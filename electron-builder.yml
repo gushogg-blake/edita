@@ -1,0 +1,25 @@
+productName: "ps"
+appId: "uk.hogg-blake.ps"
+
+# Package app code into a asar archive. Set to false to debug issues.
+asar: true
+
+# Windows configuration
+win:
+  icon: "public/img/icon.ico"
+  target:
+    - "zip"
+    - "nsis"
+
+# Config for the windows installer
+nsis:
+  oneClick: true
+  perMachine: true
+
+# Linux configuration
+linux:
+  category: Development
+  target:
+    - "AppImage"
+    - "deb"
+    - "rpm"

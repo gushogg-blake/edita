@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "file": "bundle.css",
+  "sources": [
+    "../App.svelte"
+  ],
+  "sourcesContent": [
+    "<script>\nlet fs = require(\"flowfs\");\n\nimport {onMount} from \"svelte\";\nimport powershell from \"./modules/powershell/renderer\";\n\nlet url = \"\";\nlet cmd = \"\";\nlet output = \"\";\nlet ps;\n\nasync function openIe() {\n\tawait ps.run(`\n\t\t$ie = new-object -comObject InternetExplorer.Application\n\t\t$ie.Visible = $True\n\t`);\n}\n\nasync function navigate() {\n\tawait ps.run(`\n\t\t$ie.Navigate(\"${url}\")\n\t`);\n}\n\nasync function closeIe() {\n\tawait ps.run(`\n\t\t$ie.Quit()\n\t`);\n}\n\nasync function run() {\n\ttry {\n\t\toutput += \"\\n\" + await ps.run(cmd);\n\t} catch (e) {\n\t\toutput += e;\n\t}\n\t\n\tcmd = \"\";\n}\n\nonMount(async function() {\n\tps = await powershell();\n\tconsole.log(ps);\n});\n</script>\n\n<style type=\"text/scss\">#main {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  padding: 1em; }\n\n#test {\n  padding: 1em; }\n\n#ps {\n  padding: 1em; }\n\n#output {\n  font-family: monospace;\n  white-space: pre; }\n/*# sourceMappingURL=src/App.svelte.map */</style>\n\n<div id=\"main\">\n\t<h3>IE</h3>\n\t<div id=\"test\">\n\t\t<form on:submit|preventDefault={navigate}>\n\t\t\t<label>\n\t\t\t\t<input bind:value={url}>\n\t\t\t</label>\n\t\t\t<input type=\"submit\" value=\"Go\">\n\t\t</form>\n\t\t<br><br>\n\t\t<button on:click={openIe}>Open</button>\n\t\t<button on:click={closeIe}>Close</button>\n\t</div>\n\t<h3>PS</h3>\n\t<div id=\"ps\">\n\t\t<form on:submit|preventDefault={run}>\n\t\t\t<label>\n\t\t\t\t<input bind:value={cmd}>\n\t\t\t</label>\n\t\t\t<input type=\"submit\" value=\"Run\">\n\t\t</form>\n\t\t<br><br>\n\t\t<div id=\"output\">\n\t\t\t{output}\n\t\t</div>\n\t</div>\n</div>\n"
+  ],
+  "names": [],
+  "mappings": "AA8CwB,KAAK,cAAC,CAAC,AAC7B,OAAO,CAAE,WAAW,CACpB,OAAO,CAAE,IAAI,CACb,kBAAkB,CAAE,QAAQ,CAC5B,qBAAqB,CAAE,MAAM,CACrB,cAAc,CAAE,MAAM,CAC9B,QAAQ,CAAE,QAAQ,CAClB,GAAG,CAAE,CAAC,CACN,KAAK,CAAE,CAAC,CACR,MAAM,CAAE,CAAC,CACT,IAAI,CAAE,CAAC,CACP,OAAO,CAAE,GAAG,AAAE,CAAC,AAEjB,KAAK,cAAC,CAAC,AACL,OAAO,CAAE,GAAG,AAAE,CAAC,AAEjB,GAAG,cAAC,CAAC,AACH,OAAO,CAAE,GAAG,AAAE,CAAC,AAEjB,OAAO,cAAC,CAAC,AACP,WAAW,CAAE,SAAS,CACtB,WAAW,CAAE,GAAG,AAAE,CAAC"
+}

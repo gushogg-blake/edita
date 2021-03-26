@@ -1,0 +1,11 @@
+@mixin flex-l($marginRight: 1rem) {
+	display: flex;
+	
+	> div, > a {
+		margin-right: $marginRight;
+		
+		&:last-child {
+			margin-right: 0;
+		}
+	}
+}

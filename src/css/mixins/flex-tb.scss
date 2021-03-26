@@ -1,0 +1,13 @@
+@mixin flex-tb($marginBottom: 1rem) {
+	display: flex;
+	flex-direction: column;
+	
+	> div, > a {
+		margin-bottom: $marginBottom;
+		
+		&:last-child {
+			margin-top: auto;
+			margin-bottom: 0;
+		}
+	}
+}
