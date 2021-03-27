@@ -1,9 +1,24 @@
 let {deep} = require("../../../utils/assertions");
 let dedent = require("../../../utils/dedent");
-let js = require("../../../../src/tokenisers/js");
+let parse = require("../../../../src/modules/langs/js");
 
-describe("JS tokeniser", function() {
-	describe("Main", function() {
+let tests = [
+	[
+		"string",
+		`"string"`,
+		`Cstring,S"string"`
+	],
+];
+
+describe("JavaScript parser", function() {
+	for (let [name, code, expectedTokens] of tests) {
+		it(name, function() {
+			let doc = new Document(code);
+			
+			parse({
+			}, doc,
+		});
+	}
 		it("string", async function() {
 			let code = `"string"`;
 			

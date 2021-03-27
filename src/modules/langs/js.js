@@ -80,7 +80,40 @@ function push(stack, ch) {
 	return stack + ch;
 }
 
-function getCacheKey(endState) {
+function pushOpenBracesStack(openBracesStack) {
+	return [
+		...(openBracesStack || []),
+		0,
+	];
+}
+
+function popOpenBracesStack(openBracesStack) {
+	if (openBracesStack.length === 1) {
+		return null;
+	} else {
+		return openBracesStack.slice(0, -1);
+	}
+}
+
+function peekOpenBracesStack(openBracesStack) {
+	return openBracesStack[openBracesStack.length - 1];
+}
+
+function incrementOpenBracesStack(openBracesStack) {
+	return [
+		...openBracesStack.slice(0, -1),
+		openBracesStack[openBracesStack.length - 1] + 1,
+	];
+}
+
+function decrementOpenBracesStack(openBracesStack) {
+	return [
+		...openBracesStack.slice(0, -1),
+		openBracesStack[openBracesStack.length - 1] - 1,
+	];
+}
+
+function getCacheKey(state, slashIsDivision, openBracesStack) {
 	return (
 		state
 		+ "_"
@@ -99,6 +132,21 @@ B - bracket (B instead of S is used for highlighting matching brackets)
 T - tab
 */
 
+/*
+word highlighting - just search for instances of the word in the line, and highlight
+them.  needs to know about tab widths!  probably best to do as an entirely separate
+layer - an underlay - as opposed to here (maybe each line could store a repr of itself
+with tabs replaced with spaces though, to make that much simpler?)
+*/
+
+/*
+Paging
+
+if implemented, paging should be a notional concept, not a feature of the structure of
+the code -- ie it should be like an index, that exists separately and independently to
+the data it indexes.
+*/
+
 function convertLineToCommands(
 	prefs,
 	initialState,
@@ -112,6 +160,7 @@ function convertLineToCommands(
 		state,
 		openBracesStack,
 		slashIsDivision, // for discerning between division and regex literal
+		cacheKey,
 	} = initialState;
 	
 	let commands = [];
@@ -153,20 +202,23 @@ function convertLineToCommands(
 				let nextState = state;
 				
 				if (ch === "}") {
-					
-					
-					nextState = states.IN_TEMPLATE_STRING;
+					if (openBracesStack) {
+						openBracesStack = decrementOpenBracesStack(openBracesStack);
+						
+						if (peekOpenBracesStack(openBracesStack) === 0) {
+							openBracesStack = popOpenBracesStack(openBracesStack);
+							
+							nextState = states.IN_TEMPLATE_STRING;
+						}
+					}
 				}
 				
-				if (nextState === states.IN_TEMPLATE_STRING) {
-					commands.push("Cstring");
-					commands.push("S}");
-				} else {
-					commands.push("Csymbol");
-					commands.push("B" + ch);
-				}
+				commands.push("Csymbol");
+				commands.push("B" + ch);
 				
-				slashIsDivision = ch !== "}"; // TODO does this work with IN_TEMPLATE_STRING?
+				if (nextState !== states.IN_TEMPLATE_STRING) {
+					slashIsDivision = ch !== "}";
+				}
 				
 				i++;
 				col++;
@@ -207,12 +259,11 @@ function convertLineToCommands(
 					i++;
 					col++;
 				} else {
-					start = i;
-					
+					let start = i;
 					let end;
 					let inClass = false;
 					
-					while (true) {
+					while (true) { // TODO tabs
 						i++;
 						col++;
 						ch = str[i];
@@ -416,17 +467,12 @@ function convertLineToCommands(
 						
 						break;
 					}
-				} else if (ch === "$" && lineString[i + 1] === "{") {
-					str += "${";
-					i += 2;
-					col += 2;
-					
+				} else if (!isEscaped && ch === "$" && lineString[i + 1] === "{") {
 					commands.push("S" + str);
 					
-					openBracesStack = [
-						...(openBracesStack || []),
-						0,
-					];
+					str = "";
+					
+					openBracesStack = pushOpenBracesStack(openBracesStack);
 					
 					isClosed = true;
 					
@@ -456,30 +502,29 @@ function convertLineToCommands(
 	
 	let endState = {
 		state,
-		openBracesStack,
 		slashIsDivision,
+		openBracesStack,
+		cacheKey: getCacheKey(state, slashIsDivision, openBracesStack),
 	};
 	
 	return {
 		commands,
 		endState,
-		cacheKey: getCacheKey(endState),
 	};
 }
 
 module.exports = function(
 	prefs,
-	document,
-	startLineIndex,
-	endLineIndex,
+	lines,
 ) {
-	let stack = []; // keep track of brackets, braces, quotes, etc
-	
 	let prevState = startLineIndex > 0 ? document.lines[startLineIndex - 1].endState : {
 		state: states.DEFAULT,
+		slashIsDivision: false,
+		openBracesStack: null,
+		cacheKey: getCacheKey(states.DEFAULT, false, null),
 	};
 	
-	for (let lineIndex = startLineIndex; lineIndex <= endLineIndex; lineIndex++) {
+	for (let lineIndex = startIndex; lineIndex <= endIndex; lineIndex++) {
 		let line = document.lines[lineIndex];
 		
 		let {
@@ -489,7 +534,6 @@ module.exports = function(
 			prefs,
 			prevState,
 			line.string,
-			stack,
 		);
 		
 		line.commands = commands;

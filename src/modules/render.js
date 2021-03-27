@@ -3,14 +3,29 @@ Renders the current state to the canvas.  Includes:
 
 - Underlays (current line highlight, selection, other highlights)
 - The code
-- Cursor (if cursorBlinkOn)
-- Margin (line nos etc)
+- The cursor
+- Margin (line nos, folding, etc)
+*/
+
+/*
+scroll position
+
+scrollPosition has row and col - visual lines/cols
+
+render receives all lines
+
+scan all lines to calculate where to start rendering, taking account of wrapping
+(lines are effectively variable height - one line != one row)
+
+(scanning is fast, 0.7ms to search half way down a 30k line file)
 */
 
 module.exports = function(
+	lines,
 	c,
-	prefs,
-	document,
+	font,
+	colors,
+	indentWidth,
 	measurements,
 	margin,
 	scrollPosition,
@@ -24,32 +39,33 @@ module.exports = function(
 		height,
 	} = c.canvas;
 	
-	c.font = prefs.font;
+	c.font = font;
 	
 	c.clearRect(0, 0, width, height);
 	
-	let {colors} = prefs.langs[document.lang];
-	
 	let {
-		charWidth,
-		lineHeight,
+		colWidth,
+		rowHeight,
 	} = measurements;
 	
-	let leftEdge = margin.widthPlusGap - scrollPosition.x;
+	let leftEdge = margin.widthPlusGap - scrollPosition.col * colWidth;
 	
 	let x = leftEdge;
-	let y = lineHeight; // not 0 -- we're using textBaseline="bottom"
+	let y = rowHeight; // not 0 -- we're using textBaseline="bottom"
 	
-	let renderLines = height / lineHeight;
-	let {lineIndex} = scrollPosition;
-	let maxIndex = lineIndex + renderLines - 1;
+	let renderRows = height / lineHeight;
+	let renderedRows = 0;
 	
-	// Code
+	// TODO find the first line that's onscreen (if only partially)
 	
-	for (let i = lineIndex; i <= maxIndex; i++) {
-		let {commands} = document.lines[lineIndex];
+	
+	// Code & margin
+	
+	while (true) {
+		let line = lines[i];
 		
-		for (let command of commands) {
+		
+		for (let command of line.commands) {
 			let [type, value] = [command.charAt(0), command.substr(1)];
 			
 			if (type === "S" || type === "B") {
@@ -64,18 +80,15 @@ module.exports = function(
 				c.fillText(" ".repeat(width), x, y);
 				
 				x += width * charWidth;
-			} else if (type === "N") {
-				
-				linesRendered++;
-			} else if (type === "W") {
-				x = leftEdge;
-				y += lineHeight;
-				linesRendered++;
 			}
 		}
 		
-		x = leftEdge;
-		y += lineHeight;
+		if (screenFull) {
+			break;
+		}
+		
+		//x = leftEdge;
+		//y += lineHeight;
 	}
 	
 	// Margin (line nos etc)
@@ -112,8 +125,6 @@ module.exports = function(
 			return true;
 		}
 	});
-	
-	// TODO render cursor (document.selection)
 	
 	console.timeEnd("render");
 }
