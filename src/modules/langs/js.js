@@ -80,6 +80,16 @@ function push(stack, ch) {
 	return stack + ch;
 }
 
+function getCacheKey(endState) {
+	return (
+		state
+		+ "_"
+		+ Number(slashIsDivision)
+		+ "_"
+		+ (openBracesStack?.join(",") || "")
+	);
+}
+
 /*
 token codes:
 
@@ -88,45 +98,6 @@ S - string of text
 B - bracket (B instead of S is used for highlighting matching brackets)
 T - tab
 */
-
-function parseString(lineString, quote, startIndex) {
-	let isEscaped = false;
-					
-			while (true) {
-				ch = str[i];
-				
-				//console.log(ch);
-				
-				if (!isEscaped && ch === quote) {
-					i++;
-					col++;
-					
-					commands.push("Cstring");
-					commands.push("S" + str.substring(start, i));
-					
-					break;
-				} else if (ch === "\n") {
-					commands.push("Cstring");
-					commands.push("S" + str.substring(start, i));
-					
-					break;
-				} else if (i === length - 1) {
-					commands.push("Cstring");
-					commands.push("S" + str.substring(start, i));
-					
-					break;
-				}
-				
-				if (!isEscaped && ch === "\\") {
-					isEscaped = true;
-				} else {
-					isEscaped = false;
-				}
-				
-				i++;
-				col++;
-			// go to closing quote or backslash and newline
-}
 
 function convertLineToCommands(
 	prefs,
@@ -138,8 +109,8 @@ function convertLineToCommands(
 	} = prefs;
 	
 	let {
-		stack,
 		state,
+		openBracesStack,
 		slashIsDivision, // for discerning between division and regex literal
 	} = initialState;
 	
@@ -168,7 +139,11 @@ function convertLineToCommands(
 				commands.push("Csymbol");
 				commands.push("B" + ch);
 				
-				stack = push(stack, ch);
+				// TODO highlight matching bracket - base on line/col?
+				
+				if (ch === "{" && openBracesStack) {
+					openBracesStack = incrementOpenBracesStack(openBracesStack);
+				}
 				
 				slashIsDivision = false;
 				i++;
@@ -177,10 +152,8 @@ function convertLineToCommands(
 				let opener = stack[stack.length - 1];
 				let nextState = state;
 				
-				if (opener === openers[ch]) {
-					stack = pop(stack);
-				} else if (opener === "$" && ch === "}") {
-					stack = pop(stack);
+				if (ch === "}") {
+					
 					
 					nextState = states.IN_TEMPLATE_STRING;
 				}
@@ -244,14 +217,14 @@ function convertLineToCommands(
 						col++;
 						ch = str[i];
 						
-						if (i === length - 1 || ch === "\n") {
+						if (i === lineString.length - 1) {
 							end = i;
 							
 							break;
 						}
 						
 						if (ch === "\\") {
-							if (i < length - 1) {
+							if (i < lineString.length - 1) {
 								i++;
 								col++;
 							}
@@ -355,34 +328,142 @@ function convertLineToCommands(
 					}
 				}
 			*/
-		} else if (state === states.IN_SINGLE_QUOTED_STRING) {
-			let {
-				isEscaped,
-				isClosed,
-				endIndex,
-			} = parseString(commands, lineString, "'", i);
-			
-			
-			if (isEscaped) {
-				break;
+		} else if (
+			state === states.IN_SINGLE_QUOTED_STRING
+			|| state === states.IN_DOUBLE_QUOTED_STRING
+		) {
+			let quote = state === states.IN_SINGLE_QUOTED_STRING ? "'" : "\"";
+			let isEscaped = false;
+			let isClosed = false;
+			let str = "";
+					
+			while (i < lineString.length) {
+				ch = str[i];
+				
+				if (ch === "\t") {
+					if (str) {
+						commands.push("S" + str);
+					}
+					
+					let tabWidth = (indentWidth - col % indentWidth);
+					
+					commands.push("T" + tabWidth);
+					
+					str = "";
+					col += tabWidth;
+					i++;
+				} else if (ch === quote) {
+					str += ch;
+					i++;
+					col++;
+					
+					if (!isEscaped) {
+						isClosed = true;
+						
+						break;
+					}
+				} else {
+					str += ch;
+					i++;
+					col++;
+				}
+				
+				if (!isEscaped && ch === "\\") {
+					isEscaped = true;
+				} else {
+					isEscaped = false;
+				}
 			}
-			// if ends without backslash, add a highlight for the syntax error (commands.push("Enoclosingquote"))
-		} else if (state === states.IN_SINGLE_QUOTED_STRING) {
-			// go to closing quote or backslash and newline
-			// if ends without backslash, add a highlight for the syntax error (commands.push("Enoclosingquote"))
-		} else if (state === states.IN_TEMPLATE_STRING) {
 			
-			// go to end or ${ or `
+			if (str) {
+				commands.push("S" + str);
+			}
+			
+			if (!isClosed && !isEscaped) {
+				commands.push("EnoClosingQuote");
+			}
+			
+			if (!isEscaped) {
+				state = states.DEFAULT;
+			}
+		} else if (state === states.IN_TEMPLATE_STRING) {
+			let isEscaped = false;
+			let isClosed = false;
+			let str = "";
+					
+			while (i < lineString.length) {
+				ch = str[i];
+				
+				if (ch === "\t") {
+					if (str) {
+						commands.push("S" + str);
+					}
+					
+					let tabWidth = (indentWidth - col % indentWidth);
+					
+					commands.push("T" + tabWidth);
+					
+					str = "";
+					col += tabWidth;
+					i++;
+				} else if (ch === "`") {
+					str += ch;
+					i++;
+					col++;
+					
+					if (!isEscaped) {
+						isClosed = true;
+						
+						break;
+					}
+				} else if (ch === "$" && lineString[i + 1] === "{") {
+					str += "${";
+					i += 2;
+					col += 2;
+					
+					commands.push("S" + str);
+					
+					openBracesStack = [
+						...(openBracesStack || []),
+						0,
+					];
+					
+					isClosed = true;
+					
+					break;
+				} else {
+					str += ch;
+					i++;
+					col++;
+				}
+				
+				if (!isEscaped && ch === "\\") {
+					isEscaped = true;
+				} else {
+					isEscaped = false;
+				}
+			}
+			
+			if (str) {
+				commands.push("S" + str);
+			}
+			
+			if (isClosed) {
+				state = states.DEFAULT;
+			}
 		}
 	}
 	
+	let endState = {
+		state,
+		openBracesStack,
+		slashIsDivision,
+	};
+	
 	return {
 		commands,
-		
-		endState: {
-			state,
-			slashIsDivision,
-		},
+		endState,
+		cacheKey: getCacheKey(endState),
 	};
 }
 
