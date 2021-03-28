@@ -62,12 +62,6 @@ let quoteStates = {
 	"\"": states.IN_DOUBLE_QUOTED_STRING,
 };
 
-let openers = {
-	")": "(",
-	"]": "[",
-	"}": "{",
-};
-
 function peek(stack) {
 	return stack[stack.length - 1];
 }
@@ -198,7 +192,6 @@ function convertLineToCommands(
 				i++;
 				col++;
 			} else if (ch === ")" || ch === "]" || ch === "}") {
-				let opener = stack[stack.length - 1];
 				let nextState = state;
 				
 				if (ch === "}") {
@@ -244,69 +237,85 @@ function convertLineToCommands(
 				slashIsDivision = false;
 				
 				break;
-			} else if (ch === "/" && str[i + 1] === "*") {
+			} else if (ch === "/" && lineString[i + 1] === "*") {
 				commands.push("Ccomment");
 				commands.push("S/*");
 				
 				i += 2;
 				col += 2;
 				state = states.IN_BLOCK_COMMENT;
-			} else if (ch === "/") {
-				if (slashIsDivision) {
-					commands.push("Csymbol");
-					commands.push("S" + ch);
+			} else if (ch === "/" && slashIsDivision) {
+				commands.push("Csymbol");
+				commands.push("S" + ch);
+				
+				slashIsDivision = false;
+				i++;
+				col++;
+			} else if (ch === "/" && !slashIsDivision) {
+				commands.push("Cregex");
+				
+				let str = "/";
+				let isEscaped = false;
+				let isClosed = false;
+				let inClass = false;
+				
+				i++;
+				col++;
+				
+				while (i < lineString.length) {
+					ch = lineString[i];
 					
-					i++;
-					col++;
-				} else {
-					let start = i;
-					let end;
-					let inClass = false;
-					
-					while (true) { // TODO tabs
+					if (ch === "\\") {
+						let escaped = lineString.substr(i, 2);
+						
+						str += escaped;
+						i += escaped.length;
+						col += escaped.length;
+					} else if (ch === "[") {
+						inClass = true;
+						
+						str += ch;
 						i++;
 						col++;
-						ch = str[i];
+					} else if (ch === "]") {
+						inClass = false;
 						
-						if (i === lineString.length - 1) {
-							end = i;
-							
-							break;
+						str += ch;
+						i++;
+						col++;
+					} else if (ch === "\t") {
+						if (str) {
+							commands.push("S" + str);
 						}
 						
-						if (ch === "\\") {
-							if (i < lineString.length - 1) {
-								i++;
-								col++;
-							}
-							
-							continue;
-						}
+						let tabWidth = (indentWidth - col % indentWidth);
 						
-						if (ch === "[") {
-							inClass = true;
-						} else if (inClass && ch === "]") {
-							inClass = false;
-						} else if (!inClass && ch === "/") {
-							i++;
-							col++;
-							
-							break;
-						}
+						commands.push("T" + tabWidth);
+						
+						str = "";
+						col += tabWidth;
+						i++;
+					} else if (!inClass && ch === "/") {
+						str += ch;
+						i++;
+						col++;
+						
+						break;
+					} else {
+						str += ch;
+						i++;
+						col++;
 					}
-					
-					re.regexFlags.lastIndex = i;
-					
-					let flagsLength = re.regexFlags.exec(str)[0].length;
-					
-					i += flagsLength;
-					col += flagsLength;
-					
-					let body = str.substring(start, i);
-					
-					commands.push("Cregex");
-					commands.push("S" + body);
 				}
+				
+				re.regexFlags.lastIndex = i;
+				
+				let flags = re.regexFlags.exec(lineString)[0];
+				
+				i += flags.length;
+				col += flags.length;
+				
+				commands.push("S" + str + flags);
 				
 				slashIsDivision = false;
 			} else if (re.symbol.exec(ch)) {
@@ -319,7 +328,7 @@ function convertLineToCommands(
 			} else if (re.startWord.exec(ch)) {
 				re.word.lastIndex = i;
 				
-				let [word] = re.word.exec(str);
+				let [word] = re.word.exec(lineString);
 				
 				if (keywords.includes(word)) {
 					commands.push("Ckeyword");
@@ -335,7 +344,7 @@ function convertLineToCommands(
 			} else if (re.startNumber.exec(ch)) {
 				re.number.lastIndex = i;
 				
-				let [number] = re.number.exec(str);
+				let [number] = re.number.exec(lineString);
 				
 				commands.push("Cnumber");
 				commands.push("S" + number);
@@ -389,7 +398,7 @@ function convertLineToCommands(
 			let str = "";
 					
 			while (i < lineString.length) {
-				ch = str[i];
+				ch = lineString[i];
 				
 				if (ch === "\t") {
 					if (str) {
@@ -516,8 +525,14 @@ function convertLineToCommands(
 module.exports = function(
 	prefs,
 	lines,
+	startIndex=0,
+	endIndex=null,
 ) {
-	let prevState = startLineIndex > 0 ? document.lines[startLineIndex - 1].endState : {
+	if (endIndex === null) {
+		endIndex = lines.length - 1;
+	}
+	
+	let prevState = startIndex > 0 ? lines[startIndex - 1].endState : {
 		state: states.DEFAULT,
 		slashIsDivision: false,
 		openBracesStack: null,
@@ -525,7 +540,7 @@ module.exports = function(
 	};
 	
 	for (let lineIndex = startIndex; lineIndex <= endIndex; lineIndex++) {
-		let line = document.lines[lineIndex];
+		let line = lines[lineIndex];
 		
 		let {
 			commands,
