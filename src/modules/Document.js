@@ -4,6 +4,7 @@ function createLine(string) {
 		endState: null,
 		cacheKey: null,
 		cachedCommands: {},
+		height: 1,
 	};
 }
 

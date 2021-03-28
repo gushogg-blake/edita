@@ -1,3 +1,4 @@
+let renderMarginBackground = require("./renderMarginBackground");
 let renderCurrentLineHilite = require("./renderCurrentLineHilite");
 let renderSelection = require("./renderSelection");
 let renderWordHilites = require("./renderWordHilites");
@@ -40,6 +41,13 @@ module.exports = function(
 	console.time("render");
 	
 	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+	
+	renderMarginBackground(
+		context,
+		lines,
+		colors,
+		measurements,
+	);
 	
 	renderCurrentLineHilite(
 		context,
