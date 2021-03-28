@@ -30,9 +30,9 @@ let tests = [
 			}
 		`,
 		`
-			Ckeyword,Sfunction,S ,Cid,Sa,Csymbol,B(,Csymbol,B),S ,Csymbol,B{
+			Ckeyword,Sfunction,S ,Cid,Sa,B(,B),S ,B{
 			T4,Cnumber,S123
-			Csymbol,B}
+			B}
 		`,
 	],
 	[
@@ -51,6 +51,51 @@ let tests = [
 		`,
 		`
 			Cregex,S/asd,T4,S/gi
+		`,
+	],
+	[
+		"regex with class",
+		`
+			/asd[abc]/gi
+		`,
+		`
+			Cregex,S/asd[abc]/gi
+		`,
+	],
+	[
+		"regex with escapes",
+		`
+			/asd[abc\\]/gi
+		`,
+		`
+			Cregex,S/asd[abc\\]/gi
+		`,
+	],
+	[
+		"regex with escapes 2",
+		`
+			/asd[abc\\]\\/gi
+		`,
+		`
+			Cregex,S/asd[abc\\]\\/gi
+		`,
+	],
+	[
+		"template string",
+		`
+			\`string\`
+		`,
+		`
+			Cstring,S\`,Sstring\`
+		`,
+	],
+	[
+		"template string with interpolation",
+		`
+			\`string\${123}string\`
+		`,
+		`
+			Cstring,S\`,Sstring,Cid,S$,B{,Cnumber,S123,B},Cstring,Sstring\`
 		`,
 	],
 ];

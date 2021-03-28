@@ -179,7 +179,6 @@ function convertLineToCommands(
 				i++;
 				col++;
 			} else if (ch === "(" || ch === "[" || ch === "{") {
-				commands.push("Csymbol");
 				commands.push("B" + ch);
 				
 				// TODO highlight matching bracket - base on line/col?
@@ -192,7 +191,10 @@ function convertLineToCommands(
 				i++;
 				col++;
 			} else if (ch === ")" || ch === "]" || ch === "}") {
-				let nextState = state;
+				commands.push("B" + ch);
+				
+				i++;
+				col++;
 				
 				if (ch === "}") {
 					if (openBracesStack) {
@@ -201,21 +203,18 @@ function convertLineToCommands(
 						if (peekOpenBracesStack(openBracesStack) === 0) {
 							openBracesStack = popOpenBracesStack(openBracesStack);
 							
-							nextState = states.IN_TEMPLATE_STRING;
+							state = states.IN_TEMPLATE_STRING;
 						}
 					}
 				}
 				
-				commands.push("Csymbol");
-				commands.push("B" + ch);
-				
-				if (nextState !== states.IN_TEMPLATE_STRING) {
+				if (state !== states.IN_TEMPLATE_STRING) {
 					slashIsDivision = ch !== "}";
 				}
 				
-				i++;
-				col++;
-				state = nextState;
+				if (state === states.IN_TEMPLATE_STRING) {
+					commands.push("Cstring");
+				}
 			} else if (ch === "\"" || ch === "'") {
 				commands.push("Cstring");
 				commands.push("S" + ch);
@@ -256,7 +255,6 @@ function convertLineToCommands(
 				
 				let str = "/";
 				let isEscaped = false;
-				let isClosed = false;
 				let inClass = false;
 				
 				i++;
@@ -266,23 +264,31 @@ function convertLineToCommands(
 					ch = lineString[i];
 					
 					if (ch === "\\") {
-						let escaped = lineString.substr(i, 2);
+						str += ch;
+						i++;
+						col++;
 						
-						str += escaped;
-						i += escaped.length;
-						col += escaped.length;
-					} else if (ch === "[") {
+						isEscaped = true;
+						
+						continue;
+					} else if (!isEscaped && ch === "[") {
 						inClass = true;
 						
 						str += ch;
 						i++;
 						col++;
-					} else if (ch === "]") {
+					} else if (!isEscaped && ch === "]") {
 						inClass = false;
 						
 						str += ch;
 						i++;
 						col++;
+					} else if (!isEscaped && !inClass && ch === "/") {
+						str += ch;
+						i++;
+						col++;
+						
+						break;
 					} else if (ch === "\t") {
 						if (str) {
 							commands.push("S" + str);
@@ -295,12 +301,6 @@ function convertLineToCommands(
 						str = "";
 						col += tabWidth;
 						i++;
-					} else if (!inClass && ch === "/") {
-						str += ch;
-						i++;
-						col++;
-						
-						break;
 					} else {
 						str += ch;
 						i++;
@@ -317,13 +317,6 @@ function convertLineToCommands(
 				
 				commands.push("S" + str + flags);
 				
-				slashIsDivision = false;
-			} else if (re.symbol.exec(ch)) {
-				commands.push("Csymbol");
-				commands.push("S" + ch);
-				
-				i++;
-				col++;
 				slashIsDivision = false;
 			} else if (re.startWord.exec(ch)) {
 				re.word.lastIndex = i;
@@ -352,6 +345,13 @@ function convertLineToCommands(
 				i += number.length;
 				col += number.length;
 				slashIsDivision = true;
+			} else if (re.symbol.exec(ch)) {
+				commands.push("Csymbol");
+				commands.push("S" + ch);
+				
+				i++;
+				col++;
+				slashIsDivision = false;
 			} else {
 				commands.push("Cmisc");
 				commands.push("S" + ch);
@@ -400,7 +400,15 @@ function convertLineToCommands(
 			while (i < lineString.length) {
 				ch = lineString[i];
 				
-				if (ch === "\t") {
+				if (ch === "\\") {
+					str += ch;
+					i++;
+					col++;
+					
+					isEscaped = true;
+					
+					continue;
+				} else if (ch === "\t") {
 					if (str) {
 						commands.push("S" + str);
 					}
@@ -428,11 +436,7 @@ function convertLineToCommands(
 					col++;
 				}
 				
-				if (!isEscaped && ch === "\\") {
-					isEscaped = true;
-				} else {
-					isEscaped = false;
-				}
+				isEscaped = false;
 			}
 			
 			if (str) {
@@ -452,9 +456,17 @@ function convertLineToCommands(
 			let str = "";
 					
 			while (i < lineString.length) {
-				ch = str[i];
+				ch = lineString[i];
 				
-				if (ch === "\t") {
+				if (ch === "\\") {
+					str += ch;
+					i++;
+					col++;
+					
+					isEscaped = true;
+					
+					continue;
+				} else if (ch === "\t") {
 					if (str) {
 						commands.push("S" + str);
 					}
@@ -492,11 +504,7 @@ function convertLineToCommands(
 					col++;
 				}
 				
-				if (!isEscaped && ch === "\\") {
-					isEscaped = true;
-				} else {
-					isEscaped = false;
-				}
+				isEscaped = false;
 			}
 			
 			if (str) {
