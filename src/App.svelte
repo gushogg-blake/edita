@@ -2,12 +2,11 @@
 let fs = require("flowfs");
 
 import {onMount} from "svelte";
-import Document from "../core/Document";
-import Editor from "../components/Editor/Editor.svelte";
+import Document from "./modules/Document";
+import Editor from "./components/Editor/Editor.svelte";
 
 let prefs = {
 	font: "14px DejaVu Sans Mono",
-	//lineHeight: 18,
 	indentWidth: 4,
 	
 	lineNumberColor: "#9f9f9f",
@@ -48,6 +47,6 @@ onMount(async function() {
 
 <div id="main">
 	{#if document}
-		<Editor {document} {prefs}/>
+		<Editor {document}/>
 	{/if}
 </div>
