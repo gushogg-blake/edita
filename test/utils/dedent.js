@@ -3,7 +3,7 @@ dedent template strings
 */
 
 module.exports = function(str) {
-	str = str.substr(1, str.length - 1);
+	str = str.substr(1);
 	
 	let minIndent = str.split("\n").reduce(function(min, line) {
 		return Math.min(min, line.match(/^\t*/)[0].length);

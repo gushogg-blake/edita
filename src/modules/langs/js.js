@@ -50,11 +50,11 @@ let re = {
 };
 
 let states = {
-	DEFAULT: "DEFAULT",
-	IN_BLOCK_COMMENT: "IN_BLOCK_COMMENT",
-	IN_SINGLE_QUOTED_STRING: "IN_SINGLE_QUOTED_STRING",
-	IN_DOUBLE_QUOTED_STRING: "IN_DOUBLE_QUOTED_STRING",
-	IN_TEMPLATE_STRING: "IN_TEMPLATE_STRING",
+	DEFAULT: "_",
+	IN_BLOCK_COMMENT: "B",
+	IN_SINGLE_QUOTED_STRING: "S",
+	IN_DOUBLE_QUOTED_STRING: "D",
+	IN_TEMPLATE_STRING: "T",
 };
 
 let quoteStates = {
@@ -62,17 +62,11 @@ let quoteStates = {
 	"\"": states.IN_DOUBLE_QUOTED_STRING,
 };
 
-function peek(stack) {
-	return stack[stack.length - 1];
-}
-
-function pop(stack) {
-	return stack.substr(0, stack.length - 1);
-}
-
-function push(stack, ch) {
-	return stack + ch;
-}
+/*
+open braces stack - for keeping track of template string interpolations
+(${ switches to  default state and matching } switches back to template string
+state)
+*/
 
 function pushOpenBracesStack(openBracesStack) {
 	return [
@@ -107,6 +101,19 @@ function decrementOpenBracesStack(openBracesStack) {
 	];
 }
 
+/*
+cache key - string representation of the entire state after parsing a line
+
+this is used to check whether we need to re-parse a line - if a line hasn't
+changed then it only needs re-parsing if the previous line's state has changed
+since we last cached the parse result
+
+since there are not many different likely end states, we can cache multiple
+results to save time in the common cases, ie. it's likely that slashIsDivision
+and openBracesStack with stay the same and state will toggle between DEFAULT,
+IN_TEMPLATE_STRING, and IN_BLOCK_COMMENT
+*/
+
 function getCacheKey(state, slashIsDivision, openBracesStack) {
 	return (
 		state
@@ -124,21 +131,6 @@ C - set color
 S - string of text
 B - bracket (B instead of S is used for highlighting matching brackets)
 T - tab
-*/
-
-/*
-word highlighting - just search for instances of the word in the line, and highlight
-them.  needs to know about tab widths!  probably best to do as an entirely separate
-layer - an underlay - as opposed to here (maybe each line could store a repr of itself
-with tabs replaced with spaces though, to make that much simpler?)
-*/
-
-/*
-Paging
-
-if implemented, paging should be a notional concept, not a feature of the structure of
-the code -- ie it should be like an index, that exists separately and independently to
-the data it indexes.
 */
 
 function convertLineToCommands(
@@ -180,8 +172,6 @@ function convertLineToCommands(
 				col++;
 			} else if (ch === "(" || ch === "[" || ch === "{") {
 				commands.push("B" + ch);
-				
-				// TODO highlight matching bracket - base on line/col?
 				
 				if (ch === "{" && openBracesStack) {
 					openBracesStack = incrementOpenBracesStack(openBracesStack);
@@ -361,33 +351,46 @@ function convertLineToCommands(
 				slashIsDivision = false;
 			}
 		} else if (state === states.IN_BLOCK_COMMENT) {
-			// go to end or */
-			/*
-			} else if (ch === "\t") {
-						let tabWidth = (indentWidth - col % indentWidth);
-						
-						commands.push("S" + str.substring(start, i));
-						commands.push("T" + tabWidth);
-						
-						i++;
-						col += tabWidth;
-						start = i;
-					} else if (ch === "*" && str[i + 1] === "/") {
-						if (i !== start) {
-							commands.push("S" + str.substring(start, i));
-						}
-						
-						commands.push("S*" + "/"); // 
-						
-						i += 2;
-						col += 2;
-						
-						break;
-					} else {
-						i++;
+			let str = "";
+			let isClosed = false;
+					
+			while (i < lineString.length) {
+				ch = lineString[i];
+				
+				if (ch === "\t") {
+					if (str) {
+						commands.push("S" + str);
 					}
+					
+					let tabWidth = (indentWidth - col % indentWidth);
+					
+					commands.push("T" + tabWidth);
+					
+					str = "";
+					col += tabWidth;
+					i++;
+				} else if (ch === "*" && lineString[i + 1] === "/") {
+					str += "*/";
+					i += 2;
+					col += 2;
+					
+					isClosed = true;
+						
+					break;
+				} else {
+					str += ch;
+					i++;
+					col++;
 				}
-			*/
+			}
+			
+			if (str) {
+				commands.push("S" + str);
+			}
+			
+			if (isClosed) {
+				state = states.DEFAULT;
+			}
 		} else if (
 			state === states.IN_SINGLE_QUOTED_STRING
 			|| state === states.IN_DOUBLE_QUOTED_STRING

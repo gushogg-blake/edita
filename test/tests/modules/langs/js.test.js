@@ -5,12 +5,57 @@ let Document = require("../../../../src/modules/Document");
 
 let tests = [
 	[
-		"string",
+		"single-quoted string",
+		`
+			'string'
+		`,
+		`
+			Cstring,S',Sstring'
+		`,
+	],
+	[
+		"single-quoted string with escaped quote",
+		`
+			'string\\''
+		`,
+		`
+			Cstring,S',Sstring\\''
+		`,
+	],
+	[
+		"single-quoted string unterminated",
+		`
+			'string
+		`,
+		`
+			Cstring,S',Sstring,EnoClosingQuote
+		`,
+	],
+	[
+		"double-quoted string",
 		`
 			"string"
 		`,
 		`
 			Cstring,S",Sstring"
+		`,
+	],
+	[
+		"double-quoted string with escaped quote",
+		`
+			"string\\""
+		`,
+		`
+			Cstring,S",Sstring\\""
+		`,
+	],
+	[
+		"double-quoted string unterminated",
+		`
+			"string
+		`,
+		`
+			Cstring,S",Sstring,EnoClosingQuote
 		`,
 	],
 	[
@@ -109,6 +154,46 @@ let tests = [
 			Cstring,S\`,Sstring,Cid,S$,B{
 			T4,Cid,Sa,S ,Csymbol,S+,S ,Cstring,S\`,Sinner string ,Cid,S$,B{,Cid,Sid,B},Cstring,S\`
 			B},Cstring,Sstring\`
+		`,
+	],
+	[
+		"block comment",
+		`
+			/* block comment */
+		`,
+		`
+			Ccomment,S/*,S block comment */
+		`,
+	],
+	[
+		"multi-line block comment",
+		`
+			/*
+			block comment
+			*/
+		`,
+		`
+			Ccomment,S/*
+			Sblock comment
+			S*/
+		`,
+	],
+	[
+		"single-line comment",
+		`
+			// comment
+		`,
+		`
+			Ccomment,S// comment
+		`,
+	],
+	[
+		"code and single-line comment",
+		`
+			asd // comment
+		`,
+		`
+			Cid,Sasd,S ,Ccomment,S// comment
 		`,
 	],
 ];
