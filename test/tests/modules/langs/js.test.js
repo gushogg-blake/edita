@@ -98,6 +98,19 @@ let tests = [
 			Cstring,S\`,Sstring,Cid,S$,B{,Cnumber,S123,B},Cstring,Sstring\`
 		`,
 	],
+	[
+		"template string with multi-level interpolation",
+		`
+			\`string\${
+				a + \`inner string \${id}\`
+			}string\`
+		`,
+		`
+			Cstring,S\`,Sstring,Cid,S$,B{
+			T4,Cid,Sa,S ,Csymbol,S+,S ,Cstring,S\`,Sinner string ,Cid,S$,B{,Cid,Sid,B},Cstring,S\`
+			B},Cstring,Sstring\`
+		`,
+	],
 ];
 
 describe("JavaScript parser", function() {
