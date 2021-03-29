@@ -1,4 +1,4 @@
-let _typeof = require("@wildwood/utils/typeof");
+let _typeof = require("../typeof");
 let {removeInPlace} = require("../arrayMethods");
 let lid = require("../lid");
 

@@ -1,4 +1,6 @@
 let marginStyle = require("./marginStyle");
+let calculateMarginWidth = require("./calculateMarginWidth");
+let calculateMarginOffset = require("./calculateMarginOffset");
 let findFirstVisibleLine = require("../utils/findFirstVisibleLine");
 
 module.exports = function(
@@ -6,11 +8,11 @@ module.exports = function(
 	lines,
 	selection,
 	scrollPosition,
-	font,
+	prefs,
 	colors,
 	measurements,
 ) {
-	context.font = font;
+	context.font = prefs.font;
 	
 	let {
 		colWidth,
@@ -22,10 +24,12 @@ module.exports = function(
 		height,
 	} = context.canvas;
 	
-	let rowsToRender = height / lineHeight;
+	let rowsToRender = height / rowHeight;
 	let rowsRendered = 0;
 	
-	let leftEdge = marginPlusGap - scrollPosition.col * colWidth;
+	let marginWidth = calculateMarginWidth(lines, measurements);
+	let marginOffset = calculateMarginOffset(lines, measurements);
+	let leftEdge = marginOffset - scrollPosition.col * colWidth;
 	
 	// Code & margin
 	
@@ -51,12 +55,12 @@ module.exports = function(
 				if (type === "S") {
 					context.fillText(value, x, y);
 					
-					x += value.length * charWidth;
+					x += value.length * colWidth;
 				} else if (type === "B") {
 					context.fillStyle = colors.symbol;
 					context.fillText(value, x, y);
 					
-					x += charWidth;
+					x += colWidth;
 				} else if (type === "C") {
 					context.fillStyle = colors[value];
 				} else if (type === "T") {
@@ -64,7 +68,7 @@ module.exports = function(
 					
 					context.fillText(" ".repeat(width), x, y);
 					
-					x += width * charWidth;
+					x += width * colWidth;
 				}
 			}
 			
@@ -76,10 +80,10 @@ module.exports = function(
 		// margin background
 		// rendered after code so that it covers it if code is scrolled horizontally
 		
-		let marginHeight = line.height * rowHeight
+		let marginHeight = line.height * rowHeight;
 		
 		context.fillStyle = "#f0f0f0";
-		context.fillRect(0, y - marginHeight, overallWidth, marginHeight);
+		context.fillRect(0, y - marginHeight, marginWidth, marginHeight);
 		
 		// line number
 		
@@ -87,7 +91,7 @@ module.exports = function(
 		
 		context.fillText(
 			lineNumber,
-			marginWidth - paddingRight - lineNumber.length * colWidth,
+			marginWidth - marginStyle.paddingRight - lineNumber.length * colWidth,
 			y - marginHeight + rowHeight,
 		);
 		
@@ -103,30 +107,4 @@ module.exports = function(
 			break;
 		}
 	}
-	
-	// Margin (line nos, folding)
-	
-	let {
-		margin,
-		paddingLeft,
-		paddingRight,
-	} = marginStyle;
-	
-	x = leftEdge;
-	y = lineHeight;
-	linesRendered = 0;
-	
-	context.fillStyle = prefs.lineNumberColor;
-	
-	for (let i = lineIndex; i <= maxIndex; i++) {
-		let lineNumber = lineIndex + 1;
-		
-		context.fillText(
-			lineNumber,
-			overallWidth - paddingRight - value.length * charWidth,
-			y,
-		);
-		
-		y += lineHeight; // TODO rowHeight * line....
-	});
 }

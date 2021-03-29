@@ -11,7 +11,7 @@ module.exports = function(
 	selection,
 	hiliteWord,
 	scrollPosition,
-	font,
+	prefs,
 	colors,
 	measurements,
 	cursorBlinkOn,
@@ -23,7 +23,7 @@ module.exports = function(
 	renderMarginBackground(
 		context,
 		lines,
-		colors,
+		prefs,
 		measurements,
 	);
 	
@@ -59,7 +59,7 @@ module.exports = function(
 		lines,
 		selection,
 		scrollPosition,
-		font,
+		prefs,
 		colors,
 		measurements,
 	);

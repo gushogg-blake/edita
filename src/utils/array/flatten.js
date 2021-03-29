@@ -1,4 +1,4 @@
-let _typeof = require("@wildwood/utils/typeof");
+let _typeof = require("../typeof");
 
 function reduce(acc, val) {
 	if (_typeof(val) === "Array") {

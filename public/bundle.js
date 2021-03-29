@@ -1,5 +1,5 @@
 
-(function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.head.appendChild(r) })(window.document);
+(function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(window.document);
 var app = (function () {
     'use strict';
 
@@ -24,6 +24,18 @@ var app = (function () {
     function safe_not_equal(a, b) {
         return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
     }
+    function validate_store(store, name) {
+        if (!store || typeof store.subscribe !== 'function') {
+            throw new Error(`'${name}' is not a store with a 'subscribe' method`);
+        }
+    }
+    function subscribe(store, callback) {
+        const unsub = store.subscribe(callback);
+        return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
+    }
+    function component_subscribe(component, store, callback) {
+        component.$$.on_destroy.push(subscribe(store, callback));
+    }
 
     function append(target, node) {
         target.appendChild(node);
@@ -47,13 +59,6 @@ var app = (function () {
         node.addEventListener(event, handler, options);
         return () => node.removeEventListener(event, handler, options);
     }
-    function prevent_default(fn) {
-        return function (event) {
-            event.preventDefault();
-            // @ts-ignore
-            return fn.call(this, event);
-        };
-    }
     function attr(node, attribute, value) {
         if (value == null)
             node.removeAttribute(attribute);
@@ -62,11 +67,6 @@ var app = (function () {
     }
     function children(element) {
         return Array.from(element.childNodes);
-    }
-    function set_input_value(input, value) {
-        if (value != null || input.value) {
-            input.value = value;
-        }
     }
     function custom_event(type, detail) {
         const e = document.createEvent('CustomEvent');
@@ -143,11 +143,46 @@ var app = (function () {
         }
     }
     const outroing = new Set();
+    let outros;
+    function group_outros() {
+        outros = {
+            r: 0,
+            c: [],
+            p: outros // parent group
+        };
+    }
+    function check_outros() {
+        if (!outros.r) {
+            run_all(outros.c);
+        }
+        outros = outros.p;
+    }
     function transition_in(block, local) {
         if (block && block.i) {
             outroing.delete(block);
             block.i(local);
         }
+    }
+    function transition_out(block, local, detach, callback) {
+        if (block && block.o) {
+            if (outroing.has(block))
+                return;
+            outroing.add(block);
+            outros.c.push(() => {
+                outroing.delete(block);
+                if (callback) {
+                    if (detach)
+                        block.d(1);
+                    callback();
+                }
+            });
+            block.o(local);
+        }
+    }
+
+    const globals = (typeof window !== 'undefined' ? window : global);
+    function create_component(block) {
+        block && block.c();
     }
     function mount_component(component, target, anchor) {
         const { fragment, on_mount, on_destroy, after_update } = component.$$;
@@ -295,13 +330,6 @@ var app = (function () {
         else
             dispatch_dev("SvelteDOMSetAttribute", { node, attribute, value });
     }
-    function set_data_dev(text, data) {
-        data = '' + data;
-        if (text.data === data)
-            return;
-        dispatch_dev("SvelteDOMSetData", { node: text, data });
-        text.data = data;
-    }
     class SvelteComponentDev extends SvelteComponent {
         constructor(options) {
             if (!options || (!options.target && !options.$$inline)) {
@@ -317,218 +345,1515 @@ var app = (function () {
         }
     }
 
-    let indentRe = /^\s+/gm;
+    function createLine(string) {
+    	return {
+    		string,
+    		endState: null,
+    		cacheKey: null,
+    		cachedCommands: {},
+    		height: 1,
+    	};
+    }
 
-    var normaliseString = function(str) {
-    	return str.trim().replace(indentRe, "");
-    };
+    function createLines(code) {
+    	return code.split("\n").map(createLine);
+    }
 
-    let {ipcRenderer: ipc} = window.require("electron-better-ipc");
-
-
-    class PowerShell {
-    	constructor(id) {
-    		this.id = id;
-    		
-    		[
-    			"addCommand",
-    			"invoke",
-    		].forEach(m => this[m] = (...args) => this.call(m, ...args));
+    class Document {
+    	constructor(code) {
+    		this.lines = createLines(code);
     	}
     	
-    	call(fn, ...args) {
-    		return ipc.callMain("powershell/call", [this.id, fn, ...args]);
-    	}
+    	/*
+    	edit - accepts a starting line index, a number of lines to
+    	delete, and a string of code to add (which can contain newlines)
+    	*/
     	
-    	run(commands) {
-    		let lines = normaliseString(commands).split("\n");
+    	edit(lineIndex, removeLines, addCode) {
     		
-    		for (let line of lines) {
-    			this.addCommand(line);
-    		}
-    		
-    		return this.invoke();
-    	}
-    	
-    	destroy() {
-    		return ipc.callMain("powershell/destroy", [this.id]);
     	}
     }
 
-    var renderer = async function() {
-    	return new PowerShell(await ipc.callMain("powershell/create"));
+    var Document_1 = Document;
+
+    let keywords = [
+    	"break",
+    	"case",
+    	"catch",
+    	"class",
+    	"const",
+    	"continue",
+    	"debugger",
+    	"default",
+    	"delete",
+    	"do",
+    	"else",
+    	"enum",
+    	"export",
+    	"extends",
+    	"false",
+    	"finally",
+    	"for",
+    	"function",
+    	"if",
+    	"import",
+    	"in",
+    	"instanceof",
+    	"let",
+    	"new",
+    	"null",
+    	"return",
+    	"static",
+    	"super",
+    	"switch",
+    	"this",
+    	"throw",
+    	"true",
+    	"try",
+    	"typeof",
+    	"undefined",
+    	"var",
+    	"void",
+    	"while",
+    	"with",
+    ];
+
+    let re = {
+    	startWord: /[a-zA-Z_$]/,
+    	word: /[a-zA-Z_$][a-zA-Z_$0-9]*/g,
+    	symbol: /[^\s\w]/,
+    	startNumber: /(\d|\.\d)/,
+    	number: /[.0-9][.0-9E]*/g,
+    	regexFlags: /[gmiysu]*/g,
     };
 
-    /* src/App.svelte generated by Svelte v3.16.7 */
-    const file = "src/App.svelte";
+    let states = {
+    	DEFAULT: "_",
+    	IN_BLOCK_COMMENT: "B",
+    	IN_SINGLE_QUOTED_STRING: "S",
+    	IN_DOUBLE_QUOTED_STRING: "D",
+    	IN_TEMPLATE_STRING: "T",
+    };
 
-    function create_fragment(ctx) {
-    	let div3;
-    	let h30;
-    	let t1;
+    let quoteStates = {
+    	"'": states.IN_SINGLE_QUOTED_STRING,
+    	"\"": states.IN_DOUBLE_QUOTED_STRING,
+    };
+
+    /*
+    open braces stack - for keeping track of template string interpolations
+    (${ switches to  default state and matching } switches back to template string
+    state)
+    */
+
+    function pushOpenBracesStack(openBracesStack) {
+    	return [
+    		...(openBracesStack || []),
+    		0,
+    	];
+    }
+
+    function popOpenBracesStack(openBracesStack) {
+    	if (openBracesStack.length === 1) {
+    		return null;
+    	} else {
+    		return openBracesStack.slice(0, -1);
+    	}
+    }
+
+    function peekOpenBracesStack(openBracesStack) {
+    	return openBracesStack[openBracesStack.length - 1];
+    }
+
+    function incrementOpenBracesStack(openBracesStack) {
+    	return [
+    		...openBracesStack.slice(0, -1),
+    		openBracesStack[openBracesStack.length - 1] + 1,
+    	];
+    }
+
+    function decrementOpenBracesStack(openBracesStack) {
+    	return [
+    		...openBracesStack.slice(0, -1),
+    		openBracesStack[openBracesStack.length - 1] - 1,
+    	];
+    }
+
+    /*
+    cache key - string representation of the entire state after parsing a line
+
+    this is used to check whether we need to re-parse a line - if a line hasn't
+    changed then it only needs re-parsing if the previous line's state has changed
+    since we last cached the parse result
+
+    since there are not many different likely end states, we can cache multiple
+    results to save time in the common cases, ie. it's likely that slashIsDivision
+    and openBracesStack with stay the same and state will toggle between DEFAULT,
+    IN_TEMPLATE_STRING, and IN_BLOCK_COMMENT
+    */
+
+    function getCacheKey(state, slashIsDivision, openBracesStack) {
+    	return (
+    		state
+    		+ "_"
+    		+ Number(slashIsDivision)
+    		+ "_"
+    		+ (openBracesStack?.join(",") || "")
+    	);
+    }
+
+    /*
+    token codes:
+
+    C - set color
+    S - string of text
+    B - bracket (B instead of S is used for highlighting matching brackets)
+    T - tab
+    */
+
+    function convertLineToCommands(
+    	prefs,
+    	initialState,
+    	lineString,
+    ) {
+    	let {
+    		indentWidth,
+    	} = prefs;
+    	
+    	let {
+    		state,
+    		openBracesStack,
+    		slashIsDivision, // for discerning between division and regex literal
+    		cacheKey,
+    	} = initialState;
+    	
+    	let commands = [];
+    	let i = 0;
+    	let col = 0;
+    	let ch;
+    	
+    	while (i < lineString.length) {
+    		ch = lineString[i];
+    		
+    		if (state === states.DEFAULT) {
+    			if (ch === "\t") {
+    				let tabWidth = (indentWidth - col % indentWidth);
+    				
+    				commands.push("T" + tabWidth);
+    				
+    				col += tabWidth;
+    				i++;
+    			} else if (ch === " ") {
+    				commands.push("S ");
+    				
+    				i++;
+    				col++;
+    			} else if (ch === "(" || ch === "[" || ch === "{") {
+    				commands.push("B" + ch);
+    				
+    				if (ch === "{" && openBracesStack) {
+    					openBracesStack = incrementOpenBracesStack(openBracesStack);
+    				}
+    				
+    				slashIsDivision = false;
+    				i++;
+    				col++;
+    			} else if (ch === ")" || ch === "]" || ch === "}") {
+    				commands.push("B" + ch);
+    				
+    				i++;
+    				col++;
+    				
+    				if (ch === "}") {
+    					if (openBracesStack) {
+    						openBracesStack = decrementOpenBracesStack(openBracesStack);
+    						
+    						if (peekOpenBracesStack(openBracesStack) === 0) {
+    							openBracesStack = popOpenBracesStack(openBracesStack);
+    							
+    							state = states.IN_TEMPLATE_STRING;
+    						}
+    					}
+    				}
+    				
+    				if (state !== states.IN_TEMPLATE_STRING) {
+    					slashIsDivision = ch !== "}";
+    				}
+    				
+    				if (state === states.IN_TEMPLATE_STRING) {
+    					commands.push("Cstring");
+    				}
+    			} else if (ch === "\"" || ch === "'") {
+    				commands.push("Cstring");
+    				commands.push("S" + ch);
+    				
+    				i++;
+    				col++;
+    				state = quoteStates[ch];
+    			} else if (ch === "`") {
+    				commands.push("Cstring");
+    				commands.push("S`");
+    				
+    				i++;
+    				col++;
+    				state = states.IN_TEMPLATE_STRING;
+    			} else if (ch === "/" && lineString[i + 1] === "/") {
+    				commands.push("Ccomment");
+    				commands.push("S" + lineString.substring(i));
+    				
+    				slashIsDivision = false;
+    				
+    				break;
+    			} else if (ch === "/" && lineString[i + 1] === "*") {
+    				commands.push("Ccomment");
+    				commands.push("S/*");
+    				
+    				i += 2;
+    				col += 2;
+    				state = states.IN_BLOCK_COMMENT;
+    			} else if (ch === "/" && slashIsDivision) {
+    				commands.push("Csymbol");
+    				commands.push("S" + ch);
+    				
+    				slashIsDivision = false;
+    				i++;
+    				col++;
+    			} else if (ch === "/" && !slashIsDivision) {
+    				commands.push("Cregex");
+    				
+    				let str = "/";
+    				let isEscaped = false;
+    				let inClass = false;
+    				
+    				i++;
+    				col++;
+    				
+    				while (i < lineString.length) {
+    					ch = lineString[i];
+    					
+    					if (ch === "\\") {
+    						str += ch;
+    						i++;
+    						col++;
+    						
+    						isEscaped = true;
+    						
+    						continue;
+    					} else if (!isEscaped && ch === "[") {
+    						inClass = true;
+    						
+    						str += ch;
+    						i++;
+    						col++;
+    					} else if (!isEscaped && ch === "]") {
+    						inClass = false;
+    						
+    						str += ch;
+    						i++;
+    						col++;
+    					} else if (!isEscaped && !inClass && ch === "/") {
+    						str += ch;
+    						i++;
+    						col++;
+    						
+    						break;
+    					} else if (ch === "\t") {
+    						if (str) {
+    							commands.push("S" + str);
+    						}
+    						
+    						let tabWidth = (indentWidth - col % indentWidth);
+    						
+    						commands.push("T" + tabWidth);
+    						
+    						str = "";
+    						col += tabWidth;
+    						i++;
+    					} else {
+    						str += ch;
+    						i++;
+    						col++;
+    					}
+    				}
+    				
+    				re.regexFlags.lastIndex = i;
+    				
+    				let flags = re.regexFlags.exec(lineString)[0];
+    				
+    				i += flags.length;
+    				col += flags.length;
+    				
+    				commands.push("S" + str + flags);
+    				
+    				slashIsDivision = false;
+    			} else if (re.startWord.exec(ch)) {
+    				re.word.lastIndex = i;
+    				
+    				let [word] = re.word.exec(lineString);
+    				
+    				if (keywords.includes(word)) {
+    					commands.push("Ckeyword");
+    				} else {
+    					commands.push("Cid");
+    				}
+    				
+    				commands.push("S" + word);
+    				
+    				i += word.length;
+    				col += word.length;
+    				slashIsDivision = true;
+    			} else if (re.startNumber.exec(ch)) {
+    				re.number.lastIndex = i;
+    				
+    				let [number] = re.number.exec(lineString);
+    				
+    				commands.push("Cnumber");
+    				commands.push("S" + number);
+    				
+    				i += number.length;
+    				col += number.length;
+    				slashIsDivision = true;
+    			} else if (re.symbol.exec(ch)) {
+    				commands.push("Csymbol");
+    				commands.push("S" + ch);
+    				
+    				i++;
+    				col++;
+    				slashIsDivision = false;
+    			} else {
+    				commands.push("Cmisc");
+    				commands.push("S" + ch);
+    				
+    				i++;
+    				col++;
+    				slashIsDivision = false;
+    			}
+    		} else if (state === states.IN_BLOCK_COMMENT) {
+    			let str = "";
+    			let isClosed = false;
+    					
+    			while (i < lineString.length) {
+    				ch = lineString[i];
+    				
+    				if (ch === "\t") {
+    					if (str) {
+    						commands.push("S" + str);
+    					}
+    					
+    					let tabWidth = (indentWidth - col % indentWidth);
+    					
+    					commands.push("T" + tabWidth);
+    					
+    					str = "";
+    					col += tabWidth;
+    					i++;
+    				} else if (ch === "*" && lineString[i + 1] === "/") {
+    					str += "*/";
+    					i += 2;
+    					col += 2;
+    					
+    					isClosed = true;
+    						
+    					break;
+    				} else {
+    					str += ch;
+    					i++;
+    					col++;
+    				}
+    			}
+    			
+    			if (str) {
+    				commands.push("S" + str);
+    			}
+    			
+    			if (isClosed) {
+    				state = states.DEFAULT;
+    			}
+    		} else if (
+    			state === states.IN_SINGLE_QUOTED_STRING
+    			|| state === states.IN_DOUBLE_QUOTED_STRING
+    		) {
+    			let quote = state === states.IN_SINGLE_QUOTED_STRING ? "'" : "\"";
+    			let isEscaped = false;
+    			let isClosed = false;
+    			let str = "";
+    					
+    			while (i < lineString.length) {
+    				ch = lineString[i];
+    				
+    				if (ch === "\\") {
+    					str += ch;
+    					i++;
+    					col++;
+    					
+    					isEscaped = true;
+    					
+    					continue;
+    				} else if (ch === "\t") {
+    					if (str) {
+    						commands.push("S" + str);
+    					}
+    					
+    					let tabWidth = (indentWidth - col % indentWidth);
+    					
+    					commands.push("T" + tabWidth);
+    					
+    					str = "";
+    					col += tabWidth;
+    					i++;
+    				} else if (ch === quote) {
+    					str += ch;
+    					i++;
+    					col++;
+    					
+    					if (!isEscaped) {
+    						isClosed = true;
+    						
+    						break;
+    					}
+    				} else {
+    					str += ch;
+    					i++;
+    					col++;
+    				}
+    				
+    				isEscaped = false;
+    			}
+    			
+    			if (str) {
+    				commands.push("S" + str);
+    			}
+    			
+    			if (!isClosed && !isEscaped) {
+    				commands.push("EnoClosingQuote");
+    			}
+    			
+    			if (!isEscaped) {
+    				state = states.DEFAULT;
+    			}
+    		} else if (state === states.IN_TEMPLATE_STRING) {
+    			let isEscaped = false;
+    			let isClosed = false;
+    			let str = "";
+    					
+    			while (i < lineString.length) {
+    				ch = lineString[i];
+    				
+    				if (ch === "\\") {
+    					str += ch;
+    					i++;
+    					col++;
+    					
+    					isEscaped = true;
+    					
+    					continue;
+    				} else if (ch === "\t") {
+    					if (str) {
+    						commands.push("S" + str);
+    					}
+    					
+    					let tabWidth = (indentWidth - col % indentWidth);
+    					
+    					commands.push("T" + tabWidth);
+    					
+    					str = "";
+    					col += tabWidth;
+    					i++;
+    				} else if (ch === "`") {
+    					str += ch;
+    					i++;
+    					col++;
+    					
+    					if (!isEscaped) {
+    						isClosed = true;
+    						
+    						break;
+    					}
+    				} else if (!isEscaped && ch === "$" && lineString[i + 1] === "{") {
+    					commands.push("S" + str);
+    					
+    					str = "";
+    					
+    					openBracesStack = pushOpenBracesStack(openBracesStack);
+    					
+    					isClosed = true;
+    					
+    					break;
+    				} else {
+    					str += ch;
+    					i++;
+    					col++;
+    				}
+    				
+    				isEscaped = false;
+    			}
+    			
+    			if (str) {
+    				commands.push("S" + str);
+    			}
+    			
+    			if (isClosed) {
+    				state = states.DEFAULT;
+    			}
+    		}
+    	}
+    	
+    	let endState = {
+    		state,
+    		slashIsDivision,
+    		openBracesStack,
+    		cacheKey: getCacheKey(state, slashIsDivision, openBracesStack),
+    	};
+    	
+    	return {
+    		commands,
+    		endState,
+    	};
+    }
+
+    var js = function(
+    	prefs,
+    	lines,
+    	startIndex=0,
+    	endIndex=null,
+    ) {
+    	if (endIndex === null) {
+    		endIndex = lines.length - 1;
+    	}
+    	
+    	let prevState = startIndex > 0 ? lines[startIndex - 1].endState : {
+    		state: states.DEFAULT,
+    		slashIsDivision: false,
+    		openBracesStack: null,
+    		cacheKey: getCacheKey(states.DEFAULT, false, null),
+    	};
+    	
+    	for (let lineIndex = startIndex; lineIndex <= endIndex; lineIndex++) {
+    		let line = lines[lineIndex];
+    		
+    		let {
+    			commands,
+    			endState,
+    		} = convertLineToCommands(
+    			prefs,
+    			prevState,
+    			line.string,
+    		);
+    		
+    		line.commands = commands;
+    		line.endState = endState;
+    		
+    		prevState = endState;
+    	}
+    };
+
+    var marginStyle = {
+    	margin: 1,
+    	paddingLeft: 3,
+    	paddingRight: 5,
+    };
+
+    let {paddingLeft: paddingLeft$1, paddingRight: paddingRight$1} = marginStyle;
+
+    var calculateMarginWidth = function(lines, measurements) {
+    	return paddingLeft$1 + String(lines.length).length * measurements.colWidth + paddingRight$1;
+    };
+
+    var renderMarginBackground = function(
+    	context,
+    	lines,
+    	prefs,
+    	measurements,
+    ) {
+    	let {height} = context.canvas;
+    	
+    	context.fillStyle = prefs.marginBackground;
+    	context.fillRect(0, 0, calculateMarginWidth(lines, measurements), height);
+    };
+
+    let {paddingLeft, paddingRight, margin: margin$1} = marginStyle;
+
+    var calculateMarginOffset = function(lines, measurements) {
+    	return paddingLeft + String(lines.length).length * measurements.colWidth + paddingRight + margin$1;
+    };
+
+    var findFirstVisibleLine = function(lines, scrollPosition) {
+    	let row = 0;
+    	
+    	for (let i = 0; i < lines.length; i++) {
+    		let line = lines[i];
+    		
+    		if (row + line.height > scrollPosition.row) {
+    			return {
+    				line,
+    				lineIndex: i,
+    				wrappedLineIndex: scrollPosition.row - row,
+    			};
+    		}
+    		
+    		row += line.height;
+    	}
+    	
+    	return null;
+    };
+
+    var renderCodeAndMargin = function(
+    	context,
+    	lines,
+    	selection,
+    	scrollPosition,
+    	prefs,
+    	colors,
+    	measurements,
+    ) {
+    	context.font = prefs.font;
+    	
+    	let {
+    		colWidth,
+    		rowHeight,
+    	} = measurements;
+    	
+    	let {
+    		width,
+    		height,
+    	} = context.canvas;
+    	
+    	let rowsToRender = height / rowHeight;
+    	let rowsRendered = 0;
+    	
+    	let marginWidth = calculateMarginWidth(lines, measurements);
+    	let marginOffset = calculateMarginOffset(lines, measurements);
+    	let leftEdge = marginOffset - scrollPosition.col * colWidth;
+    	
+    	// Code & margin
+    	
+    	let x = 0;
+    	let y = rowHeight; // not 0 -- we're using textBaseline="bottom"
+    	
+    	let {
+    		lineIndex,
+    		wrappedLineIndex,
+    	} = findFirstVisibleLine(lines, scrollPosition);
+    	
+    	while (true) {
+    		let line = lines[lineIndex];
+    		
+    		// code
+    		
+    		for (let i = 0; i < line.height; i++) {
+    			line.height === 1 ? line.commands : line.wrappedLines[i].commands;
+    			
+    			for (let command of line.commands) {
+    				let [type, value] = [command.charAt(0), command.substr(1)];
+    				
+    				if (type === "S") {
+    					context.fillText(value, x, y);
+    					
+    					x += value.length * colWidth;
+    				} else if (type === "B") {
+    					context.fillStyle = colors.symbol;
+    					context.fillText(value, x, y);
+    					
+    					x += colWidth;
+    				} else if (type === "C") {
+    					context.fillStyle = colors[value];
+    				} else if (type === "T") {
+    					let width = Number(value);
+    					
+    					context.fillText(" ".repeat(width), x, y);
+    					
+    					x += width * colWidth;
+    				}
+    			}
+    			
+    			rowsRendered++;
+    			x = leftEdge;
+    			y += rowHeight;
+    		}
+    		
+    		// margin background
+    		// rendered after code so that it covers it if code is scrolled horizontally
+    		
+    		let marginHeight = line.height * rowHeight;
+    		
+    		context.fillStyle = "#f0f0f0";
+    		context.fillRect(0, y - marginHeight, marginWidth, marginHeight);
+    		
+    		// line number
+    		
+    		let lineNumber = String(lineIndex + 1);
+    		
+    		context.fillText(
+    			lineNumber,
+    			marginWidth - marginStyle.paddingRight - lineNumber.length * colWidth,
+    			y - marginHeight + rowHeight,
+    		);
+    		
+    		// TODO folding
+    		
+    		if (rowsRendered >= rowsToRender) {
+    			break;
+    		}
+    		
+    		lineIndex++;
+    		
+    		if (lineIndex === lines.length) {
+    			break;
+    		}
+    	}
+    };
+
+    //let renderCurrentLineHilite = require("./renderCurrentLineHilite");
+    //let renderSelection = require("./renderSelection");
+    //let renderWordHilites = require("./renderWordHilites");
+
+    //let renderCursor = require("./renderCursor");
+
+    var render = function(
+    	context,
+    	lines,
+    	selection,
+    	hiliteWord,
+    	scrollPosition,
+    	prefs,
+    	colors,
+    	measurements,
+    	cursorBlinkOn,
+    ) {
+    	console.time("render");
+    	
+    	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    	
+    	renderMarginBackground(
+    		context,
+    		lines,
+    		prefs,
+    		measurements,
+    	);
+    	
+    	//renderCurrentLineHilite(
+    	//	context,
+    	//	lines,
+    	//	selection,
+    	//	scrollPosition,
+    	//	colors,
+    	//	measurements,
+    	//);
+    	
+    	//renderSelection(
+    	//	context,
+    	//	lines,
+    	//	selection,
+    	//	scrollPosition,
+    	//	colors,
+    	//	measurements,
+    	//);
+    	
+    	//renderWordHilites(
+    	//	context,
+    	//	lines,
+    	//	selection,
+    	//	scrollPosition,
+    	//	colors,
+    	//	measurements,
+    	//);
+    	
+    	renderCodeAndMargin(
+    		context,
+    		lines,
+    		selection,
+    		scrollPosition,
+    		prefs,
+    		colors,
+    		measurements,
+    	);
+    	
+    	//renderCursor(
+    	//	context,
+    	//	lines,
+    	//	selection,
+    	//	scrollPosition,
+    	//	measurements,
+    	//	cursorBlinkOn,
+    	//);
+    	
+    	console.timeEnd("render");
+    };
+
+    var _typeof = v => ({}).toString.call(v).slice(8, -1);
+
+    function reduce(acc, val) {
+    	if (_typeof(val) === "Array") {
+    		return [...acc, ...flatten(val)];
+    	} else {
+    		return [...acc, val];
+    	}
+    }
+
+    function flatten(array) {
+    	return array.reduce(reduce, []);
+    }
+
+    var flatten_1 = flatten;
+
+    var camelToKebab = function(str) {
+    	return str.replace(/([A-Z])/g, (_, ch) => "-" + ch.toLowerCase());
+    };
+
+    let nonSizeProps = [
+    	"opacity",
+    	"flex-grow",
+    	"font-weight",
+    ];
+
+    var inlineStyle = function(...styles) {
+    	let all = Object.assign({}, ...flatten_1(styles));
+    	let str = "";
+    	
+    	for (let k in all) {
+    		let prop = camelToKebab(k);
+    		let value = all[k];
+    		
+    		if (typeof value === "number" && value !== 0 && !nonSizeProps.includes(prop)) {
+    			value += "px";
+    		}
+    		
+    		if (value !== undefined) {
+    			str += prop + ": " + value + ";";
+    		}
+    	}
+    	
+    	return str;
+    };
+
+    function createCommonjsModule(fn, module) {
+    	return module = { exports: {} }, fn(module, module.exports), module.exports;
+    }
+
+    var arrayMethods = createCommonjsModule(function (module) {
+    module.exports = {
+    	splice(array, ...args) {
+    		return module.exports.spliceInPlace(array.slice(), ...args);
+    	},
+    	
+    	push(array, ...elements) {
+    		return [...array, ...elements];
+    	},
+    	
+    	add(array, ...elements) {
+    		return [...array, ...elements.filter(e => !array.includes(e))];
+    	},
+    	
+    	pop(array) {
+    		return array.slice(0, array.length - 1);
+    	},
+    	
+    	shift(array) {
+    		return array.slice(1);
+    	},
+    	
+    	unshift(array, ...elements) {
+    		return [...elements, ...array];
+    	},
+    	
+    	remove(array, item) {
+    		return array.filter(_item => _item !== item);
+    	},
+    	
+    	sort(array, comparator) {
+    		return array.slice().sort(comparator);
+    	},
+    	
+    	reverse(array, comparator) {
+    		return array.slice().reverse();
+    	},
+    	
+    	spliceInPlace(array, i, deleteElements, ...insertElements) {
+    		array.splice(i, deleteElements, ...insertElements);
+    		
+    		return array;
+    	},
+    	
+    	pushInPlace(array, ...elements) {
+    		array.push(...elements);
+    		
+    		return array;
+    	},
+    	
+    	addInPlace(array, ...elements) {
+    		for (let e of elements) {
+    			if (!array.includes(e)) {
+    				array.push(e);
+    			}
+    		}
+    	},
+    	
+    	popInPlace(array) {
+    		array.pop();
+    		
+    		return array;
+    	},
+    	
+    	shiftInPlace(array) {
+    		array.shift();
+    		
+    		return array;
+    	},
+    	
+    	unshiftInPlace(array, elements) {
+    		array.unshift(elements);
+    		
+    		return array;
+    	},
+    	
+    	removeInPlace(array, item) {
+    		let index;
+    		
+    		while ((index = array.indexOf(item)) !== -1) {
+    			array.splice(index, 1);
+    		}
+    		
+    		return array;
+    	},
+    	
+    	sortInPlace(array, comparator) {
+    		array.sort(comparator);
+    		
+    		return array;
+    	},
+    	
+    	reverseInPlace(array) {
+    		array.reverse();
+    		
+    		return array;
+    	},
+    };
+    });
+    arrayMethods.splice;
+    arrayMethods.push;
+    arrayMethods.add;
+    arrayMethods.pop;
+    arrayMethods.shift;
+    arrayMethods.unshift;
+    arrayMethods.remove;
+    arrayMethods.sort;
+    arrayMethods.reverse;
+    arrayMethods.spliceInPlace;
+    arrayMethods.pushInPlace;
+    arrayMethods.addInPlace;
+    arrayMethods.popInPlace;
+    arrayMethods.shiftInPlace;
+    arrayMethods.unshiftInPlace;
+    arrayMethods.removeInPlace;
+    arrayMethods.sortInPlace;
+    arrayMethods.reverseInPlace;
+
+    let {removeInPlace} = arrayMethods;
+
+    var Store = class {
+    	constructor(value) {
+    		this.value = value;
+    		this.handlers = [];
+    	}
+    	
+    	subscribe(handler) {
+    		this.handlers.push(handler);
+    		
+    		handler(this.value);
+    		
+    		return () => {
+    			removeInPlace(this.handlers, handler);
+    		}
+    	}
+    };
+
+    var Writable = class extends Store {
+    	constructor(value) {
+    		super(value);
+    	}
+    	
+    	set(value) {
+    		this.value = value;
+    		
+    		for (let handler of this.handlers) {
+    			handler(value);
+    		}
+    	}
+    };
+
+    var LocalStorage = class extends Writable {
+    	constructor(key, value, version, migrate) {
+    		let existingValue;
+    		
+    		try {
+    			let existing = JSON.parse(localStorage.getItem(key));
+    			
+    			if (existing.version && (!version || existing.version === version)) {
+    				existingValue = existing.value;
+    			} else if (migrate && migrate[existing.version]) {
+    				existingValue = migrate[existing.version](existing.value);
+    			} else if (migrate && migrate["*"]) {
+    				existingValue = migrate["*"](existing.value);
+    			} else {
+    				existingValue = null;
+    			}
+    		} catch (e) {
+    			existingValue = null;
+    			
+    			localStorage.setItem(key, "null");
+    		}
+    		
+    		value = existingValue || value;
+    		
+    		super(value);
+    		
+    		this.version = version;
+    		this.key = key;
+    		this._store();
+    	}
+    	
+    	_store() {
+    		localStorage.setItem(this.key, JSON.stringify({
+    			version: this.version || "1",
+    			value: this.value,
+    		}));
+    	}
+    	
+    	set(value) {
+    		super.set(value);
+    		
+    		this._store();
+    	}
+    	
+    	update(obj) {
+    		this.set({
+    			...this.value,
+    			...obj,
+    		});
+    	}
+    	
+    	clear() {
+    		localStorage.removeItem(this.key);
+    	}
+    };
+
+    var prefs = new LocalStorage("prefs", {
+    	font: "14px DejaVu Sans Mono",
+    	indentWidth: 4,
+    	lineNumberColor: "#9f9f9f",
+    	marginBackground: "#f0f0f0",
+    	
+    	langs: {
+    		js: {
+    			colors: {
+    				keyword: "#aa33aa",
+    				id:  "#202020",
+    				comment: "#7f7f7f",
+    				symbol: "#bb22bb",
+    				number: "#cc2222",
+    				string: "#2233bb",
+    				regex: "#cc7030",
+    			},
+    		},
+    	},
+    });
+
+    /* src/components/Editor.svelte generated by Svelte v3.16.7 */
+
+    const { console: console_1 } = globals;
+    const file$1 = "src/components/Editor.svelte";
+
+    function create_fragment$1(ctx) {
     	let div0;
-    	let form0;
-    	let label0;
-    	let input0;
-    	let t2;
-    	let input1;
-    	let t3;
-    	let br0;
-    	let br1;
-    	let t4;
-    	let button0;
-    	let t6;
-    	let button1;
-    	let t8;
-    	let h31;
-    	let t10;
-    	let div2;
-    	let form1;
-    	let label1;
-    	let input2;
-    	let t11;
-    	let input3;
-    	let t12;
-    	let br2;
-    	let br3;
-    	let t13;
+    	let canvas_1;
+    	let canvas_1_style_value;
+    	let t;
     	let div1;
-    	let t14;
     	let dispose;
 
     	const block = {
     		c: function create() {
-    			div3 = element("div");
-    			h30 = element("h3");
-    			h30.textContent = "IE";
-    			t1 = space();
     			div0 = element("div");
-    			form0 = element("form");
-    			label0 = element("label");
-    			input0 = element("input");
-    			t2 = space();
-    			input1 = element("input");
-    			t3 = space();
-    			br0 = element("br");
-    			br1 = element("br");
-    			t4 = space();
-    			button0 = element("button");
-    			button0.textContent = "Open";
-    			t6 = space();
-    			button1 = element("button");
-    			button1.textContent = "Close";
-    			t8 = space();
-    			h31 = element("h3");
-    			h31.textContent = "PS";
-    			t10 = space();
-    			div2 = element("div");
-    			form1 = element("form");
-    			label1 = element("label");
-    			input2 = element("input");
-    			t11 = space();
-    			input3 = element("input");
-    			t12 = space();
-    			br2 = element("br");
-    			br3 = element("br");
-    			t13 = space();
+    			canvas_1 = element("canvas");
+    			t = space();
     			div1 = element("div");
-    			t14 = text(/*output*/ ctx[2]);
-    			add_location(h30, file, 71, 1, 1094);
-    			add_location(input0, file, 75, 4, 1183);
-    			add_location(label0, file, 74, 3, 1171);
-    			attr_dev(input1, "type", "submit");
-    			input1.value = "Go";
-    			add_location(input1, file, 77, 3, 1223);
-    			add_location(form0, file, 73, 2, 1125);
-    			add_location(br0, file, 79, 2, 1268);
-    			add_location(br1, file, 79, 6, 1272);
-    			add_location(button0, file, 80, 2, 1279);
-    			add_location(button1, file, 81, 2, 1321);
-    			attr_dev(div0, "id", "test");
-    			attr_dev(div0, "class", "svelte-8u10tr");
-    			add_location(div0, file, 72, 1, 1107);
-    			add_location(h31, file, 83, 1, 1372);
-    			add_location(input2, file, 87, 4, 1454);
-    			add_location(label1, file, 86, 3, 1442);
-    			attr_dev(input3, "type", "submit");
-    			input3.value = "Run";
-    			add_location(input3, file, 89, 3, 1494);
-    			add_location(form1, file, 85, 2, 1401);
-    			add_location(br2, file, 91, 2, 1540);
-    			add_location(br3, file, 91, 6, 1544);
-    			attr_dev(div1, "id", "output");
-    			attr_dev(div1, "class", "svelte-8u10tr");
-    			add_location(div1, file, 92, 2, 1551);
-    			attr_dev(div2, "id", "ps");
-    			attr_dev(div2, "class", "svelte-8u10tr");
-    			add_location(div2, file, 84, 1, 1385);
-    			attr_dev(div3, "id", "main");
-    			attr_dev(div3, "class", "svelte-8u10tr");
-    			add_location(div3, file, 70, 0, 1077);
+    			attr_dev(canvas_1, "style", canvas_1_style_value = inlineStyle(/*canvasStyle*/ ctx[3]));
+    			add_location(canvas_1, file$1, 170, 1, 3597);
+    			attr_dev(div0, "id", "main");
+    			attr_dev(div0, "class", "svelte-14ao8hw");
+    			add_location(div0, file$1, 165, 0, 3542);
+    			attr_dev(div1, "id", "measurements");
+    			attr_dev(div1, "class", "svelte-14ao8hw");
+    			add_location(div1, file$1, 179, 0, 3750);
 
     			dispose = [
-    				listen_dev(input0, "input", /*input0_input_handler*/ ctx[9]),
-    				listen_dev(form0, "submit", prevent_default(/*navigate*/ ctx[4]), false, true, false),
-    				listen_dev(button0, "click", /*openIe*/ ctx[3], false, false, false),
-    				listen_dev(button1, "click", /*closeIe*/ ctx[5], false, false, false),
-    				listen_dev(input2, "input", /*input2_input_handler*/ ctx[10]),
-    				listen_dev(form1, "submit", prevent_default(/*run*/ ctx[6]), false, true, false)
+    				listen_dev(window, "resize", /*resize*/ ctx[6], false, false, false),
+    				listen_dev(canvas_1, "mousedown", /*mousedown*/ ctx[4], false, false, false),
+    				listen_dev(canvas_1, "mouseup", mouseup, false, false, false),
+    				listen_dev(canvas_1, "mousemove", mousemove, false, false, false),
+    				listen_dev(div0, "wheel", /*wheel*/ ctx[5], false, false, false)
     			];
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div3, anchor);
-    			append_dev(div3, h30);
-    			append_dev(div3, t1);
-    			append_dev(div3, div0);
-    			append_dev(div0, form0);
-    			append_dev(form0, label0);
-    			append_dev(label0, input0);
-    			set_input_value(input0, /*url*/ ctx[0]);
-    			append_dev(form0, t2);
-    			append_dev(form0, input1);
-    			append_dev(div0, t3);
-    			append_dev(div0, br0);
-    			append_dev(div0, br1);
-    			append_dev(div0, t4);
-    			append_dev(div0, button0);
-    			append_dev(div0, t6);
-    			append_dev(div0, button1);
-    			append_dev(div3, t8);
-    			append_dev(div3, h31);
-    			append_dev(div3, t10);
-    			append_dev(div3, div2);
-    			append_dev(div2, form1);
-    			append_dev(form1, label1);
-    			append_dev(label1, input2);
-    			set_input_value(input2, /*cmd*/ ctx[1]);
-    			append_dev(form1, t11);
-    			append_dev(form1, input3);
-    			append_dev(div2, t12);
-    			append_dev(div2, br2);
-    			append_dev(div2, br3);
-    			append_dev(div2, t13);
-    			append_dev(div2, div1);
-    			append_dev(div1, t14);
+    			insert_dev(target, div0, anchor);
+    			append_dev(div0, canvas_1);
+    			/*canvas_1_binding*/ ctx[18](canvas_1);
+    			/*div0_binding*/ ctx[19](div0);
+    			insert_dev(target, t, anchor);
+    			insert_dev(target, div1, anchor);
+    			/*div1_binding*/ ctx[20](div1);
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*url*/ 1 && input0.value !== /*url*/ ctx[0]) {
-    				set_input_value(input0, /*url*/ ctx[0]);
+    			if (dirty & /*canvasStyle*/ 8 && canvas_1_style_value !== (canvas_1_style_value = inlineStyle(/*canvasStyle*/ ctx[3]))) {
+    				attr_dev(canvas_1, "style", canvas_1_style_value);
     			}
-
-    			if (dirty & /*cmd*/ 2 && input2.value !== /*cmd*/ ctx[1]) {
-    				set_input_value(input2, /*cmd*/ ctx[1]);
-    			}
-
-    			if (dirty & /*output*/ 4) set_data_dev(t14, /*output*/ ctx[2]);
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div3);
+    			if (detaching) detach_dev(div0);
+    			/*canvas_1_binding*/ ctx[18](null);
+    			/*div0_binding*/ ctx[19](null);
+    			if (detaching) detach_dev(t);
+    			if (detaching) detach_dev(div1);
+    			/*div1_binding*/ ctx[20](null);
     			run_all(dispose);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_fragment$1.name,
+    		type: "component",
+    		source: "",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function mousemove(e) {
+    	
+    }
+
+    function mouseup(e) {
+    	
+    }
+
+    function instance$1($$self, $$props, $$invalidate) {
+    	let $prefs;
+    	validate_store(prefs, "prefs");
+    	component_subscribe($$self, prefs, $$value => $$invalidate(12, $prefs = $$value));
+    	let { document } = $$props;
+    	let { lang } = $$props;
+    	let main;
+    	let measurementsDiv;
+    	let canvas;
+    	let context;
+    	let measurements;
+    	let coordsXHint = 2;
+    	let selection = { start: [0, 0], end: [0, 0] };
+    	let scrollPosition = { row: 0, col: 0 };
+    	let hiliteWord = null;
+
+    	function mousedown(e) {
+    		let { colWidth, rowHeight } = measurements;
+    		let { x: left, y: top } = canvas.getBoundingClientRect();
+    		calculateMarginOffset(document.lines, measurements);
+    		let x = e.clientX - left - margin.widthPlusGap + scrollPosition.col + coordsXHint;
+    		let y = e.clientY - top;
+    		let cursorCol = Math.round(x / colWidth);
+    		let screenLine = Math.floor(y / rowHeight);
+    		console.log(screenLine, cursorCol);
+    	}
+
+    	function wheel(e) {
+    		let dir = e.deltaY > 0 ? 1 : -1;
+
+    		if (e.shiftKey) {
+    			let newCol = Math.round(scrollPosition.col + measurements.colWidth * 3 * dir);
+    			newCol = Math.max(0, newCol);
+    			scrollPosition.col = newCol;
+    		} else {
+    			let newRow = scrollPosition.row + 3 * dir;
+    			newRow = Math.max(0, newRow);
+    			scrollPosition.row = newRow;
+    		}
+
+    		redraw();
+    	}
+
+    	function resize() {
+    		$$invalidate(2, canvas.width = main.offsetWidth, canvas);
+    		$$invalidate(2, canvas.height = main.offsetHeight, canvas);
+    		context.textBaseline = "bottom";
+    		redraw();
+    	}
+
+    	function redraw() {
+    		render(context, document.lines, selection, hiliteWord, scrollPosition, $prefs.font, $prefs.langs[lang].colors, measurements);
+    	}
+
+    	function updateMeasurements() {
+    		$$invalidate(1, measurementsDiv.style = inlineStyle({ font: prefs.font }), measurementsDiv);
+    		$$invalidate(1, measurementsDiv.innerHTML = ("A").repeat(100), measurementsDiv);
+
+    		measurements = {
+    			colWidth: measurementsDiv.offsetWidth / measurementsDiv.innerHTML.length,
+    			rowHeight: measurementsDiv.offsetHeight
+    		};
+    	}
+
+    	onMount(async function () {
+    		context = canvas.getContext("2d");
+    		js($prefs, document.lines);
+    		updateMeasurements();
+    		resize();
+    		redraw();
+    	});
+
+    	const writable_props = ["document", "lang"];
+
+    	Object.keys($$props).forEach(key => {
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1.warn(`<Editor> was created with unknown prop '${key}'`);
+    	});
+
+    	function canvas_1_binding($$value) {
+    		binding_callbacks[$$value ? "unshift" : "push"](() => {
+    			$$invalidate(2, canvas = $$value);
+    		});
+    	}
+
+    	function div0_binding($$value) {
+    		binding_callbacks[$$value ? "unshift" : "push"](() => {
+    			$$invalidate(0, main = $$value);
+    		});
+    	}
+
+    	function div1_binding($$value) {
+    		binding_callbacks[$$value ? "unshift" : "push"](() => {
+    			$$invalidate(1, measurementsDiv = $$value);
+    		});
+    	}
+
+    	$$self.$set = $$props => {
+    		if ("document" in $$props) $$invalidate(7, document = $$props.document);
+    		if ("lang" in $$props) $$invalidate(8, lang = $$props.lang);
+    	};
+
+    	$$self.$capture_state = () => {
+    		return {
+    			document,
+    			lang,
+    			main,
+    			measurementsDiv,
+    			canvas,
+    			context,
+    			measurements,
+    			coordsXHint,
+    			selection,
+    			scrollPosition,
+    			hiliteWord,
+    			$prefs,
+    			canvasStyle
+    		};
+    	};
+
+    	$$self.$inject_state = $$props => {
+    		if ("document" in $$props) $$invalidate(7, document = $$props.document);
+    		if ("lang" in $$props) $$invalidate(8, lang = $$props.lang);
+    		if ("main" in $$props) $$invalidate(0, main = $$props.main);
+    		if ("measurementsDiv" in $$props) $$invalidate(1, measurementsDiv = $$props.measurementsDiv);
+    		if ("canvas" in $$props) $$invalidate(2, canvas = $$props.canvas);
+    		if ("context" in $$props) context = $$props.context;
+    		if ("measurements" in $$props) measurements = $$props.measurements;
+    		if ("coordsXHint" in $$props) coordsXHint = $$props.coordsXHint;
+    		if ("selection" in $$props) selection = $$props.selection;
+    		if ("scrollPosition" in $$props) scrollPosition = $$props.scrollPosition;
+    		if ("hiliteWord" in $$props) hiliteWord = $$props.hiliteWord;
+    		if ("$prefs" in $$props) prefs.set($prefs = $$props.$prefs);
+    		if ("canvasStyle" in $$props) $$invalidate(3, canvasStyle = $$props.canvasStyle);
+    	};
+
+    	let canvasStyle;
+    	$$invalidate(3, canvasStyle = { cursor: "text" });
+
+    	return [
+    		main,
+    		measurementsDiv,
+    		canvas,
+    		canvasStyle,
+    		mousedown,
+    		wheel,
+    		resize,
+    		document,
+    		lang,
+    		context,
+    		measurements,
+    		scrollPosition,
+    		$prefs,
+    		coordsXHint,
+    		selection,
+    		hiliteWord,
+    		redraw,
+    		updateMeasurements,
+    		canvas_1_binding,
+    		div0_binding,
+    		div1_binding
+    	];
+    }
+
+    class Editor extends SvelteComponentDev {
+    	constructor(options) {
+    		super(options);
+    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { document: 7, lang: 8 });
+
+    		dispatch_dev("SvelteRegisterComponent", {
+    			component: this,
+    			tagName: "Editor",
+    			options,
+    			id: create_fragment$1.name
+    		});
+
+    		const { ctx } = this.$$;
+    		const props = options.props || ({});
+
+    		if (/*document*/ ctx[7] === undefined && !("document" in props)) {
+    			console_1.warn("<Editor> was created without expected prop 'document'");
+    		}
+
+    		if (/*lang*/ ctx[8] === undefined && !("lang" in props)) {
+    			console_1.warn("<Editor> was created without expected prop 'lang'");
+    		}
+    	}
+
+    	get document() {
+    		throw new Error("<Editor>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set document(value) {
+    		throw new Error("<Editor>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get lang() {
+    		throw new Error("<Editor>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set lang(value) {
+    		throw new Error("<Editor>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+    }
+
+    /* src/App.svelte generated by Svelte v3.16.7 */
+    const file = "src/App.svelte";
+
+    // (27:1) {#if document}
+    function create_if_block(ctx) {
+    	let current;
+
+    	const editor = new Editor({
+    			props: {
+    				document: /*document*/ ctx[0],
+    				lang: "js"
+    			},
+    			$$inline: true
+    		});
+
+    	const block = {
+    		c: function create() {
+    			create_component(editor.$$.fragment);
+    		},
+    		m: function mount(target, anchor) {
+    			mount_component(editor, target, anchor);
+    			current = true;
+    		},
+    		p: function update(ctx, dirty) {
+    			const editor_changes = {};
+    			if (dirty & /*document*/ 1) editor_changes.document = /*document*/ ctx[0];
+    			editor.$set(editor_changes);
+    		},
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(editor.$$.fragment, local);
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			transition_out(editor.$$.fragment, local);
+    			current = false;
+    		},
+    		d: function destroy(detaching) {
+    			destroy_component(editor, detaching);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block.name,
+    		type: "if",
+    		source: "(27:1) {#if document}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function create_fragment(ctx) {
+    	let div;
+    	let current;
+    	let if_block = /*document*/ ctx[0] && create_if_block(ctx);
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			if (if_block) if_block.c();
+    			attr_dev(div, "id", "main");
+    			attr_dev(div, "class", "svelte-5h8m80");
+    			add_location(div, file, 25, 0, 572);
+    		},
+    		l: function claim(nodes) {
+    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    			if (if_block) if_block.m(div, null);
+    			current = true;
+    		},
+    		p: function update(ctx, [dirty]) {
+    			if (/*document*/ ctx[0]) {
+    				if (if_block) {
+    					if_block.p(ctx, dirty);
+    					transition_in(if_block, 1);
+    				} else {
+    					if_block = create_if_block(ctx);
+    					if_block.c();
+    					transition_in(if_block, 1);
+    					if_block.m(div, null);
+    				}
+    			} else if (if_block) {
+    				group_outros();
+
+    				transition_out(if_block, 1, 1, () => {
+    					if_block = null;
+    				});
+
+    				check_outros();
+    			}
+    		},
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(if_block);
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			transition_out(if_block);
+    			current = false;
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    			if (if_block) if_block.d();
     		}
     	};
 
@@ -545,54 +1870,12 @@ var app = (function () {
 
     function instance($$self, $$props, $$invalidate) {
     	let fs = require("flowfs");
-    	let url = "";
-    	let cmd = "";
-    	let output = "";
-    	let ps;
-
-    	async function openIe() {
-    		await ps.run(`
-		$ie = new-object -comObject InternetExplorer.Application
-		$ie.Visible = $True
-	`);
-    	}
-
-    	async function navigate() {
-    		await ps.run(`
-		$ie.Navigate("${url}")
-	`);
-    	}
-
-    	async function closeIe() {
-    		await ps.run(`
-		$ie.Quit()
-	`);
-    	}
-
-    	async function run() {
-    		try {
-    			$$invalidate(2, output += "\n" + (await ps.run(cmd)));
-    		} catch(e) {
-    			$$invalidate(2, output += e);
-    		}
-
-    		$$invalidate(1, cmd = "");
-    	}
+    	let document;
 
     	onMount(async function () {
-    		ps = await renderer();
-    		console.log(ps);
+    		let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
+    		$$invalidate(0, document = new Document_1(code));
     	});
-
-    	function input0_input_handler() {
-    		url = this.value;
-    		$$invalidate(0, url);
-    	}
-
-    	function input2_input_handler() {
-    		cmd = this.value;
-    		$$invalidate(1, cmd);
-    	}
 
     	$$self.$capture_state = () => {
     		return {};
@@ -600,25 +1883,10 @@ var app = (function () {
 
     	$$self.$inject_state = $$props => {
     		if ("fs" in $$props) fs = $$props.fs;
-    		if ("url" in $$props) $$invalidate(0, url = $$props.url);
-    		if ("cmd" in $$props) $$invalidate(1, cmd = $$props.cmd);
-    		if ("output" in $$props) $$invalidate(2, output = $$props.output);
-    		if ("ps" in $$props) ps = $$props.ps;
+    		if ("document" in $$props) $$invalidate(0, document = $$props.document);
     	};
 
-    	return [
-    		url,
-    		cmd,
-    		output,
-    		openIe,
-    		navigate,
-    		closeIe,
-    		run,
-    		ps,
-    		fs,
-    		input0_input_handler,
-    		input2_input_handler
-    	];
+    	return [document];
     }
 
     class App extends SvelteComponentDev {

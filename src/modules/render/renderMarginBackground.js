@@ -1,11 +1,13 @@
-let marginStyle = require("./marginStyle");
+let calculateMarginWidth = require("./calculateMarginWidth");
 
 module.exports = function(
 	context,
 	lines,
-	colors,
+	prefs,
 	measurements,
 ) {
-	context.fillStyle = "#f0f0f0";
-	context.fillRect(0, 0, overallWidth, height);
+	let {height} = context.canvas;
+	
+	context.fillStyle = prefs.marginBackground;
+	context.fillRect(0, 0, calculateMarginWidth(lines, measurements), height);
 }

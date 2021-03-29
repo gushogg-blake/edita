@@ -26,7 +26,7 @@ export default {
 			dev: !production,
 			
 			// we'll extract any component CSS out into
-			// a separate file — better for performance
+			// a separate file - better for performance
 			preprocess: autoPreprocess({
 				scss: {
 					includePaths: ["src"],
@@ -37,14 +37,14 @@ export default {
 				},
 			}),
 			
-			css: css => {
+			css(css) {
 				css.write("public/bundle.css");
 			},
 		}),
 
 		// If you have external dependencies installed from
 		// npm, you'll most likely need these plugins. In
-		// some cases you'll need additional configuration —
+		// some cases you'll need additional configuration -
 		// consult the documentation for details:
 		// https://github.com/rollup/rollup-plugin-commonjs
 		resolve({
@@ -56,11 +56,11 @@ export default {
 		globals(),
 		builtins(),
 
-		// In dev mode, call `npm run start:dev` once
+		// In dev mode, call npm run start:dev once
 		// the bundle has been generated
 		!production && rollupDev,
 
-		// Watch the `public` directory and refresh the
+		// Watch the public directory and refresh the
 		// browser on changes when not in production
 		!production && livereload("public"),
 		
