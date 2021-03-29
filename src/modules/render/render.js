@@ -3,7 +3,7 @@ let renderMarginBackground = require("./renderMarginBackground");
 //let renderSelection = require("./renderSelection");
 //let renderWordHilites = require("./renderWordHilites");
 let renderCodeAndMargin = require("./renderCodeAndMargin");
-//let renderCursor = require("./renderCursor");
+let renderCursor = require("./renderCursor");
 
 module.exports = function(
 	context,
@@ -64,14 +64,14 @@ module.exports = function(
 		measurements,
 	);
 	
-	//renderCursor(
-	//	context,
-	//	lines,
-	//	selection,
-	//	scrollPosition,
-	//	measurements,
-	//	cursorBlinkOn,
-	//);
+	renderCursor(
+		context,
+		lines,
+		selection,
+		scrollPosition,
+		measurements,
+		cursorBlinkOn,
+	);
 	
 	console.timeEnd("render");
 }

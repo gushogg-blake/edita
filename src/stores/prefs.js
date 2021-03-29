@@ -1,6 +1,6 @@
 import LocalStorage from "../modules/stores/LocalStorage";
 
-export default new LocalStorage("prefs", {
+let defaultPrefs = {
 	font: "14px DejaVu Sans Mono",
 	indentWidth: 4,
 	lineNumberColor: "#9f9f9f",
@@ -10,13 +10,20 @@ export default new LocalStorage("prefs", {
 		js: {
 			colors: {
 				keyword: "#aa33aa",
-				id:  "#202020",
+				id: "#202020",
 				comment: "#7f7f7f",
 				symbol: "#bb22bb",
+				bracket: "#202020",
 				number: "#cc2222",
 				string: "#2233bb",
 				regex: "#cc7030",
 			},
 		},
+	},
+};
+
+export default new LocalStorage("prefs", defaultPrefs, Date.now(), {
+	"*": function() {
+		return defaultPrefs;
 	},
 });

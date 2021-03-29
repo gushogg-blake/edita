@@ -23,6 +23,8 @@ let canvas;
 let context;
 let measurements;
 let coordsXHint = 2;
+let rowHeightPadding = 2;
+let rowBaselineHint = -1;
 
 let selection = {
 	start: [0, 0],
@@ -48,7 +50,7 @@ function mousedown(e) {
 	} = canvas.getBoundingClientRect();
 	
 	let marginOffset = calculateMarginOffset(document.lines, measurements);
-	let x = e.clientX - left - margin.widthPlusGap + scrollPosition.col + coordsXHint;
+	let x = e.clientX - left - marginOffset + scrollPosition.col + coordsXHint;
 	let y = e.clientY - top;
 	
 	let cursorCol = Math.round(x / colWidth);
@@ -110,7 +112,7 @@ function redraw() {
 		selection,
 		hiliteWord,
 		scrollPosition,
-		$prefs.font,
+		$prefs,
 		$prefs.langs[lang].colors,
 		measurements,
 		(now - now % 800) % 2 === 0,
@@ -119,14 +121,14 @@ function redraw() {
 
 function updateMeasurements() {
 	measurementsDiv.style = inlineStyle({
-		font: prefs.font,
+		font: $prefs.font,
 	});
 	
 	measurementsDiv.innerHTML = "A".repeat(100);
 	
 	measurements = {
 		colWidth: measurementsDiv.offsetWidth / measurementsDiv.innerHTML.length,
-		rowHeight: measurementsDiv.offsetHeight,
+		rowHeight: measurementsDiv.offsetHeight + rowHeightPadding,
 	};
 }
 

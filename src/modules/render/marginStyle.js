@@ -1,5 +1,5 @@
 module.exports = {
-	margin: 1,
+	margin: 2,
 	paddingLeft: 3,
 	paddingRight: 5,
 };

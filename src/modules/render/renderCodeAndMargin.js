@@ -33,7 +33,7 @@ module.exports = function(
 	
 	// Code & margin
 	
-	let x = 0;
+	let x = marginOffset;
 	let y = rowHeight; // not 0 -- we're using textBaseline="bottom"
 	
 	let {
@@ -57,7 +57,7 @@ module.exports = function(
 					
 					x += value.length * colWidth;
 				} else if (type === "B") {
-					context.fillStyle = colors.symbol;
+					context.fillStyle = colors.bracket;
 					context.fillText(value, x, y);
 					
 					x += colWidth;
@@ -77,23 +77,29 @@ module.exports = function(
 			y += rowHeight;
 		}
 		
+		let {fillStyle} = context;
+		
 		// margin background
 		// rendered after code so that it covers it if code is scrolled horizontally
 		
 		let marginHeight = line.height * rowHeight;
 		
-		context.fillStyle = "#f0f0f0";
+		context.fillStyle = prefs.marginBackground;
 		context.fillRect(0, y - marginHeight, marginWidth, marginHeight);
 		
 		// line number
 		
 		let lineNumber = String(lineIndex + 1);
 		
+		context.fillStyle = prefs.lineNumberColor;
+		
 		context.fillText(
 			lineNumber,
 			marginWidth - marginStyle.paddingRight - lineNumber.length * colWidth,
 			y - marginHeight + rowHeight,
 		);
+		
+		context.fillStyle = fillStyle;
 		
 		// TODO folding
 		
