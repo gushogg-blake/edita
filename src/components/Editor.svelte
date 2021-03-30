@@ -1,5 +1,5 @@
 <script>
-import js from "../modules/langs/js";
+import langs from "../modules/langs";
 import render from "../modules/render/render";
 import calculateMarginOffset from "../modules/render/calculateMarginOffset";
 /*
@@ -112,6 +112,7 @@ function redraw() {
 		selection,
 		hiliteWord,
 		scrollPosition,
+		langs[lang],
 		$prefs,
 		$prefs.langs[lang].colors,
 		measurements,
@@ -135,7 +136,7 @@ function updateMeasurements() {
 onMount(async function() {
 	context = canvas.getContext("2d");
 	
-	js($prefs, document.lines);
+	langs[lang].parse($prefs, document.lines);
 	
 	updateMeasurements();
 	resize();

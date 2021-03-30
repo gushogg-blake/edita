@@ -57,6 +57,13 @@ let states = {
 	IN_TEMPLATE_STRING: "T",
 };
 
+let stateColors = {
+	[states.IN_BLOCK_COMMENT]: "comment",
+	[states.IN_SINGLE_QUOTED_STRING]: "string",
+	[states.IN_DOUBLE_QUOTED_STRING]: "string",
+	[states.IN_TEMPLATE_STRING]: "string",
+};
+
 let quoteStates = {
 	"'": states.IN_SINGLE_QUOTED_STRING,
 	"\"": states.IN_DOUBLE_QUOTED_STRING,
@@ -533,7 +540,7 @@ function convertLineToCommands(
 	};
 }
 
-module.exports = function(
+function parse(
 	prefs,
 	lines,
 	startIndex=0,
@@ -568,3 +575,8 @@ module.exports = function(
 		prevState = endState;
 	}
 }
+
+module.exports = {
+	parse,
+	stateColors,
+};

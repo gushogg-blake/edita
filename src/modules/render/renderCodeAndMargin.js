@@ -1,13 +1,14 @@
+let findFirstVisibleLine = require("../utils/findFirstVisibleLine");
 let marginStyle = require("./marginStyle");
 let calculateMarginWidth = require("./calculateMarginWidth");
 let calculateMarginOffset = require("./calculateMarginOffset");
-let findFirstVisibleLine = require("../utils/findFirstVisibleLine");
 
 module.exports = function(
 	context,
 	lines,
 	selection,
 	scrollPosition,
+	lang,
 	prefs,
 	colors,
 	measurements,
@@ -40,6 +41,14 @@ module.exports = function(
 		lineIndex,
 		wrappedLineIndex,
 	} = findFirstVisibleLine(lines, scrollPosition);
+	
+	if (lineIndex > 0) {
+		let prevLine = lines[lineIndex - 1];
+		
+		if (lang.stateColors[prevLine.endState.state]) {
+			context.fillStyle = colors[lang.stateColors[prevLine.endState.state]];
+		}
+	}
 	
 	while (true) {
 		let line = lines[lineIndex];
@@ -85,7 +94,7 @@ module.exports = function(
 		let marginHeight = line.height * rowHeight;
 		
 		context.fillStyle = prefs.marginBackground;
-		context.fillRect(0, y - marginHeight, marginWidth, marginHeight);
+		context.fillRect(0, y - marginHeight - rowHeight, marginWidth, marginHeight);
 		
 		// line number
 		
@@ -96,7 +105,7 @@ module.exports = function(
 		context.fillText(
 			lineNumber,
 			marginWidth - marginStyle.paddingRight - lineNumber.length * colWidth,
-			y - marginHeight + rowHeight,
+			y - marginHeight,
 		);
 		
 		context.fillStyle = fillStyle;
