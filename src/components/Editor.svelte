@@ -17,7 +17,7 @@ import prefs from "../stores/prefs";
 export let document;
 export let lang;
 
-let main;
+let canvasDiv;
 let measurementsDiv;
 let canvas;
 let context;
@@ -90,8 +90,8 @@ function wheel(e) {
 }
 
 function resize() {
-	canvas.width = main.offsetWidth;
-	canvas.height = main.offsetHeight;
+	canvas.width = canvasDiv.offsetWidth;
+	canvas.height = canvasDiv.offsetHeight;
 	
 	/*
 	setting width/height resets the context, so need to apply things
@@ -136,11 +136,17 @@ function updateMeasurements() {
 onMount(async function() {
 	context = canvas.getContext("2d");
 	
+	console.time("parse");
+	
 	langs[lang].parse($prefs, document.lines);
+	
+	console.timeEnd("parse");
 	
 	updateMeasurements();
 	resize();
 	redraw();
+	
+	setInterval(redraw, 800);
 });
 
 $: canvasStyle = {
@@ -150,11 +156,39 @@ $: canvasStyle = {
 
 <svelte:window on:resize={resize}/>
 
-<style>
+<style type="text/scss">
+@import "../css/mixins/abs-sticky";
+
 #main {
+	display: grid;
+	grid-template-rows: 1fr auto;
+	grid-template-columns: 1fr auto;
+	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar blank";
 	flex-grow: 1;
-	overflow: hidden;
+	width: 100%;
 	color: black;
+}
+
+#canvas {
+	position: relative;
+	grid-area: canvas;
+	overflow: hidden;
+}
+
+canvas {
+	@include abs-sticky;
+}
+
+#verticalScrollbar {
+	grid-area: verticalScrollbar;
+	width: 12px;
+	background: #EAEAEA;
+}
+
+#horizontalScrollbar {
+	grid-area: horizontalScrollbar;
+	height: 12px;
+	background: #EAEAEA;
 }
 
 #measurements {
@@ -166,16 +200,26 @@ $: canvasStyle = {
 
 <div
 	id="main"
-	bind:this={main}
 	on:wheel={wheel}
 >
-	<canvas
-		bind:this={canvas}
-		on:mousedown={mousedown}
-		on:mouseup={mouseup}
-		on:mousemove={mousemove}
-		style={inlineStyle(canvasStyle)}
-	/>
+	<div
+		id="canvas"
+		bind:this={canvasDiv}
+	>
+		<canvas
+			bind:this={canvas}
+			on:mousedown={mousedown}
+			on:mouseup={mouseup}
+			on:mousemove={mousemove}
+			style={inlineStyle(canvasStyle)}
+		/>
+	</div>
+	<div id="verticalScrollbar">
+		
+	</div>
+	<div id="horizontalScrollbar">
+		
+	</div>
 </div>
 
 <div id="measurements" bind:this={measurementsDiv}></div>
