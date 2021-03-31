@@ -53,9 +53,10 @@ function mousedown(e) {
 	let x = e.clientX - left - marginOffset + scrollPosition.col + coordsXHint;
 	let y = e.clientY - top;
 	
-	let cursorCol = Math.round(x / colWidth);
+	let screenCol = Math.round(x / colWidth);
+	let screenRow = Math.floor(y / rowHeight);
 	
-	let screenLine = Math.floor(y / rowHeight);
+	
 	
 	console.log(screenLine, cursorCol);
 }
