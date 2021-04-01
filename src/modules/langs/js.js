@@ -577,6 +577,7 @@ function parse(
 }
 
 module.exports = {
+	code: "js",
 	parse,
 	stateColors,
 };

@@ -1,6 +1,6 @@
-let {is, deep} = require("../../../utils/assertions.js");
+let {is, deep} = require("../../../utils/assertions");
 let dedent = require("../../../utils/dedent");
-let parse = require("../../../../src/modules/langs/js");
+let js = require("../../../../src/modules/langs/js");
 let Document = require("../../../../src/modules/Document");
 
 let tests = [
@@ -203,7 +203,7 @@ describe("JavaScript parser", function() {
 		it(name, function() {
 			let doc = new Document(dedent(code));
 			
-			parse({
+			js.parse({
 				indentWidth: 4,
 			}, doc.lines);
 			

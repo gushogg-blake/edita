@@ -18,5 +18,5 @@ module.exports = function(
 		measurements,
 	);
 	
-	//let 
+	console.log(x, y);
 }

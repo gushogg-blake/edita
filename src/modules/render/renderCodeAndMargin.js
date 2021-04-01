@@ -30,11 +30,11 @@ module.exports = function(
 	
 	let marginWidth = calculateMarginWidth(lines, measurements);
 	let marginOffset = calculateMarginOffset(lines, measurements);
-	let leftEdge = marginOffset - scrollPosition.col * colWidth;
+	let leftEdge = marginOffset - scrollPosition.x;
 	
 	// Code & margin
 	
-	let x = marginOffset;
+	let x = leftEdge;
 	let y = rowHeight; // not 0 -- we're using textBaseline="bottom"
 	
 	let {

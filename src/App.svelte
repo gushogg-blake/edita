@@ -2,7 +2,10 @@
 let fs = require("flowfs");
 
 import {onMount} from "svelte";
+
+import langs from "./modules/langs";
 import Document from "./modules/Document";
+
 import Editor from "./components/Editor.svelte";
 
 let document;
@@ -10,7 +13,7 @@ let document;
 onMount(async function() {
 	let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
 	
-	document = new Document(code);
+	document = new Document(code, langs.js);
 });
 </script>
 
@@ -28,7 +31,6 @@ onMount(async function() {
 	{#if document}
 		<Editor
 			{document}
-			lang="js"
 		/>
 	{/if}
 </div>

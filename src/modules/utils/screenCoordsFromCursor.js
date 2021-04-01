@@ -17,9 +17,29 @@ module.exports = function(
 	
 	let line = lines[lineIndex];
 	
-	if (line.height > 1) {
-		// TODO find pos within wrap
-		// inner lines will be indented - add line.indent to value
+	let innerLine;
+	let charsConsumed = 0;
+	let isInWrappedLine = false;
+	let innerLineOffset = offset;
+	
+	for (let i = 0; i < line.height; i++) {
+		isInWrappedLine = i > 0;
+		innerLine = isInWrappedLine ? line.wrappedLines[i] : line;
+		
+		if (innerLineOffset < innerLine.string.length) {
+			break;
+		}
+		
+		row++;
+		innerLineOffset -= innerLine.string.length;
 	}
+	
+	
+	
+	if (line.height > 1) {
+		
+	}
+	
+	return [0, 0];
 }
 	

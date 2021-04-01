@@ -13,7 +13,9 @@ function createLines(code) {
 }
 
 class Document {
-	constructor(code) {
+	constructor(code, lang) {
+		this.lang = lang;
+		
 		this.lines = createLines(code);
 	}
 	
@@ -24,6 +26,10 @@ class Document {
 	
 	edit(lineIndex, removeLines, addCode) {
 		
+	}
+	
+	parse(prefs) {
+		this.lang.parse(prefs, this.lines);
 	}
 }
 

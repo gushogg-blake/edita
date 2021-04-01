@@ -1,5 +1,4 @@
 <script>
-import langs from "../modules/langs";
 import render from "../modules/render/render";
 import calculateMarginOffset from "../modules/render/calculateMarginOffset";
 /*
@@ -15,7 +14,6 @@ import inlineStyle from "../utils/dom/inlineStyle";
 import prefs from "../stores/prefs";
 
 export let document;
-export let lang;
 
 let canvasDiv;
 let measurementsDiv;
@@ -33,7 +31,7 @@ let selection = {
 
 let scrollPosition = {
 	row: 0,
-	col: 0,
+	x: 0,
 };
 
 let hiliteWord = null;
@@ -50,7 +48,7 @@ function mousedown(e) {
 	} = canvas.getBoundingClientRect();
 	
 	let marginOffset = calculateMarginOffset(document.lines, measurements);
-	let x = e.clientX - left - marginOffset + scrollPosition.col + coordsXHint;
+	let x = e.clientX - left - marginOffset + scrollPosition.x + coordsXHint;
 	let y = e.clientY - top;
 	
 	let screenCol = Math.round(x / colWidth);
@@ -58,7 +56,7 @@ function mousedown(e) {
 	
 	
 	
-	console.log(screenLine, cursorCol);
+	console.log(screenRow, screenCol);
 }
 
 function mousemove(e) {
@@ -73,11 +71,11 @@ function wheel(e) {
 	let dir = e.deltaY > 0 ? 1 : -1;
 	
 	if (e.shiftKey) {
-		let newCol = Math.round(scrollPosition.col + measurements.colWidth * 3 * dir);
+		let newX = Math.round(scrollPosition.x + measurements.colWidth * 3 * dir);
 		
-		newCol = Math.max(0, newCol);
+		newX = Math.max(0, newX);
 		
-		scrollPosition.col = newCol;
+		scrollPosition.x = newX;
 	} else {
 		let newRow = scrollPosition.row + 3 * dir;
 		
@@ -113,9 +111,9 @@ function redraw() {
 		selection,
 		hiliteWord,
 		scrollPosition,
-		langs[lang],
+		document.lang,
 		$prefs,
-		$prefs.langs[lang].colors,
+		$prefs.langs[document.lang.code].colors,
 		measurements,
 		(now - now % 800) % 2 === 0,
 	);
@@ -139,7 +137,7 @@ onMount(async function() {
 	
 	console.time("parse");
 	
-	langs[lang].parse($prefs, document.lines);
+	document.parse($prefs);
 	
 	console.timeEnd("parse");
 	
