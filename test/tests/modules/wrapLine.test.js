@@ -12,7 +12,13 @@ let measurements = {
 let screenWidth = 305;
 
 function wrap(code) {
-	let [line] = new Document(dedent(code), js).lines;
+	let doc = new Document(dedent(code), js);
+	
+	doc.parse({
+		indentWidth: 4,
+	});
+	
+	let [line] = doc.lines;
 	
 	wrapLine(line, measurements, screenWidth);
 	

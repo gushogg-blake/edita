@@ -56,7 +56,7 @@ module.exports = function(
 		// code
 		
 		for (let i = 0; i < line.height; i++) {
-			let commands = line.height === 1 ? line.commands : line.wrappedLines[i];
+			let commands = line.height === 1 ? line.commands : line.wrappedLines[i].commands;
 			
 			for (let command of line.commands) {
 				let [type, value] = [command[0], command.substr(1)];
