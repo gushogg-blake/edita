@@ -30,23 +30,23 @@ describe("wrapLine", function() {
 		is(line.wrappedLines, undefined);
 	});
 	
-	//it("single wrap, no indent", function() {
-	//	let line = wrap(`
-	//		function fn(a) {function fn(a) {
-	//	`);
-	//	
-	//	is(line.height, 2);
-	//	
-	//	let [l1, l2] = line.wrappedLines;
-	//	
-	//	is(
-	//		l1.commands.join(","),
-	//		`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S Cid,Sfn,B(,Cid,Sa,B)`,
-	//	);
-	//	
-	//	is(
-	//		l2.commands.join(","),
-	//		`B{`,
-	//	);
-	//});
+	it("single wrap, no indent", function() {
+		let line = wrap(`
+			function fn(a) {function fn(a) {
+		`);
+		
+		is(line.height, 2);
+		
+		let [l1, l2] = line.wrappedLines;
+		
+		is(
+			l1.commands.join(","),
+			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S Cid,Sfn,B(,Cid,Sa,B)`,
+		);
+		
+		is(
+			l2.commands.join(","),
+			`B{`,
+		);
+	});
 });

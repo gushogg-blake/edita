@@ -155,6 +155,7 @@ let tests = [
 			T4,Cid,Sa,S ,Csymbol,S+,S ,Cstring,S\`,Sinner string ,Cid,S$,B{,Cid,Sid,B},Cstring,S\`
 			B},Cstring,Sstring\`
 		`,
+		[9, 28, 8],
 	],
 	[
 		"block comment",
@@ -177,6 +178,7 @@ let tests = [
 			Sblock comment
 			S*/
 		`,
+		[2, 13, 2],
 	],
 	[
 		"single-line comment",
@@ -214,7 +216,7 @@ let tests = [
 		`
 			Cid,Sasd1,S ,Ccomment,S// comment,T1,Sasd,T1,T4,Sb,T3
 		`,
-		[14],
+		[28],
 	],
 ];
 
@@ -233,7 +235,7 @@ describe("JavaScript parser", function() {
 			
 			if (expectedWidths) {
 				for (let i = 0; i < expectedWidths.length; i++) {
-					//is(doc.lines[i].width, expectedWidths[i]);
+					is(doc.lines[i].width, expectedWidths[i]);
 				}
 			}
 		});
