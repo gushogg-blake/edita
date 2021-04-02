@@ -228,11 +228,39 @@ function convertLineToCommands(
 				state = states.IN_TEMPLATE_STRING;
 			} else if (ch === "/" && lineString[i + 1] === "/") {
 				commands.push("Ccomment");
-				commands.push("S" + lineString.substring(i));
+				
+				let str = "//";
+				
+				i += 2;
+				col += 2;
+						
+				while (i < lineString.length) {
+					ch = lineString[i];
+					
+					if (ch === "\t") {
+						if (str) {
+							commands.push("S" + str);
+						}
+						
+						let tabWidth = (indentWidth - col % indentWidth);
+						
+						commands.push("T" + tabWidth);
+						
+						str = "";
+						col += tabWidth;
+						i++;
+					} else {
+						str += ch;
+						i++;
+						col++;
+					}
+				}
+				
+				if (str) {
+					commands.push("S" + str);
+				}
 				
 				slashIsDivision = false;
-				
-				break;
 			} else if (ch === "/" && lineString[i + 1] === "*") {
 				commands.push("Ccomment");
 				commands.push("S/*");
@@ -535,6 +563,7 @@ function convertLineToCommands(
 	};
 	
 	return {
+		col,
 		commands,
 		endState,
 	};
@@ -561,6 +590,7 @@ function parse(
 		let line = lines[lineIndex];
 		
 		let {
+			col,
 			commands,
 			endState,
 		} = convertLineToCommands(
@@ -569,6 +599,7 @@ function parse(
 			line.string,
 		);
 		
+		line.width = col;
 		line.commands = commands;
 		line.endState = endState;
 		

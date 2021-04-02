@@ -188,6 +188,15 @@ let tests = [
 		`,
 	],
 	[
+		"single-line comment with tabs",
+		`
+			// comment	asd		b
+		`,
+		`
+			Ccomment,S// comment,T2,Sasd,T1,T4,Sb
+		`,
+	],
+	[
 		"code and single-line comment",
 		`
 			asd // comment
@@ -195,11 +204,22 @@ let tests = [
 		`
 			Cid,Sasd,S ,Ccomment,S// comment
 		`,
+		[14],
+	],
+	[
+		"code and single-line comment with tabs",
+		`
+			asd1 // comment	asd		b	
+		`,
+		`
+			Cid,Sasd1,S ,Ccomment,S// comment,T1,Sasd,T1,T4,Sb,T3
+		`,
+		[14],
 	],
 ];
 
 describe("JavaScript parser", function() {
-	for (let [name, code, expectedCommands] of tests) {
+	for (let [name, code, expectedCommands, expectedWidths] of tests) {
 		it(name, function() {
 			let doc = new Document(dedent(code));
 			
@@ -210,6 +230,12 @@ describe("JavaScript parser", function() {
 			is(doc.lines.map(function(line) {
 				return line.commands.join(",");
 			}).join("\n"), dedent(expectedCommands));
+			
+			if (expectedWidths) {
+				for (let i = 0; i < expectedWidths.length; i++) {
+					//is(doc.lines[i].width, expectedWidths[i]);
+				}
+			}
 		});
 	}
 });
