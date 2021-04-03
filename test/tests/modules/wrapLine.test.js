@@ -47,12 +47,75 @@ describe("wrapLine", function() {
 		
 		is(
 			l1.commands.join(","),
-			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S Cid,Sfn,B(,Cid,Sa,B)`,
+			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa`,
 		);
 		
 		is(
 			l2.commands.join(","),
-			`B{`,
+			`B),S ,B{`,
+		);
+	});
+	
+	it("perfect width", function() {
+		let line = wrap(`
+			function fn(a) {function fn(a)
+		`);
+		
+		is(line.height, 1);
+		
+		is(
+			line.commands.join(","),
+			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B)`,
+		);
+	});
+	
+	it("3 wrap, no indent", function() {
+		let line = wrap(`
+			function fn(a) {function fn(a) {aaaaaaaaaaaaaaaaaaaaaaaaaaaa
+		`);
+		
+		is(line.height, 3);
+		
+		let [l1, l2, l3] = line.wrappedLines;
+		
+		is(
+			l1.commands.join(","),
+			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa`,
+		);
+		
+		is(
+			l2.commands.join(","),
+			`B),S ,B{`,
+		);
+		
+		is(
+			l3.commands.join(","),
+			`Cid,Saaaaaaaaaaaaaaaaaaaaaaaaaaaa`,
+		);
+	});
+	
+	it("3 wrap, indented", function() {
+		let line = wrap(`
+				function fn(a) {function fn(a) {aaaaaaaaaaaaaaaaaaaaaaaaaaaa
+		`);
+		
+		is(line.height, 3);
+		
+		let [l1, l2, l3] = line.wrappedLines;
+		
+		is(
+			l1.commands.join(","),
+			`T4,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S `,
+		);
+		
+		is(
+			l2.commands.join(","),
+			`Cid,Sfn,B(,Cid,Sa,B),S ,B{,Cid,Saaaaaaaaaaaaaaaaaaa`,
+		);
+		
+		is(
+			l3.commands.join(","),
+			`Saaaaaaaaa`,
 		);
 	});
 });

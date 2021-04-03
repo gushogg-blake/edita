@@ -2,7 +2,7 @@ function createLine(string) {
 	return {
 		string,
 		endState: null,
-		cacheKey: null,
+		lastUsedCacheKey: null,
 		cachedCommands: {},
 		height: 1,
 	};
