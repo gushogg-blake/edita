@@ -2,7 +2,6 @@ let minNonWhitespaceCols = 16;
 
 let wordRe = /^[\w_]+/;
 let nonWordRe = /[^\w_]/;
-
 let wordAndSpaceRe = /^( |[^\w_] ?|[\w_]+ ?)/;
 
 function getCurrentWordAndSpaceWidth(line, col) {
@@ -155,8 +154,6 @@ function getCurrentWordWidth(line, col) {
 }
 
 module.exports = function(line, measurements, screenWidth) {
-	console.time("wrap line");
-	
 	let {colWidth} = measurements;
 	let screenCols = Math.floor(screenWidth / colWidth);
 	
@@ -342,6 +339,4 @@ module.exports = function(line, measurements, screenWidth) {
 	}
 	
 	line.height = line.wrappedLines.length;
-	
-	console.timeEnd("wrap line");
 }
