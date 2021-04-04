@@ -1,157 +1,6 @@
-let minNonWhitespaceCols = 16;
-
-let wordRe = /^[\w_]+/;
-let nonWordRe = /[^\w_]/;
-let wordAndSpaceRe = /^( |[^\w_] ?|[\w_]+ ?)/;
-
-function getCurrentWordAndSpaceWidth(line, col) {
-	// find the index of the next command (the one that starts at col)
-	
-	let c = 0;
-	let commandIndex = 0;
-	
-	while (c < col) {
-		let command = line.commands[commandIndex];
-		
-		if (!command) {
-			break;
-		}
-		
-		let [type, value] = [command[0], command.substr(1)];
-		
-		if (type === "T") {
-			c += Number(value);
-		} else if (type === "S" || type === "B") {
-			c += value.length;
-		}
-		
-		commandIndex++;
-	}
-	
-	// find word (string of word chars or single non-word char)
-	// if word is non-whitespace, find immediately following whitespace
-	
-	while (true) {
-		let command = line.commands[commandIndex];
-		
-		if (!command) {
-			return 0;
-		}
-		
-		let [type, value] = [command[0], command.substr(1)];
-		
-		if (type === "T") {
-			return Number(value);
-		}
-		
-		if (type === "S" || type === "B") {
-			if (value[0] === " ") {
-				return 1;
-			}
-			
-			let word;
-			
-			if (value[0].match(nonWordRe)) {
-				word = value[0];
-			} else {
-				word = value.match(wordRe)[0];
-			}
-			
-			if (value.substr(word.length)[0] === " ") {
-				return word.length + 1;
-			} else if (value.length > word.length) {
-				return word.length;
-			}
-			
-			commandIndex++;
-			
-			while (true) {
-				let command = line.commands[commandIndex];
-				
-				if (!command) {
-					return word.length;
-				}
-				
-				let [type, value] = [command[0], command.substr(1)];
-				
-				if (type === "T") {
-					return word.length + Number(value);
-				}
-				
-				if (type === "S" || type === "B") {
-					if (value[0] === " ") {
-						return word.length + 1;
-					} else {
-						return word.length;
-					}
-				}
-				
-				commandIndex++;
-			}
-		}
-		
-		commandIndex++;
-	}
-}
-
-function getCurrentWordWidth(line, col) {
-	// find the index of the next command (the one that starts at col)
-	
-	let c = 0;
-	let commandIndex = 0;
-	
-	while (c < col) {
-		let command = line.commands[commandIndex];
-		
-		if (!command) {
-			break;
-		}
-		
-		let [type, value] = [command[0], command.substr(1)];
-		
-		if (type === "T") {
-			c += Number(value);
-		} else if (type === "S" || type === "B") {
-			c += value.length;
-		}
-		
-		commandIndex++;
-	}
-	
-	// find word (string of word chars or single non-word char)
-	
-	while (true) {
-		let command = line.commands[commandIndex];
-		
-		if (!command) {
-			return 0;
-		}
-		
-		let [type, value] = [command[0], command.substr(1)];
-		
-		if (type === "T") {
-			return Number(value);
-		}
-		
-		if (type === "S" || type === "B") {
-			if (value[0] === " ") {
-				return 1;
-			}
-			
-			let word;
-			
-			if (value[0].match(nonWordRe)) {
-				word = value[0];
-			} else {
-				word = value.match(wordRe)[0];
-			}
-			
-			return word.length;
-		}
-		
-		commandIndex++;
-	}
-}
+let {minNonWhitespaceCols, wordAndSpaceRe} = require("./config");
+let getCurrentWordWidth = require("./getCurrentWordWidth");
+let getCurrentWordAndSpaceWidth = require("./getCurrentWordAndSpaceWidth");
 
 module.exports = function(line, measurements, screenWidth) {
 	let {colWidth} = measurements;
@@ -203,6 +52,7 @@ module.exports = function(line, measurements, screenWidth) {
 	let currentlyAvailableCols = availableCols;
 	
 	let wrappedLine = {
+		string: "",
 		width: 0,
 		commands: [],
 	};
@@ -242,6 +92,8 @@ module.exports = function(line, measurements, screenWidth) {
 					
 					wrappedLine.commands.push(command);
 					wrappedLine.width += width;
+					wrappedLine.string += "\t";
+					
 					col += width;
 					
 					break;
@@ -257,6 +109,8 @@ module.exports = function(line, measurements, screenWidth) {
 				
 				wrappedLine.commands.push(type + wordAndSpace);
 				wrappedLine.width += wordAndSpace.length;
+				wrappedLine.string += wordAndSpace;
+				
 				col += wordAndSpace.length;
 				
 				// there may be a space to add as well, but it's simpler to just
@@ -284,14 +138,15 @@ module.exports = function(line, measurements, screenWidth) {
 					
 					let [fill, rest] = [value.substr(0, currentlyAvailableCols), value.substr(currentlyAvailableCols)];
 					
-					wrappedLine.commands.push(type + fill);
-					
 					if (rest.length > 0) {
 						commands.unshift(type + rest);
 					}
 					
-					col += fill.length;
+					wrappedLine.commands.push(type + fill);
 					wrappedLine.width += fill.length;
+					wrappedLine.string += fill;
+					
+					col += fill.length;
 					
 					if (wrappedLine.width === availableCols) {
 						break;
@@ -301,6 +156,7 @@ module.exports = function(line, measurements, screenWidth) {
 				line.wrappedLines.push(wrappedLine);
 				
 				wrappedLine = {
+					string: "",
 					width: 0,
 					commands: [],
 				};
@@ -317,6 +173,7 @@ module.exports = function(line, measurements, screenWidth) {
 				line.wrappedLines.push(wrappedLine);
 				
 				wrappedLine = {
+					string: "",
 					width: 0,
 					commands: [],
 				};

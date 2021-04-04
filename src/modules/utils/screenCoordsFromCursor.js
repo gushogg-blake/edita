@@ -1,3 +1,6 @@
+let rowColFromCursor = require("./rowColFromCursor");
+let screenCoordsFromRowCol = require("./screenCoordsFromRowCol");
+
 module.exports = function(
 	lines,
 	lineIndex,
@@ -5,10 +8,6 @@ module.exports = function(
 	scrollPosition,
 	measurements,
 ) {
-	/*
-	calculate screen offsets from real offsets
-	*/
-	
 	let row = 0;
 	
 	for (let i = 0; i < lineIndex; i++) {

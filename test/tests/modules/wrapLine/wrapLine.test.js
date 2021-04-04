@@ -1,8 +1,8 @@
-let {is, deep} = require("../../utils/assertions");
-let dedent = require("../../utils/dedent");
-let js = require("../../../src/modules/langs/js");
-let Document = require("../../../src/modules/Document");
-let wrapLine = require("../../../src/modules/wrapLine");
+let {is, deep} = require("../../../utils/assertions");
+let dedent = require("../../../utils/dedent");
+let js = require("../../../../src/modules/langs/js");
+let Document = require("../../../../src/modules/Document");
+let wrapLine = require("../../../../src/modules/wrapLine/wrapLine");
 
 let measurements = {
 	rowHeight: 20,
@@ -78,15 +78,21 @@ describe("wrapLine", function() {
 		
 		let [l1, l2, l3] = line.wrappedLines;
 		
+		is(l1.string, `function fn(a) {function fn(a`);
+		
 		is(
 			l1.commands.join(","),
 			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa`,
 		);
 		
+		is(l2.string, `) {`);
+		
 		is(
 			l2.commands.join(","),
 			`B),S ,B{`,
 		);
+		
+		is(l3.string, `aaaaaaaaaaaaaaaaaaaaaaaaaaaa`);
 		
 		is(
 			l3.commands.join(","),
@@ -103,15 +109,21 @@ describe("wrapLine", function() {
 		
 		let [l1, l2, l3] = line.wrappedLines;
 		
+		is(l1.string, `\tfunction fn(a) {function `);
+		
 		is(
 			l1.commands.join(","),
 			`T4,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S `,
 		);
 		
+		is(l2.string, `fn(a) {aaaaaaaaaaaaaaaaaaa`);
+		
 		is(
 			l2.commands.join(","),
 			`Cid,Sfn,B(,Cid,Sa,B),S ,B{,Cid,Saaaaaaaaaaaaaaaaaaa`,
 		);
+		
+		is(l3.string, `aaaaaaaaa`);
 		
 		is(
 			l3.commands.join(","),
