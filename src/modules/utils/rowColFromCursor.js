@@ -3,5 +3,61 @@ module.exports = function(
 	lineIndex,
 	offset,
 ) {
+	let row = 0;
 	
+	for (let i = 0; i < lineIndex; i++) {
+		row += lines[i].height;
+	}
+	
+	let line = lines[lineIndex];
+	
+	let innerLine;
+	let innerLineOffset = offset;
+	
+	for (let i = 0; i < line.height; i++) {
+		innerLine = i > 0 ? line.wrappedLines[i] : line;
+		
+		/*
+		if we're at the end of a line that ends in a soft wrap, go to the next row
+		otherwise (if we're at the end of an actual line, whether wrapped or not)
+		we can be at the end
+		*/
+		
+		if (line.height > 1 && i < line.height) {
+			if (innerLineOffset < innerLine.string.length) {
+				break;
+			}
+		} else {
+			if (innerLineOffset <= innerLine.string.length) {
+				break;
+			}
+		}
+		
+		row++;
+		innerLineOffset -= innerLine.string.length;
+	}
+	
+	let col = 0;
+	let charsConsumed = 0;
+	
+	for (let command of innerLine.commands) {
+		if (charsConsumed === innerLineOffset) {
+			break;
+		}
+		
+		let [type, value] = [command[0], command.substr(1)];
+		
+		if (type === "T") {
+			col += Number(value);
+			charsConsumed++;
+		} else if (type === "S" || type === "B") {
+			let newCharsConsumed = Math.min(charsConsumed + value.length, offset);
+			let consumed = newCharsConsumed - charsConsumed;
+			
+			charsConsumed = newCharsConsumed;
+			col += consumed;
+		}
+	}
+	
+	return [row, col];
 }
