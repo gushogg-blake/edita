@@ -1,12 +1,17 @@
-let {wordRe, nonWordRe} = require("./config");
+let {multiCharWordRe, nonWordRe} = require("./config");
 
 module.exports = function(line, col) {
 	// find the index of the next command (the one that starts at col)
 	
 	let c = 0;
 	let commandIndex = 0;
+	let offset = 0;
 	
-	while (c < col) {
+	while (true) {
+		if (c === col) {
+			break;
+		}
+		
 		let command = line.commands[commandIndex];
 		
 		if (!command) {
@@ -18,6 +23,12 @@ module.exports = function(line, col) {
 		if (type === "T") {
 			c += Number(value);
 		} else if (type === "S" || type === "B") {
+			if (c + value.length > col) {
+				offset = col - c;
+				
+				break;
+			}
+			
 			c += value.length;
 		}
 		
@@ -26,35 +37,42 @@ module.exports = function(line, col) {
 	
 	// find word (string of word chars or single non-word char)
 	
+	let width = 0;
+	
 	while (true) {
 		let command = line.commands[commandIndex];
 		
 		if (!command) {
-			return 0;
+			break;
 		}
 		
 		let [type, value] = [command[0], command.substr(1)];
 		
 		if (type === "T") {
-			return Number(value);
+			if (width === 0) {
+				width = Number(value);
+			}
+			
+			break;
 		}
 		
 		if (type === "S" || type === "B") {
-			if (value[0] === " ") {
-				return 1;
+			if (value[offset].match(nonWordRe)) {
+				if (width === 0) {
+					width = 1;
+				}
+				
+				break;
 			}
 			
-			let word;
+			let word = value.substr(offset).match(multiCharWordRe)[0];
 			
-			if (value[0].match(nonWordRe)) {
-				word = value[0];
-			} else {
-				word = value.match(wordRe)[0];
-			}
-			
-			return word.length;
+			width += word.length;
 		}
 		
+		offset = 0;
 		commandIndex++;
 	}
+	
+	return width;
 }

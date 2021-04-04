@@ -10,5 +10,5 @@ module.exports = function(
 ) {
 	let [row, col] = rowColFromScreenCoords(lines, x, y, scrollPosition, measurements);
 	
-	return cursorFromRowCol(row, col);
+	return cursorFromRowCol(lines, row, col);
 }

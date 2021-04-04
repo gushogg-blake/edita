@@ -1,10 +1,9 @@
-let {minNonWhitespaceCols, wordAndSpaceRe} = require("./config");
+let {minNonWhitespaceCols, wordRe} = require("./config");
 let getCurrentWordWidth = require("./getCurrentWordWidth");
-let getCurrentWordAndSpaceWidth = require("./getCurrentWordAndSpaceWidth");
 
-module.exports = function(line, measurements, screenWidth) {
+module.exports = function(line, measurements, availableWidth) {
 	let {colWidth} = measurements;
-	let screenCols = Math.floor(screenWidth / colWidth);
+	let screenCols = Math.floor(availableWidth / colWidth);
 	
 	line.height = 1;
 	
@@ -69,8 +68,10 @@ module.exports = function(line, measurements, screenWidth) {
 	let col = 0;
 	
 	while (true) {
-		if (getCurrentWordAndSpaceWidth(line, col) <= currentlyAvailableCols) {
-			// word and space fits on current line - add to current line
+		let currentWordWidth = getCurrentWordWidth(line, col);
+		
+		if (currentWordWidth <= currentlyAvailableCols) {
+			// word fits on current line - add to current line
 			
 			while (true) {
 				let command = commands.shift();
@@ -99,29 +100,27 @@ module.exports = function(line, measurements, screenWidth) {
 					break;
 				}
 				
-				let wordAndSpace = value.match(wordAndSpaceRe)[0];
+				let word = value.match(wordRe)[0];
 				
-				if (wordAndSpace.length < value.length) {
-					let rest = value.substr(wordAndSpace.length);
+				if (word.length < value.length) {
+					let rest = value.substr(word.length);
 					
 					commands.unshift(type + rest);
 				}
 				
-				wrappedLine.commands.push(type + wordAndSpace);
-				wrappedLine.width += wordAndSpace.length;
-				wrappedLine.string += wordAndSpace;
+				wrappedLine.commands.push(type + word);
+				wrappedLine.width += word.length;
+				wrappedLine.string += word;
 				
-				col += wordAndSpace.length;
-				
-				// there may be a space to add as well, but it's simpler to just
-				// let the next loop pick it up
+				col += word.length;
 				
 				break;
 			}
 			
 			currentlyAvailableCols = availableCols - wrappedLine.width;
 		} else {
-			if (getCurrentWordWidth(line, col) > availableCols) {
+			
+			if (currentWordWidth > availableCols) {
 				// word doesn't fit on a line - split it to fill the current
 				// line and then start a new line
 				
@@ -167,8 +166,8 @@ module.exports = function(line, measurements, screenWidth) {
 				
 				currentlyAvailableCols = availableCols;
 			} else {
-				// word and next space doesn't fit on current line but will fit
-				// on next line - start a new line
+				// word doesn't fit on current line but will fit on next line
+				// - start a new line
 				
 				line.wrappedLines.push(wrappedLine);
 				

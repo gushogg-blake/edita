@@ -1,6 +1,7 @@
 <script>
-import render from "../modules/render/render";
 import calculateMarginOffset from "../modules/render/calculateMarginOffset";
+import render from "../modules/render/render";
+import cursorFromScreenCoords from "../modules/utils/cursorFromScreenCoords";
 /*
 let js = require("../src/modules/langs/js");
 let render = require("../src/modules/render/render");
@@ -20,7 +21,6 @@ let measurementsDiv;
 let canvas;
 let context;
 let measurements;
-let coordsXHint = 2;
 let rowHeightPadding = 2;
 let rowBaselineHint = -1;
 
@@ -46,23 +46,23 @@ setInterval(function() {
 
 function mousedown(e) {
 	let {
-		colWidth,
-		rowHeight,
-	} = measurements;
-	
-	let {
 		x: left,
 		y: top,
 	} = canvas.getBoundingClientRect();
 	
-	let marginOffset = calculateMarginOffset(document.lines, measurements);
-	let x = e.clientX - left - marginOffset + scrollPosition.x + coordsXHint;
+	let x = e.clientX - left;
 	let y = e.clientY - top;
 	
-	let screenCol = Math.round(x / colWidth);
-	let screenRow = Math.floor(y / rowHeight);
+	let [lineIndex, offset] = cursorFromScreenCoords(
+		document.lines,
+		x,
+		y,
+		scrollPosition,
+		measurements,
+	);
 	
-	console.log(screenRow, screenCol);
+	selection.start = [lineIndex, offset];
+	selection.end = [lineIndex, offset];
 }
 
 function mousemove(e) {
@@ -104,6 +104,11 @@ function resize() {
 	*/
 	
 	context.textBaseline = "bottom";
+	
+	document.wrapLines(
+		measurements,
+		canvas.width - calculateMarginOffset(document.lines, measurements),
+	);
 	
 	redraw();
 }

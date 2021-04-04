@@ -36,6 +36,7 @@ class Document {
 	
 	wrapLines(measurements, screenWidth) {
 		for (let line of this.lines) {
+			//console.log((this.lines.indexOf(line) + 1 ) + " " + line.string);
 			wrapLine(line, measurements, screenWidth);
 		}
 	}

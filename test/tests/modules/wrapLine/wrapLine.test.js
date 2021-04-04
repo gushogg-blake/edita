@@ -1,3 +1,4 @@
+let fs = require("flowfs");
 let {is, deep} = require("../../../utils/assertions");
 let dedent = require("../../../utils/dedent");
 let js = require("../../../../src/modules/langs/js");
@@ -47,12 +48,12 @@ describe("wrapLine", function() {
 		
 		is(
 			l1.commands.join(","),
-			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa`,
+			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B)`,
 		);
 		
 		is(
 			l2.commands.join(","),
-			`B),S ,B{`,
+			`S ,B{`,
 		);
 	});
 	
@@ -71,32 +72,32 @@ describe("wrapLine", function() {
 	
 	it("3 wrap, no indent", function() {
 		let line = wrap(`
-			function fn(a) {function fn(a) {aaaaaaaaaaaaaaaaaaaaaaaaaaaa
+			function fn(a) {function fn(a) {aaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 		`);
 		
 		is(line.height, 3);
 		
 		let [l1, l2, l3] = line.wrappedLines;
 		
-		is(l1.string, `function fn(a) {function fn(a`);
+		is(l1.string, `function fn(a) {function fn(a)`);
 		
 		is(
 			l1.commands.join(","),
-			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa`,
+			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B)`,
 		);
 		
-		is(l2.string, `) {`);
+		is(l2.string, ` {`);
 		
 		is(
 			l2.commands.join(","),
-			`B),S ,B{`,
+			`S ,B{`,
 		);
 		
-		is(l3.string, `aaaaaaaaaaaaaaaaaaaaaaaaaaaa`);
+		is(l3.string, `aaaaaaaaaaaaaaaaaaaaaaaaaaaaa`);
 		
 		is(
 			l3.commands.join(","),
-			`Cid,Saaaaaaaaaaaaaaaaaaaaaaaaaaaa`,
+			`Cid,Saaaaaaaaaaaaaaaaaaaaaaaaaaaaa`,
 		);
 	});
 	
@@ -129,5 +130,20 @@ describe("wrapLine", function() {
 			l3.commands.join(","),
 			`Saaaaaaaaa`,
 		);
+	});
+	
+	it("bluebird", async function() {
+		let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
+		
+		let doc = new Document(code, js);
+		
+		doc.parse({
+			indentWidth: 4,
+		});
+		
+		doc.wrapLines({
+			colWidth: 10,//8.43,
+			rowHeight: 20,//18,
+		}, 389);
 	});
 });
