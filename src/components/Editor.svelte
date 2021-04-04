@@ -111,6 +111,8 @@ function mousemove(e) {
 		);
 		
 		selection.end = [lineIndex, offset];
+		
+		redraw();
 	}
 }
 
