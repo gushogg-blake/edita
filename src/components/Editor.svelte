@@ -36,13 +36,22 @@ let scrollPosition = {
 
 let hiliteWord = null;
 
-let cursorBlinkOn = true;
+let cursorBlinkOn;
+let cursorInterval;
 
-setInterval(function() {
-	cursorBlinkOn = !cursorBlinkOn;
+function startCursorBlink() {
+	if (cursorInterval) {
+		clearInterval(cursorInterval);
+	}
 	
-	redraw();
-}, $prefs.cursorBlinkPeriod);
+	cursorBlinkOn = true;
+	
+	cursorInterval = setInterval(function() {
+		cursorBlinkOn = !cursorBlinkOn;
+		
+		redraw();
+	}, $prefs.cursorBlinkPeriod);
+}
 
 function mousedown(e) {
 	let {
@@ -63,6 +72,8 @@ function mousedown(e) {
 	
 	selection.start = [lineIndex, offset];
 	selection.end = [lineIndex, offset];
+	
+	startCursorBlink();
 	
 	redraw();
 }
@@ -154,6 +165,7 @@ onMount(async function() {
 	
 	updateMeasurements();
 	resize();
+	startCursorBlink();
 	redraw();
 });
 
