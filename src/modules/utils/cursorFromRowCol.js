@@ -44,7 +44,13 @@ module.exports = function(
 			let width = Number(value);
 			
 			if (c + width > col) {
-				// col is within tab
+				// the col is within the tab
+				// if more than half way go to after the tab
+				// otherwise stay before it
+				
+				if (col - c > width / 2) {
+					offset++;
+				}
 				
 				break;
 			}
@@ -53,7 +59,10 @@ module.exports = function(
 			offset++;
 		} else if (type === "S" || type === "B") {
 			if (c + value.length > col) {
-				// col is within string
+				// col is within the current string
+				// add the remaining cols to the offset
+				
+				offset += col - c;
 				
 				break;
 			}
