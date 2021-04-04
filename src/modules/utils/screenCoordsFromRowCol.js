@@ -1,3 +1,5 @@
+let calculateMarginOffset = require("../render/calculateMarginOffset");
+
 module.exports = function(
 	lines,
 	row,
@@ -10,7 +12,9 @@ module.exports = function(
 		colWidth,
 	} = measurements;
 	
-	let x = col * colWidth - scrollPosition.x;
+	let marginOffset = Math.round(calculateMarginOffset(lines, measurements));
+	
+	let x = marginOffset + col * colWidth - scrollPosition.x;
 	let y = (row - scrollPosition.row) * rowHeight;
 	
 	return [x, y];

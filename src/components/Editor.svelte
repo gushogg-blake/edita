@@ -36,6 +36,14 @@ let scrollPosition = {
 
 let hiliteWord = null;
 
+let cursorBlinkOn = true;
+
+setInterval(function() {
+	cursorBlinkOn = !cursorBlinkOn;
+	
+	redraw();
+}, $prefs.cursorBlinkPeriod);
+
 function mousedown(e) {
 	let {
 		colWidth,
@@ -53,8 +61,6 @@ function mousedown(e) {
 	
 	let screenCol = Math.round(x / colWidth);
 	let screenRow = Math.floor(y / rowHeight);
-	
-	
 	
 	console.log(screenRow, screenCol);
 }
@@ -103,8 +109,6 @@ function resize() {
 }
 
 function redraw() {
-	let now = Date.now();
-	
 	render(
 		context,
 		document.lines,
@@ -115,7 +119,7 @@ function redraw() {
 		$prefs,
 		$prefs.langs[document.lang.code].colors,
 		measurements,
-		(now - now % 800) % 2 === 0,
+		cursorBlinkOn,
 	);
 }
 
@@ -144,8 +148,6 @@ onMount(async function() {
 	updateMeasurements();
 	resize();
 	redraw();
-	
-	setInterval(redraw, 800);
 });
 
 $: canvasStyle = {

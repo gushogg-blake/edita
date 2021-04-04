@@ -8,37 +8,8 @@ module.exports = function(
 	scrollPosition,
 	measurements,
 ) {
-	let row = 0;
+	let [row, col] = rowColFromCursor(lines, lineIndex, offset);
 	
-	for (let i = 0; i < lineIndex; i++) {
-		row += lines[i].height;
-	}
-	
-	let line = lines[lineIndex];
-	
-	let innerLine;
-	let charsConsumed = 0;
-	let isInWrappedLine = false;
-	let innerLineOffset = offset;
-	
-	for (let i = 0; i < line.height; i++) {
-		isInWrappedLine = i > 0;
-		innerLine = isInWrappedLine ? line.wrappedLines[i] : line;
-		
-		if (innerLineOffset < innerLine.string.length) {
-			break;
-		}
-		
-		row++;
-		innerLineOffset -= innerLine.string.length;
-	}
-	
-	
-	
-	if (line.height > 1) {
-		
-	}
-	
-	return [0, 0];
+	return screenCoordsFromRowCol(lines, row, col, scrollPosition, measurements);
 }
 	

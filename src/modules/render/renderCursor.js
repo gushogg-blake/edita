@@ -1,4 +1,5 @@
 let screenCoordsFromCursor = require("../utils/screenCoordsFromCursor");
+let calculateMarginOffset = require("./calculateMarginOffset");
 
 module.exports = function(
 	context,
@@ -8,6 +9,10 @@ module.exports = function(
 	measurements,
 	cursorBlinkOn,
 ) {
+	if (!cursorBlinkOn) {
+		return;
+	}
+	
 	let [lineIndex, offset] = selection.end;
 	
 	let [x, y] = screenCoordsFromCursor(
@@ -18,5 +23,10 @@ module.exports = function(
 		measurements,
 	);
 	
-	console.log(x, y);
+	let marginOffset = calculateMarginOffset(lines, measurements);
+	
+	if (x >= marginOffset) {
+		context.fillStyle = "black";
+		context.fillRect(x, y, 1, measurements.rowHeight);
+	}
 }

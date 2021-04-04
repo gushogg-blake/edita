@@ -20,6 +20,8 @@ let defaultPrefs = {
 			},
 		},
 	},
+	
+	cursorBlinkPeriod: 700,
 };
 
 export default new LocalStorage("prefs", defaultPrefs, Date.now(), {
