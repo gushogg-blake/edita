@@ -24,106 +24,106 @@ function lines(code) {
 }
 
 let tests = [
-	//[
-	//	"0, 0",
-	//	`
-	//		function fn(a) {
-	//			return 123;
-	//		}
-	//	`,
-	//	[0, 0],
-	//	[0, 0],
-	//],
-	//[
-	//	"second line",
-	//	`
-	//		function fn(a) {
-	//			return 123;
-	//		}
-	//	`,
-	//	[1, 0],
-	//	[1, 0],
-	//],
-	//[
-	//	"mid-line",
-	//	`
-	//		function fn(a) {
-	//			return 123;
-	//		}
-	//	`,
-	//	[0, 8],
-	//	[0, 8],
-	//],
-	//[
-	//	"mid-line with tabs",
-	//	`
-	//		asd 	789	hjk
-	//			return 123;
-	//		}
-	//	`,
-	//	[0, 7],
-	//	[0, 10],
-	//],
-	//[
-	//	"end of line",
-	//	`
-	//		function fn(a) {
-	//			return 123;
-	//		}
-	//	`,
-	//	[0, 16],
-	//	[0, 16],
-	//],
-	//[
-	//	"end of line with tabs",
-	//	`
-	//		asd 	789	hjk
-	//			return 123;
-	//		}
-	//	`,
-	//	[0, 12],
-	//	[0, 15],
-	//],
-	//[
-	//	"mid-line, wrapped",
-	//	`
-	//		function f1(a) {function f2(b) {function f3(c) {
-	//			return 123;
-	//		}
-	//	`,
-	//	[0, 36],
-	//	[1, 7],
-	//],
-	//[
-	//	"end of first wrap, wrapped",
-	//	`
-	//		function f1(a) {function f2(b) {function f3(c) {
-	//			return 123;
-	//		}
-	//	`,
-	//	[0, 29],
-	//	[1, 0],
-	//],
-	//[
-	//	"end of second wrap, wrapped",
-	//	`
-	//		function f1(a) {function f2(b) {function f3(c) {function f4(d) {function f5(e) {
-	//			return 123;
-	//		}
-	//	`,
-	//	[0, 59],
-	//	[2, 0],
-	//],
-	//[
-	//	"end of line, wrapped",
-	//	`
-	//		function f1(a) {function f2(b) {function f3(c) {function f4(d) {function f5(e) {
-	//			return 123;
-	//		}
-	//	`,
-	//	[0, 80],
-	//	[2, 21],
-	//],
+	[
+		"0, 0",
+		`
+			function fn(a) {
+				return 123;
+			}
+		`,
+		[0, 0],
+		[0, 0],
+	],
+	[
+		"second line",
+		`
+			function fn(a) {
+				return 123;
+			}
+		`,
+		[1, 0],
+		[1, 0],
+	],
+	[
+		"mid-line",
+		`
+			function fn(a) {
+				return 123;
+			}
+		`,
+		[0, 8],
+		[0, 8],
+	],
+	[
+		"mid-line with tabs",
+		`
+			asd 	789	hjk
+				return 123;
+			}
+		`,
+		[0, 7],
+		[0, 10],
+	],
+	[
+		"end of line",
+		`
+			function fn(a) {
+				return 123;
+			}
+		`,
+		[0, 16],
+		[0, 16],
+	],
+	[
+		"end of line with tabs",
+		`
+			asd 	789	hjk
+				return 123;
+			}
+		`,
+		[0, 12],
+		[0, 15],
+	],
+	[
+		"mid-line, wrapped",
+		`
+			function f1(a) {function f2(b) {function f3(c) {
+				return 123;
+			}
+		`,
+		[0, 36],
+		[1, 7],
+	],
+	[
+		"end of first wrap, wrapped",
+		`
+			function f1(a) {function f2(b) {function f3(c) {
+				return 123;
+			}
+		`,
+		[0, 29],
+		[1, 0],
+	],
+	[
+		"end of second wrap, wrapped",
+		`
+			function f1(a) {function f2(b) {function f3(c) {function f4(d) {function f5(e) {
+				return 123;
+			}
+		`,
+		[0, 59],
+		[2, 0],
+	],
+	[
+		"end of line, wrapped",
+		`
+			function f1(a) {function f2(b) {function f3(c) {function f4(d) {function f5(e) {
+				return 123;
+			}
+		`,
+		[0, 80],
+		[2, 21],
+	],
 ];
 
 describe("rowColFromCursor", function() {
