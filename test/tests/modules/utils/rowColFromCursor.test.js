@@ -4,12 +4,21 @@ let js = require("../../../../src/modules/langs/js");
 let Document = require("../../../../src/modules/Document");
 let rowColFromCursor = require("../../../../src/modules/utils/rowColFromCursor");
 
+let measurements = {
+	rowHeight: 20,
+	colWidth: 10,
+};
+
+let screenWidth = 305;
+
 function lines(code) {
 	let doc = new Document(dedent(code), js);
 	
 	doc.parse({
 		indentWidth: 4,
 	});
+	
+	doc.wrapLines(measurements, screenWidth);
 	
 	return doc.lines;
 }

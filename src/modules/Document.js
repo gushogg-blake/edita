@@ -1,3 +1,5 @@
+let wrapLine = require("./wrapLine/wrapLine");
+
 function createLine(string) {
 	return {
 		string,
@@ -30,6 +32,12 @@ class Document {
 	
 	parse(prefs) {
 		this.lang.parse(prefs, this.lines);
+	}
+	
+	wrapLines(measurements, screenWidth) {
+		for (let line of this.lines) {
+			wrapLine(line, measurements, screenWidth);
+		}
 	}
 }
 
