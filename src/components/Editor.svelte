@@ -16,6 +16,10 @@ import prefs from "../stores/prefs";
 
 export let document;
 
+export function focus() {
+	focused = true;
+}
+
 let canvasDiv;
 let measurementsDiv;
 let canvas;
@@ -23,6 +27,8 @@ let context;
 let measurements;
 let rowHeightPadding = 2;
 let rowBaselineHint = -1;
+
+let focused = false;
 
 let selection = {
 	start: [0, 0],
@@ -154,19 +160,36 @@ function updateMeasurements() {
 	};
 }
 
+function keydown(e) {
+	if (!focused) {
+		return;
+	}
+	
+	if (!e.ctrlKey && !e.altKey && !e.metaKey && e.key.length === 1) {
+		// printable character other than tab
+		
+		document.replaceSelection(selection, e.key);
+	}
+}
+
+function keyup(e) {
+	if (!focused) {
+		return;
+	}
+	console.log(e);
+}
+
 onMount(async function() {
 	context = canvas.getContext("2d");
 	
-	console.time("parse");
-	
 	document.parse($prefs);
-	
-	console.timeEnd("parse");
 	
 	updateMeasurements();
 	resize();
 	startCursorBlink();
 	redraw();
+	
+	focused = true; // DEV
 });
 
 $: canvasStyle = {
@@ -174,7 +197,11 @@ $: canvasStyle = {
 };
 </script>
 
-<svelte:window on:resize={resize}/>
+<svelte:window
+	on:resize={resize}
+	on:keydown={keydown}
+	on:keyup={keyup}
+/>
 
 <style type="text/scss">
 @import "../css/mixins/abs-sticky";

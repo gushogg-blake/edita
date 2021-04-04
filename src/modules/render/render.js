@@ -17,8 +17,6 @@ module.exports = function(
 	measurements,
 	cursorBlinkOn,
 ) {
-	console.time("render");
-	
 	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 	
 	renderMarginBackground(
@@ -74,6 +72,4 @@ module.exports = function(
 		measurements,
 		cursorBlinkOn,
 	);
-	
-	console.timeEnd("render");
 }

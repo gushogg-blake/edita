@@ -1,4 +1,5 @@
 let wrapLine = require("./wrapLine/wrapLine");
+let sortSelection = require("./utils/sortSelection");
 
 function createLine(string) {
 	return {
@@ -26,8 +27,28 @@ class Document {
 	delete, and a string of code to add (which can contain newlines)
 	*/
 	
-	edit(lineIndex, removeLines, addCode) {
+	edit(lineIndex, removeLines, insertString) {
+		let insertLines = insertString.split("\n").map(createLine);
 		
+		console.log(lineIndex, removeLines);
+		console.log(insertLines);
+		
+		this.lines.splice(lineIndex, removeLines, ...insertLines);
+		
+		this.parse({
+			indentWidth: 4,
+		});
+	}
+	
+	replaceSelection(selection, string) {
+		let {start, end} = sortSelection(selection);
+		let [startLineIndex, startOffset] = start;
+		let [endLineIndex, endOffset] = end;
+		
+		let prefix = this.lines[startLineIndex].string.substr(0, startOffset);
+		let suffix = this.lines[endLineIndex].string.substr(endOffset);
+		
+		this.edit(startLineIndex, endLineIndex - startLineIndex + 1, prefix + string + suffix);
 	}
 	
 	parse(prefs) {
