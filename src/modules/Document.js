@@ -30,9 +30,6 @@ class Document {
 	edit(lineIndex, removeLines, insertString) {
 		let insertLines = insertString.split("\n").map(createLine);
 		
-		console.log(lineIndex, removeLines);
-		console.log(insertLines);
-		
 		this.lines.splice(lineIndex, removeLines, ...insertLines);
 		
 		this.parse({

@@ -2,6 +2,7 @@
 import calculateMarginOffset from "../modules/render/calculateMarginOffset";
 import render from "../modules/render/render";
 import cursorFromScreenCoords from "../modules/utils/cursorFromScreenCoords";
+import sortSelection from "../modules/utils/sortSelection";
 /*
 let js = require("../src/modules/langs/js");
 let render = require("../src/modules/render/render");
@@ -29,6 +30,9 @@ let rowHeightPadding = 2;
 let rowBaselineHint = -1;
 
 let focused = false;
+
+let dragSelectionEnd;
+let draggingSelection = false;
 
 let selection = {
 	start: [0, 0],
@@ -76,20 +80,42 @@ function mousedown(e) {
 		measurements,
 	);
 	
-	selection.start = [lineIndex, offset];
-	selection.end = [lineIndex, offset];
+	selection = {
+		start: [lineIndex, offset],
+		end: [lineIndex, offset],
+	};
 	
 	startCursorBlink();
 	
 	redraw();
+	
+	draggingSelection = true;
 }
 
 function mousemove(e) {
-	//console.log(e);
+	if (draggingSelection) {
+		let {
+			x: left,
+			y: top,
+		} = canvas.getBoundingClientRect();
+		
+		let x = e.clientX - left;
+		let y = e.clientY - top;
+		
+		let [lineIndex, offset] = cursorFromScreenCoords(
+			document.lines,
+			x,
+			y,
+			scrollPosition,
+			measurements,
+		);
+		
+		selection.end = [lineIndex, offset];
+	}
 }
 
 function mouseup(e) {
-	//console.log(e);
+	draggingSelection = false;
 }
 
 function wheel(e) {
@@ -168,7 +194,16 @@ function keydown(e) {
 	if (!e.ctrlKey && !e.altKey && !e.metaKey && e.key.length === 1) {
 		// printable character other than tab
 		
+		let [lineIndex, offset] = sortSelection(selection).start;
+		
 		document.replaceSelection(selection, e.key);
+		
+		selection = {
+			start: [lineIndex, offset + 1],
+			end: [lineIndex, offset + 1],
+		};
+		
+		redraw();
 	}
 }
 
@@ -176,7 +211,7 @@ function keyup(e) {
 	if (!focused) {
 		return;
 	}
-	console.log(e);
+	
 }
 
 onMount(async function() {

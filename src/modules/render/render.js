@@ -1,6 +1,6 @@
 let renderMarginBackground = require("./renderMarginBackground");
 //let renderCurrentLineHilite = require("./renderCurrentLineHilite");
-//let renderSelection = require("./renderSelection");
+let renderSelection = require("./renderSelection");
 //let renderWordHilites = require("./renderWordHilites");
 let renderCodeAndMargin = require("./renderCodeAndMargin");
 let renderCursor = require("./renderCursor");
@@ -35,14 +35,14 @@ module.exports = function(
 	//	measurements,
 	//);
 	
-	//renderSelection(
-	//	context,
-	//	lines,
-	//	selection,
-	//	scrollPosition,
-	//	colors,
-	//	measurements,
-	//);
+	renderSelection(
+		context,
+		lines,
+		selection,
+		scrollPosition,
+		colors,
+		measurements,
+	);
 	
 	//renderWordHilites(
 	//	context,
