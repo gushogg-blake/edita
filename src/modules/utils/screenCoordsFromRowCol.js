@@ -14,7 +14,7 @@ module.exports = function(
 	
 	let marginOffset = Math.round(calculateMarginOffset(lines, measurements));
 	
-	let x = marginOffset + col * colWidth - scrollPosition.x;
+	let x = Math.round(marginOffset + col * colWidth - scrollPosition.x);
 	let y = (row - scrollPosition.row) * rowHeight;
 	
 	return [x, y];

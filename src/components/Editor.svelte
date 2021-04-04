@@ -63,6 +63,8 @@ function mousedown(e) {
 	
 	selection.start = [lineIndex, offset];
 	selection.end = [lineIndex, offset];
+	
+	redraw();
 }
 
 function mousemove(e) {
