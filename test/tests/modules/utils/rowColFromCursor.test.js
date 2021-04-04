@@ -24,65 +24,75 @@ function lines(code) {
 }
 
 let tests = [
+	//[
+	//	"0, 0",
+	//	`
+	//		function fn(a) {
+	//			return 123;
+	//		}
+	//	`,
+	//	[0, 0],
+	//	[0, 0],
+	//],
+	//[
+	//	"second line",
+	//	`
+	//		function fn(a) {
+	//			return 123;
+	//		}
+	//	`,
+	//	[1, 0],
+	//	[1, 0],
+	//],
+	//[
+	//	"mid-line",
+	//	`
+	//		function fn(a) {
+	//			return 123;
+	//		}
+	//	`,
+	//	[0, 8],
+	//	[0, 8],
+	//],
+	//[
+	//	"mid-line with tabs",
+	//	`
+	//		asd 	789	hjk
+	//			return 123;
+	//		}
+	//	`,
+	//	[0, 7],
+	//	[0, 10],
+	//],
+	//[
+	//	"end of line",
+	//	`
+	//		function fn(a) {
+	//			return 123;
+	//		}
+	//	`,
+	//	[0, 16],
+	//	[0, 16],
+	//],
+	//[
+	//	"end of line with tabs",
+	//	`
+	//		asd 	789	hjk
+	//			return 123;
+	//		}
+	//	`,
+	//	[0, 12],
+	//	[0, 15],
+	//],
 	[
-		"0, 0",
+		"mid-line, wrapped",
 		`
-			function fn(a) {
+			function f1(a) {function f2(b) {function f3(c) {
 				return 123;
 			}
 		`,
-		[0, 0],
-		[0, 0],
-	],
-	[
-		"second line",
-		`
-			function fn(a) {
-				return 123;
-			}
-		`,
-		[1, 0],
-		[1, 0],
-	],
-	[
-		"mid-line",
-		`
-			function fn(a) {
-				return 123;
-			}
-		`,
-		[0, 8],
-		[0, 8],
-	],
-	[
-		"mid-line with tabs",
-		`
-			asd 	789	hjk
-				return 123;
-			}
-		`,
-		[0, 7],
-		[0, 10],
-	],
-	[
-		"end of line",
-		`
-			function fn(a) {
-				return 123;
-			}
-		`,
-		[0, 16],
-		[0, 16],
-	],
-	[
-		"end of line with tabs",
-		`
-			asd 	789	hjk
-				return 123;
-			}
-		`,
-		[0, 12],
-		[0, 15],
+		[0, 36],
+		[1, 7],
 	],
 ];
 

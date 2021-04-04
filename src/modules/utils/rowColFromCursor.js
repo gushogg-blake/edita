@@ -15,7 +15,7 @@ module.exports = function(
 	let innerLineOffset = offset;
 	
 	for (let i = 0; i < line.height; i++) {
-		innerLine = i > 0 ? line.wrappedLines[i] : line;
+		innerLine = line.height > 1 ? line.wrappedLines[i] : line;
 		
 		/*
 		if we're at the end of a line that ends in a soft wrap, go to the next row
@@ -51,7 +51,7 @@ module.exports = function(
 			col += Number(value);
 			charsConsumed++;
 		} else if (type === "S" || type === "B") {
-			let newCharsConsumed = Math.min(charsConsumed + value.length, offset);
+			let newCharsConsumed = Math.min(charsConsumed + value.length, innerLineOffset);
 			let consumed = newCharsConsumed - charsConsumed;
 			
 			charsConsumed = newCharsConsumed;
