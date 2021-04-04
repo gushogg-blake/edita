@@ -84,15 +84,45 @@ let tests = [
 	//	[0, 12],
 	//	[0, 15],
 	//],
+	//[
+	//	"mid-line, wrapped",
+	//	`
+	//		function f1(a) {function f2(b) {function f3(c) {
+	//			return 123;
+	//		}
+	//	`,
+	//	[0, 36],
+	//	[1, 7],
+	//],
 	[
-		"mid-line, wrapped",
+		"end of first wrap, wrapped",
 		`
 			function f1(a) {function f2(b) {function f3(c) {
 				return 123;
 			}
 		`,
-		[0, 36],
-		[1, 7],
+		[0, 29],
+		[1, 0],
+	],
+	[
+		"end of second wrap, wrapped",
+		`
+			function f1(a) {function f2(b) {function f3(c) {function f4(d) {function f5(e) {
+				return 123;
+			}
+		`,
+		[0, 59],
+		[2, 0],
+	],
+	[
+		"end of line, wrapped",
+		`
+			function f1(a) {function f2(b) {function f3(c) {function f4(d) {function f5(e) {
+				return 123;
+			}
+		`,
+		[0, 80],
+		[2, 21],
 	],
 ];
 

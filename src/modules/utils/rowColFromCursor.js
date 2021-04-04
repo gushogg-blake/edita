@@ -23,7 +23,7 @@ module.exports = function(
 		we can be at the end
 		*/
 		
-		if (line.height > 1 && i < line.height) {
+		if (line.height > 1 && i !== line.height - 1) {
 			if (innerLineOffset < innerLine.string.length) {
 				break;
 			}
