@@ -121,6 +121,65 @@ class Document extends Evented {
 		}
 	}
 	
+	delete(selection) {
+		let {start, end} = sortSelection(selection);
+		let [lineIndex, offset] = start;
+		
+		if (isFullSelection(selection)) {
+			this.replaceSelection(selection, "");
+			
+			return {
+				start: [lineIndex, offset],
+				end: [lineIndex, offset],
+			};
+		} else {
+			let line = this.lines[lineIndex];
+			
+			if (offset === line.string.length) {
+				// deleting the newline, so join with the next line if there is one
+				
+				if (lineIndex === this.lines.length - 1) {
+					return selection;
+				}
+				
+				let nextLineIndex = lineIndex + 1;
+				let nextLineString = this.lines[nextLineIndex].string;
+				
+				this.edit(lineIndex, 2, line.string + nextLineString);
+				
+				return {
+					start: [lineIndex, line.string.length],
+					end: [lineIndex, line.string.length],
+				};
+			} else {
+				// deleting a character within the line
+				
+				let {string} = line;
+				
+				this.edit(
+					lineIndex,
+					1,
+					string.substr(0, offset) + string.substr(offset + 1),
+				);
+				
+				return selection;
+			}
+		}
+	}
+	
+	insertNewline(selection) {
+		let {start, end} = sortSelection(selection);
+		let [lineIndex, offset] = start;
+		let line = this.lines[lineIndex];
+		
+		this.replaceSelection(selection, "\n");
+		
+		return {
+			start: [lineIndex + 1, 0],
+			end: [lineIndex + 1, 0],
+		};
+	}
+	
 	parse(prefs) {
 		this.lang.parse(prefs, this.lines);
 	}

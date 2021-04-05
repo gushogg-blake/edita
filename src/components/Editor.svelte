@@ -218,6 +218,18 @@ function keydown(e) {
 		
 		redraw();
 	}
+	
+	if (keyCombo === "Delete") {
+		selection = document.delete(selection);
+		
+		redraw();
+	}
+	
+	if (keyCombo === "Enter") {
+		selection = document.insertNewline(selection);
+		
+		redraw();
+	}
 }
 
 function keyup(e) {
