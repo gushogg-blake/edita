@@ -27,6 +27,8 @@ class Document extends Evented {
 		this.lang = lang;
 		
 		this.lines = createLines(code);
+		
+		this.renderedUpTo = 0;
 	}
 	
 	/*
@@ -82,7 +84,25 @@ class Document extends Evented {
 				end: [lineIndex, offset],
 			};
 		} else {
+			let line = this.lines[lineIndex];
 			
+			if (offset === 0) {
+				// deleting the newline, so join with the prev line if there is one
+				
+				if (lineIndex === 0) {
+					return;
+				}
+				
+				let prevLineIndex = lineIndex - 1;
+				let prevLineString = this.lines[prevLineIndex].string;
+				
+				this.edit(lineIndex - 1, 2, prevLineString + line.string);
+				
+				return {
+					start: [prevLineIndex, prevLineString.length],
+					end: [prevLineIndex, prevLineString.length],
+				};
+			}
 		}
 	}
 	
