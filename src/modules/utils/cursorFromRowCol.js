@@ -27,6 +27,14 @@ module.exports = function(
 		i++;
 	}
 	
+	if (innerLineIndex > 0) {
+		col -= line.wrapIndentCols;
+		
+		if (col < 0) {
+			col = 0;
+		}
+	}
+	
 	// consume chars until c is col
 	
 	let c = 0;

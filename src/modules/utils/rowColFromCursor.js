@@ -59,5 +59,9 @@ module.exports = function(
 		}
 	}
 	
+	if (innerLine !== line) {
+		col += line.wrapIndentCols;
+	}
+	
 	return [row, col];
 }
