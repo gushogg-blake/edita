@@ -1,25 +1,28 @@
 module.exports = function(e) {
-	let str = "";
-	let modified = false;
+	let keyCombo = "";
+	let isModified = false;
 	
 	if (!["Control", "Shift", "Alt", "Meta"].includes(e.key)) {
 		if (e.ctrlKey || e.metaKey) {
-			modified = true;
-			str += "Ctrl+";
+			isModified = true;
+			keyCombo += "Ctrl+";
 		}
 		
 		if (e.altKey) {
-			modified = true;
-			str += "Alt+";
+			isModified = true;
+			keyCombo += "Alt+";
 		}
 		
-		if ((modified || e.key.length !== 1) && e.shiftKey) {
-			modified = true;
-			str += "Shift+";
+		if ((isModified || e.key.length !== 1) && e.shiftKey) {
+			isModified = true;
+			keyCombo += "Shift+";
 		}
 	}
 	
-	str += modified && e.key.length === 1 ? e.key.toUpperCase() : e.key;
+	keyCombo += isModified && e.key.length === 1 ? e.key.toUpperCase() : e.key;
 	
-	return str;
+	return {
+		keyCombo,
+		isModified,
+	};
 }

@@ -1,6 +1,7 @@
 let Evented = require("../utils/Evented");
 let wrapLine = require("./wrapLine/wrapLine");
 let sortSelection = require("./utils/sortSelection");
+let isFullSelection = require("./utils/isFullSelection");
 
 function createLine(string) {
 	return {
@@ -55,6 +56,34 @@ class Document extends Evented {
 		let suffix = this.lines[endLineIndex].string.substr(endOffset);
 		
 		this.edit(startLineIndex, endLineIndex - startLineIndex + 1, prefix + string + suffix);
+	}
+	
+	insertCharacter(selection, ch) {
+		let {start, end} = sortSelection(selection);
+		let [lineIndex, offset] = start;
+		
+		this.replaceSelection(selection, ch);
+		
+		return {
+			start: [lineIndex, offset + 1],
+			end: [lineIndex, offset + 1],
+		};
+	}
+	
+	backspace(selection) {
+		let {start, end} = sortSelection(selection);
+		let [lineIndex, offset] = start;
+		
+		if (isFullSelection(selection)) {
+			this.replaceSelection(selection, "");
+			
+			return {
+				start: [lineIndex, offset],
+				end: [lineIndex, offset],
+			};
+		} else {
+			
+		}
 	}
 	
 	parse(prefs) {

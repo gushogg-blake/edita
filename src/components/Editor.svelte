@@ -3,6 +3,7 @@ import calculateMarginOffset from "../modules/render/calculateMarginOffset";
 import render from "../modules/render/render";
 import cursorFromScreenCoords from "../modules/utils/cursorFromScreenCoords";
 import sortSelection from "../modules/utils/sortSelection";
+import isFullSelection from "../modules/utils/isFullSelection";
 import getKeyCombo from "../utils/getKeyCombo";
 /*
 let js = require("../src/modules/langs/js");
@@ -194,21 +195,26 @@ function keydown(e) {
 		return;
 	}
 	
-	let keyCombo = getKeyCombo(e);
+	let {keyCombo, isModified} = getKeyCombo(e);
 	
-	console.log(keyCombo);
+	let [lineIndex, offset] = sortSelection(selection).start;
 	
-	if (!e.ctrlKey && !e.altKey && !e.metaKey && e.key.length === 1) {
-		// printable character other than tab
+	if (!isModified && e.key.length === 1) {
+		// printable character other than tab or enter
 		
-		let [lineIndex, offset] = sortSelection(selection).start;
+		selection = document.insertCharacter(selection, e.key);
 		
-		document.replaceSelection(selection, e.key);
+		redraw();
+	}
+	
+	if (keyCombo === "Tab") {
+		selection = document.insertCharacter(selection, "\t");
 		
-		selection = {
-			start: [lineIndex, offset + 1],
-			end: [lineIndex, offset + 1],
-		};
+		redraw();
+	}
+	
+	if (keyCombo === "Backspace") {
+		selection = document.backspace(selection);
 		
 		redraw();
 	}
