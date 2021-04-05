@@ -35,8 +35,8 @@ let dragSelectionEnd;
 let draggingSelection = false;
 
 let selection = {
-	start: [0, 0],
-	end: [0, 0],
+	start: [14, 113],
+	end: [22, 3],
 };
 
 let scrollPosition = {

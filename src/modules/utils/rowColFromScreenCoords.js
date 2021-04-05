@@ -16,12 +16,11 @@ module.exports = function(
 	
 	let marginOffset = calculateMarginOffset(lines, measurements);
 	
-	
 	let screenCol = Math.round((x - marginOffset + coordsXHint + scrollPosition.x) / colWidth);
 	let screenRow = Math.floor(y / rowHeight) + scrollPosition.row;
 	
 	return [
-		screenRow,
-		screenCol,
+		Math.max(0, screenRow),
+		Math.max(0, screenCol),
 	];
 }
