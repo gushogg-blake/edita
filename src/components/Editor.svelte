@@ -226,7 +226,26 @@ onMount(async function() {
 	startCursorBlink();
 	redraw();
 	
+	let teardown = [];
+	
+	teardown.push(document.on("edit", function() {
+		// TODO perf
+		
+		document.parse($prefs);
+		
+		document.wrapLines(
+			measurements,
+			canvas.width - calculateMarginOffset(document.lines, measurements),
+		);
+	}));
+	
 	focused = true; // DEV
+	
+	return function() {
+		for (let fn of teardown) {
+			fn();
+		}
+	}
 });
 
 $: canvasStyle = {

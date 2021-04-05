@@ -15,9 +15,19 @@ module.exports = function(
 	let [startLineIndex, startOffset] = start;
 	let [endLineIndex, endOffset] = end;
 	
-	for (let i = startLineIndex; i < endLineIndex; i++) {
+	for (let i = startLineIndex; i <= endLineIndex; i++) {
 		let line = lines[i];
 		
+		for (let j = 0; j < line.height; j++) {
+			let width = line.height > 1 ? line.wrappedLines[j].width : line.width;
+			if (i === startLineIndex && j === 0) {
+				
+			} else if (i === endLineIndex) {
+				
+			} else {
+				
+			}
+		}
 		
 	}
 }

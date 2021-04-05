@@ -1,3 +1,4 @@
+let Evented = require("../utils/Evented");
 let wrapLine = require("./wrapLine/wrapLine");
 let sortSelection = require("./utils/sortSelection");
 
@@ -7,7 +8,10 @@ function createLine(string) {
 		endState: null,
 		lastUsedCacheKey: null,
 		cachedCommands: {},
-		height: 1,
+		width: undefined,
+		height: undefined,
+		wrappedLines: undefined,
+		wrapIndentCols: undefined,
 	};
 }
 
@@ -15,8 +19,10 @@ function createLines(code) {
 	return code.split("\n").map(createLine);
 }
 
-class Document {
+class Document extends Evented {
 	constructor(code, lang) {
+		super();
+		
 		this.lang = lang;
 		
 		this.lines = createLines(code);
@@ -32,8 +38,11 @@ class Document {
 		
 		this.lines.splice(lineIndex, removeLines, ...insertLines);
 		
-		this.parse({
-			indentWidth: 4,
+		this.fire("edit", {
+			lineIndex,
+			removeLines,
+			insertString,
+			insertLines,
 		});
 	}
 	
@@ -54,7 +63,6 @@ class Document {
 	
 	wrapLines(measurements, screenWidth) {
 		for (let line of this.lines) {
-			//console.log((this.lines.indexOf(line) + 1 ) + " " + line.string);
 			wrapLine(line, measurements, screenWidth);
 		}
 	}

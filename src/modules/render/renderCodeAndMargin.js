@@ -32,8 +32,6 @@ module.exports = function(
 	let marginOffset = calculateMarginOffset(lines, measurements);
 	let leftEdge = marginOffset - scrollPosition.x;
 	
-	// Code & margin
-	
 	let x = leftEdge;
 	let y = rowHeight; // not 0 -- we're using textBaseline="bottom"
 	
@@ -57,6 +55,10 @@ module.exports = function(
 		
 		for (let i = 0; i < line.height; i++) {
 			let commands = line.height === 1 ? line.commands : line.wrappedLines[i].commands;
+			
+			if (i > 0) {
+				x += line.wrapIndentCols * colWidth;
+			}
 			
 			for (let command of commands) {
 				let [type, value] = [command[0], command.substr(1)];

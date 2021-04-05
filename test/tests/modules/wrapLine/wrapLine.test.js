@@ -146,4 +146,23 @@ describe("wrapLine", function() {
 			rowHeight: 20,//18,
 		}, 389);
 	});
+	
+	//it("bluebird", async function() {
+	//	let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
+	//	
+	//	let doc = new Document(code, js);
+	//	
+	//	doc.parse({
+	//		indentWidth: 4,
+	//	});
+	//	
+	//	for (let i = 100; i < 1500; i++) {
+	//		console.log(i);
+	//		doc.wrapLines({
+	//			colWidth: 8.43,
+	//			rowHeight: 18,
+	//		}, i);
+	//	}
+	//	
+	//});
 });
