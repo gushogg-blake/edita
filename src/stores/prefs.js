@@ -5,6 +5,7 @@ let defaultPrefs = {
 	indentWidth: 4,
 	lineNumberColor: "#9f9f9f",
 	marginBackground: "#f0f0f0",
+	selectionBackground: "#afafaf",
 	
 	langs: {
 		js: {

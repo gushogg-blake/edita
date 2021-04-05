@@ -40,7 +40,7 @@ module.exports = function(
 		lines,
 		selection,
 		scrollPosition,
-		colors,
+		prefs,
 		measurements,
 	);
 	
