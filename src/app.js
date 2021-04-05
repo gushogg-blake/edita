@@ -9,4 +9,12 @@ let app = new App({
 
 window.app = app;
 
+// prevent default ctrl+w behaviour
+
+window.addEventListener("keydown", function(e) {
+	if (e.ctrlKey && e.key === "w") {
+		e.preventDefault();
+	}
+});
+
 export default app;

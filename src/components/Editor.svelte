@@ -3,6 +3,7 @@ import calculateMarginOffset from "../modules/render/calculateMarginOffset";
 import render from "../modules/render/render";
 import cursorFromScreenCoords from "../modules/utils/cursorFromScreenCoords";
 import sortSelection from "../modules/utils/sortSelection";
+import getKeyCombo from "../utils/getKeyCombo";
 /*
 let js = require("../src/modules/langs/js");
 let render = require("../src/modules/render/render");
@@ -35,8 +36,8 @@ let dragSelectionEnd;
 let draggingSelection = false;
 
 let selection = {
-	start: [14, 113],
-	end: [22, 3],
+	start: [0, 0],
+	end: [0, 0],
 };
 
 let scrollPosition = {
@@ -192,6 +193,10 @@ function keydown(e) {
 	if (!focused) {
 		return;
 	}
+	
+	let keyCombo = getKeyCombo(e);
+	
+	console.log(keyCombo);
 	
 	if (!e.ctrlKey && !e.altKey && !e.metaKey && e.key.length === 1) {
 		// printable character other than tab
