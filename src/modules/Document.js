@@ -90,7 +90,7 @@ class Document extends Evented {
 				// deleting the newline, so join with the prev line if there is one
 				
 				if (lineIndex === 0) {
-					return;
+					return selection;
 				}
 				
 				let prevLineIndex = lineIndex - 1;
@@ -101,6 +101,21 @@ class Document extends Evented {
 				return {
 					start: [prevLineIndex, prevLineString.length],
 					end: [prevLineIndex, prevLineString.length],
+				};
+			} else {
+				// deleting a character within the line
+				
+				let {string} = line;
+				
+				this.edit(
+					lineIndex,
+					1,
+					string.substr(0, offset - 1) + string.substr(offset),
+				);
+				
+				return {
+					start: [lineIndex, offset - 1],
+					end: [lineIndex, offset - 1],
 				};
 			}
 		}
