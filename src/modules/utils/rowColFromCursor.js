@@ -11,6 +11,7 @@ module.exports = function(
 	
 	let line = lines[lineIndex];
 	
+	let innerLineIndex = 0;
 	let innerLine;
 	let innerLineOffset = offset;
 	
@@ -34,6 +35,7 @@ module.exports = function(
 		}
 		
 		row++;
+		innerLineIndex++;
 		innerLineOffset -= innerLine.string.length;
 	}
 	
@@ -59,7 +61,7 @@ module.exports = function(
 		}
 	}
 	
-	if (innerLine !== line) {
+	if (innerLineIndex > 0) {
 		col += line.wrapIndentCols;
 	}
 	
