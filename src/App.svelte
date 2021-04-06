@@ -5,7 +5,6 @@ import {onMount} from "svelte";
 
 import langs from "./modules/langs";
 import Document from "./modules/Document";
-
 import Editor from "./components/Editor.svelte";
 
 let document;

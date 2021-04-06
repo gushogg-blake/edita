@@ -7,7 +7,6 @@ let {
 } = require("electron");
 
 let path = require("path");
-let {ipcMain: ipc} = require("electron-better-ipc");
 let windowStateKeeper = require("electron-window-state");
 let dev = require("electron-is-dev");
 

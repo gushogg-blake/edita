@@ -16,8 +16,12 @@ import sleep from "../utils/sleep";
 import inlineStyle from "../utils/dom/inlineStyle";
 //import render from "../modules/render/render";
 import prefs from "../stores/prefs";
+import Scrollbar from "./Scrollbar.svelte";
 
 export let document;
+
+let hasVerticalScrollbar = true;
+let hasHorizontalScrollbar = true;
 
 export function focus() {
 	focused = true;
@@ -287,14 +291,26 @@ $: canvasStyle = {
 
 #main {
 	display: grid;
-	grid-template-rows: 1fr auto;
-	grid-template-columns: 1fr auto;
+	grid-template-rows: 1fr 0;
+	grid-template-columns: 1fr 0;
 	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar blank";
 	flex-grow: 1;
 	width: 100%;
 	color: black;
+	
+	&.hasVerticalScrollbar {
+		grid-template-columns: 1fr 12px;
+	}
+	
+	&.hasHorizontalScrollbar {
+		grid-template-rows: 1fr 12px;
+	}
 }
-
+/*
+#canvasContainer {
+	position: relative;
+}
+*/
 #canvas {
 	position: relative;
 	grid-area: canvas;
@@ -303,18 +319,18 @@ $: canvasStyle = {
 
 canvas {
 	@include abs-sticky;
+	
+	z-index: 1;
 }
 
 #verticalScrollbar {
+	position: relative;
 	grid-area: verticalScrollbar;
-	width: 12px;
-	background: #EAEAEA;
 }
 
 #horizontalScrollbar {
+	position: relative;
 	grid-area: horizontalScrollbar;
-	height: 12px;
-	background: #EAEAEA;
 }
 
 #measurements {
@@ -327,6 +343,8 @@ canvas {
 <div
 	id="main"
 	on:wheel={wheel}
+	class:hasVerticalScrollbar
+	class:hasHorizontalScrollbar
 >
 	<div
 		id="canvas"
@@ -340,11 +358,15 @@ canvas {
 			style={inlineStyle(canvasStyle)}
 		/>
 	</div>
-	<div id="verticalScrollbar">
-		
+	<div class="scrollbar" id="verticalScrollbar">
+		<Scrollbar
+			orientation="vertical"
+		/>
 	</div>
-	<div id="horizontalScrollbar">
-		
+	<div class="scrollbar" id="horizontalScrollbar">
+		<Scrollbar
+			orientation="horizontal"
+		/>
 	</div>
 </div>
 
