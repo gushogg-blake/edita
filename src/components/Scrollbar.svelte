@@ -1,34 +1,77 @@
 <script>
+import {createEventDispatcher} from "svelte";
 import inlineStyle from "../utils/dom/inlineStyle";
 
 export let orientation;
-export let totalSize;
-export let pageSize;
-export let position;
 
-let dimensions = {
+let totalSize = 1;
+let pageSize = 1;
+let position = 0;
+
+export function setRange(totalSize, pageSize) {
+	_setRange(totalSize, pageSize);
+}
+
+export function setPosition(position) {
+	_setPosition(position);
+}
+
+let fire = createEventDispatcher();
+
+let main;
+
+let cssSizeKey = {
 	horizontal: "width",
 	vertical: "height",
 };
 
-function scroll(e) {
-	console.log(e);
+let scrollSizeKey = {
+	horizontal: "scrollWidth",
+	vertical: "scrollHeight",
+};
+
+let scrollPositionKey = {
+	horizontal: "scrollLeft",
+	vertical: "scrollTop",
+};
+
+let offsetSizeKey = {
+	horizontal: "offsetWidth",
+	vertical: "offsetHeight",
+};
+
+function getScrollPosition() {
+	let divSize = main[offsetSizeKey[orientation]];
+	let position = main[scrollPositionKey[orientation]];
+	let scrollSize = main[scrollSizeKey[orientation]];
+	let max = scrollSize - divSize;
+	
+	return position / max;
 }
 
-$: style = calculateStyle(totalSize, pageSize);
-$: expanderStyle = calculateExpanderStyle(totalSize, pageSize);
+function scroll() {
+	fire("scroll", getScrollPosition());
+}
 
-function calculateStyle(totalSize, pageSize) {
+function _setRange(_totalSize, _pageSize) {
 	
 }
+
+function _setPosition(_position) {
+}
+
+//$: style = calculateStyle(totalSize, pageSize);
+$: expanderStyle = calculateExpanderStyle(totalSize, pageSize);
+
+//function calculateStyle(totalSize, pageSize) {
+//	
+//}
 
 function calculateExpanderStyle(totalSize, pageSize) {
 	// return width or height as a percentage (>= 100%) to give the main div a scrollbar
 	
-	let dimension = dimensions[orientation];
-	
 	return {
-		[dimension]: "150%",
+		[cssSizeKey[orientation]]: "150%",
 	};
 }
 
@@ -58,10 +101,28 @@ function calculateExpanderStyle(totalSize, pageSize) {
 		overflow-x: scroll;
 		overflow-y: hidden;
 	}
+	
+	&::-webkit-scrollbar {
+		width: 12px;
+		height: 12px;
+	}
+	
+	&::-webkit-scrollbar-track {
+		/*border-radius: 10px;*/
+	}
+	
+	&::-webkit-scrollbar-thumb {
+		width: 8px;
+		height: 8px;
+		border-radius: 8px;
+		border: 2px solid white;
+		background-clip: content-box;
+		background: #B2B2B2;
+	}
+
 }
 
 #expander {
-	position: relative;
 	.vertical & {
 		width: 100%;
 	}
@@ -74,9 +135,9 @@ function calculateExpanderStyle(totalSize, pageSize) {
 
 <div
 	id="main"
+	bind:this={main}
 	class={orientation}
 	on:scroll={scroll}
-	style={inlineStyle(style)}
 >
 	<div
 		id="expander"

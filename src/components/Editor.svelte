@@ -35,6 +35,9 @@ let measurements;
 let rowHeightPadding = 2;
 let rowBaselineHint = -1;
 
+let verticalScrollbar;
+let horizontalScrollbar;
+
 let focused = false;
 
 let dragSelectionEnd;
@@ -299,18 +302,14 @@ $: canvasStyle = {
 	color: black;
 	
 	&.hasVerticalScrollbar {
-		grid-template-columns: 1fr 12px;
+		grid-template-columns: 1fr 13px;
 	}
 	
 	&.hasHorizontalScrollbar {
-		grid-template-rows: 1fr 12px;
+		grid-template-rows: 1fr 13px;
 	}
 }
-/*
-#canvasContainer {
-	position: relative;
-}
-*/
+
 #canvas {
 	position: relative;
 	grid-area: canvas;
@@ -323,14 +322,18 @@ canvas {
 	z-index: 1;
 }
 
+$scrollBarBorder: 1px solid #bababa;
+
 #verticalScrollbar {
 	position: relative;
 	grid-area: verticalScrollbar;
+	border-left: $scrollBarBorder;
 }
 
 #horizontalScrollbar {
 	position: relative;
 	grid-area: horizontalScrollbar;
+	border-top: $scrollBarBorder;
 }
 
 #measurements {
@@ -360,11 +363,13 @@ canvas {
 	</div>
 	<div class="scrollbar" id="verticalScrollbar">
 		<Scrollbar
+			bind:this={verticalScrollbar}
 			orientation="vertical"
 		/>
 	</div>
 	<div class="scrollbar" id="horizontalScrollbar">
 		<Scrollbar
+			bind:this={horizontalScrollbar}
 			orientation="horizontal"
 		/>
 	</div>
