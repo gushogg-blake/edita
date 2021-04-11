@@ -147,9 +147,7 @@ function wheel(e) {
 		scrollPosition.row = newRow;
 	}
 	
-	console.log("WHEEL");
-	console.log(scrollPosition.row);
-	
+	updateScrollbars();
 	redraw();
 }
 
@@ -252,6 +250,19 @@ function keydown(e) {
 		scrollPosition.row += screenRows;
 		
 		scrollPosition.row = Math.min(scrollPosition.row, maxRow);
+		
+		updateScrollbars();
+		redraw();
+	}
+	
+	if (keyCombo === "PageUp") {
+		let {rowHeight} = measurements;
+		let {offsetHeight: height} = canvasDiv;
+		let screenRows = Math.floor(height / rowHeight);
+
+		scrollPosition.row -= screenRows;
+		
+		scrollPosition.row = Math.max(0, scrollPosition.row);
 		
 		updateScrollbars();
 		redraw();
