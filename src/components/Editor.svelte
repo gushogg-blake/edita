@@ -1,4 +1,5 @@
 <script>
+import {tick} from "svelte";
 import calculateMarginOffset from "../modules/render/calculateMarginOffset";
 import render from "../modules/render/render";
 import cursorFromScreenCoords from "../modules/utils/cursorFromScreenCoords";
@@ -276,12 +277,18 @@ function keyup(e) {
 	
 }
 
-function updateScrollbars() {
+async function updateScrollbars() {
 	updateVerticalScrollbar();
 	updateHorizontalScrollbar();
+	
+	await tick();
+	
+	resize();
 }
 
 function updateVerticalScrollbar() {
+	hasVerticalScrollbar = true; //
+	
 	let {rowHeight} = measurements;
 	let {offsetHeight: height} = canvasDiv;
 	
@@ -296,6 +303,14 @@ function updateVerticalScrollbar() {
 }
 
 function updateHorizontalScrollbar() {
+	if (!$prefs.wrap) {
+		hasHorizontalScrollbar = false;
+		
+		return;
+	}
+	
+	hasHorizontalScrollbar = true;
+	
 	let {offsetWidth: width} = canvasDiv;
 	
 	// longest line + screen
@@ -316,8 +331,6 @@ function verticalScroll({detail: position}) {
 	
 	scrollPosition.row = scrollRows;
 	
-	console.log(scrollPosition.row);
-	
 	redraw();
 }
 
@@ -332,8 +345,6 @@ onMount(async function() {
 	updateScrollbars();
 	startCursorBlink();
 	redraw();
-	
-	console.log(document.countRows());
 	
 	let teardown = [];
 	
@@ -371,6 +382,7 @@ $: canvasStyle = {
 
 <style type="text/scss">
 @import "../css/mixins/abs-sticky";
+@import "../css/classes/hide";
 
 #main {
 	display: grid;
@@ -441,14 +453,22 @@ $scrollBarBorder: 1px solid #bababa;
 			style={inlineStyle(canvasStyle)}
 		/>
 	</div>
-	<div class="scrollbar" id="verticalScrollbar">
+	<div
+		class="scrollbar"
+		class:hide={!hasVerticalScrollbar}
+		id="verticalScrollbar"
+	>
 		<Scrollbar
 			bind:this={verticalScrollbar}
 			orientation="vertical"
 			on:scroll={verticalScroll}
 		/>
 	</div>
-	<div class="scrollbar" id="horizontalScrollbar">
+	<div
+		class="scrollbar"
+		class:hide={!hasHorizontalScrollbar}
+		id="horizontalScrollbar"
+	>
 		<Scrollbar
 			bind:this={horizontalScrollbar}
 			orientation="horizontal"

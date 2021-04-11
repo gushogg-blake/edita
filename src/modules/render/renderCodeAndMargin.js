@@ -42,8 +42,6 @@ module.exports = function(
 	
 	let lineIndex = firstLineIndex;
 	
-	console.log(lineIndex, wrappedLineIndex);
-	
 	if (lineIndex > 0) {
 		let prevLine = lines[lineIndex - 1];
 		
