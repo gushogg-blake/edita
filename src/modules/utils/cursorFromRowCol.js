@@ -16,9 +16,13 @@ module.exports = function(
 		lineIndex++;
 	}
 	
+	lineIndex = Math.min(lineIndex, lines.length - 1);
+	
 	let line = lines[lineIndex];
 	
 	let innerLineIndex = row - r;
+	
+	innerLineIndex = Math.min(innerLineIndex, line.height - 1);
 	
 	let i = 0;
 	
