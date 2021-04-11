@@ -184,10 +184,20 @@ class Document extends Evented {
 		this.lang.parse(prefs, this.lines);
 	}
 	
-	wrapLines(measurements, screenWidth) {
+	wrapLines(prefs, measurements, screenWidth) {
 		for (let line of this.lines) {
-			wrapLine(line, measurements, screenWidth);
+			wrapLine(prefs.wrap, line, measurements, screenWidth);
 		}
+	}
+	
+	countRows() {
+		let rows = 0;
+		
+		for (let line of this.lines) {
+			rows += line.height;
+		}
+		
+		return rows;
 	}
 }
 

@@ -6,19 +6,15 @@ export let orientation;
 
 let totalSize = 1;
 let pageSize = 1;
-let position = 0;
 
-export function setRange(totalSize, pageSize) {
-	_setRange(totalSize, pageSize);
-}
-
-export function setPosition(position) {
-	_setPosition(position);
+export function update(totalSize, pageSize, position) {
+	_update(totalSize, pageSize, position);
 }
 
 let fire = createEventDispatcher();
 
 let main;
+let expander;
 
 let cssSizeKey = {
 	horizontal: "width",
@@ -49,32 +45,26 @@ function getScrollPosition() {
 	return position / max;
 }
 
+function setScrollPosition(position) {
+	let divSize = main[offsetSizeKey[orientation]];
+	let scrollSize = main[scrollSizeKey[orientation]];
+	let max = scrollSize - divSize;
+	
+	main[scrollPositionKey[orientation]] = position * max;
+}
+
 function scroll() {
 	fire("scroll", getScrollPosition());
 }
 
-function _setRange(_totalSize, _pageSize) {
+function _update(_totalSize, _pageSize, position) {
+	totalSize = _totalSize;
+	pageSize = _pageSize,
 	
-}
-
-function _setPosition(_position) {
-}
-
-//$: style = calculateStyle(totalSize, pageSize);
-$: expanderStyle = calculateExpanderStyle(totalSize, pageSize);
-
-//function calculateStyle(totalSize, pageSize) {
-//	
-//}
-
-function calculateExpanderStyle(totalSize, pageSize) {
-	// return width or height as a percentage (>= 100%) to give the main div a scrollbar
+	expander.style[cssSizeKey[orientation]] = (totalSize / pageSize) * 100 + "%";
 	
-	return {
-		[cssSizeKey[orientation]]: "150%",
-	};
+	setScrollPosition(position);
 }
-
 
 </script>
 
@@ -141,6 +131,6 @@ function calculateExpanderStyle(totalSize, pageSize) {
 >
 	<div
 		id="expander"
-		style={inlineStyle(expanderStyle)}
+		bind:this={expander}
 	></div>
 </div>

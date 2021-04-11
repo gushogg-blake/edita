@@ -1,7 +1,7 @@
 let {minNonWhitespaceCols, wordRe} = require("./config");
 let getCurrentWordWidth = require("./getCurrentWordWidth");
 
-module.exports = function(line, measurements, availableWidth) {
+module.exports = function(wrappingEnabled, line, measurements, availableWidth) {
 	let {colWidth} = measurements;
 	let screenCols = Math.floor(availableWidth / colWidth);
 	
@@ -9,6 +9,10 @@ module.exports = function(line, measurements, availableWidth) {
 	
 	delete line.wrappedLines;
 	delete line.wrapIndentCols;
+	
+	if (!wrappingEnabled) {
+		return;
+	}
 	
 	if (line.width <= screenCols) {
 		return;

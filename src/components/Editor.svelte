@@ -246,13 +246,58 @@ function keyup(e) {
 	
 }
 
+function updateScrollbars() {
+	updateVerticalScrollbar();
+	updateHorizontalScrollbar();
+}
+
+function updateVerticalScrollbar() {
+	let {rowHeight} = measurements;
+	let {offsetHeight: height} = canvasDiv;
+	
+	let rows = document.countRows();
+	
+	let scrollHeight = (rows - 1) * rowHeight + height;
+	let scrollTop = scrollPosition.row * rowHeight;
+	let scrollMax = scrollHeight - height;
+	let position = scrollTop / scrollMax;
+	
+	verticalScrollbar.update(scrollHeight, height, position);
+}
+
+function updateHorizontalScrollbar() {
+	let {offsetWidth: width} = canvasDiv;
+	
+	// longest line + screen
+	
+	//horizontalScrollbar.update(scrollHeight, height, scrollTop);
+}
+
+function verticalScroll({detail: position}) {
+	let {rowHeight} = measurements;
+	let {offsetHeight: height} = canvasDiv;
+	
+	let rows = document.countRows();
+	let scrollHeight = (rows - 1) * rowHeight + height;
+	let scrollMax = scrollHeight - height;
+	
+	let scrollTop = scrollMax * position;
+	let scrollRows = Math.round(scrollTop / rowHeight);
+	
+	scrollPosition.row = scrollRows;
+	
+	redraw();
+}
+
 onMount(async function() {
 	context = canvas.getContext("2d");
 	
 	document.parse($prefs);
 	
 	updateMeasurements();
+	
 	resize();
+	updateScrollbars();
 	startCursorBlink();
 	redraw();
 	
@@ -365,6 +410,7 @@ $scrollBarBorder: 1px solid #bababa;
 		<Scrollbar
 			bind:this={verticalScrollbar}
 			orientation="vertical"
+			on:scroll={verticalScroll}
 		/>
 	</div>
 	<div class="scrollbar" id="horizontalScrollbar">
