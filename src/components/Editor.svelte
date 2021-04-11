@@ -142,10 +142,13 @@ function wheel(e) {
 		let newRow = scrollPosition.row + 3 * dir;
 		
 		newRow = Math.max(0, newRow);
-		//newRow = Math.min(document.countLines + 1, newRow);
+		newRow = Math.min(newRow, document.countRows() - 1);
 		
 		scrollPosition.row = newRow;
 	}
+	
+	console.log("WHEEL");
+	console.log(scrollPosition.row);
 	
 	redraw();
 }
@@ -162,6 +165,7 @@ function resize() {
 	context.textBaseline = "bottom";
 	
 	document.wrapLines(
+		$prefs,
 		measurements,
 		canvas.width - calculateMarginOffset(document.lines, measurements),
 	);
@@ -237,6 +241,21 @@ function keydown(e) {
 		
 		redraw();
 	}
+	
+	if (keyCombo === "PageDown") {
+		let {rowHeight} = measurements;
+		let {offsetHeight: height} = canvasDiv;
+		let screenRows = Math.floor(height / rowHeight);
+		let rows = document.countRows();
+		let maxRow = rows - 1;
+		
+		scrollPosition.row += screenRows;
+		
+		scrollPosition.row = Math.min(scrollPosition.row, maxRow);
+		
+		updateScrollbars();
+		redraw();
+	}
 }
 
 function keyup(e) {
@@ -286,6 +305,8 @@ function verticalScroll({detail: position}) {
 	
 	scrollPosition.row = scrollRows;
 	
+	console.log(scrollPosition.row);
+	
 	redraw();
 }
 
@@ -301,6 +322,8 @@ onMount(async function() {
 	startCursorBlink();
 	redraw();
 	
+	console.log(document.countRows());
+	
 	let teardown = [];
 	
 	teardown.push(document.on("edit", function() {
@@ -309,6 +332,7 @@ onMount(async function() {
 		document.parse($prefs);
 		
 		document.wrapLines(
+			$prefs,
 			measurements,
 			canvas.width - calculateMarginOffset(document.lines, measurements),
 		);

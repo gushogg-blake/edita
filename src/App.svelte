@@ -11,6 +11,7 @@ let document;
 
 onMount(async function() {
 	let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
+	//let code = await fs("test/repos/acorn/dist/bin.js").read();
 	
 	document = new Document(code, langs.js);
 });

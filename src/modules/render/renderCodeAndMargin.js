@@ -36,9 +36,13 @@ module.exports = function(
 	let y = rowHeight; // not 0 -- we're using textBaseline="bottom"
 	
 	let {
-		lineIndex,
+		lineIndex: firstLineIndex,
 		wrappedLineIndex,
 	} = findFirstVisibleLine(lines, scrollPosition);
+	
+	let lineIndex = firstLineIndex;
+	
+	console.log(lineIndex, wrappedLineIndex);
 	
 	if (lineIndex > 0) {
 		let prevLine = lines[lineIndex - 1];
@@ -54,6 +58,10 @@ module.exports = function(
 		// code
 		
 		for (let i = 0; i < line.height; i++) {
+			if (lineIndex === firstLineIndex && i < wrappedLineIndex) {
+				continue;
+			}
+			
 			let commands = line.height === 1 ? line.commands : line.wrappedLines[i].commands;
 			
 			if (i > 0) {

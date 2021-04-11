@@ -6,6 +6,7 @@ export let orientation;
 
 let totalSize = 1;
 let pageSize = 1;
+let maxExpanderPages = 10; // thumb can get too small with many pages otherwise
 
 export function update(totalSize, pageSize, position) {
 	_update(totalSize, pageSize, position);
@@ -59,9 +60,11 @@ function scroll() {
 
 function _update(_totalSize, _pageSize, position) {
 	totalSize = _totalSize;
-	pageSize = _pageSize,
+	pageSize = _pageSize;
 	
-	expander.style[cssSizeKey[orientation]] = (totalSize / pageSize) * 100 + "%";
+	let pages = Math.min(totalSize / pageSize, maxExpanderPages);
+	
+	expander.style[cssSizeKey[orientation]] = pages * 100 + "%";
 	
 	setScrollPosition(position);
 }
