@@ -1,7 +1,6 @@
 let Evented = require("../utils/Evented");
 let wrapLine = require("./wrapLine/wrapLine");
-let sortSelection = require("./utils/sortSelection");
-let isFullSelection = require("./utils/isFullSelection");
+let Selection = require("./utils/Selection");
 
 function createLine(string) {
 	return {
@@ -50,7 +49,7 @@ class Document extends Evented {
 	}
 	
 	replaceSelection(selection, string) {
-		let {start, end} = sortSelection(selection);
+		let {start, end} = Selection.sort(selection);
 		let [startLineIndex, startOffset] = start;
 		let [endLineIndex, endOffset] = end;
 		
@@ -61,7 +60,7 @@ class Document extends Evented {
 	}
 	
 	insertCharacter(selection, ch) {
-		let {start, end} = sortSelection(selection);
+		let {start, end} = Selection.sort(selection);
 		let [lineIndex, offset] = start;
 		
 		this.replaceSelection(selection, ch);
@@ -73,10 +72,10 @@ class Document extends Evented {
 	}
 	
 	backspace(selection) {
-		let {start, end} = sortSelection(selection);
+		let {start, end} = Selection.sort(selection);
 		let [lineIndex, offset] = start;
 		
-		if (isFullSelection(selection)) {
+		if (Selection.isFull(selection)) {
 			this.replaceSelection(selection, "");
 			
 			return {
@@ -122,10 +121,10 @@ class Document extends Evented {
 	}
 	
 	delete(selection) {
-		let {start, end} = sortSelection(selection);
+		let {start, end} = Selection.sort(selection);
 		let [lineIndex, offset] = start;
 		
-		if (isFullSelection(selection)) {
+		if (Selection.isFull(selection)) {
 			this.replaceSelection(selection, "");
 			
 			return {
@@ -168,7 +167,7 @@ class Document extends Evented {
 	}
 	
 	insertNewline(selection) {
-		let {start, end} = sortSelection(selection);
+		let {start, end} = Selection.sort(selection);
 		let [lineIndex, offset] = start;
 		let line = this.lines[lineIndex];
 		

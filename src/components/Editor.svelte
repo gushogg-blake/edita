@@ -3,8 +3,7 @@ import {tick} from "svelte";
 import calculateMarginOffset from "../modules/render/calculateMarginOffset";
 import render from "../modules/render/render";
 import cursorFromScreenCoords from "../modules/utils/cursorFromScreenCoords";
-import sortSelection from "../modules/utils/sortSelection";
-import isFullSelection from "../modules/utils/isFullSelection";
+import Selection from "../modules/Selection";
 import getKeyCombo from "../utils/getKeyCombo";
 /*
 let js = require("../src/modules/langs/js");
@@ -207,7 +206,7 @@ function keydown(e) {
 	
 	let {keyCombo, isModified} = getKeyCombo(e);
 	
-	let [lineIndex, offset] = sortSelection(selection).start;
+	let [lineIndex, offset] = Selection.sort(selection).start;
 	
 	if (!isModified && e.key.length === 1) {
 		// printable character other than tab or enter
@@ -267,6 +266,10 @@ function keydown(e) {
 		
 		updateScrollbars();
 		redraw();
+	}
+	
+	if (keyCombo === "Shift+ArrowUp") {
+		selection = Selection.expandUp(document.lines, selection);
 	}
 }
 
