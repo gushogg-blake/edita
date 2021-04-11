@@ -85,9 +85,6 @@ module.exports = function(
 					measurements,
 				);
 				
-				console.log(startRow);
-				console.log(startCol);
-				
 				let width = (
 					line.height > 1
 					? line.wrappedLines[j].width + line.wrapIndentCols
