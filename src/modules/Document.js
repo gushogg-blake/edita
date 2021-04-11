@@ -199,6 +199,18 @@ class Document extends Evented {
 		
 		return rows;
 	}
+	
+	getLongestLineWidth() {
+		let width = 0;
+		
+		for (let line of this.lines) {
+			if (line.width > width) {
+				width = line.width;
+			}
+		}
+		
+		return width;
+	}
 }
 
 module.exports = Document;

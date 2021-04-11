@@ -311,11 +311,19 @@ function updateHorizontalScrollbar() {
 	
 	hasHorizontalScrollbar = true;
 	
+	let {colWidth} = measurements;
 	let {offsetWidth: width} = canvasDiv;
 	
-	// longest line + screen
+	width -= calculateMarginOffset(document.lines, measurements);
 	
-	//horizontalScrollbar.update(scrollHeight, height, scrollTop);
+	let longestLineWidth = document.getLongestLineWidth();
+	
+	let scrollWidth = longestLineWidth * colWidth + width;
+	let scrollMax = scrollWidth - width;
+	let scrollLeft = scrollPosition.x;
+	let position = scrollLeft / scrollMax;
+	
+	horizontalScrollbar.update(scrollWidth, width, position);
 }
 
 function verticalScroll({detail: position}) {
@@ -330,6 +338,21 @@ function verticalScroll({detail: position}) {
 	let scrollRows = Math.round(scrollTop / rowHeight);
 	
 	scrollPosition.row = scrollRows;
+	
+	redraw();
+}
+
+function horizontalScroll({detail: position}) {
+	let {colWidth} = measurements;
+	let {offsetWidth: width} = canvasDiv;
+	
+	let longestLineWidth = document.getLongestLineWidth();
+	let scrollWidth = longestLineWidth * colWidth + width;
+	let scrollMax = scrollWidth - width;
+	
+	let scrollLeft = scrollMax * position;
+	
+	scrollPosition.x = scrollLeft;
 	
 	redraw();
 }
@@ -428,6 +451,11 @@ $scrollBarBorder: 1px solid #bababa;
 	border-top: $scrollBarBorder;
 }
 
+#scrollbarSpacer {
+	grid-area: blank;
+	background: #E8E8E8;
+}
+
 #measurements {
 	position: absolute;
 	left: -9000px;
@@ -472,8 +500,12 @@ $scrollBarBorder: 1px solid #bababa;
 		<Scrollbar
 			bind:this={horizontalScrollbar}
 			orientation="horizontal"
+			on:scroll={horizontalScroll}
 		/>
 	</div>
+	{#if hasVerticalScrollbar && hasHorizontalScrollbar}
+		<div id="scrollbarSpacer"></div>
+	{/if}
 </div>
 
 <div id="measurements" bind:this={measurementsDiv}></div>

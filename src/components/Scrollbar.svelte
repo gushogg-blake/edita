@@ -72,8 +72,6 @@ function _update(_totalSize, _pageSize, position) {
 </script>
 
 <style type="text/scss">
-@import "../css/mixins/abs-sticky";
-
 #main {
 	position: absolute;
 	
