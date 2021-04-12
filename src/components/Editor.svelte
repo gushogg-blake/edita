@@ -2,7 +2,8 @@
 import {tick} from "svelte";
 import calculateMarginOffset from "../modules/render/calculateMarginOffset";
 import render from "../modules/render/render";
-import cursorFromScreenCoords from "../modules/utils/cursorFromScreenCoords";
+import rowColFromScreenCoords from "../modules/utils/rowColFromScreenCoords";
+import cursorFromRowCol from "../modules/utils/cursorFromRowCol";
 import Selection from "../modules/utils/Selection";
 import getKeyCombo from "../utils/getKeyCombo";
 /*
@@ -20,7 +21,7 @@ import Scrollbar from "./Scrollbar.svelte";
 
 export let document;
 
-let hasHorizontalScrollbar = true;
+$: hasHorizontalScrollbar = $prefs.wrap;
 
 export function focus() {
 	focused = true;
@@ -61,20 +62,6 @@ let hiliteWord = null;
 let cursorBlinkOn;
 let cursorInterval;
 
-function startCursorBlink() {
-	if (cursorInterval) {
-		clearInterval(cursorInterval);
-	}
-	
-	cursorBlinkOn = true;
-	
-	cursorInterval = setInterval(function() {
-		cursorBlinkOn = !cursorBlinkOn;
-		
-		redraw();
-	}, $prefs.cursorBlinkPeriod);
-}
-
 function mousedown(e) {
 	let {
 		x: left,
@@ -84,7 +71,7 @@ function mousedown(e) {
 	let x = e.clientX - left;
 	let y = e.clientY - top;
 	
-	let cursor = cursorFromScreenCoords(
+	let [row, col] = rowColFromScreenCoords(
 		document.lines,
 		x,
 		y,
@@ -92,10 +79,18 @@ function mousedown(e) {
 		measurements,
 	);
 	
+	let cursor = cursorFromRowCol(
+		document.lines,
+		row,
+		col,
+	);
+	
 	selection = {
 		start: cursor,
 		end: cursor,
 	};
+	
+	selectionEndCol = col;
 	
 	startCursorBlink();
 	
@@ -114,7 +109,7 @@ function mousemove(e) {
 		let x = e.clientX - left;
 		let y = e.clientY - top;
 		
-		let cursor = cursorFromScreenCoords(
+		let [row, col] = rowColFromScreenCoords(
 			document.lines,
 			x,
 			y,
@@ -122,7 +117,15 @@ function mousemove(e) {
 			measurements,
 		);
 		
+		let cursor = cursorFromRowCol(
+			document.lines,
+			row,
+			col,
+		);
+		
 		selection.end = cursor;
+		
+		selectionEndCol = col;
 		
 		redraw();
 	}
@@ -237,6 +240,20 @@ function keyup(e) {
 	}
 }
 
+function startCursorBlink() {
+	if (cursorInterval) {
+		clearInterval(cursorInterval);
+	}
+	
+	cursorBlinkOn = true;
+	
+	cursorInterval = setInterval(function() {
+		cursorBlinkOn = !cursorBlinkOn;
+		
+		updateCanvas();
+	}, $prefs.cursorBlinkPeriod);
+}
+
 function updateCanvasSize() {
 	canvas.width = canvasDiv.offsetWidth;
 	canvas.height = canvasDiv.offsetHeight;
@@ -322,13 +339,9 @@ function updateVerticalScrollbar() {
 }
 
 function updateHorizontalScrollbar() {
-	if (!$prefs.wrap) {
-		hasHorizontalScrollbar = false;
-		
+	if (!hasHorizontalScrollbar) {
 		return;
 	}
-	
-	hasHorizontalScrollbar = true;
 	
 	let {colWidth} = measurements;
 	let {offsetWidth: width} = canvasDiv;
