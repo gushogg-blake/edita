@@ -192,10 +192,27 @@ function keydown(e) {
 	}
 	
 	updateScrollbars();
+	startCursorBlink();
 	redraw();
 }
 
 let functions = {
+	moveSelectionUp() {
+		selection = Selection.up(document.lines, selection, selectionEndCol);
+	},
+	
+	moveSelectionDown() {
+		selection = Selection.down(document.lines, selection, selectionEndCol);
+	},
+	
+	moveSelectionLeft() {
+		selection = Selection.left(document.lines, selection, selectionEndCol);
+	},
+	
+	moveSelectionRight() {
+		selection = Selection.right(document.lines, selection, selectionEndCol);
+	},
+	
 	expandOrContractSelectionUp() {
 		selection = Selection.expandOrContractUp(document.lines, selection);
 	},
@@ -228,6 +245,10 @@ let functions = {
 };
 
 let keymap = {
+	"ArrowUp": "moveSelectionUp",
+	"ArrowDown": "moveSelectionDown",
+	"ArrowLeft": "moveSelectionLeft",
+	"ArrowRight": "moveSelectionRight",
 	"PageUp": "pageUp",
 	"PageDown": "pageDown",
 	"Shift+ArrowUp": "expandOrContractSelectionUp",
@@ -395,7 +416,6 @@ onMount(async function() {
 	document.parse($prefs);
 	
 	updateMeasurements();
-	
 	startCursorBlink();
 	updateCanvasSize();
 	updateWraps();
@@ -405,6 +425,8 @@ onMount(async function() {
 	
 	teardown.push(document.on("edit", function() {
 		// TODO perf
+		// only modified lines need wraps recalculating
+		// async parsing
 		
 		document.parse($prefs);
 		

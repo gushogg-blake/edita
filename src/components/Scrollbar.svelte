@@ -6,7 +6,7 @@ export let orientation;
 
 let totalSize = 1;
 let pageSize = 1;
-let maxExpanderPages = 10; // thumb can get too small with many pages otherwise
+let maxExpanderPages = 20; // thumb can get too small with many pages otherwise
 
 export function update(totalSize, pageSize, position) {
 	_update(totalSize, pageSize, position);

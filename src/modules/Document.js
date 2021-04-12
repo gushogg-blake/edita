@@ -1,6 +1,7 @@
 let Evented = require("../utils/Evented");
-let wrapLine = require("./wrapLine/wrapLine");
 let Selection = require("./utils/Selection");
+let countRows = require("./utils/countRows");
+let wrapLine = require("./wrapLine/wrapLine");
 
 function createLine(string) {
 	return {
@@ -190,13 +191,7 @@ class Document extends Evented {
 	}
 	
 	countRows() {
-		let rows = 0;
-		
-		for (let line of this.lines) {
-			rows += line.height;
-		}
-		
-		return rows;
+		return countRows(this.lines);
 	}
 	
 	getLongestLineWidth() {
