@@ -307,18 +307,20 @@ function redraw() {
 }
 
 function updateCanvas() {
-	render(
-		context,
-		document.lines,
-		selection,
-		hiliteWord,
-		scrollPosition,
-		document.lang,
-		$prefs,
-		$prefs.langs[document.lang.code].colors,
-		measurements,
-		cursorBlinkOn,
-	);
+	requestAnimationFrame(function() {
+		render(
+			context,
+			document.lines,
+			selection,
+			hiliteWord,
+			scrollPosition,
+			document.lang,
+			$prefs,
+			$prefs.langs[document.lang.code].colors,
+			measurements,
+			cursorBlinkOn,
+		);
+	});
 }
 
 function updateMeasurements() {
