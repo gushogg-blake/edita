@@ -1,4 +1,4 @@
-let sortSelection = require("../utils/sortSelection");
+let Selection = require("../utils/Selection");
 let getLineStartingRow = require("../utils/getLineStartingRow.js");
 let screenCoordsFromCursor = require("../utils/screenCoordsFromCursor");
 let rowColFromCursor = require("../utils/rowColFromCursor");
@@ -15,7 +15,7 @@ module.exports = function(
 	context.fillStyle = prefs.selectionBackground;
 	
 	let {colWidth, rowHeight} = measurements;
-	let {start, end} = sortSelection(selection);
+	let {start, end} = Selection.sort(selection);
 	let [startLineIndex, startOffset] = start;
 	let [endLineIndex, endOffset] = end;
 	

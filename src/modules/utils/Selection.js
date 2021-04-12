@@ -32,7 +32,7 @@ function isFull(selection) {
 	return start[0] !== end[0] || start[1] !== end[1];
 }
 
-function up(lines, selection) {
+function up(lines, selection, selectionEndCol) {
 	let {start, end} = selection;
 	let [startLineIndex, startOffset] = start;
 	let [endLineIndex, endOffset] = end;
@@ -47,7 +47,6 @@ function up(lines, selection) {
 		};
 	}
 	
-	let 
 	/*
 	go to start line - 1, end col
 	*/
@@ -55,7 +54,7 @@ function up(lines, selection) {
 	
 }
 
-function shiftUp(lines, selection) {
+function expandOrContractUp(lines, selection) {
 	
 }
 
@@ -63,5 +62,5 @@ module.exports = {
 	sort,
 	isFull,
 	up,
-	shiftUp,
+	expandOrContractUp,
 };

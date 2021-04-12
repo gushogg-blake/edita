@@ -15,7 +15,10 @@ module.exports = function(e) {
 		
 		if ((isModified || e.key.length !== 1) && e.shiftKey) {
 			isModified = true;
-			keyCombo += "Shift+";
+			
+			if (e.key.match(/\w/)) {
+				keyCombo += "Shift+";
+			}
 		}
 	}
 	

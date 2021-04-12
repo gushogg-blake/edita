@@ -3,7 +3,7 @@ import {tick} from "svelte";
 import calculateMarginOffset from "../modules/render/calculateMarginOffset";
 import render from "../modules/render/render";
 import cursorFromScreenCoords from "../modules/utils/cursorFromScreenCoords";
-import Selection from "../modules/Selection";
+import Selection from "../modules/utils/Selection";
 import getKeyCombo from "../utils/getKeyCombo";
 /*
 let js = require("../src/modules/langs/js");
@@ -20,7 +20,6 @@ import Scrollbar from "./Scrollbar.svelte";
 
 export let document;
 
-let hasVerticalScrollbar = true;
 let hasHorizontalScrollbar = true;
 
 export function focus() {
@@ -47,6 +46,10 @@ let selection = {
 	start: [0, 0],
 	end: [0, 0],
 };
+
+// for remembering the "intended" col when moving a cursor up/down to a line
+// that doesn't have as many cols as the cursor
+let selectionEndCol = 0;
 
 let scrollPosition = {
 	row: 0,
@@ -81,7 +84,7 @@ function mousedown(e) {
 	let x = e.clientX - left;
 	let y = e.clientY - top;
 	
-	let [lineIndex, offset] = cursorFromScreenCoords(
+	let cursor = cursorFromScreenCoords(
 		document.lines,
 		x,
 		y,
@@ -90,8 +93,8 @@ function mousedown(e) {
 	);
 	
 	selection = {
-		start: [lineIndex, offset],
-		end: [lineIndex, offset],
+		start: cursor,
+		end: cursor,
 	};
 	
 	startCursorBlink();
@@ -111,7 +114,7 @@ function mousemove(e) {
 		let x = e.clientX - left;
 		let y = e.clientY - top;
 		
-		let [lineIndex, offset] = cursorFromScreenCoords(
+		let cursor = cursorFromScreenCoords(
 			document.lines,
 			x,
 			y,
@@ -119,7 +122,7 @@ function mousemove(e) {
 			measurements,
 		);
 		
-		selection.end = [lineIndex, offset];
+		selection.end = cursor;
 		
 		redraw();
 	}
@@ -127,6 +130,15 @@ function mousemove(e) {
 
 function mouseup(e) {
 	draggingSelection = false;
+}
+
+function mouseenter(e) {
+	//console.log(e);
+}
+
+function mouseleave(e) {
+	//console.log(e);
+	
 }
 
 function wheel(e) {
@@ -151,7 +163,81 @@ function wheel(e) {
 	redraw();
 }
 
-function resize() {
+function keydown(e) {
+	if (!focused) {
+		return;
+	}
+	
+	let {keyCombo, isModified} = getKeyCombo(e);
+	
+	if (!isModified && e.key.length === 1) {
+		// printable character other than tab or enter
+		
+		selection = document.insertCharacter(selection, e.key);
+	} else if (keyCombo === "Tab") {
+		// TODO snippets
+		
+		selection = document.insertCharacter(selection, "\t");
+	} else if (keyCombo === "Enter") {
+		selection = document.insertNewline(selection);
+	} else if (keyCombo === "Backspace") {
+		selection = document.backspace(selection);
+	} else if (keyCombo === "Delete") {
+		selection = document.delete(selection);
+	} else if (keymap[keyCombo]) {
+		functions[keymap[keyCombo]]();
+	}
+	
+	updateScrollbars();
+	redraw();
+}
+
+let functions = {
+	expandOrContractSelectionUp() {
+		selection = Selection.expandOrContractUp(document.lines, selection);
+	},
+	
+	expandOrContractSelectionDown() {
+		selection = Selection.expandOrContractDown(document.lines, selection);
+	},
+	
+	pageUp() {
+		let {rowHeight} = measurements;
+		let {offsetHeight: height} = canvasDiv;
+		let screenRows = Math.floor(height / rowHeight);
+
+		scrollPosition.row -= screenRows;
+		
+		scrollPosition.row = Math.max(0, scrollPosition.row);
+	},
+	
+	pageDown() {
+		let {rowHeight} = measurements;
+		let {offsetHeight: height} = canvasDiv;
+		let screenRows = Math.floor(height / rowHeight);
+		let rows = document.countRows();
+		let maxRow = rows - 1;
+		
+		scrollPosition.row += screenRows;
+		
+		scrollPosition.row = Math.min(scrollPosition.row, maxRow);
+	},
+};
+
+let keymap = {
+	"PageUp": "pageUp",
+	"PageDown": "pageDown",
+	"Shift+ArrowUp": "expandOrContractSelectionUp",
+	"Shift+ArrowDown": "expandOrContractSelectionDown",
+};
+
+function keyup(e) {
+	if (!focused) {
+		return;
+	}
+}
+
+function updateCanvasSize() {
 	canvas.width = canvasDiv.offsetWidth;
 	canvas.height = canvasDiv.offsetHeight;
 	
@@ -161,17 +247,28 @@ function resize() {
 	*/
 	
 	context.textBaseline = "bottom";
-	
+}
+
+function updateWraps() {
 	document.wrapLines(
 		$prefs,
 		measurements,
 		canvas.width - calculateMarginOffset(document.lines, measurements),
 	);
-	
+}
+
+function resize() {
+	updateCanvasSize();
+	updateWraps();
 	redraw();
 }
 
 function redraw() {
+	updateScrollbars();
+	updateCanvas();
+}
+
+function updateCanvas() {
 	render(
 		context,
 		document.lines,
@@ -199,99 +296,18 @@ function updateMeasurements() {
 	};
 }
 
-function keydown(e) {
-	if (!focused) {
-		return;
-	}
-	
-	let {keyCombo, isModified} = getKeyCombo(e);
-	
-	let [lineIndex, offset] = Selection.sort(selection).start;
-	
-	if (!isModified && e.key.length === 1) {
-		// printable character other than tab or enter
-		
-		selection = document.insertCharacter(selection, e.key);
-		
-		redraw();
-	}
-	
-	if (keyCombo === "Tab") {
-		selection = document.insertCharacter(selection, "\t");
-		
-		redraw();
-	}
-	
-	if (keyCombo === "Backspace") {
-		selection = document.backspace(selection);
-		
-		redraw();
-	}
-	
-	if (keyCombo === "Delete") {
-		selection = document.delete(selection);
-		
-		redraw();
-	}
-	
-	if (keyCombo === "Enter") {
-		selection = document.insertNewline(selection);
-		
-		redraw();
-	}
-	
-	if (keyCombo === "PageDown") {
-		let {rowHeight} = measurements;
-		let {offsetHeight: height} = canvasDiv;
-		let screenRows = Math.floor(height / rowHeight);
-		let rows = document.countRows();
-		let maxRow = rows - 1;
-		
-		scrollPosition.row += screenRows;
-		
-		scrollPosition.row = Math.min(scrollPosition.row, maxRow);
-		
-		updateScrollbars();
-		redraw();
-	}
-	
-	if (keyCombo === "PageUp") {
-		let {rowHeight} = measurements;
-		let {offsetHeight: height} = canvasDiv;
-		let screenRows = Math.floor(height / rowHeight);
-
-		scrollPosition.row -= screenRows;
-		
-		scrollPosition.row = Math.max(0, scrollPosition.row);
-		
-		updateScrollbars();
-		redraw();
-	}
-	
-	if (keyCombo === "Shift+ArrowUp") {
-		selection = Selection.expandUp(document.lines, selection);
-	}
-}
-
-function keyup(e) {
-	if (!focused) {
-		return;
-	}
-	
-}
-
 async function updateScrollbars() {
 	updateVerticalScrollbar();
 	updateHorizontalScrollbar();
 	
 	await tick();
 	
-	resize();
+	updateWraps();
+	updateCanvasSize();
+	updateCanvas();
 }
 
 function updateVerticalScrollbar() {
-	hasVerticalScrollbar = true; //
-	
 	let {rowHeight} = measurements;
 	let {offsetHeight: height} = canvasDiv;
 	
@@ -342,7 +358,7 @@ function verticalScroll({detail: position}) {
 	
 	scrollPosition.row = scrollRows;
 	
-	redraw();
+	updateCanvas();
 }
 
 function horizontalScroll({detail: position}) {
@@ -357,7 +373,7 @@ function horizontalScroll({detail: position}) {
 	
 	scrollPosition.x = scrollLeft;
 	
-	redraw();
+	updateCanvas();
 }
 
 onMount(async function() {
@@ -367,9 +383,9 @@ onMount(async function() {
 	
 	updateMeasurements();
 	
-	resize();
-	updateScrollbars();
 	startCursorBlink();
+	updateCanvasSize();
+	updateWraps();
 	redraw();
 	
 	let teardown = [];
@@ -379,11 +395,7 @@ onMount(async function() {
 		
 		document.parse($prefs);
 		
-		document.wrapLines(
-			$prefs,
-			measurements,
-			canvas.width - calculateMarginOffset(document.lines, measurements),
-		);
+		updateWraps();
 	}));
 	
 	focused = true; // DEV
@@ -413,15 +425,11 @@ $: canvasStyle = {
 #main {
 	display: grid;
 	grid-template-rows: 1fr 0;
-	grid-template-columns: 1fr 0;
+	grid-template-columns: 1fr 13px;
 	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar blank";
 	flex-grow: 1;
 	width: 100%;
 	color: black;
-	
-	&.hasVerticalScrollbar {
-		grid-template-columns: 1fr 13px;
-	}
 	
 	&.hasHorizontalScrollbar {
 		grid-template-rows: 1fr 13px;
@@ -469,7 +477,6 @@ $scrollBarBorder: 1px solid #bababa;
 <div
 	id="main"
 	on:wheel={wheel}
-	class:hasVerticalScrollbar
 	class:hasHorizontalScrollbar
 >
 	<div
@@ -481,12 +488,13 @@ $scrollBarBorder: 1px solid #bababa;
 			on:mousedown={mousedown}
 			on:mouseup={mouseup}
 			on:mousemove={mousemove}
+			on:mouseenter={mouseenter}
+			on:mouseleave={mouseleave}
 			style={inlineStyle(canvasStyle)}
 		/>
 	</div>
 	<div
 		class="scrollbar"
-		class:hide={!hasVerticalScrollbar}
 		id="verticalScrollbar"
 	>
 		<Scrollbar
@@ -506,7 +514,7 @@ $scrollBarBorder: 1px solid #bababa;
 			on:scroll={horizontalScroll}
 		/>
 	</div>
-	{#if hasVerticalScrollbar && hasHorizontalScrollbar}
+	{#if hasHorizontalScrollbar}
 		<div id="scrollbarSpacer"></div>
 	{/if}
 </div>
