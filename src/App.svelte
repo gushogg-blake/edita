@@ -22,16 +22,58 @@ onMount(async function() {
 @import "./css/mixins/flex-col";
 
 #main {
-	@include flex-col;
-	
+	display: grid;
+	grid-template-rows: auto auto 1fr auto;
+	grid-template-columns: auto 1fr auto;
+	grid-template-areas:
+		"toolbar toolbar toolbar"
+		"left tabs right"
+		"left editor right"
+		"bottom bottom bottom";
+	width: 100vw;
 	height: 100vh;
+	user-select: none;
+}
+
+#toolbar {
+	grid-area: toolbar;
+}
+
+#left {
+	grid-area: left;
+}
+
+#tabs {
+	grid-area: tabs;
+}
+
+#editor {
+	grid-area: editor;
+}
+
+#bottom {
+	grid-area: bottom;
 }
 </style>
 
 <div id="main">
-	{#if document}
-		<Editor
-			{document}
-		/>
-	{/if}
+	<div id="toolbar">
+		tooblar
+	</div>
+	<div id="left">
+		left
+	</div>
+	<div id="tabs">
+		tabs
+	</div>
+	<div id="editor">
+		{#if document}
+			<Editor
+				{document}
+			/>
+		{/if}
+	</div>
+	<div id="bottom">
+		bottom
+	</div>
 </div>

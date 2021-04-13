@@ -15,18 +15,20 @@ let calculateMarginOffset = require("../src/modules/render/calculateMarginOffset
 import {onMount} from "svelte";
 import sleep from "../utils/sleep";
 import inlineStyle from "../utils/dom/inlineStyle";
+import {on, off} from "../utils/dom/domEvents";
 //import render from "../modules/render/render";
 import prefs from "../stores/prefs";
 import Scrollbar from "./Scrollbar.svelte";
 
 export let document;
 
-$: hasHorizontalScrollbar = $prefs.wrap;
+$: prefsUpdated($prefs);
 
 export function focus() {
 	focused = true;
 }
 
+let mounted = false;
 let canvasDiv;
 let measurementsDiv;
 let canvas;
@@ -37,6 +39,7 @@ let rowBaselineHint = -1;
 
 let verticalScrollbar;
 let horizontalScrollbar;
+let hasHorizontalScrollbar = $prefs.wrap;
 
 let focused = false;
 
@@ -61,6 +64,22 @@ let hiliteWord = null;
 
 let cursorBlinkOn;
 let cursorInterval;
+
+async function prefsUpdated(prefs) {
+	if (!mounted) {
+		return;
+	}
+	
+	hasHorizontalScrollbar = $prefs.wrap;
+	
+	await tick();
+	
+	updateMeasurements();
+	startCursorBlink();
+	updateCanvasSize();
+	updateWraps();
+	redraw();
+}
 
 function mousedown(e) {
 	let {
@@ -97,9 +116,13 @@ function mousedown(e) {
 	redraw();
 	
 	draggingSelection = true;
+	
+	on(window, "mousemove", mousemove);
+	on(window, "mouseup", mouseup);
 }
 
 function mousemove(e) {
+	//console.log(e);
 	if (draggingSelection) {
 		let {
 			x: left,
@@ -307,7 +330,7 @@ function redraw() {
 }
 
 function updateCanvas() {
-	requestAnimationFrame(function() {
+	//requestAnimationFrame(function() {
 		render(
 			context,
 			document.lines,
@@ -320,7 +343,7 @@ function updateCanvas() {
 			measurements,
 			cursorBlinkOn,
 		);
-	});
+	//});
 }
 
 function updateMeasurements() {
@@ -342,7 +365,6 @@ async function updateScrollbars() {
 	
 	await tick();
 	
-	updateWraps();
 	updateCanvasSize();
 	updateCanvas();
 }
@@ -464,9 +486,13 @@ $: canvasStyle = {
 	grid-template-rows: 1fr 0;
 	grid-template-columns: 1fr 13px;
 	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar blank";
-	flex-grow: 1;
 	width: 100%;
+	height: 100%;
 	color: black;
+	
+	/*width: 300px;
+	height: 300px;
+	margin: 50px;*/
 	
 	&.hasHorizontalScrollbar {
 		grid-template-rows: 1fr 13px;
@@ -523,8 +549,6 @@ $scrollBarBorder: 1px solid #bababa;
 		<canvas
 			bind:this={canvas}
 			on:mousedown={mousedown}
-			on:mouseup={mouseup}
-			on:mousemove={mousemove}
 			on:mouseenter={mouseenter}
 			on:mouseleave={mouseleave}
 			style={inlineStyle(canvasStyle)}
