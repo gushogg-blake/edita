@@ -3,6 +3,7 @@ import {tick} from "svelte";
 import calculateMarginOffset from "../modules/render/calculateMarginOffset";
 import render from "../modules/render/render";
 import rowColFromScreenCoords from "../modules/utils/rowColFromScreenCoords";
+import rowColFromCursor from "../modules/utils/rowColFromCursor";
 import cursorFromRowCol from "../modules/utils/cursorFromRowCol";
 import Selection from "../modules/utils/Selection";
 import getKeyCombo from "../utils/getKeyCombo";
@@ -109,7 +110,10 @@ function mousedown(e) {
 		end: cursor,
 	};
 	
-	selectionEndCol = col;
+	let [lineIndex, offset] = cursor;
+	let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
+	
+	selectionEndCol = endCol;
 	
 	startCursorBlink();
 	
@@ -156,6 +160,11 @@ function mousemove(e) {
 
 function mouseup(e) {
 	draggingSelection = false;
+	
+	console.log(e);
+	
+	off(window, "mousemove", mousemove);
+	off(window, "mouseup", mouseup);
 }
 
 function mouseenter(e) {
@@ -165,6 +174,19 @@ function mouseenter(e) {
 function mouseleave(e) {
 	//console.log(e);
 	
+}
+
+function dragover(e) {
+	console.log(e);
+	e.preventDefault();
+	e.dataTransfer.dropEffect = "move";
+}
+
+function drop(e) {
+	console.log(e);
+	let str = e.dataTransfer.getData("text/plain");
+	
+	console.log(str);
 }
 
 function wheel(e) {
@@ -230,10 +252,20 @@ let functions = {
 	
 	moveSelectionLeft() {
 		selection = Selection.left(document.lines, selection, selectionEndCol);
+		
+		let [lineIndex, offset] = selection.end;
+		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
+		
+		selectionEndCol = endCol;
 	},
 	
 	moveSelectionRight() {
 		selection = Selection.right(document.lines, selection, selectionEndCol);
+		
+		let [lineIndex, offset] = selection.end;
+		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
+		
+		selectionEndCol = endCol;
 	},
 	
 	expandOrContractSelectionUp() {
@@ -551,6 +583,8 @@ $scrollBarBorder: 1px solid #bababa;
 			on:mousedown={mousedown}
 			on:mouseenter={mouseenter}
 			on:mouseleave={mouseleave}
+			on:dragover={dragover}
+			on:drop={drop}
 			style={inlineStyle(canvasStyle)}
 		/>
 	</div>

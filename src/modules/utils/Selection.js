@@ -37,7 +37,6 @@ function isFull(selection) {
 function up(lines, selection, selectionEndCol) {
 	let {start, end} = sort(selection);
 	let [startLineIndex, startOffset] = start;
-	let [endLineIndex, endOffset] = end;
 	
 	let [startRow, startCol] = rowColFromCursor(lines, startLineIndex, startOffset);
 	
@@ -85,6 +84,59 @@ function down(lines, selection, selectionEndCol) {
 	};
 }
 
+function left(lines, selection) {
+	let {start} = sort(selection);
+	let [lineIndex, offset] = start;
+	
+	if (lineIndex === 0 && offset === 0) {
+		return;
+	}
+	
+	if (offset === 0) {
+		let prevLine = lines[lineIndex - 1];
+		
+		let cursor = [lineIndex - 1, prevLine.string.length];
+		
+		return {
+			start: cursor,
+			end: cursor,
+		};
+	}
+	
+	let cursor = [lineIndex, offset - 1];
+	
+	return {
+		start: cursor,
+		end: cursor,
+	};
+}
+
+function right(lines, selection) {
+	let {end} = sort(selection);
+	let [lineIndex, offset] = end;
+	let line = lines[lineIndex];
+	
+	if (lineIndex === lines.length - 1 && offset === line.string.length) {
+		return;
+	}
+	
+	if (offset === line.string.length) {
+		let cursor = [lineIndex + 1, 0];
+		
+		return {
+			start: cursor,
+			end: cursor,
+		};
+	}
+	
+	let cursor = [lineIndex, offset + 1];
+	
+	return {
+		start: cursor,
+		end: cursor,
+	};
+}
+
 function expandOrContractUp(lines, selection) {
 	
 }
@@ -94,5 +146,7 @@ module.exports = {
 	isFull,
 	up,
 	down,
+	left,
+	right,
 	expandOrContractUp,
 };
