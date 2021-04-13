@@ -269,11 +269,11 @@ let functions = {
 	},
 	
 	expandOrContractSelectionUp() {
-		selection = Selection.expandOrContractUp(document.lines, selection);
+		selection = Selection.expandOrContractUp(document.lines, selection, selectionEndCol);
 	},
 	
 	expandOrContractSelectionDown() {
-		selection = Selection.expandOrContractDown(document.lines, selection);
+		selection = Selection.expandOrContractDown(document.lines, selection, selectionEndCol);
 	},
 	
 	pageUp() {

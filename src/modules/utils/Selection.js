@@ -88,6 +88,13 @@ function left(lines, selection) {
 	let {start} = sort(selection);
 	let [lineIndex, offset] = start;
 	
+	if (isFull(selection)) {
+		return {
+			start,
+			end: start,
+		};
+	}
+	
 	if (lineIndex === 0 && offset === 0) {
 		return;
 	}
@@ -116,6 +123,13 @@ function right(lines, selection) {
 	let [lineIndex, offset] = end;
 	let line = lines[lineIndex];
 	
+	if (isFull(selection)) {
+		return {
+			start: end,
+			end,
+		};
+	}
+	
 	if (lineIndex === lines.length - 1 && offset === line.string.length) {
 		return;
 	}
@@ -137,8 +151,28 @@ function right(lines, selection) {
 	};
 }
 
-function expandOrContractUp(lines, selection) {
+function expandOrContractUp(lines, selection, selectionEndCol) {
+	let {start, end} = selection;
+	let [lineIndex, offset] = end;
 	
+	let [endRow, endCol] = rowColFromCursor(lines, lineIndex, offset);
+	
+	if (endRow === 0) {
+		return {
+			start,
+			end: [0, 0],
+		};
+	}
+	
+	let row = endRow - 1;
+	let col = selectionEndCol;
+	
+	let cursor = cursorFromRowCol(lines, row, col);
+	
+	return {
+		start,
+		end: cursor,
+	};
 }
 
 module.exports = {
