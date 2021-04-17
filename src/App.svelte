@@ -80,7 +80,7 @@ async function openFile(path) {
 	
 	tabs = push(tabs, newTab);
 	
-	await tick();
+	await tick(); // wait for Editor to be created
 	
 	selectTab(newTab);
 }
@@ -103,10 +103,6 @@ function selectTab(tab) {
 	selectedTab = tab;
 	
 	let editor = editorsByTabId[tab.id];
-	
-	console.log(tab);
-	console.log(editorsByTabId);
-	console.log(editor);
 }
 
 onMount(async function() {

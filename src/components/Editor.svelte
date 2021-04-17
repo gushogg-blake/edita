@@ -17,6 +17,8 @@ import {onMount} from "svelte";
 import sleep from "../utils/sleep";
 import inlineStyle from "../utils/dom/inlineStyle";
 import {on, off} from "../utils/dom/domEvents";
+import screenOffsets from "../utils/dom/screenOffsets";
+import autoScroll from "../utils/dom/autoScroll";
 //import render from "../modules/render/render";
 import prefs from "../stores/prefs";
 import Scrollbar from "./Scrollbar.svelte";
@@ -27,6 +29,15 @@ $: prefsUpdated($prefs);
 
 export function focus() {
 	focused = true;
+}
+
+export function show() {
+	visible = true;
+	redraw();
+}
+
+export function hide() {
+	visible = false;
 }
 
 let mounted = false;
@@ -42,6 +53,7 @@ let verticalScrollbar;
 let horizontalScrollbar;
 let hasHorizontalScrollbar = $prefs.wrap;
 
+let visible = true;
 let focused = false;
 
 let dragSelectionEnd;
@@ -123,6 +135,25 @@ function mousedown(e) {
 	
 	on(window, "mousemove", mousemove);
 	on(window, "mouseup", mouseup);
+	
+	let offsets = screenOffsets(canvasDiv);
+	
+	offsets.left += calculateMarginOffset(document.lines, measurements);
+	
+	autoScroll(offsets, function(x, y) {
+		let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.pow(1.2, Math.abs(x)) / 30));
+		let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(2, Math.abs(y) / 30)));
+		
+		if (x < 0) {
+			xOffset = -xOffset;
+		}
+		
+		if (y < 0) {
+			rows = -rows;
+		}
+		
+		scrollBy(xOffset, rows);
+	});
 }
 
 function mousemove(e) {
@@ -193,22 +224,32 @@ function wheel(e) {
 	let dir = e.deltaY > 0 ? 1 : -1;
 	
 	if (e.shiftKey) {
-		let newX = Math.round(scrollPosition.x + measurements.colWidth * 3 * dir);
+		scrollBy(measurements.colWidth * 3 * dir, 0);
+	} else {
+		scrollBy(0, 3 * dir);
+	}
+	
+	updateScrollbars();
+	redraw();
+}
+
+function scrollBy(x, rows) {
+	if (x !== 0) {
+		let newX = Math.round(scrollPosition.x + x);
 		
 		newX = Math.max(0, newX);
 		
 		scrollPosition.x = newX;
-	} else {
-		let newRow = scrollPosition.row + 3 * dir;
+	}
+	
+	if (rows !== 0) {
+		let newRow = scrollPosition.row + rows;
 		
 		newRow = Math.max(0, newRow);
 		newRow = Math.min(newRow, document.countRows() - 1);
 		
 		scrollPosition.row = newRow;
 	}
-	
-	updateScrollbars();
-	redraw();
 }
 
 function keydown(e) {
