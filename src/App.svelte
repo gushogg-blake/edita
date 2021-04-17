@@ -3,11 +3,46 @@ let fs = require("flowfs");
 
 import {onMount} from "svelte";
 
+import getKeyCombo from "./utils/getKeyCombo";
 import langs from "./modules/langs";
 import Document from "./modules/Document";
+import openDialog from "./modules/ipc/openDialog/renderer";
 import Editor from "./components/Editor.svelte";
 
 let document;
+
+function keydown(e) {
+	let {keyCombo, isModified} = getKeyCombo(e);
+	
+	if (!isModified) {
+		return;
+	}
+	
+	if (keymap[keyCombo]) {
+		functions[keymap[keyCombo]]();
+	}
+}
+
+let functions = {
+	async showOpenDialog() {
+		let {
+			canceled,
+			filePaths,
+		} = await openDialog({
+			defaultPath: "/home/gus/projects/editor",
+			properties: [
+				"openFile",
+				"multiSelections",
+			],
+		});
+		
+		console.log(canceled, filePaths);
+	},
+};
+
+let keymap = {
+	"Ctrl+O": "showOpenDialog",
+};
 
 onMount(async function() {
 	let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
@@ -17,6 +52,8 @@ onMount(async function() {
 	document = new Document(code, langs.js);
 });
 </script>
+
+<svelte:window on:keydown={keydown}/>
 
 <style type="text/scss">
 @import "./css/mixins/flex-col";
