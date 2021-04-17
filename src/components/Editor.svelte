@@ -404,7 +404,11 @@ function resize() {
 	
 	if (offsetWidth !== prevWidth || offsetHeight !== prevHeight) {
 		updateCanvasSize();
-		updateWraps();
+		
+		if (offsetWidth !== prevWidth) {
+			updateWraps();
+		}
+		
 		redraw();
 		
 		prevWidth = offsetWidth;
@@ -412,7 +416,7 @@ function resize() {
 	}
 	
 	if (visible) {
-		requestAnimationFrame(resize);
+		setTimeout(resize, 50);
 	}
 }
 
