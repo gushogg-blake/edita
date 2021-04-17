@@ -97,7 +97,7 @@ function getTabName(tabs, tab) {
 }
 
 function clickTab(tab) {
-	
+	selectTab(tab);
 }
 
 function tabIsSelected(tab, selectedTab) {
