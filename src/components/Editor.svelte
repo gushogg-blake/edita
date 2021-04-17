@@ -33,6 +33,7 @@ export function focus() {
 
 export function show() {
 	visible = true;
+	resize();
 	redraw();
 }
 
@@ -42,6 +43,8 @@ export function hide() {
 
 let mounted = false;
 let canvasDiv;
+let canvasWidth;
+let canvasHeight;
 let measurementsDiv;
 let canvas;
 let context;
@@ -51,7 +54,7 @@ let rowBaselineHint = -1;
 
 let verticalScrollbar;
 let horizontalScrollbar;
-let hasHorizontalScrollbar = $prefs.wrap;
+let hasHorizontalScrollbar = !$prefs.wrap;
 
 let visible = true;
 let focused = false;
@@ -63,6 +66,8 @@ let selection = {
 	start: [0, 0],
 	end: [0, 0],
 };
+
+$: console.log(canvasWidth, canvasHeight);
 
 // for remembering the "intended" col when moving a cursor up/down to a line
 // that doesn't have as many cols as the cursor
@@ -83,7 +88,7 @@ async function prefsUpdated(prefs) {
 		return;
 	}
 	
-	hasHorizontalScrollbar = $prefs.wrap;
+	hasHorizontalScrollbar = !$prefs.wrap;
 	
 	await tick();
 	
@@ -391,10 +396,24 @@ function updateWraps() {
 	);
 }
 
+let prevWidth;
+let prevHeight;
+
 function resize() {
-	updateCanvasSize();
-	updateWraps();
-	redraw();
+	let {offsetWidth, offsetHeight} = canvasDiv;
+	
+	if (offsetWidth !== prevWidth || offsetHeight !== prevHeight) {
+		updateCanvasSize();
+		updateWraps();
+		redraw();
+		
+		prevWidth = offsetWidth;
+		prevHeight = offsetHeight;
+	}
+	
+	if (visible) {
+		requestAnimationFrame(resize);
+	}
 }
 
 function redraw() {
@@ -513,10 +532,8 @@ onMount(async function() {
 	document.parse($prefs);
 	
 	updateMeasurements();
+	resize();
 	startCursorBlink();
-	updateCanvasSize();
-	updateWraps();
-	redraw();
 	
 	let teardown = [];
 	
@@ -545,7 +562,6 @@ $: canvasStyle = {
 </script>
 
 <svelte:window
-	on:resize={resize}
 	on:keydown={keydown}
 	on:keyup={keyup}
 />
@@ -559,8 +575,6 @@ $: canvasStyle = {
 	grid-template-rows: 1fr 0;
 	grid-template-columns: 1fr 13px;
 	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar blank";
-	width: 100%;
-	height: 100%;
 	color: black;
 	
 	/*width: 300px;

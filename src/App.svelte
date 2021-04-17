@@ -99,10 +99,15 @@ function onSelectTab({detail: tab}) {
 	selectTab(tab);
 }
 
-function selectTab(tab) {
+async function selectTab(tab) {
 	selectedTab = tab;
 	
 	let editor = editorsByTabId[tab.id];
+	console.log("tab selected");
+	console.log(editor);
+	await tick();
+	console.log("after tick");
+	editor.show();
 }
 
 onMount(async function() {
@@ -147,12 +152,16 @@ onMount(async function() {
 }
 
 #editor {
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr;
 	grid-area: editor;
 }
 
 .tab {
-	width: 100%;
-	height: 100%;
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr;
 }
 
 #right {
