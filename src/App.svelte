@@ -4,19 +4,20 @@ let fs = require("flowfs");
 import {onMount} from "svelte";
 
 import getKeyCombo from "./utils/getKeyCombo";
+import lid from "./utils/lid";
+import {push} from "./utils/arrayMethods";
 import langs from "./modules/langs";
 import Document from "./modules/Document";
 import openDialog from "./modules/ipc/openDialog/renderer";
+import Toolbar from "./components/Toolbar.svelte";
 import Editor from "./components/Editor.svelte";
 
-let document;
+let tabs = [];
+let editorsByTabId = {};
+let selectedTab = null;
 
 function keydown(e) {
-	let {keyCombo, isModified} = getKeyCombo(e);
-	
-	if (!isModified) {
-		return;
-	}
+	let {keyCombo} = getKeyCombo(e);
 	
 	if (keymap[keyCombo]) {
 		functions[keymap[keyCombo]]();
@@ -36,20 +37,87 @@ let functions = {
 			],
 		});
 		
-		console.log(canceled, filePaths);
+		if (canceled) {
+			return;
+		}
+		
+		for (let path of filePaths) {
+			openFile(path);
+		}
+	},
+	
+	async saveCurrentFile() {
+		
 	},
 };
 
 let keymap = {
 	"Ctrl+O": "showOpenDialog",
+	"Ctrl+S": "saveCurrentFile",
 };
 
+async function openFile(path) {
+	path = fs(path).path;
+	
+	let tab = findTabByPath(path);
+	
+	if (tab) {
+		selectTab(tab);
+		
+		return;
+	}
+	
+	let code = await fs(path).read();
+	
+	let newTab = {
+		id: lid(),
+		path,
+		document: new Document(code, langs.js), // TODO detect lang
+	};
+	
+	console.log(newTab);
+	
+	tabs = push(tabs, newTab);
+	
+	selectTab(newTab);
+}
+
+function findTabByPath(path) {
+	for (let tab of tabs) {
+		if (tab.path === path) {
+			return tab;
+		}
+	}
+	
+	return null;
+}
+
+function getTabName(tabs, tab) {
+	// display name for tab (show path parts to disambiguate from other tabs)
+}
+
+function clickTab(tab) {
+	
+}
+
+function tabIsSelected(tab, selectedTab) {
+	return selectedTab === tab;
+}
+
+function selectTab(tab) {
+	selectedTab = tab;
+	
+	let editor = editorsByTabId[tab.id];
+	
+	console.log(editor);
+}
+
 onMount(async function() {
-	let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
+	//let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
 	//let code = await fs("test/repos/acorn/dist/bin.js").read();
 	//let code = await fs("test/repos/array-find-index/index.js").read();
 	
-	document = new Document(code, langs.js);
+	openFile("test/repos/bluebird/js/browser/bluebird.js");
 });
 </script>
 
@@ -57,6 +125,7 @@ onMount(async function() {
 
 <style type="text/scss">
 @import "./css/mixins/flex-col";
+@import "./css/classes/hide";
 
 #main {
 	display: grid;
@@ -64,7 +133,7 @@ onMount(async function() {
 	grid-template-columns: auto 1fr auto;
 	grid-template-areas:
 		"toolbar toolbar toolbar"
-		"left tabs right"
+		"left tabBar right"
 		"left editor right"
 		"bottom bottom bottom";
 	width: 100vw;
@@ -80,12 +149,21 @@ onMount(async function() {
 	grid-area: left;
 }
 
-#tabs {
-	grid-area: tabs;
+#tabBar {
+	grid-area: tabBar;
 }
 
 #editor {
 	grid-area: editor;
+}
+
+.tab {
+	width: 100%;
+	height: 100%;
+}
+
+#right {
+	grid-area: right;
 }
 
 #bottom {
@@ -95,20 +173,32 @@ onMount(async function() {
 
 <div id="main">
 	<div id="toolbar">
-		tooblar
+		<Toolbar
+			on:open={functions.showOpenDialog}
+		/>
 	</div>
 	<div id="left">
 		left
 	</div>
-	<div id="tabs">
-		tabs
+	<div id="tabBar">
+		{#each tabs as tab}
+			<div class="tabButton" on:click={clickTab(tab)}>
+				{getTabName(tabs, tab)}
+			</div>
+		{/each}
 	</div>
 	<div id="editor">
-		{#if document}
-			<Editor
-				{document}
-			/>
-		{/if}
+		{#each tabs as tab (tab)}
+			<div class="tab" class:hide={!tabIsSelected(tab, selectedTab)}>
+				<Editor
+					bind:this={editorsByTabId[tab.id]}
+					document={tab.document}
+				/>
+			</div>
+		{/each}
+	</div>
+	<div id="right">
+		right
 	</div>
 	<div id="bottom">
 		bottom

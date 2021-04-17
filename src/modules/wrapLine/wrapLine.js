@@ -14,6 +14,10 @@ module.exports = function(wrappingEnabled, line, measurements, availableWidth) {
 		return;
 	}
 	
+	if (availableWidth < colWidth) {
+		return;
+	}
+	
 	if (line.width <= screenCols) {
 		return;
 	}
