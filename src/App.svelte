@@ -1,7 +1,7 @@
 <script>
 let fs = require("flowfs");
 
-import {onMount} from "svelte";
+import {onMount, tick} from "svelte";
 
 import getKeyCombo from "./utils/getKeyCombo";
 import lid from "./utils/lid";
@@ -10,6 +10,7 @@ import langs from "./modules/langs";
 import Document from "./modules/Document";
 import openDialog from "./modules/ipc/openDialog/renderer";
 import Toolbar from "./components/Toolbar.svelte";
+import TabBar from "./components/TabBar.svelte";
 import Editor from "./components/Editor.svelte";
 
 let tabs = [];
@@ -75,9 +76,11 @@ async function openFile(path) {
 		document: new Document(code, langs.js), // TODO detect lang
 	};
 	
-	console.log(newTab);
+	//console.log(newTab);
 	
 	tabs = push(tabs, newTab);
+	
+	await tick();
 	
 	selectTab(newTab);
 }
@@ -92,16 +95,8 @@ function findTabByPath(path) {
 	return null;
 }
 
-function getTabName(tabs, tab) {
-	// display name for tab (show path parts to disambiguate from other tabs)
-}
-
-function clickTab(tab) {
+function onSelectTab({detail: tab}) {
 	selectTab(tab);
-}
-
-function tabIsSelected(tab, selectedTab) {
-	return selectedTab === tab;
 }
 
 function selectTab(tab) {
@@ -109,6 +104,8 @@ function selectTab(tab) {
 	
 	let editor = editorsByTabId[tab.id];
 	
+	console.log(tab);
+	console.log(editorsByTabId);
 	console.log(editor);
 }
 
@@ -181,15 +178,15 @@ onMount(async function() {
 		left
 	</div>
 	<div id="tabBar">
-		{#each tabs as tab}
-			<div class="tabButton" on:click={clickTab(tab)}>
-				{getTabName(tabs, tab)}
-			</div>
-		{/each}
+		<TabBar
+			{tabs}
+			{selectedTab}
+			on:select={onSelectTab}
+		/>
 	</div>
 	<div id="editor">
 		{#each tabs as tab (tab)}
-			<div class="tab" class:hide={!tabIsSelected(tab, selectedTab)}>
+			<div class="tab" class:hide={tab !== selectedTab}>
 				<Editor
 					bind:this={editorsByTabId[tab.id]}
 					document={tab.document}
