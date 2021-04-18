@@ -173,6 +173,12 @@ function mouseleave(e) {
 	
 }
 
+function keyup(e) {
+	if (!focused) {
+		return;
+	}
+}
+
 function dragover(e) {
 	console.log(e);
 	e.preventDefault();
@@ -302,13 +308,7 @@ let normalFunctions = {
 	},
 	
 	switchToAstMode() {
-		if (mouseIsDown) {
-			return;
-		}
-		
-		mode = "ast";
-		
-		redraw();
+		switchToAstMode();
 	},
 	
 	default(e, keyCombo, isModified) {
@@ -331,14 +331,9 @@ let normalFunctions = {
 };
 
 let astFunctions = {
+	
 	switchToNormalMode() {
-		if (mouseIsDown) {
-			return;
-		}
-		
-		mode = "normal";
-		
-		redraw();
+		switchToNormalMode();
 	},
 };
 
@@ -379,10 +374,24 @@ let keymaps = {
 	common: commonKeymap,
 };
 
-function keyup(e) {
-	if (!focused) {
+function switchToAstMode() {
+	if (mouseIsDown) {
 		return;
 	}
+	
+	mode = "ast";
+	
+	let [lineIndex] = normalSelection.end;
+	
+	astSelection = AstSelection.fromLineIndex(lineIndex);
+}
+
+function switchToNormalMode() {
+	if (mouseIsDown) {
+		return;
+	}
+	
+	mode = "normal";
 }
 
 function startCursorBlink() {

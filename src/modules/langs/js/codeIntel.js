@@ -37,7 +37,9 @@ and so on.
 */
 
 function findHeaderLineIndex(lines, lineIndex) {
+	let fromLine = lines[lineIndex];
 	let i = lineIndex - 1;
+	let encounteredNonEmptyLine = false;
 	
 	while (true) {
 		if (i < 0) {
@@ -46,11 +48,23 @@ function findHeaderLineIndex(lines, lineIndex) {
 		
 		let line = lines[i];
 		
-		if (line.string.length > 0 && line.indentLevel === lines[lineIndex].indentLevel - 1) {
-			if (isFooter(lines, i)) {
-				return findHeaderLineIndex(lines, i - 1);
-			} else {
+		if (line.string.length > 0) {
+			if (
+				fromLine.trimmed[0] === "}"
+				&& !encounteredNonEmptyLine
+				&& line.indentLevel === fromLine.indentLevel
+			) {
 				return i;
+			}
+			
+			encounteredNonEmptyLine = true;
+			
+			if (line.indentLevel === fromLine.indentLevel - 1) {
+				if (isFooter(lines, i)) {
+					return findHeaderLineIndex(lines, i - 1);
+				} else {
+					return i;
+				}
 			}
 		}
 		
@@ -67,7 +81,9 @@ and so on.
 */
 
 function findFooterLineIndex(lines, lineIndex) {
+	let fromLine = lines[lineIndex];
 	let i = lineIndex + 1;
+	let encounteredNonEmptyLine = false;
 	
 	while (true) {
 		if (i === lines.length) {
@@ -76,11 +92,23 @@ function findFooterLineIndex(lines, lineIndex) {
 		
 		let line = lines[i];
 		
-		if (line.string.length > 0 && line.indentLevel === lines[lineIndex].indentLevel - 1) {
-			if (isHeader(lines, i)) {
-				return findFooterLineIndex(lines, i + 1);
-			} else {
+		if (line.string.length > 0) {
+			if (
+				!encounteredNonEmptyLine
+				&& line.trimmed[0] === "}"
+				&& line.indentLevel === fromLine.indentLevel
+			) {
 				return i;
+			}
+			
+			encounteredNonEmptyLine = true;
+			
+			if (line.indentLevel === fromLine.indentLevel - 1) {
+				if (isHeader(lines, i)) {
+					return findFooterLineIndex(lines, i + 1);
+				} else {
+					return i;
+				}
 			}
 		}
 		
