@@ -585,7 +585,7 @@ function parse(
 		openBracesStack: null,
 		cacheKey: getCacheKey(states.DEFAULT, false, null),
 	};
-	
+	console.time("parse");
 	for (let lineIndex = startIndex; lineIndex <= endIndex; lineIndex++) {
 		let line = lines[lineIndex];
 		
@@ -600,15 +600,17 @@ function parse(
 		);
 		
 		line.width = col;
+		line.trimmed = line.string.trimLeft();
+		line.indentLevel = line.string.length - line.trimmed.length;
 		line.commands = commands;
 		line.endState = endState;
 		
 		prevState = endState;
 	}
+	console.timeEnd("parse");
 }
 
 module.exports = {
-	code: "js",
 	parse,
 	stateColors,
 };

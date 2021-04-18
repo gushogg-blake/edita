@@ -104,7 +104,7 @@ async function prefsUpdated(prefs) {
 
 function mousedown(e) {
 	mouseIsDown = true;
-	console.time("mousedown");
+	//console.time("mousedown");
 	if (mode === "normal") {
 		normalMouse(e, {
 			canvas,
@@ -157,7 +157,7 @@ function mousedown(e) {
 			},
 		});
 	}
-	console.timeEnd("mousedown");
+	//console.timeEnd("mousedown");
 }
 
 function getScrollPosition() {

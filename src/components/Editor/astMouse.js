@@ -6,7 +6,7 @@ import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
 import rowColFromCursor from "../../modules/utils/rowColFromCursor";
 import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
 
-export default function(editor) {
+export default function(e, editor) {
 	let {
 		canvas,
 		measurements,
@@ -34,7 +34,7 @@ export default function(editor) {
 			document.lines,
 			x,
 			y,
-			scrollPosition,
+			getScrollPosition(),
 			measurements,
 		);
 		
@@ -75,6 +75,10 @@ export default function(editor) {
 		});
 	}
 	
+	function mousemove(e) {
+		
+	}
+	
 	function mouseup(e) {
 		editor.mouseup(e);
 		
@@ -82,5 +86,5 @@ export default function(editor) {
 		off(window, "mouseup", mouseup);
 	}
 
-	return mousedown;
+	mousedown(e);
 }
