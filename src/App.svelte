@@ -103,10 +103,9 @@ async function selectTab(tab) {
 	selectedTab = tab;
 	
 	let editor = editorsByTabId[tab.id];
-	console.log("tab selected");
-	console.log(editor);
+	
 	await tick();
-	console.log("after tick");
+	
 	editor.show();
 }
 

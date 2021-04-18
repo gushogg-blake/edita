@@ -36,7 +36,11 @@ function getTabName(tabs, tab) {
 
 <div id="main">
 	{#each tabs as tab}
-		<div class="tabButton" on:click={clickTab(tab)}>
+		<div
+			class="tabButton"
+			class:isSelected={tabIsSelected(tab, selectedTab)}
+			on:click={clickTab(tab)}
+		>
 			{getTabName(tabs, tab)}
 		</div>
 	{/each}

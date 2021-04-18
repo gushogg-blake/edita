@@ -1,6 +1,7 @@
 let {on, off} = require("./domEvents");
 
 module.exports = function(offsets, handler) {
+	let ticker;
 	let top;
 	let right;
 	let bottom;
@@ -40,7 +41,11 @@ module.exports = function(offsets, handler) {
 	function mouseup(e) {
 		off(window, "mousemove", mousemove);
 		off(window, "mouseup", mouseup);
+		
+		clearInterval(ticker);
 	}
+	
+	ticker = setInterval(tick, 300);
 	
 	on(window, "mousemove", mousemove);
 	on(window, "mouseup", mouseup);

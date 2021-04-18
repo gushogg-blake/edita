@@ -146,8 +146,14 @@ function mousedown(e) {
 	offsets.left += calculateMarginOffset(document.lines, measurements);
 	
 	autoScroll(offsets, function(x, y) {
-		let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.pow(1.2, Math.abs(x)) / 30));
+		let {colWidth} = measurements;
+		
+		let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.abs(x) / colWidth)) * colWidth;
 		let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(2, Math.abs(y) / 30)));
+		
+		if (!hasHorizontalScrollbar) {
+			xOffset = 0;
+		}
 		
 		if (x < 0) {
 			xOffset = -xOffset;
@@ -233,9 +239,6 @@ function wheel(e) {
 	} else {
 		scrollBy(0, 3 * dir);
 	}
-	
-	updateScrollbars();
-	redraw();
 }
 
 function scrollBy(x, rows) {
@@ -255,6 +258,9 @@ function scrollBy(x, rows) {
 		
 		scrollPosition.row = newRow;
 	}
+	
+	updateScrollbars();
+	redraw();
 }
 
 function keydown(e) {

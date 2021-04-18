@@ -6,7 +6,7 @@ let defaultPrefs = {
 	lineNumberColor: "#9f9f9f",
 	marginBackground: "#f0f0f0",
 	selectionBackground: "#d0d0d0",
-	wrap: true,
+	wrap: false,
 	
 	langs: {
 		js: {
