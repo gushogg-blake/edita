@@ -43,8 +43,6 @@ export function hide() {
 
 let mounted = false;
 let canvasDiv;
-let canvasWidth;
-let canvasHeight;
 let measurementsDiv;
 let canvas;
 let context;
@@ -73,8 +71,6 @@ let normalSelection = {
 let astSelection = null;
 let astHilite = null;
 let astCursor = null;
-
-$: console.log(canvasWidth, canvasHeight);
 
 // for remembering the "intended" col when moving a cursor up/down to a line
 // that doesn't have as many cols as the cursor
