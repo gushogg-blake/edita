@@ -71,7 +71,7 @@ export default function(e, editor) {
 			let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.abs(x) / colWidth)) * colWidth;
 			let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(2, Math.abs(y) / 30)));
 			
-			if (!hasHorizontalScrollbar()) {
+			if (!hasHorizontalScrollbar) {
 				xOffset = 0;
 			}
 			
