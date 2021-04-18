@@ -1,27 +1,29 @@
 <script>
 import {tick} from "svelte";
-import calculateMarginOffset from "../modules/render/calculateMarginOffset";
-import render from "../modules/render/render";
-import rowColFromScreenCoords from "../modules/utils/rowColFromScreenCoords";
-import rowColFromCursor from "../modules/utils/rowColFromCursor";
-import cursorFromRowCol from "../modules/utils/cursorFromRowCol";
-import Selection from "../modules/utils/Selection";
-import getKeyCombo from "../utils/getKeyCombo";
+import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
+import render from "../../modules/render/render";
+import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
+import rowColFromCursor from "../../modules/utils/rowColFromCursor";
+import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
+import Selection from "../../modules/utils/Selection";
+import getKeyCombo from "../../utils/getKeyCombo";
 /*
-let js = require("../src/modules/langs/js");
-let render = require("../src/modules/render/render");
-let calculateMarginOffset = require("../src/modules/render/calculateMarginOffset");
+let js = require("../../src/modules/langs/js");
+let render = require("../../src/modules/render/render");
+let calculateMarginOffset = require("../../src/modules/render/calculateMarginOffset");
 
 */
 import {onMount} from "svelte";
-import sleep from "../utils/sleep";
-import inlineStyle from "../utils/dom/inlineStyle";
-import {on, off} from "../utils/dom/domEvents";
-import screenOffsets from "../utils/dom/screenOffsets";
-import autoScroll from "../utils/dom/autoScroll";
-//import render from "../modules/render/render";
-import prefs from "../stores/prefs";
-import Scrollbar from "./Scrollbar.svelte";
+import sleep from "../../utils/sleep";
+import inlineStyle from "../../utils/dom/inlineStyle";
+import {on, off} from "../../utils/dom/domEvents";
+import screenOffsets from "../../utils/dom/screenOffsets";
+import autoScroll from "../../utils/dom/autoScroll";
+//import render from "../../modules/render/render";
+import prefs from "../../stores/prefs";
+import Scrollbar from "../Scrollbar.svelte";
+import normalMouse from "./normalMouse";
+import astMouse from "./astMouse";
 
 export let document;
 
@@ -57,8 +59,6 @@ let hasHorizontalScrollbar = !$prefs.wrap;
 let visible = true;
 let focused = false;
 
-let dragSelectionEnd;
-let draggingNormalSelection = false;
 let mouseIsDown = false;
 
 let mode = "normal";
@@ -103,188 +103,64 @@ async function prefsUpdated(prefs) {
 }
 
 function mousedown(e) {
-	if (mode === "normal") {
-		normalMousedown(e);
-	} else {
-		astMousedown(e);
-	}
-}
-
-function normalMousedown(e) {
-	let {
-		x: left,
-		y: top,
-	} = canvas.getBoundingClientRect();
-	
-	let x = e.clientX - left;
-	let y = e.clientY - top;
-	
-	let [row, col] = rowColFromScreenCoords(
-		document.lines,
-		x,
-		y,
-		scrollPosition,
-		measurements,
-	);
-	
-	let cursor = cursorFromRowCol(
-		document.lines,
-		row,
-		col,
-	);
-	
-	normalSelection = {
-		start: cursor,
-		end: cursor,
-	};
-	
-	let [lineIndex, offset] = cursor;
-	let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
-	
-	selectionEndCol = endCol;
-	
-	startCursorBlink();
-	
-	redraw();
-	
-	draggingNormalSelection = true;
-	
-	on(window, "mousemove", normalMousemove);
-	on(window, "mouseup", normalMouseup);
-	
-	let offsets = screenOffsets(canvasDiv);
-	
-	offsets.left += calculateMarginOffset(document.lines, measurements);
-	
-	autoScroll(offsets, function(x, y) {
-		let {colWidth} = measurements;
-		
-		let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.abs(x) / colWidth)) * colWidth;
-		let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(2, Math.abs(y) / 30)));
-		
-		if (!hasHorizontalScrollbar) {
-			xOffset = 0;
-		}
-		
-		if (x < 0) {
-			xOffset = -xOffset;
-		}
-		
-		if (y < 0) {
-			rows = -rows;
-		}
-		
-		scrollBy(xOffset, rows);
-	});
-}
-
-function astMousedown(e) {
 	mouseIsDown = true;
 	
-	let {
-		x: left,
-		y: top,
-	} = canvas.getBoundingClientRect();
-	
-	let x = e.clientX - left;
-	let y = e.clientY - top;
-	
-	let [row, col] = rowColFromScreenCoords(
-		document.lines,
-		x,
-		y,
-		scrollPosition,
-		measurements,
-	);
-	
-	let cursor = cursorFromRowCol(
-		document.lines,
-		row,
-		col,
-	);
-	
-	let [lineIndex, offset] = cursor;
-	
-	redraw();
-	
-	draggingNormalSelection = true;
-	
-	on(window, "mousemove", astMousemove);
-	on(window, "mouseup", astMouseup);
-	
-	let offsets = screenOffsets(canvasDiv);
-	
-	offsets.left += calculateMarginOffset(document.lines, measurements);
-	
-	autoScroll(offsets, function(x, y) {
-		let {colWidth} = measurements;
-		
-		let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.abs(x) / colWidth)) * colWidth;
-		let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(2, Math.abs(y) / 30)));
-		
-		if (!hasHorizontalScrollbar) {
-			xOffset = 0;
-		}
-		
-		if (x < 0) {
-			xOffset = -xOffset;
-		}
-		
-		if (y < 0) {
-			rows = -rows;
-		}
-		
-		scrollBy(xOffset, rows);
-	});
-}
-
-function normalMousemove(e) {
-	//console.log(e);
-	if (draggingNormalSelection) {
-		let {
-			x: left,
-			y: top,
-		} = canvas.getBoundingClientRect();
-		
-		let x = e.clientX - left;
-		let y = e.clientY - top;
-		
-		let [row, col] = rowColFromScreenCoords(
-			document.lines,
-			x,
-			y,
-			scrollPosition,
+	if (mode === "normal") {
+		normalMouse(e, {
+			canvas,
 			measurements,
-		);
-		
-		let cursor = cursorFromRowCol(
-			document.lines,
-			row,
-			col,
-		);
-		
-		normalSelection.end = cursor;
-		
-		selectionEndCol = col;
-		
-		redraw();
+			document,
+			hasHorizontalScrollbar,
+			scrollBy,
+			getScrollPosition,
+			redraw,
+			startCursorBlink,
+			
+			getSelection() {
+				return normalSelection;
+			},
+			
+			setSelection(selection) {
+				normalSelection = selection;
+			},
+			
+			setSelectionEndCol(col) {
+				selectionEndCol = col;
+			},
+			
+			mouseup(e) {
+				mouseIsDown = false;
+			},
+		});
+	}
+	
+	if (mode === "ast") {
+		astMouse(e, {
+			canvas,
+			measurements,
+			document,
+			hasHorizontalScrollbar,
+			scrollBy,
+			getScrollPosition,
+			redraw,
+			
+			getSelection() {
+				return astSelection;
+			},
+			
+			setSelection(selection) {
+				astSelection = selection;
+			},
+			
+			mouseup(e) {
+				mouseIsDown = false;
+			},
+		});
 	}
 }
 
-function normalMouseup(e) {
-	draggingNormalSelection = false;
-	mouseIsDown = false;
-	
-	
-	off(window, "mousemove", normalMousemove);
-	off(window, "mouseup", normalMouseup);
-}
-
-function astMouseup(e) {
-	mouseIsDown = false;
-	
-	off(window, "mousemove", astMousemove);
-	off(window, "mouseup", astMouseup);
+function getScrollPosition() {
+	return scrollPosition;
 }
 
 function mouseenter(e) {
@@ -425,6 +301,10 @@ let normalFunctions = {
 	},
 	
 	switchToAstMode() {
+		if (mouseIsDown) {
+			return;
+		}
+		
 		mode = "ast";
 		
 		redraw();
@@ -451,6 +331,10 @@ let normalFunctions = {
 
 let astFunctions = {
 	switchToNormalMode() {
+		if (mouseIsDown) {
+			return;
+		}
+		
 		mode = "normal";
 		
 		redraw();
@@ -711,8 +595,8 @@ $: canvasStyle = {
 />
 
 <style type="text/scss">
-@import "../css/mixins/abs-sticky";
-@import "../css/classes/hide";
+@import "../../css/mixins/abs-sticky";
+@import "../../css/classes/hide";
 
 #main {
 	display: grid;

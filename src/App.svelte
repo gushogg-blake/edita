@@ -11,7 +11,7 @@ import Document from "./modules/Document";
 import openDialog from "./modules/ipc/openDialog/renderer";
 import Toolbar from "./components/Toolbar.svelte";
 import TabBar from "./components/TabBar.svelte";
-import Editor from "./components/Editor.svelte";
+import Editor from "./components/Editor/Editor.svelte";
 
 let tabs = [];
 let editorsByTabId = {};
