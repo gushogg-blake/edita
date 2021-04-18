@@ -6,7 +6,6 @@ let calculateMarginOffset = require("./calculateMarginOffset");
 module.exports = function(
 	context,
 	lines,
-	selection,
 	scrollPosition,
 	lang,
 	prefs,

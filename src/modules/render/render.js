@@ -1,14 +1,21 @@
 let renderMarginBackground = require("./renderMarginBackground");
 //let renderCurrentLineHilite = require("./renderCurrentLineHilite");
-let renderSelection = require("./renderSelection");
+let renderNormalSelection = require("./renderNormalSelection");
+let renderAstSelection = require("./renderAstSelection");
+let renderAstHilite = require("./renderAstHilite");
 //let renderWordHilites = require("./renderWordHilites");
 let renderCodeAndMargin = require("./renderCodeAndMargin");
-let renderCursor = require("./renderCursor");
+let renderNormalCursor = require("./renderNormalCursor");
+let renderAstCursor = require("./renderAstCursor");
 
 module.exports = function(
 	context,
+	mode,
 	lines,
-	selection,
+	normalSelection,
+	astSelection,
+	astHilite,
+	astCursor,
 	hiliteWord,
 	scrollPosition,
 	lang,
@@ -26,28 +33,53 @@ module.exports = function(
 		measurements,
 	);
 	
-	//renderCurrentLineHilite(
-	//	context,
-	//	lines,
-	//	selection,
-	//	scrollPosition,
-	//	colors,
-	//	measurements,
-	//);
+	if (mode === "normal") {
+		//renderCurrentLineHilite(
+		//	context,
+		//	lines,
+		//	selection,
+		//	scrollPosition,
+		//	colors,
+		//	measurements,
+		//);
+	}
 	
-	renderSelection(
-		context,
-		lines,
-		selection,
-		scrollPosition,
-		prefs,
-		measurements,
-	);
+	if (mode === "normal") {
+		renderNormalSelection(
+			context,
+			lines,
+			normalSelection,
+			scrollPosition,
+			prefs,
+			measurements,
+		);
+	}
+	
+	if (mode === "ast") {
+		renderAstSelection(
+			context,
+			lines,
+			astSelection,
+			scrollPosition,
+			prefs,
+			measurements,
+		);
+	}
+	
+	if (mode === "ast") {
+		renderAstHilite(
+			context,
+			lines,
+			astHilite,
+			scrollPosition,
+			prefs,
+			measurements,
+		);
+	}
 	
 	//renderWordHilites(
 	//	context,
 	//	lines,
-	//	selection,
 	//	scrollPosition,
 	//	colors,
 	//	measurements,
@@ -56,7 +88,6 @@ module.exports = function(
 	renderCodeAndMargin(
 		context,
 		lines,
-		selection,
 		scrollPosition,
 		lang,
 		prefs,
@@ -64,12 +95,28 @@ module.exports = function(
 		measurements,
 	);
 	
-	renderCursor(
-		context,
-		lines,
-		selection,
-		scrollPosition,
-		measurements,
-		cursorBlinkOn,
-	);
+	if (mode === "normal") {
+		// TODO multiple cursors
+		// TODO block selections
+		
+		renderNormalCursor(
+			context,
+			lines,
+			normalSelection,
+			scrollPosition,
+			measurements,
+			cursorBlinkOn,
+		);
+	}
+	
+	if (mode === "ast") {
+		renderAstCursor(
+			context,
+			lines,
+			astCursor,
+			scrollPosition,
+			measurements,
+			cursorBlinkOn,
+		);
+	}
 }

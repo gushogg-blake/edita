@@ -60,14 +60,19 @@ let visible = true;
 let focused = false;
 
 let dragSelectionEnd;
-let draggingSelection = false;
+let draggingNormalSelection = false;
+let mouseIsDown = false;
 
 let mode = "normal";
 
-let selection = {
+let normalSelection = {
 	start: [0, 0],
 	end: [0, 0],
 };
+
+let astSelection = null;
+let astHilite = null;
+let astCursor = null;
 
 $: console.log(canvasWidth, canvasHeight);
 
@@ -132,7 +137,7 @@ function normalMousedown(e) {
 		col,
 	);
 	
-	selection = {
+	normalSelection = {
 		start: cursor,
 		end: cursor,
 	};
@@ -146,10 +151,10 @@ function normalMousedown(e) {
 	
 	redraw();
 	
-	draggingSelection = true;
+	draggingNormalSelection = true;
 	
-	on(window, "mousemove", mousemove);
-	on(window, "mouseup", mouseup);
+	on(window, "mousemove", normalMousemove);
+	on(window, "mouseup", normalMouseup);
 	
 	let offsets = screenOffsets(canvasDiv);
 	
@@ -178,6 +183,8 @@ function normalMousedown(e) {
 }
 
 function astMousedown(e) {
+	mouseIsDown = true;
+	
 	let {
 		x: left,
 		y: top,
@@ -200,24 +207,14 @@ function astMousedown(e) {
 		col,
 	);
 	
-	selection = {
-		start: cursor,
-		end: cursor,
-	};
-	
 	let [lineIndex, offset] = cursor;
-	let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
-	
-	selectionEndCol = endCol;
-	
-	startCursorBlink();
 	
 	redraw();
 	
-	draggingSelection = true;
+	draggingNormalSelection = true;
 	
-	on(window, "mousemove", mousemove);
-	on(window, "mouseup", mouseup);
+	on(window, "mousemove", astMousemove);
+	on(window, "mouseup", astMouseup);
 	
 	let offsets = screenOffsets(canvasDiv);
 	
@@ -245,9 +242,9 @@ function astMousedown(e) {
 	});
 }
 
-function mousemove(e) {
+function normalMousemove(e) {
 	//console.log(e);
-	if (draggingSelection) {
+	if (draggingNormalSelection) {
 		let {
 			x: left,
 			y: top,
@@ -270,7 +267,7 @@ function mousemove(e) {
 			col,
 		);
 		
-		selection.end = cursor;
+		normalSelection.end = cursor;
 		
 		selectionEndCol = col;
 		
@@ -278,13 +275,20 @@ function mousemove(e) {
 	}
 }
 
-function mouseup(e) {
-	draggingSelection = false;
+function normalMouseup(e) {
+	draggingNormalSelection = false;
+	mouseIsDown = false;
 	
-	console.log(e);
 	
-	off(window, "mousemove", mousemove);
-	off(window, "mouseup", mouseup);
+	off(window, "mousemove", normalMousemove);
+	off(window, "mouseup", normalMouseup);
+}
+
+function astMouseup(e) {
+	mouseIsDown = false;
+	
+	off(window, "mousemove", astMousemove);
+	off(window, "mouseup", astMouseup);
 }
 
 function mouseenter(e) {
@@ -369,37 +373,37 @@ function keydown(e) {
 
 let normalFunctions = {
 	moveSelectionUp() {
-		selection = Selection.up(document.lines, selection, selectionEndCol);
+		normalSelection = Selection.up(document.lines, normalSelection, selectionEndCol);
 	},
 	
 	moveSelectionDown() {
-		selection = Selection.down(document.lines, selection, selectionEndCol);
+		normalSelection = Selection.down(document.lines, normalSelection, selectionEndCol);
 	},
 	
 	moveSelectionLeft() {
-		selection = Selection.left(document.lines, selection, selectionEndCol);
+		normalSelection = Selection.left(document.lines, normalSelection, selectionEndCol);
 		
-		let [lineIndex, offset] = selection.end;
+		let [lineIndex, offset] = normalSelection.end;
 		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
 		
 		selectionEndCol = endCol;
 	},
 	
 	moveSelectionRight() {
-		selection = Selection.right(document.lines, selection, selectionEndCol);
+		normalSelection = Selection.right(document.lines, normalSelection, selectionEndCol);
 		
-		let [lineIndex, offset] = selection.end;
+		let [lineIndex, offset] = normalSelection.end;
 		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
 		
 		selectionEndCol = endCol;
 	},
 	
 	expandOrContractSelectionUp() {
-		selection = Selection.expandOrContractUp(document.lines, selection, selectionEndCol);
+		normalSelection = Selection.expandOrContractUp(document.lines, normalSelection, selectionEndCol);
 	},
 	
 	expandOrContractSelectionDown() {
-		selection = Selection.expandOrContractDown(document.lines, selection, selectionEndCol);
+		normalSelection = Selection.expandOrContractDown(document.lines, normalSelection, selectionEndCol);
 	},
 	
 	pageUp() {
@@ -434,17 +438,17 @@ let normalFunctions = {
 		if (!isModified && e.key.length === 1) {
 			// printable character other than tab or enter
 			
-			selection = document.insertCharacter(selection, e.key);
+			normalSelection = document.insertCharacter(normalSelection, e.key);
 		} else if (keyCombo === "Tab") {
 			// TODO snippets
 			
-			selection = document.insertCharacter(selection, "\t");
+			normalSelection = document.insertCharacter(normalSelection, "\t");
 		} else if (keyCombo === "Enter") {
-			selection = document.insertNewline(selection);
+			normalSelection = document.insertNewline(normalSelection);
 		} else if (keyCombo === "Backspace") {
-			selection = document.backspace(selection);
+			normalSelection = document.backspace(normalSelection);
 		} else if (keyCombo === "Delete") {
-			selection = document.delete(selection);
+			normalSelection = document.delete(normalSelection);
 		}
 	},
 };
@@ -480,14 +484,8 @@ let normalKeymap = {
 };
 
 let astKeymap = {
-	"ArrowUp": "moveSelectionUp",
-	"ArrowDown": "moveSelectionDown",
-	"ArrowLeft": "moveSelectionLeft",
-	"ArrowRight": "moveSelectionRight",
 	"PageUp": "pageUp",
 	"PageDown": "pageDown",
-	"Shift+ArrowUp": "expandOrContractSelectionUp",
-	"Shift+ArrowDown": "expandOrContractSelectionDown",
 	"Escape": "switchToNormalMode",
 };
 
@@ -570,20 +568,22 @@ function redraw() {
 }
 
 function updateCanvas() {
-	//requestAnimationFrame(function() {
-		render(
-			context,
-			document.lines,
-			selection,
-			hiliteWord,
-			scrollPosition,
-			document.lang,
-			$prefs,
-			$prefs.langs[document.lang.code].colors,
-			measurements,
-			cursorBlinkOn,
-		);
-	//});
+	render(
+		context,
+		mode,
+		document.lines,
+		normalSelection,
+		astSelection,
+		astHilite,
+		astCursor,
+		hiliteWord,
+		scrollPosition,
+		document.lang,
+		$prefs,
+		$prefs.langs[document.lang.code].colors,
+		measurements,
+		cursorBlinkOn,
+	);
 }
 
 function updateMeasurements() {
