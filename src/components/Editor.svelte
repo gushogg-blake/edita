@@ -62,6 +62,8 @@ let focused = false;
 let dragSelectionEnd;
 let draggingSelection = false;
 
+let mode = "normal";
+
 let selection = {
 	start: [0, 0],
 	end: [0, 0],
@@ -100,6 +102,82 @@ async function prefsUpdated(prefs) {
 }
 
 function mousedown(e) {
+	if (mode === "normal") {
+		normalMousedown(e);
+	} else {
+		astMousedown(e);
+	}
+}
+
+function normalMousedown(e) {
+	let {
+		x: left,
+		y: top,
+	} = canvas.getBoundingClientRect();
+	
+	let x = e.clientX - left;
+	let y = e.clientY - top;
+	
+	let [row, col] = rowColFromScreenCoords(
+		document.lines,
+		x,
+		y,
+		scrollPosition,
+		measurements,
+	);
+	
+	let cursor = cursorFromRowCol(
+		document.lines,
+		row,
+		col,
+	);
+	
+	selection = {
+		start: cursor,
+		end: cursor,
+	};
+	
+	let [lineIndex, offset] = cursor;
+	let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
+	
+	selectionEndCol = endCol;
+	
+	startCursorBlink();
+	
+	redraw();
+	
+	draggingSelection = true;
+	
+	on(window, "mousemove", mousemove);
+	on(window, "mouseup", mouseup);
+	
+	let offsets = screenOffsets(canvasDiv);
+	
+	offsets.left += calculateMarginOffset(document.lines, measurements);
+	
+	autoScroll(offsets, function(x, y) {
+		let {colWidth} = measurements;
+		
+		let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.abs(x) / colWidth)) * colWidth;
+		let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(2, Math.abs(y) / 30)));
+		
+		if (!hasHorizontalScrollbar) {
+			xOffset = 0;
+		}
+		
+		if (x < 0) {
+			xOffset = -xOffset;
+		}
+		
+		if (y < 0) {
+			rows = -rows;
+		}
+		
+		scrollBy(xOffset, rows);
+	});
+}
+
+function astMousedown(e) {
 	let {
 		x: left,
 		y: top,
@@ -270,22 +348,18 @@ function keydown(e) {
 	
 	let {keyCombo, isModified} = getKeyCombo(e);
 	
-	if (!isModified && e.key.length === 1) {
-		// printable character other than tab or enter
-		
-		selection = document.insertCharacter(selection, e.key);
-	} else if (keyCombo === "Tab") {
-		// TODO snippets
-		
-		selection = document.insertCharacter(selection, "\t");
-	} else if (keyCombo === "Enter") {
-		selection = document.insertNewline(selection);
-	} else if (keyCombo === "Backspace") {
-		selection = document.backspace(selection);
-	} else if (keyCombo === "Delete") {
-		selection = document.delete(selection);
-	} else if (keymap[keyCombo]) {
-		functions[keymap[keyCombo]]();
+	let keymap = keymaps[mode];
+	
+	if (keymap[keyCombo]) {
+		functions[mode][keymap[keyCombo]]();
+	} else if (keymaps.common[keyCombo]) {
+		functions.common[keymaps.common[keyCombo]]();
+	} else {
+		if (functions[mode].default) {
+			functions[mode].default(e, keyCombo, isModified);
+		} else {
+			//functions.common.default(e, keyCombo, isModified);
+		}
 	}
 	
 	updateScrollbars();
@@ -293,7 +367,7 @@ function keydown(e) {
 	redraw();
 }
 
-let functions = {
+let normalFunctions = {
 	moveSelectionUp() {
 		selection = Selection.up(document.lines, selection, selectionEndCol);
 	},
@@ -349,9 +423,51 @@ let functions = {
 		
 		scrollPosition.row = Math.min(scrollPosition.row, maxRow);
 	},
+	
+	switchToAstMode() {
+		mode = "ast";
+		
+		redraw();
+	},
+	
+	default(e, keyCombo, isModified) {
+		if (!isModified && e.key.length === 1) {
+			// printable character other than tab or enter
+			
+			selection = document.insertCharacter(selection, e.key);
+		} else if (keyCombo === "Tab") {
+			// TODO snippets
+			
+			selection = document.insertCharacter(selection, "\t");
+		} else if (keyCombo === "Enter") {
+			selection = document.insertNewline(selection);
+		} else if (keyCombo === "Backspace") {
+			selection = document.backspace(selection);
+		} else if (keyCombo === "Delete") {
+			selection = document.delete(selection);
+		}
+	},
 };
 
-let keymap = {
+let astFunctions = {
+	switchToNormalMode() {
+		mode = "normal";
+		
+		redraw();
+	},
+};
+
+let commonFunctions = {
+	
+};
+
+let functions = {
+	normal: normalFunctions,
+	ast: astFunctions,
+	common: commonFunctions,
+};
+
+let normalKeymap = {
 	"ArrowUp": "moveSelectionUp",
 	"ArrowDown": "moveSelectionDown",
 	"ArrowLeft": "moveSelectionLeft",
@@ -360,6 +476,28 @@ let keymap = {
 	"PageDown": "pageDown",
 	"Shift+ArrowUp": "expandOrContractSelectionUp",
 	"Shift+ArrowDown": "expandOrContractSelectionDown",
+	"Escape": "switchToAstMode",
+};
+
+let astKeymap = {
+	"ArrowUp": "moveSelectionUp",
+	"ArrowDown": "moveSelectionDown",
+	"ArrowLeft": "moveSelectionLeft",
+	"ArrowRight": "moveSelectionRight",
+	"PageUp": "pageUp",
+	"PageDown": "pageDown",
+	"Shift+ArrowUp": "expandOrContractSelectionUp",
+	"Shift+ArrowDown": "expandOrContractSelectionDown",
+	"Escape": "switchToNormalMode",
+};
+
+let commonKeymap = {
+};
+
+let keymaps = {
+	normal: normalKeymap,
+	ast: astKeymap,
+	common: commonKeymap,
 };
 
 function keyup(e) {
