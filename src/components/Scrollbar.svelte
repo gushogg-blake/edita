@@ -1,6 +1,7 @@
 <script>
-import {createEventDispatcher} from "svelte";
+import {createEventDispatcher, tick} from "svelte";
 import inlineStyle from "../utils/dom/inlineStyle";
+import sleep from "../utils/sleep";
 
 export let orientation;
 
@@ -16,6 +17,8 @@ let fire = createEventDispatcher();
 
 let main;
 let expander;
+let settingScrollPosition;
+let resetTimer;
 
 let cssSizeKey = {
 	horizontal: "width",
@@ -47,14 +50,28 @@ function getScrollPosition() {
 }
 
 function setScrollPosition(position) {
+	settingScrollPosition = true;
+	
 	let divSize = main[offsetSizeKey[orientation]];
 	let scrollSize = main[scrollSizeKey[orientation]];
 	let max = scrollSize - divSize;
 	
 	main[scrollPositionKey[orientation]] = position * max;
+	
+	if (resetTimer) {
+		clearTimeout(resetTimer);
+	}
+	
+	resetTimer = setTimeout(function() {
+		settingScrollPosition = false;
+	}, 30);
 }
 
 function scroll() {
+	if (settingScrollPosition) {
+		return;
+	}
+	
 	fire("scroll", getScrollPosition());
 }
 

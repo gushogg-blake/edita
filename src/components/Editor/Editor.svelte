@@ -534,6 +534,7 @@ function updateHorizontalScrollbar() {
 }
 
 function verticalScroll({detail: position}) {
+	//console.trace(position);
 	let {rowHeight} = measurements;
 	let {offsetHeight: height} = canvasDiv;
 	
