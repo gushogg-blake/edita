@@ -481,7 +481,7 @@ function updateMeasurements() {
 		font: $prefs.font,
 	});
 	
-	measurementsDiv.innerHTML = "A".repeat(100);
+	measurementsDiv.innerHTML = "A".repeat(10000);
 	
 	measurements = {
 		colWidth: measurementsDiv.offsetWidth / measurementsDiv.innerHTML.length,

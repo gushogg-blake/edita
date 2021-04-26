@@ -6,25 +6,31 @@ function astSelectionFromLineIndex(lines, lineIndex) {
 	let line = lines[lineIndex];
 	
 	/*
-	if next line is indented, this line is a header
-	if prev line is indented, this line is a footer
+	will probs need to keep track of each line's openers and closers to identify
+	types of header/footer.  e.g. ) { is a multiline header footer, } else { is a
+	ladder header/footer.
+	
+	can just keep track of it by keeping a list of openers and closers.  if we
+	encounter a } and we have a corresponding opener (most recent opener matches),
+	they cancel each other out, otherwise the } is a closer.  when we encounter a {,
+	it is added as an opener.  we are probably only interested in the first opener
+	and the last closer.
+	
+	use openers and closers (instead of indentation) to identify headers & footers?
+	probs easier for the edge cases
 	*/
 	
-	let nextLineIndex = findNextNonEmptyLineIndex(lines, lineIndex, 1);
-	let prevLineIndex = findNextNonEmptyLineIndex(lines, lineIndex, -1);
-	
-	/*
-	if it's a footer, go up to find a header.  if these headers are footers, keep going
-	
-	if it's a header, go down to find a footer.  if these footers are also headers, keep going
-	*/
-	
-	/*
-	NOTE this doesn't account for 
-	*/
-	
-	if (isHeader(lines, lineIndex)) {
-		let footerLineIndex = findFooterLineIndex(lines, lineIndex + 1);
+	if (isMultilineHeaderHeader(lines, lineIndex)) {
+		// expand to whole header and immediate footer
+	} else if (isMultilineHeaderFooter(lines, lineIndex)) {
+		// expand to whole header and immediate footer
+	} else if (isHeader(lines, lineIndex)) {
+		// may also be footer in ladder
+		// expand to direct footer
+	} else if (isFooter(lines, lineIndex)) {
+		// expand to direct header
+	} else {
+		// just the line
 	}
 }
 
