@@ -23,4 +23,6 @@ window.addEventListener("keydown", function(e) {
 	}
 });
 
+console.warn = _ => null;
+
 export default app;
