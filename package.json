@@ -41,7 +41,7 @@
 		"electron-dev": "run-p autobuild pure-electron-dev",
 		"dist": "run-s build pure-dist-win",
 		"pure-electron": "electron .",
-		"pure-electron-dev": "cross-env NODE_ENV=development electron --disable-features=smooth-scrolling .",
+		"pure-electron-dev": "cross-env NODE_ENV=development electron .",
 		"pure-dist-win": "electron-builder --win --config electron-builder.yml",
 		"test": "./node_modules/mocha/bin/mocha 'test/tests/**/*.test.js'"
 	}
