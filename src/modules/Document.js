@@ -2,6 +2,7 @@ let Evented = require("../utils/Evented");
 let Selection = require("./utils/Selection");
 let countRows = require("./utils/countRows");
 let wrapLine = require("./wrapLine/wrapLine");
+let unwrapLine = require("./wrapLine/unwrapLine");
 
 function createLine(string) {
 	return {
@@ -184,9 +185,15 @@ class Document extends Evented {
 		this.lang.parse(prefs, this.lines);
 	}
 	
-	wrapLines(prefs, measurements, screenWidth) {
+	wrapLines(measurements, screenWidth) {
 		for (let line of this.lines) {
-			wrapLine(prefs.wrap, line, measurements, screenWidth);
+			wrapLine(line, measurements, screenWidth);
+		}
+	}
+	
+	unwrapLines() {
+		for (let line of this.lines) {
+			unwrapLine(line);
 		}
 	}
 	

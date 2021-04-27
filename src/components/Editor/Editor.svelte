@@ -421,11 +421,14 @@ function updateCanvasSize() {
 }
 
 function updateWraps() {
-	document.wrapLines(
-		$prefs,
-		measurements,
-		canvas.width - calculateMarginOffset(document.lines, measurements),
-	);
+	if ($prefs.wrap) {
+		document.wrapLines(
+			measurements,
+			canvas.width - calculateMarginOffset(document.lines, measurements),
+		);
+	} else {
+		document.unwrapLines();
+	}
 }
 
 let prevWidth;

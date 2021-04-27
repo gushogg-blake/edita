@@ -1,7 +1,7 @@
-let {is, deep} = require("../../../utils/assertions");
-let dedent = require("../../../utils/dedent");
-let js = require("../../../../src/modules/langs/js");
-let Document = require("../../../../src/modules/Document");
+let {is, deep} = require("../../../../utils/assertions");
+let dedent = require("../../../../utils/dedent");
+let js = require("../../../../../src/modules/langs/js");
+let Document = require("../../../../../src/modules/Document");
 
 let tests = [
 	[

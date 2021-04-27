@@ -585,7 +585,7 @@ function parse(
 		openBracesStack: null,
 		cacheKey: getCacheKey(states.DEFAULT, false, null),
 	};
-	console.time("parse");
+	//console.time("parse");
 	for (let lineIndex = startIndex; lineIndex <= endIndex; lineIndex++) {
 		let line = lines[lineIndex];
 		
@@ -607,7 +607,7 @@ function parse(
 		
 		prevState = endState;
 	}
-	console.timeEnd("parse");
+	//console.timeEnd("parse");
 }
 
 module.exports = {
