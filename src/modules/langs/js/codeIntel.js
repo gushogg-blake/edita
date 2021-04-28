@@ -21,9 +21,11 @@ function astSelectionFromLineIndex(lines, lineIndex) {
 	*/
 	
 	if (isMultilineHeaderHeader(lines, lineIndex)) {
-		// expand to whole header and immediate footer
+		// expand to whole header and either immediate footer or whole ladder depending on pref
+		
+		
 	} else if (isMultilineHeaderFooter(lines, lineIndex)) {
-		// expand to whole header and immediate footer
+		// expand to whole header and either immediate footer or whole ladder depending on pref
 	} else if (isHeader(lines, lineIndex)) {
 		// may also be footer in ladder
 		// expand to direct footer
@@ -32,6 +34,10 @@ function astSelectionFromLineIndex(lines, lineIndex) {
 	} else {
 		// just the line
 	}
+}
+
+function isMultilineHeaderHeader(lines, lineIndex) {
+	
 }
 
 /*
