@@ -27,13 +27,17 @@ function astSelectionFromLineIndex(lines, lineIndex) {
 	} = getOpenersAndClosersOnLine(line);
 	
 	if (openers.length > 0) {
+		let footerIndex = findNextLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel);
+		
 		return [
 			lineIndex,
-			findNextLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel),
+			footerIndex !== null ? footerIndex : lineIndex,
 		];
 	} else if (closers.length > 0) {
+		let headerIndex = findPrevLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel);
+		
 		return [
-			findPrevLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel),
+			headerIndex !== null ? headerIndex : lineIndex,
 			lineIndex,
 		];
 	} else {
