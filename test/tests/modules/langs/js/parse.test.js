@@ -75,7 +75,7 @@ let tests = [
 			}
 		`,
 		`
-			Ckeyword,Sfunction,S ,Cid,Sa,B(,B),S ,B{
+			Ckeyword,Sfunction,S ,Cid,Sa,Csymbol,((,Csymbol,)),S ,Csymbol,({
 			T4,Cnumber,S123
 			B}
 		`,
@@ -140,7 +140,7 @@ let tests = [
 			\`string\${123}string\`
 		`,
 		`
-			Cstring,S\`,Sstring,Cid,S$,B{,Cnumber,S123,B},Cstring,Sstring\`
+			Cstring,(\`,Sstring,Cid,S$,Csymbol,({,Cnumber,S123,Csymbol,)},Cstring,Sstring,Cstring,)\`
 		`,
 	],
 	[
@@ -151,9 +151,9 @@ let tests = [
 			}string\`
 		`,
 		`
-			Cstring,S\`,Sstring,Cid,S$,B{
-			T4,Cid,Sa,S ,Csymbol,S+,S ,Cstring,S\`,Sinner string ,Cid,S$,B{,Cid,Sid,B},Cstring,S\`
-			B},Cstring,Sstring\`
+			Cstring,(\`,Sstring,Cid,S$,Csymbol,({
+			T4,Cid,Sa,S ,Csymbol,S+,S ,Cstring,(\`,Sinner string ,Cid,S$,Csymbol,({,Cid,Sid,Csymbol,)},Cstring,)\`
+			Csymbol,)},Cstring,Sstring,Cstring,)\`
 		`,
 		[9, 28, 8],
 	],
@@ -230,7 +230,19 @@ describe("JavaScript parser", function() {
 			}, doc.lines);
 			
 			is(doc.lines.map(function(line) {
-				return line.commands.join(",");
+				return line.commands.map(function(command) {
+					let [type, value] = command;
+					
+					if (type === "colour") {
+						return "C" + value;
+					} else if (type === "string") {
+						return "S" + value;
+					} else if (type === "open") {
+						return "(" + value;
+					} else if (type === "close") {
+						return ")" + value;
+					}
+				}).join(",");
 			}).join("\n"), dedent(expectedCommands));
 			
 			if (expectedWidths) {

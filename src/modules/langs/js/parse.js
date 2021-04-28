@@ -170,17 +170,18 @@ function convertLineToCommands(
 			if (ch === "\t") {
 				let tabWidth = (indentWidth - col % indentWidth);
 				
-				commands.push("T" + tabWidth);
+				commands.push(["indent", tabWidth]);
 				
 				col += tabWidth;
 				i++;
 			} else if (ch === " ") {
-				commands.push("S ");
+				commands.push(["string", " "]);
 				
 				i++;
 				col++;
 			} else if (ch === "(" || ch === "[" || ch === "{") {
-				commands.push("B" + ch);
+				commands.push(["colour", "symbol"]);
+				commands.push(["open", ch]);
 				
 				if (ch === "{" && openBracesStack) {
 					openBracesStack = incrementOpenBracesStack(openBracesStack);
@@ -190,7 +191,8 @@ function convertLineToCommands(
 				i++;
 				col++;
 			} else if (ch === ")" || ch === "]" || ch === "}") {
-				commands.push("B" + ch);
+				commands.push(["colour", "symbol"]);
+				commands.push(["close", ch]);
 				
 				i++;
 				col++;
@@ -212,24 +214,24 @@ function convertLineToCommands(
 				}
 				
 				if (state === states.IN_TEMPLATE_STRING) {
-					commands.push("Cstring");
+					commands.push(["colour", "string"]);
 				}
 			} else if (ch === "\"" || ch === "'") {
-				commands.push("Cstring");
-				commands.push("S" + ch);
+				commands.push(["colour", "string"]);
+				commands.push(["string", ch]);
 				
 				i++;
 				col++;
 				state = quoteStates[ch];
 			} else if (ch === "`") {
-				commands.push("Cstring");
-				commands.push("S`");
+				commands.push(["colour", "string"]);
+				commands.push(["string", ch]);
 				
 				i++;
 				col++;
 				state = states.IN_TEMPLATE_STRING;
 			} else if (ch === "/" && lineString[i + 1] === "/") {
-				commands.push("Ccomment");
+				commands.push(["colour", "comment"]);
 				
 				let str = "//";
 				
@@ -241,12 +243,12 @@ function convertLineToCommands(
 					
 					if (ch === "\t") {
 						if (str) {
-							commands.push("S" + str);
+							commands.push(["string", str]);
 						}
 						
 						let tabWidth = (indentWidth - col % indentWidth);
 						
-						commands.push("T" + tabWidth);
+						commands.push(["indent", tabWidth]);
 						
 						str = "";
 						col += tabWidth;
@@ -259,26 +261,26 @@ function convertLineToCommands(
 				}
 				
 				if (str) {
-					commands.push("S" + str);
+					commands.push(["string", str]);
 				}
 				
 				slashIsDivision = false;
 			} else if (ch === "/" && lineString[i + 1] === "*") {
-				commands.push("Ccomment");
-				commands.push("S/*");
+				commands.push(["colour", "comment"]);
+				commands.push(["string", "/*"]);
 				
 				i += 2;
 				col += 2;
 				state = states.IN_BLOCK_COMMENT;
 			} else if (ch === "/" && slashIsDivision) {
-				commands.push("Csymbol");
-				commands.push("S" + ch);
+				commands.push(["colour", "symbol"]);
+				commands.push(["string", ch]);
 				
 				slashIsDivision = false;
 				i++;
 				col++;
 			} else if (ch === "/" && !slashIsDivision) {
-				commands.push("Cregex");
+				commands.push(["colour", "regex"]);
 				
 				let str = "/";
 				let isEscaped = false;
@@ -318,12 +320,12 @@ function convertLineToCommands(
 						break;
 					} else if (ch === "\t") {
 						if (str) {
-							commands.push("S" + str);
+							commands.push(["string", str]);
 						}
 						
 						let tabWidth = (indentWidth - col % indentWidth);
 						
-						commands.push("T" + tabWidth);
+						commands.push(["indent", tabWidth]);
 						
 						str = "";
 						col += tabWidth;
@@ -351,12 +353,12 @@ function convertLineToCommands(
 				let [word] = re.word.exec(lineString);
 				
 				if (keywords.includes(word)) {
-					commands.push("Ckeyword");
+					commands.push(["colour", "keyword"]);
 				} else {
-					commands.push("Cid");
+					commands.push(["colour", "id"]);
 				}
 				
-				commands.push("S" + word);
+				commands.push(["string", word]);
 				
 				i += word.length;
 				col += word.length;
@@ -366,22 +368,22 @@ function convertLineToCommands(
 				
 				let [number] = re.number.exec(lineString);
 				
-				commands.push("Cnumber");
-				commands.push("S" + number);
+				commands.push(["colour", "number"]);
+				commands.push(["string", number]);
 				
 				i += number.length;
 				col += number.length;
 				slashIsDivision = true;
 			} else if (re.symbol.exec(ch)) {
-				commands.push("Csymbol");
-				commands.push("S" + ch);
+				commands.push(["colour", "symbol"]);
+				commands.push(["string", ch]);
 				
 				i++;
 				col++;
 				slashIsDivision = false;
 			} else {
-				commands.push("Cmisc");
-				commands.push("S" + ch);
+				commands.push(["colour", "misc"]);
+				commands.push(["string", ch]);
 				
 				i++;
 				col++;
@@ -396,12 +398,12 @@ function convertLineToCommands(
 				
 				if (ch === "\t") {
 					if (str) {
-						commands.push("S" + str);
+						commands.push(["string", str]);
 					}
 					
 					let tabWidth = (indentWidth - col % indentWidth);
 					
-					commands.push("T" + tabWidth);
+					commands.push(["indent", tabWidth]);
 					
 					str = "";
 					col += tabWidth;
@@ -422,7 +424,7 @@ function convertLineToCommands(
 			}
 			
 			if (str) {
-				commands.push("S" + str);
+				commands.push(["string", str]);
 			}
 			
 			if (isClosed) {
@@ -450,12 +452,12 @@ function convertLineToCommands(
 					continue;
 				} else if (ch === "\t") {
 					if (str) {
-						commands.push("S" + str);
+						commands.push(["string", str]);
 					}
 					
 					let tabWidth = (indentWidth - col % indentWidth);
 					
-					commands.push("T" + tabWidth);
+					commands.push(["indent", tabWidth]);
 					
 					str = "";
 					col += tabWidth;
@@ -480,11 +482,11 @@ function convertLineToCommands(
 			}
 			
 			if (str) {
-				commands.push("S" + str);
+				commands.push(["string", str]);
 			}
 			
 			if (!isClosed && !isEscaped) {
-				commands.push("EnoClosingQuote");
+				commands.push(["error", "noClosingQuote"]);
 			}
 			
 			if (!isEscaped) {
@@ -508,12 +510,12 @@ function convertLineToCommands(
 					continue;
 				} else if (ch === "\t") {
 					if (str) {
-						commands.push("S" + str);
+						commands.push(["string", str]);
 					}
 					
 					let tabWidth = (indentWidth - col % indentWidth);
 					
-					commands.push("T" + tabWidth);
+					commands.push(["indent", tabWidth]);
 					
 					str = "";
 					col += tabWidth;
@@ -529,7 +531,7 @@ function convertLineToCommands(
 						break;
 					}
 				} else if (!isEscaped && ch === "$" && lineString[i + 1] === "{") {
-					commands.push("S" + str);
+					commands.push(["string", str]);
 					
 					str = "";
 					
@@ -548,7 +550,7 @@ function convertLineToCommands(
 			}
 			
 			if (str) {
-				commands.push("S" + str);
+				commands.push(["string", str]);
 			}
 			
 			if (isClosed) {

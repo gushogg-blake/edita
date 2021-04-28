@@ -383,7 +383,7 @@ function switchToAstMode() {
 	
 	let [lineIndex] = normalSelection.end;
 	
-	astSelection = AstSelection.fromLineIndex(lineIndex);
+	astSelection = document.lang.codeIntel.astSelectionFromLineIndex(document.lines, lineIndex);
 }
 
 function switchToNormalMode() {

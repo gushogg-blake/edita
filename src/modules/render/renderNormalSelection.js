@@ -1,5 +1,5 @@
 let Selection = require("../utils/Selection");
-let getLineStartingRow = require("../utils/getLineStartingRow.js");
+let getLineStartingRow = require("../utils/getLineStartingRow");
 let screenCoordsFromCursor = require("../utils/screenCoordsFromCursor");
 let rowColFromCursor = require("../utils/rowColFromCursor");
 let screenCoordsFromRowCol = require("../utils/screenCoordsFromRowCol");
