@@ -1,3 +1,5 @@
+let getOpenersAndClosersOnLine = require("../common/codeIntel/getOpenersAndClosersOnLine");
+
 let keywords = [
 	"break",
 	"case",
@@ -585,7 +587,7 @@ function parse(
 		openBracesStack: null,
 		cacheKey: getCacheKey(states.DEFAULT, false, null),
 	};
-	//console.time("parse");
+	console.time("parse");
 	for (let lineIndex = startIndex; lineIndex <= endIndex; lineIndex++) {
 		let line = lines[lineIndex];
 		
@@ -605,9 +607,11 @@ function parse(
 		line.commands = commands;
 		line.endState = endState;
 		
+		//Object.assign(line, getOpenersAndClosersOnLine(line)); // perf
+		
 		prevState = endState;
 	}
-	//console.timeEnd("parse");
+	console.timeEnd("parse");
 }
 
 module.exports = {

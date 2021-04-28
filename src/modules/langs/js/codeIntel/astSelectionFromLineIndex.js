@@ -1,55 +1,60 @@
+let getOpenersAndClosersOnLine = require("../../common/codeIntel/getOpenersAndClosersOnLine");
+
+/*
+if not a header/footer then just the line
+
+if a header, then to the immediate footer
+
+expanding goes to next indent level, NOT the entire ladder - there's a diff command
+for that (like {} for next/prev paragraph in vim)
+
+cutting selection goes from first opener to that opener's closer in the footer,
+if present (otherwise ?)
+
+^ special cases for easy if statements/function headers?  ) { and ) => always indicate
+function header (or if/while/for in the case of ) {).  } else is always an else or
+else if statement
+
+expand could go to ladder actually - seems poss more useful, and not unintuitive
+*/
+
 function astSelectionFromLineIndex(lines, lineIndex) {
-	// if single line, then just that line
-	// if header (or footer?), then whole element
-	// poss edge cases for multi-line headers - we can have footers that are part of headers.
-	
 	let line = lines[lineIndex];
 	
-	/*
-	will probs need to keep track of each line's openers and closers to identify
-	types of header/footer.  e.g. ) { is a multiline header footer, } else { is a
-	ladder header/footer.
+	let {
+		openers,
+		closers,
+	} = getOpenersAndClosersOnLine(line);
 	
-	can just keep track of it by keeping a list of openers and closers.  if we
-	encounter a } and we have a corresponding opener (most recent opener matches),
-	they cancel each other out, otherwise the } is a closer.  when we encounter a {,
-	it is added as an opener.  we are probably only interested in the first opener
-	and the last closer.
-	
-	use openers and closers (instead of indentation) to identify headers & footers?
-	probs easier for the edge cases
-	*/
-	
-	if (isMultilineHeaderHeader(lines, lineIndex)) {
-		// expand to whole header and either immediate footer or whole ladder depending on pref
-		
-		
-	} else if (isMultilineHeaderFooter(lines, lineIndex)) {
-		// expand to whole header and either immediate footer or whole ladder depending on pref
-	} else if (isHeader(lines, lineIndex)) {
-		// may also be footer in ladder
-		// expand to direct footer
-	} else if (isFooter(lines, lineIndex)) {
-		// expand to direct header
+	if (openers.length > 0) {
+		return [
+			lineIndex,
+			findFooterLineIndexFromHeader(lines, lineIndex, line),
+		];
+	} else if (closers.length > 0) {
+		return [
+			findHeaderLineIndexFromFooter(lines, lineIndex, line),
+			lineIndex,
+		];
 	} else {
-		// just the line
+		return [
+			lineIndex,
+			lineIndex,
+		];
 	}
 }
 
-function isMultilineHeaderHeader(lines, lineIndex) {
+function findNextLineIndexAtIndentLevel(lines, lineIndex, indentLevel) {
+	for (let i = lineIndex + 1; i < lines.length; i++) {
+		if (lines[i].indentLevel === indentLevel) {
+			return i;
+		}
+	}
 	
+	return null;
 }
 
-/*
-findHeaderLineIndex - find the index of the line that's the header to the current
-line.
-
-if the header is also a footer (e.g. } else {) then find the header of that line,
-and so on.
-*/
-
-function findHeaderLineIndex(lines, lineIndex) {
-	let fromLine = lines[lineIndex];
+function findHeaderLineIndexFromFooter(lines, lineIndex, line) {
 	let i = lineIndex - 1;
 	let encounteredNonEmptyLine = false;
 	
@@ -194,6 +199,4 @@ function findNextNonEmptyLineIndex(lines, lineIndex, dir) {
 (after the prev element)
 */
 
-module.exports =  {
-	astSelectionFromLineIndex,
-};
+module.exports = astSelectionFromLineIndex;

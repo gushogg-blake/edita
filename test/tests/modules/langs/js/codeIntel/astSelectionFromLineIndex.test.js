@@ -25,7 +25,7 @@ describe("JavaScript codeIntel.astSelectionFromLineIndex", function() {
 				indentWidth: 4,
 			}, doc.lines);
 			
-			let astSelection = js.codeIntel.astSelectionFromLineIndex(lineIndex);
+			let astSelection = js.codeIntel.astSelectionFromLineIndex(doc.lines, lineIndex);
 			
 			deep(astSelection, expectedAstSelection);
 		});
