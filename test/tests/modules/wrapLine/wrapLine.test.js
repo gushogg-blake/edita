@@ -1,6 +1,7 @@
 let fs = require("flowfs");
 let {is, deep} = require("../../../utils/assertions");
 let dedent = require("../../../utils/dedent");
+let commandsToShorthand = require("../../../utils/commandsToShorthand");
 let js = require("../../../../src/modules/langs/js");
 let Document = require("../../../../src/modules/Document");
 let wrapLine = require("../../../../src/modules/wrapLine/wrapLine");
@@ -47,13 +48,13 @@ describe("wrapLine", function() {
 		let [l1, l2] = line.wrappedLines;
 		
 		is(
-			l1.commands.join(","),
-			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B)`,
+			commandsToShorthand(l1),
+			`Ckeyword,Sfunction,S ,Cid,Sfn,((,Csymbol,S(,Cid,Sa,)),Csymbol,S),S ,({,Csymbol,S{,Ckeyword,Sfunction,S ,Cid,Sfn,((,Csymbol,S(,Cid,Sa,)),Csymbol,S)`,
 		);
 		
 		is(
-			l2.commands.join(","),
-			`S ,B{`,
+			commandsToShorthand(l2),
+			`S ,({,Csymbol,S{`,
 		);
 	});
 	
@@ -65,8 +66,8 @@ describe("wrapLine", function() {
 		is(line.height, 1);
 		
 		is(
-			line.commands.join(","),
-			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B)`,
+			commandsToShorthand(line),
+			`Ckeyword,Sfunction,S ,Cid,Sfn,((,Csymbol,S(,Cid,Sa,)),Csymbol,S),S ,({,Csymbol,S{,Ckeyword,Sfunction,S ,Cid,Sfn,((,Csymbol,S(,Cid,Sa,)),Csymbol,S)`,
 		);
 	});
 	
@@ -82,21 +83,21 @@ describe("wrapLine", function() {
 		is(l1.string, `function fn(a) {function fn(a)`);
 		
 		is(
-			l1.commands.join(","),
-			`Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B)`,
+			commandsToShorthand(l1),
+			`Ckeyword,Sfunction,S ,Cid,Sfn,((,Csymbol,S(,Cid,Sa,)),Csymbol,S),S ,({,Csymbol,S{,Ckeyword,Sfunction,S ,Cid,Sfn,((,Csymbol,S(,Cid,Sa,)),Csymbol,S)`,
 		);
 		
 		is(l2.string, ` {`);
 		
 		is(
-			l2.commands.join(","),
-			`S ,B{`,
+			commandsToShorthand(l2),
+			`S ,({,Csymbol,S{`,
 		);
 		
 		is(l3.string, `aaaaaaaaaaaaaaaaaaaaaaaaaaaaa`);
 		
 		is(
-			l3.commands.join(","),
+			commandsToShorthand(l3),
 			`Cid,Saaaaaaaaaaaaaaaaaaaaaaaaaaaaa`,
 		);
 	});
@@ -113,21 +114,21 @@ describe("wrapLine", function() {
 		is(l1.string, `\tfunction fn(a) {function `);
 		
 		is(
-			l1.commands.join(","),
-			`T4,Ckeyword,Sfunction,S ,Cid,Sfn,B(,Cid,Sa,B),S ,B{,Ckeyword,Sfunction,S `,
+			commandsToShorthand(l1),
+			`T4,Ckeyword,Sfunction,S ,Cid,Sfn,((,Csymbol,S(,Cid,Sa,)),Csymbol,S),S ,({,Csymbol,S{,Ckeyword,Sfunction,S `,
 		);
 		
 		is(l2.string, `fn(a) {aaaaaaaaaaaaaaaaaaa`);
 		
 		is(
-			l2.commands.join(","),
-			`Cid,Sfn,B(,Cid,Sa,B),S ,B{,Cid,Saaaaaaaaaaaaaaaaaaa`,
+			commandsToShorthand(l2),
+			`Cid,Sfn,((,Csymbol,S(,Cid,Sa,)),Csymbol,S),S ,({,Csymbol,S{,Cid,Saaaaaaaaaaaaaaaaaaa`,
 		);
 		
 		is(l3.string, `aaaaaaaaa`);
 		
 		is(
-			l3.commands.join(","),
+			commandsToShorthand(l3),
 			`Saaaaaaaaa`,
 		);
 	});

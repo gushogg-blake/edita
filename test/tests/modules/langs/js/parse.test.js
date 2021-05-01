@@ -1,5 +1,6 @@
 let {is, deep} = require("../../../../utils/assertions");
 let dedent = require("../../../../utils/dedent");
+let commandsToShorthand = require("../../../../utils/commandsToShorthand");
 let js = require("../../../../../src/modules/langs/js");
 let Document = require("../../../../../src/modules/Document");
 
@@ -229,25 +230,7 @@ describe("JavaScript parser", function() {
 				indentWidth: 4,
 			}, doc.lines);
 			
-			is(doc.lines.map(function(line) {
-				return line.commands.map(function(command) {
-					let [type, value] = command;
-					
-					if (type === "colour") {
-						return "C" + value;
-					} else if (type === "tab") {
-						return "T" + value;
-					} else if (type === "string") {
-						return "S" + value;
-					} else if (type === "open") {
-						return "(" + value;
-					} else if (type === "close") {
-						return ")" + value;
-					} else if (type === "error") {
-						return "E" + value;
-					}
-				}).join(",");
-			}).join("\n"), dedent(expectedCommands));
+			is(doc.lines.map(commandsToShorthand).join("\n"), dedent(expectedCommands));
 			
 			if (expectedWidths) {
 				for (let i = 0; i < expectedWidths.length; i++) {
