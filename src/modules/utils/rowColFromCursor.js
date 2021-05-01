@@ -47,12 +47,12 @@ module.exports = function(
 			break;
 		}
 		
-		let [type, value] = [command[0], command.substr(1)];
+		let [type, value] = command;
 		
-		if (type === "T") {
+		if (type === "tab") {
 			col += Number(value);
 			charsConsumed++;
-		} else if (type === "S" || type === "B") {
+		} else if (type === "string") {
 			let newCharsConsumed = Math.min(charsConsumed + value.length, innerLineOffset);
 			let consumed = newCharsConsumed - charsConsumed;
 			

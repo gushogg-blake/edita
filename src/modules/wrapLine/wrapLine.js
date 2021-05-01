@@ -25,10 +25,8 @@ module.exports = function(line, measurements, availableWidth) {
 	
 	let indentCols = 0;
 	
-	cmds: for (let command of line.commands) {
-		let [type, value] = [command[0], command.substr(1)];
-		
-		if (type === "S") {
+	cmds: for (let [type, value] of line.commands) {
+		if (type === "string") {
 			for (let ch of value) {
 				if (ch === " ") {
 					indentCols++;
@@ -36,7 +34,7 @@ module.exports = function(line, measurements, availableWidth) {
 					break cmds;
 				}
 			}
-		} else if (type === "T") {
+		} else if (type === "tab") {
 			indentCols += Number(value);
 		}
 	}
@@ -82,15 +80,15 @@ module.exports = function(line, measurements, availableWidth) {
 					break;
 				}
 				
-				let [type, value] = [command[0], command.substr(1)];
+				let [type, value] = command;
 				
-				if (type === "C") {
+				if (type !== "string" && type !== "tab") {
 					wrappedLine.commands.push(command);
 					
 					continue;
 				}
 				
-				if (type === "T") {
+				if (type === "tab") {
 					let width = Number(value);
 					
 					wrappedLine.commands.push(command);
@@ -107,10 +105,10 @@ module.exports = function(line, measurements, availableWidth) {
 				if (word.length < value.length) {
 					let rest = value.substr(word.length);
 					
-					commands.unshift(type + rest);
+					commands.unshift([type, rest]);
 				}
 				
-				wrappedLine.commands.push(type + word);
+				wrappedLine.commands.push([type, word]);
 				wrappedLine.width += word.length;
 				wrappedLine.string += word;
 				
@@ -121,7 +119,6 @@ module.exports = function(line, measurements, availableWidth) {
 			
 			currentlyAvailableCols = availableCols - wrappedLine.width;
 		} else {
-			
 			if (currentWordWidth > availableCols) {
 				// word doesn't fit on a line - split it to fill the current
 				// line and then start a new line
@@ -129,9 +126,9 @@ module.exports = function(line, measurements, availableWidth) {
 				while (true) {
 					let command = commands.shift();
 					
-					let [type, value] = [command[0], command.substr(1)];
+					let [type, value] = command;
 					
-					if (type === "C") {
+					if (type !== "string") {
 						wrappedLine.commands.push(command);
 						
 						continue;
@@ -140,10 +137,10 @@ module.exports = function(line, measurements, availableWidth) {
 					let [fill, rest] = [value.substr(0, currentlyAvailableCols), value.substr(currentlyAvailableCols)];
 					
 					if (rest.length > 0) {
-						commands.unshift(type + rest);
+						commands.unshift([type, rest]);
 					}
 					
-					wrappedLine.commands.push(type + fill);
+					wrappedLine.commands.push([type, fill]);
 					wrappedLine.width += fill.length;
 					wrappedLine.string += fill;
 					

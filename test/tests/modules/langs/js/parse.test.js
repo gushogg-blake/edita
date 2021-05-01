@@ -75,9 +75,9 @@ let tests = [
 			}
 		`,
 		`
-			Ckeyword,Sfunction,S ,Cid,Sa,Csymbol,((,Csymbol,)),S ,Csymbol,({
+			Ckeyword,Sfunction,S ,Cid,Sa,((,Csymbol,S(,)),Csymbol,S),S ,({,Csymbol,S{
 			T4,Cnumber,S123
-			B}
+			)},Csymbol,S}
 		`,
 	],
 	[
@@ -131,7 +131,7 @@ let tests = [
 			\`string\`
 		`,
 		`
-			Cstring,S\`,Sstring\`
+			(\`,Cstring,S\`,Sstring,)\`,S\`
 		`,
 	],
 	[
@@ -140,7 +140,7 @@ let tests = [
 			\`string\${123}string\`
 		`,
 		`
-			Cstring,(\`,Sstring,Cid,S$,Csymbol,({,Cnumber,S123,Csymbol,)},Cstring,Sstring,Cstring,)\`
+			(\`,Cstring,S\`,Sstring,Cid,S$,({,Csymbol,S{,Cnumber,S123,)},Csymbol,S},Cstring,Sstring,)\`,S\`
 		`,
 	],
 	[
@@ -151,9 +151,9 @@ let tests = [
 			}string\`
 		`,
 		`
-			Cstring,(\`,Sstring,Cid,S$,Csymbol,({
-			T4,Cid,Sa,S ,Csymbol,S+,S ,Cstring,(\`,Sinner string ,Cid,S$,Csymbol,({,Cid,Sid,Csymbol,)},Cstring,)\`
-			Csymbol,)},Cstring,Sstring,Cstring,)\`
+			(\`,Cstring,S\`,Sstring,Cid,S$,({,Csymbol,S{
+			T4,Cid,Sa,S ,Csymbol,S+,S ,(\`,Cstring,S\`,Sinner string ,Cid,S$,({,Csymbol,S{,Cid,Sid,)},Csymbol,S},Cstring,)\`,S\`
+			)},Csymbol,S},Cstring,Sstring,)\`,S\`
 		`,
 		[9, 28, 8],
 	],
@@ -235,12 +235,16 @@ describe("JavaScript parser", function() {
 					
 					if (type === "colour") {
 						return "C" + value;
+					} else if (type === "tab") {
+						return "T" + value;
 					} else if (type === "string") {
 						return "S" + value;
 					} else if (type === "open") {
 						return "(" + value;
 					} else if (type === "close") {
 						return ")" + value;
+					} else if (type === "error") {
+						return "E" + value;
 					}
 				}).join(",");
 			}).join("\n"), dedent(expectedCommands));

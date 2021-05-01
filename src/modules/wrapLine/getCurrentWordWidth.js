@@ -18,11 +18,11 @@ module.exports = function(line, col) {
 			break;
 		}
 		
-		let [type, value] = [command[0], command.substr(1)];
+		let [type, value] = command;
 		
-		if (type === "T") {
+		if (type === "tab") {
 			c += Number(value);
-		} else if (type === "S" || type === "B") {
+		} else if (type === "string") {
 			if (c + value.length > col) {
 				offset = col - c;
 				
@@ -46,9 +46,9 @@ module.exports = function(line, col) {
 			break;
 		}
 		
-		let [type, value] = [command[0], command.substr(1)];
+		let [type, value] = command;
 		
-		if (type === "T") {
+		if (type === "tab") {
 			if (width === 0) {
 				width = Number(value);
 			}
@@ -56,7 +56,7 @@ module.exports = function(line, col) {
 			break;
 		}
 		
-		if (type === "S" || type === "B") {
+		if (type === "string") {
 			if (value[offset].match(nonWordRe)) {
 				if (width === 0) {
 					width = 1;

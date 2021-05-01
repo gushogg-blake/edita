@@ -50,9 +50,9 @@ module.exports = function(
 			break;
 		}
 		
-		let [type, value] = [command[0], command.substr(1)];
+		let [type, value] = command;
 		
-		if (type === "T") {
+		if (type === "tab") {
 			let width = Number(value);
 			
 			if (c + width > col) {
@@ -69,7 +69,7 @@ module.exports = function(
 			
 			c += width;
 			offset++;
-		} else if (type === "S" || type === "B") {
+		} else if (type === "string") {
 			if (c + value.length > col) {
 				// col is within the current string
 				// add the remaining cols to the offset

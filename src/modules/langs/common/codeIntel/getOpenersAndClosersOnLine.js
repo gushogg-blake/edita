@@ -11,9 +11,7 @@ module.exports = function(line) {
 	let openers = [];
 	let closers = [];
 	
-	for (let command of line.commands) {
-		let [type, value] = [command[0], command.substr(1)];
-		
+	for (let [type, value] of line.commands) {
 		if (type !== "B") {
 			continue;
 		}

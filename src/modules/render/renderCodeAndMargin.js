@@ -66,20 +66,15 @@ module.exports = function(
 			}
 			
 			for (let command of commands) {
-				let [type, value] = [command[0], command.substr(1)];
+				let [type, value] = command;
 				
-				if (type === "S") {
+				if (type === "string") {
 					context.fillText(value, x, y);
 					
 					x += value.length * colWidth;
-				} else if (type === "B") {
-					context.fillStyle = colors.bracket;
-					context.fillText(value, x, y);
-					
-					x += colWidth;
-				} else if (type === "C") {
+				} else if (type === "colour") {
 					context.fillStyle = colors[value];
-				} else if (type === "T") {
+				} else if (type === "tab") {
 					let width = Number(value);
 					
 					context.fillText(" ".repeat(width), x, y);

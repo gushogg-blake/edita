@@ -170,7 +170,7 @@ function convertLineToCommands(
 			if (ch === "\t") {
 				let tabWidth = (indentWidth - col % indentWidth);
 				
-				commands.push(["indent", tabWidth]);
+				commands.push(["tab", tabWidth]);
 				
 				col += tabWidth;
 				i++;
@@ -180,8 +180,9 @@ function convertLineToCommands(
 				i++;
 				col++;
 			} else if (ch === "(" || ch === "[" || ch === "{") {
-				commands.push(["colour", "symbol"]);
 				commands.push(["open", ch]);
+				commands.push(["colour", "symbol"]);
+				commands.push(["string", ch]);
 				
 				if (ch === "{" && openBracesStack) {
 					openBracesStack = incrementOpenBracesStack(openBracesStack);
@@ -191,8 +192,9 @@ function convertLineToCommands(
 				i++;
 				col++;
 			} else if (ch === ")" || ch === "]" || ch === "}") {
-				commands.push(["colour", "symbol"]);
 				commands.push(["close", ch]);
+				commands.push(["colour", "symbol"]);
+				commands.push(["string", ch]);
 				
 				i++;
 				col++;
@@ -224,6 +226,7 @@ function convertLineToCommands(
 				col++;
 				state = quoteStates[ch];
 			} else if (ch === "`") {
+				commands.push(["open", ch]);
 				commands.push(["colour", "string"]);
 				commands.push(["string", ch]);
 				
@@ -248,7 +251,7 @@ function convertLineToCommands(
 						
 						let tabWidth = (indentWidth - col % indentWidth);
 						
-						commands.push(["indent", tabWidth]);
+						commands.push(["tab", tabWidth]);
 						
 						str = "";
 						col += tabWidth;
@@ -325,7 +328,7 @@ function convertLineToCommands(
 						
 						let tabWidth = (indentWidth - col % indentWidth);
 						
-						commands.push(["indent", tabWidth]);
+						commands.push(["tab", tabWidth]);
 						
 						str = "";
 						col += tabWidth;
@@ -344,7 +347,7 @@ function convertLineToCommands(
 				i += flags.length;
 				col += flags.length;
 				
-				commands.push("S" + str + flags);
+				commands.push(["string", str + flags]);
 				
 				slashIsDivision = false;
 			} else if (re.startWord.exec(ch)) {
@@ -403,7 +406,7 @@ function convertLineToCommands(
 					
 					let tabWidth = (indentWidth - col % indentWidth);
 					
-					commands.push(["indent", tabWidth]);
+					commands.push(["tab", tabWidth]);
 					
 					str = "";
 					col += tabWidth;
@@ -457,7 +460,7 @@ function convertLineToCommands(
 					
 					let tabWidth = (indentWidth - col % indentWidth);
 					
-					commands.push(["indent", tabWidth]);
+					commands.push(["tab", tabWidth]);
 					
 					str = "";
 					col += tabWidth;
@@ -494,7 +497,8 @@ function convertLineToCommands(
 			}
 		} else if (state === states.IN_TEMPLATE_STRING) {
 			let isEscaped = false;
-			let isClosed = false;
+			let inInterpolation = false;
+			let reachedClosingQuote = false;
 			let str = "";
 					
 			while (i < lineString.length) {
@@ -515,18 +519,18 @@ function convertLineToCommands(
 					
 					let tabWidth = (indentWidth - col % indentWidth);
 					
-					commands.push(["indent", tabWidth]);
+					commands.push(["tab", tabWidth]);
 					
 					str = "";
 					col += tabWidth;
 					i++;
 				} else if (ch === "`") {
-					str += ch;
-					i++;
-					col++;
-					
-					if (!isEscaped) {
-						isClosed = true;
+					if (isEscaped) {
+						str += ch;
+						i++;
+						col++;
+					} else {
+						reachedClosingQuote = true;
 						
 						break;
 					}
@@ -537,7 +541,7 @@ function convertLineToCommands(
 					
 					openBracesStack = pushOpenBracesStack(openBracesStack);
 					
-					isClosed = true;
+					inInterpolation = true;
 					
 					break;
 				} else {
@@ -553,7 +557,14 @@ function convertLineToCommands(
 				commands.push(["string", str]);
 			}
 			
-			if (isClosed) {
+			if (reachedClosingQuote) {
+				commands.push(["close", "`"]);
+				commands.push(["string", "`"]);
+				i++;
+				col++;
+			}
+			
+			if (inInterpolation || reachedClosingQuote) {
 				state = states.DEFAULT;
 			}
 		}
