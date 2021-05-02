@@ -35,7 +35,7 @@ module.exports = function(line, measurements, availableWidth) {
 				}
 			}
 		} else if (type === "tab") {
-			indentCols += Number(value);
+			indentCols += value;
 		}
 	}
 	
@@ -89,7 +89,7 @@ module.exports = function(line, measurements, availableWidth) {
 				}
 				
 				if (type === "tab") {
-					let width = Number(value);
+					let width = value;
 					
 					wrappedLine.commands.push(command);
 					wrappedLine.width += width;

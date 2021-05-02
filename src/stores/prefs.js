@@ -2,7 +2,8 @@ import LocalStorage from "../modules/stores/LocalStorage";
 
 let defaultPrefs = {
 	font: "14px DejaVu Sans Mono",
-	indentWidth: 4,
+	tabWidth: 4,
+	defaultIndent: "\t",
 	lineNumberColor: "#9f9f9f",
 	marginBackground: "#f0f0f0",
 	selectionBackground: "#d0d0d0",

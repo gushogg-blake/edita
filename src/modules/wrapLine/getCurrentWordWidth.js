@@ -21,7 +21,7 @@ module.exports = function(line, col) {
 		let [type, value] = command;
 		
 		if (type === "tab") {
-			c += Number(value);
+			c += value;
 		} else if (type === "string") {
 			if (c + value.length > col) {
 				offset = col - c;
@@ -50,7 +50,7 @@ module.exports = function(line, col) {
 		
 		if (type === "tab") {
 			if (width === 0) {
-				width = Number(value);
+				width = value;
 			}
 			
 			break;

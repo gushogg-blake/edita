@@ -50,7 +50,7 @@ module.exports = function(
 		let [type, value] = command;
 		
 		if (type === "tab") {
-			col += Number(value);
+			col += value;
 			charsConsumed++;
 		} else if (type === "string") {
 			let newCharsConsumed = Math.min(charsConsumed + value.length, innerLineOffset);

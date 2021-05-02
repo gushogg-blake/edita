@@ -1,10 +1,9 @@
 let fs = require("flowfs");
 let {is, deep} = require("../../../utils/assertions");
 let dedent = require("../../../utils/dedent");
+let createJsDoc = require("../../../utils/createJsDoc");
 let commandsToShorthand = require("../../../utils/commandsToShorthand");
-let js = require("../../../../src/modules/langs/js");
-let getFileDetails = require("../../../../src/modules/utils/getFileDetails");
-let Document = require("../../../../src/modules/Document");
+
 let wrapLine = require("../../../../src/modules/wrapLine/wrapLine");
 
 let measurements = {
@@ -14,17 +13,8 @@ let measurements = {
 
 let screenWidth = 305;
 
-let prefs = {
-	indentWidth: 4,
-	indent: "\t",
-};
-
 function wrap(code) {
-	let details = getFileDetails(prefs, code, "a.js");
-	
-	let doc = new Document(dedent(code), details);
-	
-	doc.parse(prefs);
+	let doc = createJsDoc(dedent(code));
 	
 	let [line] = doc.lines;
 	
@@ -140,35 +130,13 @@ describe("wrapLine", function() {
 	});
 	
 	it("bluebird", async function() {
-		let path = "test/repos/bluebird/js/browser/bluebird.js";
-		let code = await fs(path).read();
-		let details = getFileDetails(prefs, code, path);
-		let doc = new Document(dedent(code), details);
+		let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
 		
-		doc.parse(prefs);
+		let doc = createJsDoc(dedent(code));
 		
 		doc.wrapLines({
 			colWidth: 10,//8.43,
 			rowHeight: 20,//18,
 		}, 389);
 	});
-	
-	//it("bluebird", async function() {
-	//	let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
-	//	
-	//	let doc = new Document(code, js);
-	//	
-	//	doc.parse({
-	//		indentWidth: 4,
-	//	});
-	//	
-	//	for (let i = 100; i < 1500; i++) {
-	//		console.log(i);
-	//		doc.wrapLines({
-	//			colWidth: 8.43,
-	//			rowHeight: 18,
-	//		}, i);
-	//	}
-	//	
-	//});
 });

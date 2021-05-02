@@ -7,8 +7,8 @@ module.exports = function(
 	context,
 	lines,
 	scrollPosition,
-	lang,
 	prefs,
+	fileDetails,
 	colors,
 	measurements,
 ) {
@@ -23,6 +23,10 @@ module.exports = function(
 		width,
 		height,
 	} = context.canvas;
+	
+	let {
+		lang,
+	} = fileDetails;
 	
 	let rowsToRender = height / rowHeight;
 	let rowsRendered = 0;
@@ -75,7 +79,7 @@ module.exports = function(
 				} else if (type === "colour") {
 					context.fillStyle = colors[value];
 				} else if (type === "tab") {
-					let width = Number(value);
+					let width = value;
 					
 					context.fillText(" ".repeat(width), x, y);
 					

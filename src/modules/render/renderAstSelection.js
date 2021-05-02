@@ -8,6 +8,7 @@ module.exports = function(
 	astSelection,
 	scrollPosition,
 	prefs,
+	fileDetails,
 	measurements,
 ) {
 	context.fillStyle = prefs.astSelectionBackground;
@@ -21,7 +22,7 @@ module.exports = function(
 	let [x, y] = screenCoordsFromRowCol(
 		lines,
 		startRow,
-		startLine.indentLevel * prefs.indentWidth,
+		startLine.indentLevel * fileDetails.indentation.colsPerIndent,
 		scrollPosition,
 		measurements,
 	);

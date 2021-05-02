@@ -18,8 +18,8 @@ module.exports = function(
 	astCursor,
 	hiliteWord,
 	scrollPosition,
-	lang,
 	prefs,
+	fileDetails,
 	colors,
 	measurements,
 	cursorBlinkOn,
@@ -64,6 +64,7 @@ module.exports = function(
 			astSelection,
 			scrollPosition,
 			prefs,
+			fileDetails,
 			measurements,
 		);
 	}
@@ -75,6 +76,7 @@ module.exports = function(
 			astHilite,
 			scrollPosition,
 			prefs,
+			fileDetails,
 			measurements,
 		);
 	}
@@ -91,8 +93,8 @@ module.exports = function(
 		context,
 		lines,
 		scrollPosition,
-		lang,
 		prefs,
+		fileDetails,
 		colors,
 		measurements,
 	);

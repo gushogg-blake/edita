@@ -1,9 +1,7 @@
 let {is, deep} = require("../../../../utils/assertions");
 let dedent = require("../../../../utils/dedent");
+let createJsDoc = require("../../../../utils/createJsDoc");
 let commandsToShorthand = require("../../../../utils/commandsToShorthand");
-let getFileDetails = require("../../../../../src/modules/utils/getFileDetails");
-let js = require("../../../../../src/modules/langs/js");
-let Document = require("../../../../../src/modules/Document");
 
 let tests = [
 	[
@@ -225,16 +223,7 @@ let tests = [
 describe("JavaScript parser", function() {
 	for (let [name, code, expectedCommands, expectedWidths] of tests) {
 		it(name, function() {
-			let prefs = {
-				indentWidth: 4,
-				indent: "\t",
-			};
-			
-			let details = getFileDetails(prefs, code, "a.js");
-			
-			let doc = new Document(dedent(code), details);
-			
-			doc.parse(prefs);
+			let doc = createJsDoc(dedent(code));
 			
 			is(doc.lines.map(commandsToShorthand).join("\n"), dedent(expectedCommands));
 			

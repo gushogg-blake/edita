@@ -1,8 +1,7 @@
 let {is, deep} = require("../../../../../utils/assertions");
 let dedent = require("../../../../../utils/dedent");
-let getFileDetails = require("../../../../../../src/modules/utils/getFileDetails");
+let createJsDoc = require("../../../../../utils/createJsDoc");
 let js = require("../../../../../../src/modules/langs/js");
-let Document = require("../../../../../../src/modules/Document");
 
 let tests = [
 	[
@@ -131,16 +130,7 @@ let tests = [
 describe("JavaScript codeIntel.astSelectionFromLineIndex", function() {
 	for (let [name, code, lineIndex, expectedAstSelection] of tests) {
 		it(name, function() {
-			let prefs = {
-				indentWidth: 4,
-				indent: "\t",
-			};
-			
-			let details = getFileDetails(prefs, code, "a.js");
-			
-			let doc = new Document(dedent(code).trimRight(), details);
-			
-			doc.parse(prefs);
+			let doc = createJsDoc(dedent(code).trimRight());
 			
 			let astSelection = js.codeIntel.astSelectionFromLineIndex(doc.lines, lineIndex);
 			

@@ -53,7 +53,7 @@ module.exports = function(
 		let [type, value] = command;
 		
 		if (type === "tab") {
-			let width = Number(value);
+			let width = value;
 			
 			if (c + width > col) {
 				// the col is within the tab
