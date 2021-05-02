@@ -2,6 +2,7 @@ let {is, deep} = require("../../../utils/assertions");
 let dedent = require("../../../utils/dedent");
 let js = require("../../../../src/modules/langs/js");
 let Document = require("../../../../src/modules/Document");
+let getFileDetails = require("../../../../src/modules/utils/getFileDetails");
 let rowColFromCursor = require("../../../../src/modules/utils/rowColFromCursor");
 
 let measurements = {
@@ -12,11 +13,16 @@ let measurements = {
 let screenWidth = 305;
 
 function lines(code) {
-	let doc = new Document(dedent(code), js);
-	
-	doc.parse({
+	let prefs = {
 		indentWidth: 4,
-	});
+		indent: "\t",
+	};
+	
+	let details = getFileDetails(prefs, code, "a.js");
+	
+	let doc = new Document(dedent(code), details);
+	
+	doc.parse(prefs);
 	
 	doc.wrapLines(measurements, screenWidth);
 	

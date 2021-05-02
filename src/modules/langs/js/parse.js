@@ -1,3 +1,4 @@
+let getIndentLevel = require("../common/utils/getIndentLevel");
 let getOpenersAndClosersOnLine = require("../common/codeIntel/getOpenersAndClosersOnLine");
 
 let keywords = [
@@ -587,6 +588,7 @@ function convertLineToCommands(
 function parse(
 	prefs,
 	lines,
+	indentation,
 	startIndex=0,
 	endIndex=null,
 ) {
@@ -616,7 +618,7 @@ function parse(
 		
 		line.width = col;
 		line.trimmed = line.string.trimLeft();
-		line.indentLevel = line.string.length - line.trimmed.length;
+		line.indentLevel = getIndentLevel(line.string, indentation);
 		line.commands = commands;
 		line.endState = endState;
 		

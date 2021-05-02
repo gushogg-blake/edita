@@ -22,10 +22,16 @@ function createLines(code) {
 }
 
 class Document extends Evented {
-	constructor(code, lang) {
+	constructor(code, details) {
 		super();
 		
+		let {
+			lang,
+			indentation,
+		} = details;
+		
 		this.lang = lang;
+		this.indentation = indentation;
 		
 		this.lines = createLines(code);
 		
@@ -182,7 +188,7 @@ class Document extends Evented {
 	}
 	
 	parse(prefs) {
-		this.lang.parse(prefs, this.lines);
+		this.lang.parse(prefs, this.lines, this.indentation);
 	}
 	
 	wrapLines(measurements, screenWidth) {

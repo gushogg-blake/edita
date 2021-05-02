@@ -1,26 +1,22 @@
 <script>
-import {tick} from "svelte";
+import {tick, onMount} from "svelte";
+
+import sleep from "../../utils/sleep";
+import inlineStyle from "../../utils/dom/inlineStyle";
+import {on, off} from "../../utils/dom/domEvents";
+import screenOffsets from "../../utils/dom/screenOffsets";
+import autoScroll from "../../utils/dom/autoScroll";
+import getKeyCombo from "../../utils/getKeyCombo";
+
 import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
 import render from "../../modules/render/render";
 import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
 import rowColFromCursor from "../../modules/utils/rowColFromCursor";
 import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
 import Selection from "../../modules/utils/Selection";
-import getKeyCombo from "../../utils/getKeyCombo";
-/*
-let js = require("../../src/modules/langs/js");
-let render = require("../../src/modules/render/render");
-let calculateMarginOffset = require("../../src/modules/render/calculateMarginOffset");
 
-*/
-import {onMount} from "svelte";
-import sleep from "../../utils/sleep";
-import inlineStyle from "../../utils/dom/inlineStyle";
-import {on, off} from "../../utils/dom/domEvents";
-import screenOffsets from "../../utils/dom/screenOffsets";
-import autoScroll from "../../utils/dom/autoScroll";
-//import render from "../../modules/render/render";
 import prefs from "../../stores/prefs";
+
 import Scrollbar from "../Scrollbar.svelte";
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";

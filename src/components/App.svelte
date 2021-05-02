@@ -3,15 +3,17 @@ let fs = require("flowfs");
 
 import {onMount, tick} from "svelte";
 
-import getKeyCombo from "./utils/getKeyCombo";
-import lid from "./utils/lid";
-import {push} from "./utils/arrayMethods";
-import langs from "./modules/langs";
-import Document from "./modules/Document";
-import openDialog from "./modules/ipc/openDialog/renderer";
-import Toolbar from "./components/Toolbar.svelte";
-import TabBar from "./components/TabBar.svelte";
-import Editor from "./components/Editor/Editor.svelte";
+import getKeyCombo from "../utils/getKeyCombo";
+import lid from "../utils/lid";
+import {push} from "../utils/arrayMethods";
+import getFileDetails from "../modules/utils/getFileDetails";
+import langs from "../modules/langs";
+import Document from "../modules/Document";
+import openDialog from "../modules/ipc/openDialog/renderer";
+import prefs from "../stores/prefs";
+import Toolbar from "../components/Toolbar.svelte";
+import TabBar from "../components/TabBar.svelte";
+import Editor from "../components/Editor/Editor.svelte";
 
 let tabs = [];
 let editorsByTabId = {};
@@ -70,10 +72,12 @@ async function openFile(path) {
 	
 	let code = await fs(path).read();
 	
+	let details = getFileDetails($prefs, code, path);
+	
 	let newTab = {
 		id: lid(),
 		path,
-		document: new Document(code, langs.js), // TODO detect lang
+		document: new Document(code, details),
 	};
 	
 	//console.log(newTab);
@@ -121,8 +125,8 @@ onMount(async function() {
 <svelte:window on:keydown={keydown}/>
 
 <style type="text/scss">
-@import "./css/mixins/flex-col";
-@import "./css/classes/hide";
+@import "../css/mixins/flex-col";
+@import "../css/classes/hide";
 
 #main {
 	display: grid;

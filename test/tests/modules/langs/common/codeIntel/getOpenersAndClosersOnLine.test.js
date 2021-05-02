@@ -1,8 +1,9 @@
 let {is, deep} = require("../../../../../utils/assertions");
 let dedent = require("../../../../../utils/dedent");
 let js = require("../../../../../../src/modules/langs/js");
-let getOpenersAndClosersOnLine = require("../../../../../../src/modules/langs/common/codeIntel/getOpenersAndClosersOnLine");
+let getFileDetails = require("../../../../../../src/modules/utils/getFileDetails");
 let Document = require("../../../../../../src/modules/Document");
+let getOpenersAndClosersOnLine = require("../../../../../../src/modules/langs/common/codeIntel/getOpenersAndClosersOnLine");
 
 let tests = [
 	[
@@ -66,11 +67,16 @@ let tests = [
 describe("Common codeIntel.getOpenersAndClosersOnLine", function() {
 	for (let [name, code, expectedOpeners, expectedClosers] of tests) {
 		it(name, function() {
-			let doc = new Document(dedent(code));
-			
-			js.parse({
+			let prefs = {
 				indentWidth: 4,
-			}, doc.lines);
+				indent: "\t",
+			};
+			
+			let details = getFileDetails(prefs, code, "a.js");
+			
+			let doc = new Document(dedent(code), details);
+			
+			doc.parse(prefs);
 			
 			let {
 				openers,
