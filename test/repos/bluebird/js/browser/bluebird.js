@@ -12,24 +12,24 @@
 
 
 let o = {
-	// Features enabled: core, race, call_get, generators, map, nodeify, promisify, props, reduce, settle, some, using, timers, filter, any, each
+    // Features enabled: core, race, call_get, generators, map, nodeify, promisify, props, reduce, settle, some, using, timers, filter, any, each
 };
 
 let str = `
-	aeojk[poke
-	a
-	ergaerg
-	${
-		{
-			a: 123,
-			b: `
-				test${asd}457
-			`,
-		}
-	}
-	srting
-	asd
-	
+    aeojk[poke
+    a
+    ergaerg
+    ${
+        {
+            a: 123,
+            b: `
+                test${asd}457
+            `,
+        }
+    }
+    srting
+    asd
+    
 `;
 
 "use strict";

@@ -72,12 +72,12 @@ async function openFile(path) {
 	
 	let code = await fs(path).read();
 	
-	let details = getFileDetails($prefs, code, path);
+	let fileDetails = getFileDetails($prefs, code, path);
 	
 	let newTab = {
 		id: lid(),
 		path,
-		document: new Document(code, details),
+		document: new Document(code, fileDetails),
 	};
 	
 	//console.log(newTab);
