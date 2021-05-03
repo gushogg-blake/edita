@@ -11,7 +11,7 @@ module.exports = function(code) {
 	
 	let doc = new Document(code, details);
 	
-	doc.parse();
+	doc.parse(prefs);
 	
 	return doc;
 }

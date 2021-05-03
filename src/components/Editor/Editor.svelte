@@ -281,6 +281,24 @@ let normalFunctions = {
 		normalSelection = Selection.expandOrContractDown(document.lines, normalSelection, selectionEndCol);
 	},
 	
+	expandOrContractSelectionLeft() {
+		normalSelection = Selection.expandOrContractLeft(document.lines, normalSelection);
+		
+		let [lineIndex, offset] = normalSelection.end;
+		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
+		
+		selectionEndCol = endCol;
+	},
+	
+	expandOrContractSelectionRight() {
+		normalSelection = Selection.expandOrContractRight(document.lines, normalSelection);
+		
+		let [lineIndex, offset] = normalSelection.end;
+		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
+		
+		selectionEndCol = endCol;
+	},
+	
 	pageUp() {
 		let {rowHeight} = measurements;
 		let {offsetHeight: height} = canvasDiv;
@@ -352,6 +370,8 @@ let normalKeymap = {
 	"PageDown": "pageDown",
 	"Shift+ArrowUp": "expandOrContractSelectionUp",
 	"Shift+ArrowDown": "expandOrContractSelectionDown",
+	"Shift+ArrowLeft": "expandOrContractSelectionLeft",
+	"Shift+ArrowRight": "expandOrContractSelectionRight",
 	"Escape": "switchToAstMode",
 };
 

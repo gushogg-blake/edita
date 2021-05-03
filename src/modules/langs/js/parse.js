@@ -135,13 +135,13 @@ function getCacheKey(state, slashIsDivision, openBracesStack) {
 }
 
 function convertLineToCommands(
-	fileDetails,
+	prefs,
 	initialState,
 	lineString,
 ) {
 	let {
 		tabWidth,
-	} = fileDetails;
+	} = prefs;
 	
 	let {
 		state,
@@ -578,6 +578,7 @@ function convertLineToCommands(
 
 function parse(
 	lines,
+	prefs,
 	fileDetails,
 	startIndex=0,
 	endIndex=null,
@@ -601,7 +602,7 @@ function parse(
 			commands,
 			endState,
 		} = convertLineToCommands(
-			fileDetails,
+			prefs,
 			prevState,
 			line.string,
 		);

@@ -188,8 +188,8 @@ class Document extends Evented {
 		};
 	}
 	
-	parse() {
-		this.lang.parse(this.lines, this.fileDetails);
+	parse(prefs) {
+		this.lang.parse(this.lines, prefs, this.fileDetails);
 	}
 	
 	wrapLines(measurements, screenWidth) {
