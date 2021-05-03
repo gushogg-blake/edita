@@ -17,24 +17,18 @@ function createLine(string) {
 	};
 }
 
-function createLines(code) {
-	return code.split("\n").map(createLine);
+function createLines(code, newline) {
+	return code.split(newline).map(createLine);
 }
 
 class Document extends Evented {
 	constructor(code, fileDetails) {
 		super();
 		
-		let {
-			lang,
-			indentation,
-		} = fileDetails;
-		
-		this.lang = lang;
-		this.indentation = indentation;
+		this.lang = fileDetails.lang;
 		this.fileDetails = fileDetails;
 		
-		this.lines = createLines(code);
+		this.lines = createLines(code, fileDetails.newline);
 		
 		this.renderedUpTo = 0;
 	}
@@ -45,7 +39,7 @@ class Document extends Evented {
 	*/
 	
 	edit(lineIndex, removeLines, insertString) {
-		let insertLines = insertString.split("\n").map(createLine);
+		let insertLines = insertString.split(this.fileDetails.newline).map(createLine);
 		
 		this.lines.splice(lineIndex, removeLines, ...insertLines);
 		
@@ -180,7 +174,7 @@ class Document extends Evented {
 		let [lineIndex, offset] = start;
 		let line = this.lines[lineIndex];
 		
-		this.replaceSelection(selection, "\n");
+		this.replaceSelection(selection, this.fileDetails.newline);
 		
 		return {
 			start: [lineIndex + 1, 0],
@@ -218,6 +212,10 @@ class Document extends Evented {
 		}
 		
 		return width;
+	}
+	
+	toString() {
+		return this.lines.map(line => line.string).join(this.fileDetails.newline);
 	}
 }
 

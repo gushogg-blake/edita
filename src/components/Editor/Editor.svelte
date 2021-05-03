@@ -11,6 +11,7 @@ import getKeyCombo from "../../utils/getKeyCombo";
 import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
 import render from "../../modules/render/render";
 import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
+import screenCoordsFromRowCol from "../../modules/utils/screenCoordsFromRowCol";
 import rowColFromCursor from "../../modules/utils/rowColFromCursor";
 import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
 import Selection from "../../modules/utils/Selection";
@@ -220,6 +221,55 @@ function scrollBy(x, rows) {
 	redraw();
 }
 
+function ensureSelectionIsOnScreen() {
+	if (mode === "ast") {
+		ensureAstSelectionIsOnScreen();
+	} else {
+		ensureNormalCursorIsOnScreen();
+	}
+}
+
+function ensureAstSelectionIsOnScreen() {
+	
+}
+
+function ensureNormalCursorIsOnScreen() {
+	let {colWidth} = measurements;
+	
+	let {end} = normalSelection;
+	let [lineIndex, offset] = end;
+	let [row, col] = rowColFromCursor(document.lines, lineIndex, offset);
+	
+	let {width, rows} = getCodeAreaSize();
+	let maxRow = document.countRows() - 1;
+	let firstVisibleRow = scrollPosition.row;
+	let lastFullyVisibleRow = firstVisibleRow + rows;
+	
+	let idealRowBuffer = 5;
+	
+	let topRowDiff = idealRowBuffer - (row - firstVisibleRow);
+	
+	if (topRowDiff > 0) {
+		scrollPosition.row = Math.max(0, scrollPosition.row - topRowDiff);
+	}
+	
+	let bottomRowDiff = idealRowBuffer - (lastFullyVisibleRow - row);
+	
+	if (bottomRowDiff > 0) {
+		scrollPosition.row = Math.min(scrollPosition.row + bottomRowDiff, maxRow);
+	}
+	
+	let colBuffer = 8;
+	
+	let [x] = screenCoordsFromRowCol(document.lines, row, col, scrollPosition, measurements);
+	
+	x -= calculateMarginOffset(document.lines, measurements);
+	
+	if (x < 1) {
+		scrollPosition.x = Math.max(0, scrollPosition.x - x - colBuffer * colWidth);
+	}
+}
+
 function keydown(e) {
 	if (!focused) {
 		return;
@@ -241,6 +291,7 @@ function keydown(e) {
 		}
 	}
 	
+	ensureSelectionIsOnScreen();
 	updateScrollbars();
 	startCursorBlink();
 	redraw();
@@ -300,25 +351,11 @@ let normalFunctions = {
 	},
 	
 	pageUp() {
-		let {rowHeight} = measurements;
-		let {offsetHeight: height} = canvasDiv;
-		let screenRows = Math.floor(height / rowHeight);
-
-		scrollPosition.row -= screenRows;
 		
-		scrollPosition.row = Math.max(0, scrollPosition.row);
 	},
 	
 	pageDown() {
-		let {rowHeight} = measurements;
-		let {offsetHeight: height} = canvasDiv;
-		let screenRows = Math.floor(height / rowHeight);
-		let rows = document.countRows();
-		let maxRow = rows - 1;
 		
-		scrollPosition.row += screenRows;
-		
-		scrollPosition.row = Math.min(scrollPosition.row, maxRow);
 	},
 	
 	switchToAstMode() {
@@ -440,7 +477,7 @@ function updateWraps() {
 	if ($prefs.wrap) {
 		document.wrapLines(
 			measurements,
-			canvas.width - calculateMarginOffset(document.lines, measurements),
+			getCodeAreaSize().width,
 		);
 	} else {
 		document.unwrapLines();
@@ -538,9 +575,7 @@ function updateHorizontalScrollbar() {
 	}
 	
 	let {colWidth} = measurements;
-	let {offsetWidth: width} = canvasDiv;
-	
-	width -= calculateMarginOffset(document.lines, measurements);
+	let {width} = getCodeAreaSize();
 	
 	let longestLineWidth = document.getLongestLineWidth();
 	
@@ -553,9 +588,8 @@ function updateHorizontalScrollbar() {
 }
 
 function verticalScroll({detail: position}) {
-	//console.trace(position);
 	let {rowHeight} = measurements;
-	let {offsetHeight: height} = canvasDiv;
+	let {height} = canvas;
 	
 	let rows = document.countRows();
 	let scrollHeight = (rows - 1) * rowHeight + height;
@@ -571,7 +605,7 @@ function verticalScroll({detail: position}) {
 
 function horizontalScroll({detail: position}) {
 	let {colWidth} = measurements;
-	let {offsetWidth: width} = canvasDiv;
+	let {width} = canvas;
 	
 	let longestLineWidth = document.getLongestLineWidth();
 	let scrollWidth = longestLineWidth * colWidth + width;
@@ -582,6 +616,22 @@ function horizontalScroll({detail: position}) {
 	scrollPosition.x = scrollLeft;
 	
 	updateCanvas();
+}
+
+function getCodeAreaSize() {
+	let {width, height} = canvas;
+	
+	let {
+		colWidth,
+		rowHeight,
+	} = measurements;
+	
+	return {
+		width: width - calculateMarginOffset(document.lines, measurements),
+		height,
+		rows: Math.floor(height / rowHeight),
+		cols: Math.floor(width / colWidth),
+	};
 }
 
 onMount(async function() {

@@ -15,6 +15,8 @@ import Toolbar from "../components/Toolbar.svelte";
 import TabBar from "../components/TabBar.svelte";
 import Editor from "../components/Editor/Editor.svelte";
 
+prefs.init();
+
 let tabs = [];
 let editorsByTabId = {};
 let selectedTab = null;
@@ -50,7 +52,17 @@ let functions = {
 	},
 	
 	async saveCurrentFile() {
+		if (!selectedTab) {
+			return;
+		}
 		
+		let {document, path} = selectedTab;
+		
+		if (path) {
+			await fs(path).write(document.toString());
+		} else {
+			// TODO save dialog
+		}
 	},
 };
 

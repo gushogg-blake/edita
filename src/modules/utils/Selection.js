@@ -102,7 +102,7 @@ let api = {
 		}
 		
 		if (lineIndex === 0 && offset === 0) {
-			return;
+			return selection;
 		}
 		
 		if (offset === 0) {
@@ -137,7 +137,7 @@ let api = {
 		}
 		
 		if (lineIndex === lines.length - 1 && offset === line.string.length) {
-			return;
+			return selection;
 		}
 		
 		if (offset === line.string.length) {

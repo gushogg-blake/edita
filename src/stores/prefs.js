@@ -1,4 +1,4 @@
-import LocalStorage from "../modules/stores/LocalStorage";
+import Writable from "../modules/stores/Writable";
 
 let defaultPrefs = {
 	font: "14px DejaVu Sans Mono",
@@ -28,8 +28,12 @@ let defaultPrefs = {
 	cursorBlinkPeriod: 700,
 };
 
-export default new LocalStorage("prefs", defaultPrefs, Date.now(), {
-	"*": function() {
-		return defaultPrefs;
-	},
-});
+class Prefs extends Writable {
+	init(...sources) {
+		this.set(Object.assign({}, defaultPrefs, {
+			defaultNewline: window.systemInfo.newline,
+		}, ...sources));
+	}
+}
+
+export default new Prefs();
