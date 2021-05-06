@@ -1,8 +1,13 @@
 module.exports = function(str) {
+	let mixed = false;
+	let mostCommon = null;
 	let all = str.match(/(\r\n|\r|\n)/g);
 	
 	if (!all) {
-		return null;
+		return {
+			mixed,
+			mostCommon,
+		};
 	}
 	
 	let crlf = 0;
@@ -20,24 +25,31 @@ module.exports = function(str) {
 	}
 	
 	if (crlf + cr + lf === 0) {
-		return null;
+		return {
+			mixed,
+			mostCommon,
+		};
 	}
+	
+	mixed = [crlf, cr, lf].filter(c => c > 0).length > 1;
 	
 	if (crlf > cr && crlf > lf) {
-		return "\r\n";
+		mostCommon = "\r\n";
 	} else if (cr > crlf && cr > lf) {
-		return "\r";
+		mostCommon = "\r";
 	} else if (lf > crlf && lf > cr) {
-		return "\n";
+		mostCommon = "\n";
 	}
 	
-	if (crlf > 0) {
-		return "\r\n";
+	if (mostCommon) {
+		return {
+			mixed,
+			mostCommon,
+		};
 	}
 	
-	if (cr > 0) {
-		return "\r";
-	}
-	
-	return "\n";
+	return {
+		mixed,
+		mostCommon: "\n",
+	};
 }

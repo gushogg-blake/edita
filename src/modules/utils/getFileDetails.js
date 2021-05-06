@@ -1,7 +1,7 @@
 let langs = require("../langs");
 let guessIndent = require("./guessIndent");
 let guessLang = require("./guessLang");
-let guessNewline = require("./guessNewline");
+let checkNewlines = require("./checkNewlines");
 
 module.exports = function(prefs, code, path) {
 	let {
@@ -14,7 +14,15 @@ module.exports = function(prefs, code, path) {
 	let indent = guessIndent(code) || defaultIndent;
 	let lang = guessLang(code, path) || langs[defaultLang];
 	let indentType = indent[0] === "\t" ? "tab" : "space";
-	let newline = guessNewline(code) || defaultNewline;
+	
+	let {
+		mixed: hasMixedNewlines,
+		mostCommon: newline,
+	} = checkNewlines(code);
+	
+	if (!newline) {
+		newline = defaultNewline;
+	}
 
 	let indentation = {
 		str: indent,
@@ -27,5 +35,6 @@ module.exports = function(prefs, code, path) {
 		tabWidth,
 		lang,
 		newline,
+		hasMixedNewlines,
 	};
 }

@@ -86,6 +86,10 @@ async function openFile(path) {
 	
 	let fileDetails = getFileDetails($prefs, code, path);
 	
+	if (fileDetails.hasMixedNewlines) {
+		// TODO prompt to change all newlines
+	}
+	
 	let newTab = {
 		id: lid(),
 		path,
