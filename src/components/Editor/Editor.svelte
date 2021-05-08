@@ -583,7 +583,6 @@ function redraw() {
 }
 
 function updateCanvas() {
-	console.log(windowHasFocus);
 	render(
 		context,
 		mode,

@@ -1,3 +1,4 @@
+let countInitialWhitespaceCols = require("../utils/countInitialWhitespaceCols");
 let {minNonWhitespaceCols, wordRe} = require("./config");
 let getCurrentWordWidth = require("./getCurrentWordWidth");
 let unwrapLine = require("./unwrapLine");
@@ -23,21 +24,7 @@ module.exports = function(line, measurements, availableWidth) {
 	2) indent wrapped lines to the same level as the main line
 	*/
 	
-	let indentCols = 0;
-	
-	cmds: for (let [type, value] of line.commands) {
-		if (type === "string") {
-			for (let ch of value) {
-				if (ch === " ") {
-					indentCols++;
-				} else {
-					break cmds;
-				}
-			}
-		} else if (type === "tab") {
-			indentCols += value;
-		}
-	}
+	let indentCols = countInitialWhitespaceCols(line);
 	
 	let isIndented = screenCols - indentCols >= minNonWhitespaceCols;
 	let availableCols = screenCols;
