@@ -397,7 +397,6 @@ let normalFunctions = {
 		updateSelectionEndCol();
 	},
 	
-	
 	switchToAstMode() {
 		switchToAstMode();
 	},
@@ -420,8 +419,9 @@ let normalFunctions = {
 	
 	tab() {
 		// TODO snippets
+		// TODO indent/dedent selection
 		
-		normalSelection = document.insertCharacter(normalSelection, "\t");
+		normalSelection = document.replaceSelection(normalSelection, document.fileDetails.indentation.string);
 	},
 	
 	shiftTab() {

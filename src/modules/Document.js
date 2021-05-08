@@ -41,6 +41,8 @@ class Document extends Evented {
 	edit(lineIndex, removeLines, insertString) {
 		let insertLines = insertString.split(this.fileDetails.newline).map(createLine);
 		
+		let removedLines = this.lines.slice(lineIndex, lineIndex + removeLines);
+		
 		this.lines.splice(lineIndex, removeLines, ...insertLines);
 		
 		this.fire("edit", {
@@ -49,6 +51,11 @@ class Document extends Evented {
 			insertString,
 			insertLines,
 		});
+		
+		return {
+			removedLines,
+			insertedLines: insertLines,
+		};
 	}
 	
 	replaceSelection(selection, string) {
@@ -59,19 +66,20 @@ class Document extends Evented {
 		let prefix = this.lines[startLineIndex].string.substr(0, startOffset);
 		let suffix = this.lines[endLineIndex].string.substr(endOffset);
 		
-		this.edit(startLineIndex, endLineIndex - startLineIndex + 1, prefix + string + suffix);
+		let {insertedLines} = this.edit(
+			startLineIndex,
+			endLineIndex - startLineIndex + 1,
+			prefix + string + suffix,
+		);
+		
+		let newEndLineIndex = startLineIndex + insertedLines.length - 1;
+		let lastLine = insertedLines[insertedLines.length - 1];
+		
+		return Selection.s([newEndLineIndex, lastLine.string.length - suffix.length]);
 	}
 	
 	insertCharacter(selection, ch) {
-		let {start, end} = Selection.sort(selection);
-		let [lineIndex, offset] = start;
-		
-		this.replaceSelection(selection, ch);
-		
-		return {
-			start: [lineIndex, offset + 1],
-			end: [lineIndex, offset + 1],
-		};
+		return this.replaceSelection(selection, ch);
 	}
 	
 	backspace(selection) {
@@ -79,12 +87,7 @@ class Document extends Evented {
 		let [lineIndex, offset] = start;
 		
 		if (Selection.isFull(selection)) {
-			this.replaceSelection(selection, "");
-			
-			return {
-				start: [lineIndex, offset],
-				end: [lineIndex, offset],
-			};
+			return this.replaceSelection(selection, "");
 		} else {
 			let line = this.lines[lineIndex];
 			
@@ -100,10 +103,7 @@ class Document extends Evented {
 				
 				this.edit(lineIndex - 1, 2, prevLineString + line.string);
 				
-				return {
-					start: [prevLineIndex, prevLineString.length],
-					end: [prevLineIndex, prevLineString.length],
-				};
+				return Selection.s([prevLineIndex, prevLineString.length]);
 			} else {
 				// deleting a character within the line
 				
@@ -115,10 +115,7 @@ class Document extends Evented {
 					string.substr(0, offset - 1) + string.substr(offset),
 				);
 				
-				return {
-					start: [lineIndex, offset - 1],
-					end: [lineIndex, offset - 1],
-				};
+				return Selection.s([lineIndex, offset - 1]);
 			}
 		}
 	}
@@ -128,12 +125,7 @@ class Document extends Evented {
 		let [lineIndex, offset] = start;
 		
 		if (Selection.isFull(selection)) {
-			this.replaceSelection(selection, "");
-			
-			return {
-				start: [lineIndex, offset],
-				end: [lineIndex, offset],
-			};
+			return this.replaceSelection(selection, "");
 		} else {
 			let line = this.lines[lineIndex];
 			
@@ -149,10 +141,7 @@ class Document extends Evented {
 				
 				this.edit(lineIndex, 2, line.string + nextLineString);
 				
-				return {
-					start: [lineIndex, line.string.length],
-					end: [lineIndex, line.string.length],
-				};
+				return Selection.s([lineIndex, line.string.length]);
 			} else {
 				// deleting a character within the line
 				
@@ -185,9 +174,7 @@ class Document extends Evented {
 		
 		let indent = this.fileDetails.indentation.string.repeat(indentLevel);
 		
-		this.replaceSelection(selection, this.fileDetails.newline + indent);
-		
-		return Selection.s([lineIndex + 1, indent.length]);
+		return this.replaceSelection(selection, this.fileDetails.newline + indent);
 	}
 	
 	parse(prefs) {
