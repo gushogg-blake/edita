@@ -270,6 +270,13 @@ function ensureNormalCursorIsOnScreen() {
 	}
 }
 
+function updateSelectionEndCol() {
+	let [lineIndex, offset] = normalSelection.end;
+	let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
+	
+	selectionEndCol = endCol;
+}
+
 function keydown(e) {
 	if (!focused) {
 		return;
@@ -291,6 +298,8 @@ function keydown(e) {
 		}
 	}
 	
+	console.log(keyCombo);
+	
 	ensureSelectionIsOnScreen();
 	updateScrollbars();
 	startCursorBlink();
@@ -298,30 +307,48 @@ function keydown(e) {
 }
 
 let normalFunctions = {
-	moveSelectionUp() {
+	up() {
 		normalSelection = Selection.up(document.lines, normalSelection, selectionEndCol);
 	},
 	
-	moveSelectionDown() {
+	down() {
 		normalSelection = Selection.down(document.lines, normalSelection, selectionEndCol);
 	},
 	
-	moveSelectionLeft() {
-		normalSelection = Selection.left(document.lines, normalSelection, selectionEndCol);
+	left() {
+		normalSelection = Selection.left(document.lines, normalSelection);
 		
-		let [lineIndex, offset] = normalSelection.end;
-		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
-		
-		selectionEndCol = endCol;
+		updateSelectionEndCol();
 	},
 	
-	moveSelectionRight() {
-		normalSelection = Selection.right(document.lines, normalSelection, selectionEndCol);
+	right() {
+		normalSelection = Selection.right(document.lines, normalSelection);
 		
-		let [lineIndex, offset] = normalSelection.end;
-		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
+		updateSelectionEndCol();
+	},
+	
+	pageUp() {
+		let {rows} = getCodeAreaSize();
 		
-		selectionEndCol = endCol;
+		normalSelection = Selection.pageUp(document.lines, rows, normalSelection, selectionEndCol);
+	},
+	
+	pageDown() {
+		let {rows} = getCodeAreaSize();
+		
+		normalSelection = Selection.pageDown(document.lines, rows, normalSelection, selectionEndCol);
+	},
+	
+	end() {
+		normalSelection = Selection.end(document.lines, normalSelection);
+		
+		updateSelectionEndCol();
+	},
+	
+	home() {
+		normalSelection = Selection.end(document.lines, normalSelection);
+		
+		updateSelectionEndCol();
 	},
 	
 	expandOrContractSelectionUp() {
@@ -335,48 +362,73 @@ let normalFunctions = {
 	expandOrContractSelectionLeft() {
 		normalSelection = Selection.expandOrContractLeft(document.lines, normalSelection);
 		
-		let [lineIndex, offset] = normalSelection.end;
-		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
-		
-		selectionEndCol = endCol;
+		updateSelectionEndCol();
 	},
 	
 	expandOrContractSelectionRight() {
 		normalSelection = Selection.expandOrContractRight(document.lines, normalSelection);
 		
-		let [lineIndex, offset] = normalSelection.end;
-		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
-		
-		selectionEndCol = endCol;
+		updateSelectionEndCol();
 	},
 	
-	pageUp() {
+	expandOrContractSelectionPageUp() {
+		let {rows} = getCodeAreaSize();
 		
+		normalSelection = Selection.expandOrContractPageUp(document.lines, rows, normalSelection, selectionEndCol);
 	},
 	
-	pageDown() {
+	expandOrContractSelectionPageDown() {
+		let {rows} = getCodeAreaSize();
 		
+		normalSelection = Selection.expandOrContractPageDown(document.lines, rows, normalSelection, selectionEndCol);
 	},
+	
+	expandOrContractSelectionEnd() {
+		normalSelection = Selection.expandOrContractEnd(document.lines, normalSelection);
+		
+		updateSelectionEndCol();
+	},
+	
+	expandOrContractSelectionHome() {
+		normalSelection = Selection.expandOrContractHome(document.lines, normalSelection);
+		
+		updateSelectionEndCol();
+	},
+	
 	
 	switchToAstMode() {
 		switchToAstMode();
 	},
 	
+	enter() {
+		normalSelection = document.insertNewline(normalSelection);
+	},
+	
+	enterNoAutoIndent() {
+		//normalSelection = document.insertNewlineNoAutoIndent(normalSelection);
+	},
+	
+	backspace() {
+		normalSelection = document.backspace(normalSelection);
+	},
+	
+	delete() {
+		normalSelection = document.delete(normalSelection);
+	},
+	
+	tab() {
+		// TODO snippets
+		
+		normalSelection = document.insertCharacter(normalSelection, "\t");
+	},
+	
+	shiftTab() {
+		// TODO
+	},
+	
 	default(e, keyCombo, isModified) {
 		if (!isModified && e.key.length === 1) {
-			// printable character other than tab or enter
-			
 			normalSelection = document.insertCharacter(normalSelection, e.key);
-		} else if (keyCombo === "Tab") {
-			// TODO snippets
-			
-			normalSelection = document.insertCharacter(normalSelection, "\t");
-		} else if (keyCombo === "Enter") {
-			normalSelection = document.insertNewline(normalSelection);
-		} else if (keyCombo === "Backspace") {
-			normalSelection = document.backspace(normalSelection);
-		} else if (keyCombo === "Delete") {
-			normalSelection = document.delete(normalSelection);
 		}
 	},
 };
@@ -399,16 +451,31 @@ let functions = {
 };
 
 let normalKeymap = {
-	"ArrowUp": "moveSelectionUp",
-	"ArrowDown": "moveSelectionDown",
-	"ArrowLeft": "moveSelectionLeft",
-	"ArrowRight": "moveSelectionRight",
+	"ArrowUp": "up",
+	"ArrowDown": "down",
+	"ArrowLeft": "left",
+	"ArrowRight": "right",
 	"PageUp": "pageUp",
 	"PageDown": "pageDown",
+	"End": "end",
+	"Home": "home",
 	"Shift+ArrowUp": "expandOrContractSelectionUp",
 	"Shift+ArrowDown": "expandOrContractSelectionDown",
 	"Shift+ArrowLeft": "expandOrContractSelectionLeft",
 	"Shift+ArrowRight": "expandOrContractSelectionRight",
+	"Shift+PageUp": "expandOrContractSelectionPageUp",
+	"Shift+PageDown": "expandOrContractSelectionPageDown",
+	"Shift+End": "expandOrContractSelectionEnd",
+	"Shift+Home": "expandOrContractSelectionHome",
+	"Backspace": "backspace",
+	"Delete": "delete",
+	"Enter": "enter",
+	"Tab": "tab",
+	"Shift+Backspace": "backspace",
+	"Shift+Delete": "delete",
+	"Shift+Enter": "enter",
+	"Ctrl+Enter": "enterNoAutoIndent",
+	"Shift+Tab": "shiftTab",
 	"Escape": "switchToAstMode",
 };
 
