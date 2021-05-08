@@ -1,8 +1,9 @@
 module.exports = function(
 	context,
 	lines,
-	astCursor,
+	selection,
 	scrollPosition,
+	colors,
 	measurements,
 	windowHasFocus,
 ) {

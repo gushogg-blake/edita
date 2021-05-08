@@ -144,32 +144,41 @@ let api = {
 	},
 	
 	end(lines, selection) {
-		let [lineIndex, offset] = selection;
-		
+		let [lineIndex, offset] = sort(selection).end;
 		let line = lines[lineIndex];
-		
 		let [innerLineIndex, innerLineOffset] = innerLineIndexAndOffsetFromCursor(lines, lineIndex, offset);
 		
-		let innerLine = line.height > 1 ? line.wrappedLines[innerLineIndex] : line;
-		
-		
-		if (line.height > 1) {
-			if (innerLineOffset === innerLine.string.length) {
-				// go to 
+		if (line.height > 1 && innerLineIndex < line.height - 1) {
+			let innerLine = line.wrappedLines[innerLineIndex];
+			
+			if (innerLineOffset === innerLine.string.length - 1) {
+				return s([lineIndex, line.string.length]);
 			} else {
-				
+				return s([lineIndex, offset + (innerLine.string.length - innerLineOffset) - 1]);
 			}
 		} else {
 			return s([lineIndex, line.string.length]);
 		}
-		
-		
-		return selection;
 	},
 	
 	home(lines, selection) {
-		// home of wrap, then home of line (indent), then 0
-		return selection;
+		let [lineIndex, offset] = sort(selection).start;
+		let [row, col] = rowColFromCursor(lines, lineIndex, offset);
+		let line = lines[lineIndex];
+		let [innerLineIndex, innerLineOffset] = innerLineIndexAndOffsetFromCursor(lines, lineIndex, offset);
+		console.log(line);
+		if (line.height > 1 && innerLineIndex > 0) {
+			let innerLine = line.wrappedLines[innerLineIndex];
+		
+			if (innerLineOffset === innerLine.string.length - 1) {
+				return s([lineIndex, line.string.length]);
+			} else {
+				return s([lineIndex, offset + (innerLine.string.length - innerLineOffset) - 1]);
+			}
+		} else {
+			
+			return s([lineIndex, line.string.length]);
+		}
 	},
 	
 	expandOrContractUp(lines, selection, selectionEndCol) {

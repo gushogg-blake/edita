@@ -1,5 +1,5 @@
 let renderMarginBackground = require("./renderMarginBackground");
-//let renderCurrentLineHilite = require("./renderCurrentLineHilite");
+let renderCurrentLineHilite = require("./renderCurrentLineHilite");
 let renderNormalSelection = require("./renderNormalSelection");
 let renderAstSelection = require("./renderAstSelection");
 let renderAstHilite = require("./renderAstHilite");
@@ -23,6 +23,7 @@ module.exports = function(
 	colors,
 	measurements,
 	cursorBlinkOn,
+	windowHasFocus,
 ) {
 	console.time("render");
 	
@@ -36,14 +37,15 @@ module.exports = function(
 	);
 	
 	if (mode === "normal") {
-		//renderCurrentLineHilite(
-		//	context,
-		//	lines,
-		//	selection,
-		//	scrollPosition,
-		//	colors,
-		//	measurements,
-		//);
+		renderCurrentLineHilite(
+			context,
+			lines,
+			normalSelection,
+			scrollPosition,
+			colors,
+			measurements,
+			windowHasFocus,
+		);
 	}
 	
 	if (mode === "normal") {
@@ -110,6 +112,7 @@ module.exports = function(
 			scrollPosition,
 			measurements,
 			cursorBlinkOn,
+			windowHasFocus,
 		);
 	}
 	
@@ -120,7 +123,7 @@ module.exports = function(
 			astCursor,
 			scrollPosition,
 			measurements,
-			cursorBlinkOn,
+			windowHasFocus,
 		);
 	}
 	

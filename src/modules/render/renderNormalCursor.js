@@ -10,8 +10,9 @@ module.exports = function(
 	scrollPosition,
 	measurements,
 	cursorBlinkOn,
+	windowHasFocus,
 ) {
-	if (!cursorBlinkOn) {
+	if (!cursorBlinkOn || !windowHasFocus) {
 		return;
 	}
 	

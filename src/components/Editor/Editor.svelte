@@ -6,6 +6,7 @@ import inlineStyle from "../../utils/dom/inlineStyle";
 import {on, off} from "../../utils/dom/domEvents";
 import screenOffsets from "../../utils/dom/screenOffsets";
 import autoScroll from "../../utils/dom/autoScroll";
+import windowFocus from "../../utils/dom/windowFocus";
 import getKeyCombo from "../../utils/getKeyCombo";
 
 import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
@@ -55,6 +56,7 @@ let hasHorizontalScrollbar = !$prefs.wrap;
 
 let visible = true;
 let focused = false;
+let windowHasFocus;
 
 let mouseIsDown = false;
 
@@ -346,7 +348,7 @@ let normalFunctions = {
 	},
 	
 	home() {
-		normalSelection = Selection.end(document.lines, normalSelection);
+		normalSelection = Selection.home(document.lines, normalSelection);
 		
 		updateSelectionEndCol();
 	},
@@ -581,6 +583,7 @@ function redraw() {
 }
 
 function updateCanvas() {
+	console.log(windowHasFocus);
 	render(
 		context,
 		mode,
@@ -596,6 +599,7 @@ function updateCanvas() {
 		$prefs.langs[document.lang.code].colors,
 		measurements,
 		cursorBlinkOn,
+		windowHasFocus,
 	);
 }
 
@@ -706,6 +710,10 @@ onMount(async function() {
 	
 	document.parse($prefs);
 	
+	focused = true; // DEV
+	
+	windowHasFocus = windowFocus.isFocused();
+	
 	updateMeasurements();
 	resize();
 	startCursorBlink();
@@ -722,7 +730,11 @@ onMount(async function() {
 		updateWraps();
 	}));
 	
-	focused = true; // DEV
+	teardown.push(windowFocus.listen(function(isFocused) {
+		windowHasFocus = isFocused;
+		
+		updateCanvas();
+	}));
 	
 	return function() {
 		for (let fn of teardown) {
