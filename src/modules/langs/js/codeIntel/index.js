@@ -1,4 +1,4 @@
-let getOpenersAndClosersOnLine = require("../../common/codeIntel/getOpenersAndClosersOnLine");
+let getOpenersAndClosersOnLine = require("./getOpenersAndClosersOnLine");
 let astSelectionFromLineIndex = require("./astSelectionFromLineIndex");
 
 module.exports = {

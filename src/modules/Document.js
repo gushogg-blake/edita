@@ -163,8 +163,6 @@ class Document extends Evented {
 		let [lineIndex, offset] = start;
 		let line = this.lines[lineIndex];
 		
-		console.log(line);
-		
 		let indentLevel = line.indentLevel;
 		
 		if (
