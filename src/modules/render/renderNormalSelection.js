@@ -87,7 +87,7 @@ module.exports = function(
 				
 				let width = (
 					line.height > 1
-					? line.wrappedLines[j].width + line.wrapIndentCols
+					? line.wrappedLines[j].width + (j > 0 ? line.wrapIndentCols : 0)
 					: line.width
 				) - startCol + 1;
 				
