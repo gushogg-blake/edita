@@ -45,6 +45,7 @@ function s(start, end=null) {
 }
 
 let api = {
+	s,
 	sort,
 	isFull,
 	

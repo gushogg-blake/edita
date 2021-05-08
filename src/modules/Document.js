@@ -174,12 +174,20 @@ class Document extends Evented {
 		let [lineIndex, offset] = start;
 		let line = this.lines[lineIndex];
 		
-		this.replaceSelection(selection, this.fileDetails.newline);
+		let indentLevel = line.indentLevel;
 		
-		return {
-			start: [lineIndex + 1, 0],
-			end: [lineIndex + 1, 0],
-		};
+		if (
+			offset === line.string.length
+			&& this.lang.codeIntel.getOpenersAndClosersOnLine(line).openers.length > 0
+		) {
+			indentLevel++;
+		}
+		
+		let indent = this.fileDetails.indentation.string.repeat(indentLevel);
+		
+		this.replaceSelection(selection, this.fileDetails.newline + indent);
+		
+		return Selection.s([lineIndex + 1, indent.length]);
 	}
 	
 	parse(prefs) {

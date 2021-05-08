@@ -25,7 +25,7 @@ module.exports = function(prefs, code, path) {
 	}
 
 	let indentation = {
-		str: indent,
+		string: indent,
 		re: new RegExp("^(" + indent + ")*"),
 		colsPerIndent: indentType === "tab" ? indent.length * tabWidth : indent.length,
 	};
