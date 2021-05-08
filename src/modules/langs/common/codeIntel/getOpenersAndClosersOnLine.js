@@ -2,6 +2,7 @@ let ctoo = {
 	")": "(",
 	"]": "[",
 	"}": "{",
+	"`": "`",
 };
 
 module.exports = function(line) {
