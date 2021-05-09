@@ -49,7 +49,7 @@ function getTabName(tabs, tab) {
 	display: flex;
 	align-items: center;
 	border-radius: $radius $radius 0 0;
-	padding: .5em 1em;
+	padding: 6px 12px;
 	
 	&.isSelected {
 		box-shadow: 0 0 3px 0 rgba(0, 0, 0, .2);

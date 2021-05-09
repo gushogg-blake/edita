@@ -11,6 +11,7 @@ let {ipcMain: ipc} = require("electron-better-ipc");
 let windowStateKeeper = require("electron-window-state");
 let dev = require("electron-is-dev");
 let init = require("./modules/ipc/init/main");
+let clipboard = require("./modules/ipc/clipboard/main");
 let openDialog = require("./modules/ipc/openDialog/main");
 
 // HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
@@ -18,6 +19,7 @@ ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
 
 let ipcModules = {
 	init,
+	clipboard,
 	openDialog,
 };
 

@@ -9,6 +9,8 @@ import autoScroll from "../../utils/dom/autoScroll";
 import windowFocus from "../../utils/dom/windowFocus";
 import getKeyCombo from "../../utils/getKeyCombo";
 
+import clipboard from "../../modules/ipc/clipboard/renderer";
+
 import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
 import render from "../../modules/render/render";
 import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
@@ -428,6 +430,17 @@ let normalFunctions = {
 		// TODO
 	},
 	
+	async cut() {
+	},
+	
+	async copy() {
+		// TODO line if not full selection?
+		await clipboard.write(document.getSelectedText(normalSelection));
+	},
+	
+	async paste() {
+	},
+	
 	default(e, keyCombo, isModified) {
 		if (!isModified && e.key.length === 1) {
 			normalSelection = document.insertCharacter(normalSelection, e.key);
@@ -479,6 +492,9 @@ let normalKeymap = {
 	"Ctrl+Enter": "enterNoAutoIndent",
 	"Shift+Tab": "shiftTab",
 	"Escape": "switchToAstMode",
+	"Ctrl+X": "cut",
+	"Ctrl+C": "copy",
+	"Ctrl+V": "paste",
 };
 
 let astKeymap = {

@@ -177,6 +177,19 @@ class Document extends Evented {
 		return this.replaceSelection(selection, this.fileDetails.newline + indent);
 	}
 	
+	getSelectedText(selection) {
+		let {start, end} = Selection.sort(selection);
+		let [startLineIndex, startOffset] = start;
+		let [endLineIndex, endOffset] = end;
+		let lines = this.lines.slice(startLineIndex, endLineIndex + 1);
+		
+		let str = lines.map(line => line.string).join(this.fileDetails.newline);
+		let trimLeft = startOffset;
+		let trimRight = lines[lines.length - 1].string.length - endOffset;
+		
+		return str.substring(trimLeft, str.length - trimRight);
+	}
+	
 	parse(prefs) {
 		this.lang.parse(this.lines, prefs, this.fileDetails);
 	}
