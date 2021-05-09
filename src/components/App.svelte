@@ -5,7 +5,7 @@ import {onMount, tick} from "svelte";
 
 import getKeyCombo from "../utils/getKeyCombo";
 import lid from "../utils/lid";
-import {push} from "../utils/arrayMethods";
+import {push, remove} from "../utils/arrayMethods";
 import getFileDetails from "../modules/utils/getFileDetails";
 import langs from "../modules/langs";
 import Document from "../modules/Document";
@@ -129,6 +129,32 @@ async function selectTab(tab) {
 	editor.show();
 }
 
+function onCloseTab({detail: tab}) {
+	closeTab(tab);
+}
+
+function closeTab(tab) {
+	// TODO check if modified
+	
+	let selectNext = null;
+	
+	if (selectedTab === tab) {
+		let index = tabs.indexOf(tab);
+		
+		if (index > 0) {
+			selectNext = tabs[index - 1];
+		} else if (index < tabs.length - 1) {
+			selectNext = tabs[index + 1];
+		}
+	}
+	
+	tabs = remove(tabs, tab);
+	
+	if (selectNext) {
+		selectTab(selectNext);
+	}
+}
+
 onMount(async function() {
 	//let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
 	//let code = await fs("test/repos/acorn/dist/bin.js").read();
@@ -168,6 +194,7 @@ onMount(async function() {
 
 #tabBar {
 	grid-area: tabBar;
+	border-bottom: 1px solid #AFACAA;
 }
 
 #editor {
@@ -206,6 +233,7 @@ onMount(async function() {
 			{tabs}
 			{selectedTab}
 			on:select={onSelectTab}
+			on:close={onCloseTab}
 		/>
 	</div>
 	<div id="editor">

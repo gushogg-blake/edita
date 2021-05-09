@@ -557,6 +557,10 @@ let prevWidth;
 let prevHeight;
 
 function resize() {
+	if (!canvasDiv) {
+		return;
+	}
+	
 	let {offsetWidth, offsetHeight} = canvasDiv;
 	
 	if (offsetWidth !== prevWidth || offsetHeight !== prevHeight) {
