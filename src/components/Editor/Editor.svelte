@@ -338,6 +338,7 @@ function keydown(e) {
 	
 	console.log(keyCombo);
 	
+	updateSelectionEndCol();
 	ensureSelectionIsOnScreen();
 	updateScrollbars();
 	startCursorBlink();
