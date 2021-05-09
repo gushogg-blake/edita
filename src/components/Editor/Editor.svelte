@@ -184,7 +184,7 @@ async function prefsUpdated(prefs) {
 
 function mousedown(e) {
 	mouseIsDown = true;
-	console.time("mousedown");
+	
 	if (mode === "normal") {
 		normalMouseHandler.mousedown(e, {
 			canvas,
@@ -197,7 +197,6 @@ function mousedown(e) {
 	if (mode === "ast") {
 		astMouseHandler.mousedown(e);
 	}
-	console.timeEnd("mousedown");
 }
 
 function mouseenter(e) {

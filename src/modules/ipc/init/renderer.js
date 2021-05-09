@@ -4,4 +4,8 @@ module.exports = {
 	getSystemInfo() {
 		return ipc.callMain("init/getSystemInfo");
 	},
+	
+	getConfig() {
+		return ipc.callMain("init/getConfig");
+	},
 };

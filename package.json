@@ -11,7 +11,8 @@
 		"electron-is-dev": "^1.1.0",
 		"electron-settings": "^3.2.0",
 		"electron-window-state": "^5.0.3",
-		"flowfs": "^4.0.0"
+		"flowfs": "^4.0.0",
+		"yargs": "^17.0.1"
 	},
 	"devDependencies": {
 		"autoprefixer": "^9.7.3",
@@ -43,7 +44,7 @@
 		"electron-dev": "run-p autobuild pure-electron-dev",
 		"dist": "run-s build pure-dist-win",
 		"pure-electron": "electron .",
-		"pure-electron-dev": "cross-env NODE_ENV=development electron .",
+		"pure-electron-dev": "cross-env NODE_ENV=development electron . --watch",
 		"pure-dist-win": "electron-builder --win --config electron-builder.yml",
 		"test": "./node_modules/mocha/bin/mocha 'test/tests/**/*.test.js'"
 	}

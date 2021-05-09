@@ -10,12 +10,20 @@ let path = require("path");
 let {ipcMain: ipc} = require("electron-better-ipc");
 let windowStateKeeper = require("electron-window-state");
 let dev = require("electron-is-dev");
+let fs = require("flowfs");
+let config = require("./config");
 let init = require("./modules/ipc/init/main");
 let clipboard = require("./modules/ipc/clipboard/main");
 let openDialog = require("./modules/ipc/openDialog/main");
 
 // HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
 ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
+
+if (config.watch) {
+	require("./watch");
+}
+
+app.setPath("userData", fs(config.userDataDir, "electron").path);
 
 let ipcModules = {
 	init,
