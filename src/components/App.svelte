@@ -186,6 +186,7 @@ onMount(async function() {
 
 #toolbar {
 	grid-area: toolbar;
+	border-bottom: 1px solid #AFACAA;
 }
 
 #left {
