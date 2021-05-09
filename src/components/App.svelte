@@ -170,6 +170,8 @@ onMount(async function() {
 @import "../css/mixins/flex-col";
 @import "../css/classes/hide";
 
+$border: 1px solid #AFACAA;
+
 #main {
 	display: grid;
 	grid-template-rows: auto auto 1fr auto;
@@ -186,16 +188,17 @@ onMount(async function() {
 
 #toolbar {
 	grid-area: toolbar;
-	border-bottom: 1px solid #AFACAA;
+	border-bottom: $border;
 }
 
 #left {
 	grid-area: left;
+	border-right: $border;
 }
 
 #tabBar {
 	grid-area: tabBar;
-	border-bottom: 1px solid #AFACAA;
+	border-bottom: $border;
 }
 
 #editor {
@@ -213,10 +216,12 @@ onMount(async function() {
 
 #right {
 	grid-area: right;
+	border-left: $border;
 }
 
 #bottom {
 	grid-area: bottom;
+	border-top: $border;
 }
 </style>
 

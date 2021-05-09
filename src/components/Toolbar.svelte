@@ -17,7 +17,9 @@ function save() {
 </script>
 
 <style type="text/scss">
-
+#main {
+	padding: 3px;
+}
 </style>
 
 <div id="main">

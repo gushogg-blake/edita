@@ -64,7 +64,7 @@ function setScrollPosition(position) {
 	
 	resetTimer = setTimeout(function() {
 		settingScrollPosition = false;
-	}, 30);
+	}, 150);
 }
 
 function scroll() {
