@@ -6,22 +6,22 @@ import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
 import rowColFromCursor from "../../modules/utils/rowColFromCursor";
 import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
 
-export default function(e, editor) {
-	let {
-		canvas,
-		measurements,
-		document,
-		hasHorizontalScrollbar,
-		scrollBy,
-		getScrollPosition,
-		setSelection,
-		getSelection,
-		setSelectionEndCol,
-		redraw,
-		startCursorBlink,
-	} = editor;
-	
+export default function(editor) {
 	function mousedown(e) {
+		let {
+			canvas,
+			measurements,
+			document,
+			selection,
+			hasHorizontalScrollbar,
+			scrollBy,
+			scrollPosition,
+			setSelection,
+			setSelectionEndCol,
+			redraw,
+			startCursorBlink,
+		} = editor;
+		
 		let {
 			x: left,
 			y: top,
@@ -34,7 +34,7 @@ export default function(e, editor) {
 			document.lines,
 			x,
 			y,
-			getScrollPosition(),
+			scrollPosition,
 			measurements,
 		);
 		
@@ -86,5 +86,7 @@ export default function(e, editor) {
 		off(window, "mouseup", mouseup);
 	}
 
-	mousedown(e);
+	return {
+		mousedown,
+	};
 }

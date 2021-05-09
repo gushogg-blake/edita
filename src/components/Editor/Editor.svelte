@@ -60,6 +60,85 @@ let visible = true;
 let focused = false;
 let windowHasFocus;
 
+let normalMouseHandler = normalMouse({
+	get canvas() {
+		return canvas;
+	},
+	
+	get measurements() {
+		return measurements;
+	},
+	
+	get document() {
+		return document;
+	},
+	
+	get hasHorizontalScrollbar() {
+		return hasHorizontalScrollbar;
+	},
+	
+	get scrollPosition() {
+		return scrollPosition;
+	},
+	
+	get selection() {
+		return normalSelection;
+	},
+	
+	scrollBy,
+	redraw,
+	startCursorBlink,
+	
+	setSelection(selection) {
+		normalSelection = selection;
+	},
+	
+	setSelectionEndCol(col) {
+		selectionEndCol = col;
+	},
+	
+	mouseup(e) {
+		mouseIsDown = false;
+	},
+});
+
+let astMouseHandler = astMouse({
+	get canvas() {
+		return canvas;
+	},
+	
+	get measurements() {
+		return measurements;
+	},
+	
+	get document() {
+		return document;
+	},
+	
+	get hasHorizontalScrollbar() {
+		return hasHorizontalScrollbar;
+	},
+	
+	get scrollPosition() {
+		return scrollPosition;
+	},
+	
+	get selection() {
+		return astSelection;
+	},
+	
+	setSelection(selection) {
+		astSelection = selection;
+	},
+	
+	scrollBy,
+	redraw,
+	
+	mouseup(e) {
+		mouseIsDown = false;
+	},
+});
+
 let mouseIsDown = false;
 
 let mode = "normal";
@@ -105,64 +184,20 @@ async function prefsUpdated(prefs) {
 
 function mousedown(e) {
 	mouseIsDown = true;
-	//console.time("mousedown");
+	console.time("mousedown");
 	if (mode === "normal") {
-		normalMouse(e, {
+		normalMouseHandler.mousedown(e, {
 			canvas,
 			measurements,
 			document,
 			hasHorizontalScrollbar,
-			scrollBy,
-			getScrollPosition,
-			redraw,
-			startCursorBlink,
-			
-			getSelection() {
-				return normalSelection;
-			},
-			
-			setSelection(selection) {
-				normalSelection = selection;
-			},
-			
-			setSelectionEndCol(col) {
-				selectionEndCol = col;
-			},
-			
-			mouseup(e) {
-				mouseIsDown = false;
-			},
 		});
 	}
 	
 	if (mode === "ast") {
-		astMouse(e, {
-			canvas,
-			measurements,
-			document,
-			hasHorizontalScrollbar,
-			scrollBy,
-			getScrollPosition,
-			redraw,
-			
-			getSelection() {
-				return astSelection;
-			},
-			
-			setSelection(selection) {
-				astSelection = selection;
-			},
-			
-			mouseup(e) {
-				mouseIsDown = false;
-			},
-		});
+		astMouseHandler.mousedown(e);
 	}
-	//console.timeEnd("mousedown");
-}
-
-function getScrollPosition() {
-	return scrollPosition;
+	console.timeEnd("mousedown");
 }
 
 function mouseenter(e) {

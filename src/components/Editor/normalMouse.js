@@ -6,22 +6,26 @@ import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
 import rowColFromCursor from "../../modules/utils/rowColFromCursor";
 import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
 
-export default function(e, editor) {
-	let {
-		canvas,
-		measurements,
-		document,
-		hasHorizontalScrollbar,
-		scrollBy,
-		getScrollPosition,
-		getSelection,
-		setSelection,
-		setSelectionEndCol,
-		redraw,
-		startCursorBlink,
-	} = editor;
-	
+export default function(editor) {
 	function mousedown(e) {
+		if (e.button !== 0) {
+			return;
+		}
+		
+		let {
+			canvas,
+			measurements,
+			document,
+			selection,
+			hasHorizontalScrollbar,
+			scrollPosition,
+			scrollBy,
+			setSelection,
+			setSelectionEndCol,
+			redraw,
+			startCursorBlink,
+		} = editor;
+		
 		let {
 			x: left,
 			y: top,
@@ -34,7 +38,7 @@ export default function(e, editor) {
 			document.lines,
 			x,
 			y,
-			getScrollPosition(),
+			scrollPosition,
 			measurements,
 		);
 		
@@ -89,6 +93,17 @@ export default function(e, editor) {
 	
 	function mousemove(e) {
 		let {
+			canvas,
+			measurements,
+			document,
+			selection,
+			scrollPosition,
+			setSelection,
+			setSelectionEndCol,
+			redraw,
+		} = editor;
+		
+		let {
 			x: left,
 			y: top,
 		} = canvas.getBoundingClientRect();
@@ -100,7 +115,7 @@ export default function(e, editor) {
 			document.lines,
 			x,
 			y,
-			getScrollPosition(),
+			scrollPosition,
 			measurements,
 		);
 		
@@ -111,7 +126,7 @@ export default function(e, editor) {
 		);
 		
 		setSelection({
-			...getSelection(),
+			...selection,
 			end: cursor,
 		});
 		
@@ -127,5 +142,7 @@ export default function(e, editor) {
 		off(window, "mouseup", mouseup);
 	}
 	
-	mousedown(e);
+	return {
+		mousedown,
+	};
 }
