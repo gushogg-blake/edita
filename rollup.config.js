@@ -19,21 +19,6 @@ export default {
 		format: "iife",
 		name: "app",
 		file: "public/bundle.js",
-		
-		//globals: {
-		//	require: "require",
-		//	//require: "require",
-		//	fs: "fs",
-		//	constants: "constants",
-		//	stream: "stream",
-		//	util: "util",
-		//	assert: "assert",
-		//	path: "path",
-		//	os: "os",
-		//	string_decoder: "string_decoder",
-		//	buffer: "buffer",
-		//	events: "events",
-		//},
 	},
 	
 	plugins: [
