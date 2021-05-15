@@ -166,7 +166,7 @@ let hiliteWord = null;
 let cursorBlinkOn;
 let cursorInterval;
 
-async function prefsUpdated(prefs) {
+async function prefsUpdated() {
 	if (!mounted) {
 		return;
 	}

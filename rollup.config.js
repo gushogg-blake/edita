@@ -1,12 +1,13 @@
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
 import svelte from "rollup-plugin-svelte";
-import resolve from "rollup-plugin-node-resolve";
-import commonjs from "rollup-plugin-commonjs";
+import cssOnly from "rollup-plugin-css-only";
 import livereload from "rollup-plugin-livereload";
 import {terser} from "rollup-plugin-terser";
-import rollupDev from "./rollup-dev";
-import autoPreprocess from "svelte-preprocess";
+import preprocess from "svelte-preprocess";
 import builtins from "rollup-plugin-node-builtins";
 import globals from "rollup-plugin-node-globals";
+import rollupDev from "./rollup-dev";
 
 let production = !process.env.ROLLUP_WATCH;
 
@@ -18,16 +19,28 @@ export default {
 		format: "iife",
 		name: "app",
 		file: "public/bundle.js",
+		
+		//globals: {
+		//	require: "require",
+		//	//require: "require",
+		//	fs: "fs",
+		//	constants: "constants",
+		//	stream: "stream",
+		//	util: "util",
+		//	assert: "assert",
+		//	path: "path",
+		//	os: "os",
+		//	string_decoder: "string_decoder",
+		//	buffer: "buffer",
+		//	events: "events",
+		//},
 	},
 	
 	plugins: [
 		svelte({
-			// enable run-time checks when not in production
-			dev: !production,
-			
 			// we'll extract any component CSS out into
 			// a separate file - better for performance
-			preprocess: autoPreprocess({
+			preprocess: preprocess({
 				scss: {
 					includePaths: ["src"],
 				},
@@ -37,9 +50,14 @@ export default {
 				},
 			}),
 			
-			css(css) {
-				css.write("public/bundle.css");
+			compilerOptions: {
+				// enable run-time checks when not in production
+				dev: !production,
 			},
+		}),
+		
+		cssOnly({
+			output: "bundle.css",
 		}),
 
 		// If you have external dependencies installed from
@@ -52,7 +70,21 @@ export default {
 			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
 		}),
 		
-		commonjs(),
+		commonjs({
+			ignore: [
+				"os",
+				"fs",
+				"path",
+				"constants",
+				"util",
+				"stream",
+				"assert",
+				"string_decoder",
+				"buffer",
+				"events",
+			],
+		}),
+		
 		globals(),
 		builtins(),
 
