@@ -565,6 +565,10 @@ function switchToNormalMode() {
 	}
 	
 	mode = "normal";
+	
+	let [topLineIndex] = astSelection;
+	
+	normalSelection = Selection.s([topLineIndex, 0]);
 }
 
 function startCursorBlink() {
