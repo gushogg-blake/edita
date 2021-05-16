@@ -1,12 +1,12 @@
-import {on, off} from "../../utils/dom/domEvents";
-import screenOffsets from "../../utils/dom/screenOffsets";
-import autoScroll from "../../utils/dom/autoScroll";
-import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
-import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
-import rowColFromCursor from "../../modules/utils/rowColFromCursor";
-import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
+let {on, off} = require("../../utils/dom/domEvents");
+let screenOffsets = require("../../utils/dom/screenOffsets");
+let autoScroll = require("../../utils/dom/autoScroll");
+let calculateMarginOffset = require("../../modules/render/calculateMarginOffset");
+let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
+let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
+let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
 
-export default function(editor) {
+module.exports = function(editor) {
 	function mousedown(e) {
 		if (e.button !== 0) {
 			return;

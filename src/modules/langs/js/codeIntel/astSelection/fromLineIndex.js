@@ -1,4 +1,4 @@
-let getOpenersAndClosersOnLine = require("../../common/codeIntel/getOpenersAndClosersOnLine");
+let getOpenersAndClosersOnLine = require("../getOpenersAndClosersOnLine");
 
 /*
 if not a header/footer then just the line
@@ -18,7 +18,7 @@ else if statement
 expand could go to ladder actually - seems poss more useful, and not unintuitive
 */
 
-function astSelectionFromLineIndex(lines, lineIndex) {
+function fromLineIndex(lines, lineIndex) {
 	let line = lines[lineIndex];
 	
 	let {
@@ -68,4 +68,4 @@ function findPrevLineIndexAtIndentLevel(lines, lineIndex, indentLevel) {
 	return null;
 }
 
-module.exports = astSelectionFromLineIndex;
+module.exports = fromLineIndex;

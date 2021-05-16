@@ -4,6 +4,7 @@ let innerLineIndexAndOffsetFromCursor = require("./innerLineIndexAndOffsetFromCu
 let countInitialWhitespaceCols = require("./countInitialWhitespaceCols");
 let getLineStartingRow = require("./getLineStartingRow");
 let countRows = require("./countRows");
+let Cursor = require("./Cursor");
 
 /*
 sort a selection so that start is before end
@@ -324,6 +325,10 @@ let api = {
 		} else {
 			return s(start, [lineIndex, line.string.length]);
 		}
+	},
+	
+	startOfLineContent(lines, lineIndex) {
+		return s(Cursor.startOfLineContent(lines, lineIndex));
 	},
 };
 

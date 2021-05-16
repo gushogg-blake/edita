@@ -607,9 +607,12 @@ function parse(
 			line.string,
 		);
 		
+		let indentLevel = getIndentLevel(line.string, fileDetails.indentation);
+		
 		line.width = col;
 		line.trimmed = line.string.trimLeft();
-		line.indentLevel = getIndentLevel(line.string, fileDetails.indentation);
+		line.indentLevel = indentLevel.level;
+		line.indentOffset = indentLevel.offset;
 		line.commands = commands;
 		line.endState = endState;
 		

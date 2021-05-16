@@ -9,8 +9,6 @@ import autoScroll from "../../utils/dom/autoScroll";
 import windowFocus from "../../utils/dom/windowFocus";
 import getKeyCombo from "../../utils/getKeyCombo";
 
-import clipboard from "../../modules/ipc/clipboard/renderer";
-
 import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
 import render from "../../modules/render/render";
 import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
@@ -24,6 +22,8 @@ import prefs from "../../stores/prefs";
 import Scrollbar from "../Scrollbar.svelte";
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
+import normalKeyboard from "./normalKeyboard";
+import astKeyboard from "./astKeyboard";
 
 export let document;
 
@@ -141,6 +141,54 @@ let astMouseHandler = astMouse({
 
 let mouseIsDown = false;
 
+let normalKeyboardHandler = normalKeyboard({
+	get document() {
+		return document;
+	},
+	
+	get selection() {
+		return astSelection;
+	},
+	
+	get selectionEndCol() {
+		return selectionEndCol;
+	},
+	
+	setSelection(selection) {
+		normalSelection = selection;
+	},
+	
+	updateSelectionEndCol,
+	ensureSelectionIsOnScreen,
+	updateScrollbars,
+	startCursorBlink,
+	redraw,
+});
+
+let astKeyboardHandler = astKeyboard({
+	get document() {
+		return document;
+	},
+	
+	get selection() {
+		return astSelection;
+	},
+	
+	get selectionEndCol() {
+		return selectionEndCol;
+	},
+	
+	setSelection(selection) {
+		astSelection = selection;
+	},
+	
+	updateSelectionEndCol,
+	ensureSelectionIsOnScreen,
+	updateScrollbars,
+	startCursorBlink,
+	redraw,
+});
+
 let mode = "normal";
 
 let normalSelection = {
@@ -186,12 +234,7 @@ function mousedown(e) {
 	mouseIsDown = true;
 	
 	if (mode === "normal") {
-		normalMouseHandler.mousedown(e, {
-			canvas,
-			measurements,
-			document,
-			hasHorizontalScrollbar,
-		});
+		normalMouseHandler.mousedown(e);
 	}
 	
 	if (mode === "ast") {
@@ -320,232 +363,14 @@ function keydown(e) {
 		return;
 	}
 	
-	let {keyCombo, isModified} = getKeyCombo(e);
-	
-	let keymap = keymaps[mode];
-	
-	if (keymap[keyCombo]) {
-		functions[mode][keymap[keyCombo]]();
-	} else if (keymaps.common[keyCombo]) {
-		functions.common[keymaps.common[keyCombo]]();
-	} else {
-		if (functions[mode].default) {
-			functions[mode].default(e, keyCombo, isModified);
-		} else {
-			//functions.common.default(e, keyCombo, isModified);
-		}
+	if (mode === "normal") {
+		normalKeyboardHandler.keydown(e);
 	}
 	
-	console.log(keyCombo);
-	
-	updateSelectionEndCol();
-	ensureSelectionIsOnScreen();
-	updateScrollbars();
-	startCursorBlink();
-	redraw();
+	if (mode === "ast") {
+		astKeyboardHandler.keydown(e);
+	}
 }
-
-let normalFunctions = {
-	up() {
-		normalSelection = Selection.up(document.lines, normalSelection, selectionEndCol);
-	},
-	
-	down() {
-		normalSelection = Selection.down(document.lines, normalSelection, selectionEndCol);
-	},
-	
-	left() {
-		normalSelection = Selection.left(document.lines, normalSelection);
-		
-		updateSelectionEndCol();
-	},
-	
-	right() {
-		normalSelection = Selection.right(document.lines, normalSelection);
-		
-		updateSelectionEndCol();
-	},
-	
-	pageUp() {
-		let {rows} = getCodeAreaSize();
-		
-		normalSelection = Selection.pageUp(document.lines, rows, normalSelection, selectionEndCol);
-	},
-	
-	pageDown() {
-		let {rows} = getCodeAreaSize();
-		
-		normalSelection = Selection.pageDown(document.lines, rows, normalSelection, selectionEndCol);
-	},
-	
-	end() {
-		normalSelection = Selection.end(document.lines, normalSelection);
-		
-		updateSelectionEndCol();
-	},
-	
-	home() {
-		normalSelection = Selection.home(document.lines, normalSelection);
-		
-		updateSelectionEndCol();
-	},
-	
-	expandOrContractSelectionUp() {
-		normalSelection = Selection.expandOrContractUp(document.lines, normalSelection, selectionEndCol);
-	},
-	
-	expandOrContractSelectionDown() {
-		normalSelection = Selection.expandOrContractDown(document.lines, normalSelection, selectionEndCol);
-	},
-	
-	expandOrContractSelectionLeft() {
-		normalSelection = Selection.expandOrContractLeft(document.lines, normalSelection);
-		
-		updateSelectionEndCol();
-	},
-	
-	expandOrContractSelectionRight() {
-		normalSelection = Selection.expandOrContractRight(document.lines, normalSelection);
-		
-		updateSelectionEndCol();
-	},
-	
-	expandOrContractSelectionPageUp() {
-		let {rows} = getCodeAreaSize();
-		
-		normalSelection = Selection.expandOrContractPageUp(document.lines, rows, normalSelection, selectionEndCol);
-	},
-	
-	expandOrContractSelectionPageDown() {
-		let {rows} = getCodeAreaSize();
-		
-		normalSelection = Selection.expandOrContractPageDown(document.lines, rows, normalSelection, selectionEndCol);
-	},
-	
-	expandOrContractSelectionEnd() {
-		normalSelection = Selection.expandOrContractEnd(document.lines, normalSelection);
-		
-		updateSelectionEndCol();
-	},
-	
-	expandOrContractSelectionHome() {
-		normalSelection = Selection.expandOrContractHome(document.lines, normalSelection);
-		
-		updateSelectionEndCol();
-	},
-	
-	switchToAstMode() {
-		switchToAstMode();
-	},
-	
-	enter() {
-		normalSelection = document.insertNewline(normalSelection);
-	},
-	
-	enterNoAutoIndent() {
-		//normalSelection = document.insertNewlineNoAutoIndent(normalSelection);
-	},
-	
-	backspace() {
-		normalSelection = document.backspace(normalSelection);
-	},
-	
-	delete() {
-		normalSelection = document.delete(normalSelection);
-	},
-	
-	tab() {
-		// TODO snippets
-		// TODO indent/dedent selection
-		
-		normalSelection = document.replaceSelection(normalSelection, document.fileDetails.indentation.string);
-	},
-	
-	shiftTab() {
-		// TODO
-	},
-	
-	async cut() {
-	},
-	
-	async copy() {
-		// TODO line if not full selection?
-		await clipboard.write(document.getSelectedText(normalSelection));
-	},
-	
-	async paste() {
-	},
-	
-	default(e, keyCombo, isModified) {
-		if (!isModified && e.key.length === 1) {
-			normalSelection = document.insertCharacter(normalSelection, e.key);
-		}
-	},
-};
-
-let astFunctions = {
-	
-	switchToNormalMode() {
-		switchToNormalMode();
-	},
-};
-
-let commonFunctions = {
-	
-};
-
-let functions = {
-	normal: normalFunctions,
-	ast: astFunctions,
-	common: commonFunctions,
-};
-
-let normalKeymap = {
-	"ArrowUp": "up",
-	"ArrowDown": "down",
-	"ArrowLeft": "left",
-	"ArrowRight": "right",
-	"PageUp": "pageUp",
-	"PageDown": "pageDown",
-	"End": "end",
-	"Home": "home",
-	"Shift+ArrowUp": "expandOrContractSelectionUp",
-	"Shift+ArrowDown": "expandOrContractSelectionDown",
-	"Shift+ArrowLeft": "expandOrContractSelectionLeft",
-	"Shift+ArrowRight": "expandOrContractSelectionRight",
-	"Shift+PageUp": "expandOrContractSelectionPageUp",
-	"Shift+PageDown": "expandOrContractSelectionPageDown",
-	"Shift+End": "expandOrContractSelectionEnd",
-	"Shift+Home": "expandOrContractSelectionHome",
-	"Backspace": "backspace",
-	"Delete": "delete",
-	"Enter": "enter",
-	"Tab": "tab",
-	"Shift+Backspace": "backspace",
-	"Shift+Delete": "delete",
-	"Shift+Enter": "enter",
-	"Ctrl+Enter": "enterNoAutoIndent",
-	"Shift+Tab": "shiftTab",
-	"Escape": "switchToAstMode",
-	"Ctrl+X": "cut",
-	"Ctrl+C": "copy",
-	"Ctrl+V": "paste",
-};
-
-let astKeymap = {
-	"PageUp": "pageUp",
-	"PageDown": "pageDown",
-	"Escape": "switchToNormalMode",
-};
-
-let commonKeymap = {
-};
-
-let keymaps = {
-	normal: normalKeymap,
-	ast: astKeymap,
-	common: commonKeymap,
-};
 
 function switchToAstMode() {
 	if (mouseIsDown) {
@@ -556,7 +381,7 @@ function switchToAstMode() {
 	
 	let [lineIndex] = normalSelection.end;
 	
-	astSelection = document.lang.codeIntel.astSelectionFromLineIndex(document.lines, lineIndex);
+	astSelection = document.lang.codeIntel.astSelection.fromLineIndex(document.lines, lineIndex);
 }
 
 function switchToNormalMode() {
@@ -568,7 +393,7 @@ function switchToNormalMode() {
 	
 	let [topLineIndex] = astSelection;
 	
-	normalSelection = Selection.s([topLineIndex, 0]);
+	normalSelection = Selection.startOfLineContent(document.lines, topLineIndex);
 }
 
 function startCursorBlink() {

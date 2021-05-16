@@ -1,7 +1,7 @@
 let getOpenersAndClosersOnLine = require("./getOpenersAndClosersOnLine");
-let astSelectionFromLineIndex = require("./astSelectionFromLineIndex");
+let astSelection = require("./astSelection");
 
 module.exports = {
 	getOpenersAndClosersOnLine,
-	astSelectionFromLineIndex,
+	astSelection,
 };
