@@ -17,7 +17,7 @@ module.exports = function(
 	let [startLineIndex, endLineIndex] = astSelection;
 	let startLine = lines[startLineIndex];
 	let startRow = getLineStartingRow(lines, startLineIndex);
-	let height = getLineRangeTotalHeight(lines, startLineIndex, endLineIndex) * rowHeight;
+	let height = (getLineRangeTotalHeight(lines, startLineIndex, endLineIndex) - 1) * rowHeight;
 	
 	let [x, y] = screenCoordsFromRowCol(
 		lines,
@@ -27,5 +27,10 @@ module.exports = function(
 		measurements,
 	);
 	
-	context.fillRect(x, y, context.canvas.width, height);
+	if (height === 0) {
+		
+	} else {
+		context.fillRect(x, y, context.canvas.width, height);
+	}
+	
 }

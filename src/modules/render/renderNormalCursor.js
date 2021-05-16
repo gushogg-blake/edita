@@ -28,8 +28,6 @@ module.exports = function(
 	
 	let marginOffset = calculateMarginOffset(lines, measurements);
 	
-	if (x >= marginOffset) {
-		context.fillStyle = "black";
-		context.fillRect(x + xHint, y, 1, measurements.rowHeight);
-	}
+	context.fillStyle = "black";
+	context.fillRect(x + xHint, y, 1, measurements.rowHeight);
 }

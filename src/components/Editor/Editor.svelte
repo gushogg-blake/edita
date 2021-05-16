@@ -60,6 +60,31 @@ let visible = true;
 let focused = false;
 let windowHasFocus;
 
+let mode = "normal";
+
+let normalSelection = {
+	start: [0, 0],
+	end: [0, 0],
+};
+
+let astSelection = null;
+let astHilite = null;
+let astCursor = null;
+
+// for remembering the "intended" col when moving a cursor up/down to a line
+// that doesn't have as many cols as the cursor
+let selectionEndCol = 0;
+
+let scrollPosition = {
+	row: 0,
+	x: 0,
+};
+
+let hiliteWord = null;
+
+let cursorBlinkOn;
+let cursorInterval;
+
 let normalMouseHandler = normalMouse({
 	get canvas() {
 		return canvas;
@@ -167,6 +192,8 @@ let normalKeyboardHandler = normalKeyboard({
 	redraw,
 });
 
+let astSelectionChanged = false;
+
 let astKeyboardHandler = astKeyboard({
 	get document() {
 		return document;
@@ -182,8 +209,12 @@ let astKeyboardHandler = astKeyboard({
 	
 	setSelection(selection) {
 		astSelection = selection;
+		astSelectionChanged = true;
 	},
 	
+	scrollPageUp,
+	scrollPageDown,
+	scrollBy,
 	switchToNormalMode,
 	getCodeAreaSize,
 	ensureSelectionIsOnScreen,
@@ -191,31 +222,6 @@ let astKeyboardHandler = astKeyboard({
 	startCursorBlink,
 	redraw,
 });
-
-let mode = "normal";
-
-let normalSelection = {
-	start: [0, 0],
-	end: [0, 0],
-};
-
-let astSelection = null;
-let astHilite = null;
-let astCursor = null;
-
-// for remembering the "intended" col when moving a cursor up/down to a line
-// that doesn't have as many cols as the cursor
-let selectionEndCol = 0;
-
-let scrollPosition = {
-	row: 0,
-	x: 0,
-};
-
-let hiliteWord = null;
-
-let cursorBlinkOn;
-let cursorInterval;
 
 async function prefsUpdated() {
 	if (!mounted) {
@@ -303,6 +309,20 @@ function scrollBy(x, rows) {
 	redraw();
 }
 
+function scrollPage(dir) {
+	let {rows} = getCodeAreaSize();
+	
+	scrollBy(0, rows * dir);
+}
+
+function scrollPageDown() {
+	scrollPage(1);
+}
+
+function scrollPageUp() {
+	scrollPage(-1);
+}
+
 function ensureSelectionIsOnScreen() {
 	if (mode === "ast") {
 		ensureAstSelectionIsOnScreen();
@@ -381,6 +401,8 @@ function switchToAstMode() {
 	let [lineIndex] = normalSelection.end;
 	
 	astSelection = document.lang.codeIntel.astSelection.fromLineIndex(document.lines, lineIndex);
+	
+	astSelectionChanged = false;
 }
 
 function switchToNormalMode() {
@@ -392,9 +414,11 @@ function switchToNormalMode() {
 	
 	let [topLineIndex] = astSelection;
 	
-	normalSelection = Selection.startOfLineContent(document.lines, topLineIndex);
-	
-	updateSelectionEndCol();
+	if (astSelectionChanged) {
+		normalSelection = Selection.startOfLineContent(document.lines, topLineIndex);
+		
+		updateSelectionEndCol();
+	}
 }
 
 function startCursorBlink() {
@@ -619,6 +643,8 @@ onMount(async function() {
 		
 		updateCanvas();
 	}));
+	
+	mounted = true;
 	
 	return function() {
 		for (let fn of teardown) {

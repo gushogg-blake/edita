@@ -7,7 +7,7 @@ module.exports = function(
 	let offset = 0;
 	let r = 0;
 	
-	for (let i = 0; i < lines.length; i++) {
+	for (let i = 0; i < lines.length - 1; i++) {
 		if (r + lines[i].height > row) {
 			break;
 		}

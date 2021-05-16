@@ -5,8 +5,11 @@ module.exports = function(editor) {
 	let keymap = {
 		"PageUp": "pageUp",
 		"PageDown": "pageDown",
-		"Escape": "switchToNormalMode",
 		"j": "down",
+		"k": "up",
+		"J": "next",
+		"K": "previous",
+		"Escape": "switchToNormalMode",
 	};
 	
 	let functions = {
@@ -15,16 +18,16 @@ module.exports = function(editor) {
 			editor.startCursorBlink();
 		},
 		
-		j({document, selection}) {
-			console.log("test");
-		},
-		
-		J({document, selection}) {
-			console.log("J");
-		},
-		
 		down({document, selection}) {
 			editor.setSelection(document.lang.codeIntel.astSelection.down(document.lines, selection));
+		},
+		
+		pageUp() {
+			editor.scrollPageUp();
+		},
+		
+		pageDown() {
+			editor.scrollPageDown();
 		},
 	};
 	

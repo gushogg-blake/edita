@@ -31,19 +31,19 @@ function fromLineIndex(lines, lineIndex) {
 		
 		return [
 			lineIndex,
-			footerIndex !== null ? footerIndex : lineIndex,
+			(footerIndex !== null ? footerIndex : lineIndex) + 1,
 		];
 	} else if (closers.length > 0) {
 		let headerIndex = findPrevLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel);
 		
 		return [
 			headerIndex !== null ? headerIndex : lineIndex,
-			lineIndex,
+			lineIndex + 1,
 		];
 	} else {
 		return [
 			lineIndex,
-			lineIndex,
+			lineIndex + 1,
 		];
 	}
 }

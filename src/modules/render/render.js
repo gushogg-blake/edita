@@ -25,7 +25,7 @@ module.exports = function(
 	cursorBlinkOn,
 	windowHasFocus,
 ) {
-	console.time("render");
+	//console.time("render");
 	
 	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 	
@@ -127,5 +127,5 @@ module.exports = function(
 		);
 	}
 	
-	console.timeEnd("render");
+	//console.timeEnd("render");
 }
