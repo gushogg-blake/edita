@@ -2,6 +2,7 @@ let findFirstVisibleLine = require("../utils/findFirstVisibleLine");
 let marginStyle = require("./marginStyle");
 let calculateMarginWidth = require("./calculateMarginWidth");
 let calculateMarginOffset = require("./calculateMarginOffset");
+let topMargin = require("./topMargin");
 
 module.exports = function(
 	context,
@@ -36,7 +37,7 @@ module.exports = function(
 	let leftEdge = marginOffset - scrollPosition.x;
 	
 	let x = leftEdge;
-	let y = rowHeight; // not 0 -- we're using textBaseline="bottom"
+	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
 	
 	let {
 		lineIndex: firstLineIndex,

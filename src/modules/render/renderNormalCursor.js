@@ -1,5 +1,4 @@
-let screenCoordsFromCursor = require("../utils/screenCoordsFromCursor");
-let calculateMarginOffset = require("./calculateMarginOffset");
+let screenCoordsFromCursor = require("../utils/screenCoordsFromCursor.js");
 
 let xHint = -1;
 
@@ -25,8 +24,6 @@ module.exports = function(
 		scrollPosition,
 		measurements,
 	);
-	
-	let marginOffset = calculateMarginOffset(lines, measurements);
 	
 	context.fillStyle = "black";
 	context.fillRect(x + xHint, y, 1, measurements.rowHeight);

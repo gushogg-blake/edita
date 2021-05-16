@@ -1,4 +1,5 @@
 let calculateMarginOffset = require("../render/calculateMarginOffset");
+let topMargin = require("../render/topMargin");
 
 let coordsXHint = 2;
 
@@ -17,7 +18,7 @@ module.exports = function(
 	let marginOffset = calculateMarginOffset(lines, measurements);
 	
 	let screenCol = Math.round((x - marginOffset + coordsXHint + scrollPosition.x) / colWidth);
-	let screenRow = Math.floor(y / rowHeight) + scrollPosition.row;
+	let screenRow = Math.floor((y - topMargin) / rowHeight) + scrollPosition.row;
 	
 	return [
 		Math.max(0, screenRow),
