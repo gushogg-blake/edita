@@ -6,7 +6,6 @@ let renderAstHilite = require("./renderAstHilite");
 //let renderWordHilites = require("./renderWordHilites");
 let renderCodeAndMargin = require("./renderCodeAndMargin");
 let renderNormalCursor = require("./renderNormalCursor");
-let renderAstCursor = require("./renderAstCursor");
 
 module.exports = function(
 	context,
@@ -112,17 +111,6 @@ module.exports = function(
 			scrollPosition,
 			measurements,
 			cursorBlinkOn,
-			windowHasFocus,
-		);
-	}
-	
-	if (mode === "ast") {
-		renderAstCursor(
-			context,
-			lines,
-			astCursor,
-			scrollPosition,
-			measurements,
 			windowHasFocus,
 		);
 	}

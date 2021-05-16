@@ -28,7 +28,7 @@ module.exports = function(
 	);
 	
 	if (height === 0) {
-		
+		context.fillRect(x, y, context.canvas.width, 2);
 	} else {
 		context.fillRect(x, y, context.canvas.width, height);
 	}
