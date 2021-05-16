@@ -158,6 +158,8 @@ let normalKeyboardHandler = normalKeyboard({
 		normalSelection = selection;
 	},
 	
+	switchToAstMode,
+	getCodeAreaSize,
 	updateSelectionEndCol,
 	ensureSelectionIsOnScreen,
 	updateScrollbars,
@@ -182,7 +184,8 @@ let astKeyboardHandler = astKeyboard({
 		astSelection = selection;
 	},
 	
-	updateSelectionEndCol,
+	switchToNormalMode,
+	getCodeAreaSize,
 	ensureSelectionIsOnScreen,
 	updateScrollbars,
 	startCursorBlink,
@@ -235,9 +238,7 @@ function mousedown(e) {
 	
 	if (mode === "normal") {
 		normalMouseHandler.mousedown(e);
-	}
-	
-	if (mode === "ast") {
+	} else if (mode === "ast") {
 		astMouseHandler.mousedown(e);
 	}
 }
@@ -365,9 +366,7 @@ function keydown(e) {
 	
 	if (mode === "normal") {
 		normalKeyboardHandler.keydown(e);
-	}
-	
-	if (mode === "ast") {
+	} else if (mode === "ast") {
 		astKeyboardHandler.keydown(e);
 	}
 }
@@ -394,6 +393,8 @@ function switchToNormalMode() {
 	let [topLineIndex] = astSelection;
 	
 	normalSelection = Selection.startOfLineContent(document.lines, topLineIndex);
+	
+	updateSelectionEndCol();
 }
 
 function startCursorBlink() {

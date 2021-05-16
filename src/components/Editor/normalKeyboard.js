@@ -1,3 +1,4 @@
+let getKeyCombo = require("../../utils/getKeyCombo");
 let clipboard = require("../../modules/ipc/clipboard/renderer");
 let Selection = require("../../modules/utils/Selection");
 

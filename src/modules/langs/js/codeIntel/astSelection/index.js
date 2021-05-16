@@ -4,10 +4,8 @@ let api = {
 	fromLineIndex,
 	
 	down(lines, selection) {
-		
+		return selection;
 	},
 }
 
-module.exports = {
-	fromLineIndex,
-};
+module.exports = api;
