@@ -2,12 +2,10 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import svelte from "rollup-plugin-svelte";
 import cssOnly from "rollup-plugin-css-only";
-import livereload from "rollup-plugin-livereload";
 import {terser} from "rollup-plugin-terser";
 import preprocess from "svelte-preprocess";
 import builtins from "rollup-plugin-node-builtins";
 import globals from "rollup-plugin-node-globals";
-import rollupDev from "./rollup-dev";
 
 let production = !process.env.ROLLUP_WATCH;
 
@@ -72,19 +70,6 @@ export default {
 		
 		globals(),
 		builtins(),
-
-		// In dev mode, call npm run start:dev once
-		// the bundle has been generated
-		!production && rollupDev,
-
-		// Watch the public directory and refresh the
-		// browser on changes when not in production
-		!production && livereload("public"),
-		
 		production && terser(),
 	],
-	
-	watch: {
-		clearScreen: false,
-	},
 };

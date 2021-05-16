@@ -6,19 +6,14 @@ let fs = require("flowfs");
 
 let args = yargs(hideBin(process.argv));
 
-args.boolean("watch");
-
 args.default({
-	watch: false,
 	userDataDir: fs(os.homedir(), ".editor").path,
 });
 
 let {
-	watch,
 	userDataDir,
 } = args.argv;
 
 module.exports = {
-	watch,
 	userDataDir,
 };

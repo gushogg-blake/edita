@@ -14,16 +14,14 @@ function debounce(fn, delay) {
 }
 
 let watch = chokidar.watch([
-	"public/index.html",
-	"public/global.css",
 	"src/modules/ipc",
 	"src/config.js",
 	"src/main.js",
-	"src/watch.js",
-].map(p => fs(__dirname, "..", p).path));
+	"watch.js",
+].map(p => fs(__dirname, p).path));
 
 watch.on("change", debounce(function() {
-	let child = spawn("npm", ["run", "electron-dev"], {
+	let child = spawn("npm", ["run", "pure-electron-dev"], {
 		cwd: __dirname,
 		detached: true,
 		stdio: "inherit",

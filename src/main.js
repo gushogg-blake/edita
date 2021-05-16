@@ -19,8 +19,8 @@ let openDialog = require("./modules/ipc/openDialog/main");
 // HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
 ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
 
-if (config.watch) {
-	require("./watch");
+if (dev) {
+	require("../watch");
 }
 
 app.setPath("userData", fs(config.userDataDir, "electron").path);
@@ -33,7 +33,9 @@ let ipcModules = {
 
 for (let [key, fns] of Object.entries(ipcModules)) {
 	for (let name in fns) {
-		ipc.answerRenderer(key + "/" + name, (args=[]) => fns[name](...args));
+		ipc.answerRenderer(key + "/" + name, function(args=[]) {
+			return fns[name](...args);
+		});
 	}
 }
 
@@ -63,16 +65,16 @@ function createWindow() {
 	if (dev) {
 		win.webContents.openDevTools();
 
-		watcher = require("chokidar").watch(path.join(__dirname, "../public/bundle.js"), {
+		watcher = require("chokidar").watch(path.join(__dirname, "../public"), {
 			ignoreInitial: true,
 		});
 		
-		watcher.on("change", () => {
+		watcher.on("change", function() {
 			win.reload();
 		});
 	}
 	
-	win.on("closed", () => {
+	win.on("closed", function() {
 		if (watcher) {
 			watcher.close();
 		}
@@ -85,7 +87,7 @@ function createWindow() {
 	});
 }
 
-app.on("ready", async function() {
+app.on("ready", function() {
 	createWindow();
 });
 
