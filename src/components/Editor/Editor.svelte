@@ -85,6 +85,10 @@ let hiliteWord = null;
 let cursorBlinkOn;
 let cursorInterval;
 
+let mouseIsDown = false;
+
+let astSelectionChanged = false;
+
 let normalMouseHandler = normalMouse({
 	get canvas() {
 		return canvas;
@@ -164,15 +168,13 @@ let astMouseHandler = astMouse({
 	},
 });
 
-let mouseIsDown = false;
-
 let normalKeyboardHandler = normalKeyboard({
 	get document() {
 		return document;
 	},
 	
 	get selection() {
-		return astSelection;
+		return normalSelection;
 	},
 	
 	get selectionEndCol() {
@@ -191,8 +193,6 @@ let normalKeyboardHandler = normalKeyboard({
 	startCursorBlink,
 	redraw,
 });
-
-let astSelectionChanged = false;
 
 let astKeyboardHandler = astKeyboard({
 	get document() {
