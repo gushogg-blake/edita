@@ -54,7 +54,6 @@ module.exports = function(editor) {
 		setSelection(Selection.s(cursor));
 		
 		if (e.button === 1) {
-			debugger;
 			let str = await clipboard.readSelection();
 			let newSelection = document.replaceSelection(editor.selection, str);
 			
@@ -149,6 +148,15 @@ module.exports = function(editor) {
 	}
 	
 	function mouseup(e) {
+		let {
+			document,
+			selection,
+		} = editor;
+		
+		if (Selection.isFull(selection)) {
+			clipboard.writeSelection(document.getSelectedText(selection));
+		}
+		
 		editor.mouseup(e);
 		
 		off(window, "mousemove", mousemove);

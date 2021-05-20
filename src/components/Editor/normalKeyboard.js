@@ -35,7 +35,14 @@ module.exports = function(editor) {
 		"Ctrl+V": "paste",
 	};
 	
-	// TODO pass document, selection etc in?  (or pass editor in and detructure)
+	function setClipboardSelection() {
+		let {
+			document,
+			selection,
+		} = editor;
+		
+		clipboard.writeSelection(document.getSelectedText(selection));
+	}
 	
 	let functions = {
 		up({document, selection, selectionEndCol}) {
@@ -82,26 +89,31 @@ module.exports = function(editor) {
 		
 		expandOrContractSelectionUp({document, selection, selectionEndCol}) {
 			editor.setSelection(Selection.expandOrContractUp(document.lines, selection, selectionEndCol));
+			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionDown({document, selection, selectionEndCol}) {
 			editor.setSelection(Selection.expandOrContractDown(document.lines, selection, selectionEndCol));
+			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionLeft({document, selection}) {
 			editor.setSelection(Selection.expandOrContractLeft(document.lines, selection));
 			editor.updateSelectionEndCol();
+			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionRight({document, selection}) {
 			editor.setSelection(Selection.expandOrContractRight(document.lines, selection));
 			editor.updateSelectionEndCol();
+			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionPageUp({document, selection, selectionEndCol}) {
 			let {rows} = editor.getCodeAreaSize();
 			
 			editor.setSelection(Selection.expandOrContractPageUp(document.lines, rows, selection, selectionEndCol));
+			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionPageDown({document, selection, selectionEndCol}) {
@@ -113,11 +125,13 @@ module.exports = function(editor) {
 		expandOrContractSelectionEnd({document, selection}) {
 			editor.setSelection(Selection.expandOrContractEnd(document.lines, selection));
 			editor.updateSelectionEndCol();
+			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionHome({document, selection}) {
 			editor.setSelection(Selection.expandOrContractHome(document.lines, selection));
 			editor.updateSelectionEndCol();
+			setClipboardSelection();
 		},
 		
 		switchToAstMode() {

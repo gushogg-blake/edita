@@ -121,7 +121,7 @@ let normalMouseHandler = normalMouse({
 	startCursorBlink,
 	
 	setSelection(selection) {
-		setNormalSelection(selection);
+		normalSelection = selection;
 	},
 	
 	setSelectionEndCol(col) {
@@ -184,7 +184,7 @@ let normalKeyboardHandler = normalKeyboard({
 	},
 	
 	setSelection(selection) {
-		setNormalSelection(selection);
+		normalSelection = selection;
 	},
 	
 	switchToAstMode,
@@ -224,12 +224,6 @@ let astKeyboardHandler = astKeyboard({
 	startCursorBlink,
 	redraw,
 });
-
-function setNormalSelection(selection) {
-	normalSelection = selection;
-	
-	clipboard.writeSelection(document.getSelectedText(normalSelection));
-}
 
 function mousedown(e) {
 	mouseIsDown = true;
@@ -407,7 +401,7 @@ function switchToNormalMode() {
 	let [topLineIndex] = astSelection;
 	
 	if (astSelectionChanged) {
-		setNormalSelection(Selection.startOfLineContent(document.lines, topLineIndex));
+		normalSelection = Selection.startOfLineContent(document.lines, topLineIndex);
 		
 		updateSelectionEndCol();
 	}
@@ -662,7 +656,7 @@ onMount(async function() {
 });
 
 $: canvasStyle = {
-	cursor: "text",
+	cursor: mode === "ast" ? "default" : "text",
 };
 </script>
 
