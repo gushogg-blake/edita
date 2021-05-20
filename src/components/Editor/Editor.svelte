@@ -9,6 +9,8 @@ import autoScroll from "../../utils/dom/autoScroll";
 import windowFocus from "../../utils/dom/windowFocus";
 import getKeyCombo from "../../utils/getKeyCombo";
 
+import clipboard from "../../modules/ipc/clipboard/renderer";
+
 import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
 import render from "../../modules/render/render";
 import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
@@ -119,7 +121,7 @@ let normalMouseHandler = normalMouse({
 	startCursorBlink,
 	
 	setSelection(selection) {
-		normalSelection = selection;
+		setNormalSelection(selection);
 	},
 	
 	setSelectionEndCol(col) {
@@ -182,7 +184,7 @@ let normalKeyboardHandler = normalKeyboard({
 	},
 	
 	setSelection(selection) {
-		normalSelection = selection;
+		setNormalSelection(selection);
 	},
 	
 	switchToAstMode,
@@ -223,20 +225,10 @@ let astKeyboardHandler = astKeyboard({
 	redraw,
 });
 
-async function prefsUpdated() {
-	if (!mounted) {
-		return;
-	}
+function setNormalSelection(selection) {
+	normalSelection = selection;
 	
-	hasHorizontalScrollbar = !$prefs.wrap;
-	
-	await tick();
-	
-	updateMeasurements();
-	startCursorBlink();
-	updateCanvasSize();
-	updateWraps();
-	redraw();
+	clipboard.writeSelection(document.getSelectedText(normalSelection));
 }
 
 function mousedown(e) {
@@ -415,7 +407,7 @@ function switchToNormalMode() {
 	let [topLineIndex] = astSelection;
 	
 	if (astSelectionChanged) {
-		normalSelection = Selection.startOfLineContent(document.lines, topLineIndex);
+		setNormalSelection(Selection.startOfLineContent(document.lines, topLineIndex));
 		
 		updateSelectionEndCol();
 	}
@@ -611,6 +603,22 @@ function getCodeAreaSize() {
 		rows: Math.floor(height / rowHeight),
 		cols: Math.floor(width / colWidth),
 	};
+}
+
+async function prefsUpdated() {
+	if (!mounted) {
+		return;
+	}
+	
+	hasHorizontalScrollbar = !$prefs.wrap;
+	
+	await tick();
+	
+	updateMeasurements();
+	startCursorBlink();
+	updateCanvasSize();
+	updateWraps();
+	redraw();
 }
 
 onMount(async function() {

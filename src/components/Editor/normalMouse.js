@@ -1,14 +1,16 @@
 let {on, off} = require("../../utils/dom/domEvents");
 let screenOffsets = require("../../utils/dom/screenOffsets");
 let autoScroll = require("../../utils/dom/autoScroll");
+let clipboard = require("../../modules/ipc/clipboard/renderer");
 let calculateMarginOffset = require("../../modules/render/calculateMarginOffset");
 let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
 let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
 let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
+let Selection = require("../../modules/utils/Selection");
 
 module.exports = function(editor) {
-	function mousedown(e) {
-		if (e.button !== 0) {
+	async function mousedown(e) {
+		if (e.button === 2) {
 			return;
 		}
 		
@@ -24,6 +26,7 @@ module.exports = function(editor) {
 			setSelectionEndCol,
 			redraw,
 			startCursorBlink,
+			insert,
 		} = editor;
 		
 		let {
@@ -48,12 +51,18 @@ module.exports = function(editor) {
 			col,
 		);
 		
-		setSelection({
-			start: cursor,
-			end: cursor,
-		});
+		setSelection(Selection.s(cursor));
 		
-		let [lineIndex, offset] = cursor;
+		if (e.button === 1) {
+			debugger;
+			let str = await clipboard.readSelection();
+			let newSelection = document.replaceSelection(editor.selection, str);
+			
+			setSelection(newSelection);
+		}
+		
+		let {end} = editor.selection;
+		let [lineIndex, offset] = end;
 		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
 		
 		setSelectionEndCol(endCol);
@@ -61,6 +70,10 @@ module.exports = function(editor) {
 		startCursorBlink();
 		
 		redraw();
+		
+		if (e.button === 1) {
+			return;
+		}
 		
 		on(window, "mousemove", mousemove);
 		on(window, "mouseup", mouseup);

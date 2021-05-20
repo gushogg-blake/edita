@@ -17,7 +17,7 @@ module.exports = function(
 	let [startLineIndex, endLineIndex] = astSelection;
 	let startLine = lines[startLineIndex];
 	let startRow = getLineStartingRow(lines, startLineIndex);
-	let height = (getLineRangeTotalHeight(lines, startLineIndex, endLineIndex) - 1) * rowHeight;
+	let height = (getLineRangeTotalHeight(lines, startLineIndex, endLineIndex - 1)) * rowHeight;
 	
 	let [x, y] = screenCoordsFromRowCol(
 		lines,

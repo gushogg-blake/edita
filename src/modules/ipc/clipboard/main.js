@@ -6,7 +6,6 @@ module.exports =  {
 	},
 	
 	write(str) {
-		console.log("write");
 		clipboard.writeText(str);
 	},
 	
