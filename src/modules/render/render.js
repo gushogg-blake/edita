@@ -73,6 +73,7 @@ module.exports = function(
 		renderAstHilite(
 			context,
 			lines,
+			astSelection,
 			astHilite,
 			scrollPosition,
 			prefs,
