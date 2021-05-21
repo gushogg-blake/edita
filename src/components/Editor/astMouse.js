@@ -123,8 +123,6 @@ module.exports = function(editor) {
 		}
 		
 		hilite(e);
-		
-		console.log(e);
 	}
 	
 	function mouseup(e) {

@@ -155,8 +155,6 @@ module.exports = function(editor) {
 		if (dragging) {
 			return;
 		}
-		
-		console.log(e);
 	}
 	
 	function mouseup(e) {
