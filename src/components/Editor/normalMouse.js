@@ -9,6 +9,8 @@ let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
 let Selection = require("../../modules/utils/Selection");
 
 module.exports = function(editor) {
+	let dragging = false;
+	
 	async function mousedown(e) {
 		if (e.button === 2) {
 			return;
@@ -74,7 +76,9 @@ module.exports = function(editor) {
 			return;
 		}
 		
-		on(window, "mousemove", mousemove);
+		dragging = true;
+		
+		on(window, "mousemove", drag);
 		on(window, "mouseup", mouseup);
 		
 		let offsets = screenOffsets(canvas);
@@ -103,7 +107,7 @@ module.exports = function(editor) {
 		});
 	}
 	
-	function mousemove(e) {
+	function drag(e) {
 		let {
 			canvas,
 			measurements,
@@ -147,6 +151,14 @@ module.exports = function(editor) {
 		redraw();
 	}
 	
+	function mousemove(e) {
+		if (dragging) {
+			return;
+		}
+		
+		console.log(e);
+	}
+	
 	function mouseup(e) {
 		let {
 			document,
@@ -159,11 +171,14 @@ module.exports = function(editor) {
 		
 		editor.mouseup(e);
 		
-		off(window, "mousemove", mousemove);
+		dragging = false;
+		
+		off(window, "mousemove", drag);
 		off(window, "mouseup", mouseup);
 	}
 	
 	return {
 		mousedown,
+		mousemove,
 	};
 }

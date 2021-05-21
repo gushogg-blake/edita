@@ -62,16 +62,15 @@ let visible = true;
 let focused = false;
 let windowHasFocus;
 
-let mode = "normal";
+let mode = "ast";
 
 let normalSelection = {
 	start: [0, 0],
 	end: [0, 0],
 };
 
-let astSelection = null;
+let astSelection = [13, 14];
 let astHilite = null;
-let astCursor = null;
 
 // for remembering the "intended" col when moving a cursor up/down to a line
 // that doesn't have as many cols as the cursor
@@ -88,8 +87,6 @@ let cursorBlinkOn;
 let cursorInterval;
 
 let mouseIsDown = false;
-
-let astSelectionChanged = false;
 
 let normalMouseHandler = normalMouse({
 	get canvas() {
@@ -162,6 +159,10 @@ let astMouseHandler = astMouse({
 		astSelection = selection;
 	},
 	
+	setSelectionHilite(selection) {
+		astHilite = selection;
+	},
+	
 	scrollBy,
 	redraw,
 	
@@ -211,7 +212,7 @@ let astKeyboardHandler = astKeyboard({
 	
 	setSelection(selection) {
 		astSelection = selection;
-		astSelectionChanged = true;
+		normalSelection = null;
 	},
 	
 	scrollPageUp,
@@ -232,6 +233,14 @@ function mousedown(e) {
 		normalMouseHandler.mousedown(e);
 	} else if (mode === "ast") {
 		astMouseHandler.mousedown(e);
+	}
+}
+
+function mousemove(e) {
+	if (mode === "normal") {
+		normalMouseHandler.mousemove(e);
+	} else if (mode === "ast") {
+		astMouseHandler.mousemove(e);
 	}
 }
 
@@ -387,8 +396,6 @@ function switchToAstMode() {
 	let [lineIndex] = normalSelection.end;
 	
 	astSelection = document.lang.codeIntel.astSelection.fromLineIndex(document.lines, lineIndex);
-	
-	astSelectionChanged = false;
 }
 
 function switchToNormalMode() {
@@ -400,7 +407,7 @@ function switchToNormalMode() {
 	
 	let [topLineIndex] = astSelection;
 	
-	if (astSelectionChanged) {
+	if (!normalSelection) {
 		normalSelection = Selection.startOfLineContent(document.lines, topLineIndex);
 		
 		updateSelectionEndCol();
@@ -485,7 +492,6 @@ function updateCanvas() {
 		normalSelection,
 		astSelection,
 		astHilite,
-		astCursor,
 		hiliteWord,
 		scrollPosition,
 		$prefs,
@@ -638,6 +644,10 @@ onMount(async function() {
 		document.parse($prefs);
 		
 		updateWraps();
+		
+		if (mode === "ast") {
+			normalSelection = null;
+		}
 	}));
 	
 	teardown.push(windowFocus.listen(function(isFocused) {
@@ -737,6 +747,7 @@ $scrollBarBorder: 1px solid #bababa;
 			on:mousedown={mousedown}
 			on:mouseenter={mouseenter}
 			on:mouseleave={mouseleave}
+			on:mousemove={mousemove}
 			on:dragover={dragover}
 			on:drop={drop}
 			style={inlineStyle(canvasStyle)}

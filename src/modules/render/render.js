@@ -14,7 +14,6 @@ module.exports = function(
 	normalSelection,
 	astSelection,
 	astHilite,
-	astCursor,
 	hiliteWord,
 	scrollPosition,
 	prefs,

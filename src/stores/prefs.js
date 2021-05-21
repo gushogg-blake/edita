@@ -8,6 +8,7 @@ let defaultPrefs = {
 	marginBackground: "#f0f0f0",
 	selectionBackground: "#d0d0d0",
 	astSelectionBackground: "#c5e4ff",
+	astHiliteBackground: "#F2F2F2",
 	wrap: true,
 	
 	langs: {

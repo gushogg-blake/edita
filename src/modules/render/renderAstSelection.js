@@ -32,5 +32,4 @@ module.exports = function(
 	} else {
 		context.fillRect(x, y, context.canvas.width, height);
 	}
-	
 }

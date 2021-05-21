@@ -1,12 +1,48 @@
-import {on, off} from "../../utils/dom/domEvents";
-import screenOffsets from "../../utils/dom/screenOffsets";
-import autoScroll from "../../utils/dom/autoScroll";
-import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
-import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
-import rowColFromCursor from "../../modules/utils/rowColFromCursor";
-import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
+let {on, off} = require("../../utils/dom/domEvents");
+let screenOffsets = require("../../utils/dom/screenOffsets");
+let autoScroll = require("../../utils/dom/autoScroll");
+let calculateMarginOffset = require("../../modules/render/calculateMarginOffset");
+let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
+let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
+let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
 
-export default function(editor) {
+module.exports = function(editor) {
+	let dragging = false;
+	
+	function hilite(e) {
+		let {
+			canvas,
+			measurements,
+			document,
+			selection,
+			scrollPosition,
+			setSelectionHilite,
+			redraw,
+		} = editor;
+		
+		let {
+			x: left,
+			y: top,
+		} = canvas.getBoundingClientRect();
+		
+		let x = e.clientX - left;
+		let y = e.clientY - top;
+		
+		let [row, col] = rowColFromScreenCoords(
+			document.lines,
+			x,
+			y,
+			scrollPosition,
+			measurements,
+		);
+		
+		let [lineIndex] = cursorFromRowCol(document.lines, row, col);
+		
+		setSelectionHilite(document.lang.codeIntel.astSelection.fromLineIndex(document.lines, lineIndex));
+		
+		redraw();
+	}
+	
 	function mousedown(e) {
 		let {
 			canvas,
@@ -46,7 +82,9 @@ export default function(editor) {
 		
 		let [lineIndex, offset] = cursor;
 		
-		on(window, "mousemove", mousemove);
+		dragging = true;
+		
+		on(window, "mousemove", drag);
 		on(window, "mouseup", mouseup);
 		
 		let offsets = screenOffsets(canvas);
@@ -75,18 +113,31 @@ export default function(editor) {
 		});
 	}
 	
-	function mousemove(e) {
+	function drag(e) {
 		
+	}
+	
+	function mousemove(e) {
+		if (dragging) {
+			return;
+		}
+		
+		hilite(e);
+		
+		console.log(e);
 	}
 	
 	function mouseup(e) {
 		editor.mouseup(e);
 		
-		off(window, "mousemove", mousemove);
+		dragging = false;
+		
+		off(window, "mousemove", drag);
 		off(window, "mouseup", mouseup);
 	}
 
 	return {
 		mousedown,
+		mousemove,
 	};
 }
