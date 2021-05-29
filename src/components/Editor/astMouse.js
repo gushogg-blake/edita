@@ -36,9 +36,13 @@ module.exports = function(editor) {
 			measurements,
 		);
 		
-		let [lineIndex] = cursorFromRowCol(document.lines, row, col);
-		
-		setSelectionHilite(document.lang.codeIntel.astSelection.fromLineIndex(document.lines, lineIndex));
+		if (row < document.countRows()) {
+			let [lineIndex] = cursorFromRowCol(document.lines, row, col);
+			
+			setSelectionHilite(document.lang.codeIntel.astSelection.fromLineIndex(document.lines, lineIndex));
+		} else {
+			setSelectionHilite(null);
+		}
 		
 		redraw();
 	}
@@ -122,7 +126,9 @@ module.exports = function(editor) {
 			return;
 		}
 		
-		hilite(e);
+		requestAnimationFrame(function() {
+			hilite(e);
+		});
 	}
 	
 	function mouseup(e) {

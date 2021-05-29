@@ -10,6 +10,8 @@ let defaultPrefs = {
 	astSelectionBackground: "#c5e4ff",
 	astHiliteBackground: "#F2F2F2",
 	wrap: true,
+	modeSwitchKey: "Escape",
+	minHoldTime: 200,
 	
 	langs: {
 		js: {

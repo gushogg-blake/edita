@@ -26,6 +26,7 @@ import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
 import normalKeyboard from "./normalKeyboard";
 import astKeyboard from "./astKeyboard";
+import modeSwitchKey from "./modeSwitchKey";
 
 export let document;
 
@@ -62,7 +63,7 @@ let visible = true;
 let focused = false;
 let windowHasFocus;
 
-let mode = "ast";
+let mode = "normal";
 
 let normalSelection = {
 	start: [0, 0],
@@ -226,6 +227,26 @@ let astKeyboardHandler = astKeyboard({
 	redraw,
 });
 
+let modeSwitchKeyHandler = modeSwitchKey({
+	switchToAstMode() {
+		switchToAstMode();
+		redraw();
+	},
+	
+	switchToNormalMode() {
+		switchToNormalMode();
+		redraw();
+	},
+	
+	get mode() {
+		return mode;
+	},
+	
+	get minHoldTime() {
+		return $prefs.minHoldTime;
+	},
+});
+
 function mousedown(e) {
 	mouseIsDown = true;
 	
@@ -249,14 +270,9 @@ function mouseenter(e) {
 }
 
 function mouseleave(e) {
-	//console.log(e);
+	astHilite = null;
 	
-}
-
-function keyup(e) {
-	if (!focused) {
-		return;
-	}
+	redraw();
 }
 
 function dragover(e) {
@@ -279,6 +295,36 @@ function wheel(e) {
 		scrollBy(measurements.colWidth * 3 * dir, 0);
 	} else {
 		scrollBy(0, 3 * dir);
+	}
+}
+
+function keydown(e) {
+	if (!focused) {
+		return;
+	}
+	
+	if (e.key === $prefs.modeSwitchKey) {
+		modeSwitchKeyHandler.keydown(e);
+		
+		return;
+	}
+	
+	if (mode === "normal") {
+		normalKeyboardHandler.keydown(e);
+	} else if (mode === "ast") {
+		astKeyboardHandler.keydown(e);
+	}
+}
+
+function keyup(e) {
+	if (!focused) {
+		return;
+	}
+	
+	if (e.key === $prefs.modeSwitchKey) {
+		modeSwitchKeyHandler.keyup(e);
+		
+		return;
 	}
 }
 
@@ -372,18 +418,6 @@ function updateSelectionEndCol() {
 	let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
 	
 	selectionEndCol = endCol;
-}
-
-function keydown(e) {
-	if (!focused) {
-		return;
-	}
-	
-	if (mode === "normal") {
-		normalKeyboardHandler.keydown(e);
-	} else if (mode === "ast") {
-		astKeyboardHandler.keydown(e);
-	}
 }
 
 function switchToAstMode() {

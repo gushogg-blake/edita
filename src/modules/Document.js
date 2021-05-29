@@ -30,7 +30,7 @@ class Document extends Evented {
 		
 		this.lines = createLines(code, fileDetails.newline);
 		
-		this.renderedUpTo = 0;
+		//this.parsedUpTo = 0;
 	}
 	
 	/*
