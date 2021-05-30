@@ -156,11 +156,7 @@ function closeTab(tab) {
 }
 
 onMount(async function() {
-	//let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
-	//let code = await fs("test/repos/acorn/dist/bin.js").read();
-	//let code = await fs("test/repos/array-find-index/index.js").read();
-	
-	openFile("test/repos/bluebird/js/browser/bluebird.js");
+	openFile("src/components/test.js");
 });
 </script>
 

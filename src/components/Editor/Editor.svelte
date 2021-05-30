@@ -18,6 +18,7 @@ import screenCoordsFromRowCol from "../../modules/utils/screenCoordsFromRowCol";
 import rowColFromCursor from "../../modules/utils/rowColFromCursor";
 import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
 import Selection from "../../modules/utils/Selection";
+import AstSelection from "../../modules/utils/AstSelection";
 
 import prefs from "../../stores/prefs";
 
@@ -427,9 +428,15 @@ function switchToAstMode() {
 	
 	mode = "ast";
 	
-	let [lineIndex] = normalSelection.end;
+	let selection = Selection.sort(normalSelection);
+	let [startLineIndex] = selection.start;
+	let [endLineIndex] = selection.end;
 	
-	astSelection = document.lang.codeIntel.astSelection.fromLineIndex(document.lines, lineIndex);
+	if (startLineIndex === endLineIndex) {
+		astSelection = document.lang.codeIntel.astSelection.fromLineIndex(document.lines, startLineIndex);
+	} else {
+		astSelection = AstSelection.s(startLineIndex, endLineIndex + 1);
+	}
 }
 
 function switchToNormalMode() {
