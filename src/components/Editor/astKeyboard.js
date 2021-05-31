@@ -43,11 +43,13 @@ module.exports = function(editor) {
 		},
 	};
 	
-	function keydown(e) {
+	async function keydown(e) {
 		let {keyCombo, isModified} = getKeyCombo(e);
 		
 		if (keymap[keyCombo]) {
-			functions[keymap[keyCombo]](editor);
+			e.preventDefault();
+			
+			await functions[keymap[keyCombo]](editor);
 		} else if (functions.default) {
 			functions.default(e, keyCombo, isModified, editor);
 		}

@@ -6,11 +6,17 @@ module.exports = function(
 	context,
 	lines,
 	astSelection,
+	astHilite,
+	isPeeking,
 	scrollPosition,
 	prefs,
 	fileDetails,
 	measurements,
 ) {
+	if (isPeeking) {
+		return;
+	}
+	
 	context.fillStyle = prefs.astSelectionBackground;
 	
 	let {colWidth, rowHeight} = measurements;

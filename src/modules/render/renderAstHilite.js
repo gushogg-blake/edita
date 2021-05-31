@@ -8,13 +8,18 @@ module.exports = function(
 	lines,
 	astSelection,
 	astHilite,
+	isPeeking,
 	scrollPosition,
 	prefs,
 	fileDetails,
 	measurements,
 ) {
-	if (!astHilite || AstSelection.isEqual(astHilite, astSelection)) {
+	if (!astHilite) {
 		return;
+	}
+	
+	if (isPeeking && AstSelection.isWithin(astHilite, astSelection)) {
+		astHilite = astSelection;
 	}
 	
 	context.fillStyle = prefs.astHiliteBackground;

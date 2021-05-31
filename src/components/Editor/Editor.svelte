@@ -75,6 +75,7 @@ let focused = false;
 let windowHasFocus;
 
 let mode = "normal";
+let isPeekingAstMode = false;
 let switchToAstModeOnMouseUp = false;
 
 let normalSelection = {
@@ -82,12 +83,14 @@ let normalSelection = {
 	end: [0, 0],
 };
 
-let astSelection = [13, 14];
-let astHilite = null;
-
 // for remembering the "intended" col when moving a cursor up/down to a line
 // that doesn't have as many cols as the cursor
 let selectionEndCol = 0;
+
+let astSelection = [13, 14];
+let astHilite = null;
+let pickOptions = [];
+let dropTargets = [];
 
 let scrollPosition = {
 	row: 0,
@@ -143,6 +146,7 @@ let normalMouseHandler = normalMouse({
 		
 		if (switchToAstModeOnMouseUp) {
 			switchToAstMode();
+			redraw();
 			
 			switchToAstModeOnMouseUp = false;
 		}
@@ -179,7 +183,7 @@ let astMouseHandler = astMouse({
 	},
 	
 	setSelectionHilite(selection) {
-		astHilite = selection;
+		setAstHilite(selection);
 	},
 	
 	scrollBy,
@@ -245,7 +249,9 @@ let astKeyboardHandler = astKeyboard({
 });
 
 let modeSwitchKeyHandler = modeSwitchKey({
-	switchToAstMode() {
+	switchToAstMode(isPeeking) {
+		isPeekingAstMode = isPeeking;
+		
 		if (mouseIsDown) {
 			switchToAstModeOnMouseUp = true;
 			
@@ -293,8 +299,7 @@ function mouseenter({detail: e}) {
 }
 
 function mouseleave({detail: e}) {
-	astHilite = null;
-	
+	setAstHilite(null);
 	redraw();
 }
 
@@ -326,9 +331,9 @@ function keydown(e) {
 		return;
 	}
 	
-	console.log(e.key);
-	
 	if (e.key === $prefs.modeSwitchKey) {
+		e.preventDefault();
+		
 		modeSwitchKeyHandler.keydown(e);
 		
 		return;
@@ -346,14 +351,18 @@ function keyup(e) {
 		return;
 	}
 	
-	console.log(e.key);
-	
-	
 	if (e.key === $prefs.modeSwitchKey) {
+		e.preventDefault();
+		
 		modeSwitchKeyHandler.keyup(e);
 		
 		return;
 	}
+}
+
+function setAstHilite(selection) {
+	astHilite = selection;
+	//pickOptions = document.lang.codeIntel.generatePickOptions(document.lines, selection);
 }
 
 function scrollBy(x, rows) {
@@ -561,6 +570,7 @@ function updateCanvas() {
 		normalSelection,
 		astSelection,
 		astHilite,
+		isPeekingAstMode,
 		hiliteWord,
 		scrollPosition,
 		$prefs,
@@ -833,6 +843,8 @@ $scrollBarBorder: 1px solid #bababa;
 				overallWidth={sizes.overallWidth}
 				marginWidth={sizes.marginWidth}
 				marginOffset={sizes.marginOffset}
+				{pickOptions}
+				{dropTargets}
 				on:mousedown={mousedown}
 				on:mouseenter={mouseenter}
 				on:mouseleave={mouseleave}
