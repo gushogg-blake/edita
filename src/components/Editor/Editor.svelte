@@ -11,6 +11,7 @@ import getKeyCombo from "../../utils/getKeyCombo";
 
 import clipboard from "../../modules/ipc/clipboard/renderer";
 
+import calculateMarginWidth from "../../modules/render/calculateMarginWidth";
 import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
 import render from "../../modules/render/render";
 import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
@@ -23,11 +24,14 @@ import AstSelection from "../../modules/utils/AstSelection";
 import prefs from "../../stores/prefs";
 
 import Scrollbar from "../Scrollbar.svelte";
+
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
 import normalKeyboard from "./normalKeyboard";
 import astKeyboard from "./astKeyboard";
 import modeSwitchKey from "./modeSwitchKey";
+
+import InteractionLayer from "./InteractionLayer.svelte";
 
 export let document;
 
@@ -56,6 +60,12 @@ let measurements;
 let rowHeightPadding = 2;
 let rowBaselineHint = -1;
 
+let sizes = {
+	overallWidth: 0,
+	marginWidth: 0,
+	marginOffset: 0,
+};
+
 let verticalScrollbar;
 let horizontalScrollbar;
 let hasHorizontalScrollbar = !$prefs.wrap;
@@ -65,7 +75,6 @@ let focused = false;
 let windowHasFocus;
 
 let mode = "normal";
-
 let switchToAstModeOnMouseUp = false;
 
 let normalSelection = {
@@ -261,7 +270,7 @@ let modeSwitchKeyHandler = modeSwitchKey({
 	},
 });
 
-function mousedown(e) {
+function mousedown({detail: e}) {
 	mouseIsDown = true;
 	
 	if (mode === "normal") {
@@ -271,7 +280,7 @@ function mousedown(e) {
 	}
 }
 
-function mousemove(e) {
+function mousemove({detail: e}) {
 	if (mode === "normal") {
 		normalMouseHandler.mousemove(e);
 	} else if (mode === "ast") {
@@ -279,23 +288,23 @@ function mousemove(e) {
 	}
 }
 
-function mouseenter(e) {
+function mouseenter({detail: e}) {
 	//console.log(e);
 }
 
-function mouseleave(e) {
+function mouseleave({detail: e}) {
 	astHilite = null;
 	
 	redraw();
 }
 
-function dragover(e) {
+function dragover({detail: e}) {
 	console.log(e);
 	e.preventDefault();
 	e.dataTransfer.dropEffect = "move";
 }
 
-function drop(e) {
+function drop({detail: e}) {
 	console.log(e);
 	let str = e.dataTransfer.getData("text/plain");
 	
@@ -520,6 +529,7 @@ function resize() {
 		
 		if (offsetWidth !== prevWidth) {
 			updateWraps();
+			updateSizes();
 		}
 		
 		redraw();
@@ -659,6 +669,18 @@ function getCodeAreaSize() {
 	};
 }
 
+function updateSizes() {
+	let {width, height} = canvas;
+	let marginWidth = calculateMarginWidth(document.lines, measurements);
+	let marginOffset = calculateMarginOffset(document.lines, measurements);
+	
+	sizes = {
+		overallWidth: width,
+		marginWidth,
+		marginOffset,
+	};
+}
+
 async function prefsUpdated() {
 	if (!mounted) {
 		return;
@@ -698,6 +720,7 @@ onMount(async function() {
 		document.parse($prefs);
 		
 		updateWraps();
+		updateSizes();
 		
 		if (mode === "ast") {
 			normalSelection = null;
@@ -718,10 +741,6 @@ onMount(async function() {
 		}
 	}
 });
-
-$: canvasStyle = {
-	cursor: mode === "ast" ? "default" : "text",
-};
 </script>
 
 <svelte:window
@@ -755,10 +774,14 @@ $: canvasStyle = {
 	overflow: hidden;
 }
 
-canvas {
+.layer {
 	@include abs-sticky;
 	
 	z-index: 1;
+}
+
+canvas {
+	@include abs-sticky;
 }
 
 $scrollBarBorder: 1px solid #bababa;
@@ -796,16 +819,23 @@ $scrollBarBorder: 1px solid #bababa;
 		id="canvas"
 		bind:this={canvasDiv}
 	>
-		<canvas
-			bind:this={canvas}
-			on:mousedown={mousedown}
-			on:mouseenter={mouseenter}
-			on:mouseleave={mouseleave}
-			on:mousemove={mousemove}
-			on:dragover={dragover}
-			on:drop={drop}
-			style={inlineStyle(canvasStyle)}
-		/>
+		<div class="layer">
+			<canvas bind:this={canvas}/>
+		</div>
+		<div class="layer">
+			<InteractionLayer
+				{mode}
+				overallWidth={sizes.overallWidth}
+				marginWidth={sizes.marginWidth}
+				marginOffset={sizes.marginOffset}
+				on:mousedown={mousedown}
+				on:mouseenter={mouseenter}
+				on:mouseleave={mouseleave}
+				on:mousemove={mousemove}
+				on:dragover={dragover}
+				on:drop={drop}
+			/>
+		</div>
 	</div>
 	<div
 		class="scrollbar"
