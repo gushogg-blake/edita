@@ -326,6 +326,8 @@ function keydown(e) {
 		return;
 	}
 	
+	console.log(e.key);
+	
 	if (e.key === $prefs.modeSwitchKey) {
 		modeSwitchKeyHandler.keydown(e);
 		
@@ -343,6 +345,9 @@ function keyup(e) {
 	if (!focused) {
 		return;
 	}
+	
+	console.log(e.key);
+	
 	
 	if (e.key === $prefs.modeSwitchKey) {
 		modeSwitchKeyHandler.keyup(e);

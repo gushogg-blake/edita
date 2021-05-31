@@ -6,6 +6,8 @@ export let overallWidth;
 export let marginWidth;
 export let marginOffset;
 export let mode;
+export let pickOptions;
+export let dropTargets;
 
 let fire = createEventDispatcher();
 
@@ -43,10 +45,10 @@ function calculateMarginStyle(marginWidth) {
 	};
 }
 
-function calculateCodeStyle(overallWidth, marginOffset, mode) {
+function calculateCodeStyle(overallWidth, marginWidth, mode) {
 	return {
-		left: marginOffset,
-		width: overallWidth - marginOffset,
+		left: marginWidth,
+		width: overallWidth - marginWidth,
 		cursor: mode === "ast" ? "default" : "text",
 	};
 }
