@@ -29,7 +29,6 @@ module.exports = function(editor) {
 		"Shift+Enter": "enter",
 		"Ctrl+Enter": "enterNoAutoIndent",
 		"Shift+Tab": "shiftTab",
-		"Escape": "switchToAstMode",
 		"Ctrl+X": "cut",
 		"Ctrl+C": "copy",
 		"Ctrl+V": "paste",
@@ -132,10 +131,6 @@ module.exports = function(editor) {
 			editor.setSelection(Selection.expandOrContractHome(document.lines, selection));
 			editor.updateSelectionEndCol();
 			setClipboardSelection();
-		},
-		
-		switchToAstMode() {
-			editor.switchToAstMode();
 		},
 		
 		enter({document, selection}) {

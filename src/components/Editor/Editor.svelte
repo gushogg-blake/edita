@@ -66,6 +66,8 @@ let windowHasFocus;
 
 let mode = "normal";
 
+let switchToAstModeOnMouseUp = false;
+
 let normalSelection = {
 	start: [0, 0],
 	end: [0, 0],
@@ -129,6 +131,12 @@ let normalMouseHandler = normalMouse({
 	
 	mouseup(e) {
 		mouseIsDown = false;
+		
+		if (switchToAstModeOnMouseUp) {
+			switchToAstMode();
+			
+			switchToAstModeOnMouseUp = false;
+		}
 	},
 });
 
@@ -190,7 +198,6 @@ let normalKeyboardHandler = normalKeyboard({
 		normalSelection = selection;
 	},
 	
-	switchToAstMode,
 	getCodeAreaSize,
 	updateSelectionEndCol,
 	ensureSelectionIsOnScreen,
@@ -230,6 +237,12 @@ let astKeyboardHandler = astKeyboard({
 
 let modeSwitchKeyHandler = modeSwitchKey({
 	switchToAstMode() {
+		if (mouseIsDown) {
+			switchToAstModeOnMouseUp = true;
+			
+			return;
+		}
+		
 		switchToAstMode();
 		redraw();
 	},
