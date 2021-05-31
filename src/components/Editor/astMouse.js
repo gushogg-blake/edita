@@ -5,6 +5,8 @@ let calculateMarginOffset = require("../../modules/render/calculateMarginOffset"
 let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
 let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
 let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
+let AstSelection = require("../../modules/utils/AstSelection");
+let Selection = require("../../modules/utils/Selection");
 
 module.exports = function(editor) {
 	let dragging = false;
@@ -15,6 +17,8 @@ module.exports = function(editor) {
 			measurements,
 			document,
 			selection,
+			isPeekingAstMode: isPeeking,
+			normalSelection,
 			scrollPosition,
 			setSelectionHilite,
 			redraw,
@@ -39,7 +43,17 @@ module.exports = function(editor) {
 		if (row < document.countRows()) {
 			let [lineIndex] = cursorFromRowCol(document.lines, row, col);
 			
-			setSelectionHilite(document.lang.codeIntel.astSelection.fromLineIndex(document.lines, lineIndex));
+			let hilite = document.lang.codeIntel.astSelection.fromLineIndex(document.lines, lineIndex);
+			
+			if (
+				isPeeking
+				&& AstSelection.isWithin(hilite, selection)
+				&& Selection.isFull(normalSelection)
+			) {
+				hilite = selection;
+			}
+			
+			setSelectionHilite(hilite);
 		} else {
 			setSelectionHilite(null);
 		}

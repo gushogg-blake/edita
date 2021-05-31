@@ -1,14 +1,11 @@
 let getLineStartingRow = require("../utils/getLineStartingRow");
 let screenCoordsFromRowCol = require("../utils/screenCoordsFromRowCol");
 let getLineRangeTotalHeight = require("../utils/getLineRangeTotalHeight");
-let AstSelection = require("../utils/AstSelection");
 
 module.exports = function(
 	context,
 	lines,
-	astSelection,
 	astHilite,
-	isPeeking,
 	scrollPosition,
 	prefs,
 	fileDetails,
@@ -16,10 +13,6 @@ module.exports = function(
 ) {
 	if (!astHilite) {
 		return;
-	}
-	
-	if (isPeeking && AstSelection.isWithin(astHilite, astSelection)) {
-		astHilite = astSelection;
 	}
 	
 	context.fillStyle = prefs.astHiliteBackground;

@@ -59,11 +59,10 @@ module.exports = function(
 	}
 	
 	if (mode === "ast") {
-		renderAstHilite(
+		renderAstSelection(
 			context,
 			lines,
 			astSelection,
-			astHilite,
 			isPeekingAstMode,
 			scrollPosition,
 			prefs,
@@ -73,12 +72,10 @@ module.exports = function(
 	}
 	
 	if (mode === "ast") {
-		renderAstSelection(
+		renderAstHilite(
 			context,
 			lines,
-			astSelection,
 			astHilite,
-			isPeekingAstMode,
 			scrollPosition,
 			prefs,
 			fileDetails,

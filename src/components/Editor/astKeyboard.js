@@ -9,15 +9,9 @@ module.exports = function(editor) {
 		"k": "up",
 		"J": "next",
 		"K": "previous",
-		"Escape": "switchToNormalMode",
 	};
 	
 	let functions = {
-		switchToNormalMode() {
-			editor.switchToNormalMode();
-			editor.startCursorBlink();
-		},
-		
 		up({document, selection}) {
 			editor.setSelection(document.lang.codeIntel.astSelection.up(document.lines, selection));
 		},

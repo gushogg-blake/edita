@@ -6,7 +6,6 @@ module.exports = function(
 	context,
 	lines,
 	astSelection,
-	astHilite,
 	isPeeking,
 	scrollPosition,
 	prefs,

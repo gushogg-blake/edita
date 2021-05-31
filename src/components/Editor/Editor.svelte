@@ -178,6 +178,14 @@ let astMouseHandler = astMouse({
 		return astSelection;
 	},
 	
+	get normalSelection() {
+		return normalSelection;
+	},
+	
+	get isPeekingAstMode() {
+		return isPeekingAstMode;
+	},
+	
 	setSelection(selection) {
 		astSelection = selection;
 	},
