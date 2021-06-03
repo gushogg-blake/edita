@@ -99,7 +99,7 @@ function calculateCodeStyle(overallWidth, marginWidth, mode) {
 //		top: screenRow * rowHeight,
 //		height: rowHeight,
 //	};
-}
+//}
 
 function rowStyle(screenRow, rowHeight) {
 	return {

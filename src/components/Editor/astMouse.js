@@ -63,7 +63,6 @@ module.exports = function(editor) {
 	}
 	
 	function mousedown(e) {
-		console.log("ast mousedown");
 		let {
 			canvas,
 			measurements,
@@ -139,7 +138,6 @@ module.exports = function(editor) {
 	}
 	
 	function mousemove(e) {
-		console.log("ast mousemove");
 		if (dragging) {
 			return;
 		}

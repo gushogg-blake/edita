@@ -865,7 +865,7 @@ $scrollBarBorder: 1px solid #bababa;
 				overallWidth={sizes.overallWidth}
 				marginWidth={sizes.marginWidth}
 				marginOffset={sizes.marginOffset}
-				rowHeight={measurements.rowHeight}
+				rowHeight={measurements?.rowHeight}
 				{pickOptions}
 				{dropTargets}
 				on:mousedown={mousedown}
