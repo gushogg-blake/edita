@@ -285,13 +285,18 @@ let modeSwitchKeyHandler = modeSwitchKey({
 	},
 });
 
-function mousedown({detail: e}) {
+function mousedown({detail}) {
+	let {
+		e,
+		enableDrag,
+	} = detail;
+	
 	mouseIsDown = true;
 	
 	if (mode === "normal") {
-		normalMouseHandler.mousedown(e);
+		normalMouseHandler.mousedown(e, enableDrag);
 	} else if (mode === "ast") {
-		astMouseHandler.mousedown(e);
+		astMouseHandler.mousedown(e, enableDrag);
 	}
 }
 
@@ -860,6 +865,7 @@ $scrollBarBorder: 1px solid #bababa;
 				overallWidth={sizes.overallWidth}
 				marginWidth={sizes.marginWidth}
 				marginOffset={sizes.marginOffset}
+				rowHeight={measurements.rowHeight}
 				{pickOptions}
 				{dropTargets}
 				on:mousedown={mousedown}
