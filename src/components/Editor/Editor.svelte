@@ -103,6 +103,7 @@ let cursorBlinkOn;
 let cursorInterval;
 
 let mouseIsDown = false;
+let lastMouseMoveEvent;
 
 let normalMouseHandler = normalMouse({
 	get canvas() {
@@ -295,6 +296,8 @@ function mousedown({detail: e}) {
 }
 
 function mousemove({detail: e}) {
+	lastMouseMoveEvent = e;
+	
 	if (mode === "normal") {
 		normalMouseHandler.mousemove(e);
 	} else if (mode === "ast") {
@@ -370,7 +373,12 @@ function keyup(e) {
 
 function setAstHilite(selection) {
 	astHilite = selection;
-	//pickOptions = document.lang.codeIntel.generatePickOptions(document.lines, selection);
+	
+	if (selection) {
+		//pickOptions = document.lang.codeIntel.generatePickOptions(document.lines, selection);
+	} else {
+		pickOptions = [];
+	}
 }
 
 function scrollBy(x, rows) {
@@ -476,10 +484,10 @@ function switchToAstMode() {
 	let [startLineIndex] = selection.start;
 	let [endLineIndex] = selection.end;
 	
-	if (startLineIndex === endLineIndex) {
-		astSelection = document.lang.codeIntel.astSelection.fromLineIndex(document.lines, startLineIndex);
-	} else {
-		astSelection = AstSelection.s(startLineIndex, endLineIndex + 1);
+	astSelection = document.lang.codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex + 1);
+	
+	if (lastMouseMoveEvent) {
+		astMouseHandler.hilite(lastMouseMoveEvent);
 	}
 }
 
@@ -489,6 +497,7 @@ function switchToNormalMode() {
 	}
 	
 	mode = "normal";
+	setAstHilite(null);
 	
 	let [topLineIndex] = astSelection;
 	

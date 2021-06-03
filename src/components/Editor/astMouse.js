@@ -43,10 +43,11 @@ module.exports = function(editor) {
 		if (row < document.countRows()) {
 			let [lineIndex] = cursorFromRowCol(document.lines, row, col);
 			
-			let hilite = document.lang.codeIntel.astSelection.fromLineIndex(document.lines, lineIndex);
+			let hilite = document.lang.codeIntel.astSelection.hiliteFromLineIndex(document.lines, lineIndex);
 			
 			if (
 				isPeeking
+				&& hilite
 				&& AstSelection.isWithin(hilite, selection)
 				&& Selection.isFull(normalSelection)
 			) {
@@ -157,5 +158,6 @@ module.exports = function(editor) {
 	return {
 		mousedown,
 		mousemove,
+		hilite,
 	};
 }

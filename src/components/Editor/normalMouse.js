@@ -167,6 +167,7 @@ module.exports = function(editor) {
 			clipboard.writeSelection(document.getSelectedText(selection));
 		}
 		
+		console.log("normalMouse up");
 		editor.mouseup(e);
 		
 		dragging = false;

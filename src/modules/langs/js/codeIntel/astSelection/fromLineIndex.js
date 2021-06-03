@@ -23,8 +23,20 @@ else if statement
 expand could go to ladder actually - seems poss more useful, and not unintuitive
 */
 
-function fromLineIndex(lines, lineIndex) {
+function fromLineIndex(lines, lineIndex, forHilite) {
 	let line = lines[lineIndex];
+	
+	if (!forHilite) {
+		while (line.trimmed.length === 0 && lineIndex > 0) {
+			lineIndex--;
+			line = lines[lineIndex];
+		}
+		
+		while (line.trimmed.length === 0 && lineIndex < lines.length - 1) {
+			lineIndex++;
+			line = lines[lineIndex];
+		}
+	}
 	
 	let {
 		openers,
@@ -45,11 +57,20 @@ function fromLineIndex(lines, lineIndex) {
 			headerIndex !== null ? headerIndex : lineIndex,
 			lineIndex + 1,
 		];
-	} else {
+	} else if (line.trimmed.length > 0) {
 		return [
 			lineIndex,
 			lineIndex + 1,
 		];
+	} else {
+		if (forHilite) {
+			return null;
+		} else {
+			return [
+				lineIndex,
+				lineIndex,
+			];
+		}
 	}
 }
 

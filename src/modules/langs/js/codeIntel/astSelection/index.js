@@ -1,7 +1,16 @@
 let fromLineIndex = require("./fromLineIndex");
+let fromLineRange = require("./fromLineRange");
 
 let api = {
-	fromLineIndex,
+	selectionFromLineIndex(lines, lineIndex) {
+		return fromLineIndex(lines, lineIndex, false);
+	},
+	
+	hiliteFromLineIndex(lines, lineIndex) {
+		return fromLineIndex(lines, lineIndex, true);
+	},
+	
+	fromLineRange,
 	
 	up(lines, selection) {
 		return selection;
