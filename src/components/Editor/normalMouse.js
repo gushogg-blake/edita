@@ -80,6 +80,7 @@ module.exports = function(editor) {
 		
 		on(window, "mousemove", drag);
 		on(window, "mouseup", mouseup);
+		on(window, "dragend", dragend);
 		
 		let offsets = screenOffsets(canvas);
 		
@@ -157,7 +158,7 @@ module.exports = function(editor) {
 		}
 	}
 	
-	function mouseup(e) {
+	function mouseup() {
 		let {
 			document,
 			selection,
@@ -167,12 +168,17 @@ module.exports = function(editor) {
 			clipboard.writeSelection(document.getSelectedText(selection));
 		}
 		
-		editor.mouseup(e);
+		editor.mouseup();
 		
 		dragging = false;
 		
 		off(window, "mousemove", drag);
 		off(window, "mouseup", mouseup);
+		off(window, "dragend", dragend);
+	}
+	
+	function dragend() {
+		mouseup();
 	}
 	
 	return {

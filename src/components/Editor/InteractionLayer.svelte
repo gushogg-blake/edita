@@ -2,6 +2,7 @@
 import {createEventDispatcher} from "svelte";
 import unique from "../../utils/array/unique";
 import inlineStyle from "../../utils/dom/inlineStyle";
+import topMargin from "../../modules/render/topMargin";
 
 export let overallWidth;
 export let marginWidth;
@@ -61,6 +62,14 @@ function drop(e) {
 
 function dragstart(e) {
 	console.log(e);
+	
+	if (lastMouseDownElement) {
+		let {node, x, y} = lastMouseDownElement;
+		
+		e.dataTransfer.setDragImage(node, x, y);
+		
+		lastMouseDownElement = null;
+	}
 }
 
 function dragend(e) {
@@ -71,7 +80,14 @@ function dragend(e) {
 
 function pickOptionMousedown(option, e) {
 	console.log(option, e);
+	
 	draggable = true;
+	
+	lastMouseDownElement = {
+		node: e.target,
+		x: e.offsetX,
+		y: e.offsetY,
+	};
 }
 
 function calculateMarginStyle(marginWidth) {
@@ -103,7 +119,7 @@ function calculateCodeStyle(overallWidth, marginWidth, mode) {
 
 function rowStyle(screenRow, rowHeight) {
 	return {
-		top: screenRow * rowHeight,
+		top: topMargin + screenRow * rowHeight,
 		height: rowHeight,
 	};
 }
@@ -133,9 +149,21 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 }
 
 .row {
+	position: absolute;
+	left: 200px;
 	display: flex;
 	align-items: center;
 	gap: 5px;
+}
+
+.option {
+	color: #3D2F00;
+	/*font-weight: bold;*/
+	font-size: 12px;
+	border: 1px solid #544200;
+	border-radius: 100px;
+	padding: 0 5px;
+	background: #D6AD0C;
 }
 </style>
 
@@ -162,23 +190,26 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 		on:drop={drop}
 		on:dragend={dragend}
 	>
-		
-	</div>
-	{#each pickOptionRows as screenRow}
-		<div
-			class="row"
-			style={inlineStyle(rowStyle(screenRow, rowHeight))}
-		>
-			{#each pickOptions.filter(o => o.screenRow === screenRow) as option}
+		{#if mode === "ast"}
+			{#each pickOptionRows as screenRow}
 				<div
-					class="pickOption"
-					on:mousedown={(e) => pickOptionMousedown(option, e)}
+					class="row"
+					style={inlineStyle(rowStyle(screenRow, rowHeight))}
 				>
-					{option.label}
+					{#each pickOptions.filter(o => o.screenRow === screenRow) as option}
+						<div
+							class="option pickOption"
+							on:mousedown={(e) => pickOptionMousedown(option, e)}
+						>
+							{option.label}
+						</div>
+					{/each}
 				</div>
 			{/each}
-		</div>
-	{/each}
+		{/if}
+		
+	</div>
+	
 	{#each dropTargets as target}
 		
 	{/each}

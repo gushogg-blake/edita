@@ -74,7 +74,7 @@ let visible = true;
 let focused = false;
 let windowHasFocus;
 
-let mode = "normal";
+let mode = "ast";
 let isPeekingAstMode = false;
 let switchToAstModeOnMouseUp = false;
 
@@ -91,6 +91,29 @@ let astSelection = [13, 14];
 let astHilite = null;
 let pickOptions = [];
 let dropTargets = [];
+
+pickOptions = [
+	{
+		screenRow: 7,
+		label: "Test",
+	},
+	{
+		screenRow: 7,
+		label: "Test",
+	},
+	{
+		screenRow: 10,
+		label: "Test",
+	},
+	{
+		screenRow: 10,
+		label: "Test",
+	},
+	{
+		screenRow: 20,
+		label: "Test",
+	},
+];
 
 let scrollPosition = {
 	row: 0,
@@ -142,7 +165,7 @@ let normalMouseHandler = normalMouse({
 		selectionEndCol = col;
 	},
 	
-	mouseup(e) {
+	mouseup() {
 		mouseIsDown = false;
 		
 		if (switchToAstModeOnMouseUp) {
@@ -382,7 +405,7 @@ function setAstHilite(selection) {
 	if (selection) {
 		//pickOptions = document.lang.codeIntel.generatePickOptions(document.lines, selection);
 	} else {
-		pickOptions = [];
+		//pickOptions = [];
 	}
 }
 
