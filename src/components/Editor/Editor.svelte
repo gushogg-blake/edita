@@ -484,7 +484,7 @@ function switchToAstMode() {
 	let [startLineIndex] = selection.start;
 	let [endLineIndex] = selection.end;
 	
-	astSelection = document.lang.codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex + 1);
+	astSelection = document.lang.codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex);
 	
 	if (lastMouseMoveEvent) {
 		astMouseHandler.hilite(lastMouseMoveEvent);
