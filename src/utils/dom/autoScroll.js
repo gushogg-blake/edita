@@ -38,15 +38,27 @@ module.exports = function(offsets, handler) {
 		tick();
 	}
 	
-	function mouseup(e) {
+	function dragover(e) {
+		mousemove(e);
+	}
+	
+	function mouseup() {
 		off(window, "mousemove", mousemove);
+		off(window, "dragover", dragover);
 		off(window, "mouseup", mouseup);
+		off(window, "dragend", dragend);
 		
 		clearInterval(ticker);
+	}
+	
+	function dragend() {
+		mouseup();
 	}
 	
 	ticker = setInterval(tick, 300);
 	
 	on(window, "mousemove", mousemove);
+	on(window, "dragover", dragover);
 	on(window, "mouseup", mouseup);
+	on(window, "dragend", dragend);
 }

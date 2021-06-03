@@ -16,6 +16,7 @@ function mousedown(e) {
 }
 
 function mousemove(e) {
+	
 	fire("mousemove", e);
 }
 
@@ -32,11 +33,20 @@ function mouseleave(e) {
 }
 
 function dragover(e) {
+	window.dispatchEvent(new Event("dragover"));
 	fire("dragover", e);
 }
 
 function drop(e) {
 	fire("drop", e);
+}
+
+function dragstart(e) {
+	console.log(e);
+}
+
+function dragend(e) {
+	window.dispatchEvent(new Event("dragend"));
 }
 
 function calculateMarginStyle(marginWidth) {
@@ -94,8 +104,11 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 		on:mouseenter={mouseenter}
 		on:mouseleave={mouseleave}
 		on:mousemove={mousemove}
+		draggable="true"
+		on:dragstart={dragstart}
 		on:dragover={dragover}
 		on:drop={drop}
+		on:dragend={dragend}
 	>
 		
 	</div>

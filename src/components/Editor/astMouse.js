@@ -63,6 +63,7 @@ module.exports = function(editor) {
 	}
 	
 	function mousedown(e) {
+		console.log("ast mousedown");
 		let {
 			canvas,
 			measurements,
@@ -105,6 +106,7 @@ module.exports = function(editor) {
 		
 		on(window, "mousemove", drag);
 		on(window, "mouseup", mouseup);
+		on(window, "dragend", dragend);
 		
 		let offsets = screenOffsets(canvas);
 		
@@ -137,6 +139,7 @@ module.exports = function(editor) {
 	}
 	
 	function mousemove(e) {
+		console.log("ast mousemove");
 		if (dragging) {
 			return;
 		}
@@ -146,13 +149,18 @@ module.exports = function(editor) {
 		});
 	}
 	
-	function mouseup(e) {
-		editor.mouseup(e);
+	function mouseup() {
+		editor.mouseup();
 		
 		dragging = false;
 		
 		off(window, "mousemove", drag);
 		off(window, "mouseup", mouseup);
+		off(window, "dragend", dragend);
+	}
+	
+	function dragend() {
+		mouseup();
 	}
 
 	return {

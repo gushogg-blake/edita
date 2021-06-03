@@ -198,7 +198,7 @@ let astMouseHandler = astMouse({
 	scrollBy,
 	redraw,
 	
-	mouseup(e) {
+	mouseup() {
 		mouseIsDown = false;
 	},
 });

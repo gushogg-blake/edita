@@ -2,7 +2,7 @@ let fromLineIndex = require("./fromLineIndex");
 
 function fromLineRange(lines, startLineIndex, endLineIndex) {
 	if (startLineIndex === endLineIndex) {
-		return fromLineIndex(lines, startLineIndex, endLineIndex, false);
+		return fromLineIndex(lines, startLineIndex, false);
 	}
 	
 	let startLine = lines[startLineIndex];
