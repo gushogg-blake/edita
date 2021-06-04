@@ -1,6 +1,7 @@
 <script>
 import {createEventDispatcher} from "svelte";
 import unique from "../../utils/array/unique";
+import {on, off} from "../../utils/dom/domEvents";
 import inlineStyle from "../../utils/dom/inlineStyle";
 import topMargin from "../../modules/render/topMargin";
 
@@ -13,8 +14,9 @@ export let pickOptions;
 export let dropTargets;
 
 let codeDiv;
-let lastMouseDownElement;
+let selectedOption;
 let draggable = false;
+let currentDropTarget;
 
 let fire = createEventDispatcher();
 
@@ -22,6 +24,8 @@ $: pickOptionRows = unique(pickOptions.map(option => option.screenRow));
 $: dropTargetRows = unique(dropTargets.map(target => target.screenRow));
 
 function mousedown(e) {
+	on(window, "mouseup", mouseup);
+	
 	fire("mousedown", {
 		e,
 		
@@ -38,8 +42,11 @@ function mousemove(e) {
 
 function mouseup(e) {
 	draggable = false;
+	selectedOption = null;
 	
-	fire("mousedown", e);
+	fire("mouseup", e);
+	
+	off(window, "mouseup", mouseup);
 }
 
 function mouseenter(e) {
@@ -50,9 +57,17 @@ function mouseleave(e) {
 	fire("mouseleave", e);
 }
 
+function dragstart(e) {
+	if (selectedOption) {
+		let {node, x, y} = selectedOption;
+		
+		e.dataTransfer.setDragImage(node, x, y);
+	} else {
+		e.dataTransfer.setDragImage(new Image(), 0, 0);
+	}
+}
+
 function dragover(e) {
-	window.dispatchEvent(new Event("dragover"));
-	
 	fire("dragover", e);
 }
 
@@ -60,40 +75,42 @@ function drop(e) {
 	fire("drop", e);
 }
 
-function dragstart(e) {
-	console.log(e);
-	
-	if (lastMouseDownElement) {
-		let {node, x, y} = lastMouseDownElement;
-		
-		e.dataTransfer.setDragImage(node, x, y);
-		
-		lastMouseDownElement = null;
-	} else {
-		e.dataTransfer.setDragImage(new Image(), 0, 0);
-	}
-}
-
 function dragend(e) {
 	draggable = false;
+	selectedOption = null;
 	
-	window.dispatchEvent(new Event("dragend"));
 }
 
 function pickOptionMousedown(option, e) {
-	console.log(option, e);
+	e.stopPropagation();
 	
 	draggable = true;
 	
-	lastMouseDownElement = {
+	selectedOption = {
+		option,
 		node: e.target,
 		x: e.offsetX,
 		y: e.offsetY,
 	};
+	
+	fire("optionmousedown", {
+		e,
+		option,
+	});
 }
 
 function dropTargetDragover(target) {
-	console.log("dragover", target);
+	//console.log("dragover", target);
+}
+
+function dropTargetDragenter(target) {
+	currentDropTarget = target;
+}
+
+function dropTargetDragleave(target) {
+	if (currentDropTarget === target) {
+		currentDropTarget = null;
+	}
 }
 
 function dropTargetDrop(target) {
@@ -183,6 +200,11 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 	color: #EFD2C4;
 	background: #A0451E;
 	background: #D34F0C;
+	
+	&.active {
+		color: #FCDFD1;
+		background: #B24711;
+	}
 }
 </style>
 
@@ -233,7 +255,10 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 					{#each dropTargets.filter(o => o.screenRow === screenRow) as target}
 						<div
 							class="option dropTarget"
+							class:active={target === currentDropTarget}
 							on:dragover={() => dropTargetDragover(target)}
+							on:dragenter={() => dropTargetDragenter(target)}
+							on:dragleave={() => dropTargetDragleave(target)}
 							on:drop={() => dropTargetDrop(target)}
 						>
 							{target.label}

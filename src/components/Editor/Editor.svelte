@@ -233,6 +233,14 @@ let astMouseHandler = astMouse({
 		setAstHilite(selection);
 	},
 	
+	setPickOptions(options) {
+		pickOptions = options;
+	},
+	
+	pick(option) {
+		console.log("pick", option);
+	},
+	
 	scrollBy,
 	redraw,
 	
@@ -349,26 +357,69 @@ function mousemove({detail: e}) {
 }
 
 function mouseenter({detail: e}) {
-	//console.log(e);
+	if (mode === "normal") {
+		normalMouseHandler.mouseenter(e);
+	} else if (mode === "ast") {
+		astMouseHandler.mouseenter(e);
+	}
 }
 
 function mouseleave({detail: e}) {
-	setAstHilite(null);
-	redraw();
+	if (mode === "normal") {
+		normalMouseHandler.mouseleave(e);
+	} else if (mode === "ast") {
+		astMouseHandler.mouseleave(e);
+	}
+}
+
+function optionmousedown({detail}) {
+	let {
+		e,
+		option,
+	} = detail;
+	
+	console.log(option);
+}
+
+function dragstart({detail: e}) {
+	if (mode === "normal") {
+		normalMouseHandler.dragstart(e);
+	} else if (mode === "ast") {
+		astMouseHandler.dragstart(e);
+	}
 }
 
 function dragover({detail: e}) {
-	console.log(e);
-	e.preventDefault();
-	e.dataTransfer.dropEffect = "move";
+	if (mode === "normal") {
+		normalMouseHandler.dragover(e);
+	} else if (mode === "ast") {
+		astMouseHandler.dragover(e);
+	}
+}
+
+function dragend({detail: e}) {
+	if (mode === "normal") {
+		normalMouseHandler.dragend(e);
+	} else if (mode === "ast") {
+		astMouseHandler.dragend(e);
+	}
 }
 
 function drop({detail: e}) {
-	console.log(e);
-	let str = e.dataTransfer.getData("text/plain");
-	
-	console.log(str);
+	if (mode === "normal") {
+		normalMouseHandler.drop(e);
+	} else if (mode === "ast") {
+		astMouseHandler.drop(e);
+	}
 }
+
+//function mouseEvent(type, e) {
+//	if (mode === "normal") {
+//		normalMouseHandler[type](e);
+//	} else if (mode === "ast") {
+//		astMouseHandler[type](e);
+//	}
+//}
 
 function wheel(e) {
 	let dir = e.deltaY > 0 ? 1 : -1;
@@ -416,12 +467,6 @@ function keyup(e) {
 
 function setAstHilite(selection) {
 	astHilite = selection;
-	
-	if (selection) {
-		//pickOptions = document.lang.codeIntel.generatePickOptions(document.lines, selection);
-	} else {
-		//pickOptions = [];
-	}
 }
 
 function scrollBy(x, rows) {
@@ -910,7 +955,10 @@ $scrollBarBorder: 1px solid #bababa;
 				on:mouseenter={mouseenter}
 				on:mouseleave={mouseleave}
 				on:mousemove={mousemove}
+				on:optionmousedown={optionmousedown}
+				on:dragstart={dragstart}
 				on:dragover={dragover}
+				on:dragend={dragend}
 				on:drop={drop}
 			/>
 		</div>

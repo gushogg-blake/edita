@@ -158,6 +158,36 @@ module.exports = function(editor) {
 		off(window, "dragend", dragend);
 	}
 	
+	function mouseenter() {
+		
+	}
+	
+	function mouseleave(e) {
+		
+	}
+	
+	function dragstart(e) {
+		
+	}
+	
+	function dragover(e) {
+		
+	}
+	
+	function dragenter(e) {
+		
+	}
+	
+	function dragleave(e) {
+		
+	}
+	
+	function drop(e) {
+		let str = e.dataTransfer.getData("text/plain");
+		
+		console.log(str);
+	}
+	
 	function dragend() {
 		mouseup();
 	}
@@ -165,5 +195,13 @@ module.exports = function(editor) {
 	return {
 		mousedown,
 		mousemove,
+		mouseenter,
+		mouseleave,
+		dragstart,
+		dragover,
+		dragenter,
+		dragleave,
+		drop,
+		dragend,
 	};
 }

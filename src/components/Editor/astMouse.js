@@ -58,11 +58,21 @@ module.exports = function(editor) {
 	
 	function hilite(e) {
 		let {
+			document,
 			setSelectionHilite,
+			setPickOptions,
 			redraw,
 		} = editor;
 		
-		setSelectionHilite(getHilite(e));
+		let selection = getHilite(e);
+		
+		setSelectionHilite(selection);
+		
+		if (selection) {
+			//setPickOptions(document.lang.codeIntel.generatePickOptions(document.lines, selection));
+		} else {
+			//setPickOptions([]);
+		}
 		
 		redraw();
 	}
@@ -75,6 +85,7 @@ module.exports = function(editor) {
 			hasHorizontalScrollbar,
 			scrollBy,
 			setSelection,
+			pick,
 			redraw,
 		} = editor;
 		
@@ -92,14 +103,17 @@ module.exports = function(editor) {
 			on(window, "mousemove", drawSelection);
 			on(window, "mouseup", finishSelection);
 		} else {
-			let hilite = getHilite(e);
+			let selection = getHilite(e);
 			
-			if (!hilite) {
+			if (!selection) {
 				return;
 			}
 			
 			enableDrag();
 			
+			pick(selection);
+			
+			on(window, "mouseup", mouseup);
 			on(window, "dragend", dragend);
 		}
 	}
@@ -130,6 +144,40 @@ module.exports = function(editor) {
 		off(window, "dragend", dragend);
 	}
 	
+	function mouseenter() {
+		
+	}
+	
+	function mouseleave(e) {
+		let {
+			setSelectionHilite,
+			redraw,
+		} = editor;
+		
+		setSelectionHilite(null);
+		redraw();
+	}
+	
+	function dragstart(e) {
+		
+	}
+	
+	function dragover(e) {
+		
+	}
+	
+	function dragenter(e) {
+		
+	}
+	
+	function dragleave(e) {
+		
+	}
+	
+	function drop(e) {
+		
+	}
+	
 	function dragend() {
 		mouseup();
 	}
@@ -137,6 +185,14 @@ module.exports = function(editor) {
 	return {
 		mousedown,
 		mousemove,
+		mouseenter,
+		mouseleave,
+		dragstart,
+		dragover,
+		dragenter,
+		dragleave,
+		drop,
+		dragend,
 		hilite,
 	};
 }
