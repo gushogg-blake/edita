@@ -1,6 +1,6 @@
 let getOpenersAndClosersOnLine = require("./getOpenersAndClosersOnLine");
 
-function isElseIfFooter(lines, lineIndex) {
+function isIfFooter(lines, lineIndex) {
 	
 }
 
@@ -11,7 +11,7 @@ module.exports = function(lines, lineIndex, pickedElementType) {
 	
 	let {openers, closers} = getOpenersAndClosersOnLine(line);
 	
-	if (isElseIfFooter(lines, lineIndex)) {
+	if (isIfFooter(lines, lineIndex)) {
 		targets.push(
 			"addSelectionToNewElse",
 			"addSelectionToNewElseIf",
