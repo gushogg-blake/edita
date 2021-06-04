@@ -69,6 +69,8 @@ function dragstart(e) {
 		e.dataTransfer.setDragImage(node, x, y);
 		
 		lastMouseDownElement = null;
+	} else {
+		e.dataTransfer.setDragImage(new Image(), 0, 0);
 	}
 }
 
@@ -88,6 +90,14 @@ function pickOptionMousedown(option, e) {
 		x: e.offsetX,
 		y: e.offsetY,
 	};
+}
+
+function dropTargetDragover(target) {
+	console.log("dragover", target);
+}
+
+function dropTargetDrop(target) {
+	console.log("drop", target);
 }
 
 function calculateMarginStyle(marginWidth) {
@@ -157,13 +167,22 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 }
 
 .option {
-	color: #3D2F00;
 	/*font-weight: bold;*/
 	font-size: 12px;
 	border: 1px solid #544200;
 	border-radius: 100px;
 	padding: 0 5px;
+}
+
+.pickOption {
+	color: #3D2F00;
 	background: #D6AD0C;
+}
+
+.dropTarget {
+	color: #EFD2C4;
+	background: #A0451E;
+	background: #D34F0C;
 }
 </style>
 
@@ -206,11 +225,22 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 					{/each}
 				</div>
 			{/each}
+			{#each dropTargetRows as screenRow}
+				<div
+					class="row"
+					style={inlineStyle(rowStyle(screenRow, rowHeight))}
+				>
+					{#each dropTargets.filter(o => o.screenRow === screenRow) as target}
+						<div
+							class="option dropTarget"
+							on:dragover={() => dropTargetDragover(target)}
+							on:drop={() => dropTargetDrop(target)}
+						>
+							{target.label}
+						</div>
+					{/each}
+				</div>
+			{/each}
 		{/if}
-		
 	</div>
-	
-	{#each dropTargets as target}
-		
-	{/each}
 </div>

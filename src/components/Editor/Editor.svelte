@@ -115,6 +115,21 @@ pickOptions = [
 	},
 ];
 
+dropTargets = [
+	{
+		screenRow: 5,
+		label: "Test",
+	},
+	{
+		screenRow: 15,
+		label: "Test",
+	},
+	{
+		screenRow: 30,
+		label: "Test",
+	},
+];
+
 let scrollPosition = {
 	row: 0,
 	x: 0,

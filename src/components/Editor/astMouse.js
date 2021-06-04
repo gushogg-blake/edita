@@ -1,17 +1,15 @@
 let {on, off} = require("../../utils/dom/domEvents");
-let screenOffsets = require("../../utils/dom/screenOffsets");
-let autoScroll = require("../../utils/dom/autoScroll");
-let calculateMarginOffset = require("../../modules/render/calculateMarginOffset");
 let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
 let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
 let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
 let AstSelection = require("../../modules/utils/AstSelection");
 let Selection = require("../../modules/utils/Selection");
+let autoScroll = require("./utils/autoScroll");
 
 module.exports = function(editor) {
-	let dragging = false;
+	let drawingSelection = false;
 	
-	function hilite(e) {
+	function getHilite(e) {
 		let {
 			canvas,
 			measurements,
@@ -20,8 +18,6 @@ module.exports = function(editor) {
 			isPeekingAstMode: isPeeking,
 			normalSelection,
 			scrollPosition,
-			setSelectionHilite,
-			redraw,
 		} = editor;
 		
 		let {
@@ -54,91 +50,70 @@ module.exports = function(editor) {
 				hilite = selection;
 			}
 			
-			setSelectionHilite(hilite);
-		} else {
-			setSelectionHilite(null);
+			return hilite;
 		}
+		
+		return null;
+	}
+	
+	function hilite(e) {
+		let {
+			setSelectionHilite,
+			redraw,
+		} = editor;
+		
+		setSelectionHilite(getHilite(e));
 		
 		redraw();
 	}
 	
-	function mousedown(e) {
+	function mousedown(e, enableDrag) {
 		let {
 			canvas,
 			measurements,
 			document,
-			selection,
 			hasHorizontalScrollbar,
 			scrollBy,
-			scrollPosition,
 			setSelection,
-			setSelectionEndCol,
 			redraw,
-			startCursorBlink,
 		} = editor;
 		
-		let {
-			x: left,
-			y: top,
-		} = canvas.getBoundingClientRect();
-		
-		let x = e.clientX - left;
-		let y = e.clientY - top;
-		
-		let [row, col] = rowColFromScreenCoords(
-			document.lines,
-			x,
-			y,
-			scrollPosition,
+		autoScroll(
+			canvas,
 			measurements,
+			document,
+			hasHorizontalScrollbar,
+			scrollBy,
 		);
 		
-		let cursor = cursorFromRowCol(
-			document.lines,
-			row,
-			col,
-		);
-		
-		let [lineIndex, offset] = cursor;
-		
-		dragging = true;
-		
-		on(window, "mousemove", drag);
-		on(window, "mouseup", mouseup);
-		on(window, "dragend", dragend);
-		
-		let offsets = screenOffsets(canvas);
-		
-		offsets.left += calculateMarginOffset(document.lines, measurements);
-		
-		autoScroll(offsets, function(x, y) {
-			let {colWidth} = measurements;
+		if (e.shiftKey) {
+			drawingSelection = true;
 			
-			let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.abs(x) / colWidth)) * colWidth;
-			let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(2, Math.abs(y) / 30)));
+			on(window, "mousemove", drawSelection);
+			on(window, "mouseup", finishSelection);
+		} else {
+			let hilite = getHilite(e);
 			
-			if (!hasHorizontalScrollbar) {
-				xOffset = 0;
+			if (!hilite) {
+				return;
 			}
 			
-			if (x < 0) {
-				xOffset = -xOffset;
-			}
+			enableDrag();
 			
-			if (y < 0) {
-				rows = -rows;
-			}
-			
-			scrollBy(xOffset, rows);
-		});
+			on(window, "dragend", dragend);
+		}
 	}
 	
-	function drag(e) {
+	function drawSelection(e) {
+		
+	}
+	
+	function finishSelection(e) {
 		
 	}
 	
 	function mousemove(e) {
-		if (dragging) {
+		if (drawingSelection) {
 			return;
 		}
 		
@@ -150,10 +125,8 @@ module.exports = function(editor) {
 	function mouseup() {
 		editor.mouseup();
 		
-		dragging = false;
-		
-		off(window, "mousemove", drag);
-		off(window, "mouseup", mouseup);
+		off(window, "mousemove", drawSelection);
+		off(window, "mouseup", finishSelection);
 		off(window, "dragend", dragend);
 	}
 	

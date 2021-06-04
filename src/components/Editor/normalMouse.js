@@ -1,12 +1,10 @@
 let {on, off} = require("../../utils/dom/domEvents");
-let screenOffsets = require("../../utils/dom/screenOffsets");
-let autoScroll = require("../../utils/dom/autoScroll");
 let clipboard = require("../../modules/ipc/clipboard/renderer");
-let calculateMarginOffset = require("../../modules/render/calculateMarginOffset");
 let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
 let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
 let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
 let Selection = require("../../modules/utils/Selection");
+let autoScroll = require("./utils/autoScroll");
 
 module.exports = function(editor) {
 	let dragging = false;
@@ -82,30 +80,13 @@ module.exports = function(editor) {
 		on(window, "mouseup", mouseup);
 		on(window, "dragend", dragend);
 		
-		let offsets = screenOffsets(canvas);
-		
-		offsets.left += calculateMarginOffset(document.lines, measurements);
-		
-		autoScroll(offsets, function(x, y) {
-			let {colWidth} = measurements;
-			
-			let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.abs(x) / colWidth)) * colWidth;
-			let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(2, Math.abs(y) / 30)));
-			
-			if (!hasHorizontalScrollbar) {
-				xOffset = 0;
-			}
-			
-			if (x < 0) {
-				xOffset = -xOffset;
-			}
-			
-			if (y < 0) {
-				rows = -rows;
-			}
-			
-			scrollBy(xOffset, rows);
-		});
+		autoScroll(
+			canvas,
+			measurements,
+			document,
+			hasHorizontalScrollbar,
+			scrollBy,
+		);
 	}
 	
 	function drag(e) {
