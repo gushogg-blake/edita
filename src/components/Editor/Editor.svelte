@@ -8,7 +8,6 @@ import screenOffsets from "../../utils/dom/screenOffsets";
 import autoScroll from "../../utils/dom/autoScroll";
 import windowFocus from "../../utils/dom/windowFocus";
 import getKeyCombo from "../../utils/getKeyCombo";
-
 import clipboard from "../../modules/ipc/clipboard/renderer";
 
 import calculateMarginWidth from "../../modules/render/calculateMarginWidth";
@@ -18,6 +17,7 @@ import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
 import screenCoordsFromRowCol from "../../modules/utils/screenCoordsFromRowCol";
 import rowColFromCursor from "../../modules/utils/rowColFromCursor";
 import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
+import findFirstVisibleLine from "../../modules/utils/findFirstVisibleLine";
 import Selection from "../../modules/utils/Selection";
 import AstSelection from "../../modules/utils/AstSelection";
 
@@ -91,6 +91,7 @@ let astSelection = [13, 14];
 let astHilite = null;
 let pickOptions = [];
 let dropTargets = [];
+let showDropTargetsFor = null;
 
 pickOptions = [
 	{
@@ -237,8 +238,17 @@ let astMouseHandler = astMouse({
 		pickOptions = options;
 	},
 	
-	pick(option) {
-		console.log("pick", option);
+	showDropTargetsFor(selection, option) {
+		showDropTargetsFor = {
+			selection,
+			option,
+		};
+		
+		updateDropTargets();
+	},
+	
+	pick(selection, option) {
+		
 	},
 	
 	scrollBy,
@@ -374,11 +384,20 @@ function mouseleave({detail: e}) {
 
 function optionmousedown({detail}) {
 	let {
-		e,
 		option,
+		e,
 	} = detail;
 	
-	console.log(option);
+	astMouseHandler.optionmousedown(option, e);
+}
+
+function optionhover({detail}) {
+	let {
+		option,
+		e,
+	} = detail;
+	
+	astMouseHandler.optionhover(option, e);
 }
 
 function dragstart({detail: e}) {
@@ -462,6 +481,44 @@ function keyup(e) {
 		modeSwitchKeyHandler.keyup(e);
 		
 		return;
+	}
+}
+
+function updateDropTargets() {
+	console.log("updateDropTargets");
+	console.log(showDropTargetsFor);
+	dropTargets = [];
+	
+	if (showDropTargetsFor === null) {
+		return;
+	}
+	
+	let {
+		selection,
+		option,
+	} = showDropTargetsFor;
+	
+	let {lines} = document;
+	let {lineIndex} = findFirstVisibleLine(lines, scrollPosition);
+	
+	let rowsToRender = canvas.height / measurements.rowHeight;
+	let rowsRendered = 0;
+	
+	while (lineIndex < lines.length) {
+		let line = lines[lineIndex];
+		
+		dropTargets = [
+			...dropTargets,
+			...document.lang.codeIntel.generateDropTargets(lines, lineIndex, selection, option),
+		];
+		
+		rowsRendered += line.height;
+		
+		if (rowsRendered >= rowsToRender) {
+			break;
+		}
+		
+		lineIndex++;
 	}
 }
 
@@ -956,6 +1013,7 @@ $scrollBarBorder: 1px solid #bababa;
 				on:mouseleave={mouseleave}
 				on:mousemove={mousemove}
 				on:optionmousedown={optionmousedown}
+				on:optionhover={optionhover}
 				on:dragstart={dragstart}
 				on:dragover={dragover}
 				on:dragend={dragend}

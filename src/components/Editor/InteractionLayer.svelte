@@ -94,8 +94,22 @@ function pickOptionMousedown(option, e) {
 	};
 	
 	fire("optionmousedown", {
-		e,
 		option,
+		e,
+	});
+}
+
+function pickOptionMouseenter(option, e) {
+	fire("optionhover", {
+		option,
+		e,
+	});
+}
+
+function pickOptionMouseleave(option, e) {
+	fire("optionhover", {
+		option: null,
+		e,
 	});
 }
 
@@ -241,6 +255,8 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 						<div
 							class="option pickOption"
 							on:mousedown={(e) => pickOptionMousedown(option, e)}
+							on:mouseenter={(e) => pickOptionMouseenter(option, e)}
+							on:mouseleave={(e) => pickOptionMouseleave(option, e)}
 						>
 							{option.label}
 						</div>
@@ -256,10 +272,10 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 						<div
 							class="option dropTarget"
 							class:active={target === currentDropTarget}
-							on:dragover={() => dropTargetDragover(target)}
-							on:dragenter={() => dropTargetDragenter(target)}
-							on:dragleave={() => dropTargetDragleave(target)}
-							on:drop={() => dropTargetDrop(target)}
+							on:dragover={(e) => dropTargetDragover(target, e)}
+							on:dragenter={(e) => dropTargetDragenter(target, e)}
+							on:dragleave={(e) => dropTargetDragleave(target, e)}
+							on:drop={(e) => dropTargetDrop(target, e)}
 						>
 							{target.label}
 						</div>

@@ -61,6 +61,7 @@ module.exports = function(editor) {
 			document,
 			setSelectionHilite,
 			setPickOptions,
+			showDropTargetsFor,
 			redraw,
 		} = editor;
 		
@@ -70,8 +71,10 @@ module.exports = function(editor) {
 		
 		if (selection) {
 			//setPickOptions(document.lang.codeIntel.generatePickOptions(document.lines, selection));
+			showDropTargetsFor(selection, null);
 		} else {
 			//setPickOptions([]);
+			showDropTargetsFor(null, null);
 		}
 		
 		redraw();
@@ -111,7 +114,7 @@ module.exports = function(editor) {
 			
 			enableDrag();
 			
-			pick(selection);
+			pick(selection, null);
 			
 			on(window, "mouseup", mouseup);
 			on(window, "dragend", dragend);
@@ -158,6 +161,22 @@ module.exports = function(editor) {
 		redraw();
 	}
 	
+	function optionmousedown(option, e) {
+		let {
+			pick,
+		} = editor;
+		
+		pick(getHilite(e), option);
+	}
+	
+	function optionhover(option, e) {
+		let {
+			showDropTargetsFor,
+		} = editor;
+		
+		showDropTargetsFor(getHilite(e), option);
+	}
+	
 	function dragstart(e) {
 		
 	}
@@ -187,6 +206,8 @@ module.exports = function(editor) {
 		mousemove,
 		mouseenter,
 		mouseleave,
+		optionmousedown,
+		optionhover,
 		dragstart,
 		dragover,
 		dragenter,
