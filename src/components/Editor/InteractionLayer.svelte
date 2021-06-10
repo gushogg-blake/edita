@@ -4,6 +4,8 @@ import unique from "../../utils/array/unique";
 import {on, off} from "../../utils/dom/domEvents";
 import inlineStyle from "../../utils/dom/inlineStyle";
 import topMargin from "../../modules/render/topMargin";
+import drag from "./utils/drag";
+import createDragEvent from "./utils/createDragEvent";
 
 export let overallWidth;
 export let marginWidth;
@@ -16,6 +18,7 @@ export let dropTargets;
 let codeDiv;
 let selectedOption;
 let draggable = false;
+let useNativeDrag;
 let currentDropTarget;
 
 let fire = createEventDispatcher();
@@ -23,26 +26,69 @@ let fire = createEventDispatcher();
 $: pickOptionRows = unique(pickOptions.map(option => option.screenRow));
 $: dropTargetRows = unique(dropTargets.map(target => target.screenRow));
 
+let syntheticDrag = drag({
+	start(e) {
+		if (useNativeDrag) {
+			return;
+		}
+		
+		console.log("ASD");
+		
+		codeDiv.dispatchEvent(createDragEvent.dragstart(e));
+	},
+	
+	move(e, x, y) {
+		if (useNativeDrag) {
+			return;
+		}
+		
+		codeDiv.dispatchEvent(createDragEvent.dragover(e));
+		
+		// dragenter, dragleave, dragover on other els
+	},
+	
+	end(e) {
+		if (useNativeDrag) {
+			return;
+		}
+		
+		codeDiv.dispatchEvent(new MouseEvent("drop", e));
+		codeDiv.dispatchEvent(new MouseEvent("dragend", e));
+	},
+	
+	click(e) {
+		//fire("click", e);
+	},
+});
+
 function mousedown(e) {
 	on(window, "mouseup", mouseup);
 	
+	syntheticDrag.mousedown(e);
+	
 	fire("mousedown", {
 		e,
+		option: selectedOption,
 		
-		enableDrag() {
+		enableDrag(useNative) {
 			draggable = true;
+			useNativeDrag = useNative;
 		},
 	});
 }
 
 function mousemove(e) {
+	syntheticDrag.mousemove(e);
 	
 	fire("mousemove", e);
 }
 
 function mouseup(e) {
 	draggable = false;
+	useNativeDrag = false;
 	selectedOption = null;
+	
+	syntheticDrag.mouseup(e);
 	
 	fire("mouseup", e);
 	
@@ -65,6 +111,8 @@ function dragstart(e) {
 	} else {
 		e.dataTransfer.setDragImage(new Image(), 0, 0);
 	}
+	
+	fire("dragstart", e);
 }
 
 function dragover(e) {
@@ -72,31 +120,26 @@ function dragover(e) {
 }
 
 function drop(e) {
+	draggable = false;
+	useNativeDrag = false;
 	fire("drop", e);
 }
 
 function dragend(e) {
 	draggable = false;
+	useNativeDrag = false;
 	selectedOption = null;
+	fire("dragend", e);
 	
 }
 
 function pickOptionMousedown(option, e) {
-	e.stopPropagation();
-	
-	draggable = true;
-	
 	selectedOption = {
 		option,
 		node: e.target,
 		x: e.offsetX,
 		y: e.offsetY,
 	};
-	
-	fire("optionmousedown", {
-		option,
-		e,
-	});
 }
 
 function pickOptionMouseenter(option, e) {
@@ -111,24 +154,6 @@ function pickOptionMouseleave(option, e) {
 		option: null,
 		e,
 	});
-}
-
-function dropTargetDragover(target) {
-	//console.log("dragover", target);
-}
-
-function dropTargetDragenter(target) {
-	currentDropTarget = target;
-}
-
-function dropTargetDragleave(target) {
-	if (currentDropTarget === target) {
-		currentDropTarget = null;
-	}
-}
-
-function dropTargetDrop(target) {
-	console.log("drop", target);
 }
 
 function calculateMarginStyle(marginWidth) {
@@ -239,7 +264,7 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 		on:mouseenter={mouseenter}
 		on:mouseleave={mouseleave}
 		on:mousemove={mousemove}
-		{draggable}
+		draggable={draggable && useNativeDrag}
 		on:dragstart={dragstart}
 		on:dragover={dragover}
 		on:drop={drop}
@@ -272,10 +297,6 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 						<div
 							class="option dropTarget"
 							class:active={target === currentDropTarget}
-							on:dragover={(e) => dropTargetDragover(target, e)}
-							on:dragenter={(e) => dropTargetDragenter(target, e)}
-							on:dragleave={(e) => dropTargetDragleave(target, e)}
-							on:drop={(e) => dropTargetDrop(target, e)}
 						>
 							{target.label}
 						</div>

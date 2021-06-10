@@ -80,7 +80,7 @@ module.exports = function(editor) {
 		redraw();
 	}
 	
-	function mousedown(e, enableDrag) {
+	function mousedown(e, option, enableDrag) {
 		let {
 			canvas,
 			measurements,

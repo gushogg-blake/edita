@@ -74,7 +74,7 @@ let visible = true;
 let focused = false;
 let windowHasFocus;
 
-let mode = "ast";
+let mode = "normal";
 let isPeekingAstMode = false;
 let switchToAstModeOnMouseUp = false;
 
@@ -92,6 +92,8 @@ let astHilite = null;
 let pickOptions = [];
 let dropTargets = [];
 let showDropTargetsFor = null;
+
+let isDragging = false;
 
 pickOptions = [
 	{
@@ -344,19 +346,30 @@ let modeSwitchKeyHandler = modeSwitchKey({
 function mousedown({detail}) {
 	let {
 		e,
+		option,
 		enableDrag,
 	} = detail;
 	
 	mouseIsDown = true;
 	
 	if (mode === "normal") {
-		normalMouseHandler.mousedown(e, enableDrag);
+		normalMouseHandler.mousedown(e, function() {
+			enableDrag(true);
+		});
 	} else if (mode === "ast") {
-		astMouseHandler.mousedown(e, enableDrag);
+		astMouseHandler.mousedown(e, option, function() {
+			// if we're holding the Esc key down to peek AST mode, we can't use
+			// native drag and drop as the repeated keydown events will cancel it
+			enableDrag(!isPeekingAstMode || $prefs.modeSwitchKey !== "Escape");
+		});
 	}
 }
 
 function mousemove({detail: e}) {
+	if (isDragging) {
+		return;
+	}
+	
 	lastMouseMoveEvent = e;
 	
 	if (mode === "normal") {
@@ -367,6 +380,10 @@ function mousemove({detail: e}) {
 }
 
 function mouseenter({detail: e}) {
+	if (isDragging) {
+		return;
+	}
+	
 	if (mode === "normal") {
 		normalMouseHandler.mouseenter(e);
 	} else if (mode === "ast") {
@@ -375,6 +392,10 @@ function mouseenter({detail: e}) {
 }
 
 function mouseleave({detail: e}) {
+	if (isDragging) {
+		return;
+	}
+	
 	if (mode === "normal") {
 		normalMouseHandler.mouseleave(e);
 	} else if (mode === "ast") {
@@ -401,6 +422,9 @@ function optionhover({detail}) {
 }
 
 function dragstart({detail: e}) {
+	console.log("ds");
+	isDragging = true;
+	
 	if (mode === "normal") {
 		normalMouseHandler.dragstart(e);
 	} else if (mode === "ast") {
@@ -417,6 +441,8 @@ function dragover({detail: e}) {
 }
 
 function dragend({detail: e}) {
+	isDragging = false;
+	
 	if (mode === "normal") {
 		normalMouseHandler.dragend(e);
 	} else if (mode === "ast") {
@@ -485,8 +511,6 @@ function keyup(e) {
 }
 
 function updateDropTargets() {
-	console.log("updateDropTargets");
-	console.log(showDropTargetsFor);
 	dropTargets = [];
 	
 	if (showDropTargetsFor === null) {
