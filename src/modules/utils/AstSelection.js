@@ -8,7 +8,7 @@ function s(startLineIndex, endLineIndex=startLineIndex) {
 let api = {
 	s,
 	
-	isEqual(a, b) {
+	equals(a, b) {
 		let [aStart, aEnd] = a;
 		let [bStart, bEnd] = b;
 		

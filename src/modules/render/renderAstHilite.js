@@ -1,17 +1,19 @@
 let getLineStartingRow = require("../utils/getLineStartingRow");
 let screenCoordsFromRowCol = require("../utils/screenCoordsFromRowCol");
 let getLineRangeTotalHeight = require("../utils/getLineRangeTotalHeight");
+let AstSelection = require("../utils/AstSelection");
 
 module.exports = function(
 	context,
 	lines,
 	astHilite,
+	astSelection,
 	scrollPosition,
 	prefs,
 	fileDetails,
 	measurements,
 ) {
-	if (!astHilite) {
+	if (!astHilite || AstSelection.equals(astHilite, astSelection)) {
 		return;
 	}
 	

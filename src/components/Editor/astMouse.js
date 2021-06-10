@@ -181,8 +181,28 @@ module.exports = function(editor) {
 		
 	}
 	
-	function dragover(e) {
+	function dragover(e, option, target) {
+		let {
+			document,
+			setSelectionHilite,
+			setPickOptions,
+			showDropTargetsFor,
+			redraw,
+		} = editor;
 		
+		let selection = getHilite(e);
+		
+		setSelectionHilite(selection);
+		
+		if (selection) {
+			//setPickOptions(document.lang.codeIntel.generatePickOptions(document.lines, selection));
+			showDropTargetsFor(selection, null);
+		} else {
+			//setPickOptions([]);
+			showDropTargetsFor(null, null);
+		}
+		
+		redraw();
 	}
 	
 	function dragenter(e) {

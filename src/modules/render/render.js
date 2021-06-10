@@ -76,6 +76,7 @@ module.exports = function(
 			context,
 			lines,
 			astHilite,
+			astSelection,
 			scrollPosition,
 			prefs,
 			fileDetails,

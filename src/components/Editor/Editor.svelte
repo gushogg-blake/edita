@@ -74,7 +74,7 @@ let visible = true;
 let focused = false;
 let windowHasFocus;
 
-let mode = "normal";
+let mode = "ast";
 let isPeekingAstMode = false;
 let switchToAstModeOnMouseUp = false;
 
@@ -250,7 +250,7 @@ let astMouseHandler = astMouse({
 	},
 	
 	pick(selection, option) {
-		
+		astSelection = selection;
 	},
 	
 	scrollBy,
@@ -421,22 +421,32 @@ function optionhover({detail}) {
 	astMouseHandler.optionhover(option, e);
 }
 
-function dragstart({detail: e}) {
-	console.log("ds");
+function dragstart({detail}) {
+	let {
+		e,
+		option,
+	} = detail;
+	
 	isDragging = true;
 	
 	if (mode === "normal") {
 		normalMouseHandler.dragstart(e);
 	} else if (mode === "ast") {
-		astMouseHandler.dragstart(e);
+		astMouseHandler.dragstart(e, option);
 	}
 }
 
-function dragover({detail: e}) {
+function dragover({detail}) {
+	let {
+		e,
+		option,
+		target,
+	} = detail;
+	
 	if (mode === "normal") {
 		normalMouseHandler.dragover(e);
 	} else if (mode === "ast") {
-		astMouseHandler.dragover(e);
+		astMouseHandler.dragover(e, option, target);
 	}
 }
 
@@ -450,11 +460,17 @@ function dragend({detail: e}) {
 	}
 }
 
-function drop({detail: e}) {
+function drop({detail}) {
+	let {
+		e,
+		option,
+		target,
+	} = detail;
+	
 	if (mode === "normal") {
 		normalMouseHandler.drop(e);
 	} else if (mode === "ast") {
-		astMouseHandler.drop(e);
+		astMouseHandler.drop(e, option, target);
 	}
 }
 

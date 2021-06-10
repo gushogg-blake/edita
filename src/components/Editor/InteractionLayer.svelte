@@ -32,8 +32,6 @@ let syntheticDrag = drag({
 			return;
 		}
 		
-		console.log("ASD");
-		
 		codeDiv.dispatchEvent(createDragEvent.dragstart(e));
 	},
 	
@@ -112,25 +110,37 @@ function dragstart(e) {
 		e.dataTransfer.setDragImage(new Image(), 0, 0);
 	}
 	
-	fire("dragstart", e);
+	fire("dragstart", {
+		e,
+		option: selectedOption,
+	});
 }
 
 function dragover(e) {
-	fire("dragover", e);
+	fire("dragover", {
+		e,
+		option: selectedOption,
+	});
 }
 
 function drop(e) {
 	draggable = false;
 	useNativeDrag = false;
-	fire("drop", e);
+	
+	fire("drop", {
+		e,
+		option: selectedOption,
+	});
+	
+	selectedOption = null;
 }
 
 function dragend(e) {
 	draggable = false;
 	useNativeDrag = false;
 	selectedOption = null;
-	fire("dragend", e);
 	
+	fire("dragend", e);
 }
 
 function pickOptionMousedown(option, e) {
