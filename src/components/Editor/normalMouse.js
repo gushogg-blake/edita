@@ -178,6 +178,70 @@ module.exports = function(editor) {
 		
 	}
 	
+	async function click(e) {
+		if (e.button === 2) {
+			return;
+		}
+		
+		let {
+			canvas,
+			measurements,
+			document,
+			selection,
+			scrollPosition,
+			setSelection,
+			setSelectionEndCol,
+			redraw,
+			startCursorBlink,
+			insert,
+		} = editor;
+		
+		let {
+			x: left,
+			y: top,
+		} = canvas.getBoundingClientRect();
+		
+		let x = e.clientX - left;
+		let y = e.clientY - top;
+		
+		let [row, col] = rowColFromScreenCoords(
+			document.lines,
+			x,
+			y,
+			scrollPosition,
+			measurements,
+		);
+		
+		let cursor = cursorFromRowCol(
+			document.lines,
+			row,
+			col,
+		);
+		
+		setSelection(Selection.s(cursor));
+		
+		if (e.button === 1) {
+			let str = await clipboard.readSelection();
+			let newSelection = document.replaceSelection(editor.selection, str);
+			
+			setSelection(newSelection);
+		}
+		
+		let {end} = editor.selection;
+		let [lineIndex, offset] = end;
+		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
+		
+		setSelectionEndCol(endCol);
+		
+		startCursorBlink();
+		
+		redraw();
+	}
+	
+	function dblclick(e) {
+		
+	}
+	
 	function dragstart(e) {
 		
 	}
@@ -209,6 +273,8 @@ module.exports = function(editor) {
 		mousemove,
 		mouseenter,
 		mouseleave,
+		click,
+		dblclick,
 		dragstart,
 		dragover,
 		dragenter,

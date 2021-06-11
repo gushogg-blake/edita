@@ -286,6 +286,7 @@ $: console.log(colWidth);
 		on:mouseenter={mouseenter}
 		on:mouseleave={mouseleave}
 		on:mousemove={mousemove}
+		on:dblclick
 		draggable={draggable && !useSyntheticDrag}
 		on:dragstart={dragstart}
 		on:dragover={dragover}

@@ -179,6 +179,14 @@ module.exports = function(editor) {
 		redraw();
 	}
 	
+	function click(e) {
+		
+	}
+	
+	function dblclick(e) {
+		
+	}
+	
 	function optionmousedown(option, e) {
 		let {
 			pick,
@@ -236,6 +244,8 @@ module.exports = function(editor) {
 		mousemove,
 		mouseenter,
 		mouseleave,
+		click,
+		dblclick,
 		optionmousedown,
 		optionhover,
 		dragstart,

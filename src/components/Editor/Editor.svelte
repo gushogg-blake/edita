@@ -341,12 +341,6 @@ function mousedown({detail}) {
 	}
 }
 
-function mouseup({detail: e}) {
-	mouseIsDown = false;
-	
-	console.log("mouseup");
-}
-
 function mousemove({detail: e}) {
 	if (isDragging) {
 		//console.log("mousemove - dragging");
@@ -385,6 +379,26 @@ function mouseleave({detail: e}) {
 		normalMouseHandler.mouseleave(e);
 	} else if (mode === "ast") {
 		astMouseHandler.mouseleave(e);
+	}
+}
+
+function mouseup({detail: e}) {
+	mouseIsDown = false;
+}
+
+function click({detail: e}) {
+	if (mode === "normal") {
+		normalMouseHandler.click(e);
+	} else if (mode === "ast") {
+		astMouseHandler.click(e);
+	}
+}
+
+function dblclick(e) {
+	if (mode === "normal") {
+		normalMouseHandler.dblclick(e);
+	} else if (mode === "ast") {
+		astMouseHandler.dblclick(e);
 	}
 }
 
@@ -1077,6 +1091,8 @@ $scrollBarBorder: 1px solid #bababa;
 				on:mouseleave={mouseleave}
 				on:mousemove={mousemove}
 				on:mouseup={mouseup}
+				on:click={click}
+				on:dblclick={dblclick}
 				on:optionmousedown={optionmousedown}
 				on:optionhover={optionhover}
 				on:dragstart={dragstart}
