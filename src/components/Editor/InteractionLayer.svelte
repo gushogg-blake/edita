@@ -23,27 +23,53 @@ let useSyntheticDrag;
 let currentDropTarget;
 let clickDistanceThreshold = 2;
 let mouseMovedDistance;
+let syntheticDrag = null;
 
 let fire = createEventDispatcher();
 
 $: pickOptionRows = unique(pickOptions.map(option => option.screenRow));
 $: dropTargetRows = unique(dropTargets.map(target => target.screenRow));
 
-let syntheticDrag = drag({
+let syntheticDragHandler = drag({
 	start(e) {
-		codeDiv.dispatchEvent(createDragEvent.dragstart(e));
+		syntheticDrag = {
+			data: null,
+			
+			setData(type, data) {
+				this.data = {
+					type,
+					data,
+				};
+			},
+			
+			getData(type) {
+				if (!this.data || this.data.type !== type) {
+					return null;
+				}
+				
+				return this.data.data;
+			},
+			
+			setDragImage() {
+			},
+		};
+		
+		codeDiv.dispatchEvent(createDragEvent.dragstart(e, syntheticDrag));
 	},
 	
 	move(e, x, y) {
-		codeDiv.dispatchEvent(createDragEvent.dragover(e));
+		codeDiv.dispatchEvent(createDragEvent.dragover(e, syntheticDrag));
 		
 		// dragenter, dragleave, dragover on other els
 	},
 	
 	end(e) {
+		
 		// TODO only fire drop if over drop target
-		codeDiv.dispatchEvent(new MouseEvent("drop", e));
-		codeDiv.dispatchEvent(new MouseEvent("dragend", e));
+		codeDiv.dispatchEvent(createDragEvent.drop(e, syntheticDrag));
+		codeDiv.dispatchEvent(createDragEvent.dragend(e, syntheticDrag));
+		
+		syntheticDrag = null;
 	},
 	
 	click(e) {
@@ -67,7 +93,7 @@ function mousedown(e) {
 	});
 	
 	if (useSyntheticDrag) {
-		syntheticDrag.mousedown(e);
+		syntheticDragHandler.mousedown(e);
 	}
 }
 
@@ -75,7 +101,7 @@ function mousemove(e) {
 	mouseMovedDistance++;
 	
 	if (useSyntheticDrag) {
-		syntheticDrag.mousemove(e);
+		syntheticDragHandler.mousemove(e);
 	}
 	
 	fire("mousemove", e);
@@ -84,7 +110,7 @@ function mousemove(e) {
 function mouseup(e) {
 	if (useSyntheticDrag) {
 		if (mode === "ast") {
-			syntheticDrag.mouseup(e);
+			syntheticDragHandler.mouseup(e);
 		}
 	} else {
 		if (mouseMovedDistance <= clickDistanceThreshold) {

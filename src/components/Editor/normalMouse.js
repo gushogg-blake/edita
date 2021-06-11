@@ -8,7 +8,7 @@ let pointIsWithinRegions = require("../../modules/utils/pointIsWithinRegions");
 let autoScroll = require("./utils/autoScroll");
 
 module.exports = function(editor) {
-	let dragging = false;
+	let drawingSelection = false;
 	
 	async function mousedown(e, enableDrag) {
 		if (e.button === 2) {
@@ -82,9 +82,9 @@ module.exports = function(editor) {
 			return;
 		}
 		
-		dragging = true;
+		drawingSelection = true;
 		
-		on(window, "mousemove", drag);
+		on(window, "mousemove", drawSelection);
 		on(window, "mouseup", mouseup);
 		on(window, "dragend", dragend);
 		
@@ -101,7 +101,7 @@ module.exports = function(editor) {
 		enableDrag();
 	}
 	
-	function drag(e) {
+	function drawSelection(e) {
 		let {
 			canvas,
 			measurements,
@@ -146,7 +146,7 @@ module.exports = function(editor) {
 	}
 	
 	function mousemove(e) {
-		if (dragging) {
+		if (drawingSelection) {
 			return;
 		}
 	}
@@ -163,9 +163,9 @@ module.exports = function(editor) {
 		
 		editor.mouseup();
 		
-		dragging = false;
+		drawingSelection = false;
 		
-		off(window, "mousemove", drag);
+		off(window, "mousemove", drawSelection);
 		off(window, "mouseup", mouseup);
 		off(window, "dragend", dragend);
 	}

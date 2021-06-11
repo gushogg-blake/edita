@@ -45,9 +45,8 @@ module.exports = function(editor) {
 			
 			if (
 				isPeeking
-				&& hilite
-				&& AstSelection.isWithin(hilite, selection)
 				&& Selection.isFull(normalSelection)
+				&& AstSelection.isWithin([lineIndex, lineIndex + 1], selection)
 			) {
 				hilite = selection;
 			}
@@ -215,6 +214,8 @@ module.exports = function(editor) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex).map(function(line) {
 			return line.string;
 		});
+		
+		console.log(e);
 		
 		e.dataTransfer.setData("text/plain", JSON.stringify({
 			type: "ast",

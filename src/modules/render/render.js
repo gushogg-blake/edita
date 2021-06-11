@@ -75,6 +75,7 @@ module.exports = function(
 			lines,
 			astHilite,
 			astSelection,
+			isPeekingAstMode,
 			scrollPosition,
 			prefs,
 			fileDetails,

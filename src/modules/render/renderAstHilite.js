@@ -8,12 +8,17 @@ module.exports = function(
 	lines,
 	astHilite,
 	astSelection,
+	isPeeking,
 	scrollPosition,
 	prefs,
 	fileDetails,
 	measurements,
 ) {
-	if (!astHilite || AstSelection.equals(astHilite, astSelection)) {
+	if (!astHilite) {
+		return;
+	}
+	
+	if (!isPeeking && AstSelection.equals(astHilite, astSelection)) {
 		return;
 	}
 	
