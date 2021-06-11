@@ -332,10 +332,17 @@ function mousedown({detail}) {
 	}
 }
 
+function mouseup({detail: e}) {
+	console.log("mouseup");
+}
+
 function mousemove({detail: e}) {
 	if (isDragging) {
+		//console.log("mousemove - dragging");
 		return;
 	}
+	
+	//console.log("mousemove");
 	
 	lastMouseMoveEvent = e;
 	
@@ -389,6 +396,7 @@ function optionhover({detail}) {
 }
 
 function dragstart({detail}) {
+	console.log("dragstart", Date.now());
 	let {
 		e,
 		option,
@@ -404,6 +412,7 @@ function dragstart({detail}) {
 }
 
 function dragover({detail}) {
+	//console.log("dragover");
 	let {
 		e,
 		option,
@@ -418,6 +427,7 @@ function dragover({detail}) {
 }
 
 function dragend({detail: e}) {
+	console.log("dragend", Date.now());
 	isDragging = false;
 	
 	if (mode === "normal") {
@@ -428,6 +438,7 @@ function dragend({detail: e}) {
 }
 
 function drop({detail}) {
+	console.log("drop");
 	let {
 		e,
 		option,
@@ -1036,6 +1047,7 @@ $scrollBarBorder: 1px solid #bababa;
 				on:mouseenter={mouseenter}
 				on:mouseleave={mouseleave}
 				on:mousemove={mousemove}
+				on:mouseup={mouseup}
 				on:optionmousedown={optionmousedown}
 				on:optionhover={optionhover}
 				on:dragstart={dragstart}

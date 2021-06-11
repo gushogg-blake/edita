@@ -21,6 +21,8 @@ let selectedOption;
 let draggable = false;
 let useNativeDrag;
 let currentDropTarget;
+let clickDistanceThreshold = 2;
+let mouseMovedDistance;
 
 let fire = createEventDispatcher();
 
@@ -29,41 +31,30 @@ $: dropTargetRows = unique(dropTargets.map(target => target.screenRow));
 
 let syntheticDrag = drag({
 	start(e) {
-		if (useNativeDrag) {
-			return;
-		}
-		
 		codeDiv.dispatchEvent(createDragEvent.dragstart(e));
 	},
 	
 	move(e, x, y) {
-		if (useNativeDrag) {
-			return;
-		}
-		
 		codeDiv.dispatchEvent(createDragEvent.dragover(e));
 		
 		// dragenter, dragleave, dragover on other els
 	},
 	
 	end(e) {
-		if (useNativeDrag) {
-			return;
-		}
-		
+		// TODO only fire drop if over drop target
 		codeDiv.dispatchEvent(new MouseEvent("drop", e));
 		codeDiv.dispatchEvent(new MouseEvent("dragend", e));
 	},
 	
 	click(e) {
-		//fire("click", e);
+		fire("click", e);
 	},
 });
 
 function mousedown(e) {
-	on(window, "mouseup", mouseup);
+	mouseMovedDistance = 0;
 	
-	syntheticDrag.mousedown(e);
+	on(window, "mouseup", mouseup);
 	
 	fire("mousedown", {
 		e,
@@ -74,20 +65,34 @@ function mousedown(e) {
 			useNativeDrag = useNative;
 		},
 	});
+	
+	if (!useNativeDrag) {
+		syntheticDrag.mousedown(e);
+	}
 }
 
 function mousemove(e) {
-	syntheticDrag.mousemove(e);
+	mouseMovedDistance++;
+	
+	if (!useNativeDrag) {
+		syntheticDrag.mousemove(e);
+	}
 	
 	fire("mousemove", e);
 }
 
 function mouseup(e) {
+	if (useNativeDrag) {
+		if (mouseMovedDistance <= clickDistanceThreshold) {
+			fire("click", e);
+		}
+	} else {
+		syntheticDrag.mouseup(e);
+	}
+	
+	selectedOption = null;
 	draggable = false;
 	useNativeDrag = false;
-	selectedOption = null;
-	
-	syntheticDrag.mouseup(e);
 	
 	fire("mouseup", e);
 	
