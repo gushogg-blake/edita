@@ -21,6 +21,12 @@ let api = {
 		
 		return aStart >= bStart && aEnd <= bEnd;
 	},
+	
+	lineIsWithinSelection(lineIndex, selection) {
+		let [start, end] = selection;
+		
+		return lineIndex >= start && lineIndex < end;
+	},
 };
 
 module.exports = api;

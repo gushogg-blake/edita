@@ -46,7 +46,7 @@ module.exports = function(editor) {
 			if (
 				isPeeking
 				&& Selection.isFull(normalSelection)
-				&& AstSelection.isWithin([lineIndex, lineIndex + 1], selection)
+				&& AstSelection.lineIsWithinSelection(lineIndex, selection)
 			) {
 				hilite = selection;
 			}
