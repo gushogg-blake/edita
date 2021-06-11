@@ -8,4 +8,24 @@ module.exports = {
 	astSelection,
 	generatePickOptions,
 	generateDropTargets,
+	
+	pickOptions: {
+		test: {
+			label: "Test",
+		},
+	},
+	
+	dropTargets: {
+		addSelectionToNewElse: {
+			label: "+ else",
+		},
+		
+		addSelectionToNewElseIf: {
+			label: "+ else if",
+		},
+	},
+	
+	drop(fromSelection, toSelection, option, target) {
+		
+	},
 };

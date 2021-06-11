@@ -2,6 +2,7 @@ let {on, off} = require("../../utils/dom/domEvents");
 let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
 let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
 let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
+let screenRowFromLineIndex = require("../../modules/utils/screenRowFromLineIndex");
 let AstSelection = require("../../modules/utils/AstSelection");
 let Selection = require("../../modules/utils/Selection");
 let autoScroll = require("./utils/autoScroll");
@@ -59,6 +60,7 @@ module.exports = function(editor) {
 	function hilite(e) {
 		let {
 			document,
+			scrollPosition,
 			setSelectionHilite,
 			setPickOptions,
 			showDropTargetsFor,
@@ -69,11 +71,28 @@ module.exports = function(editor) {
 		
 		setSelectionHilite(selection);
 		
+		let {lines} = document;
+		let {codeIntel} = document.lang;
+		
 		if (selection) {
-			//setPickOptions(document.lang.codeIntel.generatePickOptions(document.lines, selection));
+			let [startLineIndex] = selection;
+			let pickOptions = codeIntel.generatePickOptions(lines, selection);
+			
+			setPickOptions(pickOptions.map(function(type) {
+				let screenCol = lines[startLineIndex].width + 1;
+				
+				return {
+					screenRow: screenRowFromLineIndex(lines, startLineIndex, scrollPosition),
+					screenCol,
+					type,
+					label: codeIntel.pickOptions[type].label,
+				};
+			}));
+			
 			showDropTargetsFor(selection, null);
 		} else {
-			//setPickOptions([]);
+			console.log("no hilite");
+			setPickOptions([]);
 			showDropTargetsFor(null, null);
 		}
 		
@@ -193,14 +212,6 @@ module.exports = function(editor) {
 		let selection = getHilite(e);
 		
 		setSelectionHilite(selection);
-		
-		if (selection) {
-			//setPickOptions(document.lang.codeIntel.generatePickOptions(document.lines, selection));
-			showDropTargetsFor(selection, null);
-		} else {
-			//setPickOptions([]);
-			showDropTargetsFor(null, null);
-		}
 		
 		redraw();
 	}

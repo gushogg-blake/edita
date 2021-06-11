@@ -17,6 +17,7 @@ import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
 import screenCoordsFromRowCol from "../../modules/utils/screenCoordsFromRowCol";
 import rowColFromCursor from "../../modules/utils/rowColFromCursor";
 import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
+import screenRowFromLineIndex from "../../modules/utils/screenRowFromLineIndex";
 import findFirstVisibleLine from "../../modules/utils/findFirstVisibleLine";
 import Selection from "../../modules/utils/Selection";
 import AstSelection from "../../modules/utils/AstSelection";
@@ -91,47 +92,13 @@ let astSelection = [13, 14];
 let astHilite = null;
 let pickOptions = [];
 let dropTargets = [];
-let showDropTargetsFor = null;
+
+let showDropTargetsFor = {
+	selection: null,
+	option: null,
+};
 
 let isDragging = false;
-
-pickOptions = [
-	{
-		screenRow: 7,
-		label: "Test",
-	},
-	{
-		screenRow: 7,
-		label: "Test",
-	},
-	{
-		screenRow: 10,
-		label: "Test",
-	},
-	{
-		screenRow: 10,
-		label: "Test",
-	},
-	{
-		screenRow: 20,
-		label: "Test",
-	},
-];
-
-dropTargets = [
-	{
-		screenRow: 5,
-		label: "Test",
-	},
-	{
-		screenRow: 15,
-		label: "Test",
-	},
-	{
-		screenRow: 30,
-		label: "Test",
-	},
-];
 
 let scrollPosition = {
 	row: 0,
@@ -529,16 +496,17 @@ function keyup(e) {
 function updateDropTargets() {
 	dropTargets = [];
 	
-	if (showDropTargetsFor === null) {
-		return;
-	}
-	
 	let {
 		selection,
 		option,
 	} = showDropTargetsFor;
 	
+	if (!selection) {
+		return;
+	}
+	
 	let {lines} = document;
+	let {codeIntel} = document.lang;
 	let {lineIndex} = findFirstVisibleLine(lines, scrollPosition);
 	
 	let rowsToRender = canvas.height / measurements.rowHeight;
@@ -549,7 +517,22 @@ function updateDropTargets() {
 		
 		dropTargets = [
 			...dropTargets,
-			...document.lang.codeIntel.generateDropTargets(lines, lineIndex, selection, option),
+			
+			...codeIntel.generateDropTargets(
+				lines,
+				lineIndex,
+				selection,
+				option,
+			).map(function(type) {
+				let screenCol = line.width + 1;
+				
+				return {
+					screenRow: screenRowFromLineIndex(lines, lineIndex, scrollPosition),
+					screenCol,
+					type,
+					label: codeIntel.dropTargets[type].label,
+				};
+			}),
 		];
 		
 		rowsRendered += line.height;
@@ -1046,6 +1029,7 @@ $scrollBarBorder: 1px solid #bababa;
 				marginWidth={sizes.marginWidth}
 				marginOffset={sizes.marginOffset}
 				rowHeight={measurements?.rowHeight}
+				colWidth={measurements?.colWidth}
 				{pickOptions}
 				{dropTargets}
 				on:mousedown={mousedown}

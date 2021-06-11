@@ -11,6 +11,7 @@ export let overallWidth;
 export let marginWidth;
 export let marginOffset;
 export let rowHeight;
+export let colWidth;
 export let mode;
 export let pickOptions;
 export let dropTargets;
@@ -193,15 +194,20 @@ function calculateCodeStyle(overallWidth, marginWidth, mode) {
 //	};
 //}
 
-function rowStyle(screenRow, rowHeight) {
+function rowStyle(items, screenRow, rowHeight, colWidth) {
+	let {screenCol} = items.find(item => item.screenRow === screenRow);
+	
 	return {
 		top: topMargin + screenRow * rowHeight,
+		left: screenCol * colWidth,
 		height: rowHeight,
 	};
 }
 
 $: marginStyle = calculateMarginStyle(marginWidth);
 $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
+
+$: console.log(colWidth);
 </script>
 
 <style type="text/scss">
@@ -226,7 +232,6 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 
 .row {
 	position: absolute;
-	left: 200px;
 	display: flex;
 	align-items: center;
 	gap: 5px;
@@ -284,7 +289,7 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 			{#each pickOptionRows as screenRow}
 				<div
 					class="row"
-					style={inlineStyle(rowStyle(screenRow, rowHeight))}
+					style={inlineStyle(rowStyle(pickOptions, screenRow, rowHeight, colWidth))}
 				>
 					{#each pickOptions.filter(o => o.screenRow === screenRow) as option}
 						<div
@@ -301,7 +306,7 @@ $: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 			{#each dropTargetRows as screenRow}
 				<div
 					class="row"
-					style={inlineStyle(rowStyle(screenRow, rowHeight))}
+					style={inlineStyle(rowStyle(dropTargets, screenRow, rowHeight, colWidth))}
 				>
 					{#each dropTargets.filter(o => o.screenRow === screenRow) as target}
 						<div

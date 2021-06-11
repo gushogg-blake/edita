@@ -1,5 +1,5 @@
 module.exports = function(lines, selection) {
-	let options = [];
+	let options = ["test"];
 	let [startLineIndex, endLineIndex] = selection;
 	let headerLine = lines[startLineIndex];
 	
