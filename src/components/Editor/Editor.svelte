@@ -141,6 +141,10 @@ let normalMouseHandler = normalMouse({
 		return normalSelection;
 	},
 	
+	get selectionRegions() {
+		return normalSelectionRegions;
+	},
+	
 	scrollBy,
 	redraw,
 	startCursorBlink,
@@ -286,6 +290,7 @@ let astKeyboardHandler = astKeyboard({
 	redraw,
 });
 
+
 let modeSwitchKeyHandler = modeSwitchKey({
 	switchToAstMode(isPeeking) {
 		isPeekingAstMode = isPeeking;
@@ -337,6 +342,8 @@ function mousedown({detail}) {
 }
 
 function mouseup({detail: e}) {
+	mouseIsDown = false;
+	
 	console.log("mouseup");
 }
 
@@ -669,10 +676,13 @@ function updateSelectionEndCol() {
 
 function switchToAstMode() {
 	if (mouseIsDown) {
+		console.log("not switching to ast mode");
 		return;
 	}
 	
 	mode = "ast";
+	
+	console.log("switchToAstMode", mode);
 	
 	let selection = Selection.sort(normalSelection);
 	let [startLineIndex] = selection.start;
@@ -687,11 +697,14 @@ function switchToAstMode() {
 
 function switchToNormalMode() {
 	if (mouseIsDown) {
+		console.log("not switching to normal mode");
 		return;
 	}
 	
 	mode = "normal";
 	setAstHilite(null);
+	
+	console.log("switchToNormalMode", mode);
 	
 	let [topLineIndex] = astSelection;
 	

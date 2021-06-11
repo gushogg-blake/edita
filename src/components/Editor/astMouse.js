@@ -91,7 +91,6 @@ module.exports = function(editor) {
 			
 			showDropTargetsFor(selection, null);
 		} else {
-			console.log("no hilite");
 			setPickOptions([]);
 			showDropTargetsFor(null, null);
 		}

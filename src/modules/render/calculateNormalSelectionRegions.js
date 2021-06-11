@@ -28,8 +28,6 @@ module.exports = function(
 	
 	let startScreenRow = startRow - scrollPosition.row;
 	
-	console.log("startScreenRow", startScreenRow);
-	
 	for (let i = startLineIndex; i <= endLineIndex; i++) {
 		let line = lines[i];
 		

@@ -4,6 +4,7 @@ let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords
 let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
 let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
 let Selection = require("../../modules/utils/Selection");
+let pointIsWithinRegions = require("../../modules/utils/pointIsWithinRegions");
 let autoScroll = require("./utils/autoScroll");
 
 module.exports = function(editor) {
@@ -19,6 +20,7 @@ module.exports = function(editor) {
 			measurements,
 			document,
 			selection,
+			selectionRegions,
 			hasHorizontalScrollbar,
 			scrollPosition,
 			scrollBy,
@@ -51,7 +53,7 @@ module.exports = function(editor) {
 			col,
 		);
 		
-		if (Selection.cursorIsWithinSelection(selection, cursor)) {
+		if (pointIsWithinRegions(selectionRegions, x, y)) {
 			mousedownInSelection(e, enableDrag);
 			
 			return;
