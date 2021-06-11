@@ -436,18 +436,11 @@ function dragstart({detail}) {
 	}
 }
 
-function dragover({detail}) {
-	//console.log("dragover");
-	let {
-		e,
-		option,
-		target,
-	} = detail;
-	
+function dragover({detail: e}) {
 	if (mode === "normal") {
 		normalMouseHandler.dragover(e);
 	} else if (mode === "ast") {
-		astMouseHandler.dragover(e, option, target);
+		astMouseHandler.dragover(e);
 	}
 }
 
@@ -462,18 +455,11 @@ function dragend({detail: e}) {
 	}
 }
 
-function drop({detail}) {
-	console.log("drop");
-	let {
-		e,
-		option,
-		target,
-	} = detail;
-	
+function drop({detail: e}) {
 	if (mode === "normal") {
 		normalMouseHandler.drop(e);
 	} else if (mode === "ast") {
-		astMouseHandler.drop(e, option, target);
+		astMouseHandler.drop(e);
 	}
 }
 

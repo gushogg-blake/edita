@@ -120,27 +120,20 @@ function dragstart(e) {
 	
 	fire("dragstart", {
 		e,
-		option: selectedOption,
+		option: selectedOption?.option?.type,
 	});
 }
 
 function dragover(e) {
-	fire("dragover", {
-		e,
-		option: selectedOption,
-	});
+	fire("dragover", e);
 }
 
 function drop(e) {
 	draggable = false;
 	useSyntheticDrag = false;
-	
-	fire("drop", {
-		e,
-		option: selectedOption,
-	});
-	
 	selectedOption = null;
+	
+	fire("drop", e);
 }
 
 function dragend(e) {

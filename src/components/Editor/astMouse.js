@@ -1,3 +1,4 @@
+let parseJson = require("../../utils/parseJson");
 let {on, off} = require("../../utils/dom/domEvents");
 let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
 let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
@@ -203,11 +204,27 @@ module.exports = function(editor) {
 		showDropTargetsFor(getHilite(e), option);
 	}
 	
-	function dragstart(e) {
+	function dragstart(e, option) {
+		let {
+			document,
+			selection,
+		} = editor;
 		
+		let [startLineIndex, endLineIndex] = selection;
+		
+		let lines = document.lines.slice(startLineIndex, endLineIndex).map(function(line) {
+			return line.string;
+		});
+		
+		e.dataTransfer.setData("text/plain", JSON.stringify({
+			type: "ast",
+			selection,
+			option,
+			lines,
+		}));
 	}
 	
-	function dragover(e, option, target) {
+	function dragover(e) {
 		let {
 			document,
 			setSelectionHilite,
@@ -215,6 +232,8 @@ module.exports = function(editor) {
 			showDropTargetsFor,
 			redraw,
 		} = editor;
+		
+		e.preventDefault();
 		
 		let selection = getHilite(e);
 		
@@ -224,7 +243,7 @@ module.exports = function(editor) {
 	}
 	
 	function dragenter(e) {
-		
+		e.preventDefault();
 	}
 	
 	function dragleave(e) {
@@ -232,7 +251,13 @@ module.exports = function(editor) {
 	}
 	
 	function drop(e) {
+		let json = parseJson(e.dataTransfer.getData("text/plain"));
 		
+		if (!json || json.type !== "ast") {
+			return;
+		}
+		
+		console.log(json);
 	}
 	
 	function dragend() {

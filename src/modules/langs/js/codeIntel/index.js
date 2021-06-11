@@ -26,6 +26,6 @@ module.exports = {
 	},
 	
 	drop(fromSelection, toSelection, option, target) {
-		
+		console.log(fromSelection, toSelection, option, target);
 	},
 };
