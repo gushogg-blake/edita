@@ -12,6 +12,7 @@ module.exports = function(
 	mode,
 	lines,
 	normalSelection,
+	normalSelectionRegions,
 	astSelection,
 	astHilite,
 	isPeekingAstMode,
@@ -50,11 +51,8 @@ module.exports = function(
 	if (mode === "normal") {
 		renderNormalSelection(
 			context,
-			lines,
-			normalSelection,
-			scrollPosition,
+			normalSelectionRegions,
 			prefs,
-			measurements,
 		);
 	}
 	

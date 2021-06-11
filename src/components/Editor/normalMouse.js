@@ -9,7 +9,7 @@ let autoScroll = require("./utils/autoScroll");
 module.exports = function(editor) {
 	let dragging = false;
 	
-	async function mousedown(e) {
+	async function mousedown(e, enableDrag) {
 		if (e.button === 2) {
 			return;
 		}
@@ -51,6 +51,12 @@ module.exports = function(editor) {
 			col,
 		);
 		
+		if (Selection.cursorIsWithinSelection(selection, cursor)) {
+			mousedownInSelection(e, enableDrag);
+			
+			return;
+		}
+		
 		setSelection(Selection.s(cursor));
 		
 		if (e.button === 1) {
@@ -87,6 +93,10 @@ module.exports = function(editor) {
 			hasHorizontalScrollbar,
 			scrollBy,
 		);
+	}
+	
+	function mousedownInSelection(e, enableDrag) {
+		enableDrag();
 	}
 	
 	function drag(e) {

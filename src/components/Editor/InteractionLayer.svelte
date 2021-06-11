@@ -19,7 +19,7 @@ export let dropTargets;
 let codeDiv;
 let selectedOption;
 let draggable = false;
-let useNativeDrag;
+let useSyntheticDrag;
 let currentDropTarget;
 let clickDistanceThreshold = 2;
 let mouseMovedDistance;
@@ -60,13 +60,13 @@ function mousedown(e) {
 		e,
 		option: selectedOption,
 		
-		enableDrag(useNative) {
+		enableDrag(useSynthetic) {
 			draggable = true;
-			useNativeDrag = useNative;
+			useSyntheticDrag = useSynthetic;
 		},
 	});
 	
-	if (!useNativeDrag) {
+	if (useSyntheticDrag) {
 		syntheticDrag.mousedown(e);
 	}
 }
@@ -74,7 +74,7 @@ function mousedown(e) {
 function mousemove(e) {
 	mouseMovedDistance++;
 	
-	if (!useNativeDrag) {
+	if (useSyntheticDrag) {
 		syntheticDrag.mousemove(e);
 	}
 	
@@ -82,17 +82,19 @@ function mousemove(e) {
 }
 
 function mouseup(e) {
-	if (useNativeDrag) {
+	if (useSyntheticDrag) {
+		if (mode === "ast") {
+			syntheticDrag.mouseup(e);
+		}
+	} else {
 		if (mouseMovedDistance <= clickDistanceThreshold) {
 			fire("click", e);
 		}
-	} else {
-		syntheticDrag.mouseup(e);
 	}
 	
 	selectedOption = null;
 	draggable = false;
-	useNativeDrag = false;
+	useSyntheticDrag = false;
 	
 	fire("mouseup", e);
 	
@@ -131,7 +133,7 @@ function dragover(e) {
 
 function drop(e) {
 	draggable = false;
-	useNativeDrag = false;
+	useSyntheticDrag = false;
 	
 	fire("drop", {
 		e,
@@ -143,7 +145,7 @@ function drop(e) {
 
 function dragend(e) {
 	draggable = false;
-	useNativeDrag = false;
+	useSyntheticDrag = false;
 	selectedOption = null;
 	
 	fire("dragend", e);
@@ -284,7 +286,7 @@ $: console.log(colWidth);
 		on:mouseenter={mouseenter}
 		on:mouseleave={mouseleave}
 		on:mousemove={mousemove}
-		draggable={draggable && useNativeDrag}
+		draggable={draggable && !useSyntheticDrag}
 		on:dragstart={dragstart}
 		on:dragover={dragover}
 		on:drop={drop}

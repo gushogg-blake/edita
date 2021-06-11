@@ -50,6 +50,24 @@ let api = {
 	sort,
 	isFull,
 	
+	cursorIsWithinSelection(selection, cursor) {
+		let {start, end} = sort(selection);
+		let [startLineIndex, startOffset] = start;
+		let [endLineIndex, endOffset] = end;
+		let [lineIndex, offset] = cursor;
+		
+		if (
+			lineIndex < startLineIndex
+			|| lineIndex > endLineIndex
+			|| lineIndex === startLineIndex && offset < startOffset
+			|| lineIndex === endLineIndex && offset > endOffset
+		) {
+			return false;
+		}
+		
+		return true;
+	},
+	
 	up(lines, selection, selectionEndCol) {
 		let {start, end} = sort(selection);
 		let [startLineIndex, startOffset] = start;

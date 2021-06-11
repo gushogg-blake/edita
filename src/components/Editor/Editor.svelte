@@ -12,6 +12,7 @@ import clipboard from "../../modules/ipc/clipboard/renderer";
 
 import calculateMarginWidth from "../../modules/render/calculateMarginWidth";
 import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
+import calculateNormalSelectionRegions from "../../modules/render/calculateNormalSelectionRegions";
 import render from "../../modules/render/render";
 import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
 import screenCoordsFromRowCol from "../../modules/utils/screenCoordsFromRowCol";
@@ -84,6 +85,8 @@ let normalSelection = {
 	end: [0, 0],
 };
 
+let normalSelectionRegions = [];
+
 // for remembering the "intended" col when moving a cursor up/down to a line
 // that doesn't have as many cols as the cursor
 let selectionEndCol = 0;
@@ -143,7 +146,7 @@ let normalMouseHandler = normalMouse({
 	startCursorBlink,
 	
 	setSelection(selection) {
-		normalSelection = selection;
+		setNormalSelection(selection);
 	},
 	
 	setSelectionEndCol(col) {
@@ -242,7 +245,7 @@ let normalKeyboardHandler = normalKeyboard({
 	},
 	
 	setSelection(selection) {
-		normalSelection = selection;
+		setNormalSelection(selection);
 	},
 	
 	getCodeAreaSize,
@@ -268,7 +271,8 @@ let astKeyboardHandler = astKeyboard({
 	
 	setSelection(selection) {
 		astSelection = selection;
-		normalSelection = null;
+		
+		setNormalSelection(null);
 	},
 	
 	scrollPageUp,
@@ -321,13 +325,13 @@ function mousedown({detail}) {
 	
 	if (mode === "normal") {
 		normalMouseHandler.mousedown(e, function() {
-			enableDrag(true);
+			enableDrag(false);
 		});
 	} else if (mode === "ast") {
 		astMouseHandler.mousedown(e, option, function() {
-			// if we're holding the Esc key down to peek AST mode, we can't use
-			// native drag and drop as the repeated keydown events will cancel it
-			enableDrag(!isPeekingAstMode || $prefs.modeSwitchKey !== "Escape");
+			// if we're holding the Esc key down to peek AST mode, use synthetic
+			// drag as native will be canceled by the repeated keydown events
+			enableDrag(isPeekingAstMode && $prefs.modeSwitchKey === "Escape");
 		});
 	}
 }
@@ -645,6 +649,17 @@ function ensureNormalCursorIsOnScreen() {
 	}
 }
 
+function setNormalSelection(selection) {
+	normalSelection = selection;
+	
+	normalSelectionRegions = calculateNormalSelectionRegions(
+		document.lines,
+		normalSelection,
+		scrollPosition,
+		measurements,
+	);
+}
+
 function updateSelectionEndCol() {
 	let [lineIndex, offset] = normalSelection.end;
 	let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
@@ -681,7 +696,7 @@ function switchToNormalMode() {
 	let [topLineIndex] = astSelection;
 	
 	if (!normalSelection) {
-		normalSelection = Selection.startOfLineContent(document.lines, topLineIndex);
+		setNormalSelection(Selection.startOfLineContent(document.lines, topLineIndex));
 		
 		updateSelectionEndCol();
 	}
@@ -764,6 +779,7 @@ function updateCanvas() {
 		mode,
 		document.lines,
 		normalSelection,
+		normalSelectionRegions,
 		astSelection,
 		astHilite,
 		isPeekingAstMode,
@@ -934,7 +950,7 @@ onMount(async function() {
 		updateSizes();
 		
 		if (mode === "ast") {
-			normalSelection = null;
+			setNormalSelection(null);
 		}
 	}));
 	
