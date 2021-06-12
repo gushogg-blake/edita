@@ -1,5 +1,6 @@
 <script>
 import {createEventDispatcher} from "svelte";
+import {fade} from "svelte/transition";
 import unique from "../../utils/array/unique";
 import {on, off} from "../../utils/dom/domEvents";
 import inlineStyle from "../../utils/dom/inlineStyle";
@@ -326,7 +327,7 @@ $: codeStyle = calculateCodeStyle(
 	}
 	
 	&.fade {
-		opacity: .2;
+		opacity: .35;
 	}
 }
 </style>
@@ -369,6 +370,7 @@ $: codeStyle = calculateCodeStyle(
 							on:mousedown={(e) => pickOptionMousedown(option, e)}
 							on:mouseenter={(e) => pickOptionMouseenter(option, e)}
 							on:mouseleave={(e) => pickOptionMouseleave(option, e)}
+							out:fade
 						>
 							{option.label}
 						</div>
@@ -385,6 +387,7 @@ $: codeStyle = calculateCodeStyle(
 							class="option dropTarget"
 							class:active={target === currentDropTarget}
 							class:fade={!mouseIsDown}
+							out:fade
 						>
 							{target.label}
 						</div>

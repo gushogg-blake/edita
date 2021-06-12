@@ -534,6 +534,12 @@ function updateDropTargets() {
 	let rowsRendered = 0;
 	
 	while (lineIndex < lines.length) {
+		if (AstSelection.lineIsWithinSelection(lineIndex, selection)) {
+			lineIndex++;
+			
+			continue;
+		}
+		
 		let line = lines[lineIndex];
 		
 		dropTargets = [
