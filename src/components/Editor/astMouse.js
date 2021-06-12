@@ -215,8 +215,6 @@ module.exports = function(editor) {
 			return line.string;
 		});
 		
-		console.log(e);
-		
 		e.dataTransfer.setData("text/plain", JSON.stringify({
 			type: "ast",
 			selection,

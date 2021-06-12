@@ -24,6 +24,8 @@ let currentDropTarget;
 let clickDistanceThreshold = 2;
 let mouseMovedDistance;
 let syntheticDrag = null;
+let isDragging = false;
+let mouseIsDown = false;
 
 let fire = createEventDispatcher();
 
@@ -64,6 +66,7 @@ let syntheticDragHandler = drag({
 	},
 	
 	end(e) {
+		mouseIsDown = false;
 		
 		// TODO only fire drop if over drop target
 		codeDiv.dispatchEvent(createDragEvent.drop(e, syntheticDrag));
@@ -73,18 +76,21 @@ let syntheticDragHandler = drag({
 	},
 	
 	click(e) {
+		mouseIsDown = false;
+		
 		fire("click", e);
 	},
 });
 
 function mousedown(e) {
+	mouseIsDown = true;
 	mouseMovedDistance = 0;
 	
 	on(window, "mouseup", mouseup);
 	
 	fire("mousedown", {
 		e,
-		option: selectedOption,
+		option: selectedOption?.option?.type,
 		
 		enableDrag(useSynthetic) {
 			draggable = true;
@@ -108,6 +114,8 @@ function mousemove(e) {
 }
 
 function mouseup(e) {
+	mouseIsDown = false;
+	
 	if (useSyntheticDrag) {
 		if (mode === "ast") {
 			syntheticDragHandler.mouseup(e);
@@ -136,10 +144,13 @@ function mouseleave(e) {
 }
 
 function dragstart(e) {
+	isDragging = true;
+	
 	if (selectedOption) {
 		let {node, x, y} = selectedOption;
 		
-		e.dataTransfer.setDragImage(node, x, y);
+		//e.dataTransfer.setDragImage(node, x, y);
+		e.dataTransfer.setDragImage(new Image(), 0, 0);
 	} else {
 		e.dataTransfer.setDragImage(new Image(), 0, 0);
 	}
@@ -155,17 +166,21 @@ function dragover(e) {
 }
 
 function drop(e) {
+	mouseIsDown = false;
 	draggable = false;
 	useSyntheticDrag = false;
 	selectedOption = null;
+	isDragging = false;
 	
 	fire("drop", e);
 }
 
 function dragend(e) {
+	mouseIsDown = false;
 	draggable = false;
 	useSyntheticDrag = false;
 	selectedOption = null;
+	isDragging = false;
 	
 	fire("dragend", e);
 }
@@ -199,11 +214,22 @@ function calculateMarginStyle(marginWidth) {
 	};
 }
 
-function calculateCodeStyle(overallWidth, marginWidth, mode) {
+function calculateCodeStyle(
+	overallWidth,
+	marginWidth,
+	mode,
+	isDragging,
+) {
+	let cursor = mode === "ast" ? "default" : "text";
+	
+	if (isDragging) {
+		cursor = "grabbing";
+	}
+	
 	return {
 		left: marginWidth,
 		width: overallWidth - marginWidth,
-		cursor: mode === "ast" ? "default" : "text",
+		cursor,
 	};
 }
 
@@ -231,9 +257,13 @@ function rowStyle(items, screenRow, rowHeight, colWidth) {
 }
 
 $: marginStyle = calculateMarginStyle(marginWidth);
-$: codeStyle = calculateCodeStyle(overallWidth, marginOffset, mode);
 
-$: console.log(colWidth);
+$: codeStyle = calculateCodeStyle(
+	overallWidth,
+	marginOffset,
+	mode,
+	isDragging,
+);
 </script>
 
 <style type="text/scss">
@@ -274,6 +304,15 @@ $: console.log(colWidth);
 .pickOption {
 	color: #3D2F00;
 	background: #D6AD0C;
+	
+	&.active {
+		color: #FCEEC2;
+		background: #A88712;
+	}
+	
+	&.fadeIfNotHover:not(:hover) {
+		opacity: .5;
+	}
 }
 
 .dropTarget {
@@ -284,6 +323,10 @@ $: console.log(colWidth);
 	&.active {
 		color: #FCDFD1;
 		background: #B24711;
+	}
+	
+	&.fade {
+		opacity: .2;
 	}
 }
 </style>
@@ -321,6 +364,8 @@ $: console.log(colWidth);
 					{#each pickOptions.filter(o => o.screenRow === screenRow) as option}
 						<div
 							class="option pickOption"
+							class:active={option.type === selectedOption?.option?.type}
+							class:fadeIfNotHover={!mouseIsDown}
 							on:mousedown={(e) => pickOptionMousedown(option, e)}
 							on:mouseenter={(e) => pickOptionMouseenter(option, e)}
 							on:mouseleave={(e) => pickOptionMouseleave(option, e)}
@@ -339,6 +384,7 @@ $: console.log(colWidth);
 						<div
 							class="option dropTarget"
 							class:active={target === currentDropTarget}
+							class:fade={!mouseIsDown}
 						>
 							{target.label}
 						</div>

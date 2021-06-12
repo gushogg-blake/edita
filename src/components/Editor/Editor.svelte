@@ -421,7 +421,6 @@ function optionhover({detail}) {
 }
 
 function dragstart({detail}) {
-	console.log("dragstart", Date.now());
 	let {
 		e,
 		option,
