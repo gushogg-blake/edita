@@ -370,7 +370,6 @@ $: codeStyle = calculateCodeStyle(
 							on:mousedown={(e) => pickOptionMousedown(option, e)}
 							on:mouseenter={(e) => pickOptionMouseenter(option, e)}
 							on:mouseleave={(e) => pickOptionMouseleave(option, e)}
-							out:fade
 						>
 							{option.label}
 						</div>
@@ -382,7 +381,7 @@ $: codeStyle = calculateCodeStyle(
 					class="row"
 					style={inlineStyle(rowStyle(dropTargets, screenRow, rowHeight, colWidth))}
 				>
-					{#each dropTargets.filter(o => o.screenRow === screenRow) as target}
+					{#each dropTargets.filter(t => t.screenRow === screenRow) as target}
 						<div
 							class="option dropTarget"
 							class:active={target === currentDropTarget}
