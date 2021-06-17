@@ -62,7 +62,7 @@ module.exports = function(editor) {
 			document,
 			scrollPosition,
 			setSelectionHilite,
-			setPickOptions,
+			showPickOptionsFor,
 			showDropTargetsFor,
 			redraw,
 		} = editor;
@@ -75,23 +75,10 @@ module.exports = function(editor) {
 		let {codeIntel} = document.lang;
 		
 		if (selection) {
-			let [startLineIndex] = selection;
-			let pickOptions = codeIntel.generatePickOptions(lines, selection);
-			
-			setPickOptions(pickOptions.map(function(type) {
-				let screenCol = lines[startLineIndex].width + 1;
-				
-				return {
-					screenRow: screenRowFromLineIndex(lines, startLineIndex, scrollPosition),
-					screenCol,
-					type,
-					label: codeIntel.pickOptions[type].label,
-				};
-			}));
-			
+			showPickOptionsFor(selection);
 			showDropTargetsFor(selection, null);
 		} else {
-			setPickOptions([]);
+			showPickOptionsFor(null);
 			showDropTargetsFor(null, null);
 		}
 		
@@ -227,7 +214,6 @@ module.exports = function(editor) {
 		let {
 			document,
 			setSelectionHilite,
-			setPickOptions,
 			showDropTargetsFor,
 			redraw,
 		} = editor;
@@ -249,14 +235,16 @@ module.exports = function(editor) {
 		
 	}
 	
-	function drop(e) {
+	function drop(e, target) {
 		let json = parseJson(e.dataTransfer.getData("text/plain"));
 		
 		if (!json || json.type !== "ast") {
 			return;
 		}
 		
-		console.log(json);
+		let {
+			selection,
+		} = json;
 	}
 	
 	function dragend() {

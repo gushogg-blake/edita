@@ -18,7 +18,6 @@ import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
 import screenCoordsFromRowCol from "../../modules/utils/screenCoordsFromRowCol";
 import rowColFromCursor from "../../modules/utils/rowColFromCursor";
 import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
-import screenRowFromLineIndex from "../../modules/utils/screenRowFromLineIndex";
 import findFirstVisibleLine from "../../modules/utils/findFirstVisibleLine";
 import Selection from "../../modules/utils/Selection";
 import AstSelection from "../../modules/utils/AstSelection";
@@ -53,6 +52,7 @@ export function hide() {
 	visible = false;
 }
 
+let revisionCounter = 0;
 let mounted = false;
 let canvasDiv;
 let measurementsDiv;
@@ -210,9 +210,7 @@ let astMouseHandler = astMouse({
 		setAstHilite(selection);
 	},
 	
-	setPickOptions(options) {
-		pickOptions = options;
-	},
+	showPickOptionsFor,
 	
 	showDropTargetsFor(selection, option) {
 		showDropTargetsFor = {
@@ -404,8 +402,8 @@ function dblclick(e) {
 
 function optionmousedown({detail}) {
 	let {
-		option,
 		e,
+		option,
 	} = detail;
 	
 	astMouseHandler.optionmousedown(option, e);
@@ -413,8 +411,8 @@ function optionmousedown({detail}) {
 
 function optionhover({detail}) {
 	let {
-		option,
 		e,
+		option,
 	} = detail;
 	
 	astMouseHandler.optionhover(option, e);
@@ -454,11 +452,16 @@ function dragend({detail: e}) {
 	}
 }
 
-function drop({detail: e}) {
+function drop({detail}) {
+	let {
+		e,
+		target,
+	} = detail;
+	
 	if (mode === "normal") {
-		normalMouseHandler.drop(e);
+		normalMouseHandler.drop(e, target);
 	} else if (mode === "ast") {
-		astMouseHandler.drop(e);
+		astMouseHandler.drop(e, target);
 	}
 }
 
@@ -514,8 +517,33 @@ function keyup(e) {
 	}
 }
 
+function showPickOptionsFor(selection) {
+	if (!selection) {
+		return;
+	}
+	
+	let [startLineIndex] = selection;
+	let lineIndex = startLineIndex;
+	let {lines} = document;
+	let {codeIntel} = document.lang;
+	
+	pickOptions = [{
+		lineIndex,
+		
+		options: codeIntel.generatePickOptions(
+			lines,
+			selection,
+		).map(function(option) {
+			return {
+				lineIndex,
+				option,
+			};
+		}),
+	}];
+}
+
 function updateDropTargets() {
-	dropTargets = [];
+	let byLineIndex = new Map();
 	
 	let {
 		selection,
@@ -542,25 +570,17 @@ function updateDropTargets() {
 		
 		let line = lines[lineIndex];
 		
-		dropTargets = [
-			...dropTargets,
-			
-			...codeIntel.generateDropTargets(
-				lines,
+		byLineIndex.set(lineIndex, codeIntel.generateDropTargets(
+			lines,
+			lineIndex,
+			selection,
+			option,
+		).map(function(target) {
+			return {
 				lineIndex,
-				selection,
-				option,
-			).map(function(type) {
-				let screenCol = line.width + 1;
-				
-				return {
-					screenRow: screenRowFromLineIndex(lines, lineIndex, scrollPosition),
-					screenCol,
-					type,
-					label: codeIntel.dropTargets[type].label,
-				};
-			}),
-		];
+				target,
+			};
+		}));
 		
 		rowsRendered += line.height;
 		
@@ -570,6 +590,13 @@ function updateDropTargets() {
 		
 		lineIndex++;
 	}
+	
+	dropTargets = [...byLineIndex.entries()].map(function([lineIndex, targets]) {
+		return {
+			lineIndex,
+			targets,
+		};
+	});
 }
 
 function setAstHilite(selection) {
@@ -958,6 +985,7 @@ onMount(async function() {
 	let teardown = [];
 	
 	teardown.push(document.on("edit", function() {
+		revisionCounter++;
 		// TODO perf
 		// only modified lines need wraps recalculating
 		// async parsing
@@ -1070,11 +1098,14 @@ $scrollBarBorder: 1px solid #bababa;
 		<div class="layer">
 			<InteractionLayer
 				{mode}
+				{document}
+				{revisionCounter}
 				overallWidth={sizes.overallWidth}
 				marginWidth={sizes.marginWidth}
 				marginOffset={sizes.marginOffset}
 				rowHeight={measurements?.rowHeight}
 				colWidth={measurements?.colWidth}
+				{scrollPosition}
 				{pickOptions}
 				{dropTargets}
 				on:mousedown={mousedown}

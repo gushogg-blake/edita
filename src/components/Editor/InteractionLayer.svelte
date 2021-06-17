@@ -4,15 +4,19 @@ import {fade} from "svelte/transition";
 import unique from "../../utils/array/unique";
 import {on, off} from "../../utils/dom/domEvents";
 import inlineStyle from "../../utils/dom/inlineStyle";
+import screenRowFromLineIndex from "../../modules/utils/screenRowFromLineIndex";
 import topMargin from "../../modules/render/topMargin";
 import drag from "./utils/drag";
 import createDragEvent from "./utils/createDragEvent";
 
+export let document;
+export let revisionCounter;
 export let overallWidth;
 export let marginWidth;
 export let marginOffset;
 export let rowHeight;
 export let colWidth;
+export let scrollPosition;
 export let mode;
 export let pickOptions;
 export let dropTargets;
@@ -30,8 +34,27 @@ let mouseIsDown = false;
 
 let fire = createEventDispatcher();
 
-$: pickOptionRows = unique(pickOptions.map(option => option.screenRow));
-$: dropTargetRows = unique(dropTargets.map(target => target.screenRow));
+let divToDropTarget = new Map();
+
+function registerDropTarget(el, target) {
+	divToDropTarget.set(el, target);
+	
+	return {
+		destroy() {
+			divToDropTarget.delete(el);
+		},
+	};
+}
+
+function dropTargetFromMouseEvent(e) {
+	for (let el of window.document.elementsFromPoint(e.pageX, e.pageY)) {
+		if (divToDropTarget.has(el)) {
+			return divToDropTarget.get(el);
+		}
+	}
+	
+	return null;
+}
 
 let syntheticDragHandler = drag({
 	start(e) {
@@ -163,17 +186,26 @@ function dragstart(e) {
 }
 
 function dragover(e) {
+	currentDropTarget = dropTargetFromMouseEvent(e);
+	
+	//console.log(currentDropTarget);
+	
 	fire("dragover", e);
 }
 
 function drop(e) {
+	let dropTarget = dropTargetFromMouseEvent(e);
+	
+	fire("drop", {
+		e,
+		target: dropTarget?.target
+	});
+	
 	mouseIsDown = false;
 	draggable = false;
 	useSyntheticDrag = false;
 	selectedOption = null;
 	isDragging = false;
-	
-	fire("drop", e);
 }
 
 function dragend(e) {
@@ -234,21 +266,10 @@ function calculateCodeStyle(
 	};
 }
 
-//function pickOptionRowStyle(screenRow, rowHeight) {
-//	return {
-//		top: screenRow * rowHeight,
-//	};
-//}
-//
-//function dropTargetRowStyle(screenRow, rowHeight) {
-//	return {
-//		top: screenRow * rowHeight,
-//		height: rowHeight,
-//	};
-//}
-
-function rowStyle(items, screenRow, rowHeight, colWidth) {
-	let {screenCol} = items.find(item => item.screenRow === screenRow);
+function rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounter) {
+	let {lines} = document;
+	let screenRow = screenRowFromLineIndex(lines, lineIndex, scrollPosition);
+	let screenCol = lines[lineIndex].width + 1;
 	
 	return {
 		top: topMargin + screenRow * rowHeight,
@@ -357,12 +378,12 @@ $: codeStyle = calculateCodeStyle(
 		on:dragend={dragend}
 	>
 		{#if mode === "ast"}
-			{#each pickOptionRows as screenRow}
+			{#each pickOptions as {lineIndex, options} (lineIndex)}
 				<div
 					class="row"
-					style={inlineStyle(rowStyle(pickOptions, screenRow, rowHeight, colWidth))}
+					style={inlineStyle(rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounter))}
 				>
-					{#each pickOptions.filter(o => o.screenRow === screenRow) as option}
+					{#each options as {option}}
 						<div
 							class="option pickOption"
 							class:active={option.type === selectedOption?.option?.type}
@@ -376,19 +397,19 @@ $: codeStyle = calculateCodeStyle(
 					{/each}
 				</div>
 			{/each}
-			{#each dropTargetRows as screenRow}
+			{#each dropTargets as {lineIndex, targets} (lineIndex)}
 				<div
 					class="row"
-					style={inlineStyle(rowStyle(dropTargets, screenRow, rowHeight, colWidth))}
+					style={inlineStyle(rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounter))}
 				>
-					{#each dropTargets.filter(t => t.screenRow === screenRow) as target}
+					{#each targets as target (target)}
 						<div
+							use:registerDropTarget={target}
 							class="option dropTarget"
 							class:active={target === currentDropTarget}
 							class:fade={!mouseIsDown}
-							out:fade
 						>
-							{target.label}
+							{target.target.label}
 						</div>
 					{/each}
 				</div>

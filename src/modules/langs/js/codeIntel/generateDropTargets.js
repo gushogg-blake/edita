@@ -1,4 +1,5 @@
 let getOpenersAndClosersOnLine = require("./getOpenersAndClosersOnLine");
+let dropTargets = require("./dropTargets");
 
 function isIfFooter(lines, lineIndex) {
 	return getOpenersAndClosersOnLine(lines[lineIndex]).closers.length === 1;
@@ -13,8 +14,8 @@ module.exports = function(lines, lineIndex, selection, option) {
 	
 	if (isIfFooter(lines, lineIndex)) {
 		targets.push(
-			"addSelectionToNewElse",
-			"addSelectionToNewElseIf",
+			dropTargets.addSelectionToNewElse,
+			dropTargets.addSelectionToNewElseIf,
 		);
 	}
 	
