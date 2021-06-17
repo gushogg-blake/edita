@@ -13,7 +13,7 @@ module.exports = {
 	generatePickOptions,
 	generateDropTargets,
 	
-	drop(fromSelection, toSelection, option, target) {
-		console.log(fromSelection, toSelection, option, target);
+	drop(fromSelection, toSelection, lines, option, target) {
+		console.log(fromSelection, toSelection, lines, option, target);
 	},
 };

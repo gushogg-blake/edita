@@ -8,7 +8,39 @@ let AstSelection = require("../../modules/utils/AstSelection");
 let Selection = require("../../modules/utils/Selection");
 let autoScroll = require("./utils/autoScroll");
 
+/*
+you can't see the data (only the types) on dragover, and types can't contain
+uppercase chars, so we encode all the data into a string of char codes.
+*/
+
+function setData(e, data) {
+	let json = JSON.stringify({
+		isAstDragDrop: true,
+		data,
+	});
+	
+	let str = json.split("").map(c => c.charCodeAt(0)).join(",");
+	
+	e.dataTransfer.setData(str, "");
+}
+
+function getData(e) {
+	for (let encodedStr of e.dataTransfer.types) {
+		try {
+			let str = encodedStr.split(",").map(Number).map(n => String.fromCharCode(n)).join("");
+			let json = parseJson(str);
+			
+			if (json && json.isAstDragDrop) {
+				return json.data;
+			}
+		} catch (e) {}
+	}
+	
+	return null;
+}
+
 module.exports = function(editor) {
+	let isDragging = false;
 	let drawingSelection = false;
 	
 	function getHilite(e) {
@@ -202,12 +234,13 @@ module.exports = function(editor) {
 			return line.string;
 		});
 		
-		e.dataTransfer.setData("text/plain", JSON.stringify({
-			type: "ast",
+		setData(e, {
 			selection,
 			option,
 			lines,
-		}));
+		});
+		
+		isDragging = true;
 	}
 	
 	function dragover(e) {
@@ -220,9 +253,18 @@ module.exports = function(editor) {
 		
 		e.preventDefault();
 		
-		let selection = getHilite(e);
+		let selection = getHilite(e); // TODO insertion point
+		let data = getData(e);
 		
-		setSelectionHilite(selection);
+		console.log(data);
+		
+		if (!data) {
+			return;
+		}
+		
+		console.log("dragover", data);
+		
+		//setSelectionHilite(selection);
 		
 		redraw();
 	}
@@ -236,19 +278,32 @@ module.exports = function(editor) {
 	}
 	
 	function drop(e, target) {
-		let json = parseJson(e.dataTransfer.getData("text/plain"));
+		function done() {
+			isDragging = false;
+		}
 		
-		if (!json || json.type !== "ast") {
-			return;
+		let data = getData(e);
+		
+		if (!data) {
+			return done();
 		}
 		
 		let {
 			selection,
-		} = json;
+			option,
+			lines,
+		} = data;
+		
+		let fromSelection = isDragging ? selection : null;
+		//let insertionPoint = 
+		
+		done();
 	}
 	
 	function dragend() {
 		mouseup();
+		
+		isDragging = false;
 	}
 
 	return {

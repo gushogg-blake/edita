@@ -31,6 +31,7 @@ let mouseMovedDistance;
 let syntheticDrag = null;
 let isDragging = false;
 let mouseIsDown = false;
+let rowYHint = 1;
 
 let fire = createEventDispatcher();
 
@@ -61,19 +62,16 @@ let syntheticDragHandler = drag({
 		syntheticDrag = {
 			data: null,
 			
+			get types() {
+				return Object.keys(this.data);
+			},
+			
 			setData(type, data) {
-				this.data = {
-					type,
-					data,
-				};
+				this.data[type] = data;
 			},
 			
 			getData(type) {
-				if (!this.data || this.data.type !== type) {
-					return null;
-				}
-				
-				return this.data.data;
+				return this.data[type];
 			},
 			
 			setDragImage() {
@@ -198,7 +196,7 @@ function drop(e) {
 	
 	fire("drop", {
 		e,
-		target: dropTarget?.target
+		target: dropTarget?.target,
 	});
 	
 	mouseIsDown = false;
@@ -272,7 +270,7 @@ function rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounte
 	let screenCol = lines[lineIndex].width + 1;
 	
 	return {
-		top: topMargin + screenRow * rowHeight,
+		top: topMargin + rowYHint + screenRow * rowHeight,
 		left: screenCol * colWidth,
 		height: rowHeight,
 	};
