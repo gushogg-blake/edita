@@ -60,7 +60,7 @@ function dropTargetFromMouseEvent(e) {
 let syntheticDragHandler = drag({
 	start(e) {
 		syntheticDrag = {
-			data: null,
+			data: {},
 			
 			get types() {
 				return Object.keys(this.data);
