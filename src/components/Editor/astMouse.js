@@ -3,6 +3,7 @@ let {on, off} = require("../../utils/dom/domEvents");
 let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
 let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
 let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
+let rowIndexFromScreenY = require("../../modules/utils/rowIndexFromScreenY");
 let screenRowFromLineIndex = require("../../modules/utils/screenRowFromLineIndex");
 let AstSelection = require("../../modules/utils/AstSelection");
 let Selection = require("../../modules/utils/Selection");
@@ -43,15 +44,9 @@ module.exports = function(editor) {
 	let isDragging = false;
 	let drawingSelection = false;
 	
-	function getHilite(e) {
+	function getCanvasCoords(e) {
 		let {
 			canvas,
-			measurements,
-			document,
-			selection,
-			isPeekingAstMode: isPeeking,
-			normalSelection,
-			scrollPosition,
 		} = editor;
 		
 		let {
@@ -61,6 +56,21 @@ module.exports = function(editor) {
 		
 		let x = e.clientX - left;
 		let y = e.clientY - top;
+		
+		return [x, y];
+	}
+	
+	function getHilite(e) {
+		let {
+			measurements,
+			document,
+			selection,
+			isPeekingAstMode: isPeeking,
+			normalSelection,
+			scrollPosition,
+		} = editor;
+		
+		let [x, y] = getCanvasCoords(e);
 		
 		let [row, col] = rowColFromScreenCoords(
 			document.lines,
@@ -246,6 +256,8 @@ module.exports = function(editor) {
 	function dragover(e) {
 		let {
 			document,
+			scrollPosition,
+			measurements,
 			setSelectionHilite,
 			showDropTargetsFor,
 			redraw,
@@ -253,16 +265,18 @@ module.exports = function(editor) {
 		
 		e.preventDefault();
 		
-		let selection = getHilite(e); // TODO insertion point
 		let data = getData(e);
-		
-		console.log(data);
 		
 		if (!data) {
 			return;
 		}
 		
+		let {lines} = document;
+		let [x, y] = getCanvasCoords(e);
+		
 		console.log("dragover", data);
+		
+		console.log(rowIndexFromScreenY(y, scrollPosition, measurements));
 		
 		//setSelectionHilite(selection);
 		
