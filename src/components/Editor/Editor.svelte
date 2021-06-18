@@ -741,10 +741,10 @@ function switchToAstMode() {
 }
 
 function switchToNormalMode() {
-	if (mouseIsDown) {
-		console.log("not switching to normal mode");
-		return;
-	}
+	//if (mouseIsDown) {
+	//	console.log("not switching to normal mode");
+	//	return;
+	//}
 	
 	mode = "normal";
 	setAstSelectionHilite(null);

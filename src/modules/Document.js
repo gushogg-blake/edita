@@ -7,13 +7,16 @@ let unwrapLine = require("./wrapLine/unwrapLine");
 function createLine(string) {
 	return {
 		string,
+		trimmed: undefined,
+		commands: [],
 		endState: null,
 		lastUsedCacheKey: null,
 		cachedCommands: {},
 		width: undefined,
 		height: undefined,
+		indentLevel: 0,
+		indentOffset: 0,
 		wrappedLines: undefined,
-		wrapIndentCols: undefined,
 	};
 }
 
@@ -196,7 +199,7 @@ class Document extends Evented {
 	
 	wrapLines(measurements, screenWidth) {
 		for (let line of this.lines) {
-			wrapLine(line, measurements, screenWidth);
+			wrapLine(line, this.fileDetails.indentation, measurements, screenWidth);
 		}
 	}
 	

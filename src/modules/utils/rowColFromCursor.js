@@ -62,7 +62,7 @@ module.exports = function(
 	}
 	
 	if (innerLineIndex > 0) {
-		col += line.wrapIndentCols;
+		col += line.indentOffset;
 	}
 	
 	return [row, col];

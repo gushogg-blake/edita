@@ -3,11 +3,18 @@ let {minNonWhitespaceCols, wordRe} = require("./config");
 let getCurrentWordWidth = require("./getCurrentWordWidth");
 let unwrapLine = require("./unwrapLine");
 
-module.exports = function(line, measurements, availableWidth) {
+module.exports = function(line, indentation, measurements, availableWidth) {
 	let {colWidth} = measurements;
 	let screenCols = Math.floor(availableWidth / colWidth);
 	
 	unwrapLine(line);
+	
+	/*
+	TODO simplify & fix - always render at indent level, use line.indentOffset
+	instead of counting, drop long-strings-of-spaces logic, 
+	*/
+	
+	return;
 	
 	if (availableWidth < colWidth) {
 		return;
@@ -24,13 +31,10 @@ module.exports = function(line, measurements, availableWidth) {
 	2) indent wrapped lines to the same level as the main line
 	*/
 	
-	let indentCols = countInitialWhitespaceCols(line);
+	let availableCols = screenCols - line.indentOffset;
 	
-	let isIndented = screenCols - indentCols >= minNonWhitespaceCols;
-	let availableCols = screenCols;
-	
-	if (isIndented) {
-		line.wrapIndentCols = indentCols;
+	if (availableCols < indentation.colsPerIndent) {
+		return;
 	}
 	
 	line.wrappedLines = [];

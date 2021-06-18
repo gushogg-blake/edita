@@ -32,7 +32,7 @@ module.exports = function(
 	}
 	
 	if (innerLineIndex > 0) {
-		col -= line.wrapIndentCols;
+		col -= line.indentOffset;
 		
 		if (col < 0) {
 			col = 0;

@@ -98,6 +98,35 @@ module.exports = function(editor) {
 		return null;
 	}
 	
+	function getInsertionRange(e) {
+		let {
+			document,
+			scrollPosition,
+			measurements,
+		} = editor;
+		
+		let {lines} = document;
+		let [x, y] = getCanvasCoords(e);
+		
+		let {
+			aboveLineIndex,
+			belowLineIndex,
+			offset,
+		} = insertLineIndexFromScreenY(
+			lines,
+			y,
+			scrollPosition,
+			measurements,
+		);
+		
+		return AstSelection.insertionRange(
+			lines,
+			aboveLineIndex,
+			belowLineIndex,
+			offset,
+		);
+	}
+	
 	function hilite(e) {
 		let {
 			document,
@@ -280,29 +309,10 @@ module.exports = function(editor) {
 			return;
 		}
 		
-		let {lines} = document;
-		let [x, y] = getCanvasCoords(e);
-		
-		let {
-			aboveLineIndex,
-			belowLineIndex,
-			offset,
-		} = insertLineIndexFromScreenY(
-			lines,
-			y,
-			scrollPosition,
-			measurements,
-		);
-		
 		if (target) {
 			setInsertionHilite(null);
 		} else {
-			setInsertionHilite(AstSelection.insertionRange(
-				lines,
-				aboveLineIndex,
-				belowLineIndex,
-				offset,
-			));
+			setInsertionHilite(getInsertionRange(e));
 		}
 		
 		redraw();
@@ -317,6 +327,10 @@ module.exports = function(editor) {
 	}
 	
 	function drop(e, target) {
+		let {
+			document,
+		} = editor;
+		
 		function done() {
 			isDragging = false;
 		}
@@ -328,13 +342,20 @@ module.exports = function(editor) {
 		}
 		
 		let {
-			selection,
+			selection: fromSelection,
 			option,
 			lines,
 		} = data;
 		
-		let fromSelection = isDragging ? selection : null;
-		//let insertionPoint = 
+		if (!isDragging) {
+			fromSelection = null;
+		}
+		
+		let toSelection = target ? getHilite(e) : getInsertionRange(e);
+		
+		let {codeIntel} = document.lang;
+		
+		codeIntel.drop(fromSelection, toSelection, lines, option, target);
 		
 		done();
 	}

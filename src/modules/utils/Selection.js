@@ -180,7 +180,7 @@ let api = {
 				
 				return s(cursorFromRowCol(lines, startingRow, initialWhitespaceCols));
 			} else {
-				return s(cursorFromRowCol(lines, row, line.wrapIndentCols));
+				return s(cursorFromRowCol(lines, row, line.indentOffset));
 			}
 		} else {
 			if (col === initialWhitespaceCols) {
@@ -315,7 +315,7 @@ let api = {
 				
 				return s(start, cursorFromRowCol(lines, startingRow, initialWhitespaceCols));
 			} else {
-				return s(start, cursorFromRowCol(lines, row, line.wrapIndentCols));
+				return s(start, cursorFromRowCol(lines, row, line.indentOffset));
 			}
 		} else {
 			if (col === initialWhitespaceCols) {
