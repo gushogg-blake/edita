@@ -59,7 +59,7 @@ module.exports = function(editor) {
 		return [x, y];
 	}
 	
-	function getHilite(e) {
+	function getHilite(e, withinSelection=false) {
 		let {
 			measurements,
 			document,
@@ -85,7 +85,7 @@ module.exports = function(editor) {
 		
 		let [lineIndex] = cursorFromRowCol(document.lines, row, col);
 		
-		if (AstSelection.lineIsWithinSelection(lineIndex, selection)) {
+		if (!withinSelection && AstSelection.lineIsWithinSelection(lineIndex, selection)) {
 			return selection;
 		} else {
 			return document.lang.codeIntel.astSelection.hiliteFromLineIndex(document.lines, lineIndex);
@@ -250,7 +250,18 @@ module.exports = function(editor) {
 	}
 	
 	function click(e) {
+		let {
+			pick,
+			redraw,
+		} = editor;
 		
+		let selection = getHilite(e, true);
+		
+		if (selection) {
+			pick(selection, null);
+		}
+		
+		redraw();
 	}
 	
 	function dblclick(e) {
