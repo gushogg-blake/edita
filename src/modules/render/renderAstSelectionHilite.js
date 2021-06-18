@@ -22,7 +22,7 @@ module.exports = function(
 		return;
 	}
 	
-	context.fillStyle = prefs.astHiliteBackground;
+	context.fillStyle = prefs.astSelectionHiliteBackground;
 	
 	let {colWidth, rowHeight} = measurements;
 	let [startLineIndex, endLineIndex] = hilite;

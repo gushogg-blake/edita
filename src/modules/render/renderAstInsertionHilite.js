@@ -18,10 +18,27 @@ module.exports = function(
 		return;
 	}
 	
-	context.fillStyle = prefs.astHiliteBackground;
+	context.fillStyle = prefs.astInsertionHiliteBackground;
 	
 	let {colWidth, rowHeight} = measurements;
 	let [startLineIndex, endLineIndex] = hilite;
+	
+	if (startLineIndex === lines.length) {
+		let startRow = getLineStartingRow(lines, startLineIndex - 1) + 1;
+		
+		let [x, y] = screenCoordsFromRowCol(
+			lines,
+			startRow,
+			0,
+			scrollPosition,
+			measurements,
+		);
+		
+		context.fillRect(x, y, context.canvas.width, 2);
+		
+		return;
+	}
+	
 	let startLine = lines[startLineIndex];
 	let startRow = getLineStartingRow(lines, startLineIndex);
 	let height = (getLineRangeTotalHeight(lines, startLineIndex, endLineIndex - 1)) * rowHeight;
