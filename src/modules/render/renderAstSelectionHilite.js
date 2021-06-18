@@ -6,26 +6,26 @@ let AstSelection = require("../utils/AstSelection");
 module.exports = function(
 	context,
 	lines,
-	astHilite,
-	astSelection,
+	hilite,
+	selection,
 	isPeeking,
 	scrollPosition,
 	prefs,
 	fileDetails,
 	measurements,
 ) {
-	if (!astHilite) {
+	if (!hilite) {
 		return;
 	}
 	
-	if (!isPeeking && AstSelection.equals(astHilite, astSelection)) {
+	if (!isPeeking && AstSelection.equals(hilite, selection)) {
 		return;
 	}
 	
 	context.fillStyle = prefs.astHiliteBackground;
 	
 	let {colWidth, rowHeight} = measurements;
-	let [startLineIndex, endLineIndex] = astHilite;
+	let [startLineIndex, endLineIndex] = hilite;
 	let startLine = lines[startLineIndex];
 	let startRow = getLineStartingRow(lines, startLineIndex);
 	let height = (getLineRangeTotalHeight(lines, startLineIndex, endLineIndex - 1)) * rowHeight;

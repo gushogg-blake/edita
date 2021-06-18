@@ -92,7 +92,8 @@ let normalSelectionRegions = [];
 let selectionEndCol = 0;
 
 let astSelection = [13, 14];
-let astHilite = null;
+let astSelectionHilite = null;
+let astInsertionHilite = null;
 let pickOptions = [];
 let dropTargets = [];
 
@@ -209,7 +210,11 @@ let astMouseHandler = astMouse({
 	},
 	
 	setSelectionHilite(selection) {
-		setAstHilite(selection);
+		setAstSelectionHilite(selection);
+	},
+	
+	setInsertionHilite(selection) {
+		astInsertionHilite = selection;
 	},
 	
 	showPickOptionsFor,
@@ -606,8 +611,8 @@ function updateDropTargets() {
 	});
 }
 
-function setAstHilite(selection) {
-	astHilite = selection;
+function setAstSelectionHilite(selection) {
+	astSelectionHilite = selection;
 }
 
 function scrollBy(x, rows) {
@@ -741,7 +746,7 @@ function switchToNormalMode() {
 	}
 	
 	mode = "normal";
-	setAstHilite(null);
+	setAstSelectionHilite(null);
 	
 	console.log("switchToNormalMode", mode);
 	
@@ -833,7 +838,8 @@ function updateCanvas() {
 		normalSelection,
 		normalSelectionRegions,
 		astSelection,
-		astHilite,
+		astSelectionHilite,
+		astInsertionHilite,
 		isPeekingAstMode,
 		hiliteWord,
 		scrollPosition,

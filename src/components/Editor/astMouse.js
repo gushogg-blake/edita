@@ -188,6 +188,15 @@ module.exports = function(editor) {
 	}
 	
 	function mouseup() {
+		let {
+			setInsertionHilite,
+			redraw,
+		} = editor;
+		
+		setInsertionHilite(null);
+		
+		redraw();
+		
 		editor.mouseup();
 		
 		off(window, "mousemove", drawSelection);
@@ -259,7 +268,7 @@ module.exports = function(editor) {
 			document,
 			scrollPosition,
 			measurements,
-			setSelectionHilite,
+			setInsertionHilite,
 			showDropTargetsFor,
 			redraw,
 		} = editor;
@@ -286,12 +295,15 @@ module.exports = function(editor) {
 			measurements,
 		);
 		
-		//console.log(lineIndex);
-		
 		if (target) {
-			setSelectionHilite(null);
+			setInsertionHilite(null);
 		} else {
-			setSelectionHilite(AstSelection.insertionRange(lines, aboveLineIndex, belowLineIndex, offset));
+			setInsertionHilite(AstSelection.insertionRange(
+				lines,
+				aboveLineIndex,
+				belowLineIndex,
+				offset,
+			));
 		}
 		
 		redraw();
