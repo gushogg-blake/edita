@@ -51,20 +51,22 @@ module.exports = function(editor) {
 			col,
 		);
 		
-		if (pointIsWithinRegions(selectionRegions, x, y)) {
-			if (e.button === 1) {
-				setSelection(Selection.s(cursor));
-				
-				let str = await clipboard.readSelection();
-				let newSelection = document.replaceSelection(editor.selection, str);
-				
-				setSelection(newSelection);
-				
-				startCursorBlink();
-				
-				redraw();
-			}
+		if (e.button === 1) {
+			setSelection(Selection.s(cursor));
 			
+			let str = await clipboard.readSelection();
+			let newSelection = document.replaceSelection(editor.selection, str);
+			
+			setSelection(newSelection);
+			
+			startCursorBlink();
+			
+			redraw();
+			
+			return;
+		}
+		
+		if (pointIsWithinRegions(selectionRegions, x, y)) {
 			if (e.button === 0) {
 				mousedownInSelection(e, enableDrag);
 			}
@@ -77,10 +79,6 @@ module.exports = function(editor) {
 		startCursorBlink();
 		
 		redraw();
-		
-		if (e.button === 1) {
-			return;
-		}
 		
 		drawingSelection = true;
 		
@@ -164,7 +162,6 @@ module.exports = function(editor) {
 		
 		drawingSelection = false;
 		
-		
 		off(window, "mousemove", drawSelection);
 		off(window, "mouseup", mouseup);
 		off(window, "dragend", dragend);
@@ -218,13 +215,6 @@ module.exports = function(editor) {
 		);
 		
 		setSelection(Selection.s(cursor));
-		
-		if (e.button === 1) {
-			let str = await clipboard.readSelection();
-			let newSelection = document.replaceSelection(editor.selection, str);
-			
-			setSelection(newSelection);
-		}
 		
 		startCursorBlink();
 		
