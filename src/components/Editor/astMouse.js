@@ -79,23 +79,20 @@ module.exports = function(editor) {
 			measurements,
 		);
 		
-		if (row < document.countRows()) {
-			let [lineIndex] = cursorFromRowCol(document.lines, row, col);
-			
-			let hilite = document.lang.codeIntel.astSelection.hiliteFromLineIndex(document.lines, lineIndex);
-			
-			if (
-				isPeeking
-				&& Selection.isFull(normalSelection)
-				&& AstSelection.lineIsWithinSelection(lineIndex, selection)
-			) {
-				hilite = selection;
-			}
-			
-			return hilite;
+		if (row >= document.countRows()) {
+			return null;
 		}
 		
-		return null;
+		let hilite;
+		let [lineIndex] = cursorFromRowCol(document.lines, row, col);
+		
+		if (AstSelection.lineIsWithinSelection(lineIndex, selection)) {
+			hilite = selection;
+		} else {
+			hilite = document.lang.codeIntel.astSelection.hiliteFromLineIndex(document.lines, lineIndex);
+		}
+		
+		return hilite;
 	}
 	
 	function getInsertionRange(e) {
