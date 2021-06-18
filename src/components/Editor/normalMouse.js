@@ -19,13 +19,11 @@ module.exports = function(editor) {
 			canvas,
 			measurements,
 			document,
-			selection,
 			selectionRegions,
 			hasHorizontalScrollbar,
 			scrollPosition,
 			scrollBy,
 			setSelection,
-			setSelectionEndCol,
 			redraw,
 			startCursorBlink,
 			insert,
@@ -54,25 +52,27 @@ module.exports = function(editor) {
 		);
 		
 		if (pointIsWithinRegions(selectionRegions, x, y)) {
-			mousedownInSelection(e, enableDrag);
+			if (e.button === 1) {
+				setSelection(Selection.s(cursor));
+				
+				let str = await clipboard.readSelection();
+				let newSelection = document.replaceSelection(editor.selection, str);
+				
+				setSelection(newSelection);
+				
+				startCursorBlink();
+				
+				redraw();
+			}
+			
+			if (e.button === 0) {
+				mousedownInSelection(e, enableDrag);
+			}
 			
 			return;
 		}
 		
 		setSelection(Selection.s(cursor));
-		
-		if (e.button === 1) {
-			let str = await clipboard.readSelection();
-			let newSelection = document.replaceSelection(editor.selection, str);
-			
-			setSelection(newSelection);
-		}
-		
-		let {end} = editor.selection;
-		let [lineIndex, offset] = end;
-		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
-		
-		setSelectionEndCol(endCol);
 		
 		startCursorBlink();
 		
@@ -98,7 +98,9 @@ module.exports = function(editor) {
 	}
 	
 	function mousedownInSelection(e, enableDrag) {
-		enableDrag();
+		if (e.button === 0) {
+			enableDrag();
+		}
 	}
 	
 	function drawSelection(e) {
@@ -109,7 +111,6 @@ module.exports = function(editor) {
 			selection,
 			scrollPosition,
 			setSelection,
-			setSelectionEndCol,
 			redraw,
 		} = editor;
 		
@@ -140,8 +141,6 @@ module.exports = function(editor) {
 			end: cursor,
 		});
 		
-		setSelectionEndCol(col);
-		
 		redraw();
 	}
 	
@@ -165,6 +164,7 @@ module.exports = function(editor) {
 		
 		drawingSelection = false;
 		
+		
 		off(window, "mousemove", drawSelection);
 		off(window, "mouseup", mouseup);
 		off(window, "dragend", dragend);
@@ -179,7 +179,7 @@ module.exports = function(editor) {
 	}
 	
 	async function click(e) {
-		if (e.button === 2) {
+		if (e.button !== 0) {
 			return;
 		}
 		
@@ -190,7 +190,6 @@ module.exports = function(editor) {
 			selection,
 			scrollPosition,
 			setSelection,
-			setSelectionEndCol,
 			redraw,
 			startCursorBlink,
 			insert,
@@ -226,12 +225,6 @@ module.exports = function(editor) {
 			
 			setSelection(newSelection);
 		}
-		
-		let {end} = editor.selection;
-		let [lineIndex, offset] = end;
-		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
-		
-		setSelectionEndCol(endCol);
 		
 		startCursorBlink();
 		

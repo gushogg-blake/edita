@@ -3,8 +3,7 @@ let {on, off} = require("../../utils/dom/domEvents");
 let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
 let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
 let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
-let rowIndexFromScreenY = require("../../modules/utils/rowIndexFromScreenY");
-let screenRowFromLineIndex = require("../../modules/utils/screenRowFromLineIndex");
+let insertLineIndexFromScreenY = require("../../modules/utils/insertLineIndexFromScreenY");
 let AstSelection = require("../../modules/utils/AstSelection");
 let Selection = require("../../modules/utils/Selection");
 let autoScroll = require("./utils/autoScroll");
@@ -274,9 +273,13 @@ module.exports = function(editor) {
 		let {lines} = document;
 		let [x, y] = getCanvasCoords(e);
 		
-		console.log("dragover", data);
-		
-		console.log(rowIndexFromScreenY(y, scrollPosition, measurements));
+		let rowCursor = rowCursorFromScreenY(y, scrollPosition, measurements);
+		let lineIndex = insertLineIndexFromScreenY(
+			lines,
+			y,
+			scrollPosition,
+			measurements,
+		);
 		
 		//setSelectionHilite(selection);
 		

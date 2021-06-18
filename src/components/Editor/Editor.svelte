@@ -151,10 +151,12 @@ let normalMouseHandler = normalMouse({
 	
 	setSelection(selection) {
 		setNormalSelection(selection);
-	},
-	
-	setSelectionEndCol(col) {
-		selectionEndCol = col;
+		
+		let {end} = selection;
+		let [lineIndex, offset] = end;
+		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
+		
+		selectionEndCol = endCol;
 	},
 	
 	mouseup() {
