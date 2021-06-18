@@ -83,16 +83,13 @@ module.exports = function(editor) {
 			return null;
 		}
 		
-		let hilite;
 		let [lineIndex] = cursorFromRowCol(document.lines, row, col);
 		
 		if (AstSelection.lineIsWithinSelection(lineIndex, selection)) {
-			hilite = selection;
+			return selection;
 		} else {
-			hilite = document.lang.codeIntel.astSelection.hiliteFromLineIndex(document.lines, lineIndex);
+			return document.lang.codeIntel.astSelection.hiliteFromLineIndex(document.lines, lineIndex);
 		}
-		
-		return hilite;
 	}
 	
 	function getInsertionRange(e) {
