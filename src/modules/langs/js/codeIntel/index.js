@@ -13,7 +13,14 @@ module.exports = {
 	generatePickOptions,
 	generateDropTargets,
 	
-	drop(fromSelection, toSelection, lines, option, target) {
-		console.log(fromSelection, toSelection, lines, option, target);
+	drop(
+		document,
+		fromSelection,
+		toSelection,
+		lines,
+		option,
+		target,
+	) {
+		
 	},
 };

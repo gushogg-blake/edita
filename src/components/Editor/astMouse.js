@@ -355,7 +355,14 @@ module.exports = function(editor) {
 		
 		let {codeIntel} = document.lang;
 		
-		codeIntel.drop(fromSelection, toSelection, lines, option, target);
+		codeIntel.drop(
+			document,
+			fromSelection,
+			toSelection,
+			lines,
+			option,
+			target,
+		);
 		
 		done();
 	}
