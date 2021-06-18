@@ -165,6 +165,8 @@ module.exports = function(editor) {
 			on(window, "mouseup", mouseup);
 			on(window, "dragend", dragend);
 		}
+		
+		redraw();
 	}
 	
 	function drawSelection(e) {
@@ -273,15 +275,20 @@ module.exports = function(editor) {
 		let {lines} = document;
 		let [x, y] = getCanvasCoords(e);
 		
-		let rowCursor = rowCursorFromScreenY(y, scrollPosition, measurements);
-		let lineIndex = insertLineIndexFromScreenY(
+		let {
+			aboveLineIndex,
+			belowLineIndex,
+			offset,
+		} = insertLineIndexFromScreenY(
 			lines,
 			y,
 			scrollPosition,
 			measurements,
 		);
 		
-		//setSelectionHilite(selection);
+		//console.log(lineIndex);
+		
+		setSelectionHilite(AstSelection.insertionRange(lines, aboveLineIndex, belowLineIndex, offset));
 		
 		redraw();
 	}

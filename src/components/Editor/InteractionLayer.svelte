@@ -405,7 +405,7 @@ $: codeStyle = calculateCodeStyle(
 							use:registerDropTarget={target}
 							class="option dropTarget"
 							class:active={target === currentDropTarget}
-							class:fade={!mouseIsDown}
+							class:fade={!isDragging}
 						>
 							{target.target.label}
 						</div>
