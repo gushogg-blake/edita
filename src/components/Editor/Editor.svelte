@@ -435,11 +435,16 @@ function dragstart({detail}) {
 	}
 }
 
-function dragover({detail: e}) {
+function dragover({detail}) {
+	let {
+		e,
+		target,
+	} = detail;
+	
 	if (mode === "normal") {
 		normalMouseHandler.dragover(e);
 	} else if (mode === "ast") {
-		astMouseHandler.dragover(e);
+		astMouseHandler.dragover(e, target);
 	}
 }
 

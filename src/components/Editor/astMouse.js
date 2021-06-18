@@ -254,7 +254,7 @@ module.exports = function(editor) {
 		isDragging = true;
 	}
 	
-	function dragover(e) {
+	function dragover(e, target) {
 		let {
 			document,
 			scrollPosition,
@@ -288,7 +288,11 @@ module.exports = function(editor) {
 		
 		//console.log(lineIndex);
 		
-		setSelectionHilite(AstSelection.insertionRange(lines, aboveLineIndex, belowLineIndex, offset));
+		if (target) {
+			setSelectionHilite(null);
+		} else {
+			setSelectionHilite(AstSelection.insertionRange(lines, aboveLineIndex, belowLineIndex, offset));
+		}
 		
 		redraw();
 	}

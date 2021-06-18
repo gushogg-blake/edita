@@ -188,7 +188,10 @@ function dragover(e) {
 	
 	//console.log(currentDropTarget);
 	
-	fire("dragover", e);
+	fire("dragover", {
+		e,
+		target: currentDropTarget?.target,
+	});
 }
 
 function drop(e) {
