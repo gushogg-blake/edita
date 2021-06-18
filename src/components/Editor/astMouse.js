@@ -95,6 +95,7 @@ module.exports = function(editor) {
 	function getInsertionRange(e) {
 		let {
 			document,
+			selection,
 			scrollPosition,
 			measurements,
 		} = editor;
@@ -113,12 +114,20 @@ module.exports = function(editor) {
 			measurements,
 		);
 		
-		return AstSelection.insertionRange(
+		let range = AstSelection.insertionRange(
 			lines,
 			aboveLineIndex,
 			belowLineIndex,
 			offset,
 		);
+		
+		if (AstSelection.isWithin(range, selection)) {
+			let [startLineIndex] = selection;
+			
+			return AstSelection.s(startLineIndex);
+		}
+		
+		return range;
 	}
 	
 	function hilite(e) {
