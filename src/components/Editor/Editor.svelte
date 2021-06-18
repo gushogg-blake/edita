@@ -79,6 +79,7 @@ let windowHasFocus;
 let mode = "ast";
 let isPeekingAstMode = false;
 let switchToAstModeOnMouseUp = false;
+let resetNormalSelection = false;
 
 let normalSelection = {
 	start: [0, 0],
@@ -205,8 +206,12 @@ let astMouseHandler = astMouse({
 		return isPeekingAstMode;
 	},
 	
-	setSelection(selection) {
+	pick(selection, option) {
 		astSelection = selection;
+		
+		if (!Selection.isFull(normalSelection)) {
+			resetNormalSelection = true;
+		}
 	},
 	
 	setSelectionHilite(selection) {
@@ -226,10 +231,6 @@ let astMouseHandler = astMouse({
 		};
 		
 		updateDropTargets();
-	},
-	
-	pick(selection, option) {
-		astSelection = selection;
 	},
 	
 	scrollBy,
@@ -752,11 +753,13 @@ function switchToNormalMode() {
 	
 	let [topLineIndex] = astSelection;
 	
-	if (!normalSelection) {
-		setNormalSelection(Selection.startOfLineContent(document.lines, topLineIndex));
+	if (resetNormalSelection) {
+		setNormalSelection(Selection.endOfLineContent(document.lines, topLineIndex));
 		
 		updateSelectionEndCol();
 	}
+	
+	resetNormalSelection = false;
 }
 
 function startCursorBlink() {
@@ -1009,7 +1012,7 @@ onMount(async function() {
 		updateSizes();
 		
 		if (mode === "ast") {
-			setNormalSelection(null);
+			resetNormalSelection = true;
 		}
 	}));
 	

@@ -133,7 +133,6 @@ module.exports = function(editor) {
 			document,
 			hasHorizontalScrollbar,
 			scrollBy,
-			setSelection,
 			pick,
 			redraw,
 		} = editor;

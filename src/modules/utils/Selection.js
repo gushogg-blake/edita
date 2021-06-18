@@ -348,6 +348,10 @@ let api = {
 	startOfLineContent(lines, lineIndex) {
 		return s(Cursor.startOfLineContent(lines, lineIndex));
 	},
+	
+	endOfLineContent(lines, lineIndex) {
+		return s(Cursor.endOfLineContent(lines, lineIndex));
+	},
 };
 
 module.exports = api;

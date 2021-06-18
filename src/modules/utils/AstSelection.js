@@ -44,6 +44,12 @@ let api = {
 	  within the blank space, and more whitespace should be created so that
 	  there is a space equal to the original amount of whitespace either side
 	  of the dropped selection
+	
+	when dropping between lines (no new whitespace), the returned range is
+	zero-length
+	
+	when dropping onto whitespace, the returned range encloses all the blank
+	lines
 	*/
 	
 	insertionRange(lines, aboveLineIndex, belowLineIndex, offset) {
