@@ -9,7 +9,7 @@ let defaultPrefs = {
 	selectionBackground: "#d0d0d0",
 	astSelectionBackground: "#c5e4ff",
 	astSelectionHiliteBackground: "#F2F2F2",
-	astInsertionHiliteBackground: "#aaaaaa",
+	astInsertionHiliteBackground: "#606060",
 	wrap: true,
 	modeSwitchKey: "Escape",
 	minHoldTime: 200,

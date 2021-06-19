@@ -3,6 +3,19 @@ let screenCoordsFromRowCol = require("../utils/screenCoordsFromRowCol");
 let getLineRangeTotalHeight = require("../utils/getLineRangeTotalHeight");
 let AstSelection = require("../utils/AstSelection");
 
+let images = {
+	insert: "./img/insert.png",
+	expand: "./img/expand.png",
+};
+
+for (let [name, src] of Object.entries(images)) {
+	images[name] = new Image();
+	images[name].src = src;
+}
+
+let lineWidth = 2;
+let lineLength = 35;
+
 module.exports = function(
 	context,
 	lines,
@@ -34,7 +47,7 @@ module.exports = function(
 			measurements,
 		);
 		
-		context.fillRect(x, y, context.canvas.width, 2);
+		context.fillRect(x, y, lineLength, lineWidth);
 		
 		return;
 	}
@@ -52,8 +65,23 @@ module.exports = function(
 	);
 	
 	if (height === 0) {
-		context.fillRect(x, y, context.canvas.width, 2);
+		context.fillRect(x, y, lineLength, lineWidth);
 	} else {
-		context.fillRect(x, y, context.canvas.width, height);
+		let middle = y + Math.round(height / 2) - Math.round(lineWidth / 2);
+		
+		
+		
+		context.fillRect(x, middle, lineLength, lineWidth);
+		
+		context.save();
+		
+		context.fillStyle = prefs.astInsertionHiliteBackground;
+		
+		context.translate(x + lineLength / 2, y + lineWidth / 2);
+		context.rotate(45 * Math.PI / 180);
+		
+		context.fillRect(0, 0, 11, 11);
+		
+		context.restore();
 	}
 }
