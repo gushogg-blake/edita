@@ -21,6 +21,6 @@ module.exports = {
 		option,
 		target,
 	) {
-		
+		console.log(fromSelection, toSelection);
 	},
 };

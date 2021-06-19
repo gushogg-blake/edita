@@ -453,27 +453,28 @@ function dragover({detail}) {
 	}
 }
 
-function dragend({detail: e}) {
-	console.log("dragend", Date.now());
+function dragend() {
 	isDragging = false;
 	
 	if (mode === "normal") {
-		normalMouseHandler.dragend(e);
+		normalMouseHandler.dragend();
 	} else if (mode === "ast") {
-		astMouseHandler.dragend(e);
+		astMouseHandler.dragend();
 	}
 }
 
 function drop({detail}) {
 	let {
 		e,
-		target,
+		fromUs,
+		toUs,
+		extra,
 	} = detail;
 	
 	if (mode === "normal") {
-		normalMouseHandler.drop(e, target);
+		normalMouseHandler.drop(e, fromUs, toUs, extra);
 	} else if (mode === "ast") {
-		astMouseHandler.drop(e, target);
+		astMouseHandler.drop(e, fromUs, toUs, extra);
 	}
 }
 

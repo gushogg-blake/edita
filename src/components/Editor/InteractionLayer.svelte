@@ -31,6 +31,7 @@ let mouseMovedDistance;
 let syntheticDrag = null;
 let isDragging = false;
 let mouseIsDown = false;
+let pendingDrop = false;
 let rowYHint = 1;
 
 let fire = createEventDispatcher();
@@ -186,6 +187,12 @@ function dragstart(e) {
 function dragover(e) {
 	currentDropTarget = dropTargetFromMouseEvent(e);
 	
+	if (e.ctrlKey) {
+		e.dataTransfer.dropEffect = "copy";
+	} else {
+		e.dataTransfer.dropEffect = "move";
+	}
+	
 	//console.log(currentDropTarget);
 	
 	fire("dragover", {
@@ -194,29 +201,77 @@ function dragover(e) {
 	});
 }
 
+/*
+drop/dragend
+
+dragend is fired when dropping onto another app - can check dropEffect to see
+whether to remove the source
+
+drop is fired when dropping onto the app - either from the app or from another
+app - could poss check isDragging to see whether it's from another app, and
+ignore if from the app (use dragend instead).
+
+using dragend for the cleanup in both cases would be a simple way of doing the
+removal in the source app, whether the drag was to another app or not - but if
+doing the insertion and removal separately, need to make sure we don't modify
+the document in two separate steps as the first would invalidate the selection
+ranges for the second.  so in dragend, do the removal, and if to the app, the
+insertion; and in drop, only do the insertion if from another app.
+
+and in drop(), either fromSelection or toSelection can be null to indicate just
+removing, just inserting, or both
+*/
+
 function drop(e) {
-	let dropTarget = dropTargetFromMouseEvent(e);
-	
-	fire("drop", {
-		e,
-		target: dropTarget?.target,
-	});
-	
-	mouseIsDown = false;
-	draggable = false;
-	useSyntheticDrag = false;
-	selectedOption = null;
-	isDragging = false;
+	if (isDragging) {
+		pendingDrop = true;
+	} else {
+		let extra = {};
+		
+		if (mode === "ast") {
+			extra.target = dropTargetFromMouseEvent(e)?.target;
+		}
+		
+		fire("drop", {
+			e,
+			fromUs: false,
+			toUs: true,
+			extra,
+		});
+	}
 }
 
 function dragend(e) {
+	let extra = {};
+	
+	if (pendingDrop) {
+		if (mode === "ast") {
+			extra.target = dropTargetFromMouseEvent(e)?.target;
+		}
+		
+		fire("drop", {
+			e,
+			fromUs: true,
+			toUs: true,
+			extra,
+		});
+	} else {
+		fire("drop", {
+			e,
+			fromUs: true,
+			toUs: false,
+			extra,
+		});
+	}
+	
+	fire("dragend");
+	
+	pendingDrop = false;
 	mouseIsDown = false;
 	draggable = false;
 	useSyntheticDrag = false;
 	selectedOption = null;
 	isDragging = false;
-	
-	fire("dragend", e);
 }
 
 function pickOptionMousedown(option, e) {

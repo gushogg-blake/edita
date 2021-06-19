@@ -40,7 +40,7 @@ function getData(e) {
 }
 
 module.exports = function(editor) {
-	let isDragging = false;
+	let fromSelection = null;
 	let drawingSelection = false;
 	
 	function getCanvasCoords(e) {
@@ -261,7 +261,7 @@ module.exports = function(editor) {
 			pick(selection, null);
 		}
 		
-		redraw();
+		hilite(e);
 	}
 	
 	function dblclick(e) {
@@ -290,19 +290,12 @@ module.exports = function(editor) {
 			selection,
 		} = editor;
 		
-		let [startLineIndex, endLineIndex] = selection;
-		
-		let lines = document.lines.slice(startLineIndex, endLineIndex).map(function(line) {
-			return line.string;
-		});
+		fromSelection = selection;
 		
 		setData(e, {
-			selection,
 			option,
-			lines,
+			lines: document.getSelectedLines(selection),
 		});
-		
-		isDragging = true;
 	}
 	
 	function dragover(e, target) {
@@ -340,34 +333,35 @@ module.exports = function(editor) {
 		
 	}
 	
-	function drop(e, target) {
+	function drop(e, fromUs, toUs, extra) {
 		let {
 			document,
 		} = editor;
 		
-		function done() {
-			isDragging = false;
-		}
+		let {
+			target,
+		} = extra;
 		
 		let data = getData(e);
 		
 		if (!data) {
-			return done();
+			return;
 		}
 		
 		let {
-			selection: fromSelection,
 			option,
 			lines,
 		} = data;
 		
-		if (!isDragging) {
-			fromSelection = null;
+		let toSelection = null;
+		
+		if (toUs) {
+			toSelection = target ? getHilite(e) : getInsertionRange(e);
 		}
 		
-		let toSelection = target ? getHilite(e) : getInsertionRange(e);
-		
 		let {codeIntel} = document.lang;
+		
+		console.log(e.dataTransfer.dropEffect);
 		
 		codeIntel.drop(
 			document,
@@ -377,14 +371,12 @@ module.exports = function(editor) {
 			option,
 			target,
 		);
-		
-		done();
 	}
 	
 	function dragend() {
 		mouseup();
 		
-		isDragging = false;
+		fromSelection = null;
 	}
 
 	return {
