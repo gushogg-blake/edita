@@ -31,7 +31,6 @@ let mouseMovedDistance;
 let syntheticDrag = null;
 let isDragging = false;
 let mouseIsDown = false;
-let pendingDrop = false;
 let rowYHint = 1;
 
 let fire = createEventDispatcher();
@@ -178,6 +177,8 @@ function dragstart(e) {
 		e.dataTransfer.setDragImage(new Image(), 0, 0);
 	}
 	
+	e.dataTransfer.effectAllowed = "all";
+	
 	fire("dragstart", {
 		e,
 		option: selectedOption?.option?.type,
@@ -186,14 +187,6 @@ function dragstart(e) {
 
 function dragover(e) {
 	currentDropTarget = dropTargetFromMouseEvent(e);
-	
-	if (e.ctrlKey) {
-		e.dataTransfer.dropEffect = "copy";
-	} else {
-		e.dataTransfer.dropEffect = "move";
-	}
-	
-	//console.log(currentDropTarget);
 	
 	fire("dragover", {
 		e,
@@ -221,6 +214,8 @@ insertion; and in drop, only do the insertion if from another app.
 and in drop(), either fromSelection or toSelection can be null to indicate just
 removing, just inserting, or both
 */
+
+let pendingDrop = false;
 
 function drop(e) {
 	if (isDragging) {

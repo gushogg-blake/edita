@@ -40,7 +40,7 @@ function getData(e) {
 }
 
 module.exports = function(editor) {
-	let fromSelection = null;
+	let drag = null;
 	let drawingSelection = false;
 	
 	function getCanvasCoords(e) {
@@ -218,7 +218,7 @@ module.exports = function(editor) {
 		});
 	}
 	
-	function mouseup() {
+	function mouseup(e) {
 		let {
 			setInsertionHilite,
 			redraw,
@@ -290,11 +290,17 @@ module.exports = function(editor) {
 			selection,
 		} = editor;
 		
-		fromSelection = selection;
+		let lines = document.getSelectedLines(selection);
+		
+		drag = {
+			selection,
+			option,
+			lines,
+		};
 		
 		setData(e, {
 			option,
-			lines: document.getSelectedLines(selection),
+			lines,
 		});
 	}
 	
@@ -309,6 +315,15 @@ module.exports = function(editor) {
 		} = editor;
 		
 		e.preventDefault();
+		
+		// NOTE dropEffect doesn't work when dragging between windows
+		// (it will always be none)
+		
+		if (e.ctrlKey) {
+			e.dataTransfer.dropEffect = "copy";
+		} else {
+			e.dataTransfer.dropEffect = "move";
+		}
 		
 		let data = getData(e);
 		
@@ -342,26 +357,40 @@ module.exports = function(editor) {
 			target,
 		} = extra;
 		
+		let fromSelection;
+		let toSelection;
+		let lines;
+		let option;
+		
 		let data = getData(e);
 		
-		if (!data) {
+		if (toUs && !data) {
+			console.log("no data");
 			return;
 		}
 		
-		let {
-			option,
-			lines,
-		} = data;
-		
-		let toSelection = null;
+		if (fromUs) {
+			({
+				selection: fromSelection,
+				option,
+				lines,
+			} = drag);
+		} else {
+			fromSelection = null;
+			
+			({
+				lines,
+				option,
+			} = data);
+		}
 		
 		if (toUs) {
 			toSelection = target ? getHilite(e) : getInsertionRange(e);
+		} else {
+			toSelection = null;
 		}
 		
 		let {codeIntel} = document.lang;
-		
-		console.log(e.dataTransfer.dropEffect);
 		
 		codeIntel.drop(
 			document,
@@ -376,7 +405,7 @@ module.exports = function(editor) {
 	function dragend() {
 		mouseup();
 		
-		fromSelection = null;
+		drag = null;
 	}
 
 	return {

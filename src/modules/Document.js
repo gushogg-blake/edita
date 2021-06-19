@@ -194,7 +194,7 @@ class Document extends Evented {
 	}
 	
 	getSelectedLines(astSelection) {
-		let [startLineIndex, endLineIndex] = selection;
+		let [startLineIndex, endLineIndex] = astSelection;
 		
 		return this.lines.slice(startLineIndex, endLineIndex).map(line => line.string);
 	}
