@@ -80,7 +80,7 @@ module.exports = function(
 		context.translate(x + lineLength / 2, y + lineWidth / 2);
 		context.rotate(45 * Math.PI / 180);
 		
-		context.fillRect(0, 0, 11, 11);
+		context.fillRect(1, 2, 9, 9);
 		
 		context.restore();
 	}

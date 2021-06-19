@@ -177,26 +177,35 @@ module.exports = function(editor) {
 				e.preventDefault();
 				
 				editor.setSelection(document.insertCharacter(selection, e.key));
+				
+				return true;
 			}
+			
+			return false;
 		},
 	};
 	
 	async function keydown(e) {
+		let handled = false;
 		let {keyCombo, isModified} = getKeyCombo(e);
 		
 		if (keymap[keyCombo]) {
 			e.preventDefault();
 			
 			await functions[keymap[keyCombo]](editor);
+			
+			handled = true;
 		} else if (functions.default) {
-			functions.default(e, keyCombo, isModified, editor);
+			handled = functions.default(e, keyCombo, isModified, editor);
 		}
 		
-		editor.updateSelectionEndCol();
-		editor.ensureSelectionIsOnScreen();
-		editor.updateScrollbars();
-		editor.startCursorBlink();
-		editor.redraw();
+		if (handled) {
+			editor.updateSelectionEndCol();
+			editor.ensureSelectionIsOnScreen();
+			editor.updateScrollbars();
+			editor.startCursorBlink();
+			editor.redraw();
+		}
 	}
 	
 	return {
