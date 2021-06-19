@@ -136,7 +136,6 @@ module.exports = function(editor) {
 			scrollPosition,
 			setSelectionHilite,
 			showPickOptionsFor,
-			showDropTargetsFor,
 			redraw,
 		} = editor;
 		
@@ -149,10 +148,8 @@ module.exports = function(editor) {
 		
 		if (selection) {
 			showPickOptionsFor(selection);
-			showDropTargetsFor(selection, null);
 		} else {
 			showPickOptionsFor(null);
-			showDropTargetsFor(null, null);
 		}
 		
 		redraw();
@@ -277,11 +274,11 @@ module.exports = function(editor) {
 	}
 	
 	function optionhover(option, e) {
-		let {
-			showDropTargetsFor,
-		} = editor;
-		
-		showDropTargetsFor(getHilite(e), option);
+		//let {
+		//	showDropTargetsFor,
+		//} = editor;
+		//
+		//showDropTargetsFor(getHilite(e), option);
 	}
 	
 	function dragstart(e, option) {
@@ -310,7 +307,7 @@ module.exports = function(editor) {
 			scrollPosition,
 			measurements,
 			setInsertionHilite,
-			showDropTargetsFor,
+			updateDropTargets,
 			redraw,
 		} = editor;
 		
@@ -330,6 +327,17 @@ module.exports = function(editor) {
 		if (!data) {
 			return;
 		}
+		
+		let selection = getHilite(e);
+		
+		let {
+			option,
+		} = data;
+		
+		// TODO auto scroll at edges of code area
+		// TODO update drop targets
+		
+		updateDropTargets();
 		
 		if (target) {
 			setInsertionHilite(null);
@@ -351,7 +359,12 @@ module.exports = function(editor) {
 	function drop(e, fromUs, toUs, extra) {
 		let {
 			document,
+			setInsertionHilite,
+			redraw,
 		} = editor;
+		
+		setInsertionHilite(null);
+		redraw();
 		
 		let {
 			target,
@@ -365,7 +378,6 @@ module.exports = function(editor) {
 		let data = getData(e);
 		
 		if (toUs && !data) {
-			console.log("no data");
 			return;
 		}
 		

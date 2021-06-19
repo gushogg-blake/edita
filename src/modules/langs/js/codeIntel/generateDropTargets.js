@@ -5,7 +5,7 @@ function isIfFooter(lines, lineIndex) {
 	return getOpenersAndClosersOnLine(lines[lineIndex]).closers.length === 1;
 }
 
-module.exports = function(lines, lineIndex, selection, option) {
+module.exports = function(lines, lineIndex) {
 	let targets = [];
 	
 	let line = lines[lineIndex];

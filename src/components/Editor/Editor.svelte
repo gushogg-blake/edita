@@ -97,12 +97,6 @@ let astSelectionHilite = null;
 let astInsertionHilite = null;
 let pickOptions = [];
 let dropTargets = [];
-
-let showDropTargetsFor = {
-	selection: null,
-	option: null,
-};
-
 let isDragging = false;
 
 let scrollPosition = {
@@ -223,16 +217,7 @@ let astMouseHandler = astMouse({
 	},
 	
 	showPickOptionsFor,
-	
-	showDropTargetsFor(selection, option) {
-		showDropTargetsFor = {
-			selection,
-			option,
-		};
-		
-		updateDropTargets();
-	},
-	
+	updateDropTargets,
 	scrollBy,
 	redraw,
 	
@@ -558,15 +543,6 @@ function showPickOptionsFor(selection) {
 function updateDropTargets() {
 	let byLineIndex = new Map();
 	
-	let {
-		selection,
-		option,
-	} = showDropTargetsFor;
-	
-	if (!selection) {
-		return;
-	}
-	
 	let {lines} = document;
 	let {codeIntel} = document.lang;
 	let {lineIndex} = findFirstVisibleLine(lines, scrollPosition);
@@ -575,7 +551,10 @@ function updateDropTargets() {
 	let rowsRendered = 0;
 	
 	while (lineIndex < lines.length) {
-		if (AstSelection.lineIsWithinSelection(lineIndex, selection)) {
+		if (
+			AstSelection.lineIsWithinSelection(lineIndex, astSelection)
+			|| AstSelection.lineIsWithinSelection(lineIndex, astSelectionHilite)
+		) {
 			lineIndex++;
 			
 			continue;
@@ -586,8 +565,6 @@ function updateDropTargets() {
 		byLineIndex.set(lineIndex, codeIntel.generateDropTargets(
 			lines,
 			lineIndex,
-			selection,
-			option,
 		).map(function(target) {
 			return {
 				lineIndex,
