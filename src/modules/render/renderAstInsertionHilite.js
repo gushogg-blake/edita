@@ -71,17 +71,12 @@ module.exports = function(
 	} else {
 		let middle = y + Math.round(height / 2) - Math.round(lineWidth / 2);
 		
-		
-		
 		context.fillRect(x, middle, lineLength, lineWidth);
 		
 		context.save();
 		
-		context.fillStyle = prefs.astInsertionHiliteBackground;
-		
 		context.translate(x + lineLength / 2, y + lineWidth / 2);
 		context.rotate(45 * Math.PI / 180);
-		
 		context.fillRect(1, 2, 9, 9);
 		
 		context.restore();
