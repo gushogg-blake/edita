@@ -281,8 +281,7 @@ let astKeyboardHandler = astKeyboard({
 	
 	setSelection(selection) {
 		astSelection = selection;
-		
-		setNormalSelection(null);
+		resetNormalSelection = true;
 	},
 	
 	scrollPageUp,

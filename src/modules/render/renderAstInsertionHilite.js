@@ -53,13 +53,15 @@ module.exports = function(
 	}
 	
 	let startLine = lines[startLineIndex];
+	let lineAbove = startLineIndex === 0 ? null : lines[startLineIndex - 1];
 	let startRow = getLineStartingRow(lines, startLineIndex);
 	let height = (getLineRangeTotalHeight(lines, startLineIndex, endLineIndex - 1)) * rowHeight;
+	let indentLevel = lineAbove ? Math.max(startLine.indentLevel, lineAbove.indentLevel) : startLine.indentLevel;
 	
 	let [x, y] = screenCoordsFromRowCol(
 		lines,
 		startRow,
-		startLine.indentLevel * fileDetails.indentation.colsPerIndent,
+		indentLevel * fileDetails.indentation.colsPerIndent,
 		scrollPosition,
 		measurements,
 	);

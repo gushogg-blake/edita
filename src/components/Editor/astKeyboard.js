@@ -38,19 +38,24 @@ module.exports = function(editor) {
 	};
 	
 	async function keydown(e) {
+		let handled = false;
 		let {keyCombo, isModified} = getKeyCombo(e);
 		
 		if (keymap[keyCombo]) {
 			e.preventDefault();
 			
 			await functions[keymap[keyCombo]](editor);
+			
+			handled = true;
 		} else if (functions.default) {
-			functions.default(e, keyCombo, isModified, editor);
+			handled = functions.default(e, keyCombo, isModified, editor);
 		}
 		
-		editor.ensureSelectionIsOnScreen();
-		editor.updateScrollbars();
-		editor.redraw();
+		if (handled) {
+			editor.ensureSelectionIsOnScreen();
+			editor.updateScrollbars();
+			editor.redraw();
+		}
 	}
 	
 	return {
