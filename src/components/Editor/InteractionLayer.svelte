@@ -190,7 +190,7 @@ function dragover(e) {
 	
 	fire("dragover", {
 		e,
-		target: currentDropTarget?.target,
+		target: currentDropTarget?.target?.type,
 	});
 }
 
@@ -215,18 +215,25 @@ and in drop(), either fromSelection or toSelection can be null to indicate just
 removing, just inserting, or both
 */
 
-let pendingDrop = false;
+let justDropped = false;
 
 function drop(e) {
+	let extra = {};
+	
+	if (mode === "ast") {
+		extra.target = dropTargetFromMouseEvent(e)?.target?.type;
+	}
+	
 	if (isDragging) {
-		pendingDrop = true;
+		justDropped = true;
+		
+		fire("drop", {
+			e,
+			fromUs: true,
+			toUs: true,
+			extra,
+		});
 	} else {
-		let extra = {};
-		
-		if (mode === "ast") {
-			extra.target = dropTargetFromMouseEvent(e)?.target;
-		}
-		
 		fire("drop", {
 			e,
 			fromUs: false,
@@ -237,31 +244,18 @@ function drop(e) {
 }
 
 function dragend(e) {
-	let extra = {};
-	
-	if (pendingDrop) {
-		if (mode === "ast") {
-			extra.target = dropTargetFromMouseEvent(e)?.target;
-		}
-		
-		fire("drop", {
-			e,
-			fromUs: true,
-			toUs: true,
-			extra,
-		});
-	} else {
+	if (!justDropped) {
 		fire("drop", {
 			e,
 			fromUs: true,
 			toUs: false,
-			extra,
+			extra: {},
 		});
 	}
 	
 	fire("dragend");
 	
-	pendingDrop = false;
+	justDropped = false;
 	mouseIsDown = false;
 	draggable = false;
 	useSyntheticDrag = false;
@@ -359,6 +353,10 @@ $: codeStyle = calculateCodeStyle(
 	height: 100%;
 }
 
+#interactionLayer {
+	@include abs-sticky;
+}
+
 .row {
 	position: absolute;
 	display: flex;
@@ -417,16 +415,6 @@ $: codeStyle = calculateCodeStyle(
 		bind:this={codeDiv}
 		id="code"
 		style={inlineStyle(codeStyle)}
-		on:mousedown={mousedown}
-		on:mouseenter={mouseenter}
-		on:mouseleave={mouseleave}
-		on:mousemove={mousemove}
-		on:dblclick
-		draggable={draggable && !useSyntheticDrag}
-		on:dragstart={dragstart}
-		on:dragover={dragover}
-		on:drop={drop}
-		on:dragend={dragend}
 	>
 		{#if mode === "ast"}
 			{#each pickOptions as {lineIndex, options} (lineIndex)}
@@ -466,5 +454,20 @@ $: codeStyle = calculateCodeStyle(
 				</div>
 			{/each}
 		{/if}
+		<div
+			id="interactionLayer"
+			on:mousedown={mousedown}
+			on:mouseenter={mouseenter}
+			on:mouseleave={mouseleave}
+			on:mousemove={mousemove}
+			on:dblclick
+			draggable={draggable && !useSyntheticDrag}
+			on:dragstart={dragstart}
+			on:dragover={dragover}
+			on:drop={drop}
+			on:dragend={dragend}
+		>
+			
+		</div>
 	</div>
 </div>

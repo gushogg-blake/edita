@@ -79,7 +79,7 @@ let windowHasFocus;
 let mode = "ast";
 let isPeekingAstMode = false;
 let switchToAstModeOnMouseUp = false;
-let resetNormalSelection = false;
+let resetNormalSelection = true;
 
 let normalSelection = {
 	start: [0, 0],
@@ -715,6 +715,8 @@ function switchToAstMode() {
 	if (lastMouseMoveEvent) {
 		astMouseHandler.hilite(lastMouseMoveEvent);
 	}
+	
+	resetNormalSelection = false;
 }
 
 function switchToNormalMode() {
@@ -726,8 +728,6 @@ function switchToNormalMode() {
 	mode = "normal";
 	setAstSelectionHilite(null);
 	
-	console.log("switchToNormalMode", mode);
-	
 	let [topLineIndex] = astSelection;
 	
 	if (resetNormalSelection) {
@@ -735,8 +735,6 @@ function switchToNormalMode() {
 		
 		updateSelectionEndCol();
 	}
-	
-	resetNormalSelection = false;
 }
 
 function startCursorBlink() {

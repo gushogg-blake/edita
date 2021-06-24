@@ -21,6 +21,10 @@ module.exports = {
 		option,
 		target,
 	) {
-		console.log(fromSelection, toSelection, lines, option, target);
+		if (target) {
+			dropTargets[target].handleDrop(document, fromSelection, toSelection, lines, option);
+		} else {
+			
+		}
 	},
 };

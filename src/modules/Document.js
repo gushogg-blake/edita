@@ -193,11 +193,11 @@ class Document extends Evented {
 		return str.substring(trimLeft, str.length - trimRight);
 	}
 	
-	getSelectedLines(astSelection) {
-		let [startLineIndex, endLineIndex] = astSelection;
-		
-		return this.lines.slice(startLineIndex, endLineIndex).map(line => line.string);
-	}
+	//getSelectedLines(astSelection) {
+	//	let [startLineIndex, endLineIndex] = astSelection;
+	//	
+	//	return this.lines.slice(startLineIndex, endLineIndex).map(line => line.string);
+	//}
 	
 	parse(prefs) {
 		this.lang.parse(this.lines, prefs, this.fileDetails);

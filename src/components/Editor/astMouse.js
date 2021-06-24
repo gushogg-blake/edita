@@ -287,7 +287,14 @@ module.exports = function(editor) {
 			selection,
 		} = editor;
 		
-		let lines = document.getSelectedLines(selection);
+		let [startLineIndex, endLineIndex] = selection;
+		
+		let lines = document.lines.slice(startLineIndex, endLineIndex);
+		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
+		
+		lines = lines.map(function(line) {
+			return [line.indentLevel - minIndentLevel, line.trimmed];
+		});
 		
 		drag = {
 			selection,
