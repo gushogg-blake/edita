@@ -103,7 +103,7 @@ module.exports = {
 					spaces,
 				);
 				
-				if (fromEnd < toStart) {
+				if (fromEnd < toEnd) {
 					let removeDiff = removedLines.length - insertedLines.length;
 					
 					toStart -= removeDiff;

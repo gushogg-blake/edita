@@ -238,7 +238,6 @@ function drop(e) {
 }
 
 function dragend(e) {
-	console.log("dragend", e.dataTransfer.dropEffect);
 	if (!justDropped) {
 		fire("drop", {
 			e,
