@@ -31,6 +31,26 @@ function findSiblingIndex(lines, lineIndex, indentLevel, dir) {
 	return null;
 }
 
+function countSpace(lines, lineIndex, dir) {
+	let space = 0;
+	
+	lineIndex += dir;
+	
+	let line;
+	
+	while (line = lines[lineIndex]) {
+		if (line.trimmed.length === 0) {
+			space++;
+		} else {
+			break;
+		}
+		
+		lineIndex += dir;
+	}
+	
+	return space;
+}
+
 module.exports = {
 	addSelectionToNewElse: {
 		type: "addSelectionToNewElse",
@@ -50,21 +70,21 @@ module.exports = {
 			if (move && fromSelection) {
 				let [fromStart, fromEnd] = fromSelection;
 				let selectionHeaderLine = document.lines[fromStart];
-				let nextSiblingIndex = findSiblingIndex(document.lines, fromEnd, selectionHeaderLine.indentLevel, 1);
 				let prevSiblingIndex = findSiblingIndex(document.lines, fromStart - 1, selectionHeaderLine.indentLevel, -1);
-				let removeStart = fromStart;
-				let removeEnd = fromEnd;
-				let insertBlank = false;
-				
-				if (nextSiblingIndex !== null) {
-					removeEnd = nextSiblingIndex;
-				} else if (prevSiblingIndex !== null) {
-					removeStart = prevSiblingIndex + 1;
-				} else {
-					insertBlank = true;
-				}
-				
+				let nextSiblingIndex = findSiblingIndex(document.lines, fromEnd, selectionHeaderLine.indentLevel, 1);
+				let spaceAbove = countSpace(document.lines, fromStart - 1, -1);
+				let spaceBelow = countSpace(document.lines, fromEnd, 1);
+				let maxSpace = Math.max(spaceAbove, spaceBelow);
+				let removeStart = fromStart - spaceAbove;
+				let removeEnd = fromEnd + spaceBelow;
+				let insertBlank = prevSiblingIndex === null && nextSiblingIndex === null;
 				let removeLines = removeEnd - removeStart;
+				let insertSpaces = insertBlank ? 1 : maxSpace;
+				let spaces = [];
+				
+				for (let i = 0; i < insertSpaces; i++) {
+					spaces.push(indentStr.repeat(selectionHeaderLine.indentLevel));
+				}
 				
 				let {
 					removedLines,
@@ -72,7 +92,7 @@ module.exports = {
 				} = document.edit(
 					removeStart,
 					removeLines,
-					insertBlank ? indentStr.repeat(selectionHeaderLine.indentLevel) : null,
+					spaces,
 				);
 				
 				if (fromEnd < toStart) {
