@@ -33,9 +33,6 @@ function findSiblingIndex(lines, lineIndex, indentLevel, dir) {
 
 function countSpace(lines, lineIndex, dir) {
 	let space = 0;
-	
-	lineIndex += dir;
-	
 	let line;
 	
 	while (line = lines[lineIndex]) {
@@ -72,6 +69,8 @@ module.exports = {
 				let selectionHeaderLine = document.lines[fromStart];
 				let prevSiblingIndex = findSiblingIndex(document.lines, fromStart - 1, selectionHeaderLine.indentLevel, -1);
 				let nextSiblingIndex = findSiblingIndex(document.lines, fromEnd, selectionHeaderLine.indentLevel, 1);
+				let isFirstChild = prevSiblingIndex === null;
+				let isLastChild = nextSiblingIndex === null;
 				let spaceAbove = countSpace(document.lines, fromStart - 1, -1);
 				let spaceBelow = countSpace(document.lines, fromEnd, 1);
 				let maxSpace = Math.max(spaceAbove, spaceBelow);
@@ -79,8 +78,17 @@ module.exports = {
 				let removeEnd = fromEnd + spaceBelow;
 				let insertBlank = prevSiblingIndex === null && nextSiblingIndex === null;
 				let removeLines = removeEnd - removeStart;
-				let insertSpaces = insertBlank ? 1 : maxSpace;
 				let spaces = [];
+				
+				let insertSpaces;
+				
+				if (isFirstChild) {
+					insertSpaces = spaceAbove;
+				} else if (isLastChild) {
+					insertSpaces = spaceBelow;
+				} else {
+					insertSpaces = insertBlank ? 1 : maxSpace;
+				}
 				
 				for (let i = 0; i < insertSpaces; i++) {
 					spaces.push(indentStr.repeat(selectionHeaderLine.indentLevel));
