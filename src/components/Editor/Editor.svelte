@@ -741,10 +741,10 @@ function switchToNormalMode() {
 	mode = "normal";
 	setAstSelectionHilite(null);
 	
-	let [topLineIndex] = astSelection;
+	let [, endLineIndex] = astSelection;
 	
 	if (resetNormalSelection) {
-		setNormalSelection(Selection.endOfLineContent(document.lines, topLineIndex));
+		setNormalSelection(Selection.endOfLineContent(document.lines, endLineIndex - 1));
 		
 		updateSelectionEndCol();
 	}
