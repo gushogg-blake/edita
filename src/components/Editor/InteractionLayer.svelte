@@ -21,7 +21,7 @@ export let mode;
 export let pickOptions;
 export let dropTargets;
 
-let codeDiv;
+let interactionDiv;
 let selectedOption;
 let draggable = false;
 let useSyntheticDrag;
@@ -78,11 +78,11 @@ let syntheticDragHandler = drag({
 			},
 		};
 		
-		codeDiv.dispatchEvent(createDragEvent.dragstart(e, syntheticDrag));
+		interactionDiv.dispatchEvent(createDragEvent.dragstart(e, syntheticDrag));
 	},
 	
 	move(e, x, y) {
-		codeDiv.dispatchEvent(createDragEvent.dragover(e, syntheticDrag));
+		interactionDiv.dispatchEvent(createDragEvent.dragover(e, syntheticDrag));
 		
 		// dragenter, dragleave, dragover on other els
 	},
@@ -91,8 +91,8 @@ let syntheticDragHandler = drag({
 		mouseIsDown = false;
 		
 		// TODO only fire drop if over drop target
-		codeDiv.dispatchEvent(createDragEvent.drop(e, syntheticDrag));
-		codeDiv.dispatchEvent(createDragEvent.dragend(e, syntheticDrag));
+		interactionDiv.dispatchEvent(createDragEvent.drop(e, syntheticDrag));
+		interactionDiv.dispatchEvent(createDragEvent.dragend(e, syntheticDrag));
 		
 		syntheticDrag = null;
 	},
@@ -244,6 +244,7 @@ function drop(e) {
 }
 
 function dragend(e) {
+	console.log("dragend", e.dataTransfer.dropEffect);
 	if (!justDropped) {
 		fire("drop", {
 			e,
@@ -412,7 +413,6 @@ $: codeStyle = calculateCodeStyle(
 		
 	</div>
 	<div
-		bind:this={codeDiv}
 		id="code"
 		style={inlineStyle(codeStyle)}
 	>
@@ -455,6 +455,7 @@ $: codeStyle = calculateCodeStyle(
 			{/each}
 		{/if}
 		<div
+			bind:this={interactionDiv}
 			id="interactionLayer"
 			on:mousedown={mousedown}
 			on:mouseenter={mouseenter}

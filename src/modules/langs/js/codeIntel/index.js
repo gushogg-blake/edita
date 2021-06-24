@@ -18,13 +18,21 @@ module.exports = {
 		fromSelection,
 		toSelection,
 		lines,
+		move,
 		option,
 		target,
 	) {
 		if (target) {
-			dropTargets[target].handleDrop(document, fromSelection, toSelection, lines, option);
+			return dropTargets[target].handleDrop(
+				document,
+				fromSelection,
+				toSelection,
+				lines,
+				move,
+				option,
+			);
 		} else {
-			
+			return fromSelection;
 		}
 	},
 };

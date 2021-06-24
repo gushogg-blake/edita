@@ -208,6 +208,10 @@ let astMouseHandler = astMouse({
 		}
 	},
 	
+	setSelection(selection) {
+		setAstSelection(selection);
+	},
+	
 	setSelectionHilite(selection) {
 		setAstSelectionHilite(selection);
 	},
@@ -217,7 +221,8 @@ let astMouseHandler = astMouse({
 	},
 	
 	showPickOptionsFor,
-	updateDropTargets,
+	showDropTargets,
+	clearDropTargets,
 	scrollBy,
 	redraw,
 	
@@ -265,8 +270,7 @@ let astKeyboardHandler = astKeyboard({
 	},
 	
 	setSelection(selection) {
-		astSelection = selection;
-		resetNormalSelection = true;
+		setAstSelection(selection);
 	},
 	
 	scrollPageUp,
@@ -540,7 +544,7 @@ function showPickOptionsFor(selection) {
 	}];
 }
 
-function updateDropTargets() {
+function showDropTargets() {
 	let byLineIndex = new Map();
 	
 	let {lines} = document;
@@ -553,7 +557,7 @@ function updateDropTargets() {
 	while (lineIndex < lines.length) {
 		if (
 			AstSelection.lineIsWithinSelection(lineIndex, astSelection)
-			|| AstSelection.lineIsWithinSelection(lineIndex, astSelectionHilite)
+			|| astSelectionHilite && AstSelection.lineIsWithinSelection(lineIndex, astSelectionHilite)
 		) {
 			lineIndex++;
 			
@@ -587,6 +591,10 @@ function updateDropTargets() {
 			targets,
 		};
 	});
+}
+
+function clearDropTargets() {
+	dropTargets = [];
 }
 
 function setAstSelectionHilite(selection) {
@@ -694,6 +702,11 @@ function updateSelectionEndCol() {
 	let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
 	
 	selectionEndCol = endCol;
+}
+
+function setAstSelection(selection) {
+	astSelection = selection;
+	resetNormalSelection = true;
 }
 
 function switchToAstMode() {

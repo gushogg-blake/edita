@@ -1,4 +1,5 @@
 let indentLines = require("../../../utils/indentLines");
+let AstSelection = require("../../../utils/AstSelection");
 
 let handleDrop = {
 	addSelectionToNewElse(
@@ -22,6 +23,7 @@ module.exports = {
 			fromSelection,
 			toSelection,
 			lines,
+			move,
 			option,
 		) {
 			let indentStr = document.fileDetails.indentation.string;
@@ -37,6 +39,10 @@ module.exports = {
 				}), indentStr),
 				"}",
 			], indentStr, footerLine.indentLevel).join(document.fileDetails.newline));
+			
+			let newStartLineIndex = footerLineIndex + 1;
+			
+			return AstSelection.s(newStartLineIndex, newStartLineIndex + selectionHeight);
 		},
 	},
 	

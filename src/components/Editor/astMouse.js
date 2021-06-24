@@ -85,11 +85,16 @@ module.exports = function(editor) {
 		
 		let [lineIndex] = cursorFromRowCol(document.lines, row, col);
 		
-		if (!withinSelection && AstSelection.lineIsWithinSelection(lineIndex, selection)) {
-			return selection;
-		} else {
-			return document.lang.codeIntel.astSelection.hiliteFromLineIndex(document.lines, lineIndex);
+		if (!withinSelection) {
+			if (
+				(!isPeeking || Selection.isFull(normalSelection))
+				&& AstSelection.lineIsWithinSelection(lineIndex, selection)
+			) {
+				return selection;
+			}
 		}
+		
+		return document.lang.codeIntel.astSelection.hiliteFromLineIndex(document.lines, lineIndex);
 	}
 	
 	function getInsertionRange(e) {
@@ -314,14 +319,11 @@ module.exports = function(editor) {
 			scrollPosition,
 			measurements,
 			setInsertionHilite,
-			updateDropTargets,
+			showDropTargets,
 			redraw,
 		} = editor;
 		
 		e.preventDefault();
-		
-		// NOTE dropEffect doesn't work when dragging between windows
-		// (it will always be none)
 		
 		if (e.ctrlKey) {
 			e.dataTransfer.dropEffect = "copy";
@@ -342,9 +344,8 @@ module.exports = function(editor) {
 		} = data;
 		
 		// TODO auto scroll at edges of code area
-		// TODO update drop targets
 		
-		updateDropTargets();
+		showDropTargets();
 		
 		if (target) {
 			setInsertionHilite(null);
@@ -367,8 +368,20 @@ module.exports = function(editor) {
 		let {
 			document,
 			setInsertionHilite,
+			setSelection,
 			redraw,
 		} = editor;
+		
+		e.preventDefault();
+		
+		// NOTE dropEffect doesn't work when dragging between windows
+		// (it will always be none in the source window)
+		
+		if (e.ctrlKey) {
+			e.dataTransfer.dropEffect = "copy";
+		} else {
+			e.dataTransfer.dropEffect = "move";
+		}
 		
 		setInsertionHilite(null);
 		redraw();
@@ -411,17 +424,24 @@ module.exports = function(editor) {
 		
 		let {codeIntel} = document.lang;
 		
-		codeIntel.drop(
+		setSelection(codeIntel.drop(
 			document,
 			fromSelection,
 			toSelection,
 			lines,
+			e.dataTransfer.dropEffect === "move",
 			option,
 			target,
-		);
+		));
 	}
 	
 	function dragend() {
+		let {
+			clearDropTargets,
+		} = editor;
+		
+		clearDropTargets();
+		
 		mouseup();
 		
 		drag = null;
