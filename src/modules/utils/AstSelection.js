@@ -22,6 +22,13 @@ let api = {
 		return aStart >= bStart && aEnd <= bEnd;
 	},
 	
+	isAdjacent(a, b) {
+		let [aStart, aEnd] = a;
+		let [bStart, bEnd] = b;
+		
+		return aStart === bEnd || bStart === aEnd;
+	},
+	
 	lineIsWithinSelection(lineIndex, selection) {
 		let [start, end] = selection;
 		

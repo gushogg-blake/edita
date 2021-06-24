@@ -417,25 +417,6 @@ $: codeStyle = calculateCodeStyle(
 		style={inlineStyle(codeStyle)}
 	>
 		{#if mode === "ast"}
-			{#each pickOptions as {lineIndex, options} (lineIndex)}
-				<div
-					class="row"
-					style={inlineStyle(rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounter))}
-				>
-					{#each options as {option}}
-						<div
-							class="option pickOption"
-							class:active={option.type === selectedOption?.option?.type}
-							class:fadeIfNotHover={!mouseIsDown}
-							on:mousedown={(e) => pickOptionMousedown(option, e)}
-							on:mouseenter={(e) => pickOptionMouseenter(option, e)}
-							on:mouseleave={(e) => pickOptionMouseleave(option, e)}
-						>
-							{option.label}
-						</div>
-					{/each}
-				</div>
-			{/each}
 			{#each dropTargets as {lineIndex, targets} (lineIndex)}
 				<div
 					class="row"
@@ -468,7 +449,25 @@ $: codeStyle = calculateCodeStyle(
 			on:drop={drop}
 			on:dragend={dragend}
 		>
-			
+			{#each pickOptions as {lineIndex, options} (lineIndex)}
+				<div
+					class="row"
+					style={inlineStyle(rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounter))}
+				>
+					{#each options as {option}}
+						<div
+							class="option pickOption"
+							class:active={option.type === selectedOption?.option?.type}
+							class:fadeIfNotHover={!mouseIsDown}
+							on:mousedown={(e) => pickOptionMousedown(option, e)}
+							on:mouseenter={(e) => pickOptionMouseenter(option, e)}
+							on:mouseleave={(e) => pickOptionMouseleave(option, e)}
+						>
+							{option.label}
+						</div>
+					{/each}
+				</div>
+			{/each}
 		</div>
 	</div>
 </div>

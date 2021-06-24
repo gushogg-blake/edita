@@ -13,6 +13,24 @@ let handleDrop = {
 	},
 };
 
+function findSiblingIndex(lines, lineIndex, indentLevel, dir) {
+	let line;
+	
+	while (line = lines[lineIndex]) {
+		if (line.indentLevel < indentLevel) {
+			return null;
+		}
+		
+		if (line.indentLevel === indentLevel && line.trimmed.length > 0) {
+			return lineIndex;
+		}
+		
+		lineIndex += dir;
+	}
+	
+	return null;
+}
+
 module.exports = {
 	addSelectionToNewElse: {
 		type: "addSelectionToNewElse",
@@ -27,22 +45,65 @@ module.exports = {
 			option,
 		) {
 			let indentStr = document.fileDetails.indentation.string;
-			let selectionHeight = lines.length;
 			let [toStart, toEnd] = toSelection;
+			
+			if (move && fromSelection) {
+				let [fromStart, fromEnd] = fromSelection;
+				let selectionHeaderLine = document.lines[fromStart];
+				let nextSiblingIndex = findSiblingIndex(document.lines, fromEnd, selectionHeaderLine.indentLevel, 1);
+				let prevSiblingIndex = findSiblingIndex(document.lines, fromStart - 1, selectionHeaderLine.indentLevel, -1);
+				let removeStart = fromStart;
+				let removeEnd = fromEnd;
+				let insertBlank = false;
+				
+				if (nextSiblingIndex !== null) {
+					removeEnd = nextSiblingIndex;
+				} else if (prevSiblingIndex !== null) {
+					removeStart = prevSiblingIndex + 1;
+				} else {
+					insertBlank = true;
+				}
+				
+				let removeLines = removeEnd - removeStart;
+				
+				let {
+					removedLines,
+					insertedLines,
+				} = document.edit(
+					removeStart,
+					removeLines,
+					insertBlank ? indentStr.repeat(selectionHeaderLine.indentLevel) : null,
+				);
+				
+				if (fromEnd < toStart) {
+					let removeDiff = removedLines.length - insertedLines.length;
+					
+					toStart -= removeDiff;
+					toEnd -= removeDiff;
+				}
+			}
+			
 			let footerLineIndex = toEnd - 1;
 			let footerLine = document.lines[footerLineIndex];
 			
-			document.edit(footerLineIndex, 1, indentLines([
+			let insertIndex = footerLineIndex;
+			let removeLines = 1;
+			
+			let insertLines = indentLines([
 				"} else {",
 				...indentLines(lines.map(function([indentLevel, line]) {
 					return indentStr.repeat(indentLevel) + line;
 				}), indentStr),
 				"}",
-			], indentStr, footerLine.indentLevel).join(document.fileDetails.newline));
+			], indentStr, footerLine.indentLevel);
+			
+			let insertDifference = insertLines.length - removeLines;
+			
+			document.edit(insertIndex, removeLines, insertLines);
 			
 			let newStartLineIndex = footerLineIndex + 1;
 			
-			return AstSelection.s(newStartLineIndex, newStartLineIndex + selectionHeight);
+			return AstSelection.s(newStartLineIndex, newStartLineIndex + lines.length);
 		},
 	},
 	

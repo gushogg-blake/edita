@@ -1,4 +1,5 @@
 let Evented = require("../utils/Evented");
+let _typeof = require("../utils/typeof");
 let Selection = require("./utils/Selection");
 let countRows = require("./utils/countRows");
 let wrapLine = require("./wrapLine/wrapLine");
@@ -41,17 +42,24 @@ class Document extends Evented {
 	delete, and a string of code to add (which can contain newlines)
 	*/
 	
-	edit(lineIndex, removeLines, insertString) {
-		let insertLines = insertString.split(this.fileDetails.newline).map(createLine);
+	edit(lineIndex, removeLines, insertLines) {
+		if (_typeof(insertLines) === "String") {
+			insertLines = insertLines.split(this.fileDetails.newline);
+		} else if (_typeof(insertLines) !== "Array") {
+			insertLines = [];
+		}
+		
+		insertLines = insertLines.map(createLine);
 		
 		let removedLines = this.lines.slice(lineIndex, lineIndex + removeLines);
 		
 		this.lines.splice(lineIndex, removeLines, ...insertLines);
 		
+		// TODO parse here so that insertLines/insertedLines are parsed?
+		
 		this.fire("edit", {
 			lineIndex,
 			removeLines,
-			insertString,
 			insertLines,
 		});
 		

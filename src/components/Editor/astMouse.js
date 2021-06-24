@@ -422,6 +422,10 @@ module.exports = function(editor) {
 			toSelection = null;
 		}
 		
+		if (fromSelection && toSelection && AstSelection.isAdjacent(fromSelection, toSelection)) {
+			return;
+		}
+		
 		let {codeIntel} = document.lang;
 		
 		setSelection(codeIntel.drop(
