@@ -31,7 +31,6 @@ let mouseMovedDistance;
 let syntheticDrag = null;
 let dragStartedHere = false;
 let isDragging = false;
-let mouseIsDown = false;
 let rowYHint = 1;
 
 let fire = createEventDispatcher();
@@ -80,33 +79,29 @@ let syntheticDragHandler = drag({
 		};
 		
 		interactionDiv.dispatchEvent(createDragEvent.dragstart(e, syntheticDrag));
+		interactionDiv.dispatchEvent(createDragEvent.dragenter(e, syntheticDrag));
 	},
 	
 	move(e, x, y) {
 		interactionDiv.dispatchEvent(createDragEvent.dragover(e, syntheticDrag));
-		
-		// dragenter, dragleave, dragover on other els
 	},
 	
 	end(e) {
-		mouseIsDown = false;
+		if (window.document.elementsFromPoint(e.pageX, e.pageY).includes(interactionDiv)) {
+			interactionDiv.dispatchEvent(createDragEvent.drop(e, syntheticDrag));
+		}
 		
-		// TODO only fire drop if over drop target
-		interactionDiv.dispatchEvent(createDragEvent.drop(e, syntheticDrag));
 		interactionDiv.dispatchEvent(createDragEvent.dragend(e, syntheticDrag));
 		
 		syntheticDrag = null;
 	},
 	
 	click(e) {
-		mouseIsDown = false;
-		
 		fire("click", e);
 	},
 });
 
 function mousedown(e) {
-	mouseIsDown = true;
 	mouseMovedDistance = 0;
 	
 	on(window, "mouseup", mouseup);
@@ -137,8 +132,6 @@ function mousemove(e) {
 }
 
 function mouseup(e) {
-	mouseIsDown = false;
-	
 	if (useSyntheticDrag) {
 		if (mode === "ast") {
 			syntheticDragHandler.mouseup(e);
@@ -258,7 +251,6 @@ function dragend(e) {
 	fire("dragend");
 	
 	justDropped = false;
-	mouseIsDown = false;
 	draggable = false;
 	useSyntheticDrag = false;
 	selectedOption = null;
@@ -392,7 +384,7 @@ $: codeStyle = calculateCodeStyle(
 		background: #A88712;
 	}
 	
-	&.fadeIfNotHover:not(:hover) {
+	&:not(:hover) {
 		opacity: .5;
 	}
 }
@@ -470,7 +462,6 @@ $: codeStyle = calculateCodeStyle(
 						<div
 							class="option pickOption"
 							class:active={option.type === selectedOption?.option?.type}
-							class:fadeIfNotHover={!mouseIsDown}
 							on:mousedown={(e) => pickOptionMousedown(option, e)}
 							on:mouseenter={(e) => pickOptionMouseenter(option, e)}
 							on:mouseleave={(e) => pickOptionMouseleave(option, e)}
