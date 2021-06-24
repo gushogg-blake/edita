@@ -29,6 +29,7 @@ let currentDropTarget;
 let clickDistanceThreshold = 2;
 let mouseMovedDistance;
 let syntheticDrag = null;
+let dragStartedHere = false;
 let isDragging = false;
 let mouseIsDown = false;
 let rowYHint = 1;
@@ -166,7 +167,7 @@ function mouseleave(e) {
 }
 
 function dragstart(e) {
-	isDragging = true;
+	dragStartedHere = true;
 	
 	if (selectedOption) {
 		let {node, x, y} = selectedOption;
@@ -201,7 +202,7 @@ dragend is fired when dropping onto another app - can check dropEffect to see
 whether to remove the source
 
 drop is fired when dropping onto the app - either from the app or from another
-app - could poss check isDragging to see whether it's from another app, and
+app - could poss check dragStartedHere to see whether it's from another app, and
 ignore if from the app (use dragend instead).
 
 using dragend for the cleanup in both cases would be a simple way of doing the
@@ -224,7 +225,7 @@ function drop(e) {
 		extra.target = dropTargetFromMouseEvent(e)?.target?.type;
 	}
 	
-	if (isDragging) {
+	if (dragStartedHere) {
 		justDropped = true;
 		
 		fire("drop", {
@@ -261,6 +262,15 @@ function dragend(e) {
 	draggable = false;
 	useSyntheticDrag = false;
 	selectedOption = null;
+	dragStartedHere = false;
+	isDragging = false;
+}
+
+function dragenter() {
+	isDragging = true;
+}
+
+function dragleave() {
 	isDragging = false;
 }
 
@@ -297,11 +307,11 @@ function calculateCodeStyle(
 	overallWidth,
 	marginWidth,
 	mode,
-	isDragging,
+	dragStartedHere,
 ) {
 	let cursor = mode === "ast" ? "default" : "text";
 	
-	if (isDragging) {
+	if (dragStartedHere) {
 		cursor = "grabbing";
 	}
 	
@@ -330,7 +340,7 @@ $: codeStyle = calculateCodeStyle(
 	overallWidth,
 	marginOffset,
 	mode,
-	isDragging,
+	dragStartedHere,
 );
 </script>
 
@@ -448,6 +458,8 @@ $: codeStyle = calculateCodeStyle(
 			on:dragover={dragover}
 			on:drop={drop}
 			on:dragend={dragend}
+			on:dragenter={dragenter}
+			on:dragleave={dragleave}
 		>
 			{#each pickOptions as {lineIndex, options} (lineIndex)}
 				<div

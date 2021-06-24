@@ -3,15 +3,15 @@ let screenCoordsFromRowCol = require("../utils/screenCoordsFromRowCol");
 let getLineRangeTotalHeight = require("../utils/getLineRangeTotalHeight");
 let AstSelection = require("../utils/AstSelection");
 
-let images = {
-	insert: "./img/insert.png",
-	expand: "./img/expand.png",
-};
-
-for (let [name, src] of Object.entries(images)) {
-	images[name] = new Image();
-	images[name].src = src;
-}
+//let images = {
+//	insert: "./img/insert.png",
+//	expand: "./img/expand.png",
+//};
+//
+//for (let [name, src] of Object.entries(images)) {
+//	images[name] = new Image();
+//	images[name].src = src;
+//}
 
 let lineWidth = 2;
 let lineLength = 35;

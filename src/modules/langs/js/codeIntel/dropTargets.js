@@ -97,11 +97,11 @@ module.exports = {
 				"}",
 			], indentStr, footerLine.indentLevel);
 			
-			let insertDifference = insertLines.length - removeLines;
-			
 			document.edit(insertIndex, removeLines, insertLines);
 			
 			let newStartLineIndex = footerLineIndex + 1;
+			
+			console.log(AstSelection.s(newStartLineIndex, newStartLineIndex + lines.length));
 			
 			return AstSelection.s(newStartLineIndex, newStartLineIndex + lines.length);
 		},

@@ -31,8 +31,8 @@ module.exports = {
 				move,
 				option,
 			);
-		} else {
-			return fromSelection;
 		}
+		
+		return null;
 	},
 };

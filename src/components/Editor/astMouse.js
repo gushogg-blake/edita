@@ -369,6 +369,7 @@ module.exports = function(editor) {
 			document,
 			setInsertionHilite,
 			setSelection,
+			clearDropTargets,
 			redraw,
 		} = editor;
 		
@@ -383,6 +384,7 @@ module.exports = function(editor) {
 			e.dataTransfer.dropEffect = "move";
 		}
 		
+		clearDropTargets();
 		setInsertionHilite(null);
 		redraw();
 		
@@ -423,12 +425,13 @@ module.exports = function(editor) {
 		}
 		
 		if (fromSelection && toSelection && AstSelection.isAdjacent(fromSelection, toSelection)) {
+			console.log("adjacent");
 			return;
 		}
 		
 		let {codeIntel} = document.lang;
 		
-		setSelection(codeIntel.drop(
+		let newSelection = codeIntel.drop(
 			document,
 			fromSelection,
 			toSelection,
@@ -436,7 +439,11 @@ module.exports = function(editor) {
 			e.dataTransfer.dropEffect === "move",
 			option,
 			target,
-		));
+		);
+		
+		if (newSelection) {
+			setSelection(newSelection);
+		}
 	}
 	
 	function dragend() {
