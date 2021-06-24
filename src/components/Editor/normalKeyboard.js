@@ -34,7 +34,7 @@ module.exports = function(editor) {
 		"Ctrl+V": "paste",
 	};
 	
-	function setClipboardSelection() {
+	function setClipboardSelection() { // TODO can this be moved to Editor with if isFull?
 		let {
 			document,
 			selection,
@@ -42,6 +42,8 @@ module.exports = function(editor) {
 		
 		clipboard.writeSelection(document.getSelectedText(selection));
 	}
+	
+	let batchState = null;
 	
 	let functions = {
 		up({document, selection, selectionEndCol}) {
@@ -134,26 +136,56 @@ module.exports = function(editor) {
 		},
 		
 		enter({document, selection}) {
-			editor.setSelection(document.insertNewline(selection));
+			let {
+				insertedLines,
+				removedLines,
+				newSelection,
+			} = document.insertNewline(selection);
+			
+			editor.setSelection(newSelection);
 		},
 		
 		enterNoAutoIndent({document, selection}) {
-			//editor.setSelection(document.insertNewlineNoAutoIndent(selection));
+			//let {
+			//	insertedLines,
+			//	removedLines,
+			//	newSelection,
+			//} = document.insertNewlineNoAutoIndent(selection);
+			//
+			//editor.setSelection(newSelection);
 		},
 		
 		backspace({document, selection}) {
-			editor.setSelection(document.backspace(selection));
+			let {
+				insertedLines,
+				removedLines,
+				newSelection,
+			} = document.backspace(selection);
+			
+			editor.setSelection(newSelection);
 		},
 		
 		delete({document, selection}) {
-			editor.setSelection(document.delete(selection));
+			let {
+				insertedLines,
+				removedLines,
+				newSelection,
+			} = document.delete(selection);
+			
+			editor.setSelection(newSelection);
 		},
 		
 		tab({document, selection}) {
 			// TODO snippets
 			// TODO indent/dedent selection
 			
-			editor.setSelection(document.replaceSelection(selection, document.fileDetails.indentation.string));
+			let {
+				insertedLines,
+				removedLines,
+				newSelection,
+			} = document.replaceSelection(selection, document.fileDetails.indentation.string);
+			
+			editor.setSelection(newSelection);
 		},
 		
 		shiftTab({document, selection}) {
@@ -169,19 +201,63 @@ module.exports = function(editor) {
 		},
 		
 		async paste({document, selection}) {
-			editor.setSelection(document.replaceSelection(selection, await clipboard.read()));
+			let {
+				insertedLines,
+				removedLines,
+				newSelection,
+			} = document.replaceSelection(selection, await clipboard.read());
+			
+			editor.setSelection(newSelection);
 		},
 		
 		default(e, keyCombo, isModified, {document, selection}) {
+			let handled = false;
+			let newBatchState = null;
+			
 			if (!isModified && e.key.length === 1) {
 				e.preventDefault();
 				
-				editor.setSelection(document.insertCharacter(selection, e.key));
+				let {
+					lastHistoryEntry,
+					addHistoryEntry,
+					setSelection,
+				} = editor;
 				
-				return true;
+				let {
+					lineIndex,
+					removedLines,
+					insertedLines,
+				} = document.insertCharacter(selection, e.key);
+				
+				let redo = function() {
+					document.edit(lineIndex, removedLines.length, insertedLines);
+					setSelection(newSelection);
+				}
+				
+				if (batchState === "typing") {
+					lastHistoryEntry.redo = redo;
+				} else {
+					addHistoryEntry({
+						undo() {
+							document.edit(lineIndex, insertedLines.length, removedLines);
+							setSelection(selection);
+						},
+						
+						redo,
+					});
+				}
+				
+				if (!Selection.isFull(selection)) {
+					newBatchState = "typing";
+				}
+	
+				handled = true;
 			}
 			
-			return false;
+			return {
+				handled,
+				batchState: newBatchState,
+			};
 		},
 	};
 	
@@ -192,11 +268,16 @@ module.exports = function(editor) {
 		if (keymap[keyCombo]) {
 			e.preventDefault();
 			
-			await functions[keymap[keyCombo]](editor);
+			({
+				batchState = null,
+			} = await functions[keymap[keyCombo]](editor) || {});
 			
 			handled = true;
 		} else if (functions.default) {
-			handled = functions.default(e, keyCombo, isModified, editor);
+			({
+				handled,
+				batchState = null,
+			} = functions.default(e, keyCombo, isModified, editor));
 		}
 		
 		if (handled) {
@@ -208,7 +289,12 @@ module.exports = function(editor) {
 		}
 	}
 	
+	function clearBatchState() {
+		batchState = null;
+	}
+	
 	return {
 		keydown,
+		clearBatchState,
 	};
 }

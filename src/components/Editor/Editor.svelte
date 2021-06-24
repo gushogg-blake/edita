@@ -99,6 +99,9 @@ let pickOptions = [];
 let dropTargets = [];
 let isDragging = false;
 
+let history = [];
+let historyIndex = 0;
+
 let scrollPosition = {
 	row: 0,
 	x: 0,

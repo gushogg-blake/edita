@@ -49,23 +49,20 @@ class Document extends Evented {
 			insertLines = [];
 		}
 		
-		insertLines = insertLines.map(createLine);
-		
+		let insertedLines = insertLines;
 		let removedLines = this.lines.slice(lineIndex, lineIndex + removeLines);
 		
-		this.lines.splice(lineIndex, removeLines, ...insertLines);
-		
-		// TODO parse here so that insertLines/insertedLines are parsed?
+		this.lines.splice(lineIndex, removeLines, ...insertLines.map(createLine));
 		
 		this.fire("edit", {
 			lineIndex,
-			removeLines,
-			insertLines,
+			removedLines,
+			insertedLines,
 		});
 		
 		return {
 			removedLines,
-			insertedLines: insertLines,
+			insertedLines,
 		};
 	}
 	
@@ -77,7 +74,10 @@ class Document extends Evented {
 		let prefix = this.lines[startLineIndex].string.substr(0, startOffset);
 		let suffix = this.lines[endLineIndex].string.substr(endOffset);
 		
-		let {insertedLines} = this.edit(
+		let {
+			removedLines,
+			insertedLines,
+		} = this.edit(
 			startLineIndex,
 			endLineIndex - startLineIndex + 1,
 			prefix + string + suffix,
@@ -85,8 +85,14 @@ class Document extends Evented {
 		
 		let newEndLineIndex = startLineIndex + insertedLines.length - 1;
 		let lastLine = insertedLines[insertedLines.length - 1];
+		let newSelection = Selection.s([newEndLineIndex, lastLine.string.length - suffix.length]);
 		
-		return Selection.s([newEndLineIndex, lastLine.string.length - suffix.length]);
+		return {
+			lineIndex: startLineIndex,
+			removedLines,
+			insertedLines,
+			newSelection,
+		};
 	}
 	
 	insertCharacter(selection, ch) {
@@ -106,27 +112,42 @@ class Document extends Evented {
 				// deleting the newline, so join with the prev line if there is one
 				
 				if (lineIndex === 0) {
-					return selection;
+					return null;
 				}
 				
 				let prevLineIndex = lineIndex - 1;
 				let prevLineString = this.lines[prevLineIndex].string;
 				
-				this.edit(lineIndex - 1, 2, prevLineString + line.string);
+				let {
+					removedLines,
+					insertedLines,
+				} = this.edit(lineIndex - 1, 2, prevLineString + line.string);
 				
-				return Selection.s([prevLineIndex, prevLineString.length]);
+				return {
+					removedLines,
+					insertedLines,
+					newSelection: Selection.s([prevLineIndex, prevLineString.length]),
+				};
 			} else {
 				// deleting a character within the line
 				
 				let {string} = line;
 				
-				this.edit(
+				let {
+					removedLines,
+					insertedLines,
+				} = this.edit(
 					lineIndex,
 					1,
 					string.substr(0, offset - 1) + string.substr(offset),
 				);
 				
-				return Selection.s([lineIndex, offset - 1]);
+				return {
+					lineIndex,
+					removedLines,
+					insertedLines,
+					newSelection: Selection.s([lineIndex, offset - 1]),
+				};
 			}
 		}
 	}
@@ -144,27 +165,41 @@ class Document extends Evented {
 				// deleting the newline, so join with the next line if there is one
 				
 				if (lineIndex === this.lines.length - 1) {
-					return selection;
+					return null;
 				}
 				
 				let nextLineIndex = lineIndex + 1;
 				let nextLineString = this.lines[nextLineIndex].string;
 				
-				this.edit(lineIndex, 2, line.string + nextLineString);
+				let {
+					insertedLines,
+					removedLines,
+				} = this.edit(lineIndex, 2, line.string + nextLineString);
 				
-				return Selection.s([lineIndex, line.string.length]);
+				return {
+					insertedLines,
+					removedLines,
+					newSelection: Selection.s([lineIndex, line.string.length]),
+				};
 			} else {
 				// deleting a character within the line
 				
 				let {string} = line;
 				
-				this.edit(
+				let {
+					insertedLines,
+					removedLines,
+				} = this.edit(
 					lineIndex,
 					1,
 					string.substr(0, offset) + string.substr(offset + 1),
 				);
 				
-				return selection;
+				return {
+					insertedLines,
+					removedLines,
+					newSelection: selection,
+				};
 			}
 		}
 	}
