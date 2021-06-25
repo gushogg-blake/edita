@@ -76,7 +76,7 @@ let visible = true;
 let focused = false;
 let windowHasFocus;
 
-let mode = "ast";
+let mode = "normal";
 let isPeekingAstMode = false;
 let switchToAstModeOnMouseUp = false;
 let resetNormalSelection = true;
@@ -156,6 +156,8 @@ let normalMouseHandler = normalMouse({
 		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
 		
 		selectionEndCol = endCol;
+		
+		normalKeyboardHandler.clearBatchState();
 	},
 	
 	mouseup() {
@@ -247,10 +249,21 @@ let normalKeyboardHandler = normalKeyboard({
 		return selectionEndCol;
 	},
 	
-	setSelection(selection) {
-		setNormalSelection(selection);
+	get lastHistoryEntry() {
+		return history[historyIndex - 1];
 	},
 	
+	setSelection(selection, preserveBatchState=false) {
+		setNormalSelection(selection);
+		
+		if (!preserveBatchState) {
+			normalKeyboardHandler.clearBatchState();
+		}
+	},
+	
+	addHistoryEntry,
+	undo,
+	redo,
 	getCodeAreaSize,
 	updateSelectionEndCol,
 	ensureSelectionIsOnScreen,
@@ -286,7 +299,6 @@ let astKeyboardHandler = astKeyboard({
 	startCursorBlink,
 	redraw,
 });
-
 
 let modeSwitchKeyHandler = modeSwitchKey({
 	switchToAstMode(isPeeking) {
@@ -520,6 +532,36 @@ function keyup(e) {
 		
 		return;
 	}
+}
+
+function addHistoryEntry(entry) {
+	if (historyIndex < history.length) {
+		history.splice(historyIndex, history.length - historyIndex);
+	}
+	
+	history.push(entry);
+	
+	historyIndex = history.length;
+}
+
+function undo() {
+	if (historyIndex === 0) {
+		return;
+	}
+	
+	historyIndex--;
+	
+	history[historyIndex].undo();
+}
+
+function redo() {
+	if (historyIndex === history.length) {
+		return;
+	}
+	
+	history[historyIndex].redo();
+	
+	historyIndex++;
 }
 
 function showPickOptionsFor(selection) {

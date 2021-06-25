@@ -50,7 +50,7 @@ class Document extends Evented {
 		}
 		
 		let insertedLines = insertLines;
-		let removedLines = this.lines.slice(lineIndex, lineIndex + removeLines);
+		let removedLines = this.lines.slice(lineIndex, lineIndex + removeLines).map(line => line.string);
 		
 		this.lines.splice(lineIndex, removeLines, ...insertLines.map(createLine));
 		
@@ -85,7 +85,7 @@ class Document extends Evented {
 		
 		let newEndLineIndex = startLineIndex + insertedLines.length - 1;
 		let lastLine = insertedLines[insertedLines.length - 1];
-		let newSelection = Selection.s([newEndLineIndex, lastLine.string.length - suffix.length]);
+		let newSelection = Selection.s([newEndLineIndex, lastLine.length - suffix.length]);
 		
 		return {
 			lineIndex: startLineIndex,

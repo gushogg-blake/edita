@@ -32,6 +32,8 @@ module.exports = function(editor) {
 		"Ctrl+X": "cut",
 		"Ctrl+C": "copy",
 		"Ctrl+V": "paste",
+		"Ctrl+Z": "undo",
+		"Ctrl+Y": "redo",
 	};
 	
 	function setClipboardSelection() { // TODO can this be moved to Editor with if isFull?
@@ -210,6 +212,14 @@ module.exports = function(editor) {
 			editor.setSelection(newSelection);
 		},
 		
+		undo() {
+			editor.undo();
+		},
+		
+		redo() {
+			editor.redo();
+		},
+		
 		default(e, keyCombo, isModified, {document, selection}) {
 			let handled = false;
 			let newBatchState = null;
@@ -227,7 +237,10 @@ module.exports = function(editor) {
 					lineIndex,
 					removedLines,
 					insertedLines,
+					newSelection,
 				} = document.insertCharacter(selection, e.key);
+				
+				setSelection(newSelection, true);
 				
 				let redo = function() {
 					document.edit(lineIndex, removedLines.length, insertedLines);
@@ -276,7 +289,7 @@ module.exports = function(editor) {
 		} else if (functions.default) {
 			({
 				handled,
-				batchState = null,
+				batchState,
 			} = functions.default(e, keyCombo, isModified, editor));
 		}
 		
