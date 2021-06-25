@@ -313,10 +313,14 @@ function rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounte
 }
 
 function targetIsActive(target, currentDropTarget) {
-	console.log(target);
-	console.log(currentDropTarget);
+	if (!currentDropTarget) {
+		return false;
+	}
 	
-	return false;
+	return (
+		target.lineIndex === currentDropTarget.lineIndex
+		&& target.target.type === currentDropTarget.target.type
+	);
 }
 
 $: marginStyle = calculateMarginStyle(marginWidth);
