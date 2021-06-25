@@ -315,8 +315,6 @@ module.exports = function(editor) {
 			redraw,
 		} = editor;
 		
-		e.preventDefault();
-		
 		if (e.ctrlKey) {
 			e.dataTransfer.dropEffect = "copy";
 		} else {
@@ -349,7 +347,7 @@ module.exports = function(editor) {
 	}
 	
 	function dragenter(e) {
-		e.preventDefault();
+		
 	}
 	
 	function dragleave(e) {
@@ -365,8 +363,6 @@ module.exports = function(editor) {
 			clearDropTargets,
 			redraw,
 		} = editor;
-		
-		e.preventDefault();
 		
 		// NOTE dropEffect doesn't work when dragging between windows
 		// (it will always be none in the source window)

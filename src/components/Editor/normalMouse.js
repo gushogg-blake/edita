@@ -10,23 +10,12 @@ let autoScroll = require("./utils/autoScroll");
 module.exports = function(editor) {
 	let drawingSelection = false;
 	
-	async function mousedown(e, enableDrag) {
-		if (e.button === 2) {
-			return;
-		}
-		
+	function getCursor(e) {
 		let {
 			canvas,
 			measurements,
 			document,
-			selectionRegions,
-			hasHorizontalScrollbar,
 			scrollPosition,
-			scrollBy,
-			setSelection,
-			redraw,
-			startCursorBlink,
-			insert,
 		} = editor;
 		
 		let {
@@ -45,19 +34,68 @@ module.exports = function(editor) {
 			measurements,
 		);
 		
-		let cursor = cursorFromRowCol(
+		return cursorFromRowCol(
 			document.lines,
 			row,
 			col,
 		);
+	}
+	
+	async function mousedown(e, enableDrag) {
+		if (e.button === 2) {
+			return;
+		}
+		
+		let {
+			canvas,
+			measurements,
+			document,
+			selection,
+			selectionRegions,
+			hasHorizontalScrollbar,
+			scrollPosition,
+			scrollBy,
+			setSelection,
+			addHistoryEntry,
+			redraw,
+			startCursorBlink,
+		} = editor;
+		
+		let cursor = getCursor(e);
+		
+		let {
+			x: left,
+			y: top,
+		} = canvas.getBoundingClientRect();
+		
+		let x = e.clientX - left;
+		let y = e.clientY - top;
 		
 		if (e.button === 1) {
 			setSelection(Selection.s(cursor));
 			
 			let str = await clipboard.readSelection();
-			let newSelection = document.replaceSelection(editor.selection, str);
+			
+			let {
+				lineIndex,
+				removedLines,
+				insertedLines,
+				newSelection,
+			} = document.replaceSelection(editor.selection, str);
 			
 			setSelection(newSelection);
+			
+			addHistoryEntry({
+				undo() {
+					document.edit(lineIndex, insertedLines.length, removedLines);
+					setSelection(selection);
+				},
+				
+				redo() {
+					document.edit(lineIndex, removedLines.length, insertedLines);
+					setSelection(newSelection);
+				},
+			});
 			
 			startCursorBlink();
 			
@@ -112,27 +150,7 @@ module.exports = function(editor) {
 			redraw,
 		} = editor;
 		
-		let {
-			x: left,
-			y: top,
-		} = canvas.getBoundingClientRect();
-		
-		let x = e.clientX - left;
-		let y = e.clientY - top;
-		
-		let [row, col] = rowColFromScreenCoords(
-			document.lines,
-			x,
-			y,
-			scrollPosition,
-			measurements,
-		);
-		
-		let cursor = cursorFromRowCol(
-			document.lines,
-			row,
-			col,
-		);
+		let cursor = getCursor(e);
 		
 		setSelection({
 			...selection,
@@ -189,30 +207,9 @@ module.exports = function(editor) {
 			setSelection,
 			redraw,
 			startCursorBlink,
-			insert,
 		} = editor;
 		
-		let {
-			x: left,
-			y: top,
-		} = canvas.getBoundingClientRect();
-		
-		let x = e.clientX - left;
-		let y = e.clientY - top;
-		
-		let [row, col] = rowColFromScreenCoords(
-			document.lines,
-			x,
-			y,
-			scrollPosition,
-			measurements,
-		);
-		
-		let cursor = cursorFromRowCol(
-			document.lines,
-			row,
-			col,
-		);
+		let cursor = getCursor(e);
 		
 		setSelection(Selection.s(cursor));
 		
@@ -230,7 +227,16 @@ module.exports = function(editor) {
 	}
 	
 	function dragover(e) {
+		let {
+			setInsertCursor,
+			redraw,
+		} = editor;
 		
+		let cursor = getCursor(e);
+		
+		setInsertCursor(cursor);
+		
+		redraw();
 	}
 	
 	function dragenter(e) {
@@ -238,16 +244,37 @@ module.exports = function(editor) {
 	}
 	
 	function dragleave(e) {
+		let {
+			setInsertCursor,
+			redraw,
+		} = editor;
 		
+		setInsertCursor(null);
+		
+		redraw();
 	}
 	
 	function drop(e) {
 		let str = e.dataTransfer.getData("text/plain");
 		
+		if (!str) {
+			return;
+		}
+		
 		console.log(str);
+		console.log(e.dataTransfer.types);
 	}
 	
 	function dragend() {
+		let {
+			setInsertCursor,
+			redraw,
+		} = editor;
+		
+		setInsertCursor(null);
+		
+		redraw();
+		
 		mouseup();
 	}
 	

@@ -5,18 +5,15 @@ let xHint = -1;
 module.exports = function(
 	context,
 	lines,
-	selection,
 	insertCursor,
 	scrollPosition,
 	measurements,
-	cursorBlinkOn,
-	windowHasFocus,
 ) {
-	if (!cursorBlinkOn || !windowHasFocus || insertCursor) {
+	if (!insertCursor) {
 		return;
 	}
 	
-	let [lineIndex, offset] = selection.end;
+	let [lineIndex, offset] = insertCursor;
 	
 	let [x, y] = screenCoordsFromCursor(
 		lines,

@@ -7,6 +7,7 @@ let renderAstInsertionHilite = require("./renderAstInsertionHilite");
 //let renderWordHilites = require("./renderWordHilites");
 let renderCodeAndMargin = require("./renderCodeAndMargin");
 let renderNormalCursor = require("./renderNormalCursor");
+let renderInsertCursor = require("./renderInsertCursor");
 
 module.exports = function(
 	context,
@@ -14,6 +15,7 @@ module.exports = function(
 	lines,
 	normalSelection,
 	normalSelectionRegions,
+	insertCursor,
 	astSelection,
 	astSelectionHilite,
 	astInsertionHilite,
@@ -125,10 +127,21 @@ module.exports = function(
 			context,
 			lines,
 			normalSelection,
+			insertCursor,
 			scrollPosition,
 			measurements,
 			cursorBlinkOn,
 			windowHasFocus,
+		);
+	}
+	
+	if (mode === "normal") {
+		renderInsertCursor(
+			context,
+			lines,
+			insertCursor,
+			scrollPosition,
+			measurements,
 		);
 	}
 	

@@ -211,6 +211,8 @@ function dragstart(e) {
 }
 
 function dragover(e) {
+	e.preventDefault();
+	
 	currentDropTarget = dropTargetFromMouseEvent(e);
 	
 	fire("dragover", {
@@ -222,6 +224,8 @@ function dragover(e) {
 let justDropped = false;
 
 function drop(e) {
+	e.preventDefault();
+	
 	let extra = {};
 	
 	if (mode === "ast") {
@@ -267,12 +271,20 @@ function dragend(e) {
 	isDragging = false;
 }
 
-function dragenter() {
+function dragenter(e) {
+	e.preventDefault();
+	
 	isDragging = true;
+	
+	fire("dragenter", e);
 }
 
-function dragleave() {
+function dragleave(e) {
+	e.preventDefault();
+	
 	isDragging = false;
+	
+	fire("dragleave", e);
 }
 
 function calculateMarginStyle(marginWidth) {

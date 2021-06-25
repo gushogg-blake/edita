@@ -108,7 +108,7 @@ let visible = true;
 let focused = false;
 let windowHasFocus;
 
-let mode = "ast";
+let mode = "normal";
 let isPeekingAstMode = false;
 let switchToAstModeOnMouseUp = false;
 let resetNormalSelection = true;
@@ -119,6 +119,7 @@ let normalSelection = {
 };
 
 let normalSelectionRegions = [];
+let insertCursor = null;
 
 // for remembering the "intended" col when moving a cursor up/down to a line
 // that doesn't have as many cols as the cursor
@@ -179,6 +180,7 @@ let normalMouseHandler = normalMouse({
 	scrollBy,
 	redraw,
 	startCursorBlink,
+	addHistoryEntry,
 	
 	setSelection(selection) {
 		setNormalSelection(selection);
@@ -190,6 +192,10 @@ let normalMouseHandler = normalMouse({
 		selectionEndCol = endCol;
 		
 		normalKeyboardHandler.clearBatchState();
+	},
+	
+	setInsertCursor(cursor) {
+		insertCursor = cursor;
 	},
 	
 	mouseup() {
@@ -494,6 +500,26 @@ function dragend({detail: e}) {
 		normalMouseHandler.dragend();
 	} else if (mode === "ast") {
 		astMouseHandler.dragend();
+	}
+	
+	lastMouseEvent = e;
+}
+
+function dragenter({detail: e}) {
+	if (mode === "normal") {
+		normalMouseHandler.dragenter(e);
+	} else if (mode === "ast") {
+		astMouseHandler.dragenter(e);
+	}
+	
+	lastMouseEvent = e;
+}
+
+function dragleave({detail: e}) {
+	if (mode === "normal") {
+		normalMouseHandler.dragleave(e);
+	} else if (mode === "ast") {
+		astMouseHandler.dragleave(e);
 	}
 	
 	lastMouseEvent = e;
@@ -891,6 +917,7 @@ function updateCanvas() {
 		document.lines,
 		normalSelection,
 		normalSelectionRegions,
+		insertCursor,
 		astSelection,
 		astSelectionHilite,
 		astInsertionHilite,
@@ -1190,6 +1217,8 @@ $scrollBarBorder: 1px solid #bababa;
 				on:dragstart={dragstart}
 				on:dragover={dragover}
 				on:dragend={dragend}
+				on:dragenter={dragenter}
+				on:dragleave={dragleave}
 				on:drop={drop}
 			/>
 		</div>
