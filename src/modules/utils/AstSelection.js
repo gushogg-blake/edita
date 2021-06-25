@@ -8,6 +8,12 @@ function s(startLineIndex, endLineIndex=startLineIndex) {
 let api = {
 	s,
 	
+	isFull(selection) {
+		let [start, end] = selection;
+		
+		return start !== end;
+	},
+	
 	equals(a, b) {
 		let [aStart, aEnd] = a;
 		let [bStart, bEnd] = b;

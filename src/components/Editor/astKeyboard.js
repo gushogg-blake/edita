@@ -9,6 +9,8 @@ module.exports = function(editor) {
 		"k": "up",
 		"J": "next",
 		"K": "previous",
+		"Enter": "toggleSpaceAbove",
+		"Shift+Enter": "toggleSpaceBelow",
 	};
 	
 	let functions = {
@@ -34,6 +36,14 @@ module.exports = function(editor) {
 		
 		pageDown() {
 			editor.scrollPageDown();
+		},
+		
+		toggleSpaceAbove() {
+			console.log("toggle space above");
+		},
+		
+		toggleSpaceBelow() {
+			console.log("toggle space below");
 		},
 	};
 	

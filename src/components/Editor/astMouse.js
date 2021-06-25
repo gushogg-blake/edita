@@ -270,14 +270,6 @@ module.exports = function(editor) {
 		
 	}
 	
-	function optionmousedown(option, e) {
-		let {
-			pick,
-		} = editor;
-		
-		pick(getHilite(e), option);
-	}
-	
 	function optionhover(option, e) {
 		//let {
 		//	showDropTargetsFor,
@@ -425,7 +417,12 @@ module.exports = function(editor) {
 			toSelection = null;
 		}
 		
-		if (fromSelection && toSelection && AstSelection.isAdjacent(fromSelection, toSelection)) {
+		if (
+			fromSelection
+			&& toSelection
+			&& !AstSelection.isFull(toSelection)
+			&& AstSelection.isAdjacent(fromSelection, toSelection)
+		) {
 			return;
 		}
 		
@@ -449,7 +446,6 @@ module.exports = function(editor) {
 			
 			addHistoryEntry({
 				undo() {
-					console.log(edits);
 					for (let {lineIndex, removedLines, insertedLines} of [...edits].reverse()) {
 						document.edit(lineIndex, insertedLines.length, removedLines);
 					}
@@ -479,6 +475,20 @@ module.exports = function(editor) {
 		
 		drag = null;
 	}
+	
+	function updateHilites(e) {
+		let {
+			setSelectionHilite,
+			showPickOptionsFor,
+		} = editor;
+		
+		if (e) {
+			hilite(e);
+		} else {
+			setSelectionHilite(null);
+			showPickOptionsFor(null);
+		}
+	}
 
 	return {
 		mousedown,
@@ -487,7 +497,6 @@ module.exports = function(editor) {
 		mouseleave,
 		click,
 		dblclick,
-		optionmousedown,
 		optionhover,
 		dragstart,
 		dragover,
@@ -495,6 +504,6 @@ module.exports = function(editor) {
 		dragleave,
 		drop,
 		dragend,
-		hilite,
+		updateHilites,
 	};
 }

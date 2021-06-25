@@ -145,7 +145,7 @@ let cursorBlinkOn;
 let cursorInterval;
 
 let mouseIsDown = false;
-let lastMouseMoveEvent;
+let lastMouseEvent;
 
 let normalMouseHandler = normalMouse({
 	get canvas() {
@@ -237,7 +237,7 @@ let astMouseHandler = astMouse({
 		return isPeekingAstMode;
 	},
 	
-	pick(selection, option) {
+	pick(selection) {
 		astSelection = selection;
 		
 		if (!Selection.isFull(normalSelection)) {
@@ -393,7 +393,7 @@ function mousemove({detail: e}) {
 	
 	//console.log("mousemove");
 	
-	lastMouseMoveEvent = e;
+	lastMouseEvent = e;
 	
 	if (mode === "normal") {
 		normalMouseHandler.mousemove(e);
@@ -446,15 +446,6 @@ function dblclick(e) {
 	}
 }
 
-function optionmousedown({detail}) {
-	let {
-		e,
-		option,
-	} = detail;
-	
-	astMouseHandler.optionmousedown(option, e);
-}
-
 function optionhover({detail}) {
 	let {
 		e,
@@ -477,6 +468,8 @@ function dragstart({detail}) {
 	} else if (mode === "ast") {
 		astMouseHandler.dragstart(e, option);
 	}
+	
+	lastMouseEvent = e;
 }
 
 function dragover({detail}) {
@@ -490,9 +483,11 @@ function dragover({detail}) {
 	} else if (mode === "ast") {
 		astMouseHandler.dragover(e, target);
 	}
+	
+	lastMouseEvent = e;
 }
 
-function dragend() {
+function dragend({detail: e}) {
 	isDragging = false;
 	
 	if (mode === "normal") {
@@ -500,6 +495,8 @@ function dragend() {
 	} else if (mode === "ast") {
 		astMouseHandler.dragend();
 	}
+	
+	lastMouseEvent = e;
 }
 
 function drop({detail}) {
@@ -515,6 +512,8 @@ function drop({detail}) {
 	} else if (mode === "ast") {
 		astMouseHandler.drop(e, fromUs, toUs, extra);
 	}
+	
+	lastMouseEvent = e;
 }
 
 //function mouseEvent(type, e) {
@@ -780,9 +779,7 @@ function switchToAstMode() {
 	
 	astSelection = document.lang.codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex);
 	
-	if (lastMouseMoveEvent) {
-		astMouseHandler.hilite(lastMouseMoveEvent);
-	}
+	astMouseHandler.updateHilites(lastMouseEvent);
 	
 	resetNormalSelection = false;
 }
@@ -1068,6 +1065,10 @@ onMount(async function() {
 		if (mode === "ast") {
 			resetNormalSelection = true;
 		}
+		
+		if (mode === "ast") {
+			astMouseHandler.updateHilites(lastMouseEvent);
+		}
 	}));
 	
 	teardown.push(windowFocus.listen(function(isFocused) {
@@ -1185,7 +1186,6 @@ $scrollBarBorder: 1px solid #bababa;
 				on:mouseup={mouseup}
 				on:click={click}
 				on:dblclick={dblclick}
-				on:optionmousedown={optionmousedown}
 				on:optionhover={optionhover}
 				on:dragstart={dragstart}
 				on:dragover={dragover}

@@ -257,7 +257,7 @@ function dragend(e) {
 		});
 	}
 	
-	fire("dragend");
+	fire("dragend", e);
 	
 	justDropped = false;
 	draggable = false;
