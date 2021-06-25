@@ -35,6 +35,9 @@ module.exports = {
 		
 		
 		
-		return null;
+		return {
+			edits: [],
+			newSelection: fromSelection,
+		};
 	},
 };

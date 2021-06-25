@@ -49,6 +49,7 @@ function countSpace(lines, lineIndex, dir) {
 }
 
 function removeSelection(document, selection) {
+	let indentStr = document.fileDetails.indentation.string;
 	let [start, end] = selection;
 	let selectionHeaderLine = document.lines[start];
 	let prevSiblingIndex = findSiblingIndex(document.lines, start - 1, selectionHeaderLine.indentLevel, -1);
