@@ -51,6 +51,11 @@ module.exports = {
 			&& toSelection
 			&& AstSelection.isAdjacent(fromSelection, toSelection)
 		) { // space from sibling
+			// might be better to do nothing here, as this action (space the
+			// selection from its sibling) is only available nodes that are
+			// already spaced on the other side (because there has to be a space
+			// to drag it into)
+			
 			let [fromStart, fromEnd] = fromSelection;
 			let indentLevel = document.lines[fromStart].indentLevel;
 			let dir = fromStart < toStart ? -1 : 1;
@@ -61,10 +66,11 @@ module.exports = {
 			if (siblingIndex !== null) {
 				let existingSpaces = Math.abs(index - siblingIndex);
 				let spaces = (toEnd - toStart) - existingSpaces;
+				let adjustSelection = fromStart < toStart ? spaces : 0;
 				
-				edits.push(document.edit(addSpacesAt, 0, createSpaces(spaces, document.lines[fromStart].indentLevel, indentStr)));
+				edits.push(document.edit(addSpacesAt, 0, createSpaces(spaces, indentLevel, indentStr)));
 				
-				newSelection = fromSelection;
+				newSelection = AstSelection.s(fromStart + adjustSelection, fromEnd + adjustSelection);
 			}
 		} else {
 			if (move && fromSelection) {
