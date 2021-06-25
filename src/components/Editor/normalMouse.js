@@ -255,14 +255,50 @@ module.exports = function(editor) {
 	}
 	
 	function drop(e) {
+		let {
+			document,
+			selection,
+			setSelection,
+			setInsertCursor,
+			addHistoryEntry,
+			redraw,
+			startCursorBlink,
+		} = editor;
+		
 		let str = e.dataTransfer.getData("text/plain");
 		
 		if (!str) {
 			return;
 		}
 		
-		console.log(str);
-		console.log(e.dataTransfer.types);
+		let cursor = getCursor(e);
+		
+		let {
+			lineIndex,
+			removedLines,
+			insertedLines,
+			newSelection,
+		} = document.replaceSelection(Selection.s(cursor), str);
+		
+		setSelection(newSelection);
+		
+		addHistoryEntry({
+			undo() {
+				document.edit(lineIndex, insertedLines.length, removedLines);
+				setSelection(selection);
+			},
+			
+			redo() {
+				document.edit(lineIndex, removedLines.length, insertedLines);
+				setSelection(newSelection);
+			},
+		});
+		
+		setInsertCursor(null);
+		
+		startCursorBlink();
+		
+		redraw();
 	}
 	
 	function dragend() {
