@@ -22,6 +22,7 @@ export let pickOptions;
 export let dropTargets;
 
 let interactionDiv;
+let hoveredOption;
 let selectedOption;
 let draggable = false;
 let useSyntheticDrag;
@@ -35,26 +36,43 @@ let rowYHint = 1;
 
 let fire = createEventDispatcher();
 
+let divToPickOption = new Map();
 let divToDropTarget = new Map();
 
-function registerDropTarget(el, target) {
-	divToDropTarget.set(el, target);
+function registerItem(el, map, item) {
+	map.set(el, item);
 	
 	return {
 		destroy() {
-			divToDropTarget.delete(el);
+			map.delete(el);
 		},
 	};
 }
 
-function dropTargetFromMouseEvent(e) {
+function registerPickOption(el, option) {
+	return registerItem(el, divToPickOption, option);
+}
+
+function registerDropTarget(el, option) {
+	return registerItem(el, divToDropTarget, option);
+}
+
+function itemFromMouseEvent(e, map) {
 	for (let el of window.document.elementsFromPoint(e.pageX, e.pageY)) {
-		if (divToDropTarget.has(el)) {
-			return divToDropTarget.get(el);
+		if (map.has(el)) {
+			return map.get(el);
 		}
 	}
 	
 	return null;
+}
+
+function pickOptionFromMouseEvent(e) {
+	return itemFromMouseEvent(e, divToPickOption);
+}
+
+function dropTargetFromMouseEvent(e) {
+	return itemFromMouseEvent(e, divToDropTarget);
 }
 
 let syntheticDragHandler = drag({
@@ -106,9 +124,11 @@ function mousedown(e) {
 	
 	on(window, "mouseup", mouseup);
 	
+	selectedOption = pickOptionFromMouseEvent(e);
+	
 	fire("mousedown", {
 		e,
-		option: selectedOption?.option?.type,
+		option: selectedOption?.type,
 		
 		enableDrag(useSynthetic) {
 			draggable = true;
@@ -126,6 +146,15 @@ function mousemove(e) {
 	
 	if (useSyntheticDrag) {
 		syntheticDragHandler.mousemove(e);
+	}
+	
+	if (mode === "ast") {
+		hoveredOption = pickOptionFromMouseEvent(e);
+		
+		fire("optionhover", {
+			e,
+			option: hoveredOption,
+		});
 	}
 	
 	fire("mousemove", e);
@@ -162,20 +191,22 @@ function mouseleave(e) {
 function dragstart(e) {
 	dragStartedHere = true;
 	
-	if (selectedOption) {
-		let {node, x, y} = selectedOption;
-		
-		//e.dataTransfer.setDragImage(node, x, y);
-		e.dataTransfer.setDragImage(new Image(), 0, 0);
-	} else {
-		e.dataTransfer.setDragImage(new Image(), 0, 0);
-	}
+	//if (selectedOption) {
+	//	let {node, x, y} = selectedOption;
+	//	
+	//	//e.dataTransfer.setDragImage(node, x, y);
+	//	e.dataTransfer.setDragImage(new Image(), 0, 0);
+	//} else {
+	//	e.dataTransfer.setDragImage(new Image(), 0, 0);
+	//}
+	
+	e.dataTransfer.setDragImage(new Image(), 0, 0);
 	
 	e.dataTransfer.effectAllowed = "all";
 	
 	fire("dragstart", {
 		e,
-		option: selectedOption?.option?.type,
+		option: selectedOption?.type,
 	});
 }
 
@@ -187,27 +218,6 @@ function dragover(e) {
 		target: currentDropTarget?.target?.type,
 	});
 }
-
-/*
-drop/dragend
-
-dragend is fired when dropping onto another app - can check dropEffect to see
-whether to remove the source
-
-drop is fired when dropping onto the app - either from the app or from another
-app - could poss check dragStartedHere to see whether it's from another app, and
-ignore if from the app (use dragend instead).
-
-using dragend for the cleanup in both cases would be a simple way of doing the
-removal in the source app, whether the drag was to another app or not - but if
-doing the insertion and removal separately, need to make sure we don't modify
-the document in two separate steps as the first would invalidate the selection
-ranges for the second.  so in dragend, do the removal, and if to the app, the
-insertion; and in drop, only do the insertion if from another app.
-
-and in drop(), either fromSelection or toSelection can be null to indicate just
-removing, just inserting, or both
-*/
 
 let justDropped = false;
 
@@ -265,29 +275,6 @@ function dragleave() {
 	isDragging = false;
 }
 
-function pickOptionMousedown(option, e) {
-	selectedOption = {
-		option,
-		node: e.target,
-		x: e.offsetX,
-		y: e.offsetY,
-	};
-}
-
-function pickOptionMouseenter(option, e) {
-	fire("optionhover", {
-		option,
-		e,
-	});
-}
-
-function pickOptionMouseleave(option, e) {
-	fire("optionhover", {
-		option: null,
-		e,
-	});
-}
-
 function calculateMarginStyle(marginWidth) {
 	return {
 		width: marginWidth,
@@ -323,6 +310,13 @@ function rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounte
 		left: screenCol * colWidth,
 		height: rowHeight,
 	};
+}
+
+function targetIsActive(target, currentDropTarget) {
+	console.log(target);
+	console.log(currentDropTarget);
+	
+	return false;
 }
 
 $: marginStyle = calculateMarginStyle(marginWidth);
@@ -366,7 +360,7 @@ $: codeStyle = calculateCodeStyle(
 	gap: 5px;
 }
 
-.option {
+.item {
 	/*font-weight: bold;*/
 	font-size: 12px;
 	border: 1px solid #544200;
@@ -383,7 +377,7 @@ $: codeStyle = calculateCodeStyle(
 		background: #A88712;
 	}
 	
-	&:not(:hover) {
+	&:not(.hover) {
 		opacity: .5;
 	}
 }
@@ -426,11 +420,28 @@ $: codeStyle = calculateCodeStyle(
 					{#each targets as target (target)}
 						<div
 							use:registerDropTarget={target}
-							class="option dropTarget"
-							class:active={target === currentDropTarget}
+							class="item dropTarget"
+							class:active={targetIsActive(target, currentDropTarget)}
 							class:fade={!isDragging}
 						>
 							{target.target.label}
+						</div>
+					{/each}
+				</div>
+			{/each}
+			{#each pickOptions as {lineIndex, options} (lineIndex)}
+				<div
+					class="row"
+					style={inlineStyle(rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounter))}
+				>
+					{#each options as {option}}
+						<div
+							use:registerPickOption={option}
+							class="item pickOption"
+							class:hover={option.type === hoveredOption?.type}
+							class:active={option.type === selectedOption?.type}
+						>
+							{option.label}
 						</div>
 					{/each}
 				</div>
@@ -452,24 +463,7 @@ $: codeStyle = calculateCodeStyle(
 			on:dragenter={dragenter}
 			on:dragleave={dragleave}
 		>
-			{#each pickOptions as {lineIndex, options} (lineIndex)}
-				<div
-					class="row"
-					style={inlineStyle(rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounter))}
-				>
-					{#each options as {option}}
-						<div
-							class="option pickOption"
-							class:active={option.type === selectedOption?.option?.type}
-							on:mousedown={(e) => pickOptionMousedown(option, e)}
-							on:mouseenter={(e) => pickOptionMouseenter(option, e)}
-							on:mouseleave={(e) => pickOptionMouseleave(option, e)}
-						>
-							{option.label}
-						</div>
-					{/each}
-				</div>
-			{/each}
+			
 		</div>
 	</div>
 </div>
