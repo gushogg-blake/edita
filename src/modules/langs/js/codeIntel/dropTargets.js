@@ -1,5 +1,6 @@
 let indentLines = require("../../../utils/indentLines");
 let AstSelection = require("../../../utils/AstSelection");
+let removeSelection = require("../../common/codeIntel/removeSelection");
 
 let handleDrop = {
 	addSelectionToNewElse(
@@ -12,79 +13,6 @@ let handleDrop = {
 		
 	},
 };
-
-function findSiblingIndex(lines, lineIndex, indentLevel, dir) {
-	let line;
-	
-	while (line = lines[lineIndex]) {
-		if (line.indentLevel < indentLevel) {
-			return null;
-		}
-		
-		if (line.indentLevel === indentLevel && line.trimmed.length > 0) {
-			return lineIndex;
-		}
-		
-		lineIndex += dir;
-	}
-	
-	return null;
-}
-
-function countSpace(lines, lineIndex, dir) {
-	let space = 0;
-	let line;
-	
-	while (line = lines[lineIndex]) {
-		if (line.trimmed.length === 0) {
-			space++;
-		} else {
-			break;
-		}
-		
-		lineIndex += dir;
-	}
-	
-	return space;
-}
-
-function removeSelection(document, selection) {
-	let indentStr = document.fileDetails.indentation.string;
-	let [start, end] = selection;
-	let selectionHeaderLine = document.lines[start];
-	let prevSiblingIndex = findSiblingIndex(document.lines, start - 1, selectionHeaderLine.indentLevel, -1);
-	let nextSiblingIndex = findSiblingIndex(document.lines, end, selectionHeaderLine.indentLevel, 1);
-	let isFirstChild = prevSiblingIndex === null;
-	let isLastChild = nextSiblingIndex === null;
-	let spaceAbove = countSpace(document.lines, start - 1, -1);
-	let spaceBelow = countSpace(document.lines, end, 1);
-	let maxSpace = Math.max(spaceAbove, spaceBelow);
-	let removeStart = start - spaceAbove;
-	let removeEnd = end + spaceBelow;
-	let insertBlank = prevSiblingIndex === null && nextSiblingIndex === null;
-	let removeLines = removeEnd - removeStart;
-	let spaces = [];
-	
-	let insertSpaces;
-	
-	if (isFirstChild) {
-		insertSpaces = spaceAbove;
-	} else if (isLastChild) {
-		insertSpaces = spaceBelow;
-	} else {
-		insertSpaces = insertBlank ? 1 : maxSpace;
-	}
-	
-	for (let i = 0; i < insertSpaces; i++) {
-		spaces.push(indentStr.repeat(selectionHeaderLine.indentLevel));
-	}
-	
-	return document.edit(
-		removeStart,
-		removeLines,
-		spaces,
-	);
-}
 
 module.exports = {
 	addSelectionToNewElse: {
