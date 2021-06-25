@@ -307,10 +307,40 @@ module.exports = function(editor) {
 		},
 		
 		async cut({document, selection, setSelection, addHistoryEntry}) {
+			if (!Selection.isFull(selection)) {
+				return;
+			}
+			
+			await clipboard.write(document.getSelectedText(selection));
+			
+			let {
+				lineIndex,
+				insertedLines,
+				removedLines,
+				newSelection,
+			} = document.replaceSelection(selection, "");
+			
+			setSelection(newSelection);
+			
+			addHistoryEntry({
+				undo() {
+					document.edit(lineIndex, insertedLines.length, removedLines);
+					setSelection(selection);
+				},
+				
+				redo() {
+					document.edit(lineIndex, removedLines.length, insertedLines);
+					setSelection(newSelection);
+				},
+			});
 		},
 		
 		async copy({document, selection}) {
 			// TODO line if not full selection?
+			if (!Selection.isFull(selection)) {
+				return;
+			}
+			
 			await clipboard.write(document.getSelectedText(selection));
 		},
 		
