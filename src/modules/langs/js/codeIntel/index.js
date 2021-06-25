@@ -3,6 +3,7 @@ let AstSelection = require("../../../utils/AstSelection");
 let removeSelection = require("../../common/codeIntel/removeSelection");
 let createSpaces = require("../../common/codeIntel/utils/createSpaces");
 let findIndentLevel = require("../../common/codeIntel/utils/findIndentLevel");
+let findSiblingIndex = require("../../common/codeIntel/utils/findSiblingIndex");
 let getOpenersAndClosersOnLine = require("./getOpenersAndClosersOnLine");
 let astSelection = require("./astSelection");
 let pickOptions = require("./pickOptions");
@@ -43,46 +44,68 @@ module.exports = {
 		let indentStr = document.fileDetails.indentation.string;
 		let [toStart, toEnd] = toSelection;
 		
-		if (move && fromSelection) {
-			let [fromStart, fromEnd] = fromSelection;
-			
-			let edit = removeSelection(document, fromSelection);
-			
-			edits.push(edit);
-			
-			if (fromEnd < toEnd) {
-				let {
-					removedLines,
-					insertedLines,
-				} = edit;
-				
-				let removeDiff = removedLines.length - insertedLines.length;
-				
-				toStart -= removeDiff;
-				toEnd -= removeDiff;
-			}
-		}
-		
 		let insertIndentLevel = findIndentLevel(document.lines, toStart);
 		
-		if (toStart === toEnd) { // insert between lines - no added spaces
-			edits.push(document.edit(toStart, 0, indentLines(lines.map(function([indentLevel, line]) {
-				return indentStr.repeat(indentLevel) + line;
-			}), indentStr, insertIndentLevel)));
+		if (
+			fromSelection
+			&& toSelection
+			&& AstSelection.isAdjacent(fromSelection, toSelection)
+		) { // space from sibling
+			let [fromStart, fromEnd] = fromSelection;
+			let indentLevel = document.lines[fromStart].indentLevel;
+			let dir = fromStart < toStart ? -1 : 1;
+			let index = fromStart < toStart ? fromStart - 1 : fromEnd;
+			let addSpacesAt = fromStart < toStart ? fromStart : fromEnd;
+			let siblingIndex = findSiblingIndex(document.lines, index, indentLevel, dir);
 			
-			newSelection = AstSelection.s(toStart, toStart + lines.length);
-		} else { // insert into space - add spaces either side
-			let spaces = createSpaces(toEnd - toStart, insertIndentLevel, indentStr);
-			
-			edits.push(document.edit(toEnd, 0, [
-				...indentLines(lines.map(function([indentLevel, line]) {
-					return indentStr.repeat(indentLevel) + line;
-				}), indentStr, insertIndentLevel),
+			if (siblingIndex !== null) {
+				let existingSpaces = Math.abs(index - siblingIndex);
+				let spaces = (toEnd - toStart) - existingSpaces;
 				
-				...spaces,
-			]));
+				edits.push(document.edit(addSpacesAt, 0, createSpaces(spaces, document.lines[fromStart].indentLevel, indentStr)));
+				
+				newSelection = fromSelection;
+			}
+		} else {
+			if (move && fromSelection) {
+				let [fromStart, fromEnd] = fromSelection;
+				
+				let edit = removeSelection(document, fromSelection);
+				
+				edits.push(edit);
+				
+				if (fromEnd < toEnd) {
+					let {
+						removedLines,
+						insertedLines,
+					} = edit;
+					
+					let removeDiff = removedLines.length - insertedLines.length;
+					
+					toStart -= removeDiff;
+					toEnd -= removeDiff;
+				}
+			}
 			
-			newSelection = AstSelection.s(toEnd, toEnd + lines.length);
+			if (toStart === toEnd) { // insert between lines - no added spaces
+				edits.push(document.edit(toStart, 0, indentLines(lines.map(function([indentLevel, line]) {
+					return indentStr.repeat(indentLevel) + line;
+				}), indentStr, insertIndentLevel)));
+				
+				newSelection = AstSelection.s(toStart, toStart + lines.length);
+			} else { // insert into space
+				let spaces = createSpaces(toEnd - toStart, insertIndentLevel, indentStr);
+				
+				edits.push(document.edit(toEnd, 0, [
+					...indentLines(lines.map(function([indentLevel, line]) {
+						return indentStr.repeat(indentLevel) + line;
+					}), indentStr, insertIndentLevel),
+					
+					...spaces,
+				]));
+				
+				newSelection = AstSelection.s(toEnd, toEnd + lines.length);
+			}
 		}
 		
 		return {
