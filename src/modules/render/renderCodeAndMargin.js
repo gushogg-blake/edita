@@ -67,6 +67,9 @@ module.exports = function(
 			let commands = line.height === 1 ? line.commands : line.wrappedLines[i].commands;
 			
 			if (i > 0) {
+				console.log("wrapped line");
+				console.log(line.string);
+				console.log(line.indentOffset);
 				x += line.indentOffset * colWidth;
 			}
 			

@@ -9,13 +9,6 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 	
 	unwrapLine(line);
 	
-	/*
-	TODO simplify & fix - always render at indent level, use line.indentOffset
-	instead of counting, drop long-strings-of-spaces logic, 
-	*/
-	
-	return;
-	
 	if (availableWidth < colWidth) {
 		return;
 	}
@@ -31,14 +24,15 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 	2) indent wrapped lines to the same level as the main line
 	*/
 	
-	let availableCols = screenCols - line.indentOffset;
+	let textCols = screenCols - line.indentOffset;
 	
-	if (availableCols < indentation.colsPerIndent) {
+	if (textCols < indentation.colsPerIndent) {
 		return;
 	}
 	
 	line.wrappedLines = [];
 	
+	let availableCols = screenCols;
 	let currentlyAvailableCols = availableCols;
 	
 	let wrappedLine = {
@@ -150,10 +144,7 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 					commands: [],
 				};
 				
-				if (isIndented) {
-					availableCols = screenCols - indentCols;
-				}
-				
+				availableCols = textCols;
 				currentlyAvailableCols = availableCols;
 			} else {
 				// word doesn't fit on current line but will fit on next line
@@ -167,10 +158,7 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 					commands: [],
 				};
 				
-				if (isIndented) {
-					availableCols = screenCols - indentCols;
-				}
-				
+				availableCols = textCols;
 				currentlyAvailableCols = availableCols;
 			}
 		}
