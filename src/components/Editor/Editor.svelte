@@ -256,6 +256,10 @@ let normalKeyboardHandler = normalKeyboard({
 	setSelection(selection, preserveBatchState=false) {
 		setNormalSelection(selection);
 		
+		if (Selection.isFull(selection)) {
+			clipboard.writeSelection(document.getSelectedText(selection));
+		}
+		
 		if (!preserveBatchState) {
 			normalKeyboardHandler.clearBatchState();
 		}

@@ -36,15 +36,6 @@ module.exports = function(editor) {
 		"Ctrl+Y": "redo",
 	};
 	
-	function setClipboardSelection() { // TODO can this be moved to Editor with if isFull?
-		let {
-			document,
-			selection,
-		} = editor;
-		
-		clipboard.writeSelection(document.getSelectedText(selection));
-	}
-	
 	let batchState = null;
 	
 	let functions = {
@@ -92,31 +83,26 @@ module.exports = function(editor) {
 		
 		expandOrContractSelectionUp({document, selection, selectionEndCol}) {
 			editor.setSelection(Selection.expandOrContractUp(document.lines, selection, selectionEndCol));
-			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionDown({document, selection, selectionEndCol}) {
 			editor.setSelection(Selection.expandOrContractDown(document.lines, selection, selectionEndCol));
-			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionLeft({document, selection}) {
 			editor.setSelection(Selection.expandOrContractLeft(document.lines, selection));
 			editor.updateSelectionEndCol();
-			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionRight({document, selection}) {
 			editor.setSelection(Selection.expandOrContractRight(document.lines, selection));
 			editor.updateSelectionEndCol();
-			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionPageUp({document, selection, selectionEndCol}) {
 			let {rows} = editor.getCodeAreaSize();
 			
 			editor.setSelection(Selection.expandOrContractPageUp(document.lines, rows, selection, selectionEndCol));
-			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionPageDown({document, selection, selectionEndCol}) {
@@ -128,13 +114,11 @@ module.exports = function(editor) {
 		expandOrContractSelectionEnd({document, selection}) {
 			editor.setSelection(Selection.expandOrContractEnd(document.lines, selection));
 			editor.updateSelectionEndCol();
-			setClipboardSelection();
 		},
 		
 		expandOrContractSelectionHome({document, selection}) {
 			editor.setSelection(Selection.expandOrContractHome(document.lines, selection));
 			editor.updateSelectionEndCol();
-			setClipboardSelection();
 		},
 		
 		enter({document, selection, setSelection, addHistoryEntry}) {
@@ -307,6 +291,7 @@ module.exports = function(editor) {
 		},
 		
 		async cut({document, selection, setSelection, addHistoryEntry}) {
+			// TODO line if not full selection?
 			if (!Selection.isFull(selection)) {
 				return;
 			}
