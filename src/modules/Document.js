@@ -177,6 +177,7 @@ class Document extends Evented {
 				} = this.edit(lineIndex, 2, line.string + nextLineString);
 				
 				return {
+					lineIndex,
 					insertedLines,
 					removedLines,
 					newSelection: Selection.s([lineIndex, line.string.length]),
@@ -196,6 +197,7 @@ class Document extends Evented {
 				);
 				
 				return {
+					lineIndex,
 					insertedLines,
 					removedLines,
 					newSelection: selection,

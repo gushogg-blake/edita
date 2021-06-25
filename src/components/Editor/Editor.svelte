@@ -734,12 +734,7 @@ function ensureNormalCursorIsOnScreen() {
 function setNormalSelection(selection) {
 	normalSelection = selection;
 	
-	normalSelectionRegions = calculateNormalSelectionRegions(
-		document.lines,
-		normalSelection,
-		scrollPosition,
-		measurements,
-	);
+	updateNormalSelectionRegions();
 }
 
 function updateSelectionEndCol() {
@@ -793,6 +788,15 @@ function switchToNormalMode() {
 		
 		updateSelectionEndCol();
 	}
+}
+
+function updateNormalSelectionRegions() {
+	normalSelectionRegions = calculateNormalSelectionRegions(
+		document.lines,
+		normalSelection,
+		scrollPosition,
+		measurements,
+	);
 }
 
 function startCursorBlink() {
@@ -867,6 +871,8 @@ function redraw() {
 }
 
 function updateCanvas() {
+	updateNormalSelectionRegions();
+	
 	render(
 		context,
 		mode,

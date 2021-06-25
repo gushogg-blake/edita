@@ -137,51 +137,163 @@ module.exports = function(editor) {
 			setClipboardSelection();
 		},
 		
-		enter({document, selection}) {
+		enter({document, selection, setSelection, addHistoryEntry}) {
 			let {
+				lineIndex,
 				insertedLines,
 				removedLines,
 				newSelection,
 			} = document.insertNewline(selection);
 			
 			editor.setSelection(newSelection);
+			
+			addHistoryEntry({
+				undo() {
+					document.edit(lineIndex, insertedLines.length, removedLines);
+					setSelection(selection);
+				},
+				
+				redo() {
+					document.edit(lineIndex, removedLines.length, insertedLines);
+					setSelection(newSelection);
+				},
+			});
 		},
 		
-		enterNoAutoIndent({document, selection}) {
+		enterNoAutoIndent({document, selection, setSelection, addHistoryEntry}) {
 			//let {
+			//	lineIndex,
 			//	insertedLines,
 			//	removedLines,
 			//	newSelection,
 			//} = document.insertNewlineNoAutoIndent(selection);
 			//
 			//editor.setSelection(newSelection);
+			//
+			//addHistoryEntry({
+			//	undo() {
+			//		document.edit(lineIndex, insertedLines.length, removedLines);
+			//		setSelection(selection);
+			//	},
+			//	
+			//	redo() {
+			//		document.edit(lineIndex, removedLines.length, insertedLines);
+			//		setSelection(newSelection);
+			//	},
+			//});
 		},
 		
+		/*
+		NOTE backspace and delete are identical except for backspace/delete
+		*/
+		
 		backspace({document, selection}) {
+			let newBatchState = Selection.isFull(selection) ? null : "backspace";
+			
 			let {
+				lastHistoryEntry,
+				addHistoryEntry,
+				setSelection,
+			} = editor;
+			
+			let result = document.backspace(selection);
+			
+			if (result === null) {
+				return;
+			}
+			
+			let {
+				lineIndex,
 				insertedLines,
 				removedLines,
 				newSelection,
-			} = document.backspace(selection);
+			} = result;
 			
-			editor.setSelection(newSelection);
+			setSelection(newSelection, batchState === "backspace");
+			
+			let redo = function() {
+				document.edit(lineIndex, removedLines.length, insertedLines);
+				setSelection(newSelection);
+			}
+			
+			if (batchState === "backspace") {
+				lastHistoryEntry.redo = redo;
+			} else {
+				addHistoryEntry({
+					undo() {
+						document.edit(lineIndex, insertedLines.length, removedLines);
+						setSelection(selection);
+					},
+					
+					redo,
+				});
+			}
+			
+			if (!Selection.isFull(selection)) {
+				newBatchState = "backspace";
+			}
+			
+			return {
+				batchState: newBatchState,
+			};
 		},
 		
 		delete({document, selection}) {
+			let newBatchState = Selection.isFull(selection) ? null : "delete";
+			
 			let {
+				lastHistoryEntry,
+				addHistoryEntry,
+				setSelection,
+			} = editor;
+			
+			let result = document.delete(selection);
+			
+			if (result === null) {
+				return;
+			}
+			
+			let {
+				lineIndex,
 				insertedLines,
 				removedLines,
 				newSelection,
-			} = document.delete(selection);
+			} = result;
 			
-			editor.setSelection(newSelection);
+			setSelection(newSelection, batchState === "delete");
+			
+			let redo = function() {
+				document.edit(lineIndex, removedLines.length, insertedLines);
+				setSelection(newSelection);
+			}
+			
+			if (batchState === "delete") {
+				lastHistoryEntry.redo = redo;
+			} else {
+				addHistoryEntry({
+					undo() {
+						document.edit(lineIndex, insertedLines.length, removedLines);
+						setSelection(selection);
+					},
+					
+					redo,
+				});
+			}
+			
+			if (!Selection.isFull(selection)) {
+				newBatchState = "delete";
+			}
+			
+			return {
+				batchState: newBatchState,
+			};
 		},
 		
-		tab({document, selection}) {
-			// TODO snippets
-			// TODO indent/dedent selection
+		tab({document, selection, setSelection, addHistoryEntry}) {
+			// TODO snippets, indent/dedent selection, history
 			
 			let {
+				lineIndex,
 				insertedLines,
 				removedLines,
 				newSelection,
@@ -190,11 +302,11 @@ module.exports = function(editor) {
 			editor.setSelection(newSelection);
 		},
 		
-		shiftTab({document, selection}) {
+		shiftTab({document, selection, setSelection, addHistoryEntry}) {
 			// TODO
 		},
 		
-		async cut({document, selection}) {
+		async cut({document, selection, setSelection, addHistoryEntry}) {
 		},
 		
 		async copy({document, selection}) {
@@ -202,14 +314,27 @@ module.exports = function(editor) {
 			await clipboard.write(document.getSelectedText(selection));
 		},
 		
-		async paste({document, selection}) {
+		async paste({document, selection, setSelection, addHistoryEntry}) {
 			let {
+				lineIndex,
 				insertedLines,
 				removedLines,
 				newSelection,
 			} = document.replaceSelection(selection, await clipboard.read());
 			
-			editor.setSelection(newSelection);
+			setSelection(newSelection);
+			
+			addHistoryEntry({
+				undo() {
+					document.edit(lineIndex, insertedLines.length, removedLines);
+					setSelection(selection);
+				},
+				
+				redo() {
+					document.edit(lineIndex, removedLines.length, insertedLines);
+					setSelection(newSelection);
+				},
+			});
 		},
 		
 		undo() {
@@ -240,7 +365,7 @@ module.exports = function(editor) {
 					newSelection,
 				} = document.insertCharacter(selection, e.key);
 				
-				setSelection(newSelection, true);
+				setSelection(newSelection, batchState === "typing");
 				
 				let redo = function() {
 					document.edit(lineIndex, removedLines.length, insertedLines);

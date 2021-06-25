@@ -2,7 +2,7 @@ let {ipcRenderer: ipc} = window.require("electron-better-ipc");
 
 module.exports = {
 	read() {
-		return ipc.callMain("clipboard/readSelection");
+		return ipc.callMain("clipboard/read");
 	},
 	
 	write(str) {
