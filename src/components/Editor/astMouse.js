@@ -369,6 +369,7 @@ module.exports = function(editor) {
 			document,
 			setInsertionHilite,
 			setSelection,
+			addHistoryEntry,
 			clearDropTargets,
 			redraw,
 		} = editor;
@@ -425,13 +426,15 @@ module.exports = function(editor) {
 		}
 		
 		if (fromSelection && toSelection && AstSelection.isAdjacent(fromSelection, toSelection)) {
-			console.log("adjacent");
 			return;
 		}
 		
 		let {codeIntel} = document.lang;
 		
-		let newSelection = codeIntel.drop(
+		let {
+			edits,
+			newSelection,
+		} = codeIntel.drop(
 			document,
 			fromSelection,
 			toSelection,
@@ -441,8 +444,27 @@ module.exports = function(editor) {
 			target,
 		);
 		
-		if (newSelection) {
+		if (edits.length > 0) {
 			setSelection(newSelection);
+			
+			addHistoryEntry({
+				undo() {
+					console.log(edits);
+					for (let {lineIndex, removedLines, insertedLines} of [...edits].reverse()) {
+						document.edit(lineIndex, insertedLines.length, removedLines);
+					}
+					
+					setSelection(fromSelection);
+				},
+				
+				redo() {
+					for (let {lineIndex, removedLines, insertedLines} of edits) {
+						document.edit(lineIndex, removedLines.length, insertedLines);
+					}
+					
+					setSelection(newSelection);
+				},
+			});
 		}
 	}
 	

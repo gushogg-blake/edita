@@ -61,6 +61,7 @@ class Document extends Evented {
 		});
 		
 		return {
+			lineIndex,
 			removedLines,
 			insertedLines,
 		};

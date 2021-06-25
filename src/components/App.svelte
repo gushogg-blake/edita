@@ -21,13 +21,12 @@ let tabs = [];
 let editorsByTabId = {};
 let selectedTab = null;
 
-function keydown(e) {
-	let {keyCombo} = getKeyCombo(e);
-	
-	if (keymap[keyCombo]) {
-		functions[keymap[keyCombo]]();
-	}
-}
+let keymap = {
+	"Ctrl+O": "showOpenDialog",
+	"Ctrl+S": "saveCurrentFile",
+	"Ctrl+Z": "undo",
+	"Ctrl+Y": "redo",
+};
 
 let functions = {
 	async showOpenDialog() {
@@ -64,12 +63,23 @@ let functions = {
 			// TODO save dialog
 		}
 	},
+	
+	undo() {
+		getCurrentEditor()?.undo();
+	},
+	
+	redo() {
+		getCurrentEditor()?.redo();
+	},
 };
 
-let keymap = {
-	"Ctrl+O": "showOpenDialog",
-	"Ctrl+S": "saveCurrentFile",
-};
+function keydown(e) {
+	let {keyCombo} = getKeyCombo(e);
+	
+	if (keymap[keyCombo]) {
+		functions[keymap[keyCombo]]();
+	}
+}
 
 async function openFile(path) {
 	path = fs(path).path;
@@ -113,6 +123,10 @@ function findTabByPath(path) {
 	}
 	
 	return null;
+}
+
+function getCurrentEditor() {
+	return editorsByTabId[selectedTab?.id];
 }
 
 function onSelectTab({detail: tab}) {

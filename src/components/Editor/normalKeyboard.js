@@ -32,8 +32,6 @@ module.exports = function(editor) {
 		"Ctrl+X": "cut",
 		"Ctrl+C": "copy",
 		"Ctrl+V": "paste",
-		"Ctrl+Z": "undo",
-		"Ctrl+Y": "redo",
 	};
 	
 	let batchState = null;
@@ -350,14 +348,6 @@ module.exports = function(editor) {
 					setSelection(newSelection);
 				},
 			});
-		},
-		
-		undo() {
-			editor.undo();
-		},
-		
-		redo() {
-			editor.redo();
 		},
 		
 		default(e, keyCombo, isModified, {document, selection}) {

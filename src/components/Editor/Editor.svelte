@@ -52,6 +52,38 @@ export function hide() {
 	visible = false;
 }
 
+export function undo() {
+	if (historyIndex === 0) {
+		return;
+	}
+	
+	historyIndex--;
+	
+	history[historyIndex].undo();
+	
+	updateSelectionEndCol();
+	ensureSelectionIsOnScreen();
+	updateScrollbars();
+	startCursorBlink();
+	redraw();
+}
+
+export function redo() {
+	if (historyIndex === history.length) {
+		return;
+	}
+	
+	history[historyIndex].redo();
+	
+	historyIndex++;
+	
+	updateSelectionEndCol();
+	ensureSelectionIsOnScreen();
+	updateScrollbars();
+	startCursorBlink();
+	redraw();
+}
+
 let revisionCounter = 0;
 let mounted = false;
 let canvasDiv;
@@ -76,7 +108,7 @@ let visible = true;
 let focused = false;
 let windowHasFocus;
 
-let mode = "normal";
+let mode = "ast";
 let isPeekingAstMode = false;
 let switchToAstModeOnMouseUp = false;
 let resetNormalSelection = true;
@@ -225,6 +257,7 @@ let astMouseHandler = astMouse({
 		astInsertionHilite = selection;
 	},
 	
+	addHistoryEntry,
 	showPickOptionsFor,
 	showDropTargets,
 	clearDropTargets,
@@ -266,8 +299,6 @@ let normalKeyboardHandler = normalKeyboard({
 	},
 	
 	addHistoryEntry,
-	undo,
-	redo,
 	getCodeAreaSize,
 	updateSelectionEndCol,
 	ensureSelectionIsOnScreen,
@@ -546,26 +577,6 @@ function addHistoryEntry(entry) {
 	history.push(entry);
 	
 	historyIndex = history.length;
-}
-
-function undo() {
-	if (historyIndex === 0) {
-		return;
-	}
-	
-	historyIndex--;
-	
-	history[historyIndex].undo();
-}
-
-function redo() {
-	if (historyIndex === history.length) {
-		return;
-	}
-	
-	history[historyIndex].redo();
-	
-	historyIndex++;
 }
 
 function showPickOptionsFor(selection) {
