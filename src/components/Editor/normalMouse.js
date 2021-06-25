@@ -141,11 +141,7 @@ module.exports = function(editor) {
 	
 	function drawSelection(e) {
 		let {
-			canvas,
-			measurements,
-			document,
 			selection,
-			scrollPosition,
 			setSelection,
 			redraw,
 		} = editor;
@@ -223,7 +219,12 @@ module.exports = function(editor) {
 	}
 	
 	function dragstart(e) {
+		let {
+			document,
+			selection,
+		} = editor;
 		
+		e.dataTransfer.setData("text/plain", document.getSelectedText(selection));
 	}
 	
 	function dragover(e) {
