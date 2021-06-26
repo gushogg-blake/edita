@@ -56,7 +56,7 @@ module.exports = function(editor) {
 			scrollPosition,
 			scrollBy,
 			setSelection,
-			addHistoryEntry,
+			applyAndAddHistoryEntry,
 			redraw,
 			startCursorBlink,
 		} = editor;
@@ -72,14 +72,14 @@ module.exports = function(editor) {
 		let y = e.clientY - top;
 		
 		if (e.button === 1) {
-			setSelection(Selection.s(cursor));
+			//setSelection();
 			
 			let str = await clipboard.readSelection();
 			
 			let {
 				edit,
 				newSelection,
-			} = document.replaceSelection(editor.selection, str);
+			} = document.replaceSelection(Selection.s(cursor), str);
 			
 			applyAndAddHistoryEntry({
 				edits: [edit],
