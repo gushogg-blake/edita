@@ -52,36 +52,12 @@ export function hide() {
 	visible = false;
 }
 
-export function undo() {
-	if (historyIndex === 0) {
-		return;
-	}
-	
-	historyIndex--;
-	
-	history[historyIndex].undo();
-	
-	updateSelectionEndCol();
-	ensureSelectionIsOnScreen();
-	updateScrollbars();
-	startCursorBlink();
-	redraw();
+export function _undo(...args) {
+	return undo(...args);
 }
 
-export function redo() {
-	if (historyIndex === history.length) {
-		return;
-	}
-	
-	history[historyIndex].redo();
-	
-	historyIndex++;
-	
-	updateSelectionEndCol();
-	ensureSelectionIsOnScreen();
-	updateScrollbars();
-	startCursorBlink();
-	redraw();
+export function _redo(...args) {
+	return redo(...args);
 }
 
 let revisionCounter = 0;
@@ -180,7 +156,7 @@ let normalMouseHandler = normalMouse({
 	scrollBy,
 	redraw,
 	startCursorBlink,
-	addHistoryEntry,
+	applyAndAddHistoryEntry,
 	
 	setSelection(selection) {
 		setNormalSelection(selection);
@@ -263,7 +239,7 @@ let astMouseHandler = astMouse({
 		astInsertionHilite = selection;
 	},
 	
-	addHistoryEntry,
+	applyAndAddHistoryEntry,
 	showPickOptionsFor,
 	showDropTargets,
 	clearDropTargets,
@@ -292,19 +268,18 @@ let normalKeyboardHandler = normalKeyboard({
 		return history[historyIndex - 1];
 	},
 	
-	setSelection(selection, preserveBatchState=false) {
+	setSelection(selection) {
 		setNormalSelection(selection);
 		
 		if (Selection.isFull(selection)) {
 			clipboard.writeSelection(document.getSelectedText(selection));
 		}
 		
-		if (!preserveBatchState) {
-			normalKeyboardHandler.clearBatchState();
-		}
+		normalKeyboardHandler.clearBatchState();
 	},
 	
-	addHistoryEntry,
+	applyEdit,
+	applyAndAddHistoryEntry,
 	getCodeAreaSize,
 	updateSelectionEndCol,
 	ensureSelectionIsOnScreen,
@@ -330,6 +305,7 @@ let astKeyboardHandler = astKeyboard({
 		setAstSelection(selection);
 	},
 	
+	applyAndAddHistoryEntry,
 	scrollPageUp,
 	scrollPageDown,
 	scrollBy,
@@ -594,7 +570,46 @@ function keyup(e) {
 	}
 }
 
-function addHistoryEntry(entry) {
+/*
+NOTE could rename these - edit means both text edit and composite edit (text
+and selection updates)
+*/
+
+function applyEdit(edit) {
+	let {
+		edits,
+		normalSelection,
+		astSelection,
+	} = edit;
+	
+	for (let edit of edits) {
+		console.log(edit);
+		document.apply(edit);
+	}
+	
+	if (normalSelection) {
+		setNormalSelection(normalSelection);
+	}
+	
+	if (astSelection) {
+		setAstSelection(astSelection);
+	}
+}
+
+function applyAndAddHistoryEntry(edit) {
+	let undo = {
+		normalSelection,
+		astSelection,
+		edits: [...edit.edits].reverse().map(e => document.reverse(e)),
+	};
+	
+	applyEdit(edit);
+	
+	let entry = {
+		undo,
+		redo: edit,
+	};
+	
 	if (historyIndex < history.length) {
 		history.splice(historyIndex, history.length - historyIndex);
 	}
@@ -602,6 +617,38 @@ function addHistoryEntry(entry) {
 	history.push(entry);
 	
 	historyIndex = history.length;
+}
+
+function undo() {
+	if (historyIndex === 0) {
+		return;
+	}
+	
+	historyIndex--;
+	
+	applyEdit(history[historyIndex].undo);
+	
+	updateSelectionEndCol();
+	ensureSelectionIsOnScreen();
+	updateScrollbars();
+	startCursorBlink();
+	redraw();
+}
+
+function redo() {
+	if (historyIndex === history.length) {
+		return;
+	}
+	
+	applyEdit(history[historyIndex].redo);
+	
+	historyIndex++;
+	
+	updateSelectionEndCol();
+	ensureSelectionIsOnScreen();
+	updateScrollbars();
+	startCursorBlink();
+	redraw();
 }
 
 function showPickOptionsFor(selection) {

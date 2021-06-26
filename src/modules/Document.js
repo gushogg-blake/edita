@@ -49,21 +49,40 @@ class Document extends Evented {
 			insertLines = [];
 		}
 		
-		let insertedLines = insertLines;
-		let removedLines = this.lines.slice(lineIndex, lineIndex + removeLines).map(line => line.string);
+		return {
+			lineIndex,
+			removeLines: this.lines.slice(lineIndex, lineIndex + removeLines).map(line => line.string),
+			insertLines,
+		};
+	}
+	
+	apply(edit) {
+		let {
+			lineIndex,
+			removeLines,
+			insertLines,
+		} = edit;
 		
-		this.lines.splice(lineIndex, removeLines, ...insertLines.map(createLine));
+		this.lines.splice(lineIndex, removeLines.length, ...insertLines.map(createLine));
 		
 		this.fire("edit", {
 			lineIndex,
-			removedLines,
-			insertedLines,
+			removedLines: removeLines,
+			insertedLines: insertLines,
 		});
+	}
+	
+	reverse(edit) {
+		let {
+			lineIndex,
+			removeLines,
+			insertLines,
+		} = edit;
 		
 		return {
 			lineIndex,
-			removedLines,
-			insertedLines,
+			removeLines: insertLines,
+			insertLines: removeLines,
 		};
 	}
 	
@@ -75,23 +94,23 @@ class Document extends Evented {
 		let prefix = this.lines[startLineIndex].string.substr(0, startOffset);
 		let suffix = this.lines[endLineIndex].string.substr(endOffset);
 		
-		let {
-			removedLines,
-			insertedLines,
-		} = this.edit(
+		let edit = this.edit(
 			startLineIndex,
 			endLineIndex - startLineIndex + 1,
 			prefix + string + suffix,
 		);
 		
-		let newEndLineIndex = startLineIndex + insertedLines.length - 1;
-		let lastLine = insertedLines[insertedLines.length - 1];
+		let {
+			removeLines,
+			insertLines,
+		} = edit;
+		
+		let newEndLineIndex = startLineIndex + insertLines.length - 1;
+		let lastLine = insertLines[insertLines.length - 1];
 		let newSelection = Selection.s([newEndLineIndex, lastLine.length - suffix.length]);
 		
 		return {
-			lineIndex: startLineIndex,
-			removedLines,
-			insertedLines,
+			edit,
 			newSelection,
 		};
 	}
@@ -119,14 +138,8 @@ class Document extends Evented {
 				let prevLineIndex = lineIndex - 1;
 				let prevLineString = this.lines[prevLineIndex].string;
 				
-				let {
-					removedLines,
-					insertedLines,
-				} = this.edit(lineIndex - 1, 2, prevLineString + line.string);
-				
 				return {
-					removedLines,
-					insertedLines,
+					edit: this.edit(lineIndex - 1, 2, prevLineString + line.string),
 					newSelection: Selection.s([prevLineIndex, prevLineString.length]),
 				};
 			} else {
@@ -134,19 +147,13 @@ class Document extends Evented {
 				
 				let {string} = line;
 				
-				let {
-					removedLines,
-					insertedLines,
-				} = this.edit(
-					lineIndex,
-					1,
-					string.substr(0, offset - 1) + string.substr(offset),
-				);
-				
 				return {
-					lineIndex,
-					removedLines,
-					insertedLines,
+					edit: this.edit(
+						lineIndex,
+						1,
+						string.substr(0, offset - 1) + string.substr(offset),
+					),
+					
 					newSelection: Selection.s([lineIndex, offset - 1]),
 				};
 			}
@@ -172,15 +179,8 @@ class Document extends Evented {
 				let nextLineIndex = lineIndex + 1;
 				let nextLineString = this.lines[nextLineIndex].string;
 				
-				let {
-					insertedLines,
-					removedLines,
-				} = this.edit(lineIndex, 2, line.string + nextLineString);
-				
 				return {
-					lineIndex,
-					insertedLines,
-					removedLines,
+					edit: this.edit(lineIndex, 2, line.string + nextLineString),
 					newSelection: Selection.s([lineIndex, line.string.length]),
 				};
 			} else {
@@ -188,19 +188,13 @@ class Document extends Evented {
 				
 				let {string} = line;
 				
-				let {
-					insertedLines,
-					removedLines,
-				} = this.edit(
-					lineIndex,
-					1,
-					string.substr(0, offset) + string.substr(offset + 1),
-				);
-				
 				return {
-					lineIndex,
-					insertedLines,
-					removedLines,
+					edit: this.edit(
+						lineIndex,
+						1,
+						string.substr(0, offset) + string.substr(offset + 1),
+					),
+					
 					newSelection: selection,
 				};
 			}

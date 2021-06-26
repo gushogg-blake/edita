@@ -77,24 +77,13 @@ module.exports = function(editor) {
 			let str = await clipboard.readSelection();
 			
 			let {
-				lineIndex,
-				removedLines,
-				insertedLines,
+				edit,
 				newSelection,
 			} = document.replaceSelection(editor.selection, str);
 			
-			setSelection(newSelection);
-			
-			addHistoryEntry({
-				undo() {
-					document.edit(lineIndex, insertedLines.length, removedLines);
-					setSelection(selection);
-				},
-				
-				redo() {
-					document.edit(lineIndex, removedLines.length, insertedLines);
-					setSelection(newSelection);
-				},
+			applyAndAddHistoryEntry({
+				edits: [edit],
+				normalSelection: newSelection,
 			});
 			
 			startCursorBlink();

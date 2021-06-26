@@ -6,6 +6,12 @@ let commandsToShorthand = require("../../../utils/commandsToShorthand");
 
 let wrapLine = require("../../../../src/modules/wrapLine/wrapLine");
 
+let indentation = {
+	string: "\t",
+	re: /\t*/,
+	colsPerIndent: 4,
+};
+
 let measurements = {
 	rowHeight: 20,
 	colWidth: 10,
@@ -18,7 +24,7 @@ function wrap(code) {
 	
 	let [line] = doc.lines;
 	
-	wrapLine(line, measurements, screenWidth);
+	wrapLine(line, indentation, measurements, screenWidth);
 	
 	return line;
 }

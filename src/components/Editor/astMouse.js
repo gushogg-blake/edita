@@ -438,24 +438,9 @@ module.exports = function(editor) {
 		);
 		
 		if (edits.length > 0) {
-			setSelection(newSelection);
-			
-			addHistoryEntry({
-				undo() {
-					for (let {lineIndex, removedLines, insertedLines} of [...edits].reverse()) {
-						document.edit(lineIndex, insertedLines.length, removedLines);
-					}
-					
-					setSelection(fromSelection);
-				},
-				
-				redo() {
-					for (let {lineIndex, removedLines, insertedLines} of edits) {
-						document.edit(lineIndex, removedLines.length, insertedLines);
-					}
-					
-					setSelection(newSelection);
-				},
+			applyAndAddHistoryEntry({
+				edits,
+				astSelection: newSelection,
 			});
 		}
 	}

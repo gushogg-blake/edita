@@ -65,11 +65,11 @@ let functions = {
 	},
 	
 	undo() {
-		getCurrentEditor()?.undo();
+		getCurrentEditor()?._undo();
 	},
 	
 	redo() {
-		getCurrentEditor()?.redo();
+		getCurrentEditor()?._redo();
 	},
 };
 

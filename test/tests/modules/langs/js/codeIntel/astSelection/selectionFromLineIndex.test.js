@@ -1,7 +1,7 @@
-let {is, deep} = require("../../../../../utils/assertions");
-let dedent = require("../../../../../utils/dedent");
-let createJsDoc = require("../../../../../utils/createJsDoc");
-let js = require("../../../../../../src/modules/langs/js");
+let {is, deep} = require("../../../../../../utils/assertions");
+let dedent = require("../../../../../../utils/dedent");
+let createJsDoc = require("../../../../../../utils/createJsDoc");
+let js = require("../../../../../../../src/modules/langs/js");
 
 let tests = [
 	[
@@ -12,7 +12,7 @@ let tests = [
 			let c = 789;
 		`,
 		1,
-		[1, 1],
+		[1, 2],
 	],
 	[
 		"single line with opener, no footer",
@@ -20,7 +20,7 @@ let tests = [
 			let a = {
 		`,
 		0,
-		[0, 0],
+		[0, 1],
 	],
 	[
 		"header, footer on next line",
@@ -29,7 +29,7 @@ let tests = [
 			};
 		`,
 		0,
-		[0, 1],
+		[0, 2],
 	],
 	[
 		"block with body",
@@ -39,7 +39,7 @@ let tests = [
 			};
 		`,
 		0,
-		[0, 2],
+		[0, 3],
 	],
 	[
 		"ladder - top",
@@ -53,7 +53,7 @@ let tests = [
 			}
 		`,
 		0,
-		[0, 2],
+		[0, 3],
 	],
 	[
 		"ladder - middle",
@@ -67,7 +67,7 @@ let tests = [
 			}
 		`,
 		2,
-		[2, 4],
+		[2, 5],
 	],
 	[
 		"ladder - bottom",
@@ -81,7 +81,7 @@ let tests = [
 			}
 		`,
 		4,
-		[4, 6],
+		[4, 7],
 	],
 	[
 		"ladder - footer",
@@ -95,7 +95,7 @@ let tests = [
 			}
 		`,
 		6,
-		[4, 6],
+		[4, 7],
 	],
 	[
 		"multiline array literal with filter - array",
@@ -109,7 +109,7 @@ let tests = [
 			});
 		`,
 		0,
-		[0, 4],
+		[0, 5],
 	],
 	[
 		"multiline array literal with filter - function",
@@ -123,16 +123,16 @@ let tests = [
 			});
 		`,
 		4,
-		[4, 6],
+		[4, 7],
 	],
 ];
 
-describe("JavaScript codeIntel.astSelectionFromLineIndex", function() {
+describe("JavaScript codeIntel.astSelection.fromLineIndex", function() {
 	for (let [name, code, lineIndex, expectedAstSelection] of tests) {
 		it(name, function() {
 			let doc = createJsDoc(dedent(code).trimRight());
 			
-			let astSelection = js.codeIntel.astSelectionFromLineIndex(doc.lines, lineIndex);
+			let astSelection = js.codeIntel.astSelection.selectionFromLineIndex(doc.lines, lineIndex);
 			
 			deep(astSelection, expectedAstSelection);
 		});
