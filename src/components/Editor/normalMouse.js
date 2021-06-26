@@ -72,8 +72,6 @@ module.exports = function(editor) {
 		let y = e.clientY - top;
 		
 		if (e.button === 1) {
-			//setSelection();
-			
 			let str = await clipboard.readSelection();
 			
 			let {
