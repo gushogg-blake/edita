@@ -82,11 +82,11 @@ module.exports = {
 				
 				if (fromEnd < toEnd) {
 					let {
-						removedLines,
-						insertedLines,
+						removeLines,
+						insertLines,
 					} = edit;
 					
-					let removeDiff = removedLines.length - insertedLines.length;
+					let removeDiff = removeLines.length - insertLines.length;
 					
 					toStart -= removeDiff;
 					toEnd -= removeDiff;

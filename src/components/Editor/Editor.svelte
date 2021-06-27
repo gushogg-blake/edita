@@ -101,7 +101,7 @@ let insertCursor = null;
 // that doesn't have as many cols as the cursor
 let selectionEndCol = 0;
 
-let astSelection = [13, 14];
+let astSelection = AstSelection.fromNormalSelection(normalSelection);
 let astSelectionHilite = null;
 let astInsertionHilite = null;
 let pickOptions = [];
@@ -221,10 +221,6 @@ let astMouseHandler = astMouse({
 	
 	pick(selection) {
 		astSelection = selection;
-		
-		if (!Selection.isFull(normalSelection)) {
-			resetNormalSelection = true;
-		}
 	},
 	
 	setSelection(selection) {
@@ -583,15 +579,12 @@ function applyEdit(edit) {
 	} = edit;
 	
 	for (let edit of edits) {
-		console.log(edit);
 		document.apply(edit);
 	}
 	
 	if (normalSelection) {
 		setNormalSelection(normalSelection);
-	}
-	
-	if (astSelection) {
+	} else if (astSelection) {
 		setAstSelection(astSelection);
 	}
 }
@@ -822,6 +815,13 @@ function setNormalSelection(selection) {
 	normalSelection = selection;
 	
 	updateNormalSelectionRegions();
+	updateAstSelectionFromNormalSelection();
+}
+
+function setAstSelection(selection) {
+	astSelection = selection;
+	
+	updateNormalSelectionFromAstSelection();
 }
 
 function updateSelectionEndCol() {
@@ -831,9 +831,30 @@ function updateSelectionEndCol() {
 	selectionEndCol = endCol;
 }
 
-function setAstSelection(selection) {
-	astSelection = selection;
-	resetNormalSelection = true;
+function updateNormalSelectionRegions() {
+	normalSelectionRegions = calculateNormalSelectionRegions(
+		document.lines,
+		normalSelection,
+		scrollPosition,
+		measurements,
+	);
+}
+
+function updateNormalSelectionFromAstSelection() {
+	let [, endLineIndex] = astSelection;
+
+	normalSelection = Selection.endOfLineContent(document.lines, endLineIndex - 1);
+	
+	updateSelectionEndCol();
+	updateNormalSelectionRegions();
+}
+
+function updateAstSelectionFromNormalSelection() {
+	let selection = Selection.sort(normalSelection);
+	let [startLineIndex] = selection.start;
+	let [endLineIndex] = selection.end;
+	
+	astSelection = document.lang.codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex);
 }
 
 function switchToAstMode() {
@@ -846,15 +867,7 @@ function switchToAstMode() {
 	
 	console.log("switchToAstMode", mode);
 	
-	let selection = Selection.sort(normalSelection);
-	let [startLineIndex] = selection.start;
-	let [endLineIndex] = selection.end;
-	
-	astSelection = document.lang.codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex);
-	
 	astMouseHandler.updateHilites(lastMouseEvent);
-	
-	resetNormalSelection = false;
 }
 
 function switchToNormalMode() {
@@ -864,24 +877,8 @@ function switchToNormalMode() {
 	//}
 	
 	mode = "normal";
+	
 	setAstSelectionHilite(null);
-	
-	let [, endLineIndex] = astSelection;
-	
-	if (resetNormalSelection) {
-		setNormalSelection(Selection.endOfLineContent(document.lines, endLineIndex - 1));
-		
-		updateSelectionEndCol();
-	}
-}
-
-function updateNormalSelectionRegions() {
-	normalSelectionRegions = calculateNormalSelectionRegions(
-		document.lines,
-		normalSelection,
-		scrollPosition,
-		measurements,
-	);
 }
 
 function startCursorBlink() {

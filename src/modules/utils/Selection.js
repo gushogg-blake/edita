@@ -50,6 +50,9 @@ let api = {
 	sort,
 	isFull,
 	
+	fromAstSelection(astSelection) {
+	},
+	
 	cursorIsWithinSelection(selection, cursor) {
 		let {start, end} = sort(selection);
 		let [startLineIndex, startOffset] = start;

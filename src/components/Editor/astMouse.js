@@ -207,7 +207,7 @@ module.exports = function(editor) {
 	}
 	
 	function finishSelection(e) {
-		
+		drawingSelection = false;
 	}
 	
 	function mousemove(e) {
@@ -359,7 +359,7 @@ module.exports = function(editor) {
 			document,
 			setInsertionHilite,
 			setSelection,
-			addHistoryEntry,
+			applyAndAddHistoryEntry,
 			clearDropTargets,
 			redraw,
 		} = editor;
