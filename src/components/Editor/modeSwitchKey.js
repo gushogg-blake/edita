@@ -20,7 +20,6 @@ module.exports = function(editor) {
 		},
 		
 		keyup(e) {
-			console.log("keyup");
 			let downTime = Date.now() - keyDownAt;
 			
 			keyIsDown = false;

@@ -880,6 +880,7 @@ function switchToNormalMode() {
 	isPeekingAstMode = false;
 	
 	setAstSelectionHilite(null);
+	startCursorBlink();
 }
 
 function startCursorBlink() {

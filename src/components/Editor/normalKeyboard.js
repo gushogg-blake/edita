@@ -117,7 +117,7 @@ module.exports = function(editor) {
 			editor.updateSelectionEndCol();
 		},
 		
-		enter({document, selection, setSelection, addHistoryEntry}) {
+		enter({document, selection, setSelection, applyAndAddHistoryEntry}) {
 			let {
 				edit,
 				newSelection,
@@ -131,7 +131,7 @@ module.exports = function(editor) {
 			clearBatchState();
 		},
 		
-		enterNoAutoIndent({document, selection, setSelection, addHistoryEntry}) {
+		enterNoAutoIndent({document, selection, setSelection, applyAndAddHistoryEntry}) {
 			
 		},
 		
