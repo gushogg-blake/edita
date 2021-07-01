@@ -4,6 +4,7 @@ let Selection = require("./utils/Selection");
 let countRows = require("./utils/countRows");
 let wrapLine = require("./wrapLine/wrapLine");
 let unwrapLine = require("./wrapLine/unwrapLine");
+let getIndentLevel = require("./langs/common/utils/getIndentLevel");
 
 function createLine(string) {
 	return {
@@ -240,7 +241,48 @@ class Document extends Evented {
 	//}
 	
 	parse(prefs) {
-		this.lang.parse(this.lines, prefs, this.fileDetails);
+		console.time("parse");
+		
+		//if (endIndex === null) {
+		//	endIndex = lines.length - 1;
+		//}
+		
+		// TODO async parsing
+		let startIndex = 0;
+		let endIndex = lines.length - 1;
+		
+		let prevState = (
+			startIndex > 0
+			? lines[startIndex - 1].endState
+			: this.lang.parse.getInitialState()
+		);
+		
+		for (let lineIndex = startIndex; lineIndex <= endIndex; lineIndex++) {
+			let line = lines[lineIndex];
+			
+			let {
+				col,
+				commands,
+				endState,
+			} = this.lang.parse(
+				prefs,
+				prevState,
+				line.string,
+			);
+			
+			let indentLevel = getIndentLevel(line.string, fileDetails.indentation);
+			
+			line.width = col;
+			line.trimmed = line.string.trimLeft();
+			line.indentLevel = indentLevel.level;
+			line.indentOffset = indentLevel.offset;
+			line.commands = commands;
+			line.endState = endState;
+			
+			prevState = endState;
+		}
+		
+		console.timeEnd("parse");
 	}
 	
 	wrapLines(measurements, screenWidth) {

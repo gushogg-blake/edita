@@ -1,6 +1,3 @@
-let getIndentLevel = require("../common/utils/getIndentLevel");
-let getOpenersAndClosersOnLine = require("../common/codeIntel/getOpenersAndClosersOnLine");
-
 let keywords = [
 	"break",
 	"case",
@@ -134,10 +131,21 @@ function getCacheKey(state, slashIsDivision, openBracesStack) {
 	);
 }
 
-function convertLineToCommands(
+function getInitialState() {
+	return {
+		state: states.DEFAULT,
+		slashIsDivision: false,
+		openBracesStack: null,
+		cacheKey: getCacheKey(states.DEFAULT, false, null),
+	};
+}
+
+function parse(
 	prefs,
 	initialState,
 	lineString,
+	startIndex=0,
+	endIndex=null,
 ) {
 	let {
 		tabWidth,
@@ -576,54 +584,8 @@ function convertLineToCommands(
 	};
 }
 
-function parse(
-	lines,
-	prefs,
-	fileDetails,
-	startIndex=0,
-	endIndex=null,
-) {
-	if (endIndex === null) {
-		endIndex = lines.length - 1;
-	}
-	
-	let prevState = startIndex > 0 ? lines[startIndex - 1].endState : {
-		state: states.DEFAULT,
-		slashIsDivision: false,
-		openBracesStack: null,
-		cacheKey: getCacheKey(states.DEFAULT, false, null),
-	};
-	console.time("parse");
-	for (let lineIndex = startIndex; lineIndex <= endIndex; lineIndex++) {
-		let line = lines[lineIndex];
-		
-		let {
-			col,
-			commands,
-			endState,
-		} = convertLineToCommands(
-			prefs,
-			prevState,
-			line.string,
-		);
-		
-		let indentLevel = getIndentLevel(line.string, fileDetails.indentation);
-		
-		line.width = col;
-		line.trimmed = line.string.trimLeft();
-		line.indentLevel = indentLevel.level;
-		line.indentOffset = indentLevel.offset;
-		line.commands = commands;
-		line.endState = endState;
-		
-		//Object.assign(line, getOpenersAndClosersOnLine(line)); // perf
-		
-		prevState = endState;
-	}
-	console.timeEnd("parse");
-}
-
 module.exports = {
 	parse,
 	stateColors,
+	getInitialState,
 };

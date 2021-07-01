@@ -11,10 +11,10 @@ let states = {
 	DEFAULT: "_",
 	IN_ATTRIBUTE_SINGLE: "AS",
 	IN_ATTRIBUTE_DOUBLE: "AD",
+	IN_ATTRIBUTE_BRACES: "AB",
 	IN_COMMENT: "C",
 	IN_TAG: "T",
 	IN_JS: "J",
-	IN_JS_ATTRIBUTE: "JA",
 	IN_CSS: "S",
 };
 
@@ -24,9 +24,6 @@ let cssLangs = {
 
 let stateColors = {
 	[states.IN_COMMENT]: "comment",
-	[states.IN_ATTRIBUTE_SINGLE]: "string",
-	[states.IN_ATTRIBUTE_DOUBLE]: "string",
-	[states.IN_JS_ATTRIBUTE]: "string",
 };
 
 function getCacheKey(state, cssLang) {

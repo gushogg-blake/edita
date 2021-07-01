@@ -6,9 +6,10 @@ module.exports = function(editor) {
 	/*
 	if we press another key while the mode switch is down, we want to force
 	peek regardless of hold time so that e.g. a fast Esc+S from normal mode
-	goes up and switches back to normal mode.  Pressing another key also
-	cancels the repeat, which means we can use native drag while the Esc key
-	is down
+	goes up and switches back to normal mode.
+	
+	Pressing another key also cancels the repeat, which means we can use
+	native drag while the Esc key is down
 	*/
 	
 	let keyPressedWhilePeeking = false;

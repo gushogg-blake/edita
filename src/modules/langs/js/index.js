@@ -1,9 +1,8 @@
 let codeIntel = require("./codeIntel");
-let {parse, stateColors} = require("./parse");
+let parse = require("./parse");
 
 module.exports = {
 	code: "js",
 	parse,
-	stateColors,
 	codeIntel,
 };

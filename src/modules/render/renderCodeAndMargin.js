@@ -49,8 +49,8 @@ module.exports = function(
 	if (lineIndex > 0) {
 		let prevLine = lines[lineIndex - 1];
 		
-		if (lang.stateColors[prevLine.endState.state]) {
-			context.fillStyle = colors[lang.stateColors[prevLine.endState.state]];
+		if (lang.parse.stateColors[prevLine.endState.state]) {
+			context.fillStyle = colors[lang.parse.stateColors[prevLine.endState.state]];
 		}
 	}
 	
