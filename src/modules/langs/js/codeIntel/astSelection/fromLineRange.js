@@ -1,5 +1,16 @@
 let selectionFromLineIndex = require("./selectionFromLineIndex");
 
+/*
+trim any blank lines from the ends of the range, then go through the range
+extending the bottom of the selection by the selection at each index, but
+break before a selection would extend the top (e.g. at a footer)
+
+- ranges that include the top part of a block will extend to include the whole
+  block
+
+- ranges that include the footer of a block will stop inside the block
+*/
+
 function fromLineRange(lines, startLineIndex, endLineIndex) {
 	if (startLineIndex === endLineIndex - 1) {
 		return selectionFromLineIndex(lines, startLineIndex);
@@ -21,8 +32,6 @@ function fromLineRange(lines, startLineIndex, endLineIndex) {
 	let startIndex = startLineIndex;
 	let endIndex = startIndex;
 	
-	console.log(startLineIndex, endLineIndex);
-	
 	for (let i = startLineIndex; i <= endLineIndex - 1; i++) {
 		let [s, e] = selectionFromLineIndex(lines, i);
 		
@@ -40,8 +49,3 @@ function fromLineRange(lines, startLineIndex, endLineIndex) {
 }
 
 module.exports = fromLineRange;
-	//
-	//let indentLevel = Math.max(...lines.slice(startLineIndex, endLineIndex).map(line => line.indentLevel));
-	//
-	//console.log(indentLevel);
-	//
