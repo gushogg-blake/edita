@@ -5,6 +5,28 @@ function s(startLineIndex, endLineIndex=startLineIndex) {
 	];
 }
 
+/*
+linesToSelectionLines/selectionLinesToStrings:
+
+The contents of an AST selection is an array of [indentLevel, trimmedString]
+pairs representing the lines ("selection lines").  These two functions convert
+between arrays of Document lines, strings, and selection lines.
+*/
+
+function linesToSelectionLines(lines) {
+	let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
+	
+	return lines.map(function(line) {
+		return [line.indentLevel - minIndentLevel, line.trimmed];
+	});
+}
+
+function selectionLinesToStrings(selectionLines, indentStr, indent=0) {
+	return selectionLines.map(function([indentLevel, line]) {
+		return indentStr.repeat(indent + indentLevel) + line;
+	});
+}
+
 let api = {
 	s,
 	
@@ -115,6 +137,9 @@ let api = {
 		
 		return s(start, end);
 	},
+	
+	linesToSelectionLines,
+	selectionLinesToStrings,
 };
 
 module.exports = api;

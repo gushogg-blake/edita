@@ -285,13 +285,7 @@ module.exports = function(editor) {
 		} = editor;
 		
 		let [startLineIndex, endLineIndex] = selection;
-		
-		let lines = document.lines.slice(startLineIndex, endLineIndex);
-		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
-		
-		lines = lines.map(function(line) {
-			return [line.indentLevel - minIndentLevel, line.trimmed];
-		});
+		let lines = AstSelection.linesToSelectionLines(document.lines.slice(startLineIndex, endLineIndex));
 		
 		drag = {
 			selection,

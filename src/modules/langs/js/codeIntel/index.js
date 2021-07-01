@@ -23,7 +23,7 @@ module.exports = {
 		document,
 		fromSelection,
 		toSelection,
-		lines,
+		selectionLines,
 		move,
 		option,
 		target,
@@ -33,7 +33,7 @@ module.exports = {
 				document,
 				fromSelection,
 				toSelection,
-				lines,
+				selectionLines,
 				move,
 				option,
 			);
@@ -54,8 +54,6 @@ module.exports = {
 		if (toSelection) {
 			([toStart, toEnd] = toSelection);
 		}
-		
-		let insertIndentLevel = findIndentLevel(document.lines, toStart);
 		
 		if (
 			fromSelection
@@ -104,22 +102,35 @@ module.exports = {
 			}
 			
 			if (toSelection) {
-				if (toStart === toEnd) { // insert between lines - no added spaces
-					edits.push(document.edit(toStart, 0, indentLines(lines.map(function([indentLevel, line]) {
-						return indentStr.repeat(indentLevel) + line;
-					}), indentStr, insertIndentLevel)));
+				let insertIndentLevel = findIndentLevel(document.lines, toStart);
+				let lines = AstSelection.selectionLinesToStrings(selectionLines, indentStr, insertIndentLevel);
+				
+				if (toStart === toEnd) {
+					/*
+					insert between lines - only add a space if the selection
+					indicates it, e.g. it is a block and prefs are set to space
+					blocks from other lines
+					*/
+					
+					let edit = document.edit(toStart, 0, lines);
+					
+					edits.push(edit);
 					
 					newSelection = AstSelection.s(toStart, toStart + lines.length);
-				} else { // insert into space
+				} else {
+					/*
+					insert into space - insert after the space and copy the space
+					below the insertion
+					*/
+					
 					let spaces = createSpaces(toEnd - toStart, insertIndentLevel, indentStr);
 					
-					edits.push(document.edit(toEnd, 0, [
-						...indentLines(lines.map(function([indentLevel, line]) {
-							return indentStr.repeat(indentLevel) + line;
-						}), indentStr, insertIndentLevel),
-						
+					let edit = document.edit(toEnd, 0, [
+						...lines,
 						...spaces,
-					]));
+					]);
+					
+					edits.push(edit);
 					
 					newSelection = AstSelection.s(toEnd, toEnd + lines.length);
 				}
