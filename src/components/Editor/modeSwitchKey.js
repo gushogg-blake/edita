@@ -1,13 +1,29 @@
 module.exports = function(editor) {
 	let keyIsDown = false;
 	let keyDownAt;
-	let forcePeek = false;
+	let isPeeking = false;
+	
+	/*
+	if we press another key while the mode switch is down, we want to force
+	peek regardless of hold time so that e.g. a fast Esc+S from normal mode
+	goes up and switches back to normal mode.  Pressing another key also
+	cancels the repeat, which means we can use native drag while the Esc key
+	is down
+	*/
+	
+	let keyPressedWhilePeeking = false;
+	
+	function keydown() {
+		keyPressedWhilePeeking = true;
+	}
 	
 	return {
 		keydown(e) {
 			if (keyIsDown) {
 				return;
 			}
+			
+			window.addEventListener("keydown", keydown);
 			
 			keyIsDown = true;
 			keyDownAt = Date.now();
@@ -22,27 +38,26 @@ module.exports = function(editor) {
 		keyup(e) {
 			let downTime = Date.now() - keyDownAt;
 			
-			keyIsDown = false;
-			
 			if (editor.mode === "ast") {
-				if (downTime >= editor.minHoldTime || forcePeek) {
+				if (downTime >= editor.minHoldTime || keyPressedWhilePeeking) {
 					editor.switchToNormalMode();
 				} else {
 					editor.switchToAstMode(false);
 				}
 			}
 			
-			forcePeek = false;
+			keyIsDown = false;
+			keyPressedWhilePeeking = false;
+			
+			window.removeEventListener("keydown", keydown);
 		},
 		
-		/*
-		if we do an AST edit/navigation while the mode switch key is down,
-		force peek regardless of hold time so that e.g. a fast Esc+S from
-		normal mode goes up and switches back to normal mode
-		*/
+		get isPeeking() {
+			return isPeeking;
+		},
 		
-		forcePeek() {
-			forcePeek = true;
+		get keyPressedWhilePeeking() {
+			return keyPressedWhilePeeking;
 		},
 	};
 }

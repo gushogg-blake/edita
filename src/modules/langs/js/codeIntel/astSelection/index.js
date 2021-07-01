@@ -31,6 +31,7 @@ let api = {
 	},
 	
 	down(lines, selection) {
+		// if empty block, create a new blank line
 		return selection;
 	},
 	

@@ -85,7 +85,6 @@ let focused = false;
 let windowHasFocus;
 
 let mode = "normal";
-let isPeekingAstMode = false;
 let switchToAstModeOnMouseUp = false;
 let resetNormalSelection = true;
 
@@ -216,7 +215,7 @@ let astMouseHandler = astMouse({
 	},
 	
 	get isPeekingAstMode() {
-		return isPeekingAstMode;
+		return modeSwitchKeyHandler.isPeeking;
 	},
 	
 	pick(selection) {
@@ -301,12 +300,6 @@ let astKeyboardHandler = astKeyboard({
 		setAstSelection(selection);
 	},
 	
-	forcePeek() {
-		if (isPeekingAstMode) {
-			modeSwitchKeyHandler.forcePeek();
-		}
-	},
-	
 	applyAndAddHistoryEntry,
 	scrollPageUp,
 	scrollPageDown,
@@ -320,9 +313,7 @@ let astKeyboardHandler = astKeyboard({
 });
 
 let modeSwitchKeyHandler = modeSwitchKey({
-	switchToAstMode(isPeeking) {
-		isPeekingAstMode = isPeeking;
-		
+	switchToAstMode() {
 		if (mouseIsDown) {
 			switchToAstModeOnMouseUp = true;
 			
@@ -364,9 +355,14 @@ function mousedown({detail}) {
 		astMouseHandler.mousedown(e, option, function() {
 			// if we're holding the Esc key down to peek AST mode, use synthetic
 			// drag as native will be canceled by the repeated keydown events
-			// TODO can use native if you press a key while holding Esc, as it
-			// stops the repeats
-			enableDrag(isPeekingAstMode && $prefs.modeSwitchKey === "Escape");
+			// (unless another key has been pressed while Esc is down, which
+			// cancels the repeat)
+			
+			enableDrag(
+				modeSwitchKeyHandler.isPeeking
+				&& !modeSwitchKeyHandler.keyPressedWhilePeeking
+				&& $prefs.modeSwitchKey === "Escape"
+			);
 		});
 	}
 }
@@ -877,7 +873,6 @@ function switchToAstMode() {
 
 function switchToNormalMode() {
 	mode = "normal";
-	isPeekingAstMode = false;
 	
 	setAstSelectionHilite(null);
 	startCursorBlink();
@@ -967,7 +962,7 @@ function updateCanvas() {
 		astSelection,
 		astSelectionHilite,
 		astInsertionHilite,
-		isPeekingAstMode,
+		modeSwitchKeyHandler.isPeeking,
 		hiliteWord,
 		scrollPosition,
 		$prefs,

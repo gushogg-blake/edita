@@ -12,6 +12,7 @@ module.exports = function(editor) {
 		"h": "collapseDown",
 		"l": "collapseUp",
 		//"e": "expandDown",
+		"a": "selectSelection",
 		"Space": "toggleSpaceBelow",
 		"Shift+Space": "toggleSpaceAbove",
 	};
@@ -54,6 +55,18 @@ module.exports = function(editor) {
 			
 		},
 		
+		/*
+		select the current selection
+		
+		useful for going to the end of a block selection, e.g. to insert after a
+		block, and as a no-op for enabling native drag when peeking AST mode, which
+		requires a key press
+		*/
+		
+		selectSelection({selection}) {
+			editor.setSelection(selection);
+		},
+		
 		pageUp() {
 			editor.scrollPageUp();
 		},
@@ -79,8 +92,6 @@ module.exports = function(editor) {
 		}
 		
 		e.preventDefault();
-		
-		editor.forcePeek();
 		
 		await functions[keymap[keyCombo]](editor);
 		
