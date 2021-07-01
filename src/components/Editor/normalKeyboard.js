@@ -211,7 +211,7 @@ module.exports = function(editor) {
 			};
 		},
 		
-		tab({document, selection, setSelection, addHistoryEntry}) {
+		tab({document, selection, setSelection, applyAndAddHistoryEntry}) {
 			// TODO snippets, indent/dedent selection
 			
 			let {
@@ -227,11 +227,11 @@ module.exports = function(editor) {
 			clearBatchState();
 		},
 		
-		shiftTab({document, selection, setSelection, addHistoryEntry}) {
+		shiftTab({document, selection, setSelection, applyAndAddHistoryEntry}) {
 			// TODO
 		},
 		
-		async cut({document, selection, setSelection, addHistoryEntry}) {
+		async cut({document, selection, setSelection, applyAndAddHistoryEntry}) {
 			// TODO line if not full selection?
 			if (!Selection.isFull(selection)) {
 				return;
@@ -261,7 +261,7 @@ module.exports = function(editor) {
 			await clipboard.write(document.getSelectedText(selection));
 		},
 		
-		async paste({document, selection, setSelection, addHistoryEntry}) {
+		async paste({document, selection, setSelection, applyAndAddHistoryEntry}) {
 			let {
 				edit,
 				newSelection,

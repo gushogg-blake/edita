@@ -862,7 +862,7 @@ function updateAstSelectionFromNormalSelection() {
 	let [startLineIndex] = selection.start;
 	let [endLineIndex] = selection.end;
 	
-	astSelection = document.lang.codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex);
+	astSelection = document.lang.codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex + 1);
 }
 
 function switchToAstMode() {
