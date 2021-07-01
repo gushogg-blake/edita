@@ -39,10 +39,21 @@ module.exports = {
 			);
 		}
 		
+		let fromStart;
+		let fromEnd;
+		let toStart;
+		let toEnd;
 		let edits = [];
 		let newSelection;
 		let indentStr = document.fileDetails.indentation.string;
-		let [toStart, toEnd] = toSelection;
+		
+		if (fromSelection) {
+			([fromStart, fromEnd] = fromSelection);
+		}
+		
+		if (toSelection) {
+			([toStart, toEnd] = toSelection);
+		}
 		
 		let insertIndentLevel = findIndentLevel(document.lines, toStart);
 		
@@ -56,7 +67,6 @@ module.exports = {
 			// already spaced on the other side (because there has to be a space
 			// to drag it into)
 			
-			let [fromStart, fromEnd] = fromSelection;
 			let indentLevel = document.lines[fromStart].indentLevel;
 			let dir = fromStart < toStart ? -1 : 1;
 			let index = fromStart < toStart ? fromStart - 1 : fromEnd;
@@ -74,13 +84,11 @@ module.exports = {
 			}
 		} else {
 			if (move && fromSelection) {
-				let [fromStart, fromEnd] = fromSelection;
-				
 				let edit = removeSelection(document, fromSelection);
 				
 				edits.push(edit);
 				
-				if (fromEnd < toEnd) {
+				if (toSelection && fromEnd < toEnd) {
 					let {
 						removeLines,
 						insertLines,
@@ -91,26 +99,30 @@ module.exports = {
 					toStart -= removeDiff;
 					toEnd -= removeDiff;
 				}
+				
+				// TODO newSelection
 			}
 			
-			if (toStart === toEnd) { // insert between lines - no added spaces
-				edits.push(document.edit(toStart, 0, indentLines(lines.map(function([indentLevel, line]) {
-					return indentStr.repeat(indentLevel) + line;
-				}), indentStr, insertIndentLevel)));
-				
-				newSelection = AstSelection.s(toStart, toStart + lines.length);
-			} else { // insert into space
-				let spaces = createSpaces(toEnd - toStart, insertIndentLevel, indentStr);
-				
-				edits.push(document.edit(toEnd, 0, [
-					...indentLines(lines.map(function([indentLevel, line]) {
+			if (toSelection) {
+				if (toStart === toEnd) { // insert between lines - no added spaces
+					edits.push(document.edit(toStart, 0, indentLines(lines.map(function([indentLevel, line]) {
 						return indentStr.repeat(indentLevel) + line;
-					}), indentStr, insertIndentLevel),
+					}), indentStr, insertIndentLevel)));
 					
-					...spaces,
-				]));
-				
-				newSelection = AstSelection.s(toEnd, toEnd + lines.length);
+					newSelection = AstSelection.s(toStart, toStart + lines.length);
+				} else { // insert into space
+					let spaces = createSpaces(toEnd - toStart, insertIndentLevel, indentStr);
+					
+					edits.push(document.edit(toEnd, 0, [
+						...indentLines(lines.map(function([indentLevel, line]) {
+							return indentStr.repeat(indentLevel) + line;
+						}), indentStr, insertIndentLevel),
+						
+						...spaces,
+					]));
+					
+					newSelection = AstSelection.s(toEnd, toEnd + lines.length);
+				}
 			}
 		}
 		

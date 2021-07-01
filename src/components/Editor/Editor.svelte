@@ -301,6 +301,12 @@ let astKeyboardHandler = astKeyboard({
 		setAstSelection(selection);
 	},
 	
+	forcePeek() {
+		if (isPeekingAstMode) {
+			modeSwitchKeyHandler.forcePeek();
+		}
+	},
+	
 	applyAndAddHistoryEntry,
 	scrollPageUp,
 	scrollPageDown,
@@ -358,6 +364,8 @@ function mousedown({detail}) {
 		astMouseHandler.mousedown(e, option, function() {
 			// if we're holding the Esc key down to peek AST mode, use synthetic
 			// drag as native will be canceled by the repeated keydown events
+			// TODO can use native if you press a key while holding Esc, as it
+			// stops the repeats
 			enableDrag(isPeekingAstMode && $prefs.modeSwitchKey === "Escape");
 		});
 	}
@@ -859,24 +867,17 @@ function updateAstSelectionFromNormalSelection() {
 
 function switchToAstMode() {
 	if (mouseIsDown) {
-		console.log("not switching to ast mode");
 		return;
 	}
 	
 	mode = "ast";
 	
-	console.log("switchToAstMode", mode);
-	
 	astMouseHandler.updateHilites(lastMouseEvent);
 }
 
 function switchToNormalMode() {
-	//if (mouseIsDown) {
-	//	console.log("not switching to normal mode");
-	//	return;
-	//}
-	
 	mode = "normal";
+	isPeekingAstMode = false;
 	
 	setAstSelectionHilite(null);
 }

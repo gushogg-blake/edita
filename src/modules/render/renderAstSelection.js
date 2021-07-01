@@ -12,10 +12,6 @@ module.exports = function(
 	fileDetails,
 	measurements,
 ) {
-	if (isPeeking) {
-		return;
-	}
-	
 	context.fillStyle = prefs.astSelectionBackground;
 	
 	let {colWidth, rowHeight} = measurements;

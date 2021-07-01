@@ -5,12 +5,15 @@ module.exports = function(editor) {
 	let keymap = {
 		"PageUp": "pageUp",
 		"PageDown": "pageDown",
-		"j": "down",
-		"k": "up",
-		"J": "next",
-		"K": "previous",
-		"Enter": "toggleSpaceAbove",
-		"Shift+Enter": "toggleSpaceBelow",
+		"s": "up",
+		"d": "down",
+		"j": "next",
+		"k": "previous",
+		"h": "collapseDown",
+		"l": "collapseUp",
+		//"e": "expandDown",
+		"Space": "toggleSpaceBelow",
+		"Shift+Space": "toggleSpaceAbove",
 	};
 	
 	let functions = {
@@ -28,6 +31,27 @@ module.exports = function(editor) {
 		
 		previous({document, selection}) {
 			editor.setSelection(document.lang.codeIntel.astSelection.previous(document.lines, selection));
+		},
+		
+		expandUp() {
+			
+		},
+		
+		expandDown() {
+			
+		},
+		
+		contractUp() {
+		},
+		
+		contractDown() {
+		},
+		
+		collapseUp() {
+		},
+		
+		collapseDown() {
+			
 		},
 		
 		pageUp() {
@@ -48,24 +72,21 @@ module.exports = function(editor) {
 	};
 	
 	async function keydown(e) {
-		let handled = false;
 		let {keyCombo, isModified} = getKeyCombo(e);
 		
-		if (keymap[keyCombo]) {
-			e.preventDefault();
-			
-			await functions[keymap[keyCombo]](editor);
-			
-			handled = true;
-		} else if (functions.default) {
-			handled = functions.default(e, keyCombo, isModified, editor);
+		if (!keymap[keyCombo]) {
+			return;
 		}
 		
-		if (handled) {
-			editor.ensureSelectionIsOnScreen();
-			editor.updateScrollbars();
-			editor.redraw();
-		}
+		e.preventDefault();
+		
+		editor.forcePeek();
+		
+		await functions[keymap[keyCombo]](editor);
+		
+		editor.ensureSelectionIsOnScreen();
+		editor.updateScrollbars();
+		editor.redraw();
 	}
 	
 	return {

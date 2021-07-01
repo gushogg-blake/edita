@@ -1,19 +1,33 @@
-let fromLineIndex = require("./fromLineIndex");
+let {
+	findNextLineIndexAtIndentLevel,
+	findPrevLineIndexAtIndentLevel,
+} = require("../../../common/codeIntel/utils");
+
+let selectionFromLineIndex = require("./selectionFromLineIndex");
+let hiliteFromLineIndex = require("./hiliteFromLineIndex");
 let fromLineRange = require("./fromLineRange");
 
 let api = {
 	selectionFromLineIndex(lines, lineIndex) {
-		return fromLineIndex(lines, lineIndex, false);
+		return selectionFromLineIndex(lines, lineIndex);
 	},
 	
 	hiliteFromLineIndex(lines, lineIndex) {
-		return fromLineIndex(lines, lineIndex, true);
+		return hiliteFromLineIndex(lines, lineIndex);
 	},
 	
 	fromLineRange,
 	
 	up(lines, selection) {
-		return selection;
+		let [startLineIndex] = selection;
+		let line = lines[startLineIndex];
+		let headerLineIndex = findPrevLineIndexAtIndentLevel(lines, startLineIndex, line.indentLevel - 1);
+		
+		if (headerLineIndex === null) {
+			return selection;
+		}
+		
+		return selectionFromLineIndex(lines, headerLineIndex);
 	},
 	
 	down(lines, selection) {
