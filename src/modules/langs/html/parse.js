@@ -1,6 +1,6 @@
 let getIndentLevel = require("../common/utils/getIndentLevel");
 let js = require("../js");
-let css = require("../css");
+//let css = require("../css");
 
 let re = {
 	tagStart: /[a-zA-Z]/,
@@ -18,9 +18,9 @@ let states = {
 	IN_CSS: "S",
 };
 
-let cssLangs = {
-	css,
-};
+//let cssLangs = {
+//	css,
+//};
 
 let stateColors = {
 	[states.IN_COMMENT]: "comment",

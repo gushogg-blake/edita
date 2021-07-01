@@ -247,6 +247,7 @@ class Document extends Evented {
 		//	endIndex = lines.length - 1;
 		//}
 		
+		let {lines} = this;
 		// TODO async parsing
 		let startIndex = 0;
 		let endIndex = lines.length - 1;
@@ -264,13 +265,13 @@ class Document extends Evented {
 				col,
 				commands,
 				endState,
-			} = this.lang.parse(
+			} = this.lang.parse.parse(
 				prefs,
 				prevState,
 				line.string,
 			);
 			
-			let indentLevel = getIndentLevel(line.string, fileDetails.indentation);
+			let indentLevel = getIndentLevel(line.string, this.fileDetails.indentation);
 			
 			line.width = col;
 			line.trimmed = line.string.trimLeft();
