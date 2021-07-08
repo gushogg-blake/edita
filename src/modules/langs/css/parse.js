@@ -1,46 +1,41 @@
 let getIndentLevel = require("../common/utils/getIndentLevel");
-let js = require("../js");
-//let css = require("../css");
 
 let re = {
-	tagStart: /[a-zA-Z]/,
-	tagName: /[a-zA-Z][a-zA-Z0-9]*/g,
 };
 
 let states = {
 	DEFAULT: "_",
-	IN_ATTRIBUTE_SINGLE: "AS",
-	IN_ATTRIBUTE_DOUBLE: "AD",
+	IN_PROPERTIES: "P",
+	IN_VALUE: "V",
 	IN_COMMENT: "C",
-	IN_TAG: "T",
-	IN_JS: "J",
-	IN_JS_ATTRIBUTE: "JA",
-	IN_CSS: "S",
+	IN_STRING_SINGLE: "S",
+	IN_STRING_DOUBLE: "D",
+	IN_STRING_FUNCTION: "B", // e.g. url(...) (note - can't be multiline, so may not be necessary to have a state)
 };
-
-//let cssLangs = {
-//	css,
-//};
 
 let stateColors = {
 	[states.IN_COMMENT]: "comment",
-	[states.IN_ATTRIBUTE_SINGLE]: "string",
-	[states.IN_ATTRIBUTE_DOUBLE]: "string",
-	[states.IN_JS_ATTRIBUTE]: "string",
+	[states.IN_STRING_SINGLE]: "string",
+	[states.IN_STRING_DOUBLE]: "string",
+	[states.IN_STRING_FUNCTION]: "string",
 };
 
-function getCacheKey(state, cssLang) {
+function getCacheKey(state) {
 	return (
 		state
 		+ "_"
-		+ cssLang
+		+ property
 	);
 }
 
 function getInitialState() {
+	let state = states.DEFAULT;
+	let property = null;
+	
 	return {
-		state: states.DEFAULT,
-		cacheKey: getCacheKey(states.DEFAULT/*, cssLang*/),
+		state,
+		property,
+		cacheKey: getCacheKey(state, property),
 	};
 }
 
@@ -55,8 +50,7 @@ function convertLineToCommands(
 	
 	let {
 		state,
-		inTag,
-		inElement,
+		property,
 		cacheKey,
 	} = initialState;
 	
@@ -219,5 +213,4 @@ function parse(
 module.exports = {
 	parse,
 	stateColors,
-	getInitialState,
 };

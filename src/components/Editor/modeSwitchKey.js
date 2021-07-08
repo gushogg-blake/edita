@@ -1,7 +1,6 @@
 module.exports = function(editor) {
 	let keyIsDown = false;
 	let keyDownAt;
-	let isPeeking = false;
 	
 	/*
 	if we press another key while the mode switch is down, we want to force
@@ -14,7 +13,11 @@ module.exports = function(editor) {
 	
 	let keyPressedWhilePeeking = false;
 	
-	function keydown() {
+	function keydown(e) {
+		if (e.key === editor.modeSwitchKey) {
+			return;
+		}
+		
 		keyPressedWhilePeeking = true;
 	}
 	
@@ -54,7 +57,7 @@ module.exports = function(editor) {
 		},
 		
 		get isPeeking() {
-			return isPeeking;
+			return keyIsDown;
 		},
 		
 		get keyPressedWhilePeeking() {

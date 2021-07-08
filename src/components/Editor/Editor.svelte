@@ -336,6 +336,10 @@ let modeSwitchKeyHandler = modeSwitchKey({
 	get minHoldTime() {
 		return $prefs.minHoldTime;
 	},
+	
+	get modeSwitchKey() {
+		return $prefs.modeSwitchKey;
+	},
 });
 
 function mousedown({detail}) {
