@@ -1,4 +1,4 @@
-let {ipcRenderer} = require("electron");
+let {ipcRenderer} = window.require("electron");
 
 module.exports = {
 	read() {

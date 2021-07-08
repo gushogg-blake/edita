@@ -4,6 +4,7 @@ require("electron").ipcRenderer.addListener("fix-event-79558e00-29ef-5c7f-84bd-0
 
 import getKeyCombo from "./utils/getKeyCombo";
 import init from "./modules/ipc/init/renderer";
+import treesitter from "./modules/ipc/treesitter/renderer";
 import App from "./components/App.svelte";
 
 window.systemInfo = init.getSystemInfo(); // TODO doesn't have to be global now that it's sync - can just be required where needed

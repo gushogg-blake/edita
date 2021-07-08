@@ -1,11 +1,11 @@
-let {ipcRenderer: ipc} = window.require("electron-better-ipc");
+let {ipcRenderer} = window.require("electron");
 
 module.exports = {
 	getSystemInfo() {
-		return ipc.callMain("init/getSystemInfo");
+		return ipcRenderer.sendSync("init/getSystemInfo");
 	},
 	
 	getConfig() {
-		return ipc.callMain("init/getConfig");
+		return ipcRenderer.sendSync("init/getConfig");
 	},
 };

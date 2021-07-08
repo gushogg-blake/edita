@@ -5,7 +5,7 @@ import cssOnly from "rollup-plugin-css-only";
 import {terser} from "rollup-plugin-terser";
 import preprocess from "svelte-preprocess";
 import builtins from "rollup-plugin-node-builtins";
-//import globals from "rollup-plugin-node-globals";
+import globals from "rollup-plugin-node-globals";
 
 let production = !process.env.ROLLUP_WATCH;
 
@@ -64,7 +64,7 @@ export default {
 			],
 		}),
 		
-		//globals(),
+		globals(),
 		builtins(),
 		production && terser(),
 	],
