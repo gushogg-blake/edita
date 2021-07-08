@@ -1,4 +1,5 @@
 import Writable from "../modules/stores/Writable";
+import {systemInfo} from "../modules/ipc/init/renderer";
 
 let defaultPrefs = {
 	font: "14px DejaVu Sans Mono",
@@ -35,7 +36,7 @@ let defaultPrefs = {
 class Prefs extends Writable {
 	init(...sources) {
 		this.set(Object.assign({}, defaultPrefs, {
-			defaultNewline: window.systemInfo.newline,
+			defaultNewline: systemInfo.newline,
 		}, ...sources));
 	}
 }

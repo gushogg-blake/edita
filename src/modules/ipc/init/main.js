@@ -2,13 +2,13 @@ let os = require("os");
 let config = require("../../../config");
 
 module.exports = {
-	getSystemInfo() {
+	init() {
 		return {
-			newline: os.EOL,
+			config,
+			
+			systemInfo:{
+				newline: os.EOL,
+			},
 		};
-	},
-	
-	getConfig() {
-		return config;
 	},
 };
