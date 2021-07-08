@@ -231,7 +231,7 @@ class Document extends Evented {
 	parse(prefs) {
 		console.time("parse");
 		
-		this.lines = this.lang.parse(this.string);
+		//this.lines = this.lang.parse(this.string);
 		
 		console.timeEnd("parse");
 	}

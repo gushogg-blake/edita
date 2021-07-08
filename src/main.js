@@ -9,6 +9,7 @@ let {
 let http = require("http");
 let express = require("express");
 let getPort = require("get-port");
+let nocache = require("nocache");
 let path = require("path");
 let {ipcMain: ipc} = require("electron-better-ipc");
 let windowStateKeeper = require("electron-window-state");
@@ -21,7 +22,7 @@ let clipboard = require("./modules/ipc/clipboard/main");
 let openDialog = require("./modules/ipc/openDialog/main");
 
 // HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
-//ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
+ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
 
 if (dev) {
 	require("../watch");
@@ -48,11 +49,17 @@ let expressPort;
 let expressApp = express();
 let dir = fs(__dirname, "../public");
 
+expressApp.set("etag", false);
+
+expressApp.use(nocache());
+
 expressApp.use(async function(req, res, next) {
 	let {path} = req;
 	
 	if (path.includes("index.html")) {
+		console.log("INDEX");
 		res.sendFile(dir.child("index.html").path);
+		console.log("INDEX");
 	} else if (path.includes("bundle.js")) {
 		res.sendFile(dir.child("bundle.js").path);
 	} else if (path.includes("bundle.css")) {
@@ -66,7 +73,8 @@ expressApp.use(async function(req, res, next) {
 	} else if (path.includes("tree-sitter.js")) {
 		res.sendFile(dir.child("tree-sitter.js").path);
 	} else if (path.includes("javascript.wasm")) {
-		res.sendFile(dir.child("tree-sitter-langs", "javascript.wasm").path, {
+		res.sendFile(dir.child("tree-sitter-javascript.wasm").path, {
+		//res.sendFile(dir.child("tree-sitter-langs", "javascript.wasm").path, {
 			"Content-Type": "application/wasm",
 		});
 	} else {
@@ -98,6 +106,7 @@ async function createWindow() {
 	
 	winState.manage(win);
 	
+	console.log("LOAD" + `http://localhost:${expressPort}/index.html`);
 	win.loadURL(`http://localhost:${expressPort}/index.html`);
 
 	let watcher;
@@ -130,9 +139,10 @@ async function createWindow() {
 app.on("ready", async function() {
 	expressPort = await getPort();
 	
-	http.createServer(expressApp).listen(expressPort);
-	
-	createWindow();
+	http.createServer(expressApp).listen(expressPort, function() {
+		console.log("CERA");
+		createWindow();
+	});
 });
 
 app.on("window-all-closed", function() {
