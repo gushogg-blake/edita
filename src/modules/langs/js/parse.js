@@ -1,5 +1,5 @@
-let Parser = require("tree-sitter");
-let JavaScript = require("tree-sitter-javascript");
+//let Parser = require("tree-sitter");
+//let JavaScript = require("tree-sitter-javascript");
 let getIndentLevel = require("../common/utils/getIndentLevel");
 let advanceCursor = require("../common/utils/treesitter/advanceCursor");
 
@@ -34,26 +34,29 @@ function createLine(string, offset) {
 
 
 function parse(string) {
-	let lines = [];
+	let lines = [
+		createLine("asd", 0),
+		createLine("123", 4),
+	];
 	
-	while (true) {
-		
-		let {currentNode: node} = cursor;
-		let {startIndex, endIndex} = node;
-		
-		let value = code.substring(startIndex, endIndex);
-		
-			console.log(node);
-			console.log(value);
-		if (node.childCount === 0 ) {
-			//str += code.substring(startIndex, endIndex);
-		} else {
-		}
-		
-		if (!advanceCursor(cursor)) {
-			break;
-		}
-	}
+	//while (true) {
+	//	
+	//	let {currentNode: node} = cursor;
+	//	let {startIndex, endIndex} = node;
+	//	
+	//	let value = code.substring(startIndex, endIndex);
+	//	
+	//		console.log(node);
+	//		console.log(value);
+	//	if (node.childCount === 0 ) {
+	//		//str += code.substring(startIndex, endIndex);
+	//	} else {
+	//	}
+	//	
+	//	if (!advanceCursor(cursor)) {
+	//		break;
+	//	}
+	//}
 	
 	return lines;
 }
