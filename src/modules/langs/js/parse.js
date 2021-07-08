@@ -1,8 +1,5 @@
-let Parser = require("tree-sitter");
-let JavaScript = require("tree-sitter-javascript");
 let getIndentLevel = require("../common/utils/getIndentLevel");
 let advanceCursor = require("../common/utils/treesitter/advanceCursor");
-
 
 function createLine(string, offset) {
 	return {
@@ -31,31 +28,53 @@ function createLine(string, offset) {
 		}
 */
 
+/*
+
+parser.setLanguage(HTML);
+
+let code = `
+	<html>
+		<script>
+			let a = 123;
+		</script>
+	</html>
+`;
+
+let tree = parser.parse(code);
+
+let cursor = tree.walk();
+*/
 
 
-function parse(string) {
-	let lines = [];
-	
-	while (true) {
+
+module.exports = function(tsParser) {
+	return function(string) {
+		//let tree = tsParser.parse(code);
+		let lines = [
+			createLine("asd", 0),
+			createLine("123", 4),
+			createLine("123", 8),
+		];
 		
-		let {currentNode: node} = cursor;
-		let {startIndex, endIndex} = node;
+		//while (true) {
+		//	
+		//	let {currentNode: node} = cursor;
+		//	let {startIndex, endIndex} = node;
+		//	
+		//	let value = code.substring(startIndex, endIndex);
+		//	
+		//		console.log(node);
+		//		console.log(value);
+		//	if (node.childCount === 0 ) {
+		//		//str += code.substring(startIndex, endIndex);
+		//	} else {
+		//	}
+		//	
+		//	if (!advanceCursor(cursor)) {
+		//		break;
+		//	}
+		//}
 		
-		let value = code.substring(startIndex, endIndex);
-		
-			console.log(node);
-			console.log(value);
-		if (node.childCount === 0 ) {
-			//str += code.substring(startIndex, endIndex);
-		} else {
-		}
-		
-		if (!advanceCursor(cursor)) {
-			break;
-		}
+		return lines;
 	}
-	
-	return lines;
 }
-
-module.exports = parse;
