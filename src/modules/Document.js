@@ -4,38 +4,16 @@ let Selection = require("./utils/Selection");
 let countRows = require("./utils/countRows");
 let wrapLine = require("./wrapLine/wrapLine");
 let unwrapLine = require("./wrapLine/unwrapLine");
-let getIndentLevel = require("./langs/common/utils/getIndentLevel");
-
-function createLine(string) {
-	return {
-		string,
-		trimmed: undefined,
-		commands: [],
-		endState: null,
-		lastUsedCacheKey: null,
-		cachedCommands: {},
-		width: undefined,
-		height: undefined,
-		indentLevel: 0,
-		indentOffset: 0,
-		wrappedLines: undefined,
-	};
-}
-
-function createLines(code, newline) {
-	return code.split(newline).map(createLine);
-}
 
 class Document extends Evented {
 	constructor(code, fileDetails) {
 		super();
 		
-		this.lang = fileDetails.lang;
+		this.string = code;
 		this.fileDetails = fileDetails;
+		this.lang = fileDetails.lang;
 		
-		this.lines = createLines(code, fileDetails.newline);
-		
-		//this.parsedUpTo = 0;
+		this.parse();
 	}
 	
 	/*
@@ -43,16 +21,18 @@ class Document extends Evented {
 	delete, and a string of code to add (which can contain newlines)
 	*/
 	
-	edit(lineIndex, removeLines, insertLines) {
+	edit(lineIndex, removeLinesCount, insertLines) {
 		if (_typeof(insertLines) === "String") {
 			insertLines = insertLines.split(this.fileDetails.newline);
 		} else if (_typeof(insertLines) !== "Array") {
 			insertLines = [];
 		}
 		
+		let removeLines = this.lines.slice(lineIndex, lineIndex + removeLinesCount).map(line => line.string);
+		
 		return {
 			lineIndex,
-			removeLines: this.lines.slice(lineIndex, lineIndex + removeLines).map(line => line.string),
+			removeLines,
 			insertLines,
 		};
 	}
@@ -64,7 +44,15 @@ class Document extends Evented {
 			insertLines,
 		} = edit;
 		
-		this.lines.splice(lineIndex, removeLines.length, ...insertLines.map(createLine));
+		let removeString = removeLines.join(this.fileDetails.newline);
+		let insertString = insertLines.join(this.fileDetails.newline);
+		
+		let start = removeLines.length > 0 ? removeLines[0].offset : this.string.length;
+		let end = start + removeString.length;
+		
+		this.string = this.string.substr(0, start) + insertString + this.string.substr(end);
+		
+		this.parse();
 		
 		this.fire("edit", {
 			lineIndex,
@@ -243,45 +231,7 @@ class Document extends Evented {
 	parse(prefs) {
 		console.time("parse");
 		
-		//if (endIndex === null) {
-		//	endIndex = lines.length - 1;
-		//}
-		
-		let {lines} = this;
-		// TODO async parsing
-		let startIndex = 0;
-		let endIndex = lines.length - 1;
-		
-		let prevState = (
-			startIndex > 0
-			? lines[startIndex - 1].endState
-			: this.lang.parse.getInitialState()
-		);
-		
-		for (let lineIndex = startIndex; lineIndex <= endIndex; lineIndex++) {
-			let line = lines[lineIndex];
-			
-			let {
-				col,
-				commands,
-				endState,
-			} = this.lang.parse.parse(
-				prefs,
-				prevState,
-				line.string,
-			);
-			
-			let indentLevel = getIndentLevel(line.string, this.fileDetails.indentation);
-			
-			line.width = col;
-			line.trimmed = line.string.trimLeft();
-			line.indentLevel = indentLevel.level;
-			line.indentOffset = indentLevel.offset;
-			line.commands = commands;
-			line.endState = endState;
-			
-			prevState = endState;
-		}
+		this.lines = this.lang.parse(this.string);
 		
 		console.timeEnd("parse");
 	}
