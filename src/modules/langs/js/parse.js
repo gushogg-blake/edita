@@ -1,5 +1,4 @@
-//let Parser = require("tree-sitter");
-//let JavaScript = require("tree-sitter-javascript");
+let treesitter = require("../../ipc/treesitter/renderer");
 let getIndentLevel = require("../common/utils/getIndentLevel");
 let advanceCursor = require("../common/utils/treesitter/advanceCursor");
 

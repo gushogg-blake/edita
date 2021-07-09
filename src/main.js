@@ -5,6 +5,7 @@ let {
 	Menu,
 	ipcMain,
 } = require("electron");
+console.log(process.versions);
 
 let path = require("path");
 let {ipcMain: ipc} = require("electron-better-ipc");
@@ -46,7 +47,7 @@ let syncIpcModules = {
 	clipboard,
 	treesitter,
 };
-
+console.log(process.versions);
 for (let [key, fns] of Object.entries(asyncIpcModules)) {
 	for (let name in fns) {
 		ipc.answerRenderer(key + "/" + name, function(args=[]) {
