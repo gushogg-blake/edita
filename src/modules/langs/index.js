@@ -1,7 +1,11 @@
-let js = require("./js");
-let html = require("./html");
+let langs = {};
 
 module.exports = {
-	js,
-	html,
+	add(name, lang) {
+		langs[name] = lang;
+	},
+	
+	get(name) {
+		return langs[name] || null;
+	},
 };

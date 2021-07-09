@@ -1,52 +1,45 @@
 let getIndentLevel = require("../common/utils/getIndentLevel");
 let advanceCursor = require("../common/utils/treesitter/advanceCursor");
 
-function createLine(string, offset) {
+function createLine(offset) {
 	return {
-		string,
+		string: "",
 		offset,
-		trimmed: undefined,
+		trimmed: "",
 		commands: [],
-		width: undefined,
-		height: undefined,
+		width: 0,
+		height: 1,
 		indentLevel: 0,
 		indentOffset: 0,
 		wrappedLines: undefined,
 	};
 }
 
-
 /*
-
-			let indentLevel = getIndentLevel(line.string, this.fileDetails.indentation);
-			
-			line.width = col;
-			line.trimmed = line.string.trimLeft();
-			line.indentLevel = indentLevel.level;
-			line.indentOffset = indentLevel.offset;
-			line.commands = commands;
-		}
+	let indentLevel = getIndentLevel(line.string, this.fileDetails.indentation);
+	
+	line.width = col;
+	line.trimmed = line.string.trimLeft();
+	line.indentLevel = indentLevel.level;
+	line.indentOffset = indentLevel.offset;
+	line.commands = commands;
 */
 
-
-
-
-
-module.exports = function(parser) {
+module.exports = async function() {
+	let parser = new TreeSitter();
+	let JavaScript = await TreeSitter.Language.load("vendor/tree-sitter/langs/javascript.wasm");
+	
+	parser.setLanguage(JavaScript);
+	
 	function parse(string) {
 		let lines = [
-			createLine("asd", 0),
-			createLine("123", 4),
+			createLine(0),
+			createLine(4),
 		];
 		
-		//let JavaScript = await TreeSitter.Language.load("src/tree-sitter-javascript.wasm");
-		//let parser = new TreeSitter();
-		//
-		//parser.setLanguage(JavaScript);
-		//
-		//let tree = parser.parse("let x = 123;");
-		//
-		//console.log(tree);
+		let tree = parser.parse("let x = 123;");
+		
+		console.log(tree);
 		
 		//while (true) {
 		//	

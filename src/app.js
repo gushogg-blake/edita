@@ -3,20 +3,35 @@
 require("electron").ipcRenderer.addListener("fix-event-79558e00-29ef-5c7f-84bd-0bcd9a0c5cf3", () => {});
 
 import getKeyCombo from "./utils/getKeyCombo";
-import App from "./components/App.svelte";
+import Ui from "./components/Ui.svelte";
+import App from "./App";
 
-import js from "./modules/langs/js";
+/*
+top-level entry point for clientside JS.
+
+create App instance, which represents the entire app (within the current window).
+
+create top-level Svelte component
+*/
 
 (async function() {
-	await TreeSitter.init();
-	await js.init();
+	let app = new App();
 	
-	let app = new App({
+	await app.init();
+	
+	let ui = new Ui({
 		target: document.body,
+		props: {
+			app,
+		},
 	});
 	
+	// handy for debugging:
 	window.app = app;
+	window.ui = ui;
 })();
+
+// misc shims etc:
 
 let preventDefaultCombos = [
 	"Ctrl+W",
@@ -30,5 +45,3 @@ window.addEventListener("keydown", function(e) {
 		e.preventDefault();
 	}
 });
-
-console.warn = _ => null;

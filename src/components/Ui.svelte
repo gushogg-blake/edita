@@ -6,14 +6,14 @@ import {onMount, tick} from "svelte";
 import getKeyCombo from "../utils/getKeyCombo";
 import lid from "../utils/lid";
 import {push, remove} from "../utils/arrayMethods";
-import getFileDetails from "../modules/utils/getFileDetails";
-import langs from "../modules/langs";
 import Document from "../modules/Document";
 import openDialog from "../modules/ipc/openDialog/renderer";
 import prefs from "../stores/prefs";
 import Toolbar from "../components/Toolbar.svelte";
 import TabBar from "../components/TabBar.svelte";
 import Editor from "../components/Editor/Editor.svelte";
+
+export let app;
 
 prefs.init();
 
@@ -82,7 +82,6 @@ function keydown(e) {
 }
 
 async function openFile(path) {
-	console.log(path);
 	path = fs(path).path;
 	
 	let tab = findTabByPath(path);
@@ -95,7 +94,7 @@ async function openFile(path) {
 	
 	let code = await fs(path).read();
 	
-	let fileDetails = getFileDetails($prefs, code, path);
+	let fileDetails = app.getFileDetails($prefs, code, path);
 	
 	if (fileDetails.hasMixedNewlines) {
 		// TODO prompt to change all newlines

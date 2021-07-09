@@ -6,7 +6,7 @@ module.exports = {
 	},
 	
 	write(str) {
-		return ipcRenderer.sendSync("clipboard/write", [str]);
+		return ipcRenderer.sendSync("clipboard/write", str);
 	},
 	
 	readSelection() {
@@ -14,6 +14,6 @@ module.exports = {
 	},
 	
 	writeSelection(str) {
-		return ipcRenderer.sendSync("clipboard/writeSelection", [str]);
+		return ipcRenderer.sendSync("clipboard/writeSelection", str);
 	},
 };

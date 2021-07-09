@@ -1111,8 +1111,6 @@ async function prefsUpdated() {
 onMount(async function() {
 	context = canvas.getContext("2d");
 	
-	document.parse($prefs);
-	
 	focused = true; // DEV
 	
 	windowHasFocus = windowFocus.isFocused();
@@ -1125,11 +1123,8 @@ onMount(async function() {
 	
 	teardown.push(document.on("edit", function() {
 		revisionCounter++;
-		// TODO perf
-		// only modified lines need wraps recalculating
-		// async parsing
 		
-		document.parse($prefs);
+		// TODO perf - only modified lines need wraps recalculating
 		
 		updateWraps();
 		updateSizes();

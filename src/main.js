@@ -6,14 +6,11 @@ let {
 	ipcMain,
 } = require("electron");
 
-let http = require("http");
-let path = require("path");
 let {ipcMain: ipc} = require("electron-better-ipc");
 let windowStateKeeper = require("electron-window-state");
 let dev = require("electron-is-dev");
 let fs = require("flowfs");
 let config = require("./config");
-let expressAsyncWrap = require("./utils/express/expressAsyncWrap");
 let init = require("./modules/ipc/init/main");
 let clipboard = require("./modules/ipc/clipboard/main");
 let openDialog = require("./modules/ipc/openDialog/main");
@@ -72,20 +69,18 @@ async function createWindow() {
 	
 	winState.manage(win);
 	
-	win.loadURL(`file://${__dirname}/index.html`);
+	win.loadURL("file://" + fs(__dirname).sibling("public", "index.html").path);
 
 	let watcher;
 
-	console.log(dev);
 	if (dev) {
 		win.webContents.openDevTools();
 
-		watcher = require("chokidar").watch(path.join(__dirname, "../build"), {
+		watcher = require("chokidar").watch(fs(__dirname, "../build").path, {
 			ignoreInitial: true,
 		});
 		
 		watcher.on("change", function() {
-			console.log("chjange");
 			win.reload();
 		});
 	}

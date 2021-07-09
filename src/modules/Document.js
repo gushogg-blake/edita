@@ -27,9 +27,7 @@ class Document extends Evented {
 		this.fileDetails = fileDetails;
 		this.lang = fileDetails.lang;
 		
-		this.lines = [createLine("asd", 0),createLine("asd", 0)];
-		
-		//this.parse();
+		this.parse();
 	}
 	
 	/*
@@ -238,26 +236,18 @@ class Document extends Evented {
 		return str.substring(trimLeft, str.length - trimRight);
 	}
 	
-	//getSelectedLines(astSelection) {
-	//	let [startLineIndex, endLineIndex] = astSelection;
-	//	
-	//	return this.lines.slice(startLineIndex, endLineIndex).map(line => line.string);
-	//}
-	
 	parse(prefs) {
-		//console.time("parse");
-		//console.log(this.lang);
-		//debugger;
-		//this.lines = this.lang.parse(this.string);
-		//
-		//console.timeEnd("parse");
-		//this.lines = [];
+		console.time("parse");
+		
+		this.lines = this.lang.parse(this.string);
+		
+		console.timeEnd("parse");
 	}
 	
 	wrapLines(measurements, screenWidth) {
-		//for (let line of this.lines) {
-		//	wrapLine(line, this.fileDetails.indentation, measurements, screenWidth);
-		//}
+		for (let line of this.lines) {
+			wrapLine(line, this.fileDetails.indentation, measurements, screenWidth);
+		}
 	}
 	
 	unwrapLines() {
@@ -283,7 +273,7 @@ class Document extends Evented {
 	}
 	
 	toString() {
-		return this.lines.map(line => line.string).join(this.fileDetails.newline);
+		return this.string;
 	}
 }
 

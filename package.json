@@ -13,7 +13,7 @@
 		"electron-is-dev": "^2.0.0",
 		"electron-settings": "^4.0.2",
 		"electron-window-state": "^5.0.3",
-		"flowfs": "^5.0.0",
+		"flowfs": "^5.0.1",
 		"get-port": "^5.1.1",
 		"nocache": "^3.0.1",
 		"tree-sitter": "^0.19.0",
