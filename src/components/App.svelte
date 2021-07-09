@@ -82,37 +82,38 @@ function keydown(e) {
 }
 
 async function openFile(path) {
-	//path = fs(path).path;
-	//
-	//let tab = findTabByPath(path);
-	//
-	//if (tab) {
-	//	selectTab(tab);
-	//	
-	//	return;
-	//}
-	//
-	//let code = await fs(path).read();
-	//
-	//let fileDetails = getFileDetails($prefs, code, path);
-	//
-	//if (fileDetails.hasMixedNewlines) {
-	//	// TODO prompt to change all newlines
-	//}
-	//
-	//let newTab = {
-	//	id: lid(),
-	//	path,
-	//	document: new Document(code, fileDetails),
-	//};
-	//
-	////console.log(newTab);
-	//
-	//tabs = push(tabs, newTab);
-	//
-	//await tick(); // wait for Editor to be created
-	//
-	//selectTab(newTab);
+	console.log(path);
+	path = fs(path).path;
+	
+	let tab = findTabByPath(path);
+	
+	if (tab) {
+		selectTab(tab);
+		
+		return;
+	}
+	
+	let code = await fs(path).read();
+	
+	let fileDetails = getFileDetails($prefs, code, path);
+	
+	if (fileDetails.hasMixedNewlines) {
+		// TODO prompt to change all newlines
+	}
+	
+	let newTab = {
+		id: lid(),
+		path,
+		document: new Document(code, fileDetails),
+	};
+	
+	//console.log(newTab);
+	
+	tabs = push(tabs, newTab);
+	
+	await tick(); // wait for Editor to be created
+	
+	selectTab(newTab);
 }
 
 function findTabByPath(path) {
@@ -170,6 +171,7 @@ function closeTab(tab) {
 }
 
 onMount(async function() {
+	debugger;
 	openFile("src/components/test.js");
 });
 </script>

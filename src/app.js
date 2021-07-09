@@ -5,8 +5,11 @@ require("electron").ipcRenderer.addListener("fix-event-79558e00-29ef-5c7f-84bd-0
 import getKeyCombo from "./utils/getKeyCombo";
 import App from "./components/App.svelte";
 
+import js from "./modules/langs/js";
+
 (async function() {
 	await TreeSitter.init();
+	await js.init();
 	
 	let app = new App({
 		target: document.body,

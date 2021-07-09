@@ -76,14 +76,16 @@ async function createWindow() {
 
 	let watcher;
 
+	console.log(dev);
 	if (dev) {
 		win.webContents.openDevTools();
 
-		watcher = require("chokidar").watch(path.join(__dirname, "public"), {
+		watcher = require("chokidar").watch(path.join(__dirname, "../build"), {
 			ignoreInitial: true,
 		});
 		
 		watcher.on("change", function() {
+			console.log("chjange");
 			win.reload();
 		});
 	}

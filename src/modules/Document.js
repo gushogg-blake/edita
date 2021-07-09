@@ -5,6 +5,20 @@ let countRows = require("./utils/countRows");
 let wrapLine = require("./wrapLine/wrapLine");
 let unwrapLine = require("./wrapLine/unwrapLine");
 
+function createLine(string, offset) {
+	return {
+		string,
+		offset,
+		trimmed: undefined,
+		commands: [],
+		width: undefined,
+		height: undefined,
+		indentLevel: 0,
+		indentOffset: 0,
+		wrappedLines: undefined,
+	};
+}
+
 class Document extends Evented {
 	constructor(code, fileDetails) {
 		super();
@@ -13,7 +27,9 @@ class Document extends Evented {
 		this.fileDetails = fileDetails;
 		this.lang = fileDetails.lang;
 		
-		this.parse();
+		this.lines = [createLine("asd", 0)];
+		
+		//this.parse();
 	}
 	
 	/*
@@ -229,11 +245,13 @@ class Document extends Evented {
 	//}
 	
 	parse(prefs) {
-		console.time("parse");
-		
+		//console.time("parse");
+		//console.log(this.lang);
+		//debugger;
 		//this.lines = this.lang.parse(this.string);
-		
-		console.timeEnd("parse");
+		//
+		//console.timeEnd("parse");
+		this.lines = [];
 	}
 	
 	wrapLines(measurements, screenWidth) {

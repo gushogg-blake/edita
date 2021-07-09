@@ -4,18 +4,17 @@ let parse = require("./parse");
 module.exports = {
 	code: "js",
 	codeIntel,
+	parse,//
 	
 	async init() {
+		console.log("INT");
 		let parser = new TreeSitter();
-		let old = window.process;
-		window.process = {};
-		console.log("ASD");
-		//let JavaScript = await TreeSitter.Language.load("javascript.wasm");
-		console.log("ASD3");
-		window.process = old;
 		
-		//parser.setLanguage(JavaScript);
+		let JavaScript = await TreeSitter.Language.load("src/tree-sitter-javascript.wasm");
+		
+		parser.setLanguage(JavaScript);
 		
 		this.parse = parse(parser);
+		console.log(this.parse);
 	},
 };

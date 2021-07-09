@@ -30,32 +30,45 @@ function createLine(string, offset) {
 
 
 
-function parse(string) {
-	let lines = [
-		createLine("asd", 0),
-		createLine("123", 4),
-	];
-	
-	//while (true) {
-	//	
-	//	let {currentNode: node} = cursor;
-	//	let {startIndex, endIndex} = node;
-	//	
-	//	let value = code.substring(startIndex, endIndex);
-	//	
-	//		console.log(node);
-	//		console.log(value);
-	//	if (node.childCount === 0 ) {
-	//		//str += code.substring(startIndex, endIndex);
-	//	} else {
-	//	}
-	//	
-	//	if (!advanceCursor(cursor)) {
-	//		break;
-	//	}
-	//}
-	
-	return lines;
-}
 
-module.exports = parse;
+
+module.exports = function(parser) {
+	function parse(string) {
+		let lines = [
+			createLine("asd", 0),
+			createLine("123", 4),
+		];
+		
+		//let JavaScript = await TreeSitter.Language.load("src/tree-sitter-javascript.wasm");
+		//let parser = new TreeSitter();
+		//
+		//parser.setLanguage(JavaScript);
+		//
+		//let tree = parser.parse("let x = 123;");
+		//
+		//console.log(tree);
+		
+		//while (true) {
+		//	
+		//	let {currentNode: node} = cursor;
+		//	let {startIndex, endIndex} = node;
+		//	
+		//	let value = code.substring(startIndex, endIndex);
+		//	
+		//		console.log(node);
+		//		console.log(value);
+		//	if (node.childCount === 0 ) {
+		//		//str += code.substring(startIndex, endIndex);
+		//	} else {
+		//	}
+		//	
+		//	if (!advanceCursor(cursor)) {
+		//		break;
+		//	}
+		//}
+		
+		return lines;
+	}
+	
+	return parse;
+}
