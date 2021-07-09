@@ -171,7 +171,6 @@ function closeTab(tab) {
 }
 
 onMount(async function() {
-	debugger;
 	openFile("src/components/test.js");
 });
 </script>

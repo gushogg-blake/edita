@@ -9,10 +9,10 @@ function createLine(string, offset) {
 	return {
 		string,
 		offset,
-		trimmed: undefined,
+		trimmed: string,
 		commands: [],
 		width: undefined,
-		height: undefined,
+		height: 1,
 		indentLevel: 0,
 		indentOffset: 0,
 		wrappedLines: undefined,
@@ -27,7 +27,7 @@ class Document extends Evented {
 		this.fileDetails = fileDetails;
 		this.lang = fileDetails.lang;
 		
-		this.lines = [createLine("asd", 0)];
+		this.lines = [createLine("asd", 0),createLine("asd", 0)];
 		
 		//this.parse();
 	}
@@ -251,19 +251,19 @@ class Document extends Evented {
 		//this.lines = this.lang.parse(this.string);
 		//
 		//console.timeEnd("parse");
-		this.lines = [];
+		//this.lines = [];
 	}
 	
 	wrapLines(measurements, screenWidth) {
-		for (let line of this.lines) {
-			wrapLine(line, this.fileDetails.indentation, measurements, screenWidth);
-		}
+		//for (let line of this.lines) {
+		//	wrapLine(line, this.fileDetails.indentation, measurements, screenWidth);
+		//}
 	}
 	
 	unwrapLines() {
-		for (let line of this.lines) {
-			unwrapLine(line);
-		}
+		//for (let line of this.lines) {
+		//	unwrapLine(line);
+		//}
 	}
 	
 	countRows() {
