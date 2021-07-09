@@ -28,53 +28,34 @@ function createLine(string, offset) {
 		}
 */
 
-/*
-
-parser.setLanguage(HTML);
-
-let code = `
-	<html>
-		<script>
-			let a = 123;
-		</script>
-	</html>
-`;
-
-let tree = parser.parse(code);
-
-let cursor = tree.walk();
-*/
 
 
-
-module.exports = function(tsParser) {
-	return function(string) {
-		//let tree = tsParser.parse(code);
-		let lines = [
-			createLine("asd", 0),
-			createLine("123", 4),
-			createLine("123", 8),
-		];
-		
-		//while (true) {
-		//	
-		//	let {currentNode: node} = cursor;
-		//	let {startIndex, endIndex} = node;
-		//	
-		//	let value = code.substring(startIndex, endIndex);
-		//	
-		//		console.log(node);
-		//		console.log(value);
-		//	if (node.childCount === 0 ) {
-		//		//str += code.substring(startIndex, endIndex);
-		//	} else {
-		//	}
-		//	
-		//	if (!advanceCursor(cursor)) {
-		//		break;
-		//	}
-		//}
-		
-		return lines;
-	}
+function parse(string) {
+	let lines = [
+		createLine("asd", 0),
+		createLine("123", 4),
+	];
+	
+	//while (true) {
+	//	
+	//	let {currentNode: node} = cursor;
+	//	let {startIndex, endIndex} = node;
+	//	
+	//	let value = code.substring(startIndex, endIndex);
+	//	
+	//		console.log(node);
+	//		console.log(value);
+	//	if (node.childCount === 0 ) {
+	//		//str += code.substring(startIndex, endIndex);
+	//	} else {
+	//	}
+	//	
+	//	if (!advanceCursor(cursor)) {
+	//		break;
+	//	}
+	//}
+	
+	return lines;
 }
+
+module.exports = parse;

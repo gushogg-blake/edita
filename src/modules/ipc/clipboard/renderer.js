@@ -1,19 +1,19 @@
-let {ipcRenderer: ipc} = window.require("electron-better-ipc");
+let {ipcRenderer} = window.require("electron");
 
 module.exports = {
 	read() {
-		return ipc.callMain("clipboard/read");
+		return ipcRenderer.sendSync("clipboard/read");
 	},
 	
 	write(str) {
-		return ipc.callMain("clipboard/write", [str]);
+		return ipcRenderer.sendSync("clipboard/write", [str]);
 	},
 	
 	readSelection() {
-		return ipc.callMain("clipboard/readSelection");
+		return ipcRenderer.sendSync("clipboard/readSelection");
 	},
 	
 	writeSelection(str) {
-		return ipc.callMain("clipboard/writeSelection", [str]);
+		return ipcRenderer.sendSync("clipboard/writeSelection", [str]);
 	},
 };

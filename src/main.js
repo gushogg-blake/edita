@@ -5,6 +5,7 @@ let {
 	Menu,
 	ipcMain,
 } = require("electron");
+console.log(process.versions);
 
 let http = require("http");
 let express = require("express");
@@ -20,9 +21,21 @@ let expressAsyncWrap = require("./utils/express/expressAsyncWrap");
 let init = require("./modules/ipc/init/main");
 let clipboard = require("./modules/ipc/clipboard/main");
 let openDialog = require("./modules/ipc/openDialog/main");
+let treesitter = require("./modules/ipc/treesitter/main");
 
 // HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
+// TODO might not be needed anymore
 ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
+
+//ipcMain.addListener("synctest", async function(event, arg) {
+//	console.log("st");
+//	console.log(arg);
+//	await new Promise(r => setTimeout(r, 1000));
+//	event.returnValue = 1233;
+//	setTimeout(function() {
+//		event.reply("test");
+//	}, 1000);
+//});
 
 if (dev) {
 	require("../watch");
@@ -30,16 +43,28 @@ if (dev) {
 
 app.setPath("userData", fs(config.userDataDir, "electron").path);
 
-let ipcModules = {
-	init,
-	clipboard,
+let asyncIpcModules = {
 	openDialog,
 };
 
-for (let [key, fns] of Object.entries(ipcModules)) {
+let syncIpcModules = {
+	init,
+	clipboard,
+	treesitter,
+};
+console.log(process.versions);
+for (let [key, fns] of Object.entries(asyncIpcModules)) {
 	for (let name in fns) {
 		ipc.answerRenderer(key + "/" + name, function(args=[]) {
 			return fns[name](...args);
+		});
+	}
+}
+
+for (let [key, fns] of Object.entries(syncIpcModules)) {
+	for (let name in fns) {
+		ipcMain.addListener(key + "/" + name, async function(event, ...args) {
+			event.returnValue = await fns[name](...args);
 		});
 	}
 }
