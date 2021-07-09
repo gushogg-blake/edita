@@ -5,11 +5,15 @@ require("electron").ipcRenderer.addListener("fix-event-79558e00-29ef-5c7f-84bd-0
 import getKeyCombo from "./utils/getKeyCombo";
 import App from "./components/App.svelte";
 
-let app = new App({
-	target: document.body,
-});
-
-window.app = app;
+(async function() {
+	await TreeSitter.init();
+	
+	let app = new App({
+		target: document.body,
+	});
+	
+	window.app = app;
+})();
 
 let preventDefaultCombos = [
 	"Ctrl+W",

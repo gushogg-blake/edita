@@ -5,12 +5,8 @@ let {
 	Menu,
 	ipcMain,
 } = require("electron");
-console.log(process.versions);
 
 let http = require("http");
-let express = require("express");
-let getPort = require("get-port");
-let nocache = require("nocache");
 let path = require("path");
 let {ipcMain: ipc} = require("electron-better-ipc");
 let windowStateKeeper = require("electron-window-state");
@@ -21,21 +17,10 @@ let expressAsyncWrap = require("./utils/express/expressAsyncWrap");
 let init = require("./modules/ipc/init/main");
 let clipboard = require("./modules/ipc/clipboard/main");
 let openDialog = require("./modules/ipc/openDialog/main");
-let treesitter = require("./modules/ipc/treesitter/main");
 
 // HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
 // TODO might not be needed anymore
 ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
-
-//ipcMain.addListener("synctest", async function(event, arg) {
-//	console.log("st");
-//	console.log(arg);
-//	await new Promise(r => setTimeout(r, 1000));
-//	event.returnValue = 1233;
-//	setTimeout(function() {
-//		event.reply("test");
-//	}, 1000);
-//});
 
 if (dev) {
 	require("../watch");
@@ -50,9 +35,8 @@ let asyncIpcModules = {
 let syncIpcModules = {
 	init,
 	clipboard,
-	treesitter,
 };
-console.log(process.versions);
+
 for (let [key, fns] of Object.entries(asyncIpcModules)) {
 	for (let name in fns) {
 		ipc.answerRenderer(key + "/" + name, function(args=[]) {
@@ -70,49 +54,6 @@ for (let [key, fns] of Object.entries(syncIpcModules)) {
 }
 
 let win;
-let expressPort;
-let expressApp = express();
-let dir = fs(__dirname, "../public");
-
-expressApp.set("etag", false);
-
-expressApp.use(nocache());
-
-expressApp.use(async function(req, res, next) {
-	let {path} = req;
-	
-	if (path.includes("index.html")) {
-		console.log("INDEX");
-		res.sendFile(dir.child("index.html").path);
-		console.log("INDEX");
-	} else if (path.includes("bundle.js")) {
-		res.sendFile(dir.child("bundle.js").path);
-	} else if (path.includes("bundle.css")) {
-		res.sendFile(dir.child("bundle.css").path);
-	} else if (path.includes("global.css")) {
-		res.sendFile(dir.child("global.css").path);
-	} else if (path.includes("tree-sitter.wasm")) {
-		res.sendFile(dir.child("tree-sitter.wasm").path, {
-			"Content-Type": "application/wasm",
-		});
-	} else if (path.includes("tree-sitter.js")) {
-		res.sendFile(dir.child("tree-sitter.js").path);
-	} else if (path.includes("javascript.wasm")) {
-		res.sendFile(dir.child("tree-sitter-javascript.wasm").path, {
-		//res.sendFile(dir.child("tree-sitter-langs", "javascript.wasm").path, {
-			"Content-Type": "application/wasm",
-		});
-	} else {
-		res.status(404);
-		res.send("404");
-	}
-});
-
-expressApp.use(function(error, req, res, next) {
-	console.error(error);
-	res.status(500);
-	res.send("500");
-});
 
 async function createWindow() {
 	let winState = windowStateKeeper();
@@ -131,15 +72,14 @@ async function createWindow() {
 	
 	winState.manage(win);
 	
-	console.log("LOAD" + `http://localhost:${expressPort}/index.html`);
-	win.loadURL(`http://localhost:${expressPort}/index.html`);
+	win.loadURL(`file://${__dirname}/index.html`);
 
 	let watcher;
 
 	if (dev) {
 		win.webContents.openDevTools();
 
-		watcher = require("chokidar").watch(path.join(__dirname, "../public"), {
+		watcher = require("chokidar").watch(path.join(__dirname, "public"), {
 			ignoreInitial: true,
 		});
 		
@@ -161,13 +101,8 @@ async function createWindow() {
 	});
 }
 
-app.on("ready", async function() {
-	expressPort = await getPort();
-	
-	http.createServer(expressApp).listen(expressPort, function() {
-		console.log("CERA");
-		createWindow();
-	});
+app.on("ready", function() {
+	createWindow();
 });
 
 app.on("window-all-closed", function() {
