@@ -8,14 +8,9 @@ import lid from "../utils/lid";
 import {push, remove} from "../utils/arrayMethods";
 import Document from "../modules/Document";
 import openDialog from "../modules/ipc/openDialog/renderer";
-import prefs from "../stores/prefs";
 import Toolbar from "../components/Toolbar.svelte";
 import TabBar from "../components/TabBar.svelte";
 import Editor from "../components/Editor/Editor.svelte";
-
-export let app;
-
-prefs.init();
 
 let tabs = [];
 let editorsByTabId = {};
@@ -94,10 +89,12 @@ async function openFile(path) {
 	
 	let code = await fs(path).read();
 	
-	let fileDetails = app.getFileDetails($prefs, code, path);
+	let fileDetails = app.getFileDetails(code, path);
 	
 	if (fileDetails.hasMixedNewlines) {
 		// TODO prompt to change all newlines
+		// needed as fileDetails.newline.length is currently used for e.g.
+		// calculating line start offsets
 	}
 	
 	let newTab = {

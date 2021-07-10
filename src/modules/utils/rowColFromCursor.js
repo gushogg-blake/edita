@@ -1,3 +1,5 @@
+let expandTabs = require("./string/expandTabs");
+
 module.exports = function(
 	lines,
 	lineIndex,
@@ -39,27 +41,7 @@ module.exports = function(
 		innerLineOffset -= innerLine.string.length;
 	}
 	
-	let col = 0;
-	let charsConsumed = 0;
-	
-	for (let command of innerLine.commands) {
-		if (charsConsumed === innerLineOffset) {
-			break;
-		}
-		
-		let [type, value] = command;
-		
-		if (type === "tab") {
-			col += value;
-			charsConsumed++;
-		} else if (type === "string") {
-			let newCharsConsumed = Math.min(charsConsumed + value.length, innerLineOffset);
-			let consumed = newCharsConsumed - charsConsumed;
-			
-			charsConsumed = newCharsConsumed;
-			col += consumed;
-		}
-	}
+	let col = expandTabs(innerLine.string.substr(0, innerLineOffset)).length;
 	
 	if (innerLineIndex > 0) {
 		col += line.indentOffset;

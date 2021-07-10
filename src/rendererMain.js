@@ -19,6 +19,8 @@ create top-level Svelte component
 	
 	await app.init();
 	
+	window.app = app;
+	
 	let ui = new Ui({
 		target: document.body,
 		props: {
@@ -27,7 +29,6 @@ create top-level Svelte component
 	});
 	
 	// handy for debugging:
-	window.app = app;
 	window.ui = ui;
 })();
 

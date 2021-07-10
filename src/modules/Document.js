@@ -47,7 +47,7 @@ class Document extends Evented {
 		let removeString = removeLines.join(this.fileDetails.newline);
 		let insertString = insertLines.join(this.fileDetails.newline);
 		
-		let start = removeLines.length > 0 ? removeLines[0].offset : this.string.length;
+		let start = removeLines.length > 0 ? removeLines[0].startIndex : this.string.length;
 		let end = start + removeString.length;
 		
 		this.string = this.string.substr(0, start) + insertString + this.string.substr(end);
@@ -222,18 +222,18 @@ class Document extends Evented {
 		return str.substring(trimLeft, str.length - trimRight);
 	}
 	
-	parse(prefs) {
+	parse() {
 		console.time("parse");
 		
-		this.lines = this.lang.parse(this.string, prefs, this.fileDetails);
+		this.lines = this.lang.parse(this.string, this.fileDetails);
 		
 		console.timeEnd("parse");
 	}
 	
 	wrapLines(measurements, screenWidth) {
-		for (let line of this.lines) {
-			wrapLine(line, this.fileDetails.indentation, measurements, screenWidth);
-		}
+		//for (let line of this.lines) {
+		//	wrapLine(line, this.fileDetails.indentation, measurements, screenWidth);
+		//}
 	}
 	
 	unwrapLines() {

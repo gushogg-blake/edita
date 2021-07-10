@@ -1,95 +1,66 @@
 let fs = require("flowfs");
+let expandTabs = require("../../utils/string/expandTabs");
 let getIndentLevel = require("../common/utils/getIndentLevel");
-let advanceCursor = require("../common/utils/treesitter/advanceCursor");
+let nextNode = require("../common/utils/treesitter/nextNode");
 
-function createLine(startIndex) {
+function createLine(string, fileDetails, startIndex, tabWidth) {
+	let {
+		level: indentLevel,
+		offset: indentOffset,
+	} = getIndentLevel(string, fileDetails.indentation);
+	
+	let withTabsExpanded = expandTabs(string, tabWidth);
+	
+	// NOTE withTabsExpanded probs not that useful in general as hard to
+	// calculate indexes...
+	
 	return {
-		string: "",
 		startIndex,
-		trimmed: "",
-		commands: [],
-		width: 0,
+		string,
+		trimmed: string.trimLeft(),
+		//withTabsExpanded,
+		nodes: [],
+		width: withTabsExpanded.length,
+		indentLevel,
+		indentOffset,
 		height: 1,
-		indentLevel: 0,
-		indentOffset: 0,
 		wrappedLines: undefined,
 	};
 }
 
 /*
-	let indentLevel = getIndentLevel(line.string, this.fileDetails.indentation);
-	
-	line.width = col;
-	line.trimmed = line.string.trimLeft();
-	line.indentLevel = indentLevel.level;
-	line.indentOffset = indentLevel.offset;
-	line.commands = commands;
+- split into lines
+- assign ts nodes to the line, but otherwise keep tree separate
+- render char by char
+- wrap - don't mess with ts nodes - either just store wrap indexes or split the string (or both)
+- rendering - render ts nodes (replaceAll to expand tabs), and render plain strings if nodes have gaps/there are no nodes
+- colours - could keep a map of index -> colour, and if rendering char by char, just check it at each char and set colour if present
 */
 
 module.exports = async function() {
 	let parser = new TreeSitter();
-	let JavaScript = await TreeSitter.Language.load(fs(__dirname, "../../../../vendor/tree-sitter/langs/javascript.wasm").path);
+	let JavaScript = await TreeSitter.Language.load(fs(__dirname, "../../../../vendor/tree-sitter/langs/javascript.wasm").path); // TODO portability (file path)
 	
 	parser.setLanguage(JavaScript);
 	
-	function parse(code, prefs, fileDetails) {
-		let lines = [createLine(0)];
-		let lineIndex = 0;
-		let tree = parser.parse(code);
-		//let cursor = tree.walk();
-		let line;
-		console.log(tree);
-		let node = null;
-		let prev = null;
-		let next = null;
+	function parse(code, fileDetails, tabWidth) {
+		let lineStrings = code.split(fileDetails.newline);
+		let lineStartIndex = 0;
+		let lines = [];
 		
-		while (true) {
-			node = cursor.currentNode();
+		for (let lineString of lineStrings) {
+			lines.push(createLine(lineString, fileDetails, lineStartIndex, tabWidth));
 			
-			console.log(node);
-			let {
-				startIndex,
-				endIndex,
-				childCount,
-				startPosition,
-				endPosition,
-			} = node;
+			lineStartIndex += lineString.length + fileDetails.newline.length;
+		}
+		
+		let tree = parser.parse(code);
+		let node = tree.rootNode;
+		
+		while (node) {
+			lines[node.startPosition.row].nodes.push(node);
 			
-			let {row: startLineIndex, column: startOffset} = startPosition;
-			let {row: endLineIndex, column: endOffset} = endPosition;
-			
-			
-			
-			if (node.childCount === 0 ) {
-				
-				let str = code.substring(startIndex, endIndex);
-				
-				// single text nodes can contain newlines, so split into lines
-				let lineStrings = str.split(fileDetails.newline);
-				
-				console.log(str);
-				console.log(lineStrings);
-				
-				for (let lineString of lineStrings) {
-					
-					lineIndex = startLineIndex;
-					
-					if (!lines[lineIndex]) {
-						console.log("Adding line at index " + lineIndex);
-						lines[lineIndex] = createLine(startIndex);
-					}
-					
-					line = lines[lineIndex];
-					
-					line.commands.push(["string", lineString]);
-				}
-			} else {
-				
-			}
-			
-			if (!advanceCursor(cursor)) {
-				break;
-			}
+			node = nextNode(node);
 		}
 		
 		return lines;

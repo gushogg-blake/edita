@@ -1,3 +1,5 @@
+let {removeInPlace} = require("./arrayMethods");
+
 module.exports = class {
 	constructor() {
 		this._handlers = {};

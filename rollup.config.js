@@ -10,12 +10,11 @@ import globals from "rollup-plugin-node-globals";
 let production = !process.env.ROLLUP_WATCH;
 
 export default {
-	input: "src/app.js",
+	input: "src/rendererMain.js",
 	
 	output: {
 		sourcemap: true,
 		format: "iife",
-		name: "app",
 		file: "build/bundle.js",
 	},
 	

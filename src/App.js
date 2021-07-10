@@ -1,9 +1,48 @@
+let Evented = require("./utils/Evented");
+
 let guessIndent = require("./modules/utils/guessIndent");
 let checkNewlines = require("./modules/utils/checkNewlines");
+
+let {systemInfo} = require("./modules/ipc/init/renderer");
 
 let js = require("./modules/langs/js");
 let html = require("./modules/langs/html");
 let langs = require("./modules/langs");
+
+function defaultPrefs() {
+	return {
+		font: "14px DejaVu Sans Mono",
+		tabWidth: 4,
+		defaultIndent: "\t",
+		defaultNewline: systemInfo.newline,
+		lineNumberColor: "#9f9f9f",
+		marginBackground: "#f0f0f0",
+		selectionBackground: "#d0d0d0",
+		astSelectionBackground: "#c5e4ff",
+		astSelectionHiliteBackground: "#F2F2F2",
+		astInsertionHiliteBackground: "#606060",
+		wrap: true,
+		modeSwitchKey: "Escape",
+		minHoldTime: 200,
+		
+		langs: {
+			js: {
+				colors: {
+					keyword: "#aa33aa",
+					id: "#202020",
+					comment: "#7f7f7f",
+					symbol: "#bb22bb",
+					bracket: "#202020",
+					number: "#cc2222",
+					string: "#2233bb",
+					regex: "#cc7030",
+				},
+			},
+		},
+		
+		cursorBlinkPeriod: 700,
+	};
+}
 
 /*
 top-level object for general, global things like langs, as well as any
@@ -27,8 +66,11 @@ it won't necessarily contain all (or possibly even any) of the visible state lik
 what tabs are open etc -- that will be mostly up to the Svelte components.
 */
 
-class App {
+class App extends Evented {
 	constructor() {
+		super();
+		
+		this.prefs = defaultPrefs();
 		this.langs = langs;
 	}
 	
@@ -49,20 +91,26 @@ class App {
 		return this.langs.get("js"); // DEV
 	}
 	
-	getFileDetails(prefs, code, path) {
+	/*
+	TODO these utils should probs be moved to separate files and just attached
+	to app for access purposes -- or at least the bulk should be moved to sep files
+	and app should pass any dynamic state needed (e.g. prefs)
+	*/
+	
+	getFileDetails(code, path) {
 		let {
 			defaultLang,
 			defaultIndent,
 			tabWidth,
 			defaultNewline,
-		} = prefs;
+		} = this.prefs;
 		
 		let indent = guessIndent(code) || defaultIndent;
 		let lang = this.guessLang(code, path) || this.langs.get(defaultLang);
 		let indentType = indent[0] === "\t" ? "tab" : "space";
 		
 		let {
-			mixed: hasMixedNewlines, // NOTE may not need this as no longer using split() to split the code into lines (treesitter)
+			mixed: hasMixedNewlines,
 			mostCommon: newline,
 		} = checkNewlines(code);
 		

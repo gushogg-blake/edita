@@ -22,8 +22,6 @@ import findFirstVisibleLine from "../../modules/utils/findFirstVisibleLine";
 import Selection from "../../modules/utils/Selection";
 import AstSelection from "../../modules/utils/AstSelection";
 
-import prefs from "../../stores/prefs";
-
 import Scrollbar from "../Scrollbar.svelte";
 
 import normalMouse from "./normalMouse";
@@ -35,8 +33,6 @@ import modeSwitchKey from "./modeSwitchKey";
 import InteractionLayer from "./InteractionLayer.svelte";
 
 export let document;
-
-$: prefsUpdated($prefs);
 
 export function focus() {
 	focused = true;
@@ -78,7 +74,7 @@ let sizes = {
 
 let verticalScrollbar;
 let horizontalScrollbar;
-let hasHorizontalScrollbar = !$prefs.wrap;
+let hasHorizontalScrollbar = !app.prefs.wrap;
 
 let visible = true;
 let focused = false;
@@ -86,7 +82,6 @@ let windowHasFocus;
 
 let mode = "normal";
 let switchToAstModeOnMouseUp = false;
-let resetNormalSelection = true;
 
 let normalSelection = {
 	start: [0, 0],
@@ -334,11 +329,11 @@ let modeSwitchKeyHandler = modeSwitchKey({
 	},
 	
 	get minHoldTime() {
-		return $prefs.minHoldTime;
+		return app.prefs.minHoldTime;
 	},
 	
 	get modeSwitchKey() {
-		return $prefs.modeSwitchKey;
+		return app.prefs.modeSwitchKey;
 	},
 });
 
@@ -365,7 +360,7 @@ function mousedown({detail}) {
 			enableDrag(
 				modeSwitchKeyHandler.isPeeking
 				&& !modeSwitchKeyHandler.keyPressedWhilePeeking
-				&& $prefs.modeSwitchKey === "Escape"
+				&& app.prefs.modeSwitchKey === "Escape"
 			);
 		});
 	}
@@ -545,7 +540,7 @@ function keydown(e) {
 		return;
 	}
 	
-	if (e.key === $prefs.modeSwitchKey) {
+	if (e.key === app.prefs.modeSwitchKey) {
 		e.preventDefault();
 		
 		modeSwitchKeyHandler.keydown(e);
@@ -565,7 +560,7 @@ function keyup(e) {
 		return;
 	}
 	
-	if (e.key === $prefs.modeSwitchKey) {
+	if (e.key === app.prefs.modeSwitchKey) {
 		e.preventDefault();
 		
 		modeSwitchKeyHandler.keyup(e);
@@ -893,7 +888,7 @@ function startCursorBlink() {
 		cursorBlinkOn = !cursorBlinkOn;
 		
 		updateCanvas();
-	}, $prefs.cursorBlinkPeriod);
+	}, app.prefs.cursorBlinkPeriod);
 }
 
 function updateCanvasSize() {
@@ -909,7 +904,7 @@ function updateCanvasSize() {
 }
 
 function updateWraps() {
-	if ($prefs.wrap) {
+	if (app.prefs.wrap) {
 		document.wrapLines(
 			measurements,
 			getCodeAreaSize().width,
@@ -969,9 +964,9 @@ function updateCanvas() {
 		modeSwitchKeyHandler.isPeeking,
 		hiliteWord,
 		scrollPosition,
-		$prefs,
+		app.prefs,
 		document.fileDetails,
-		$prefs.langs[document.lang.code].colors,
+		app.prefs.langs[document.lang.code].colors,
 		measurements,
 		cursorBlinkOn,
 		windowHasFocus,
@@ -980,7 +975,7 @@ function updateCanvas() {
 
 function updateMeasurements() {
 	measurementsDiv.style = inlineStyle({
-		font: $prefs.font,
+		font: app.prefs.font,
 	});
 	
 	measurementsDiv.innerHTML = "A".repeat(10000);
@@ -1097,7 +1092,7 @@ async function prefsUpdated() {
 		return;
 	}
 	
-	hasHorizontalScrollbar = !$prefs.wrap;
+	hasHorizontalScrollbar = !app.prefs.wrap;
 	
 	await tick();
 	
@@ -1130,10 +1125,6 @@ onMount(async function() {
 		updateSizes();
 		
 		if (mode === "ast") {
-			resetNormalSelection = true;
-		}
-		
-		if (mode === "ast") {
 			astMouseHandler.updateHilites(lastMouseEvent);
 		}
 	}));
@@ -1143,6 +1134,8 @@ onMount(async function() {
 		
 		updateCanvas();
 	}));
+	
+	teardown.push(app.on("prefsUpdated", prefsUpdated));
 	
 	mounted = true;
 	
