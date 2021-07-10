@@ -64,14 +64,14 @@ module.exports = function(
 				continue;
 			}
 			
-			let commands = line.height === 1 ? line.commands : line.wrappedLines[i].commands;
+			let tokens = line.height === 1 ? line.tokens : line.wrappedLines[i].tokens;
 			
 			if (i > 0) {
 				x += line.indentOffset * colWidth;
 			}
 			
-			for (let command of commands) {
-				let [type, value] = command;
+			for (let token of tokens) {
+				let [type, value] = token;
 				
 				if (type === "string") {
 					context.fillText(value, x, y);

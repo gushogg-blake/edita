@@ -1,10 +1,10 @@
 let {multiCharWordRe, nonWordRe} = require("./config");
 
 module.exports = function(line, col) {
-	// find the index of the next command (the one that starts at col)
+	// find the index of the next token (the one that starts at col)
 	
 	let c = 0;
-	let commandIndex = 0;
+	let tokenIndex = 0;
 	let offset = 0;
 	
 	while (true) {
@@ -12,13 +12,13 @@ module.exports = function(line, col) {
 			break;
 		}
 		
-		let command = line.commands[commandIndex];
+		let token = line.tokens[tokenIndex];
 		
-		if (!command) {
+		if (!token) {
 			break;
 		}
 		
-		let [type, value] = command;
+		let [type, value] = token;
 		
 		if (type === "tab") {
 			c += value;
@@ -32,7 +32,7 @@ module.exports = function(line, col) {
 			c += value.length;
 		}
 		
-		commandIndex++;
+		tokenIndex++;
 	}
 	
 	// find word (string of word chars or single non-word char)
@@ -40,13 +40,13 @@ module.exports = function(line, col) {
 	let width = 0;
 	
 	while (true) {
-		let command = line.commands[commandIndex];
+		let token = line.tokens[tokenIndex];
 		
-		if (!command) {
+		if (!token) {
 			break;
 		}
 		
-		let [type, value] = command;
+		let [type, value] = token;
 		
 		if (type === "tab") {
 			if (width === 0) {
@@ -71,7 +71,7 @@ module.exports = function(line, col) {
 		}
 		
 		offset = 0;
-		commandIndex++;
+		tokenIndex++;
 	}
 	
 	return width;

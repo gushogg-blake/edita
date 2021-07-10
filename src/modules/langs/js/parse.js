@@ -1,10 +1,11 @@
+let fs = require("flowfs");
 let getIndentLevel = require("../common/utils/getIndentLevel");
 let advanceCursor = require("../common/utils/treesitter/advanceCursor");
 
-function createLine(offset) {
+function createLine(startIndex) {
 	return {
 		string: "",
-		offset,
+		startIndex,
 		trimmed: "",
 		commands: [],
 		width: 0,
@@ -27,38 +28,69 @@ function createLine(offset) {
 
 module.exports = async function() {
 	let parser = new TreeSitter();
-	let JavaScript = await TreeSitter.Language.load("vendor/tree-sitter/langs/javascript.wasm");
+	let JavaScript = await TreeSitter.Language.load(fs(__dirname, "../../../../vendor/tree-sitter/langs/javascript.wasm").path);
 	
 	parser.setLanguage(JavaScript);
 	
-	function parse(string) {
-		let lines = [
-			createLine(0),
-			createLine(4),
-		];
-		
-		let tree = parser.parse("let x = 123;");
-		
+	function parse(code, prefs, fileDetails) {
+		let lines = [createLine(0)];
+		let lineIndex = 0;
+		let tree = parser.parse(code);
+		//let cursor = tree.walk();
+		let line;
 		console.log(tree);
+		let node = null;
+		let prev = null;
+		let next = null;
 		
-		//while (true) {
-		//	
-		//	let {currentNode: node} = cursor;
-		//	let {startIndex, endIndex} = node;
-		//	
-		//	let value = code.substring(startIndex, endIndex);
-		//	
-		//		console.log(node);
-		//		console.log(value);
-		//	if (node.childCount === 0 ) {
-		//		//str += code.substring(startIndex, endIndex);
-		//	} else {
-		//	}
-		//	
-		//	if (!advanceCursor(cursor)) {
-		//		break;
-		//	}
-		//}
+		while (true) {
+			node = cursor.currentNode();
+			
+			console.log(node);
+			let {
+				startIndex,
+				endIndex,
+				childCount,
+				startPosition,
+				endPosition,
+			} = node;
+			
+			let {row: startLineIndex, column: startOffset} = startPosition;
+			let {row: endLineIndex, column: endOffset} = endPosition;
+			
+			
+			
+			if (node.childCount === 0 ) {
+				
+				let str = code.substring(startIndex, endIndex);
+				
+				// single text nodes can contain newlines, so split into lines
+				let lineStrings = str.split(fileDetails.newline);
+				
+				console.log(str);
+				console.log(lineStrings);
+				
+				for (let lineString of lineStrings) {
+					
+					lineIndex = startLineIndex;
+					
+					if (!lines[lineIndex]) {
+						console.log("Adding line at index " + lineIndex);
+						lines[lineIndex] = createLine(startIndex);
+					}
+					
+					line = lines[lineIndex];
+					
+					line.commands.push(["string", lineString]);
+				}
+			} else {
+				
+			}
+			
+			if (!advanceCursor(cursor)) {
+				break;
+			}
+		}
 		
 		return lines;
 	}

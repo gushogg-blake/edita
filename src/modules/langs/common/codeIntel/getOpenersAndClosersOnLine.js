@@ -8,7 +8,7 @@ module.exports = function(line, mapClosersToOpeners=ctoo) {
 	let openers = [];
 	let closers = [];
 	
-	for (let [type, value] of line.commands) {
+	for (let [type, value] of line.tokens) {
 		if (type === "open") {
 			openers.push(value);
 		} else if (type === "close") {

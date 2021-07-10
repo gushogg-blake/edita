@@ -38,7 +38,7 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 	let wrappedLine = {
 		string: "",
 		width: 0,
-		commands: [],
+		tokens: [],
 	};
 	
 	/*
@@ -49,7 +49,7 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 	- current word + space doesn't fit on line, and current word fits on a line -- start a new line
 	*/
 	
-	let commands = [...line.commands];
+	let tokens = [...line.tokens];
 	let col = 0;
 	
 	while (true) {
@@ -59,16 +59,16 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 			// word fits on current line - add to current line
 			
 			while (true) {
-				let command = commands.shift();
+				let token = tokens.shift();
 				
-				if (!command) {
+				if (!token) {
 					break;
 				}
 				
-				let [type, value] = command;
+				let [type, value] = token;
 				
 				if (type !== "string" && type !== "tab") {
-					wrappedLine.commands.push(command);
+					wrappedLine.tokens.push(token);
 					
 					continue;
 				}
@@ -76,7 +76,7 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 				if (type === "tab") {
 					let width = value;
 					
-					wrappedLine.commands.push(command);
+					wrappedLine.tokens.push(token);
 					wrappedLine.width += width;
 					wrappedLine.string += "\t";
 					
@@ -90,10 +90,10 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 				if (word.length < value.length) {
 					let rest = value.substr(word.length);
 					
-					commands.unshift([type, rest]);
+					tokens.unshift([type, rest]);
 				}
 				
-				wrappedLine.commands.push([type, word]);
+				wrappedLine.tokens.push([type, word]);
 				wrappedLine.width += word.length;
 				wrappedLine.string += word;
 				
@@ -109,12 +109,12 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 				// line and then start a new line
 				
 				while (true) {
-					let command = commands.shift();
+					let token = tokens.shift();
 					
-					let [type, value] = command;
+					let [type, value] = token;
 					
 					if (type !== "string") {
-						wrappedLine.commands.push(command);
+						wrappedLine.tokens.push(token);
 						
 						continue;
 					}
@@ -122,10 +122,10 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 					let [fill, rest] = [value.substr(0, currentlyAvailableCols), value.substr(currentlyAvailableCols)];
 					
 					if (rest.length > 0) {
-						commands.unshift([type, rest]);
+						tokens.unshift([type, rest]);
 					}
 					
-					wrappedLine.commands.push([type, fill]);
+					wrappedLine.tokens.push([type, fill]);
 					wrappedLine.width += fill.length;
 					wrappedLine.string += fill;
 					
@@ -141,7 +141,7 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 				wrappedLine = {
 					string: "",
 					width: 0,
-					commands: [],
+					tokens: [],
 				};
 				
 				availableCols = textCols;
@@ -155,7 +155,7 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 				wrappedLine = {
 					string: "",
 					width: 0,
-					commands: [],
+					tokens: [],
 				};
 				
 				availableCols = textCols;

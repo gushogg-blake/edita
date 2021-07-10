@@ -43,14 +43,14 @@ module.exports = function(
 	
 	let c = 0;
 	
-	let {commands} = line.height > 1 ? line.wrappedLines[innerLineIndex] : line;
+	let {tokens} = line.height > 1 ? line.wrappedLines[innerLineIndex] : line;
 	
-	for (let command of commands) {
+	for (let token of tokens) {
 		if (c === col) {
 			break;
 		}
 		
-		let [type, value] = command;
+		let [type, value] = token;
 		
 		if (type === "tab") {
 			let width = value;
