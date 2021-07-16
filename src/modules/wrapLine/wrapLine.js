@@ -1,4 +1,3 @@
-let countInitialWhitespaceCols = require("../utils/countInitialWhitespaceCols");
 let {minNonWhitespaceCols, wordRe} = require("./config");
 let getCurrentWordWidth = require("./getCurrentWordWidth");
 let unwrapLine = require("./unwrapLine");

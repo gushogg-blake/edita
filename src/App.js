@@ -6,7 +6,7 @@ let checkNewlines = require("./modules/utils/checkNewlines");
 let {systemInfo} = require("./modules/ipc/init/renderer");
 
 let js = require("./modules/langs/js");
-let html = require("./modules/langs/html");
+//let html = require("./modules/langs/html");
 let langs = require("./modules/langs");
 
 function defaultPrefs() {
@@ -62,8 +62,9 @@ await it.
 this will be passed to plugins etc that need to interact with the app via a
 consistent interface.
 
-it won't necessarily contain all (or possibly even any) of the visible state like
-what tabs are open etc -- that will be mostly up to the Svelte components.
+this can be shared between multiple instances of the UI, e.g. with multiple
+instances embedded in a web page, so doesn't know anything about the state of the
+UI.
 */
 
 class App extends Evented {
@@ -79,7 +80,7 @@ class App extends Evented {
 		
 		let langs = await Promise.all([
 			js(),
-			html(),
+			//html(),
 		]);
 		
 		for (let lang of langs) {

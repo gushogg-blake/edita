@@ -7,9 +7,10 @@ import Ui from "./components/Ui.svelte";
 import App from "./App";
 
 /*
-top-level entry point for clientside JS.
+top-level entry point for clientside JS (electron).
 
-create App instance, which represents the entire app (within the current window).
+create App instance, which represents the entire app (within the current
+Electron window).
 
 create top-level Svelte component
 */
@@ -23,9 +24,6 @@ create top-level Svelte component
 	
 	let ui = new Ui({
 		target: document.body,
-		props: {
-			app,
-		},
 	});
 	
 	// handy for debugging:

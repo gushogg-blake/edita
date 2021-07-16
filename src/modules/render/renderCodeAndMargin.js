@@ -65,33 +65,33 @@ module.exports = function(
 		
 		// code
 		
+		console.log("??");
 		for (let i = 0; i < line.height; i++) {
 			if (lineIndex === firstLineIndex && i < wrappedLineIndex) {
 				continue;
 			}
 			
-			let tokens = line.height === 1 ? line.tokens : line.wrappedLines[i].tokens;
+			let wrappedLine = line.height === 1 ? line : line.wrappedLines[i];
+			let col = 0;
+			let offset = 0;
 			
 			if (i > 0) {
 				x += line.indentOffset * colWidth;
 			}
 			
-			for (let token of tokens) {
-				let [type, value] = token;
-				
-				if (type === "string") {
-					context.fillText(value, x, y);
+			for (let string of wrappedLine.splitByTabs) {
+				for (let j = 0; j < string.length; j++) {
 					
-					x += value.length * colWidth;
-				} else if (type === "colour") {
-					context.fillStyle = colors[value];
-				} else if (type === "tab") {
-					let width = value;
+					// TODO color
+					context.fillStyle = "black";
+					context.fillText(string[j], x, y);
 					
-					context.fillText(" ".repeat(width), x, y);
-					
-					x += width * colWidth;
+					x += colWidth;
 				}
+				
+				offset += string.length + 1;
+				
+				x += (tabWidth - string.length % tabWidth) * colWidth;
 			}
 			
 			rowsRendered++;

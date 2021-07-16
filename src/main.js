@@ -76,7 +76,11 @@ async function createWindow() {
 	if (dev) {
 		win.webContents.openDevTools();
 
-		watcher = require("chokidar").watch(fs(__dirname, "../build").path, {
+		watcher = require("chokidar").watch([
+			"build",
+			"public",
+			"vendor",
+		].map(path => fs(__dirname).sibling(path).path), {
 			ignoreInitial: true,
 		});
 		

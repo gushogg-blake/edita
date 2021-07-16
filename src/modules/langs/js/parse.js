@@ -3,6 +3,10 @@ let expandTabs = require("../../utils/string/expandTabs");
 let getIndentLevel = require("../common/utils/getIndentLevel");
 let nextNode = require("../common/utils/treesitter/nextNode");
 
+/*
+TODO move this somewhere global
+*/
+
 function createLine(string, fileDetails, startIndex, tabWidth) {
 	let {
 		level: indentLevel,
@@ -18,6 +22,7 @@ function createLine(string, fileDetails, startIndex, tabWidth) {
 		startIndex,
 		string,
 		trimmed: string.trimLeft(),
+		splitByTabs: string.split("\t"),
 		//withTabsExpanded,
 		nodes: [],
 		width: withTabsExpanded.length,
