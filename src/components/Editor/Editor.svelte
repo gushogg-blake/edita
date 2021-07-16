@@ -964,7 +964,6 @@ function updateCanvas() {
 		modeSwitchKeyHandler.isPeeking,
 		hiliteWord,
 		scrollPosition,
-		app.prefs,
 		document.fileDetails,
 		app.prefs.langs[document.lang.code].colors,
 		measurements,

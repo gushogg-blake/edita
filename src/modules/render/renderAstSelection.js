@@ -8,11 +8,10 @@ module.exports = function(
 	astSelection,
 	isPeeking,
 	scrollPosition,
-	prefs,
 	fileDetails,
 	measurements,
 ) {
-	context.fillStyle = prefs.astSelectionBackground;
+	context.fillStyle = app.prefs.astSelectionBackground;
 	
 	let {colWidth, rowHeight} = measurements;
 	let [startLineIndex, endLineIndex] = astSelection;

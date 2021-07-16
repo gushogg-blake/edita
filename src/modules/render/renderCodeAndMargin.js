@@ -8,12 +8,18 @@ module.exports = function(
 	context,
 	lines,
 	scrollPosition,
-	prefs,
 	fileDetails,
 	colors,
 	measurements,
 ) {
-	context.font = prefs.font;
+	let {
+		font,
+		tabWidth,
+		marginBackground,
+		lineNumberColor,
+	} = app.prefs;
+	
+	context.font = font;
 	
 	let {
 		colWidth,
@@ -100,14 +106,14 @@ module.exports = function(
 		
 		let marginHeight = line.height * rowHeight;
 		
-		context.fillStyle = prefs.marginBackground;
+		context.fillStyle = marginBackground;
 		context.fillRect(0, y - marginHeight - rowHeight, marginWidth, marginHeight);
 		
 		// line number
 		
 		let lineNumber = String(lineIndex + 1);
 		
-		context.fillStyle = prefs.lineNumberColor;
+		context.fillStyle = lineNumberColor;
 		
 		context.fillText(
 			lineNumber,

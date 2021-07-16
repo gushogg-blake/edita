@@ -23,7 +23,6 @@ module.exports = function(
 	selection,
 	isPeeking,
 	scrollPosition,
-	prefs,
 	fileDetails,
 	measurements,
 ) {
@@ -31,7 +30,7 @@ module.exports = function(
 		return;
 	}
 	
-	context.fillStyle = prefs.astInsertionHiliteBackground;
+	context.fillStyle = app.prefs.astInsertionHiliteBackground;
 	
 	let {colWidth, rowHeight} = measurements;
 	let [startLineIndex, endLineIndex] = hilite;

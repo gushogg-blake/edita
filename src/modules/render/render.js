@@ -22,7 +22,6 @@ module.exports = function(
 	isPeekingAstMode,
 	hiliteWord,
 	scrollPosition,
-	prefs,
 	fileDetails,
 	colors,
 	measurements,
@@ -36,7 +35,6 @@ module.exports = function(
 	renderMarginBackground(
 		context,
 		lines,
-		prefs,
 		measurements,
 	);
 	
@@ -56,7 +54,6 @@ module.exports = function(
 		renderNormalSelection(
 			context,
 			normalSelectionRegions,
-			prefs,
 		);
 	}
 	
@@ -67,7 +64,6 @@ module.exports = function(
 			astSelection,
 			isPeekingAstMode,
 			scrollPosition,
-			prefs,
 			fileDetails,
 			measurements,
 		);
@@ -81,7 +77,6 @@ module.exports = function(
 			astSelection,
 			isPeekingAstMode,
 			scrollPosition,
-			prefs,
 			fileDetails,
 			measurements,
 		);
@@ -95,7 +90,6 @@ module.exports = function(
 			astSelection,
 			isPeekingAstMode,
 			scrollPosition,
-			prefs,
 			fileDetails,
 			measurements,
 		);
@@ -113,7 +107,6 @@ module.exports = function(
 		context,
 		lines,
 		scrollPosition,
-		prefs,
 		fileDetails,
 		colors,
 		measurements,
