@@ -7,24 +7,28 @@ let nextNode = require("../common/utils/treesitter/nextNode");
 TODO move this somewhere global
 */
 
-function createLine(string, fileDetails, startIndex, tabWidth) {
+function createLine(string, fileDetails, startIndex) {
 	let {
 		level: indentLevel,
 		offset: indentOffset,
 	} = getIndentLevel(string, fileDetails.indentation);
 	
-	let withTabsExpanded = expandTabs(string, tabWidth);
+	let withTabsExpanded = expandTabs(string, app.prefs.tabWidth);
 	
 	// NOTE withTabsExpanded probs not that useful in general as hard to
 	// calculate indexes...
+	// NOTE might also be good to calculate it on the fly to avoid having
+	// to recreate lines if tab width changes
 	
 	return {
 		startIndex,
 		string,
 		trimmed: string.trimLeft(),
 		splitByTabs: string.split("\t"),
-		//withTabsExpanded,
+		withTabsExpanded,
 		nodes: [],
+		openers: [],
+		closers: [],
 		width: withTabsExpanded.length,
 		indentLevel,
 		indentOffset,
@@ -48,13 +52,13 @@ module.exports = async function() {
 	
 	parser.setLanguage(JavaScript);
 	
-	function parse(code, fileDetails, tabWidth) {
+	function parse(code, fileDetails) {
 		let lineStrings = code.split(fileDetails.newline);
 		let lineStartIndex = 0;
 		let lines = [];
 		
 		for (let lineString of lineStrings) {
-			lines.push(createLine(lineString, fileDetails, lineStartIndex, tabWidth));
+			lines.push(createLine(lineString, fileDetails, lineStartIndex));
 			
 			lineStartIndex += lineString.length + fileDetails.newline.length;
 		}
@@ -63,7 +67,21 @@ module.exports = async function() {
 		let node = tree.rootNode;
 		
 		while (node) {
-			lines[node.startPosition.row].nodes.push(node);
+			let {
+				startPosition,
+				endPosition,
+				childCount,
+			} = node;
+			
+			if (childCount === 0) {
+				lines[startPosition.row].nodes.push(node);
+			} else {
+				if (startPosition.row !== endPosition.row) {
+					// opener/closer
+					
+					
+				}
+			}
 			
 			node = nextNode(node);
 		}
