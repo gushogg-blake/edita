@@ -1,5 +1,3 @@
-let getOpenersAndClosersOnLine = require("../getOpenersAndClosersOnLine");
-
 let {
 	findNextLineIndexAtIndentLevel,
 	findPrevLineIndexAtIndentLevel,
@@ -32,19 +30,14 @@ function fromLineIndex(lines, lineIndex, forHilite) {
 		}
 	}
 	
-	let {
-		openers,
-		closers,
-	} = getOpenersAndClosersOnLine(line);
-	
-	if (openers.length > 0) {
+	if (line.openers.length > 0) {
 		let footerIndex = findNextLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel);
 		
 		return [
 			lineIndex,
 			(footerIndex !== null ? footerIndex : lineIndex) + 1,
 		];
-	} else if (closers.length > 0) {
+	} else if (line.closers.length > 0) {
 		let headerIndex = findPrevLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel);
 		
 		return [

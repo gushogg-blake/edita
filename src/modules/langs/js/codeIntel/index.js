@@ -4,7 +4,6 @@ let removeSelection = require("../../common/codeIntel/removeSelection");
 let createSpaces = require("../../common/codeIntel/utils/createSpaces");
 let findIndentLevel = require("../../common/codeIntel/utils/findIndentLevel");
 let findSiblingIndex = require("../../common/codeIntel/utils/findSiblingIndex");
-let getOpenersAndClosersOnLine = require("./getOpenersAndClosersOnLine");
 let astSelection = require("./astSelection");
 let pickOptions = require("./pickOptions");
 let dropTargets = require("./dropTargets");
@@ -14,7 +13,6 @@ let generateDropTargets = require("./generateDropTargets");
 module.exports = {
 	pickOptions,
 	dropTargets,
-	getOpenersAndClosersOnLine,
 	astSelection,
 	generatePickOptions,
 	generateDropTargets,

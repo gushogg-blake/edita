@@ -43,14 +43,12 @@ module.exports = function(
 	
 	let c = 0;
 	
-	let {tokens} = line.height > 1 ? line.wrappedLines[innerLineIndex] : line;
+	let {variableWidthParts} = line.height > 1 ? line.wrappedLines[innerLineIndex] : line;
 	
-	for (let token of tokens) {
+	for (let [type, value] of variableWidthParts) {
 		if (c === col) {
 			break;
 		}
-		
-		let [type, value] = token;
 		
 		if (type === "tab") {
 			let width = value;

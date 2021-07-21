@@ -52,20 +52,20 @@ module.exports = function(
 	
 	let lineIndex = firstLineIndex;
 	
-	if (lineIndex > 0) {
-		let prevLine = lines[lineIndex - 1];
-		
-		if (lang.parse.stateColors[prevLine.endState.state]) {
-			context.fillStyle = colors[lang.parse.stateColors[prevLine.endState.state]];
-		}
-	}
+	// TODO color
+	//if (lineIndex > 0) {
+	//	let prevLine = lines[lineIndex - 1];
+	//	
+	//	if (lang.parse.stateColors[prevLine.endState.state]) {
+	//		context.fillStyle = colors[lang.parse.stateColors[prevLine.endState.state]];
+	//	}
+	//}
 	
 	while (true) {
 		let line = lines[lineIndex];
 		
 		// code
 		
-		console.log("??");
 		for (let i = 0; i < line.height; i++) {
 			if (lineIndex === firstLineIndex && i < wrappedLineIndex) {
 				continue;
@@ -79,19 +79,19 @@ module.exports = function(
 				x += line.indentOffset * colWidth;
 			}
 			
-			for (let string of wrappedLine.splitByTabs) {
-				for (let j = 0; j < string.length; j++) {
-					
-					// TODO color
-					context.fillStyle = "black";
-					context.fillText(string[j], x, y);
-					
-					x += colWidth;
+			for (let [type, value] of wrappedLine.variableWidthParts) {
+				if (type === "string") {
+					for (let ch of value) {
+						
+						// TODO color
+						context.fillStyle = "black";
+						context.fillText(ch, x, y);
+						
+						x += colWidth;
+					}
+				} else if (type === "tab") {
+					x += value * colWidth;
 				}
-				
-				offset += string.length + 1;
-				
-				x += (tabWidth - string.length % tabWidth) * colWidth;
 			}
 			
 			rowsRendered++;

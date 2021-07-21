@@ -199,7 +199,7 @@ class Document extends Evented {
 		
 		if (
 			offset === line.string.length
-			&& this.lang.codeIntel.getOpenersAndClosersOnLine(line).openers.length > 0
+			&& line.openers.length > 0
 		) {
 			indentLevel++;
 		}
