@@ -44,10 +44,13 @@ class Document extends Evented {
 			insertLines,
 		} = edit;
 		
+		console.log(edit);
+		console.log(this.lines);
+		
 		let removeString = removeLines.join(this.fileDetails.newline);
 		let insertString = insertLines.join(this.fileDetails.newline);
 		
-		let start = removeLines.length > 0 ? removeLines[0].startIndex : this.string.length;
+		let start = removeLines.length > 0 ? this.lines[lineIndex].startIndex : this.string.length;
 		let end = start + removeString.length;
 		
 		this.string = this.string.substr(0, start) + insertString + this.string.substr(end);
