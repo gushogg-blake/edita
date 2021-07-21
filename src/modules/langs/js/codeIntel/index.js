@@ -79,6 +79,7 @@ module.exports = {
 				newSelection = AstSelection.s(fromStart + adjustSelection, fromEnd + adjustSelection);
 			}
 		} else {
+			debugger
 			if (move && fromSelection) {
 				let edit = removeSelection(document, fromSelection);
 				

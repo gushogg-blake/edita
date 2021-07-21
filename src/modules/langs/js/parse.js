@@ -1,58 +1,6 @@
 let fs = require("flowfs");
-let expandTabs = require("../../utils/string/expandTabs");
-let getIndentLevel = require("../common/utils/getIndentLevel");
 let nextNode = require("../common/utils/treesitter/nextNode");
-
-/*
-TODO move this somewhere global
-*/
-
-function createLine(string, fileDetails, startIndex) {
-	let {
-		level: indentLevel,
-		offset: indentOffset,
-	} = getIndentLevel(string, fileDetails.indentation);
-	
-	let {
-		tabWidth,
-	} = app.prefs;
-	
-	let withTabsExpanded = expandTabs(string, tabWidth);
-	
-	// NOTE withTabsExpanded probs not that useful in general as hard to
-	// calculate indexes...
-	// NOTE might also be good to calculate it on the fly to avoid having
-	// to recreate lines if tab width changes
-	
-	let splitByTabs = string.split("\t");
-	let variableWidthParts = [];
-	
-	for (let i = 0; i < splitByTabs.length; i++) {
-		let str = splitByTabs[i];
-		
-		variableWidthParts.push(["string", str]);
-		
-		if (i < splitByTabs.length - 1) {
-			variableWidthParts.push(["tab", tabWidth - str.length % tabWidth]);
-		}
-	}
-	
-	return {
-		startIndex,
-		string,
-		trimmed: string.trimLeft(),
-		variableWidthParts,
-		withTabsExpanded,
-		nodes: [],
-		openers: [],
-		closers: [],
-		width: withTabsExpanded.length,
-		indentLevel,
-		indentOffset,
-		height: 1,
-		wrappedLines: undefined,
-	};
-}
+let createLine = require("../common/modules/createLine");
 
 /*
 - split into lines
@@ -85,6 +33,7 @@ module.exports = async function() {
 		
 		while (node) {
 			let {
+				type,
 				startPosition,
 				endPosition,
 				childCount,
@@ -96,7 +45,18 @@ module.exports = async function() {
 				if (startPosition.row !== endPosition.row) {
 					// opener/closer
 					
-					
+					if (
+						type === "object"
+						|| type === "array"
+						|| type === "parenthesized_expression"
+						|| type === "statement_block"
+					) {
+						let opener = node.firstChild;
+						let closer = node.lastChild;
+						
+						lines[opener.startPosition.row].openers.push(opener);
+						lines[closer.startPosition.row].closers.unshift(closer);
+					}
 				}
 			}
 			
