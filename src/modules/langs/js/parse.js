@@ -2,18 +2,9 @@ let fs = require("flowfs");
 let Line = require("../../Line");
 let nextNode = require("../common/utils/treesitter/nextNode");
 
-/*
-- split into lines
-- assign ts nodes to the line, but otherwise keep tree separate
-- render char by char
-- wrap - don't mess with ts nodes - either just store wrap indexes or split the string (or both)
-- rendering - render ts nodes (replaceAll to expand tabs), and render plain strings if nodes have gaps/there are no nodes
-- colours - could keep a map of index -> colour, and if rendering char by char, just check it at each char and set colour if present
-*/
-
 module.exports = async function() {
 	let parser = new TreeSitter();
-	let JavaScript = await TreeSitter.Language.load(fs(__dirname, "../../../../vendor/tree-sitter/langs/javascript.wasm").path); // TODO portability (file path)
+	let JavaScript = await platform.loadTreeSitterLanguage("javascript");
 	
 	parser.setLanguage(JavaScript);
 	

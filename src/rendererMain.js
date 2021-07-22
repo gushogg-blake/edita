@@ -4,6 +4,7 @@ require("electron").ipcRenderer.addListener("fix-event-79558e00-29ef-5c7f-84bd-0
 
 import getKeyCombo from "./utils/getKeyCombo";
 import Ui from "./components/Ui.svelte";
+import Platform from "./Platform";
 import App from "./App";
 
 /*
@@ -14,6 +15,8 @@ Electron window).
 
 create top-level Svelte component
 */
+
+window.platform = new Platform();
 
 (async function() {
 	let app = new App();

@@ -34,7 +34,9 @@
 		"rollup-plugin-svelte": "^7.1.0",
 		"rollup-plugin-terser": "^7.0.2",
 		"svelte": "^3.38.3",
-		"svelte-preprocess": "^4.7.3"
+		"svelte-preprocess": "^4.7.3",
+		"tree-sitter": "^0.19.0",
+		"tree-sitter-javascript": "^0.19.0"
 	},
 	"scripts": {
 		"build": "rollup -c",
@@ -45,6 +47,6 @@
 		"pure-electron": "electron .",
 		"pure-electron-dev": "cross-env NODE_ENV=development electron .",
 		"pure-dist-win": "electron-builder --win --config electron-builder.yml",
-		"test": "./node_modules/mocha/bin/mocha 'test/tests/**/*.test.js'"
+		"test": "./node_modules/mocha/bin/mocha --file test/setup.js 'test/tests/**/*.test.js'"
 	}
 }

@@ -1,18 +1,17 @@
-let Evented = require("./utils/Evented");
+let Evented = require("../src/utils/Evented");
 
-let guessIndent = require("./modules/utils/guessIndent");
-let checkNewlines = require("./modules/utils/checkNewlines");
+let guessIndent = require("../src/modules/utils/guessIndent");
+let checkNewlines = require("../src/modules/utils/checkNewlines");
 
-let js = require("./modules/langs/js");
-//let html = require("./modules/langs/html");
-let langs = require("./modules/langs");
+let js = require("../src/modules/langs/js");
+let langs = require("../src/modules/langs");
 
 function defaultPrefs() {
 	return {
 		font: "14px DejaVu Sans Mono",
 		tabWidth: 4,
 		defaultIndent: "\t",
-		defaultNewline: platform.systemInfo.newline,
+		defaultNewline: "\n",
 		lineNumberColor: "#9f9f9f",
 		marginBackground: "#f0f0f0",
 		selectionBackground: "#d0d0d0",
@@ -42,29 +41,6 @@ function defaultPrefs() {
 	};
 }
 
-/*
-top-level object for general, global things like langs, as well as any
-initialisation that needs to be done before any other clientside code runs --
-e.g. initialising langs.  this initialisation can be async and is done by
-the init() method.
-
-the reason for having a global singleton like this, as opposed to just having
-everything in separate modules and the code that uses them require() them
-individually, is 1) it is dynamic -- not as quick-changing as the UI, but changes
-when e.g. a lang is added -- and 2) some of the init is async, so wouldn't be
-immediately available from a require()d module -- having a big init() method
-means that code that runs subsequently (which includes the entire UI, so basically
-the whole app) can get stuff from the global app object without having to
-await it.
-
-this will be passed to plugins etc that need to interact with the app via a
-consistent interface.
-
-this can be shared between multiple instances of the UI, e.g. with multiple
-instances embedded in a web page, so doesn't know anything about the state of the
-UI.
-*/
-
 class App extends Evented {
 	constructor() {
 		super();
@@ -74,8 +50,6 @@ class App extends Evented {
 	}
 	
 	async init() {
-		await TreeSitter.init();
-		
 		let langs = await Promise.all([
 			js(),
 			//html(),
@@ -89,12 +63,6 @@ class App extends Evented {
 	guessLang(code, path) {
 		return this.langs.get("js"); // DEV
 	}
-	
-	/*
-	TODO these utils should probs be moved to separate files and just attached
-	to app for access purposes -- or at least the bulk should be moved to sep files
-	and app should pass any dynamic state needed (e.g. prefs)
-	*/
 	
 	getFileDetails(code, path) {
 		let {
