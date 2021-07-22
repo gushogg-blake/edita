@@ -79,6 +79,8 @@ module.exports = {
 				newSelection = AstSelection.s(fromStart + adjustSelection, fromEnd + adjustSelection);
 			}
 		} else {
+			let removeDiff = 0;
+			
 			if (move && fromSelection) {
 				let edit = removeSelection(document, fromSelection);
 				
@@ -90,10 +92,7 @@ module.exports = {
 						insertLines,
 					} = edit;
 					
-					let removeDiff = removeLines.length - insertLines.length;
-					
-					toStart -= removeDiff;
-					toEnd -= removeDiff;
+					removeDiff = removeLines.length - insertLines.length;
 				}
 				
 				// TODO newSelection
@@ -102,6 +101,9 @@ module.exports = {
 			if (toSelection) {
 				let insertIndentLevel = findIndentLevel(document.lines, toStart);
 				let lines = AstSelection.selectionLinesToStrings(selectionLines, indentStr, insertIndentLevel);
+				
+				toStart -= removeDiff;
+				toEnd -= removeDiff;
 				
 				if (toStart === toEnd) {
 					/*
