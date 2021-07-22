@@ -1,5 +1,4 @@
 module.exports = function(lines, lineIndex) {
-	debugger
 	let prev = 0;
 	let next = 0;
 	let prevLineIndex = lineIndex - 1;
