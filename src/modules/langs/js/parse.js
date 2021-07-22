@@ -1,6 +1,6 @@
 let fs = require("flowfs");
+let Line = require("../../Line");
 let nextNode = require("../common/utils/treesitter/nextNode");
-let createLine = require("../common/modules/createLine");
 
 /*
 - split into lines
@@ -23,7 +23,7 @@ module.exports = async function() {
 		let lines = [];
 		
 		for (let lineString of lineStrings) {
-			lines.push(createLine(lineString, fileDetails, lineStartIndex));
+			lines.push(new Line(lineString, fileDetails, lineStartIndex));
 			
 			lineStartIndex += lineString.length + fileDetails.newline.length;
 		}
@@ -31,7 +31,7 @@ module.exports = async function() {
 		let tree = parser.parse(code);
 		let node = tree.rootNode;
 		
-		let y = 0;
+		// TODO set colour from prev line
 		
 		while (node) {
 			let {
@@ -41,20 +41,32 @@ module.exports = async function() {
 				childCount,
 			} = node;
 			
-			//console.log(type, startPosition, endPosition, childCount);
+			let {
+				row: startLineIndex,
+				column: startOffset,
+			} = startPosition;
+			
+			let {
+				row: endLineIndex,
+				column: endOffset,
+			} = endPosition;
 			
 			if (childCount === 0) {
-			
-				if (node.startPosition.row !== node.endPosition.row || node.startPosition.column !== node.endPosition.column) {
-					
-					//console.log(node);
-					//console.log(node.parent);
-					//console.log(node.nextSibling);
-					lines[startPosition.row].nodes.set(node.startPosition.column, node);
+				
+				// TODO if multiline just add a hint
+				
+				if (startLineIndex !== endLineIndex || startOffset !== endOffset) { // not zero-length?
+					lines[startLineIndex].renderHints.push({
+						type: "node",
+						offset: startOffset,
+						node,
+					});
+				} else {
+					console.log("??");
 				}
 				
 			} else {
-				if (startPosition.row !== endPosition.row) {
+				if (startLineIndex !== endLineIndex) {
 					// opener/closer
 					
 					// TODO template strings?
@@ -74,18 +86,6 @@ module.exports = async function() {
 				}
 			}
 			
-			if (node.startPosition.row === node.endPosition.row && node.startPosition.column === node.endPosition.column) {
-				
-				console.log("0 length", node);
-				console.log("parent", node.parent);
-				console.log("nextSibling", node.nextSibling);
-			}
-			
-			y++;
-			
-			if (y > 1000) {
-				break;
-			}
 			node = nextNode(node);
 		}
 		

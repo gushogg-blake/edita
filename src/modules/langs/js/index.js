@@ -1,6 +1,8 @@
 let codeIntel = require("./codeIntel");
 let parse = require("./parse");
 
+let wordRe = /\w/;
+
 module.exports = async function() {
 	return {
 		code: "js",
@@ -34,7 +36,7 @@ module.exports = async function() {
 				return "bracket";
 			}
 			
-			if (type.match(/\w+/)) {
+			if (type[0].match(wordRe)) {
 				return "keyword";
 			}
 			

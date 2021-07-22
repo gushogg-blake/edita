@@ -53,15 +53,6 @@ module.exports = function(
 	
 	let lineIndex = firstLineIndex;
 	
-	// TODO color
-	//if (lineIndex > 0) {
-	//	let prevLine = lines[lineIndex - 1];
-	//	
-	//	if (lang.parse.stateColors[prevLine.endState.state]) {
-	//		context.fillStyle = colors[lang.parse.stateColors[prevLine.endState.state]];
-	//	}
-	//}
-	
 	while (true) {
 		let line = lines[lineIndex];
 		
@@ -73,51 +64,31 @@ module.exports = function(
 			}
 			
 			let wrappedLine = line.height === 1 ? line : line.wrappedLines[i];
-			let startOffset = i > 0 ? wrappedLine.startOffset : 0;
-			let offset = 0;
-			
+
 			if (i > 0) {
 				x += line.indentCols * colWidth;
 			}
 			
-			for (let [type, value] of wrappedLine.variableWidthParts) {
+			for (let [type, value] of line.render(wrappedLine)) {
+				console.log(type);
 				if (type === "string") {
 					let string = value;
-					let j = 0;
 					
-					while (j < string.length) {
-						let node = line.nodes.get(startOffset + offset);
-						
-						if (node) {
-							let str = node.text;
-							
-							context.fillStyle = colors[lang.getHiliteClass(node)];
-							
-							if (lang.isChildlessMultiline(node)) {
-								context.fillText(string[j], x, y);
-								
-								offset++;
-								j++;
-								x += colWidth;
-							} else {
-								context.fillText(str, x, y);
-								context.fillStyle = colors[lang.getHiliteClass(node.parent)];
-								
-								offset += str.length;
-								j += str.length;
-								x += str.length * colWidth;
-							}
-						} else {
-							context.fillText(string[j], x, y);
-							
-							offset++;
-							j++;
-							x += colWidth;
-						}
-					}
+					context.fillText(string, x, y);
+					
+					x += string.length * colWidth;
+				} else if (type === "node") {
+					let node = value;
+					let str = node.text;
+					
+					context.fillStyle = colors[lang.getHiliteClass(node)];
+					context.fillText(str, x, y);
+					
+					x += str.length * colWidth;
+				} else if (type === "colour") {
+					context.fillStyle = colors[value];
 				} else if (type === "tab") {
 					x += value * colWidth;
-					offset++;
 				}
 			}
 			
