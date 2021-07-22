@@ -18,7 +18,7 @@ module.exports = async function() {
 				return "comment";
 			}
 			
-			if ("\"'".includes(type)) {
+			if ("\"'`".includes(type)) {
 				return "string";
 			}
 			

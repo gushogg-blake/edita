@@ -31,6 +31,8 @@ module.exports = async function() {
 		let tree = parser.parse(code);
 		let node = tree.rootNode;
 		
+		let y = 0;
+		
 		while (node) {
 			let {
 				type,
@@ -39,11 +41,23 @@ module.exports = async function() {
 				childCount,
 			} = node;
 			
+			//console.log(type, startPosition, endPosition, childCount);
+			
 			if (childCount === 0) {
-				lines[startPosition.row].nodes.set(node.startPosition.column, node);
+			
+				if (node.startPosition.row !== node.endPosition.row || node.startPosition.column !== node.endPosition.column) {
+					
+					//console.log(node);
+					//console.log(node.parent);
+					//console.log(node.nextSibling);
+					lines[startPosition.row].nodes.set(node.startPosition.column, node);
+				}
+				
 			} else {
 				if (startPosition.row !== endPosition.row) {
 					// opener/closer
+					
+					// TODO template strings?
 					
 					if (
 						type === "object"
@@ -60,6 +74,18 @@ module.exports = async function() {
 				}
 			}
 			
+			if (node.startPosition.row === node.endPosition.row && node.startPosition.column === node.endPosition.column) {
+				
+				console.log("0 length", node);
+				console.log("parent", node.parent);
+				console.log("nextSibling", node.nextSibling);
+			}
+			
+			y++;
+			
+			if (y > 1000) {
+				break;
+			}
 			node = nextNode(node);
 		}
 		

@@ -101,6 +101,7 @@ module.exports = function(
 								x += colWidth;
 							} else {
 								context.fillText(str, x, y);
+								context.fillStyle = colors[lang.getHiliteClass(node.parent)];
 								
 								offset += str.length;
 								j += str.length;

@@ -345,7 +345,10 @@ module.exports = function(editor) {
 			editor.ensureSelectionIsOnScreen();
 			editor.updateScrollbars();
 			editor.startCursorBlink();
+			
+			console.time("redraw");
 			editor.redraw();
+			console.timeEnd("redraw");
 		}
 	}
 	
