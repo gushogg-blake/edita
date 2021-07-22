@@ -44,17 +44,15 @@ class Document extends Evented {
 			insertLines,
 		} = edit;
 		
-		let removeString = removeLines.join(this.fileDetails.newline);
-		let insertString = insertLines.join(this.fileDetails.newline);
+		// TODO manipulate string manually instead of recreating from lines
 		
-		if (removeLines.length === 0) {
-			insertString += this.fileDetails.newline;
-		}
+		let {newline} = this.fileDetails;
 		
-		let start = this.lines[lineIndex].startIndex;
-		let end = start + removeString.length;
+		let lineStrings = this.lines.map(l => l.string);
 		
-		this.string = this.string.substr(0, start) + insertString + this.string.substr(end);
+		lineStrings.splice(lineIndex, removeLines.length, ...insertLines);
+		
+		this.string = lineStrings.join(newline);
 		
 		this.parse();
 		

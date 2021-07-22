@@ -3,7 +3,6 @@ module.exports = function(
 	lines,
 	selection,
 	scrollPosition,
-	colors,
 	measurements,
 	windowHasFocus,
 ) {

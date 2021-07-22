@@ -23,7 +23,6 @@ module.exports = function(
 	hiliteWord,
 	scrollPosition,
 	fileDetails,
-	colors,
 	measurements,
 	cursorBlinkOn,
 	windowHasFocus,
@@ -44,7 +43,6 @@ module.exports = function(
 			lines,
 			normalSelection,
 			scrollPosition,
-			colors,
 			measurements,
 			windowHasFocus,
 		);
@@ -99,7 +97,6 @@ module.exports = function(
 	//	context,
 	//	lines,
 	//	scrollPosition,
-	//	colors,
 	//	measurements,
 	//);
 	
@@ -108,7 +105,6 @@ module.exports = function(
 		lines,
 		scrollPosition,
 		fileDetails,
-		colors,
 		measurements,
 	);
 	

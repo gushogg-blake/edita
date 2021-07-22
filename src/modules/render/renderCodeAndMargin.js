@@ -9,7 +9,6 @@ module.exports = function(
 	lines,
 	scrollPosition,
 	fileDetails,
-	colors,
 	measurements,
 ) {
 	let {
@@ -18,6 +17,8 @@ module.exports = function(
 		marginBackground,
 		lineNumberColor,
 	} = app.prefs;
+	
+	let {colors} = app.prefs.langs[fileDetails.lang.code];
 	
 	context.font = font;
 	
@@ -72,7 +73,6 @@ module.exports = function(
 			}
 			
 			let wrappedLine = line.height === 1 ? line : line.wrappedLines[i];
-			let col = 0;
 			let offset = 0;
 			
 			if (i > 0) {
@@ -81,16 +81,32 @@ module.exports = function(
 			
 			for (let [type, value] of wrappedLine.variableWidthParts) {
 				if (type === "string") {
-					for (let ch of value) {
+					let string = value;
+					let j = 0;
+					
+					while (j < string.length) {
+						let node = line.nodes.get(wrappedLine.startOffset + offset);
 						
-						// TODO color
-						context.fillStyle = "black";
-						context.fillText(ch, x, y);
-						
-						x += colWidth;
+						if (node) {
+							let str = node.text;
+							
+							context.fillStyle = colors[fileDetails.lang.getHiliteClass(node)];
+							context.fillText(str, x, y);
+							
+							offset += str.length;
+							j += str.length;
+							x += str.length * colWidth;
+						} else {
+							context.fillText(string[j], x, y);
+							
+							offset++;
+							j++;
+							x += colWidth;
+						}
 					}
 				} else if (type === "tab") {
 					x += value * colWidth;
+					offset++;
 				}
 			}
 			

@@ -32,12 +32,13 @@ module.exports = function(string, fileDetails, startIndex) {
 	}
 	
 	return {
+		startOffset: 0,
 		startIndex,
 		string,
 		trimmed: string.trimLeft(),
 		variableWidthParts,
 		withTabsExpanded,
-		nodes: [],
+		nodes: new Map(),
 		openers: [],
 		closers: [],
 		width: withTabsExpanded.length,

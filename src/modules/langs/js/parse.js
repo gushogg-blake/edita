@@ -40,7 +40,7 @@ module.exports = async function() {
 			} = node;
 			
 			if (childCount === 0) {
-				lines[startPosition.row].nodes.push(node);
+				lines[startPosition.row].nodes.set(node.startPosition.column, node);
 			} else {
 				if (startPosition.row !== endPosition.row) {
 					// opener/closer
