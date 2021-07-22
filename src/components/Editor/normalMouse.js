@@ -246,9 +246,8 @@ module.exports = function(editor) {
 		let {
 			document,
 			selection,
-			setSelection,
 			setInsertCursor,
-			addHistoryEntry,
+			applyAndAddHistoryEntry,
 			redraw,
 			startCursorBlink,
 		} = editor;
@@ -262,24 +261,13 @@ module.exports = function(editor) {
 		let cursor = getCursor(e);
 		
 		let {
-			lineIndex,
-			removedLines,
-			insertedLines,
+			edit,
 			newSelection,
 		} = document.replaceSelection(Selection.s(cursor), str);
 		
-		setSelection(newSelection);
-		
-		addHistoryEntry({
-			undo() {
-				document.edit(lineIndex, insertedLines.length, removedLines);
-				setSelection(selection);
-			},
-			
-			redo() {
-				document.edit(lineIndex, removedLines.length, insertedLines);
-				setSelection(newSelection);
-			},
+		applyAndAddHistoryEntry({
+			edits: [edit],
+			normalSelection: newSelection,
 		});
 		
 		setInsertCursor(null);

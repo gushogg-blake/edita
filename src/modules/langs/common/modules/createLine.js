@@ -32,7 +32,6 @@ module.exports = function(string, fileDetails, startIndex) {
 	}
 	
 	return {
-		startOffset: 0,
 		startIndex,
 		string,
 		trimmed: string.trimLeft(),

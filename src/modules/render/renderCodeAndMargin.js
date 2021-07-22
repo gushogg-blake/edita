@@ -73,6 +73,7 @@ module.exports = function(
 			}
 			
 			let wrappedLine = line.height === 1 ? line : line.wrappedLines[i];
+			let startOffset = i > 0 ? wrappedLine.startOffset : 0;
 			let offset = 0;
 			
 			if (i > 0) {
@@ -85,17 +86,26 @@ module.exports = function(
 					let j = 0;
 					
 					while (j < string.length) {
-						let node = line.nodes.get(wrappedLine.startOffset + offset);
+						let node = line.nodes.get(startOffset + offset);
 						
 						if (node) {
 							let str = node.text;
 							
-							context.fillStyle = colors[fileDetails.lang.getHiliteClass(node)];
-							context.fillText(str, x, y);
+							context.fillStyle = colors[lang.getHiliteClass(node)];
 							
-							offset += str.length;
-							j += str.length;
-							x += str.length * colWidth;
+							if (lang.isChildlessMultiline(node)) {
+								context.fillText(string[j], x, y);
+								
+								offset++;
+								j++;
+								x += colWidth;
+							} else {
+								context.fillText(str, x, y);
+								
+								offset += str.length;
+								j += str.length;
+								x += str.length * colWidth;
+							}
 						} else {
 							context.fillText(string[j], x, y);
 							
