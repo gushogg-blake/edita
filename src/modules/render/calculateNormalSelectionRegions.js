@@ -87,7 +87,7 @@ module.exports = function(
 				
 				let width = (
 					line.height > 1
-					? line.wrappedLines[j].width + (j > 0 ? line.indentOffset : 0)
+					? line.wrappedLines[j].width + (j > 0 ? line.indentCols : 0)
 					: line.width
 				) - startCol + 1;
 				
@@ -113,7 +113,7 @@ module.exports = function(
 				) + 1;
 				
 				if (j > 0) {
-					width += line.indentOffset;
+					width += line.indentCols;
 				}
 				
 				regions.push([x, y, width * colWidth, rowHeight]);

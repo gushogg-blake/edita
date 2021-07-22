@@ -44,7 +44,7 @@ module.exports = function(
 	let col = expandTabs(innerLine.string.substr(0, innerLineOffset)).length;
 	
 	if (innerLineIndex > 0) {
-		col += line.indentOffset;
+		col += line.indentCols;
 	}
 	
 	return [row, col];

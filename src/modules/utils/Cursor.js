@@ -2,7 +2,7 @@ let api = {
 	startOfLineContent(lines, lineIndex) {
 		let line = lines[lineIndex];
 		
-		return [lineIndex, line.indentOffset];
+		return [lineIndex, line.string.length - line.trimmed.length];
 	},
 	
 	endOfLineContent(lines, lineIndex) {

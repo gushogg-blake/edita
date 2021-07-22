@@ -77,7 +77,7 @@ module.exports = function(
 			let offset = 0;
 			
 			if (i > 0) {
-				x += line.indentOffset * colWidth;
+				x += line.indentCols * colWidth;
 			}
 			
 			for (let [type, value] of wrappedLine.variableWidthParts) {

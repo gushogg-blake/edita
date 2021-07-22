@@ -23,7 +23,7 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 	2) indent wrapped lines to the same level as the main line
 	*/
 	
-	let textCols = screenCols - line.indentOffset;
+	let textCols = screenCols - line.indentCols;
 	
 	if (textCols < indentation.colsPerIndent) {
 		return;

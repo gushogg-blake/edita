@@ -4,7 +4,7 @@ let getIndentLevel = require("../utils/getIndentLevel");
 module.exports = function(string, fileDetails, startIndex) {
 	let {
 		level: indentLevel,
-		offset: indentOffset,
+		cols: indentCols,
 	} = getIndentLevel(string, fileDetails.indentation);
 	
 	let {
@@ -42,7 +42,7 @@ module.exports = function(string, fileDetails, startIndex) {
 		closers: [],
 		width: withTabsExpanded.length,
 		indentLevel,
-		indentOffset,
+		indentCols,
 		height: 1,
 		wrappedLines: undefined,
 	};

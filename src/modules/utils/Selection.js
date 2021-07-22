@@ -172,7 +172,7 @@ let api = {
 		let [row, col] = rowColFromCursor(lines, lineIndex, offset);
 		let line = lines[lineIndex];
 		let [innerLineIndex, innerLineOffset] = innerLineIndexAndOffsetFromCursor(lines, lineIndex, offset);
-		let {indentOffset} = line;
+		let {indentCols} = line;
 		
 		if (line.height > 1 && innerLineIndex > 0) {
 			let innerLine = line.wrappedLines[innerLineIndex];
@@ -180,15 +180,15 @@ let api = {
 			if (innerLineOffset === 0) {
 				let startingRow = getLineStartingRow(lines, lineIndex);
 				
-				return s(cursorFromRowCol(lines, startingRow, indentOffset));
+				return s(cursorFromRowCol(lines, startingRow, indentCols));
 			} else {
-				return s(cursorFromRowCol(lines, row, indentOffset));
+				return s(cursorFromRowCol(lines, row, indentCols));
 			}
 		} else {
-			if (col === indentOffset) {
+			if (col === indentCols) {
 				return s(cursorFromRowCol(lines, row, 0));
 			} else {
-				return s(cursorFromRowCol(lines, row, indentOffset));
+				return s(cursorFromRowCol(lines, row, indentCols));
 			}
 		}
 	},
@@ -307,7 +307,7 @@ let api = {
 		let [row, col] = rowColFromCursor(lines, lineIndex, offset);
 		let line = lines[lineIndex];
 		let [innerLineIndex, innerLineOffset] = innerLineIndexAndOffsetFromCursor(lines, lineIndex, offset);
-		let initialWhitespaceCols = countInitialWhitespaceCols(line);
+		let {indentCols} = line;
 		
 		if (line.height > 1 && innerLineIndex > 0) {
 			let innerLine = line.wrappedLines[innerLineIndex];
@@ -315,15 +315,15 @@ let api = {
 			if (innerLineOffset === 0) {
 				let startingRow = getLineStartingRow(lines, lineIndex);
 				
-				return s(start, cursorFromRowCol(lines, startingRow, initialWhitespaceCols));
+				return s(start, cursorFromRowCol(lines, startingRow, indentCols));
 			} else {
-				return s(start, cursorFromRowCol(lines, row, line.indentOffset));
+				return s(start, cursorFromRowCol(lines, row, indentCols));
 			}
 		} else {
-			if (col === initialWhitespaceCols) {
+			if (col === indentCols) {
 				return s(start, cursorFromRowCol(lines, row, 0));
 			} else {
-				return s(start, cursorFromRowCol(lines, row, initialWhitespaceCols));
+				return s(start, cursorFromRowCol(lines, row, indentCols));
 			}
 		}
 	},
