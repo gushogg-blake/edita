@@ -1,5 +1,4 @@
 let os = require("os");
-let {app} = require("electron");
 let {hideBin} = require("yargs/helpers");
 let yargs = require("yargs/yargs");
 let fs = require("flowfs");
