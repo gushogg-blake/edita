@@ -1,7 +1,3 @@
-// HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
-// TODO might not be needed anymore
-require("electron").ipcRenderer.addListener("fix-event-79558e00-29ef-5c7f-84bd-0bcd9a0c5cf3", () => {});
-
 import getKeyCombo from "./utils/getKeyCombo";
 import Ui from "./components/Ui.svelte";
 import Platform from "./Platform";

@@ -15,10 +15,6 @@ let init = require("./modules/ipc/init/main");
 let clipboard = require("./modules/ipc/clipboard/main");
 let openDialog = require("./modules/ipc/openDialog/main");
 
-// HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
-// TODO might not be needed anymore
-ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
-
 if (dev) {
 	require("../watch");
 }
