@@ -49,6 +49,18 @@ module.exports = async function() {
 							offset: startOffset,
 							node,
 						});
+						
+						/*
+						reset colour to string after template string interpolation
+						*/
+						
+						if (node.type === "}" && node.parent?.type === "template_substitution") {
+							lines[startLineIndex].renderHints.push({
+								type: "colour",
+								offset: startOffset + 1,
+								node: node.parent.parent,
+							});
+						}
 					} else {
 						lines[startLineIndex].renderHints.push({
 							type: "colour",

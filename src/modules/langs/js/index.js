@@ -20,7 +20,7 @@ module.exports = async function() {
 				return "comment";
 			}
 			
-			if ("\"'`".includes(type)) {
+			if ("\"'`".includes(type) || type === "template_string") {
 				return "string";
 			}
 			
@@ -32,7 +32,7 @@ module.exports = async function() {
 				return "regex";
 			}
 			
-			if ("(){}[]".includes(type)) {
+			if ("(){}[]".includes(type) || type === "${") {
 				return "bracket";
 			}
 			
