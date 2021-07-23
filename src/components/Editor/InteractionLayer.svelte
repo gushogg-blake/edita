@@ -10,7 +10,7 @@ import drag from "./utils/drag";
 import createDragEvent from "./utils/createDragEvent";
 
 export let document;
-export let revisionCounter;
+export let revisionCounter; // for reactive updates on document edits
 export let overallWidth;
 export let marginWidth;
 export let marginOffset;

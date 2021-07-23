@@ -1131,6 +1131,9 @@ onMount(async function() {
 		/*
 		NOTE the selections may be invalid here (e.g. if the last line
 		was selected and this edit deletes it)
+		
+		TODO if the edit wasn't made in this editor, update the selections if
+		necessary
 		*/
 		
 		revisionCounter++;

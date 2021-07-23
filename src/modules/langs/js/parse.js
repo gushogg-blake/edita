@@ -81,13 +81,17 @@ module.exports = async function() {
 				});
 			}
 			
-			let ignore = node.parent?.type === "regex";
+			let renderAsText = [
+				"string",
+				"template_string",
+				"regex",
+			].includes(node.parent?.type);
 			
 			if (
 				!canIncludeTabs
 				&& childCount === 0
 				&& startLineIndex === endLineIndex
-				&& !ignore
+				&& !renderAsText
 			) {
 				lines[startLineIndex].renderHints.push({
 					type: "node",

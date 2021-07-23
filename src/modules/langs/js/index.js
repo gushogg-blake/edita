@@ -20,7 +20,7 @@ module.exports = async function() {
 				return "comment";
 			}
 			
-			if ("\"'`".includes(type) || type === "template_string") {
+			if (type === "string" || type === "template_string") {
 				return "string";
 			}
 			

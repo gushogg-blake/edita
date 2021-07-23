@@ -51,6 +51,27 @@ module.exports = function(
 		wrappedLineIndex,
 	} = findFirstVisibleLine(lines, scrollPosition);
 	
+	// find the previous colour hint, if any (otherwise e.g. multiline comments
+	// won't be coloured as comments if the opener is not on screen)
+	
+	findPreviousColourHint: for (let i = firstLineIndex - 1; i >= 0; i--) {
+		let line = lines[i];
+		
+		for (let [type, value] of [...line.render(line)].reverse()) {
+			if (type === "colour") {
+				let node = value;
+				
+				context.fillStyle = colors[lang.getHiliteClass(node)];
+				
+				break findPreviousColourHint;
+			}
+			
+			if (type === "node") {
+				break findPreviousColourHint;
+			}
+		}
+	}
+	
 	let lineIndex = firstLineIndex;
 	
 	while (true) {
@@ -59,17 +80,23 @@ module.exports = function(
 		// code
 		
 		for (let i = 0; i < line.height; i++) {
-			if (lineIndex === firstLineIndex && i < wrappedLineIndex) {
-				continue;
-			}
-			
 			let wrappedLine = line.height === 1 ? line : line.wrappedLines[i];
-
+			
 			if (i > 0) {
 				x += line.indentCols * colWidth;
 			}
 			
 			for (let [type, value] of line.render(wrappedLine)) {
+				if (type === "colour") {
+					let node = value;
+					
+					context.fillStyle = colors[lang.getHiliteClass(node)];
+				}
+				
+				if (lineIndex === firstLineIndex && i < wrappedLineIndex) {
+					continue;
+				}
+				
 				if (type === "string") {
 					let string = value;
 					
@@ -84,10 +111,6 @@ module.exports = function(
 					context.fillText(str, x, y);
 					
 					x += str.length * colWidth;
-				} else if (type === "colour") {
-					let node = value;
-					
-					context.fillStyle = colors[lang.getHiliteClass(node)];
 				} else if (type === "tab") {
 					x += value * colWidth;
 				}
