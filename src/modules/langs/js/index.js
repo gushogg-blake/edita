@@ -28,7 +28,7 @@ module.exports = async function() {
 				return "number";
 			}
 			
-			if (type === "regex_pattern") {
+			if (type === "regex") {
 				return "regex";
 			}
 			

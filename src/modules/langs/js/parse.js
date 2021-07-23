@@ -46,6 +46,17 @@ module.exports = async function() {
 			render the contents as a string.
 			
 			this allows the tabs to be handled by the variableWidthParts logic
+			
+			having tabs in nodes in renderHints would break the logic, as the
+			nodes wouldn't line up with the variable width parts.
+			*/
+			
+			/*
+			canIncludeTabs/colour = these are separate because regexes are
+			composed of multiple parts.  the "regex" is the outermost node, so
+			we set the colour when we see that.  then there's a syntax node for
+			the opening /, then a regex_pattern for the actual pattern -- this
+			is the bit that can contain tabs.
 			*/
 			
 			let canIncludeTabs = [
@@ -55,7 +66,14 @@ module.exports = async function() {
 				"regex_pattern",
 			].includes(type);
 			
-			if (canIncludeTabs) {
+			let colour = [
+				"comment",
+				"string",
+				"template_string",
+				"regex",
+			].includes(type);
+			
+			if (colour) {
 				lines[startLineIndex].renderHints.push({
 					type: "colour",
 					offset: startOffset,
@@ -63,10 +81,13 @@ module.exports = async function() {
 				});
 			}
 			
+			let ignore = node.parent?.type === "regex";
+			
 			if (
 				!canIncludeTabs
 				&& childCount === 0
 				&& startLineIndex === endLineIndex
+				&& !ignore
 			) {
 				lines[startLineIndex].renderHints.push({
 					type: "node",
@@ -82,7 +103,7 @@ module.exports = async function() {
 					lines[startLineIndex].renderHints.push({
 						type: "colour",
 						offset: startOffset + 1,
-						node: node.parent.parent,
+						node: node.parent.parent, // the template_string node, which is just used for selecting the colour
 					});
 				}
 			}
