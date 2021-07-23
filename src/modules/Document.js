@@ -19,6 +19,9 @@ class Document extends Evented {
 	/*
 	edit - accepts a starting line index, a number of lines to
 	delete, and a string of code to add (which can contain newlines)
+	
+	returns a description of the edit (use apply() to actually perform the
+	edit)
 	*/
 	
 	edit(lineIndex, removeLinesCount, insertLines) {
@@ -44,7 +47,10 @@ class Document extends Evented {
 			insertLines,
 		} = edit;
 		
-		// TODO manipulate string manually instead of recreating from lines
+		// NOTE splicing/joining lines may not be most efficient way of editing
+		// doesn't seem too bad though and manipulating the string manually is
+		// surprisingly complex (4d3eb5 seems to work but messes up the undo
+		// history)
 		
 		let {newline} = this.fileDetails;
 		
