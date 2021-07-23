@@ -167,7 +167,7 @@ function closeTab(tab) {
 }
 
 onMount(async function() {
-	openFile("src/components/test.js");
+	openFile("test/repos/test.js");
 });
 </script>
 

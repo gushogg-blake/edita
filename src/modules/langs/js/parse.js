@@ -41,54 +41,68 @@ module.exports = async function() {
 				column: endOffset,
 			} = endPosition;
 			
-			if (childCount === 0) {
-				if (startLineIndex !== endLineIndex || startOffset !== endOffset) { // not zero-length?
-					if (startLineIndex === endLineIndex) {
-						lines[startLineIndex].renderHints.push({
-							type: "node",
-							offset: startOffset,
-							node,
-						});
-						
-						/*
-						reset colour to string after template string interpolation
-						*/
-						
-						if (node.type === "}" && node.parent?.type === "template_substitution") {
-							lines[startLineIndex].renderHints.push({
-								type: "colour",
-								offset: startOffset + 1,
-								node: node.parent.parent,
-							});
-						}
-					} else {
-						lines[startLineIndex].renderHints.push({
-							type: "colour",
-							offset: startOffset,
-							node,
-						});
-					}
-				} else {
-					console.log("??");
+			/*
+			if a node can contain tabs, we just set the hilite colour and then
+			render the contents as a string.
+			
+			this allows the tabs to be handled by the variableWidthParts logic
+			*/
+			
+			let canIncludeTabs = [
+				"comment",
+				"string",
+				"template_string",
+				"regex_pattern",
+			].includes(type);
+			
+			if (canIncludeTabs) {
+				lines[startLineIndex].renderHints.push({
+					type: "colour",
+					offset: startOffset,
+					node,
+				});
+			}
+			
+			if (
+				!canIncludeTabs
+				&& childCount === 0
+				&& startLineIndex === endLineIndex
+			) {
+				lines[startLineIndex].renderHints.push({
+					type: "node",
+					offset: startOffset,
+					node,
+				});
+				
+				/*
+				reset colour to string after template string interpolation
+				*/
+				
+				if (node.type === "}" && node.parent?.type === "template_substitution") {
+					lines[startLineIndex].renderHints.push({
+						type: "colour",
+						offset: startOffset + 1,
+						node: node.parent.parent,
+					});
 				}
-			} else {
-				if (startLineIndex !== endLineIndex) {
-					// opener/closer
+			}
+			
+			if (startLineIndex !== endLineIndex) {
+				// opener/closer
+				
+				// TODO template strings?
+				
+				if ([
+					"object",
+					"array",
+					"parenthesized_expression", // includes if condition brackets
+					"statement_block",
+				].includes(type)) {
+					let opener = node.firstChild;
+					let closer = node.lastChild;
 					
-					// TODO template strings?
-					
-					if (
-						type === "object"
-						|| type === "array"
-						|| type === "parenthesized_expression"
-						|| type === "statement_block"
-					) {
-						let opener = node.firstChild;
-						let closer = node.lastChild;
-						
-						lines[opener.startPosition.row].openers.push(opener);
-						lines[closer.startPosition.row].closers.unshift(closer);
-					}
+					lines[opener.startPosition.row].openers.push(opener);
+					lines[closer.startPosition.row].closers.unshift(closer);
 				}
 			}
 			

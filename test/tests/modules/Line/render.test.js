@@ -25,30 +25,33 @@ let startComment = "/*";
 describe("Line.render", function() {
 	it("init", async function() {
 
-		let line = new Line(`\t${startComment}`, fileDetails, 0);
-		
-		console.log(line.variableWidthParts);
-		
-		line.renderHints.push({
-			type: "colour",
-			offset: 1,
-			node: {
-				text: "/*",
-			},
-		});
-		
-		console.log([...line.render(line)]);
-		
-		//let path = "src/components/test.js";
-		//let code = await fs(path).read();
-		//let fileDetails = app.getFileDetails(code, path);
-		//let doc = new Document(code, fileDetails);
+		//let line = new Line(`\t${startComment} asd\t`, fileDetails, 0);
 		//
-		//for (let line of doc.lines) {
-		//	console.log(line.string);
-		//	console.log(line.renderHints);
-		//	[...line.render(line)];
-		//}
+		//console.log(line.variableWidthParts);
+		//
+		//line.renderHints.push({
+		//	type: "colour",
+		//	offset: 1,
+		//	node: {
+		//		text: "/*",
+		//	},
+		//});
+		//
+		//console.log([...line.render(line)]);
+		
+		let path = "test/repos/test.js";
+		let code = await fs(path).read();
+		let fileDetails = app.getFileDetails(code, path);
+		let doc = new Document(code, fileDetails);
+		
+		debugger
+		
+		for (let line of doc.lines) {
+			console.log(line.string);
+			console.log(line.renderHints);
+			console.log(line.variableWidthParts);
+			[...line.render(line)];
+		}
 		
 	});
 	

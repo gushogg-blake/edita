@@ -133,7 +133,7 @@ class Line {
 							
 							yield ["node", nextHint.node];
 							
-							offset += node.text.length;
+							offset = node.startPosition.column + node.text.length;
 						} else if (nextHint.type === "colour") {
 							yield ["colour", nextHint.node];
 						}
