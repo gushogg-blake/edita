@@ -89,9 +89,9 @@ module.exports = async function() {
 			
 			if (
 				!canIncludeTabs
+				&& !renderAsText
 				&& childCount === 0
 				&& startLineIndex === endLineIndex
-				&& !renderAsText
 			) {
 				lines[startLineIndex].renderHints.push({
 					type: "node",
@@ -115,13 +115,13 @@ module.exports = async function() {
 			if (startLineIndex !== endLineIndex) {
 				// opener/closer
 				
-				// TODO template strings?
-				
 				if ([
 					"object",
 					"array",
 					"parenthesized_expression", // includes if condition brackets
 					"statement_block",
+					"class_body",
+					"template_string",
 				].includes(type)) {
 					let opener = node.firstChild;
 					let closer = node.lastChild;
