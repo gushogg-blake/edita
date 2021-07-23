@@ -57,6 +57,12 @@ module.exports = async function() {
 			we set the colour when we see that.  then there's a syntax node for
 			the opening /, then a regex_pattern for the actual pattern -- this
 			is the bit that can contain tabs.
+			
+			renderAsText is for the children of regexes and strings (e.g. opening
+			and closing delims).  not having nodes for these allows the render
+			logic to break as soon as it encounters a node when looking for the
+			previous colour hint (see renderCodeAndMargin); and also means we
+			don't need to specify colours for these chars.
 			*/
 			
 			let canIncludeTabs = [
@@ -73,6 +79,12 @@ module.exports = async function() {
 				"regex",
 			].includes(type);
 			
+			let renderAsText = [
+				"string",
+				"template_string",
+				"regex",
+			].includes(node.parent?.type);
+			
 			if (colour) {
 				lines[startLineIndex].renderHints.push({
 					type: "colour",
@@ -80,12 +92,6 @@ module.exports = async function() {
 					node,
 				});
 			}
-			
-			let renderAsText = [
-				"string",
-				"template_string",
-				"regex",
-			].includes(node.parent?.type);
 			
 			if (
 				!canIncludeTabs

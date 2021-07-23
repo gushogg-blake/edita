@@ -13,8 +13,9 @@ This means that wrapped lines will have some of the same properties:
 - startOffset (this is really only needed for wrapped lines as it indicates
 where the wrapped line starts in the main line -- Lines have it set to 0 for
 simplicity)
-
-
+- string
+- variableWidthParts
+- render hints
 */
 
 class Line {
