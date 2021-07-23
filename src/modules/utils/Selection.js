@@ -347,6 +347,38 @@ let api = {
 		}
 	},
 	
+	expandOrContractWordLeft(lines, selection) {
+		let {start, end} = selection;
+		let [lineIndex, offset] = end;
+		let line = lines[lineIndex];
+		
+		if (offset === 0) {
+			// TODO go to end of prev line
+			return selection;
+		} else {
+			let stringToCursor = line.string.substr(0, offset).split("").reverse().join("");
+			let [whiteSpaceOrWord] = stringToCursor.match(/^(\s+|\w+|[^\w\s]+)/);
+			
+			return s(start, [lineIndex, offset - whiteSpaceOrWord.length]);
+		}
+	},
+	
+	expandOrContractWordRight(lines, selection) {
+		let {start, end} = selection;
+		let [lineIndex, offset] = end;
+		let line = lines[lineIndex];
+		
+		if (offset === line.string.length) {
+			// TODO go to next line
+			return selection;
+		} else {
+			let stringToCursor = line.string.substr(offset);
+			let [whiteSpaceOrWord] = stringToCursor.match(/^(\s+|\w+|[^\w\s]+)/);
+			
+			return s(start, [lineIndex, offset + whiteSpaceOrWord.length]);
+		}
+	},
+	
 	startOfLineContent(lines, lineIndex) {
 		return s(Cursor.startOfLineContent(lines, lineIndex));
 	},

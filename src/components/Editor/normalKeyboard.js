@@ -12,6 +12,8 @@ module.exports = function(editor) {
 		"PageDown": "pageDown",
 		"End": "end",
 		"Home": "home",
+		"Ctrl+ArrowLeft": "wordLeft",
+		"Ctrl+ArrowRight": "wordRight",
 		"Shift+ArrowUp": "expandOrContractSelectionUp",
 		"Shift+ArrowDown": "expandOrContractSelectionDown",
 		"Shift+ArrowLeft": "expandOrContractSelectionLeft",
@@ -20,6 +22,8 @@ module.exports = function(editor) {
 		"Shift+PageDown": "expandOrContractSelectionPageDown",
 		"Shift+End": "expandOrContractSelectionEnd",
 		"Shift+Home": "expandOrContractSelectionHome",
+		"Ctrl+Shift+ArrowLeft": "expandOrContractSelectionWordLeft",
+		"Ctrl+Shift+ArrowRight": "expandOrContractSelectionWordRight",
 		"Backspace": "backspace",
 		"Delete": "delete",
 		"Enter": "enter",
@@ -77,6 +81,16 @@ module.exports = function(editor) {
 			editor.updateSelectionEndCol();
 		},
 		
+		wordLeft({document, selection}) {
+			editor.setSelection(Selection.wordLeft(document.lines, selection));
+			editor.updateSelectionEndCol();
+		},
+		
+		wordRight({document, selection}) {
+			editor.setSelection(Selection.wordRight(document.lines, selection));
+			editor.updateSelectionEndCol();
+		},
+		
 		expandOrContractSelectionUp({document, selection, selectionEndCol}) {
 			editor.setSelection(Selection.expandOrContractUp(document.lines, selection, selectionEndCol));
 		},
@@ -114,6 +128,16 @@ module.exports = function(editor) {
 		
 		expandOrContractSelectionHome({document, selection}) {
 			editor.setSelection(Selection.expandOrContractHome(document.lines, selection));
+			editor.updateSelectionEndCol();
+		},
+		
+		expandOrContractSelectionWordLeft({document, selection}) {
+			editor.setSelection(Selection.expandOrContractWordLeft(document.lines, selection));
+			editor.updateSelectionEndCol();
+		},
+		
+		expandOrContractSelectionWordRight({document, selection}) {
+			editor.setSelection(Selection.expandOrContractWordRight(document.lines, selection));
 			editor.updateSelectionEndCol();
 		},
 		
