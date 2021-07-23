@@ -590,6 +590,8 @@ function applyEdit(edit) {
 	} else if (astSelection) {
 		setAstSelection(astSelection);
 	}
+	
+	afterEdit();
 }
 
 function applyAndAddHistoryEntry(edit) {
@@ -645,6 +647,17 @@ function redo() {
 	updateScrollbars();
 	startCursorBlink();
 	redraw();
+}
+
+/*
+general tasks to do after an edit is made and the selection has been updated
+(selections can be invalid in Document "edit" handlers)
+*/
+
+function afterEdit() {
+	if (mode === "ast") {
+		astMouseHandler.updateHilites(lastMouseEvent);
+	}
 }
 
 function showPickOptionsFor(selection) {
@@ -1115,16 +1128,17 @@ onMount(async function() {
 	let teardown = [];
 	
 	teardown.push(document.on("edit", function() {
+		/*
+		NOTE the selections may be invalid here (e.g. if the last line
+		was selected and this edit deletes it)
+		*/
+		
 		revisionCounter++;
 		
 		// TODO perf - only modified lines need wraps recalculating
 		
 		updateWraps();
 		updateSizes();
-		
-		if (mode === "ast") {
-			astMouseHandler.updateHilites(lastMouseEvent);
-		}
 	}));
 	
 	teardown.push(windowFocus.listen(function(isFocused) {
