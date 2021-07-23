@@ -43,3 +43,5 @@ window.addEventListener("keydown", function(e) {
 		e.preventDefault();
 	}
 });
+
+window.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
