@@ -1,7 +1,6 @@
 let {is, deep} = require("../../../../../../utils/assertions");
 let dedent = require("../../../../../../utils/dedent");
 let createJsDoc = require("../../../../../../utils/createJsDoc");
-let js = require("../../../../../../../src/modules/langs/js");
 
 let tests = [
 	[
@@ -132,7 +131,7 @@ describe("JavaScript codeIntel.astSelection.fromLineIndex", function() {
 		it(name, function() {
 			let doc = createJsDoc(dedent(code).trimRight());
 			
-			let astSelection = js.codeIntel.astSelection.selectionFromLineIndex(doc.lines, lineIndex);
+			let astSelection = doc.lang.codeIntel.astSelection.selectionFromLineIndex(doc.lines, lineIndex);
 			
 			deep(astSelection, expectedAstSelection);
 		});

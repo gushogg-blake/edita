@@ -70,7 +70,6 @@ module.exports = function(
 			}
 			
 			for (let [type, value] of line.render(wrappedLine)) {
-				console.log(type);
 				if (type === "string") {
 					let string = value;
 					
@@ -86,7 +85,9 @@ module.exports = function(
 					
 					x += str.length * colWidth;
 				} else if (type === "colour") {
-					context.fillStyle = colors[value];
+					let node = value;
+					
+					context.fillStyle = colors[lang.getHiliteClass(node)];
 				} else if (type === "tab") {
 					x += value * colWidth;
 				}

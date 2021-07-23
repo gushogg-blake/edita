@@ -1,4 +1,3 @@
-let fs = require("flowfs");
 let Line = require("../../Line");
 let nextNode = require("../common/utils/treesitter/nextNode");
 
@@ -43,19 +42,23 @@ module.exports = async function() {
 			} = endPosition;
 			
 			if (childCount === 0) {
-				
-				// TODO if multiline just add a hint
-				
 				if (startLineIndex !== endLineIndex || startOffset !== endOffset) { // not zero-length?
-					lines[startLineIndex].renderHints.push({
-						type: "node",
-						offset: startOffset,
-						node,
-					});
+					if (startLineIndex === endLineIndex) {
+						lines[startLineIndex].renderHints.push({
+							type: "node",
+							offset: startOffset,
+							node,
+						});
+					} else {
+						lines[startLineIndex].renderHints.push({
+							type: "colour",
+							offset: startOffset,
+							node,
+						});
+					}
 				} else {
 					console.log("??");
 				}
-				
 			} else {
 				if (startLineIndex !== endLineIndex) {
 					// opener/closer

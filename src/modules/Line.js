@@ -107,8 +107,8 @@ class Line {
 						nextHint = null;
 					}
 					
-					if (!nextHint && offset < string.length - stringStartOffset) {
-						let str = string.substr(offset);
+					if (!nextHint && offset - stringStartOffset < string.length) {
+						let str = string.substr(offset - stringStartOffset);
 						
 						yield ["string", str];
 						
@@ -135,7 +135,7 @@ class Line {
 							
 							offset += node.text.length;
 						} else if (nextHint.type === "colour") {
-							yield ["colour", nextHint.colour];
+							yield ["colour", nextHint.node];
 						}
 						
 						hintIndex++;

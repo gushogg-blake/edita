@@ -1,3 +1,4 @@
+let fs = require("flowfs");
 let {systemInfo} = require("./modules/ipc/init/renderer");
 
 class Platform {
@@ -6,7 +7,7 @@ class Platform {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load(fs(__dirname, "../../../../vendor/tree-sitter/langs/" + name + ".wasm").path); // TODO portability (file path)
+		return TreeSitter.Language.load(fs(__dirname, "../vendor/tree-sitter/langs/" + name + ".wasm").path); // TODO portability (file path)
 	}
 }
 
