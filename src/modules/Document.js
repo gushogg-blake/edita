@@ -4,6 +4,7 @@ let Selection = require("./utils/Selection");
 let countRows = require("./utils/countRows");
 let wrapLine = require("./wrapLine/wrapLine");
 let unwrapLine = require("./wrapLine/unwrapLine");
+let Line = require("./Line");
 
 class Document extends Evented {
 	constructor(code, fileDetails) {
@@ -233,7 +234,24 @@ class Document extends Evented {
 	parse() {
 		console.time("parse");
 		
-		this.lines = this.lang.parse(this.string, this.fileDetails);
+		this.lines = [];
+		
+		let {fileDetails} = this;
+		let lineStrings = this.string.split(fileDetails.newline);
+		let lineStartIndex = 0;
+		
+		for (let lineString of lineStrings) {
+			this.lines.push(new Line(lineString, fileDetails, lineStartIndex));
+			
+			lineStartIndex += lineString.length + fileDetails.newline.length;
+		}
+		
+		try {
+			this.lang.parse(this.string, this.lines, this.fileDetails);
+		} catch (e) {
+			console.error("Parse error");
+			console.error(e);
+		}
 		
 		console.timeEnd("parse");
 	}
