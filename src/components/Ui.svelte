@@ -103,8 +103,6 @@ async function openFile(path) {
 		document: new Document(code, fileDetails),
 	};
 	
-	//console.log(newTab);
-	
 	tabs = push(tabs, newTab);
 	
 	await tick(); // wait for Editor to be created
@@ -123,7 +121,7 @@ function findTabByPath(path) {
 }
 
 function getEditors() {
-	return Object.values(editorsByTabId);
+	return Object.values(editorsByTabId).filter(Boolean); // NOTE shouldn't have to filter it but Svelte keeps the binding around (but set to null) in some cases
 }
 
 function getCurrentEditor() {
@@ -134,7 +132,7 @@ function onSelectTab({detail: tab}) {
 	selectTab(tab);
 }
 
-async function selectTab(tab) {
+function selectTab(tab) {
 	for (let editor of getEditors()) {
 		editor.blur();
 		editor.hide();
@@ -143,8 +141,6 @@ async function selectTab(tab) {
 	selectedTab = tab;
 	
 	let editor = editorsByTabId[tab.id];
-	
-	await tick();
 	
 	editor.show();
 	editor.focus();
@@ -170,6 +166,8 @@ function closeTab(tab) {
 	}
 	
 	tabs = remove(tabs, tab);
+	
+	delete editorsByTabId[tab.id];
 	
 	if (selectNext) {
 		selectTab(selectNext);
