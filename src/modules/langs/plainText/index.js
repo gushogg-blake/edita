@@ -3,7 +3,7 @@ let parse = require("./parse");
 
 module.exports = async function() {
 	return {
-		code: "plain",
+		code: "plainText",
 		name: "Plain text",
 		codeIntel,
 		parse: parse(),
