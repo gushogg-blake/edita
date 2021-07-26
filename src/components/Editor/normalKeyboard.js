@@ -334,6 +334,8 @@ module.exports = function(editor) {
 				if (!Selection.isFull(selection)) {
 					newBatchState = "typing";
 				}
+				
+				editor.updateSelectionEndCol();
 	
 				handled = true;
 			}
@@ -365,7 +367,6 @@ module.exports = function(editor) {
 		}
 		
 		if (handled) {
-			editor.updateSelectionEndCol();
 			editor.ensureSelectionIsOnScreen();
 			editor.updateScrollbars();
 			editor.startCursorBlink();
