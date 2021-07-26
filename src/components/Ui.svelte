@@ -122,6 +122,10 @@ function findTabByPath(path) {
 	return null;
 }
 
+function getEditors() {
+	return Object.values(editorsByTabId);
+}
+
 function getCurrentEditor() {
 	return editorsByTabId[selectedTab?.id];
 }
@@ -131,6 +135,11 @@ function onSelectTab({detail: tab}) {
 }
 
 async function selectTab(tab) {
+	for (let editor of getEditors()) {
+		editor.blur();
+		editor.hide();
+	}
+	
 	selectedTab = tab;
 	
 	let editor = editorsByTabId[tab.id];
@@ -138,6 +147,7 @@ async function selectTab(tab) {
 	await tick();
 	
 	editor.show();
+	editor.focus();
 }
 
 function onCloseTab({detail: tab}) {

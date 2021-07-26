@@ -38,6 +38,10 @@ export function focus() {
 	focused = true;
 }
 
+export function blur() {
+	focused = false;
+}
+
 export function show() {
 	visible = true;
 	resize();
