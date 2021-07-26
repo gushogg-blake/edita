@@ -40,15 +40,6 @@ let offsetSizeKey = {
 	vertical: "offsetHeight",
 };
 
-function getScrollPosition() {
-	let divSize = main[offsetSizeKey[orientation]];
-	let position = main[scrollPositionKey[orientation]];
-	let scrollSize = main[scrollSizeKey[orientation]];
-	let max = scrollSize - divSize;
-	
-	return position / max;
-}
-
 function setScrollPosition(position) {
 	settingScrollPosition = true;
 	
@@ -72,7 +63,16 @@ function scroll() {
 		return;
 	}
 	
-	fire("scroll", getScrollPosition());
+	let divSize = main[offsetSizeKey[orientation]];
+	let position = main[scrollPositionKey[orientation]];
+	let scrollSize = main[scrollSizeKey[orientation]];
+	let max = scrollSize - divSize;
+	
+	if (divSize === 0 || scrollSize === 0) {
+		return;
+	}
+	
+	fire("scroll", position / max);
 }
 
 function _update(_totalSize, _pageSize, position) {
@@ -85,7 +85,6 @@ function _update(_totalSize, _pageSize, position) {
 	
 	setScrollPosition(position);
 }
-
 </script>
 
 <style type="text/scss">
@@ -127,7 +126,6 @@ function _update(_totalSize, _pageSize, position) {
 		background-clip: content-box;
 		background: #B2B2B2;
 	}
-
 }
 
 #expander {
