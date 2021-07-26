@@ -1,10 +1,15 @@
+let fs = require("flowfs");
+let minimatch = require("minimatch");
+
 let Evented = require("./utils/Evented");
 
 let guessIndent = require("./modules/utils/guessIndent");
 let checkNewlines = require("./modules/utils/checkNewlines");
 
-let js = require("./modules/langs/js");
-//let html = require("./modules/langs/html");
+let javascript = require("./modules/langs/javascript");
+let html = require("./modules/langs/html");
+let svelte = require("./modules/langs/svelte");
+let plainText = require("./modules/langs/plainText");
 let langs = require("./modules/langs");
 
 function defaultPrefs() {
@@ -24,7 +29,7 @@ function defaultPrefs() {
 		minHoldTime: 200,
 		
 		langs: {
-			js: {
+			javascript: {
 				colors: {
 					keyword: "#aa33aa",
 					id: "#202020",
@@ -36,6 +41,16 @@ function defaultPrefs() {
 					regex: "#cc7030",
 				},
 			},
+			
+			html: {
+				colors: {
+					
+				},
+			},
+		},
+		
+		fileAssociations: {
+			"html": ["*.svelte"],
 		},
 		
 		cursorBlinkPeriod: 700,
@@ -77,17 +92,64 @@ class App extends Evented {
 		await TreeSitter.init();
 		
 		let langs = await Promise.all([
-			js(),
-			//html(),
+			javascript(),
+			//svelte(),
+			html(),
+			plainText(),
 		]);
 		
 		for (let lang of langs) {
-			this.langs.add(lang.code, lang);
+			this.langs.add(lang);
 		}
 	}
 	
+	/*
+	There are 3 support levels: general and specific, and alternate.
+	
+	general means the lang supports the file, and should be used unless there is
+	a lang with specific support.
+	
+	specific means the file can be handled by a general lang, but this lang has
+	more specific support, e.g. Node vs JavaScript.  Languages should only return
+	"specific" if there is a specific reason to, and specific langs that can also
+	handle the general lang should return "alternate" for those files.  Node
+	should return "specific" for .js files that are identifiable as Node files
+	(e.g. they have a Node hashbang line); alternate for .js files that aren't
+	identifiable as Node files; and null for anything else.
+	
+	alternate means the lang supports the file but wouldn't usually be used,
+	e.g. JavaScript supports JSON files and SCSS supports CSS files.
+	
+	plainText is a special case and is hard-coded as the fallback if no supporting
+	langs are found, so it should just return null.
+	*/
+	
 	guessLang(code, path) {
-		return this.langs.get("js"); // DEV
+		for (let [langCode, patterns] of Object.entries(this.prefs.fileAssociations)) {
+			for (let pattern of patterns) {
+				if (minimatch(fs(path).name, pattern)) {
+					return this.langs.get(langCode);
+				}
+			}
+		}
+		
+		let general = null;
+		let alternate = null;
+		let fallback = this.langs.get("plainText");
+		
+		for (let lang of this.langs.all) {
+			let supportLevel = lang.getSupportLevel(code, path);
+			
+			if (supportLevel === "specific") {
+				return lang;
+			} else if (supportLevel === "general" && !general) {
+				general = lang;
+			} else if (supportLevel === "alternate" && !alternate) {
+				alternate = lang;
+			}
+		}
+		
+		return general || alternate || fallback;
 	}
 	
 	/*
@@ -98,14 +160,13 @@ class App extends Evented {
 	
 	getFileDetails(code, path) {
 		let {
-			defaultLang,
 			defaultIndent,
 			tabWidth,
 			defaultNewline,
 		} = this.prefs;
 		
 		let indent = guessIndent(code) || defaultIndent;
-		let lang = this.guessLang(code, path) || this.langs.get(defaultLang);
+		let lang = this.guessLang(code, path);
 		let indentType = indent[0] === "\t" ? "tab" : "space";
 		
 		let {

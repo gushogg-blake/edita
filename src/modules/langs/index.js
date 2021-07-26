@@ -1,11 +1,15 @@
 let langs = {};
 
 module.exports = {
-	add(name, lang) {
-		langs[name] = lang;
+	add(lang) {
+		langs[lang.code] = lang;
 	},
 	
-	get(name) {
-		return langs[name] || null;
+	get(code) {
+		return langs[code] || null;
+	},
+	
+	get all() {
+		return Object.values(langs);
 	},
 };

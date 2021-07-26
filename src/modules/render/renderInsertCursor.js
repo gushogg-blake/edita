@@ -1,4 +1,4 @@
-let screenCoordsFromCursor = require("../utils/screenCoordsFromCursor.js");
+let screenCoordsFromCursor = require("../utils/screenCoordsFromCursor");
 
 let xHint = -1;
 

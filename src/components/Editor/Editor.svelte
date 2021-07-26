@@ -1121,8 +1121,6 @@ async function prefsUpdated() {
 onMount(async function() {
 	context = canvas.getContext("2d");
 	
-	focused = true; // DEV
-	
 	windowHasFocus = windowFocus.isFocused();
 	
 	updateMeasurements();

@@ -21,8 +21,6 @@ module.exports = async function() {
 		let tree = parser.parse(code);
 		let node = tree.rootNode;
 		
-		// TODO set colour from prev line
-		
 		while (node) {
 			let {
 				type,
