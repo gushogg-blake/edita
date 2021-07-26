@@ -908,6 +908,14 @@ function startCursorBlink() {
 	}, app.prefs.cursorBlinkPeriod);
 }
 
+function clearCursorBlink() {
+	if (cursorInterval) {
+		clearInterval(cursorInterval);
+	}
+	
+	cursorInterval = null;
+}
+
 function updateCanvasSize() {
 	canvas.width = canvasDiv.offsetWidth;
 	canvas.height = canvasDiv.offsetHeight;
@@ -1127,7 +1135,9 @@ onMount(async function() {
 	resize();
 	startCursorBlink();
 	
-	let teardown = [];
+	let teardown = [
+		clearCursorBlink,
+	];
 	
 	teardown.push(document.on("edit", function() {
 		/*
