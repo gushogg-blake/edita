@@ -18,9 +18,8 @@ module.exports = function(
 		lineNumberColor,
 	} = app.prefs;
 	
-	let {colors} = app.prefs.langs[fileDetails.lang.code];
-	
 	context.font = font;
+	context.fillStyle = "black";
 	
 	let {
 		colWidth,
@@ -35,6 +34,8 @@ module.exports = function(
 	let {
 		lang,
 	} = fileDetails;
+	
+	let {colors} = app.prefs.langs[lang.code];
 	
 	let rowsToRender = height / rowHeight;
 	let rowsRendered = 0;
