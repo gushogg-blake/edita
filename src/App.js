@@ -15,16 +15,20 @@ let langs = require("./modules/langs");
 function defaultPrefs() {
 	return {
 		font: "14px DejaVu Sans Mono",
+		
 		tabWidth: 4,
 		defaultIndent: "\t",
 		defaultNewline: platform.systemInfo.newline,
+		
 		lineNumberColor: "#9f9f9f",
 		marginBackground: "#f0f0f0",
 		selectionBackground: "#d0d0d0",
 		astSelectionBackground: "#c5e4ff",
 		astSelectionHiliteBackground: "#F2F2F2",
 		astInsertionHiliteBackground: "#606060",
+		
 		wrap: true,
+		
 		modeSwitchKey: "Escape",
 		minHoldTime: 200,
 		
