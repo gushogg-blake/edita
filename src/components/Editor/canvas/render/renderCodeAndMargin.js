@@ -35,7 +35,7 @@ module.exports = function(
 		lang,
 	} = fileDetails;
 	
-	let {colors} = app.prefs.langs[lang.code];
+	let {colors} = app.prefs.langs[lang.code] || {colors: {}}; //
 	
 	let rowsToRender = height / rowHeight;
 	let rowsRendered = 0;

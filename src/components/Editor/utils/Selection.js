@@ -1,3 +1,4 @@
+let regexMatch = require("../../../utils/regexMatch");
 let Selection = require("../../../modules/utils/Selection");
 let Cursor = require("../../../modules/utils/Cursor");
 let innerLineIndexAndOffsetFromCursor = require("../canvas/utils/innerLineIndexAndOffsetFromCursor");
@@ -11,6 +12,14 @@ let {
 	sort,
 	isFull,
 } = Selection;
+
+let wordUnderCursorRe = {
+	wordChar: /[\w_]/,
+	whitespaceChar: /\s/,
+	word: /^[\w_]+/,
+	whitespace: /^\s+/,
+	symbol: /^[^\w\s_]+/,
+};
 
 let api = {
 	...Selection,
@@ -328,6 +337,36 @@ let api = {
 	
 	endOfLineContent(lines, lineIndex) {
 		return s(Cursor.endOfLineContent(lines, lineIndex));
+	},
+	
+	wordUnderCursor(lines, cursor) {
+		let [lineIndex, offset] = cursor;
+		let line = lines[lineIndex];
+		let {string} = line;
+		
+		if (string.length === 0) {
+			return s(cursor);
+		}
+		
+		if (offset === string.length) {
+			offset--;
+		}
+		
+		let ch = string[offset];
+		let wordRe;
+		
+		if (ch.match(wordUnderCursorRe.wordChar)) {
+			wordRe = wordUnderCursorRe.word;
+		} else if (ch.match(wordUnderCursorRe.whitespaceChar)) {
+			wordRe = wordUnderCursorRe.whitespace;
+		} else {
+			wordRe = wordUnderCursorRe.symbol;
+		}
+		
+		let right = regexMatch(string.substr(offset), wordRe).length;
+		let left = regexMatch(string.substr(0, offset).split("").reverse().join(""), wordRe).length;
+		
+		return s([lineIndex, offset - left], [lineIndex, offset + right]);
 	},
 };
 

@@ -8,15 +8,13 @@ import screenOffsets from "../../utils/dom/screenOffsets";
 import autoScroll from "../../utils/dom/autoScroll";
 import windowFocus from "../../utils/dom/windowFocus";
 import getKeyCombo from "../../utils/getKeyCombo";
-import clipboard from "../../modules/ipc/clipboard/renderer";
 
 import calculateMarginWidth from "./canvas/utils/calculateMarginWidth";
 import calculateMarginOffset from "./canvas/utils/calculateMarginOffset";
 import calculateNormalSelectionRegions from "./canvas/utils/calculateNormalSelectionRegions";
-import countRows from "./canvas/utils/countRows";
-import rowColFromScreenCoords from "./canvas/utils/rowColFromScreenCoords";
 import screenCoordsFromRowCol from "./canvas/utils/screenCoordsFromRowCol";
 import findFirstVisibleLine from "./canvas/utils/findFirstVisibleLine";
+import countRows from "./canvas/utils/countRows";
 
 import render from "./canvas/render/render";
 
@@ -268,7 +266,7 @@ let normalKeyboardHandler = normalKeyboard({
 		setNormalSelection(selection);
 		
 		if (Selection.isFull(selection)) {
-			clipboard.writeSelection(document.getSelectedText(selection));
+			platform.clipboard.writeSelection(document.getSelectedText(selection));
 		}
 		
 		normalKeyboardHandler.clearBatchState();

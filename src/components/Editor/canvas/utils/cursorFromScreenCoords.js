@@ -1,4 +1,4 @@
-let rowColFromScreenCoords = require("./rowColFromScreenCoords");
+let cursorRowColFromScreenCoords = require("./cursorRowColFromScreenCoords");
 let cursorFromRowCol = require("./cursorFromRowCol");
 
 module.exports = function(
@@ -8,7 +8,7 @@ module.exports = function(
 	scrollPosition,
 	measurements,
 ) {
-	let [row, col] = rowColFromScreenCoords(lines, x, y, scrollPosition, measurements);
+	let [row, col] = cursorRowColFromScreenCoords(lines, x, y, scrollPosition, measurements);
 	
 	return cursorFromRowCol(lines, row, col);
 }

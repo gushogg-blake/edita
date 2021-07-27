@@ -1,5 +1,4 @@
 let getKeyCombo = require("../../utils/getKeyCombo");
-let clipboard = require("../../modules/ipc/clipboard/renderer");
 
 module.exports = function(editor) {
 	let keymap = {

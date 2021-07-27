@@ -4,12 +4,44 @@ let rowColFromCursor = require("./utils/rowColFromCursor");
 let cursorFromRowCol = require("./utils/cursorFromRowCol");
 let autoScroll = require("./utils/dom/autoScroll");
 let rowColFromScreenCoords = require("./canvas/utils/rowColFromScreenCoords");
+let cursorRowColFromScreenCoords = require("./canvas/utils/cursorRowColFromScreenCoords");
 let pointIsWithinRegions = require("./canvas/utils/pointIsWithinRegions");
 
 module.exports = function(editor) {
 	let drawingSelection = false;
 	
 	function getCursor(e) {
+		let {
+			canvas,
+			measurements,
+			document,
+			scrollPosition,
+		} = editor;
+		
+		let {
+			x: left,
+			y: top,
+		} = canvas.getBoundingClientRect();
+		
+		let x = e.clientX - left;
+		let y = e.clientY - top;
+		
+		let [row, col] = cursorRowColFromScreenCoords(
+			document.lines,
+			x,
+			y,
+			scrollPosition,
+			measurements,
+		);
+		
+		return cursorFromRowCol(
+			document.lines,
+			row,
+			col,
+		);
+	}
+	
+	function getCharCursor(e) {
 		let {
 			canvas,
 			measurements,
@@ -201,7 +233,20 @@ module.exports = function(editor) {
 	}
 	
 	function dblclick(e) {
+		let {
+			document,
+			setSelection,
+			redraw,
+			startCursorBlink,
+		} = editor;
 		
+		let cursor = getCharCursor(e);
+		
+		setSelection(Selection.wordUnderCursor(document.lines, cursor));
+		
+		startCursorBlink();
+		
+		redraw();
 	}
 	
 	function dragstart(e) {

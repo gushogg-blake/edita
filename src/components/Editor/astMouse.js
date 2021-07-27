@@ -2,7 +2,7 @@ let parseJson = require("../../utils/parseJson");
 let {on, off} = require("../../utils/dom/domEvents");
 let autoScroll = require("./utils/dom/autoScroll");
 let insertLineIndexFromScreenY = require("./canvas/utils/insertLineIndexFromScreenY");
-let rowColFromScreenCoords = require("./canvas/utils/rowColFromScreenCoords");
+let cursorRowColFromScreenCoords = require("./canvas/utils/cursorRowColFromScreenCoords");
 let rowColFromCursor = require("./utils/rowColFromCursor");
 let cursorFromRowCol = require("./utils/cursorFromRowCol");
 let countRows = require("./canvas/utils/countRows");
@@ -72,7 +72,7 @@ module.exports = function(editor) {
 		
 		let [x, y] = getCanvasCoords(e);
 		
-		let [row, col] = rowColFromScreenCoords(
+		let [row, col] = cursorRowColFromScreenCoords(
 			document.lines,
 			x,
 			y,
