@@ -2,10 +2,12 @@ let bluebird = require("bluebird");
 let fs = require("flowfs");
 let {systemInfo} = require("./ipc/init");
 let openDialog = require("./ipc/openDialog");
+let clipboard = require("./ipc/clipboard");
 
 class Platform {
 	constructor() {
 		this.systemInfo = systemInfo;
+		this.clipboard = clipboard;
 	}
 	
 	async open() {

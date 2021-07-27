@@ -1,6 +1,5 @@
 let getKeyCombo = require("../../utils/getKeyCombo");
-let clipboard = require("../../modules/ipc/clipboard/renderer");
-let Selection = require("../../modules/utils/Selection");
+let Selection = require("./utils/Selection");
 
 module.exports = function(editor) {
 	let keymap = {
@@ -261,7 +260,7 @@ module.exports = function(editor) {
 				return;
 			}
 			
-			await clipboard.write(document.getSelectedText(selection));
+			await platform.clipboard.write(document.getSelectedText(selection));
 			
 			let {
 				edit,
@@ -282,14 +281,14 @@ module.exports = function(editor) {
 				return;
 			}
 			
-			await clipboard.write(document.getSelectedText(selection));
+			await platform.clipboard.write(document.getSelectedText(selection));
 		},
 		
 		async paste({document, selection, setSelection, applyAndAddHistoryEntry}) {
 			let {
 				edit,
 				newSelection,
-			} = document.replaceSelection(selection, await clipboard.read());
+			} = document.replaceSelection(selection, await platform.clipboard.read());
 			
 			applyAndAddHistoryEntry({
 				edits: [edit],

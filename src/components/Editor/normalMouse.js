@@ -1,5 +1,4 @@
 let {on, off} = require("../../utils/dom/domEvents");
-let clipboard = require("../../modules/ipc/clipboard/renderer");
 let Selection = require("./utils/Selection");
 let rowColFromCursor = require("./utils/rowColFromCursor");
 let cursorFromRowCol = require("./utils/cursorFromRowCol");
@@ -72,7 +71,7 @@ module.exports = function(editor) {
 		let y = e.clientY - top;
 		
 		if (e.button === 1) {
-			let str = await clipboard.readSelection();
+			let str = await platform.clipboard.readSelection();
 			
 			let {
 				edit,
@@ -156,7 +155,7 @@ module.exports = function(editor) {
 		} = editor;
 		
 		if (Selection.isFull(selection)) {
-			clipboard.writeSelection(document.getSelectedText(selection));
+			platform.clipboard.writeSelection(document.getSelectedText(selection));
 		}
 		
 		editor.mouseup();
