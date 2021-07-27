@@ -5,6 +5,7 @@ let insertLineIndexFromScreenY = require("./canvas/utils/insertLineIndexFromScre
 let rowColFromScreenCoords = require("./canvas/utils/rowColFromScreenCoords");
 let rowColFromCursor = require("./utils/rowColFromCursor");
 let cursorFromRowCol = require("./utils/cursorFromRowCol");
+let countRows = require("./canvas/utils/countRows");
 let AstSelection = require("./utils/AstSelection");
 let Selection = require("./utils/Selection");
 
@@ -79,7 +80,7 @@ module.exports = function(editor) {
 			measurements,
 		);
 		
-		if (row >= document.countRows()) {
+		if (row >= countRows(document.lines)) {
 			return null;
 		}
 		

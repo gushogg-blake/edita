@@ -7,9 +7,9 @@ let guessIndent = require("../../../modules/utils/guessIndent");
 let checkNewlines = require("../../../modules/utils/checkNewlines");
 
 let javascript = require("../../../modules/langs/javascript");
-//let html = require("../../../modules/langs/html");
+let html = require("../../../modules/langs/html");
 //let svelte = require("../../../modules/langs/svelte");
-//let plainText = require("../../../modules/langs/plainText");
+let plainText = require("../../../modules/langs/plainText");
 let langs = require("../../../modules/langs");
 
 function defaultPrefs() {
@@ -98,8 +98,8 @@ class App extends Evented {
 		let langs = await Promise.all([
 			javascript(),
 			//svelte(),
-			//html(),
-			//plainText(),
+			html(),
+			plainText(),
 		]);
 		
 		for (let lang of langs) {
