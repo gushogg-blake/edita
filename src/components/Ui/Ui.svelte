@@ -8,16 +8,26 @@ import Document from "../../modules/Document";
 import Editor from "../Editor/Editor.svelte";
 import Toolbar from "./Toolbar.svelte";
 import TabBar from "./TabBar.svelte";
+import FindBar from "./FindBar.svelte";
 
 let tabs = [];
 let editorsByTabId = {};
 let selectedTab = null;
+
+let showingLeftPane = true;
+let showingRightPane = true;
+let showingBottomPane = true;
+let showingFindBar = false;
 
 let keymap = {
 	"Ctrl+O": "open",
 	"Ctrl+S": "save",
 	"Ctrl+Z": "undo",
 	"Ctrl+Y": "redo",
+	"Ctrl+F": "find",
+	"Ctrl+Shift+F": "findInOpenFiles",
+	"Ctrl+H": "findAndReplace",
+	"Ctrl+Shift+H": "findAndReplaceInOpenFiles",
 };
 
 let functions = {
@@ -49,6 +59,45 @@ let functions = {
 	
 	redo() {
 		getCurrentEditor()?._redo();
+	},
+	
+	find() {
+		if (!getCurrentEditor()) {
+			return;
+		}
+		
+		showFindBar();
+	},
+	
+	findInOpenFiles() {
+		if (platform.showFindDialog) {
+			platform.showFindDialog({
+				search: "openFiles",
+			});
+		} else {
+			// TODO
+		}
+	},
+	
+	findAndReplace() {
+		if (platform.showFindDialog) {
+			platform.showFindDialog({
+				replace: true,
+			});
+		} else {
+			// TODO
+		}
+	},
+	
+	findAndReplaceInOpenFiles() {
+		if (platform.showFindDialog) {
+			platform.showFindDialog({
+				search: "openFiles",
+				replace: true,
+			});
+		} else {
+			// TODO
+		}
 	},
 };
 
@@ -154,6 +203,16 @@ function closeTab(tab) {
 	}
 }
 
+function showFindBar() {
+	showingFindBar = true;
+	
+	getCurrentEditor()?.blur();
+}
+
+function hideFindBar() {
+	showingFindBar = false;
+}
+
 onMount(async function() {
 	openFile("test/repos/test.js", await require("flowfs")("test/repos/test.js").read());
 });
@@ -169,12 +228,13 @@ $border: 1px solid #AFACAA;
 
 #main {
 	display: grid;
-	grid-template-rows: auto auto 1fr auto;
+	grid-template-rows: auto auto 1fr auto auto;
 	grid-template-columns: auto 1fr auto;
 	grid-template-areas:
 		"toolbar toolbar toolbar"
 		"left tabBar right"
 		"left editor right"
+		"left findBar right"
 		"bottom bottom bottom";
 	width: 100vw;
 	height: 100vh;
@@ -186,19 +246,28 @@ $border: 1px solid #AFACAA;
 	border-bottom: $border;
 }
 
-#left {
+#leftContainer {
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr;
 	grid-area: left;
+}
+
+#left {
 	border-right: $border;
 }
 
-#tabBar {
+#tabBarContainer {
 	grid-area: tabBar;
+}
+
+#tabBar {
 	border-bottom: $border;
 }
 
 #editor {
 	display: grid;
-	grid-template-rows: 1fr;
+	grid-template-rows: 1fr auto;
 	grid-template-columns: 1fr;
 	grid-area: editor;
 }
@@ -209,13 +278,30 @@ $border: 1px solid #AFACAA;
 	grid-template-columns: 1fr;
 }
 
-#right {
+#findBarContainer {
+	grid-area: findBar;
+}
+
+#findBar {
+	border-top: $border;
+}
+
+#rightContainer {
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr;
 	grid-area: right;
+}
+
+#right {
 	border-left: $border;
 }
 
-#bottom {
+#bottomContainer {
 	grid-area: bottom;
+}
+
+#bottom {
 	border-top: $border;
 }
 </style>
@@ -228,16 +314,22 @@ $border: 1px solid #AFACAA;
 			on:new={functions._new}
 		/>
 	</div>
-	<div id="left">
-		left
+	<div id="leftContainer">
+		{#if showingLeftPane}
+			<div id="left">
+				left
+			</div>
+		{/if}
 	</div>
-	<div id="tabBar">
-		<TabBar
-			{tabs}
-			{selectedTab}
-			on:select={onSelectTab}
-			on:close={onCloseTab}
-		/>
+	<div id="tabBarContainer">
+		<div id="tabBar">
+			<TabBar
+				{tabs}
+				{selectedTab}
+				on:select={onSelectTab}
+				on:close={onCloseTab}
+			/>
+		</div>
 	</div>
 	<div id="editor">
 		{#each tabs as tab (tab)}
@@ -249,10 +341,25 @@ $border: 1px solid #AFACAA;
 			</div>
 		{/each}
 	</div>
-	<div id="right">
-		right
+	<div id="findBarContainer">
+		{#if showingFindBar}
+			<div id="findBar">
+				<FindBar/>
+			</div>
+		{/if}
 	</div>
-	<div id="bottom">
-		bottom
+	<div id="rightContainer">
+		{#if showingRightPane}
+			<div id="right">
+				right
+			</div>
+		{/if}
+	</div>
+	<div id="bottomContainer">
+		{#if showingBottomPane}
+			<div id="bottom">
+				bottom
+			</div>
+		{/if}
 	</div>
 </div>

@@ -52,12 +52,12 @@ export function hide() {
 	visible = false;
 }
 
-export function _undo(...args) {
-	return undo(...args);
+export function undo(...args) {
+	return _undo(...args);
 }
 
-export function _redo(...args) {
-	return redo(...args);
+export function redo(...args) {
+	return _redo(...args);
 }
 
 let revisionCounter = 0;
@@ -621,7 +621,7 @@ function applyAndAddHistoryEntry(edit) {
 	historyIndex = history.length;
 }
 
-function undo() {
+function _undo() {
 	if (historyIndex === 0) {
 		return;
 	}
@@ -637,7 +637,7 @@ function undo() {
 	redraw();
 }
 
-function redo() {
+function _redo() {
 	if (historyIndex === history.length) {
 		return;
 	}
@@ -1189,10 +1189,6 @@ onMount(async function() {
 	grid-template-columns: 1fr 13px;
 	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar blank";
 	color: black;
-	
-	/*width: 300px;
-	height: 300px;
-	margin: 50px;*/
 	
 	&.hasHorizontalScrollbar {
 		grid-template-rows: 1fr 13px;

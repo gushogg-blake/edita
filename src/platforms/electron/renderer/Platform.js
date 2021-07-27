@@ -1,3 +1,4 @@
+let os = require("os");
 let bluebird = require("bluebird");
 let fs = require("flowfs");
 let {systemInfo} = require("./ipc/init");
@@ -10,12 +11,14 @@ class Platform {
 		this.clipboard = clipboard;
 	}
 	
-	async open() {
+	async open(defaultPath, currentPath) {
+		let path = currentPath ? fs(currentPath).parent.path : defaultPath || os.homedir();
+		
 		let {
 			canceled,
 			filePaths,
 		} = await openDialog({
-			defaultPath: "/home/gus/projects/editor",
+			defaultPath: path,
 			properties: [
 				"openFile",
 				"multiSelections",
