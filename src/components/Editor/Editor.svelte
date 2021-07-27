@@ -992,7 +992,7 @@ function updateCanvas() {
 		document.fileDetails,
 		measurements,
 		cursorBlinkOn,
-		windowHasFocus,
+		focused && windowHasFocus,
 	);
 }
 

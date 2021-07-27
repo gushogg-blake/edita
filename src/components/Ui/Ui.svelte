@@ -8,6 +8,8 @@ import Document from "../../modules/Document";
 import Editor from "../Editor/Editor.svelte";
 import Toolbar from "./Toolbar.svelte";
 import TabBar from "./TabBar.svelte";
+import LeftPane from "./LeftPane.svelte";
+import RightPane from "./RightPane.svelte";
 import FindBar from "./FindBar.svelte";
 
 let tabs = [];
@@ -54,11 +56,11 @@ let functions = {
 	},
 	
 	undo() {
-		getCurrentEditor()?._undo();
+		getCurrentEditor()?.undo();
 	},
 	
 	redo() {
-		getCurrentEditor()?._redo();
+		getCurrentEditor()?.redo();
 	},
 	
 	find() {
@@ -211,6 +213,16 @@ function showFindBar() {
 
 function hideFindBar() {
 	showingFindBar = false;
+	
+	getCurrentEditor()?.focus();
+}
+
+function focusLeftPane() {
+	
+}
+
+function focusRightPane() {
+	
 }
 
 onMount(async function() {
@@ -247,13 +259,12 @@ $border: 1px solid #AFACAA;
 }
 
 #leftContainer {
-	display: grid;
-	grid-template-rows: 1fr;
-	grid-template-columns: 1fr;
 	grid-area: left;
 }
 
 #left {
+	width: 100%;
+	height: 100%;
 	border-right: $border;
 }
 
@@ -287,13 +298,12 @@ $border: 1px solid #AFACAA;
 }
 
 #rightContainer {
-	display: grid;
-	grid-template-rows: 1fr;
-	grid-template-columns: 1fr;
 	grid-area: right;
 }
 
 #right {
+	width: 100%;
+	height: 100%;
 	border-left: $border;
 }
 
@@ -317,7 +327,9 @@ $border: 1px solid #AFACAA;
 	<div id="leftContainer">
 		{#if showingLeftPane}
 			<div id="left">
-				left
+				<LeftPane
+					on:focus={focusLeftPane}
+				/>
 			</div>
 		{/if}
 	</div>
@@ -344,14 +356,18 @@ $border: 1px solid #AFACAA;
 	<div id="findBarContainer">
 		{#if showingFindBar}
 			<div id="findBar">
-				<FindBar/>
+				<FindBar
+					on:close={hideFindBar}
+				/>
 			</div>
 		{/if}
 	</div>
 	<div id="rightContainer">
 		{#if showingRightPane}
 			<div id="right">
-				right
+				<RightPane
+					on:focus={focusRightPane}
+				/>
 			</div>
 		{/if}
 	</div>

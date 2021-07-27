@@ -25,7 +25,7 @@ module.exports = function(
 	fileDetails,
 	measurements,
 	cursorBlinkOn,
-	windowHasFocus,
+	focused,
 ) {
 	//console.time("render");
 	
@@ -44,7 +44,7 @@ module.exports = function(
 			normalSelection,
 			scrollPosition,
 			measurements,
-			windowHasFocus,
+			focused,
 		);
 	}
 	
@@ -120,7 +120,7 @@ module.exports = function(
 			scrollPosition,
 			measurements,
 			cursorBlinkOn,
-			windowHasFocus,
+			focused,
 		);
 	}
 	
