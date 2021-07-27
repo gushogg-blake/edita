@@ -1,5 +1,5 @@
-let calculateMarginOffset = require("../render/calculateMarginOffset");
-let topMargin = require("../render/topMargin");
+let topMargin = require("../topMargin");
+let calculateMarginOffset = require("./calculateMarginOffset");
 
 module.exports = function(
 	lines,

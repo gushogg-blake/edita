@@ -1,5 +1,5 @@
-let topMargin = require("../render/topMargin");
-let cursorFromRowCol = require("./cursorFromRowCol");
+let cursorFromRowCol = require("../../utils/cursorFromRowCol");
+let topMargin = require("../topMargin");
 let getLineStartingRow = require("./getLineStartingRow");
 
 module.exports = function(

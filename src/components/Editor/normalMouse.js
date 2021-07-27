@@ -1,11 +1,11 @@
 let {on, off} = require("../../utils/dom/domEvents");
 let clipboard = require("../../modules/ipc/clipboard/renderer");
-let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
-let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
-let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
-let Selection = require("../../modules/utils/Selection");
-let pointIsWithinRegions = require("../../modules/utils/pointIsWithinRegions");
-let autoScroll = require("./utils/autoScroll");
+let Selection = require("./utils/Selection");
+let rowColFromCursor = require("./utils/rowColFromCursor");
+let cursorFromRowCol = require("./utils/cursorFromRowCol");
+let autoScroll = require("./utils/dom/autoScroll");
+let rowColFromScreenCoords = require("./canvas/utils/rowColFromScreenCoords");
+let pointIsWithinRegions = require("./canvas/utils/pointIsWithinRegions");
 
 module.exports = function(editor) {
 	let drawingSelection = false;

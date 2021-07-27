@@ -1,4 +1,4 @@
-let calculateMarginWidth = require("./calculateMarginWidth");
+let calculateMarginWidth = require("../utils/calculateMarginWidth");
 
 module.exports = function(
 	context,

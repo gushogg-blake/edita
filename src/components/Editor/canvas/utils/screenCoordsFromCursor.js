@@ -1,4 +1,4 @@
-let rowColFromCursor = require("./rowColFromCursor");
+let rowColFromCursor = require("../../utils/rowColFromCursor");
 let screenCoordsFromRowCol = require("./screenCoordsFromRowCol");
 
 module.exports = function(

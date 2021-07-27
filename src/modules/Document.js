@@ -1,9 +1,6 @@
 let Evented = require("../utils/Evented");
 let _typeof = require("../utils/typeof");
 let Selection = require("./utils/Selection");
-let countRows = require("./utils/countRows");
-let wrapLine = require("./wrapLine/wrapLine");
-let unwrapLine = require("./wrapLine/unwrapLine");
 let Line = require("./Line");
 
 class Document extends Evented {
@@ -84,6 +81,31 @@ class Document extends Evented {
 		};
 	}
 	
+	parse() {
+		console.time("parse");
+		
+		this.lines = [];
+		
+		let {fileDetails} = this;
+		let lineStrings = this.string.split(fileDetails.newline);
+		let lineStartIndex = 0;
+		
+		for (let lineString of lineStrings) {
+			this.lines.push(new Line(lineString, fileDetails, lineStartIndex));
+			
+			lineStartIndex += lineString.length + fileDetails.newline.length;
+		}
+		
+		try {
+			this.lang.parse(this.string, this.lines, this.fileDetails);
+		} catch (e) {
+			console.error("Parse error");
+			console.error(e);
+		}
+		
+		console.timeEnd("parse");
+	}
+	
 	replaceSelection(selection, string) {
 		let {start, end} = Selection.sort(selection);
 		let [startLineIndex, startOffset] = start;
@@ -112,6 +134,10 @@ class Document extends Evented {
 			newSelection,
 		};
 	}
+	
+	/*
+	NOTE some of these should probs be moved to Editor or an Editing util
+	*/
 	
 	insertCharacter(selection, ch) {
 		return this.replaceSelection(selection, ch);
@@ -229,47 +255,6 @@ class Document extends Evented {
 		let trimRight = lines[lines.length - 1].string.length - endOffset;
 		
 		return str.substring(trimLeft, str.length - trimRight);
-	}
-	
-	parse() {
-		console.time("parse");
-		
-		this.lines = [];
-		
-		let {fileDetails} = this;
-		let lineStrings = this.string.split(fileDetails.newline);
-		let lineStartIndex = 0;
-		
-		for (let lineString of lineStrings) {
-			this.lines.push(new Line(lineString, fileDetails, lineStartIndex));
-			
-			lineStartIndex += lineString.length + fileDetails.newline.length;
-		}
-		
-		try {
-			this.lang.parse(this.string, this.lines, this.fileDetails);
-		} catch (e) {
-			console.error("Parse error");
-			console.error(e);
-		}
-		
-		console.timeEnd("parse");
-	}
-	
-	wrapLines(measurements, screenWidth) {
-		//for (let line of this.lines) {
-		//	wrapLine(line, this.fileDetails.indentation, measurements, screenWidth);
-		//}
-	}
-	
-	unwrapLines() {
-		//for (let line of this.lines) {
-		//	unwrapLine(line);
-		//}
-	}
-	
-	countRows() {
-		return countRows(this.lines);
 	}
 	
 	getLongestLineWidth() {

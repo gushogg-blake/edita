@@ -1,8 +1,8 @@
 let findFirstVisibleLine = require("../utils/findFirstVisibleLine");
-let marginStyle = require("./marginStyle");
-let calculateMarginWidth = require("./calculateMarginWidth");
-let calculateMarginOffset = require("./calculateMarginOffset");
-let topMargin = require("./topMargin");
+let calculateMarginWidth = require("../utils/calculateMarginWidth");
+let calculateMarginOffset = require("../utils/calculateMarginOffset");
+let marginStyle = require("../marginStyle");
+let topMargin = require("../topMargin");
 
 module.exports = function(
 	context,

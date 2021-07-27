@@ -10,19 +10,20 @@ import windowFocus from "../../utils/dom/windowFocus";
 import getKeyCombo from "../../utils/getKeyCombo";
 import clipboard from "../../modules/ipc/clipboard/renderer";
 
-import calculateMarginWidth from "../../modules/render/calculateMarginWidth";
-import calculateMarginOffset from "../../modules/render/calculateMarginOffset";
-import calculateNormalSelectionRegions from "../../modules/render/calculateNormalSelectionRegions";
-import render from "../../modules/render/render";
-import rowColFromScreenCoords from "../../modules/utils/rowColFromScreenCoords";
-import screenCoordsFromRowCol from "../../modules/utils/screenCoordsFromRowCol";
-import rowColFromCursor from "../../modules/utils/rowColFromCursor";
-import cursorFromRowCol from "../../modules/utils/cursorFromRowCol";
-import findFirstVisibleLine from "../../modules/utils/findFirstVisibleLine";
-import Selection from "../../modules/utils/Selection";
-import AstSelection from "../../modules/utils/AstSelection";
+import calculateMarginWidth from "./canvas/utils/calculateMarginWidth";
+import calculateMarginOffset from "./canvas/utils/calculateMarginOffset";
+import calculateNormalSelectionRegions from "./canvas/utils/calculateNormalSelectionRegions";
+import countRows from "./canvas/utils/countRows";
+import rowColFromScreenCoords from "./canvas/utils/rowColFromScreenCoords";
+import screenCoordsFromRowCol from "./canvas/utils/screenCoordsFromRowCol";
+import findFirstVisibleLine from "./canvas/utils/findFirstVisibleLine";
 
-import Scrollbar from "../Scrollbar.svelte";
+import render from "./canvas/render/render";
+
+import rowColFromCursor from "./utils/rowColFromCursor";
+import cursorFromRowCol from "./utils/cursorFromRowCol";
+import Selection from "./utils/Selection";
+import AstSelection from "./utils/AstSelection";
 
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
@@ -30,6 +31,7 @@ import normalKeyboard from "./normalKeyboard";
 import astKeyboard from "./astKeyboard";
 import modeSwitchKey from "./modeSwitchKey";
 
+import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer.svelte";
 
 export let document;
@@ -759,7 +761,7 @@ function scrollBy(x, rows) {
 		let newRow = scrollPosition.row + rows;
 		
 		newRow = Math.max(0, newRow);
-		newRow = Math.min(newRow, document.countRows() - 1);
+		newRow = Math.min(newRow, countRows(document.lines) - 1);
 		
 		scrollPosition.row = newRow;
 	}
@@ -802,7 +804,7 @@ function ensureNormalCursorIsOnScreen() {
 	let [row, col] = rowColFromCursor(document.lines, lineIndex, offset);
 	
 	let {width, rows} = getCodeAreaSize();
-	let maxRow = document.countRows() - 1;
+	let maxRow = countRows(document.lines) - 1;
 	let firstVisibleRow = scrollPosition.row;
 	let lastFullyVisibleRow = firstVisibleRow + rows;
 	
@@ -929,14 +931,14 @@ function updateCanvasSize() {
 }
 
 function updateWraps() {
-	if (app.prefs.wrap) {
-		document.wrapLines(
-			measurements,
-			getCodeAreaSize().width,
-		);
-	} else {
-		document.unwrapLines();
-	}
+	//if (app.prefs.wrap) {
+	//	document.wrapLines(
+	//		measurements,
+	//		getCodeAreaSize().width,
+	//	);
+	//} else {
+	//	document.unwrapLines();
+	//}
 }
 
 let prevWidth;
@@ -1023,7 +1025,7 @@ function updateVerticalScrollbar() {
 	let {rowHeight} = measurements;
 	let {offsetHeight: height} = canvasDiv;
 	
-	let rows = document.countRows();
+	let rows = countRows(document.lines);
 	
 	let scrollHeight = (rows - 1) * rowHeight + height;
 	let scrollTop = scrollPosition.row * rowHeight;
@@ -1055,7 +1057,7 @@ function verticalScroll({detail: position}) {
 	let {rowHeight} = measurements;
 	let {height} = canvas;
 	
-	let rows = document.countRows();
+	let rows = countRows(document.lines);
 	let scrollHeight = (rows - 1) * rowHeight + height;
 	let scrollMax = scrollHeight - height;
 	

@@ -4,10 +4,10 @@ import {fade} from "svelte/transition";
 import unique from "../../utils/array/unique";
 import {on, off} from "../../utils/dom/domEvents";
 import inlineStyle from "../../utils/dom/inlineStyle";
-import screenRowFromLineIndex from "../../modules/utils/screenRowFromLineIndex";
-import topMargin from "../../modules/render/topMargin";
-import drag from "./utils/drag";
-import createDragEvent from "./utils/createDragEvent";
+import screenRowFromLineIndex from "./canvas/utils/screenRowFromLineIndex";
+import topMargin from "./canvas/topMargin";
+import drag from "./utils/dom/drag";
+import createDragEvent from "./utils/dom/createDragEvent";
 
 export let document;
 export let revisionCounter; // for reactive updates on document edits

@@ -1,6 +1,6 @@
-let autoScroll = require("../../../utils/dom/autoScroll");
-let screenOffsets = require("../../../utils/dom/screenOffsets");
-let calculateMarginOffset = require("../../../modules/render/calculateMarginOffset");
+let autoScroll = require("../../../../utils/dom/autoScroll");
+let screenOffsets = require("../../../../utils/dom/screenOffsets");
+let calculateMarginOffset = require("../../canvas/utils/calculateMarginOffset");
 
 module.exports = function(
 	canvas,

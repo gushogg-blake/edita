@@ -1,4 +1,4 @@
-let expandTabs = require("./string/expandTabs");
+let expandTabs = require("../../../modules/utils/string/expandTabs");
 
 module.exports = function(
 	lines,

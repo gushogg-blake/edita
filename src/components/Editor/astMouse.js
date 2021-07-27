@@ -1,12 +1,12 @@
 let parseJson = require("../../utils/parseJson");
 let {on, off} = require("../../utils/dom/domEvents");
-let rowColFromScreenCoords = require("../../modules/utils/rowColFromScreenCoords");
-let rowColFromCursor = require("../../modules/utils/rowColFromCursor");
-let cursorFromRowCol = require("../../modules/utils/cursorFromRowCol");
-let insertLineIndexFromScreenY = require("../../modules/utils/insertLineIndexFromScreenY");
-let AstSelection = require("../../modules/utils/AstSelection");
-let Selection = require("../../modules/utils/Selection");
-let autoScroll = require("./utils/autoScroll");
+let autoScroll = require("./utils/dom/autoScroll");
+let insertLineIndexFromScreenY = require("./canvas/utils/insertLineIndexFromScreenY");
+let rowColFromScreenCoords = require("./canvas/utils/rowColFromScreenCoords");
+let rowColFromCursor = require("./utils/rowColFromCursor");
+let cursorFromRowCol = require("./utils/cursorFromRowCol");
+let AstSelection = require("./utils/AstSelection");
+let Selection = require("./utils/Selection");
 
 /*
 you can't see the data (only the types) on dragover, and types can't contain

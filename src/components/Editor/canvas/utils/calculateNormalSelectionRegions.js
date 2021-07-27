@@ -1,8 +1,8 @@
-let Selection = require("../utils/Selection");
-let getLineStartingRow = require("../utils/getLineStartingRow");
-let screenCoordsFromCursor = require("../utils/screenCoordsFromCursor");
-let rowColFromCursor = require("../utils/rowColFromCursor");
-let screenCoordsFromRowCol = require("../utils/screenCoordsFromRowCol");
+let Selection = require("../../utils/Selection");
+let rowColFromCursor = require("../../utils/rowColFromCursor");
+let getLineStartingRow = require("./getLineStartingRow");
+let screenCoordsFromCursor = require("./screenCoordsFromCursor");
+let screenCoordsFromRowCol = require("./screenCoordsFromRowCol");
 
 module.exports = function(
 	lines,

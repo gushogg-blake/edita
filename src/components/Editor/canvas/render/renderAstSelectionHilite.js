@@ -1,7 +1,7 @@
+let AstSelection = require("../../utils/AstSelection");
 let getLineStartingRow = require("../utils/getLineStartingRow");
 let screenCoordsFromRowCol = require("../utils/screenCoordsFromRowCol");
 let getLineRangeTotalHeight = require("../utils/getLineRangeTotalHeight");
-let AstSelection = require("../utils/AstSelection");
 
 module.exports = function(
 	context,
