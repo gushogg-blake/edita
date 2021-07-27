@@ -1,16 +1,16 @@
 let fs = require("flowfs");
 let minimatch = require("minimatch");
 
-let Evented = require("./utils/Evented");
+let Evented = require("../../../utils/Evented");
 
-let guessIndent = require("./modules/utils/guessIndent");
-let checkNewlines = require("./modules/utils/checkNewlines");
+let guessIndent = require("../../../modules/utils/guessIndent");
+let checkNewlines = require("../../../modules/utils/checkNewlines");
 
-let javascript = require("./modules/langs/javascript");
-//let html = require("./modules/langs/html");
-//let svelte = require("./modules/langs/svelte");
-//let plainText = require("./modules/langs/plainText");
-let langs = require("./modules/langs");
+let javascript = require("../../../modules/langs/javascript");
+//let html = require("../../../modules/langs/html");
+//let svelte = require("../../../modules/langs/svelte");
+//let plainText = require("../../../modules/langs/plainText");
+let langs = require("../../../modules/langs");
 
 function defaultPrefs() {
 	return {
@@ -27,7 +27,7 @@ function defaultPrefs() {
 		astSelectionHiliteBackground: "#F2F2F2",
 		astInsertionHiliteBackground: "#606060",
 		
-		wrap: true,
+		wrap: false,
 		
 		modeSwitchKey: "Escape",
 		minHoldTime: 200,

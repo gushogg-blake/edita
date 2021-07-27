@@ -17,7 +17,7 @@ module.exports = function(
 		let {colWidth} = measurements;
 		
 		let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.abs(x) / colWidth)) * colWidth;
-		let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(2, Math.abs(y) / 30)));
+		let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(1.3, Math.abs(y) / 25)));
 		
 		if (!hasHorizontalScrollbar) {
 			xOffset = 0;

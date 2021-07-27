@@ -1,51 +1,35 @@
 <script>
-let fs = require("flowfs");
-
 import {onMount, tick} from "svelte";
 
-import getKeyCombo from "../utils/getKeyCombo";
-import lid from "../utils/lid";
-import {push, remove} from "../utils/arrayMethods";
-import Document from "../modules/Document";
-import openDialog from "../modules/ipc/openDialog/renderer";
-import Toolbar from "../components/Toolbar.svelte";
-import TabBar from "../components/TabBar.svelte";
-import Editor from "../components/Editor/Editor.svelte";
+import getKeyCombo from "../../utils/getKeyCombo";
+import lid from "../../utils/lid";
+import {push, remove} from "../../utils/arrayMethods";
+import Document from "../../modules/Document";
+import Editor from "../Editor/Editor.svelte";
+import Toolbar from "./Toolbar.svelte";
+import TabBar from "./TabBar.svelte";
 
 let tabs = [];
 let editorsByTabId = {};
 let selectedTab = null;
 
 let keymap = {
-	"Ctrl+O": "showOpenDialog",
-	"Ctrl+S": "saveCurrentFile",
+	"Ctrl+O": "open",
+	"Ctrl+S": "save",
 	"Ctrl+Z": "undo",
 	"Ctrl+Y": "redo",
 };
 
 let functions = {
-	async showOpenDialog() {
-		let {
-			canceled,
-			filePaths,
-		} = await openDialog({
-			defaultPath: "/home/gus/projects/editor",
-			properties: [
-				"openFile",
-				"multiSelections",
-			],
-		});
+	async open() {
+		let files = await platform.open();
 		
-		if (canceled) {
-			return;
-		}
-		
-		for (let path of filePaths) {
-			openFile(path);
+		for (let {path, code} of files) {
+			openFile(path, code);
 		}
 	},
 	
-	async saveCurrentFile() {
+	async save() {
 		if (!selectedTab) {
 			return;
 		}
@@ -53,7 +37,7 @@ let functions = {
 		let {document, path} = selectedTab;
 		
 		if (path) {
-			await fs(path).write(document.toString());
+			await platform.save(path, document.toString());
 		} else {
 			// TODO save dialog
 		}
@@ -76,9 +60,7 @@ function keydown(e) {
 	}
 }
 
-async function openFile(path) {
-	path = fs(path).path;
-	
+async function openFile(path, code) {
 	let tab = findTabByPath(path);
 	
 	if (tab) {
@@ -86,8 +68,6 @@ async function openFile(path) {
 		
 		return;
 	}
-	
-	let code = await fs(path).read();
 	
 	let fileDetails = app.getFileDetails(code, path);
 	
@@ -175,7 +155,7 @@ function closeTab(tab) {
 }
 
 onMount(async function() {
-	openFile("test/repos/test.js");
+	openFile("test/repos/test.js", await require("flowfs")("test/repos/test.js").read());
 });
 </script>
 
@@ -243,7 +223,9 @@ $border: 1px solid #AFACAA;
 <div id="main">
 	<div id="toolbar">
 		<Toolbar
-			on:open={functions.showOpenDialog}
+			on:open={functions.open}
+			on:save={functions.save}
+			on:new={functions._new}
 		/>
 	</div>
 	<div id="left">

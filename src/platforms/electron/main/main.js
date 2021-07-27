@@ -11,12 +11,12 @@ let windowStateKeeper = require("electron-window-state");
 let dev = require("electron-is-dev");
 let fs = require("flowfs");
 let config = require("./config");
-let init = require("./modules/ipc/init/main");
-let clipboard = require("./modules/ipc/clipboard/main");
-let openDialog = require("./modules/ipc/openDialog/main");
+let init = require("./ipc/init");
+let clipboard = require("./ipc/clipboard");
+let openDialog = require("./ipc/openDialog");
 
 if (dev) {
-	require("../watch");
+	require("./watch");
 }
 
 app.setPath("userData", fs(config.userDataDir, "electron").path);
@@ -65,7 +65,7 @@ async function createWindow() {
 	
 	winState.manage(win);
 	
-	win.loadURL("file://" + fs(__dirname).sibling("public", "index.html").path);
+	win.loadURL("file://" + fs(__dirname).sibling("renderer", "public", "index.html").path);
 
 	let watcher;
 
@@ -73,10 +73,10 @@ async function createWindow() {
 		win.webContents.openDevTools();
 
 		watcher = require("chokidar").watch([
-			"build",
-			"public",
-			"vendor",
-		].map(path => fs(__dirname).sibling(path).path), {
+			"../../../../build/electron",
+			"../renderer/public",
+			"../../../../vendor",
+		].map(path => fs(__dirname).rel(path).path), {
 			ignoreInitial: true,
 		});
 		

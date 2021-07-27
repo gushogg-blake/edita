@@ -2,7 +2,7 @@
 let fs = require("flowfs");
 
 import {createEventDispatcher} from "svelte";
-import Gap from "./Gap.svelte";
+import Gap from "../utils/Gap.svelte";
 
 let fire = createEventDispatcher();
 

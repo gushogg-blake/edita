@@ -14,9 +14,9 @@ function debounce(fn, delay) {
 }
 
 let watch = chokidar.watch([
-	"src/modules/ipc",
-	"src/config.js",
-	"src/main.js",
+	"../../../modules/ipc",
+	"config.js",
+	"main.js",
 	"watch.js",
 ].map(p => fs(__dirname, p).path));
 

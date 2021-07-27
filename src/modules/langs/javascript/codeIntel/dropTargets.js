@@ -2,18 +2,6 @@ let indentLines = require("../../../utils/indentLines");
 let AstSelection = require("../../../utils/AstSelection");
 let removeSelection = require("../../common/codeIntel/removeSelection");
 
-let handleDrop = {
-	addSelectionToNewElse(
-		document,
-		fromSelection,
-		toSelection,
-		lines,
-		option,
-	) {
-		
-	},
-};
-
 module.exports = {
 	addSelectionToNewElse: {
 		type: "addSelectionToNewElse",

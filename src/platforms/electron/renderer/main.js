@@ -1,5 +1,5 @@
-import getKeyCombo from "./utils/getKeyCombo";
-import Ui from "./components/Ui.svelte";
+import getKeyCombo from "../../../utils/getKeyCombo";
+import Ui from "../../../components/Ui/Ui.svelte";
 import Platform from "./Platform";
 import App from "./App";
 

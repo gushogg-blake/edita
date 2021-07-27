@@ -1,6 +1,6 @@
 <script>
-import _typeof from "../utils/typeof";
-import inlineStyle from "../utils/dom/inlineStyle";
+import _typeof from "../../utils/typeof";
+import inlineStyle from "../../utils/dom/inlineStyle";
 
 export let width = null;
 export let height = null;
