@@ -1,5 +1,10 @@
 let {ipcRenderer} = window.require("electron");
 
+/*
+note - these methods are sync, but code should treat platform.clipboard
+methods as async as they may be async on some platforms
+*/
+
 module.exports = {
 	read() {
 		return ipcRenderer.sendSync("clipboard/read");

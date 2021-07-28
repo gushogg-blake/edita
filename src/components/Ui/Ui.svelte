@@ -211,8 +211,8 @@ function showFindBar() {
 	showingFindBar = true;
 }
 
-function hideFindBar() {
-	showingFindBar = false;
+function hideFindBarAndFocusEditor() {
+	hideFindBar();
 	
 	let editor = getCurrentEditor();
 	
@@ -221,6 +221,10 @@ function hideFindBar() {
 			editor.focus();
 		}
 	}
+}
+
+function hideFindBar() {
+	showingFindBar = false;
 }
 
 onMount(async function() {
@@ -354,7 +358,9 @@ $border: 1px solid #AFACAA;
 		{#if showingFindBar}
 			<div id="findBar">
 				<FindBar
-					on:close={hideFindBar}
+					on:close={hideFindBarAndFocusEditor}
+					on:blur={hideFindBar}
+					findController={getCurrentEditor().findController}
 				/>
 			</div>
 		{/if}

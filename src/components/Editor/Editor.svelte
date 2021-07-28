@@ -60,6 +60,16 @@ export function redo(...args) {
 	return _redo(...args);
 }
 
+let find = {
+	
+};
+
+export let findController = {
+	search(find, type, caseMode) {
+		
+	},
+};
+
 let blur = function() {
 	focused = false;
 }
@@ -1192,6 +1202,8 @@ onMount(async function() {
 	}
 });
 </script>
+
+<svelte:options accessors/>
 
 <svelte:window
 	on:keydown={keydown}

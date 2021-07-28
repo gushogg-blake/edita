@@ -3,27 +3,34 @@ import {onMount, createEventDispatcher, getContext} from "svelte";
 import getKeyCombo from "../../utils/getKeyCombo";
 import {on} from "../../utils/dom/domEvents";
 
+export let findController;
+
 let fire = createEventDispatcher();
 
 let focusManager = getContext("focusManager");
 
 let blur = function() {
-	fire("close");
+	fire("blur");
 }
 
 let main;
 let input;
 let search = "";
+let type = "plain";
+let caseMode = "caseSensitive";
 
-let keymap = {
+let windowKeymap = {
 	"Escape": "close",
+};
+
+let inputKeymap = {
 	"Enter": "findNext",
 	"Shift+Enter": "findPrevious",
 };
 
 let functions = {
 	close() {
-		blur();
+		fire("close");
 	},
 	
 	findNext() {
@@ -33,12 +40,26 @@ let functions = {
 	},
 };
 
-function keydown(e) {
+function windowKeydown(e) {
 	let {keyCombo} = getKeyCombo(e);
 	
-	if (keymap[keyCombo]) {
-		functions[keymap[keyCombo]]();
+	if (windowKeymap[keyCombo]) {
+		functions[windowKeymap[keyCombo]]();
 	}
+}
+
+function inputKeydown(e) {
+	let {keyCombo} = getKeyCombo(e);
+	
+	if (inputKeymap[keyCombo]) {
+		functions[inputKeymap[keyCombo]]();
+	}
+}
+
+function onInput(e) {
+	search = input.value;
+	
+	findController.search(search, type, caseMode);
 }
 
 function onFocus() {
@@ -51,7 +72,7 @@ onMount(function() {
 	main.focus();
 	input.focus();
 	
-	teardown.push(on(window, "keydown", keydown));
+	teardown.push(on(window, "keydown", windowKeydown));
 	
 	teardown.push(function() {
 		focusManager.teardown(blur);
@@ -78,6 +99,7 @@ onMount(function() {
 	<button on:click={blur}>x</button>
 	<input
 		bind:this={input}
-		bind:value={search}
+		on:keydown={inputKeydown}
+		on:input={onInput}
 	>
 </div>
