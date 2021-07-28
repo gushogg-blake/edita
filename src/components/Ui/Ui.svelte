@@ -1,9 +1,10 @@
 <script>
-import {onMount, tick} from "svelte";
+import {onMount, tick, setContext} from "svelte";
 
 import getKeyCombo from "../../utils/getKeyCombo";
 import lid from "../../utils/lid";
 import {push, remove} from "../../utils/arrayMethods";
+import focusManager from "../utils/focusManager";
 import Document from "../../modules/Document";
 import Editor from "../Editor/Editor.svelte";
 import Toolbar from "./Toolbar.svelte";
@@ -11,6 +12,8 @@ import TabBar from "./TabBar.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
 import FindBar from "./FindBar.svelte";
+
+setContext("focusManager", focusManager());
 
 let tabs = [];
 let editorsByTabId = {};
@@ -20,8 +23,6 @@ let showingLeftPane = true;
 let showingRightPane = true;
 let showingBottomPane = true;
 let showingFindBar = false;
-
-let blurCurrentElement = null;
 
 let keymap = {
 	"Ctrl+O": "open",
@@ -222,26 +223,6 @@ function hideFindBar() {
 	}
 }
 
-/*
-focus/blur - focusable components should fire "focus" with a blur function
-
-they then become the focused element and the previous blur function, if any, is called
-
-(native behaviour is too eager to blur elements - we only want to blur things
-when something else is focused, e.g. clicking the editor should blur the find bar
-but clicking a random div shouldn't)
-
-blur functions should be unique to the component instance, but consistent
-*/
-
-function onFocusElement({detail: blur}) {
-	if (blurCurrentElement && blurCurrentElement !== blur) {
-		blurCurrentElement();
-	}
-	
-	blurCurrentElement = blur;
-}
-
 onMount(async function() {
 	openFile("test/repos/test.js", await require("flowfs")("test/repos/test.js").read());
 });
@@ -345,7 +326,6 @@ $border: 1px solid #AFACAA;
 		{#if showingLeftPane}
 			<div id="left">
 				<LeftPane
-					on:focus={onFocusElement}
 				/>
 			</div>
 		{/if}
@@ -366,7 +346,6 @@ $border: 1px solid #AFACAA;
 				<Editor
 					bind:this={editorsByTabId[tab.id]}
 					document={tab.document}
-					on:focus={onFocusElement}
 				/>
 			</div>
 		{/each}
@@ -376,7 +355,6 @@ $border: 1px solid #AFACAA;
 			<div id="findBar">
 				<FindBar
 					on:close={hideFindBar}
-					on:focus={onFocusElement}
 				/>
 			</div>
 		{/if}
@@ -385,7 +363,6 @@ $border: 1px solid #AFACAA;
 		{#if showingRightPane}
 			<div id="right">
 				<RightPane
-					on:focus={onFocusElement}
 				/>
 			</div>
 		{/if}

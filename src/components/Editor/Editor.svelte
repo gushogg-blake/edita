@@ -1,5 +1,5 @@
 <script>
-import {tick, onMount, createEventDispatcher} from "svelte";
+import {tick, onMount, createEventDispatcher, getContext} from "svelte";
 
 import sleep from "../../utils/sleep";
 import inlineStyle from "../../utils/dom/inlineStyle";
@@ -63,6 +63,8 @@ export function redo(...args) {
 let blur = function() {
 	focused = false;
 }
+
+let focusManager = getContext("focusManager");
 
 let fire = createEventDispatcher();
 
@@ -1136,7 +1138,7 @@ async function prefsUpdated() {
 function onFocus() {
 	focused = true;
 	
-	fire("focus", blur);
+	focusManager.focus(blur);
 }
 
 onMount(async function() {
@@ -1176,6 +1178,10 @@ onMount(async function() {
 	}));
 	
 	teardown.push(app.on("prefsUpdated", prefsUpdated));
+	
+	teardown.push(function() {
+		focusManager.teardown(blur);
+	});
 	
 	mounted = true;
 	

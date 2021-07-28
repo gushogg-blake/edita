@@ -1,15 +1,18 @@
 <script>
-import {onMount, createEventDispatcher} from "svelte";
+import {onMount, createEventDispatcher, getContext} from "svelte";
 import getKeyCombo from "../../utils/getKeyCombo";
 import {on} from "../../utils/dom/domEvents";
 
 let fire = createEventDispatcher();
+
+let focusManager = getContext("focusManager");
 
 let blur = function() {
 	fire("close");
 }
 
 let main;
+let input;
 let search = "";
 
 let keymap = {
@@ -39,15 +42,20 @@ function keydown(e) {
 }
 
 function onFocus() {
-	fire("focus", blur);
+	focusManager.focus(blur);
 }
 
 onMount(function() {
 	let teardown = [];
 	
 	main.focus();
+	input.focus();
 	
 	teardown.push(on(window, "keydown", keydown));
+	
+	teardown.push(function() {
+		focusManager.teardown(blur);
+	});
 	
 	return function() {
 		for (let fn of teardown) {
@@ -69,6 +77,7 @@ onMount(function() {
 >
 	<button on:click={blur}>x</button>
 	<input
+		bind:this={input}
 		bind:value={search}
 	>
 </div>
