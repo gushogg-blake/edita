@@ -1,3 +1,5 @@
+let Cursor = require("./Cursor");
+
 /*
 sort a selection so that start is before end
 
@@ -24,6 +26,15 @@ function sort(selection) {
 	return {start, end};
 }
 
+// is a before b (and not overlapping)?
+
+function isBefore(a, b) {
+	let {end} = sort(a);
+	let {start} = sort(b);
+	
+	return Cursor.isBefore(end, start);
+}
+
 function isFull(selection) {
 	let {start, end} = selection;
 	
@@ -41,6 +52,7 @@ let api = {
 	s,
 	sort,
 	isFull,
+	isBefore,
 	
 	cursorIsWithinSelection(selection, cursor) {
 		let {start, end} = sort(selection);
@@ -51,13 +63,21 @@ let api = {
 		if (
 			lineIndex < startLineIndex
 			|| lineIndex > endLineIndex
-			|| lineIndex === startLineIndex && offset < startOffset
-			|| lineIndex === endLineIndex && offset > endOffset
+			|| lineIndex === startLineIndex && offset <= startOffset
+			|| lineIndex === endLineIndex && offset >= endOffset
 		) {
 			return false;
 		}
 		
 		return true;
+	},
+	
+	cursorIsNextToSelection(selection, cursor) {
+		return Cursor.equals(cursor, selection.start) || Cursor.equals(cursor, selection.end);
+	},
+	
+	cursorIsWithinOrNextToSelection(selection, cursor) {
+		return api.cursorIsNextToSelection(selection, cursor) || api.cursorIsWithinSelection(selection, cursor);
 	},
 };
 

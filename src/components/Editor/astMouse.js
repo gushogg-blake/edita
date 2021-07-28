@@ -310,11 +310,7 @@ module.exports = function(editor) {
 			redraw,
 		} = editor;
 		
-		if (e.ctrlKey) {
-			e.dataTransfer.dropEffect = "copy";
-		} else {
-			e.dataTransfer.dropEffect = "move";
-		}
+		e.dataTransfer.dropEffect = e.ctrlKey ? "copy" : "move";
 		
 		let data = getData(e);
 		
@@ -362,11 +358,9 @@ module.exports = function(editor) {
 		// NOTE dropEffect doesn't work when dragging between windows
 		// (it will always be none in the source window)
 		
-		if (e.ctrlKey) {
-			e.dataTransfer.dropEffect = "copy";
-		} else {
-			e.dataTransfer.dropEffect = "move";
-		}
+		let move = !e.ctrlKey;
+		
+		e.dataTransfer.dropEffect = move ? "move" : "copy";
 		
 		clearDropTargets();
 		setInsertionHilite(null);
@@ -427,7 +421,7 @@ module.exports = function(editor) {
 			fromSelection,
 			toSelection,
 			lines,
-			e.dataTransfer.dropEffect === "move",
+			move,
 			option,
 			target,
 		);

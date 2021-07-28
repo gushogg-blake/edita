@@ -1,6 +1,7 @@
 let Evented = require("../utils/Evented");
 let _typeof = require("../utils/typeof");
 let Selection = require("./utils/Selection");
+let Cursor = require("./utils/Cursor");
 let Line = require("./Line");
 
 class Document extends Evented {
@@ -139,8 +140,44 @@ class Document extends Evented {
 	NOTE some of these should probs be moved to Editor or an Editing util
 	*/
 	
-	insertCharacter(selection, ch) {
+	insert(selection, ch) {
 		return this.replaceSelection(selection, ch);
+	}
+	
+	move(fromSelection, toCursor) {
+		let {start, end} = Selection.sort(fromSelection);
+		let [fromStartLineIndex] = start;
+		let [fromEndLineIndex] = end;
+		let [toLineIndex] = toCursor;
+		let fromStartIndex = this.indexFromCursor(start);
+		let fromEndIndex = this.indexFromCursor(end);
+		let insertIndex = this.indexFromCursor(toCursor);
+		let insertString = this.string.substring(fromStartIndex, fromEndIndex);
+		
+		if (fromEndIndex < insertIndex) {
+			insertIndex -= insertString.length;
+		}
+		
+		let newString = this.string.substr(0, fromStartIndex) + this.string.substr(fromEndIndex);
+		
+		newString = newString.substr(0, insertIndex) + insertString + newString.substr(insertIndex);
+		
+		let newLineStrings = newString.split(this.fileDetails.newline);
+		
+		let newSelectionStart = this.cursorFromIndex(insertIndex);
+		let newSelectionEnd = this.cursorFromIndex(insertIndex + insertString.length);
+		
+		console.log(newSelectionEnd);
+		
+		return {
+			edit: {
+				lineIndex: 0,
+				removeLines: this.lines.map(l => l.string),
+				insertLines: newLineStrings,
+			},
+			
+			newSelection: Selection.s(newSelectionStart, newSelectionEnd),
+		};
 	}
 	
 	backspace(selection) {
@@ -242,6 +279,32 @@ class Document extends Evented {
 		let indent = this.fileDetails.indentation.string.repeat(indentLevel);
 		
 		return this.replaceSelection(selection, this.fileDetails.newline + indent);
+	}
+	
+	indexFromCursor(cursor) {
+		let [lineIndex, offset] = cursor;
+		let index = 0;
+		
+		for (let i = 0; i < lineIndex; i++) {
+			index += this.lines[i].string.length + this.fileDetails.newline.length;
+		}
+		
+		index += offset;
+		
+		return index;
+	}
+	
+	cursorFromIndex(index) {
+		let lineIndex = 0;
+		
+		for (let line of this.lines) {
+			if (index <= line.string.length) {
+				return [lineIndex, index];
+			}
+			
+			lineIndex++;
+			index -= line.string.length + this.fileDetails.newline.length;
+		}
 	}
 	
 	getSelectedText(selection) {

@@ -315,7 +315,7 @@ module.exports = function(editor) {
 				let {
 					edit,
 					newSelection,
-				} = document.insertCharacter(selection, e.key);
+				} = document.insert(selection, e.key);
 				
 				let apply = {
 					edits: [edit],

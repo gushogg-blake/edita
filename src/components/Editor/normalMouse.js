@@ -264,6 +264,10 @@ module.exports = function(editor) {
 			redraw,
 		} = editor;
 		
+		if (!e.dataTransfer.types.includes("text/plain")) {
+			return;
+		}
+		
 		let cursor = getCursor(e);
 		
 		setInsertCursor(cursor);
@@ -286,7 +290,7 @@ module.exports = function(editor) {
 		redraw();
 	}
 	
-	function drop(e) {
+	function drop(e, fromUs, toUs, extra) {
 		let {
 			document,
 			selection,
@@ -296,18 +300,47 @@ module.exports = function(editor) {
 			startCursorBlink,
 		} = editor;
 		
+		if (!e.dataTransfer.types.includes("text/plain")) {
+			return;
+		}
+		
 		let str = e.dataTransfer.getData("text/plain");
 		
 		if (!str) {
 			return;
 		}
 		
-		let cursor = getCursor(e);
+		let move = !e.ctrlKey;
 		
-		let {
-			edit,
-			newSelection,
-		} = document.replaceSelection(Selection.s(cursor), str);
+		e.dataTransfer.dropEffect = move ? "move" : "copy";
+		
+		let cursor = getCursor(e);
+		let isWithinSelection = Selection.cursorIsWithinSelection(selection, cursor);
+		
+		if (move) {
+			if (Selection.cursorIsWithinOrNextToSelection(selection, cursor)) {
+				return;
+			}
+		} else {
+			if (Selection.cursorIsWithinSelection(selection, cursor)) {
+				return;
+			}
+		}
+		
+		let edit;
+		let newSelection;
+		
+		if (move && fromUs) {
+			({
+				edit,
+				newSelection,
+			} = document.move(selection, cursor));
+		} else {
+			({
+				edit,
+				newSelection,
+			} = document.replaceSelection(Selection.s(cursor), str));
+		}
 		
 		applyAndAddHistoryEntry({
 			edits: [edit],
