@@ -1,5 +1,5 @@
 <script>
-import {tick, onMount} from "svelte";
+import {tick, onMount, createEventDispatcher} from "svelte";
 
 import sleep from "../../utils/sleep";
 import inlineStyle from "../../utils/dom/inlineStyle";
@@ -35,11 +35,11 @@ import InteractionLayer from "./InteractionLayer.svelte";
 export let document;
 
 export function focus() {
-	focused = true;
+	main.focus();
 }
 
-export function blur() {
-	focused = false;
+export function isFocused() {
+	return focused;
 }
 
 export function show() {
@@ -60,8 +60,15 @@ export function redo(...args) {
 	return _redo(...args);
 }
 
+let blur = function() {
+	focused = false;
+}
+
+let fire = createEventDispatcher();
+
 let revisionCounter = 0;
 let mounted = false;
+let main;
 let canvasDiv;
 let measurementsDiv;
 let canvas;
@@ -1126,6 +1133,12 @@ async function prefsUpdated() {
 	redraw();
 }
 
+function onFocus() {
+	focused = true;
+	
+	fire("focus", blur);
+}
+
 onMount(async function() {
 	context = canvas.getContext("2d");
 	
@@ -1238,9 +1251,12 @@ $scrollBarBorder: 1px solid #bababa;
 </style>
 
 <div
+	bind:this={main}
 	id="main"
 	on:wheel={wheel}
 	class:hasHorizontalScrollbar
+	tabindex="0"
+	on:focus={onFocus}
 >
 	<div
 		id="canvas"

@@ -21,6 +21,8 @@ let showingRightPane = true;
 let showingBottomPane = true;
 let showingFindBar = false;
 
+let blurCurrentElement = null;
+
 let keymap = {
 	"Ctrl+O": "open",
 	"Ctrl+S": "save",
@@ -165,7 +167,6 @@ function onSelectTab({detail: tab}) {
 
 function selectTab(tab) {
 	for (let editor of getEditors()) {
-		editor.blur();
 		editor.hide();
 	}
 	
@@ -207,22 +208,38 @@ function closeTab(tab) {
 
 function showFindBar() {
 	showingFindBar = true;
-	
-	getCurrentEditor()?.blur();
 }
 
 function hideFindBar() {
 	showingFindBar = false;
 	
-	getCurrentEditor()?.focus();
+	let editor = getCurrentEditor();
+	
+	if (editor) {
+		if (!editor.isFocused()) {
+			editor.focus();
+		}
+	}
 }
 
-function focusLeftPane() {
-	
-}
+/*
+focus/blur - focusable components should fire "focus" with a blur function
 
-function focusRightPane() {
+they then become the focused element and the previous blur function, if any, is called
+
+(native behaviour is too eager to blur elements - we only want to blur things
+when something else is focused, e.g. clicking the editor should blur the find bar
+but clicking a random div shouldn't)
+
+blur functions should be unique to the component instance, but consistent
+*/
+
+function onFocusElement({detail: blur}) {
+	if (blurCurrentElement && blurCurrentElement !== blur) {
+		blurCurrentElement();
+	}
 	
+	blurCurrentElement = blur;
 }
 
 onMount(async function() {
@@ -328,7 +345,7 @@ $border: 1px solid #AFACAA;
 		{#if showingLeftPane}
 			<div id="left">
 				<LeftPane
-					on:focus={focusLeftPane}
+					on:focus={onFocusElement}
 				/>
 			</div>
 		{/if}
@@ -349,6 +366,7 @@ $border: 1px solid #AFACAA;
 				<Editor
 					bind:this={editorsByTabId[tab.id]}
 					document={tab.document}
+					on:focus={onFocusElement}
 				/>
 			</div>
 		{/each}
@@ -358,6 +376,7 @@ $border: 1px solid #AFACAA;
 			<div id="findBar">
 				<FindBar
 					on:close={hideFindBar}
+					on:focus={onFocusElement}
 				/>
 			</div>
 		{/if}
@@ -366,7 +385,7 @@ $border: 1px solid #AFACAA;
 		{#if showingRightPane}
 			<div id="right">
 				<RightPane
-					on:focus={focusRightPane}
+					on:focus={onFocusElement}
 				/>
 			</div>
 		{/if}
