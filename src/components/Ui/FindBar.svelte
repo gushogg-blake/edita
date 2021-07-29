@@ -36,11 +36,25 @@ let functions = {
 	},
 	
 	findNext() {
-		findController.next();
+		let {
+			result,
+			loopedFile,
+		} = findController.next() || {};
+		
+		if (loopedFile) {
+			console.log("looped");
+		}
 	},
 	
 	findPrevious() {
-		findController.previous();
+		let {
+			result,
+			loopedFile,
+		} = findController.previous() || {};
+		
+		if (loopedFile) {
+			console.log("looped");
+		}
 	},
 };
 

@@ -381,7 +381,7 @@ class Document extends Evented {
 		}
 	}
 	
-	find(startCursor=[0, 0]) {
+	find(startCursor) {
 		return new FindSession(
 			this.string,
 			this.indexFromCursor(startCursor),

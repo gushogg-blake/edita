@@ -16,7 +16,7 @@ function generatePlaceholder(string) {
 }
 
 let api = {
-	*find(code, search, type, caseMode, startIndex=0) {
+	*find(code, search, type, caseMode, startIndex, enumerate=false) {
 		let caseSensitive = (
 			caseMode === "caseSensitive"
 			|| caseMode === "smart" && search.match(/[A-Z]/)
@@ -42,29 +42,21 @@ let api = {
 		
 		re.lastIndex = startIndex;
 		
-		let looped = false;
-		
 		while (true) {
 			let {lastIndex} = re;
 			let match = re.exec(code);
 			
 			if (!match) {
-				if (!looped) {
-					re.lastIndex = 0;
-					
-					match = re.exec(code);
-					
-					looped = true;
-				} else {
+				if (enumerate) {
 					break;
 				}
+				
+				re.lastIndex = 0;
+				
+				match = re.exec(code);
 			}
 			
 			if (!match) {
-				break;
-			}
-			
-			if (looped && match.index >= startIndex) {
 				break;
 			}
 			

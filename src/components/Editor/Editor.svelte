@@ -86,40 +86,44 @@ export let findController = {
 	
 	next() {
 		let {
-			looped,
+			loopedFile,
 			result,
-		} = findSession.next();
+		} = findSession.next() || {};
 		
 		if (!result) {
-			return;
+			return null;
 		}
-		
-		// TODO loop
 		
 		setNormalSelection(result.selection);
 		
 		ensureNormalCursorIsOnScreen();
 		
 		redraw();
+		
+		return {
+			loopedFile,
+		};
 	},
 	
 	previous() {
 		let {
-			looped,
+			loopedFile,
 			result,
-		} = findSession.previous();
+		} = findSession.previous() || {};
 		
 		if (!result) {
-			return;
+			return null;
 		}
-		
-		// TODO loop
 		
 		setNormalSelection(result.selection);
 		
 		ensureNormalCursorIsOnScreen();
 		
 		redraw();
+		
+		return {
+			loopedFile,
+		};
 	},
 	
 	clearHilites() {

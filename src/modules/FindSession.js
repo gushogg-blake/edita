@@ -4,9 +4,9 @@ let find = require("./find");
 there are a few layers to the find/replace system
 
 the most basic layer is the find.find generator.  this just loops through the
-file once, yielding occurrences, and providing a replace() function that replaces
-the occurrence with the given string in its internal copy of the code.  this
-function returns the new code.
+file infinitely, yielding occurrences, and providing a replace() function that
+replaces the occurrence with the given string in its internal copy of the code.
+this function returns the new code.
 
 this file is the next layer.  it adds functionality like previous() (generators
 don't have a previous() method) and wraps the results from the find.find generator,
@@ -22,6 +22,7 @@ class FindSession {
 		this.startIndex = startIndex;
 		this.createResult = createResult;
 		this.currentResult = null;
+		this.firstResult = null;
 	}
 	
 	find(search, type, caseMode) {
@@ -39,38 +40,32 @@ class FindSession {
 			value: result,
 		} = this.generator.next();
 		
-		let looped = false;
-		
 		if (done) {
-			this.generator = this.createGenerator(this.startIndex);
-			
-			looped = true;
-			
-			({
-				done,
-				value: result,
-			} = this.generator.next());
+			return null;
 		}
+		
+		let loopedFile = (
+			this.currentResult && result.index < this.currentResult.index
+			|| !this.currentResult && result.index < this.startIndex
+		);
 		
 		this.currentResult = result;
 		
-		if (!result) {
-			return {
-				result: null,
-			};
-		}
+		// TODO loopedResults
+		//if (!this.firstResult) {
+		//	this.firstResult = result;
+		//}
 		
 		return {
-			looped,
+			loopedFile,
+			//loopedResults,
 			result,
 		};
 	}
 	
 	previous() {
 		if (!this.currentResult) {
-			return {
-				result: null,
-			};
+			return null;
 		}
 		
 		let previousIndex = find.previousIndex(this.currentResult, this.all);
@@ -81,18 +76,21 @@ class FindSession {
 			};
 		}
 		
-		let looped = previousIndex > this.currentResult.index;
+		let loopedFile = previousIndex > this.currentResult.index;
 		
 		this.generator = this.createGenerator(previousIndex);
 		
-		return this.next();
+		return {
+			loopedFile,
+			result: this.next().result,
+		};
 	}
 	
 	getAll() {
-		return [...this.createGenerator(0)];
+		return [...this.createGenerator(0, true)];
 	}
 	
-	*createGenerator(startIndex) {
+	*createGenerator(startIndex, enumerate=false) {
 		let {
 			code,
 			search,
@@ -100,7 +98,7 @@ class FindSession {
 			caseMode,
 		} = this;
 		
-		let generator = find.find(code, search, type, caseMode, startIndex);
+		let generator = find.find(code, search, type, caseMode, startIndex, enumerate);
 		
 		for (let result of generator) {
 			yield this._createResult(result);
