@@ -2,7 +2,7 @@ let Evented = require("../utils/Evented");
 let _typeof = require("../utils/typeof");
 let Selection = require("./utils/Selection");
 let Cursor = require("./utils/Cursor");
-let find = require("./find");
+let FindSession = require("./FindSession");
 let Line = require("./Line");
 
 class Document extends Evented {
@@ -381,54 +381,38 @@ class Document extends Evented {
 		}
 	}
 	
-	/*
-	return a generator that yields find results with replace functions that
-	modify the document
-	
-	the replacement is done in two stages, one that generates an edit and one
-	that applies it and updates the underlying generator (this is needed to
-	advance the search starting index to the end of the replacement)
-	*/
-	
-	*findGenerator(search, type, caseMode, startIndex) {
-		let generator = find(this.string, search, type, caseMode, startIndex);
-		
-		for (let {index, match, groups, replace} of generator) {
-			let cursor = this.cursorFromIndex(index);
+	find(startCursor=[0, 0]) {
+		return new FindSession(
+			this.string,
+			this.indexFromCursor(startCursor),
 			
-			let selection = {
-				start: cursor,
-				end: this.cursorFromIndex(index + match.length),
-			};
-			
-			yield {
-				index,
-				cursor,
-				selection,
-				match,
-				groups,
+			({index, match, groups, replace}) => {
+				let cursor = this.cursorFromIndex(index);
 				
-				getReplaceEdit(replaceWith) {
-					return this.replaceSelection(selection, replaceWith);
-				},
+				let selection = {
+					start: cursor,
+					end: this.cursorFromIndex(index + match.length),
+				};
 				
-				replace(replaceWith, edit) {
-					this.apply(edit);
+				return {
+					index,
+					cursor,
+					selection,
+					match,
+					groups,
 					
-					replace(replaceWith);
-				},
-			};
-		}
-	}
-	
-	find(search, type, caseMode, startCursor=[0, 0]) {
-		let all = [...this.findGenerator(search, type, caseMode)];
-		let startIndex = this.indexFromCursor(startCursor);
-		
-		return {
-			all,
-			generator: this.findGenerator(search, type, caseMode, startIndex),
-		};
+					replace(str) {
+						let edit = this.replaceSelection(selection, str);
+						
+						this.apply(edit);
+						
+						replace(replaceWith);
+						
+						return edit;
+					},
+				};
+			},
+		);
 	}
 	
 	getSelectedText(selection) {

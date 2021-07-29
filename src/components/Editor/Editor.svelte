@@ -59,57 +59,61 @@ export function redo(...args) {
 	return _redo(...args);
 }
 
-let find = null;
+let findSession = null;
 
 export let findController = {
 	search(search, type, caseMode) {
-		if (!find) {
+		if (!findSession) {
+			let cursor;
+			
 			if (mode === "normal") {
-				find = {
-					startingCursor: normalSelection.end,
-				};
+				cursor = normalSelection.end;
 			} else {
 				let [startLineIndex] = astSelection;
 				
-				find = {
-					startingCursor: [startLineIndex, 0],
-				};
+				cursor = [startLineIndex, 0];
 			}
+			
+			findSession = document.find(cursor);
 		}
 		
-		let {
-			all,
-			generator,
-		} = document.find(search, type, caseMode, find.startingCursor);
+		findSession.find(search, type, caseMode);
 		
-		find = {
-			...find,
-			all,
-			generator,
-			current: null,
-		};
+		hiliteNormalSelections = findSession.all.map(result => result.selection);
 		
 		this.next();
-		
-		hiliteNormalSelections = all.map(result => result.selection);
-		
-		redraw();
-		console.log(all);
-		console.log(generator);
 	},
 	
 	next() {
 		let {
-			done,
-			value: result,
-		} = find.generator.next();
+			looped,
+			result,
+		} = findSession.next();
 		
-		console.log(result);
-		
-		if (done) {
-			// TODO loop
+		if (!result) {
 			return;
 		}
+		
+		// TODO loop
+		
+		setNormalSelection(result.selection);
+		
+		ensureNormalCursorIsOnScreen();
+		
+		redraw();
+	},
+	
+	previous() {
+		let {
+			looped,
+			result,
+		} = findSession.previous();
+		
+		if (!result) {
+			return;
+		}
+		
+		// TODO loop
 		
 		setNormalSelection(result.selection);
 		
@@ -125,7 +129,7 @@ export let findController = {
 	},
 	
 	reset() {
-		
+		findSession = null;
 	},
 };
 
