@@ -327,23 +327,23 @@ module.exports = function(editor) {
 			}
 		}
 		
-		let edit;
+		let edits;
 		let newSelection;
 		
 		if (move && fromUs) {
 			({
-				edit,
+				edits,
 				newSelection,
 			} = document.move(selection, cursor));
 		} else {
 			({
-				edit,
+				edits,
 				newSelection,
 			} = document.replaceSelection(Selection.s(cursor), str));
 		}
 		
 		applyAndAddHistoryEntry({
-			edits: [edit],
+			edits,
 			normalSelection: newSelection,
 		});
 		

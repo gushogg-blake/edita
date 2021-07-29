@@ -146,38 +146,113 @@ class Document extends Evented {
 	
 	move(fromSelection, toCursor) {
 		let {start, end} = Selection.sort(fromSelection);
-		let [fromStartLineIndex] = start;
-		let [fromEndLineIndex] = end;
-		let [toLineIndex] = toCursor;
-		let fromStartIndex = this.indexFromCursor(start);
-		let fromEndIndex = this.indexFromCursor(end);
-		let insertIndex = this.indexFromCursor(toCursor);
-		let insertString = this.string.substring(fromStartIndex, fromEndIndex);
+		let [fromStartLineIndex, fromStartOffset] = start;
+		let [fromEndLineIndex, fromEndOffset] = end;
+		let [toLineIndex, toOffset] = toCursor;
 		
-		if (fromEndIndex < insertIndex) {
-			insertIndex -= insertString.length;
-		}
-		
-		let newString = this.string.substr(0, fromStartIndex) + this.string.substr(fromEndIndex);
-		
-		newString = newString.substr(0, insertIndex) + insertString + newString.substr(insertIndex);
-		
-		let newLineStrings = newString.split(this.fileDetails.newline);
-		
-		let newSelectionStart = this.cursorFromIndex(insertIndex);
-		let newSelectionEnd = this.cursorFromIndex(insertIndex + insertString.length);
-		
-		console.log(newSelectionEnd);
-		
-		return {
-			edit: {
-				lineIndex: 0,
-				removeLines: this.lines.map(l => l.string),
-				insertLines: newLineStrings,
-			},
+		if (toLineIndex === fromStartLineIndex || toLineIndex === fromEndLineIndex) {
+			if (fromStartLineIndex === fromEndLineIndex) {
+				// moving single line onto same line - single edit
+				
+				let {string} = this.lines[toLineIndex];
+				let selectedText = string.substring(fromStartOffset, fromEndOffset);
+				let withSelectionRemoved = string.substr(0, fromStartOffset) + string.substr(fromEndOffset);
+				let length = fromEndOffset - fromStartOffset;
+				let insertOffset = toOffset > fromEndOffset ? toOffset - length : toOffset;
+				let newString = withSelectionRemoved.substr(0, insertOffset) + selectedText + withSelectionRemoved.substr(insertOffset);
+				
+				return {
+					edits: [this.edit(toLineIndex, 1, newString)],
+					
+					newSelection: {
+						start: [toLineIndex, insertOffset],
+						end: [toLineIndex, insertOffset + length],
+					},
+				};
+			} else {
+				// moving multiline onto same line - header & footer edits
+				// (moving a string from the header to the footer or vice versa)
+				
+				let moveFromFooterToHeader = "";
+				
+				let header = this.lines[fromStartLineIndex].string;
+				let footer = this.lines[fromEndLineIndex].string;
+				
+				if (toOffset < fromStartOffset) {
+					let diff = -(toOffset - fromStartOffset);
+					let moveStr = header.substr(toOffset, diff);
+					let newHeader = header.substr(0, toOffset) + header.substr(toOffset + diff);
+					let newFooter = footer.substr(0, fromEndOffset) + moveStr + footer.substr(fromEndOffset);
+					
+					return {
+						edits: [
+							this.edit(fromStartLineIndex, 1, newHeader),
+							this.edit(fromEndLineIndex, 1, newFooter),
+						],
+						
+						newSelection: {
+							start: [fromStartLineIndex, toOffset],
+							end: [fromEndLineIndex, fromEndOffset],
+						},
+					};
+				} else {
+					let diff = toOffset - fromEndOffset;
+					let moveStr = footer.substr(fromEndOffset, diff);
+					let newHeader = header.substr(0, fromStartOffset) + moveStr + header.substr(fromStartOffset);
+					let newFooter = footer.substr(0, fromEndOffset) + footer.substr(fromEndOffset + diff);
+					
+					return {
+						edits: [
+							this.edit(fromStartLineIndex, 1, newHeader),
+							this.edit(fromEndLineIndex, 1, newFooter),
+						],
+						
+						newSelection: {
+							start: [fromStartLineIndex, fromStartOffset + diff],
+							end: [fromEndLineIndex, fromEndOffset],
+						},
+					};
+				}
+			}
+		} else {
+			// moving single line/multiline somewhere else
 			
-			newSelection: Selection.s(newSelectionStart, newSelectionEnd),
-		};
+			let toCursorAdjusted = toCursor;
+			
+			if (toLineIndex > fromEndLineIndex) {
+				toCursorAdjusted = [toLineIndex - (fromEndLineIndex - fromStartLineIndex), toOffset];
+			}
+			
+			let newSelectionStart = toCursorAdjusted;
+			let [newSelectionStartLineIndex, newSelectionStartOffset] = newSelectionStart;
+			let newSelectionEndLineIndex = newSelectionStartLineIndex + (fromEndLineIndex - fromStartLineIndex);
+			let newSelectionEndOffset;
+			
+			if (fromStartLineIndex === fromEndLineIndex) {
+				newSelectionEndOffset = newSelectionStartOffset + (fromEndOffset - fromStartOffset);
+			} else {
+				newSelectionEndOffset = fromEndOffset;
+			}
+			
+			let insertEdit = this.insert(Selection.s(toCursor), this.getSelectedText(fromSelection)).edit;
+			let [toLineIndexAdjusted] = toCursorAdjusted;
+			
+			insertEdit.lineIndex = toLineIndexAdjusted;
+			
+			console.log(insertEdit);
+			
+			return {
+				edits: [
+					this.delete(fromSelection).edit,
+					insertEdit,
+				],
+				
+				newSelection: {
+					start: newSelectionStart,
+					end: [newSelectionEndLineIndex, newSelectionEndOffset],
+				},
+			};
+		}
 	}
 	
 	backspace(selection) {
