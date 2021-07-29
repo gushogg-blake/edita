@@ -5,7 +5,6 @@ let cursorFromRowCol = require("./utils/cursorFromRowCol");
 let autoScroll = require("./utils/dom/autoScroll");
 let rowColFromScreenCoords = require("./canvas/utils/rowColFromScreenCoords");
 let cursorRowColFromScreenCoords = require("./canvas/utils/cursorRowColFromScreenCoords");
-//let pointIsWithinRegions = require("./canvas/utils/pointIsWithinRegions");
 
 module.exports = function(editor) {
 	let drawingSelection = false;
