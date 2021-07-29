@@ -2,7 +2,6 @@ let {is, deep} = require("../../../utils/assertions");
 let dedent = require("../../../utils/dedent");
 let parseIndexMarks = require("../../../utils/parseIndexMarks");
 let createJsDoc = require("../../../utils/createJsDoc");
-//let Document = require("../../../../src/modules/Document");
 
 let {
 	string: code,
@@ -28,16 +27,11 @@ let {
 			
 			editor.switchToAstMode();
 		},
-	};
+	};<@20,2>
+	<@21,0>
 `));
 
 let doc;
-
-//let tests = [
-//	[
-//		
-//	],
-//];
 
 describe("Document", function() {
 	before(function() {

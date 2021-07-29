@@ -2,6 +2,7 @@ let Evented = require("../utils/Evented");
 let _typeof = require("../utils/typeof");
 let Selection = require("./utils/Selection");
 let Cursor = require("./utils/Cursor");
+let find = require("./find");
 let Line = require("./Line");
 
 class Document extends Evented {
@@ -378,6 +379,56 @@ class Document extends Evented {
 			lineIndex++;
 			index -= line.string.length + this.fileDetails.newline.length;
 		}
+	}
+	
+	/*
+	return a generator that yields find results with replace functions that
+	modify the document
+	
+	the replacement is done in two stages, one that generates an edit and one
+	that applies it and updates the underlying generator (this is needed to
+	advance the search starting index to the end of the replacement)
+	*/
+	
+	*findGenerator(search, type, caseMode, startIndex) {
+		let generator = find(this.string, search, type, caseMode, startIndex);
+		
+		for (let {index, match, groups, replace} of generator) {
+			let cursor = this.cursorFromIndex(index);
+			
+			let selection = {
+				start: cursor,
+				end: this.cursorFromIndex(index + match.length),
+			};
+			
+			yield {
+				index,
+				cursor,
+				selection,
+				match,
+				groups,
+				
+				getReplaceEdit(replaceWith) {
+					return this.replaceSelection(selection, replaceWith);
+				},
+				
+				replace(replaceWith, edit) {
+					this.apply(edit);
+					
+					replace(replaceWith);
+				},
+			};
+		}
+	}
+	
+	find(search, type, caseMode, startCursor=[0, 0]) {
+		let all = [...this.findGenerator(search, type, caseMode)];
+		let startIndex = this.indexFromCursor(startCursor);
+		
+		return {
+			all,
+			generator: this.findGenerator(search, type, caseMode, startIndex),
+		};
 	}
 	
 	getSelectedText(selection) {
