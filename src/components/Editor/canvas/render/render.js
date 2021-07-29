@@ -4,7 +4,7 @@ let renderNormalSelection = require("./renderNormalSelection");
 let renderAstSelection = require("./renderAstSelection");
 let renderAstSelectionHilite = require("./renderAstSelectionHilite");
 let renderAstInsertionHilite = require("./renderAstInsertionHilite");
-//let renderWordHilites = require("./renderWordHilites");
+let renderNormalHilites = require("./renderNormalHilites");
 let renderCodeAndMargin = require("./renderCodeAndMargin");
 let renderNormalCursor = require("./renderNormalCursor");
 let renderInsertCursor = require("./renderInsertCursor");
@@ -14,13 +14,12 @@ module.exports = function(
 	mode,
 	lines,
 	normalSelection,
-	normalSelectionRegions,
 	insertCursor,
 	astSelection,
 	astSelectionHilite,
 	astInsertionHilite,
 	isPeekingAstMode,
-	hiliteWord,
+	normalHilites,
 	scrollPosition,
 	fileDetails,
 	measurements,
@@ -51,7 +50,10 @@ module.exports = function(
 	if (mode === "normal") {
 		renderNormalSelection(
 			context,
-			normalSelectionRegions,
+			lines,
+			normalSelection,
+			scrollPosition,
+			measurements,
 		);
 	}
 	
@@ -93,12 +95,13 @@ module.exports = function(
 		);
 	}
 	
-	//renderWordHilites(
-	//	context,
-	//	lines,
-	//	scrollPosition,
-	//	measurements,
-	//);
+	renderNormalHilites(
+		context,
+		lines,
+		normalHilites,
+		scrollPosition,
+		measurements,
+	);
 	
 	renderCodeAndMargin(
 		context,

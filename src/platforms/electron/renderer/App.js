@@ -23,6 +23,7 @@ function defaultPrefs() {
 		lineNumberColor: "#9f9f9f",
 		marginBackground: "#f0f0f0",
 		selectionBackground: "#d0d0d0",
+		hiliteBackground: "#fdee20",
 		astSelectionBackground: "#c5e4ff",
 		astSelectionHiliteBackground: "#F2F2F2",
 		astInsertionHiliteBackground: "#606060",

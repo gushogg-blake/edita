@@ -15,20 +15,20 @@ function generatePlaceholder(string) {
 	return placeholder;
 }
 
-module.exports = function*(code, find, type, caseMode, startIndex=0) {
+module.exports = function*(code, search, type, caseMode, startIndex=0) {
 	let caseSensitive = (
 		caseMode === "caseSensitive"
-		|| caseMode === "smart" && find.match(/[A-Z]/)
+		|| caseMode === "smart" && search.match(/[A-Z]/)
 	);
 	
 	let re;
 	let flags = ["g", !caseSensitive ? "i" : ""].join("");
 	
 	if (type === "plain") {
-		re = new RegExp(escapeRe(find), flags);
+		re = new RegExp(escapeRe(search), flags);
 	} else if (type === "wildcard") {
-		let pattern = find;
-		let wildcardPlaceholder = generatePlaceholder(find);
+		let pattern = search;
+		let wildcardPlaceholder = generatePlaceholder(search);
 		
 		pattern = pattern.replace(/\*/g, wildcardPlaceholder);
 		pattern = escapeRe(pattern);
@@ -36,7 +36,7 @@ module.exports = function*(code, find, type, caseMode, startIndex=0) {
 		
 		re = new RegExp(pattern, flags);
 	} else if (type === "regex") {
-		re = new RegExp(find, flags);
+		re = new RegExp(search, flags);
 	}
 	
 	re.lastIndex = startIndex;

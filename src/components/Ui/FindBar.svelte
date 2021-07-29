@@ -59,11 +59,11 @@ function inputKeydown(e) {
 function onInput(e) {
 	search = input.value;
 	
-	if (!search) {
-		return;
+	if (search) {
+		findController.search(search, type, caseMode);
+	} else {
+		findController.reset();
 	}
-	
-	findController.search(search, type, caseMode);
 }
 
 function onFocus() {

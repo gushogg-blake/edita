@@ -81,8 +81,17 @@ export let findController = {
 			generator,
 		} = document.find(search, type, caseMode, cursor);
 		
+		hiliteNormalSelections = all.map(result => result.selection);
+		
+		redraw();
 		console.log(all);
 		console.log(generator);
+	},
+	
+	reset() {
+		hiliteNormalSelections = [];
+		
+		redraw();
 	},
 };
 
@@ -149,7 +158,7 @@ let scrollPosition = {
 	x: 0,
 };
 
-let hiliteWord = null;
+let hiliteNormalSelections = [];
 
 let cursorBlinkOn;
 let cursorInterval;
@@ -886,6 +895,10 @@ function updateSelectionEndCol() {
 	selectionEndCol = endCol;
 }
 
+/*
+TODO remove (check if cursor is within selection independently)
+*/
+
 function updateNormalSelectionRegions() {
 	normalSelectionRegions = calculateNormalSelectionRegions(
 		document.lines,
@@ -1016,13 +1029,12 @@ function updateCanvas() {
 		mode,
 		document.lines,
 		normalSelection,
-		normalSelectionRegions,
 		insertCursor,
 		astSelection,
 		astSelectionHilite,
 		astInsertionHilite,
 		modeSwitchKeyHandler.isPeeking,
-		hiliteWord,
+		hiliteNormalSelections,
 		scrollPosition,
 		document.fileDetails,
 		measurements,

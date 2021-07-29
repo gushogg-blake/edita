@@ -122,6 +122,14 @@ module.exports = function(editor) {
 			return;
 		}
 		
+		autoScroll(
+			canvas,
+			measurements,
+			document,
+			hasHorizontalScrollbar,
+			scrollBy,
+		);
+		
 		if (pointIsWithinRegions(selectionRegions, x, y)) {
 			if (e.button === 0) {
 				mousedownInSelection(e, enableDrag);
@@ -141,14 +149,6 @@ module.exports = function(editor) {
 		on(window, "mousemove", drawSelection);
 		on(window, "mouseup", mouseup);
 		on(window, "dragend", dragend);
-		
-		autoScroll(
-			canvas,
-			measurements,
-			document,
-			hasHorizontalScrollbar,
-			scrollBy,
-		);
 	}
 	
 	function mousedownInSelection(e, enableDrag) {
