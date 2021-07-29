@@ -5,10 +5,15 @@ let cursorFromRowCol = require("./utils/cursorFromRowCol");
 let autoScroll = require("./utils/dom/autoScroll");
 let rowColFromScreenCoords = require("./canvas/utils/rowColFromScreenCoords");
 let cursorRowColFromScreenCoords = require("./canvas/utils/cursorRowColFromScreenCoords");
-let pointIsWithinRegions = require("./canvas/utils/pointIsWithinRegions");
+//let pointIsWithinRegions = require("./canvas/utils/pointIsWithinRegions");
 
 module.exports = function(editor) {
 	let drawingSelection = false;
+	
+	/*
+	get insert cursor from mouse event (the cursor either side of the clicked
+	char, depending on position within the char)
+	*/
 	
 	function getCursor(e) {
 		let {
@@ -41,6 +46,10 @@ module.exports = function(editor) {
 		);
 	}
 	
+	/*
+	get char cursor (the cursor before the clicked char)
+	*/
+	
 	function getCharCursor(e) {
 		let {
 			canvas,
@@ -69,6 +78,7 @@ module.exports = function(editor) {
 			document.lines,
 			row,
 			col,
+			true,
 		);
 	}
 	
@@ -82,7 +92,6 @@ module.exports = function(editor) {
 			measurements,
 			document,
 			selection,
-			selectionRegions,
 			hasHorizontalScrollbar,
 			scrollPosition,
 			scrollBy,
@@ -93,6 +102,7 @@ module.exports = function(editor) {
 		} = editor;
 		
 		let cursor = getCursor(e);
+		let charCursor = getCharCursor(e);
 		
 		let {
 			x: left,
@@ -130,7 +140,7 @@ module.exports = function(editor) {
 			scrollBy,
 		);
 		
-		if (pointIsWithinRegions(selectionRegions, x, y)) {
+		if (Selection.charIsWithinSelection(selection, charCursor)) {
 			if (e.button === 0) {
 				mousedownInSelection(e, enableDrag);
 			}

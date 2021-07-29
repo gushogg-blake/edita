@@ -2,6 +2,7 @@ module.exports = function(
 	lines,
 	row,
 	col,
+	beforeTab=false,
 ) {
 	let lineIndex = 0;
 	let offset = 0;
@@ -58,7 +59,7 @@ module.exports = function(
 				// if more than half way go to after the tab
 				// otherwise stay before it
 				
-				if (col - c > width / 2) {
+				if (!beforeTab && col - c > width / 2) {
 					offset++;
 				}
 				

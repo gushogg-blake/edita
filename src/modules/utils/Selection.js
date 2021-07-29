@@ -72,6 +72,24 @@ let api = {
 		return true;
 	},
 	
+	charIsWithinSelection(selection, charCursor) {
+		let {start, end} = sort(selection);
+		let [startLineIndex, startOffset] = start;
+		let [endLineIndex, endOffset] = end;
+		let [lineIndex, offset] = charCursor;
+		
+		if (
+			lineIndex < startLineIndex
+			|| lineIndex > endLineIndex
+			|| lineIndex === startLineIndex && offset < startOffset
+			|| lineIndex === endLineIndex && offset >= endOffset
+		) {
+			return false;
+		}
+		
+		return true;
+	},
+	
 	cursorIsNextToSelection(selection, cursor) {
 		return Cursor.equals(cursor, selection.start) || Cursor.equals(cursor, selection.end);
 	},

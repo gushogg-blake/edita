@@ -11,7 +11,6 @@ import getKeyCombo from "../../utils/getKeyCombo";
 
 import calculateMarginWidth from "./canvas/utils/calculateMarginWidth";
 import calculateMarginOffset from "./canvas/utils/calculateMarginOffset";
-import calculateNormalSelectionRegions from "./canvas/utils/calculateNormalSelectionRegions";
 import screenCoordsFromRowCol from "./canvas/utils/screenCoordsFromRowCol";
 import findFirstVisibleLine from "./canvas/utils/findFirstVisibleLine";
 import countRows from "./canvas/utils/countRows";
@@ -171,7 +170,6 @@ let normalSelection = {
 	end: [0, 0],
 };
 
-let normalSelectionRegions = [];
 let insertCursor = null;
 
 // for remembering the "intended" col when moving a cursor up/down to a line
@@ -224,10 +222,6 @@ let normalMouseHandler = normalMouse({
 	
 	get selection() {
 		return normalSelection;
-	},
-	
-	get selectionRegions() {
-		return normalSelectionRegions;
 	},
 	
 	scrollBy,
@@ -917,7 +911,6 @@ function ensureNormalCursorIsOnScreen() {
 function setNormalSelection(selection) {
 	normalSelection = selection;
 	
-	updateNormalSelectionRegions();
 	updateAstSelectionFromNormalSelection();
 }
 
@@ -934,26 +927,12 @@ function updateSelectionEndCol() {
 	selectionEndCol = endCol;
 }
 
-/*
-TODO remove (check if cursor is within selection independently)
-*/
-
-function updateNormalSelectionRegions() {
-	normalSelectionRegions = calculateNormalSelectionRegions(
-		document.lines,
-		normalSelection,
-		scrollPosition,
-		measurements,
-	);
-}
-
 function updateNormalSelectionFromAstSelection() {
 	let [, endLineIndex] = astSelection;
 
 	normalSelection = Selection.endOfLineContent(document.lines, endLineIndex - 1);
 	
 	updateSelectionEndCol();
-	updateNormalSelectionRegions();
 }
 
 function updateAstSelectionFromNormalSelection() {
@@ -1061,8 +1040,6 @@ function redraw() {
 }
 
 function updateCanvas() {
-	updateNormalSelectionRegions();
-	
 	render(
 		context,
 		mode,
