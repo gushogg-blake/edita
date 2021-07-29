@@ -26,8 +26,6 @@ module.exports = function(
 	cursorBlinkOn,
 	focused,
 ) {
-	//console.time("render");
-	
 	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 	
 	renderMarginBackground(
@@ -46,6 +44,14 @@ module.exports = function(
 			focused,
 		);
 	}
+	
+	renderNormalHilites(
+		context,
+		lines,
+		normalHilites,
+		scrollPosition,
+		measurements,
+	);
 	
 	if (mode === "normal") {
 		renderNormalSelection(
@@ -95,14 +101,6 @@ module.exports = function(
 		);
 	}
 	
-	renderNormalHilites(
-		context,
-		lines,
-		normalHilites,
-		scrollPosition,
-		measurements,
-	);
-	
 	renderCodeAndMargin(
 		context,
 		lines,
@@ -136,6 +134,4 @@ module.exports = function(
 			measurements,
 		);
 	}
-	
-	//console.timeEnd("render");
 }

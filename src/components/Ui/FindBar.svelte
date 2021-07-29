@@ -10,6 +10,8 @@ let fire = createEventDispatcher();
 let focusManager = getContext("focusManager");
 
 let blur = function() {
+	findController.reset();
+	
 	fire("blur");
 }
 
@@ -34,9 +36,11 @@ let functions = {
 	},
 	
 	findNext() {
+		findController.next();
 	},
 	
 	findPrevious() {
+		findController.previous();
 	},
 };
 

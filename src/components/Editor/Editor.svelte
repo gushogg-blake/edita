@@ -60,26 +60,37 @@ export function redo(...args) {
 	return _redo(...args);
 }
 
-let findState = {
-	
-};
+let find = null;
 
 export let findController = {
 	search(search, type, caseMode) {
-		let cursor;
-		
-		if (mode === "normal") {
-			cursor = normalSelection.end;
-		} else {
-			let [startLineIndex] = astSelection;
-			
-			cursor = [startLineIndex, 0];
+		if (!find) {
+			if (mode === "normal") {
+				find = {
+					startingCursor: normalSelection.end,
+				};
+			} else {
+				let [startLineIndex] = astSelection;
+				
+				find = {
+					startingCursor: [startLineIndex, 0],
+				};
+			}
 		}
 		
 		let {
 			all,
 			generator,
-		} = document.find(search, type, caseMode, cursor);
+		} = document.find(search, type, caseMode, find.startingCursor);
+		
+		find = {
+			...find,
+			all,
+			generator,
+			current: null,
+		};
+		
+		this.next();
 		
 		hiliteNormalSelections = all.map(result => result.selection);
 		
@@ -88,10 +99,34 @@ export let findController = {
 		console.log(generator);
 	},
 	
-	reset() {
+	next() {
+		let {
+			done,
+			value: result,
+		} = find.generator.next();
+		
+		console.log(result);
+		
+		if (done) {
+			// TODO loop
+			return;
+		}
+		
+		setNormalSelection(result.selection);
+		
+		ensureNormalCursorIsOnScreen();
+		
+		redraw();
+	},
+	
+	clearHilites() {
 		hiliteNormalSelections = [];
 		
 		redraw();
+	},
+	
+	reset() {
+		
 	},
 };
 
@@ -460,6 +495,8 @@ function mouseup({detail: e}) {
 }
 
 function click({detail: e}) {
+	findController.clearHilites();
+	
 	if (mode === "normal") {
 		normalMouseHandler.click(e);
 	} else if (mode === "ast") {
@@ -703,6 +740,8 @@ general tasks to do after an edit is made and the selection has been updated
 */
 
 function afterEdit() {
+	findController.clearHilites();
+	
 	if (mode === "ast") {
 		astMouseHandler.updateHilites(lastMouseEvent);
 	}
