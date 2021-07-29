@@ -1,9 +1,9 @@
 let fs = require("flowfs");
-let {is, deep} = require("../../../utils/assertions");
-let dedent = require("../../../utils/dedent");
-let createJsDoc = require("../../../utils/createJsDoc");
+let {is, deep} = require("../../../../utils/assertions");
+let dedent = require("../../../../utils/dedent");
+let createJsDoc = require("../../../../utils/createJsDoc");
 
-let wrapLine = require("../../../../src/modules/wrapLine/wrapLine");
+let wrapLine = require("../../../../../src/components/Editor/utils/wrapLine/wrapLine");
 
 let indentation = {
 	string: "\t",

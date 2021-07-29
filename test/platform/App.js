@@ -1,10 +1,10 @@
-let Evented = require("../src/utils/Evented");
+let Evented = require("../../src/utils/Evented");
 
-let guessIndent = require("../src/modules/utils/guessIndent");
-let checkNewlines = require("../src/modules/utils/checkNewlines");
+let guessIndent = require("../../src/modules/utils/guessIndent");
+let checkNewlines = require("../../src/modules/utils/checkNewlines");
 
-let js = require("../src/modules/langs/js");
-let langs = require("../src/modules/langs");
+let javascript = require("../../src/modules/langs/javascript");
+let langs = require("../../src/modules/langs");
 
 function defaultPrefs() {
 	return {
@@ -23,7 +23,7 @@ function defaultPrefs() {
 		minHoldTime: 200,
 		
 		langs: {
-			js: {
+			javascript: {
 				colors: {
 					keyword: "#aa33aa",
 					id: "#202020",
@@ -51,17 +51,17 @@ class App extends Evented {
 	
 	async init() {
 		let langs = await Promise.all([
-			js(),
+			javascript(),
 			//html(),
 		]);
 		
 		for (let lang of langs) {
-			this.langs.add(lang.code, lang);
+			this.langs.add(lang);
 		}
 	}
 	
 	guessLang(code, path) {
-		return this.langs.get("js"); // DEV
+		return this.langs.get("javascript"); // DEV
 	}
 	
 	getFileDetails(code, path) {

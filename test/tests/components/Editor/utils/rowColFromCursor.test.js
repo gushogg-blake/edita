@@ -1,7 +1,7 @@
-let {is, deep} = require("../../../utils/assertions");
-let dedent = require("../../../utils/dedent");
-let createJsDoc = require("../../../utils/createJsDoc");
-let rowColFromCursor = require("../../../../src/modules/utils/rowColFromCursor");
+let {is, deep} = require("../../../../utils/assertions");
+let dedent = require("../../../../utils/dedent");
+let createJsDoc = require("../../../../utils/createJsDoc");
+let rowColFromCursor = require("../../../../../src/components/Editor/utils/rowColFromCursor");
 
 let measurements = {
 	rowHeight: 20,
@@ -13,7 +13,7 @@ let screenWidth = 305;
 function lines(code) {
 	let doc = createJsDoc(dedent(code));
 	
-	doc.wrapLines(measurements, screenWidth);
+	//doc.wrapLines(measurements, screenWidth);
 	
 	return doc.lines;
 }

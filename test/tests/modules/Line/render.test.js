@@ -44,12 +44,7 @@ describe("Line.render", function() {
 		let fileDetails = app.getFileDetails(code, path);
 		let doc = new Document(code, fileDetails);
 		
-		debugger
-		
 		for (let line of doc.lines) {
-			console.log(line.string);
-			console.log(line.renderHints);
-			console.log(line.variableWidthParts);
 			[...line.render(line)];
 		}
 		

@@ -51,6 +51,6 @@
 		"pure-electron": "electron .",
 		"pure-electron-dev": "cross-env NODE_ENV=development electron .",
 		"pure-dist-win": "electron-builder --win --config electron-builder.yml",
-		"test": "./node_modules/mocha/bin/mocha --file test/setup.js 'test/tests/**/*.test.js'"
+		"test": "./node_modules/mocha/bin/mocha --file test/platform/main.js 'test/tests/**/*.test.js'"
 	}
 }

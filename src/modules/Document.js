@@ -239,8 +239,6 @@ class Document extends Evented {
 			
 			insertEdit.lineIndex = toLineIndexAdjusted;
 			
-			console.log(insertEdit);
-			
 			return {
 				edits: [
 					this.delete(fromSelection).edit,

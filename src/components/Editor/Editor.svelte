@@ -9,6 +9,8 @@ import autoScroll from "../../utils/dom/autoScroll";
 import windowFocus from "../../utils/dom/windowFocus";
 import getKeyCombo from "../../utils/getKeyCombo";
 
+import findOccurrences from "../../modules/findOccurrences";
+
 import calculateMarginWidth from "./canvas/utils/calculateMarginWidth";
 import calculateMarginOffset from "./canvas/utils/calculateMarginOffset";
 import calculateNormalSelectionRegions from "./canvas/utils/calculateNormalSelectionRegions";
@@ -60,13 +62,28 @@ export function redo(...args) {
 	return _redo(...args);
 }
 
-let find = {
+let findState = {
 	
 };
 
 export let findController = {
 	search(find, type, caseMode) {
+		let code = document.toString();
+		let cursor;
 		
+		if (mode === "normal") {
+			cursor = normalSelection.end;
+		} else {
+			let [, end] = astSelection;
+			
+			console.log(end);
+			//cursor = 
+		}
+		
+		let startIndex = document.indexFromCursor(cursor);
+		let occurrences = [...findOccurrences(code, find, type, caseMode)];
+		
+		console.log(occurrences);
 	},
 };
 
