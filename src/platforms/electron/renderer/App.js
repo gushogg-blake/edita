@@ -12,6 +12,8 @@ let html = require("../../../modules/langs/html");
 let plainText = require("../../../modules/langs/plainText");
 let langs = require("../../../modules/langs");
 
+let focusManager = require("./utils/focusManager");
+
 function defaultPrefs() {
 	return {
 		font: "14px DejaVu Sans Mono",
@@ -32,6 +34,56 @@ function defaultPrefs() {
 		
 		modeSwitchKey: "Escape",
 		minHoldTime: 200,
+		
+		normalKeymap: {
+			"ArrowUp": "up",
+			"ArrowDown": "down",
+			"ArrowLeft": "left",
+			"ArrowRight": "right",
+			"PageUp": "pageUp",
+			"PageDown": "pageDown",
+			"End": "end",
+			"Home": "home",
+			"Ctrl+ArrowLeft": "wordLeft",
+			"Ctrl+ArrowRight": "wordRight",
+			"Shift+ArrowUp": "expandOrContractSelectionUp",
+			"Shift+ArrowDown": "expandOrContractSelectionDown",
+			"Shift+ArrowLeft": "expandOrContractSelectionLeft",
+			"Shift+ArrowRight": "expandOrContractSelectionRight",
+			"Shift+PageUp": "expandOrContractSelectionPageUp",
+			"Shift+PageDown": "expandOrContractSelectionPageDown",
+			"Shift+End": "expandOrContractSelectionEnd",
+			"Shift+Home": "expandOrContractSelectionHome",
+			"Ctrl+Shift+ArrowLeft": "expandOrContractSelectionWordLeft",
+			"Ctrl+Shift+ArrowRight": "expandOrContractSelectionWordRight",
+			"Backspace": "backspace",
+			"Delete": "delete",
+			"Enter": "enter",
+			"Tab": "tab",
+			"Shift+Backspace": "backspace",
+			"Shift+Delete": "delete",
+			"Shift+Enter": "enter",
+			"Ctrl+Enter": "enterNoAutoIndent",
+			"Shift+Tab": "shiftTab",
+			"Ctrl+X": "cut",
+			"Ctrl+C": "copy",
+			"Ctrl+V": "paste",
+		},
+		
+		astKeymap: {
+			"PageUp": "pageUp",
+			"PageDown": "pageDown",
+			"s": "up",
+			"d": "down",
+			"j": "next",
+			"k": "previous",
+			"h": "collapseDown",
+			"l": "collapseUp",
+			//"e": "expandDown",
+			"a": "selectSelection",
+			"Space": "toggleSpaceBelow",
+			"Shift+Space": "toggleSpaceAbove",
+		},
 		
 		langs: {
 			javascript: {
@@ -91,6 +143,8 @@ class App extends Evented {
 		
 		this.prefs = defaultPrefs();
 		this.langs = langs;
+		
+		this.focusManager = focusManager();
 	}
 	
 	async init() {

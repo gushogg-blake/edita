@@ -2,7 +2,6 @@ let Evented = require("../utils/Evented");
 let _typeof = require("../utils/typeof");
 let Selection = require("./utils/Selection");
 let Cursor = require("./utils/Cursor");
-let FindSession = require("./FindSession");
 let Line = require("./Line");
 
 class Document extends Evented {
@@ -61,12 +60,6 @@ class Document extends Evented {
 		this.string = lineStrings.join(newline);
 		
 		this.parse();
-		
-		this.fire("edit", {
-			lineIndex,
-			removedLines: removeLines,
-			insertedLines: insertLines,
-		});
 	}
 	
 	reverse(edit) {
@@ -136,10 +129,6 @@ class Document extends Evented {
 			newSelection,
 		};
 	}
-	
-	/*
-	NOTE some of these should probs be moved to Editor or an Editing util
-	*/
 	
 	insert(selection, ch) {
 		return this.replaceSelection(selection, ch);
@@ -379,40 +368,6 @@ class Document extends Evented {
 			lineIndex++;
 			index -= line.string.length + this.fileDetails.newline.length;
 		}
-	}
-	
-	find(startCursor) {
-		return new FindSession(
-			this.string,
-			this.indexFromCursor(startCursor),
-			
-			({index, match, groups, replace}) => {
-				let cursor = this.cursorFromIndex(index);
-				
-				let selection = {
-					start: cursor,
-					end: this.cursorFromIndex(index + match.length),
-				};
-				
-				return {
-					index,
-					cursor,
-					selection,
-					match,
-					groups,
-					
-					replace(str) {
-						let edit = this.replaceSelection(selection, str);
-						
-						this.apply(edit);
-						
-						replace(replaceWith);
-						
-						return edit;
-					},
-				};
-			},
-		);
 	}
 	
 	getSelectedText(selection) {

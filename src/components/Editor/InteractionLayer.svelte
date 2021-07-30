@@ -1,25 +1,17 @@
 <script>
-import {createEventDispatcher} from "svelte";
+import {onMount, createEventDispatcher} from "svelte";
 import {fade} from "svelte/transition";
 import unique from "../../utils/array/unique";
 import {on, off} from "../../utils/dom/domEvents";
 import inlineStyle from "../../utils/dom/inlineStyle";
-import screenRowFromLineIndex from "./canvas/utils/screenRowFromLineIndex";
-import topMargin from "./canvas/topMargin";
-import drag from "./utils/dom/drag";
-import createDragEvent from "./utils/dom/createDragEvent";
+import drag from "./utils/drag";
+import createDragEvent from "./utils/createDragEvent";
 
 export let document;
-export let revisionCounter; // for reactive updates on document edits
-export let overallWidth;
-export let marginWidth;
-export let marginOffset;
-export let rowHeight;
-export let colWidth;
-export let scrollPosition;
-export let mode;
-export let pickOptions;
-export let dropTargets;
+export let editor;
+export let view;
+
+let fire = createEventDispatcher();
 
 let interactionDiv;
 let hoveredOption;
@@ -34,7 +26,22 @@ let dragStartedHere = false;
 let isDragging = false;
 let rowYHint = 1;
 
-let fire = createEventDispatcher();
+let {
+	wrappedLines,
+	mode,
+	dropTargets,
+	pickOptions,
+	scrollPosition,
+	measurements: {
+		rowHeight,
+		colWidth,
+	},
+	sizes: {
+		width,
+		marginWidth,
+		marginOffset,
+	},
+} = view;
 
 let divToPickOption = new Map();
 let divToDropTarget = new Map();
@@ -287,6 +294,16 @@ function dragleave(e) {
 	fire("dragleave", e);
 }
 
+function resize() {
+	({
+		sizes: {
+			width,
+			marginWidth,
+			marginOffset,
+		},
+	} = view);
+}
+
 function calculateMarginStyle(marginWidth) {
 	return {
 		width: marginWidth,
@@ -294,7 +311,7 @@ function calculateMarginStyle(marginWidth) {
 }
 
 function calculateCodeStyle(
-	overallWidth,
+	width,
 	marginWidth,
 	mode,
 	dragStartedHere,
@@ -307,18 +324,17 @@ function calculateCodeStyle(
 	
 	return {
 		left: marginWidth,
-		width: overallWidth - marginWidth,
+		width: width - marginWidth,
 		cursor,
 	};
 }
 
-function rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounter) {
-	let {lines} = document;
-	let screenRow = screenRowFromLineIndex(lines, lineIndex, scrollPosition);
-	let screenCol = lines[lineIndex].width + 1;
+function rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition) {
+	let screenRow = view.screenRowFromLineIndex(lineIndex);
+	let screenCol = wrappedLines[lineIndex].line.width + 1; // ?
 	
 	return {
-		top: topMargin + rowYHint + screenRow * rowHeight,
+		top: view.sizes.topMargin + rowYHint + screenRow * rowHeight,
 		left: screenCol * colWidth,
 		height: rowHeight,
 	};
@@ -338,11 +354,23 @@ function targetIsActive(target, currentDropTarget) {
 $: marginStyle = calculateMarginStyle(marginWidth);
 
 $: codeStyle = calculateCodeStyle(
-	overallWidth,
+	width,
 	marginOffset,
 	mode,
 	dragStartedHere,
 );
+
+onMount(function() {
+	let teardown = [
+		view.on("resize", resize),
+	];
+	
+	return function() {
+		for (let fn of teardown) {
+			fn();
+		}
+	}
+});
 </script>
 
 <style type="text/scss">
@@ -420,9 +448,7 @@ $: codeStyle = calculateCodeStyle(
 	<div
 		id="margin"
 		style={inlineStyle(marginStyle)}
-	>
-		
-	</div>
+	></div>
 	<div
 		id="code"
 		style={inlineStyle(codeStyle)}
@@ -431,7 +457,7 @@ $: codeStyle = calculateCodeStyle(
 			{#each dropTargets as {lineIndex, targets} (lineIndex)}
 				<div
 					class="row"
-					style={inlineStyle(rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounter))}
+					style={inlineStyle(rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition))}
 				>
 					{#each targets as target (target)}
 						<div
@@ -448,7 +474,7 @@ $: codeStyle = calculateCodeStyle(
 			{#each pickOptions as {lineIndex, options} (lineIndex)}
 				<div
 					class="row"
-					style={inlineStyle(rowStyle(lineIndex, rowHeight, colWidth, scrollPosition, revisionCounter))}
+					style={inlineStyle(rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition))}
 				>
 					{#each options as {option}}
 						<div
@@ -478,8 +504,6 @@ $: codeStyle = calculateCodeStyle(
 			on:dragend={dragend}
 			on:dragenter={dragenter}
 			on:dragleave={dragleave}
-		>
-			
-		</div>
+		></div>
 	</div>
 </div>

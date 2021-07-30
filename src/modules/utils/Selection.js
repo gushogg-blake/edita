@@ -97,6 +97,14 @@ let api = {
 	cursorIsWithinOrNextToSelection(selection, cursor) {
 		return api.cursorIsNextToSelection(selection, cursor) || api.cursorIsWithinSelection(selection, cursor);
 	},
+	
+	startOfLineContent(wrappedLines, lineIndex) {
+		return s(Cursor.startOfLineContent(wrappedLines, lineIndex));
+	},
+	
+	endOfLineContent(wrappedLines, lineIndex) {
+		return s(Cursor.endOfLineContent(wrappedLines, lineIndex));
+	},
 };
 
 module.exports = api;

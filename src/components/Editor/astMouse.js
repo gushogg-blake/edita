@@ -1,13 +1,19 @@
 let parseJson = require("../../utils/parseJson");
 let {on, off} = require("../../utils/dom/domEvents");
-let autoScroll = require("./utils/dom/autoScroll");
-let insertLineIndexFromScreenY = require("./canvas/utils/insertLineIndexFromScreenY");
-let cursorRowColFromScreenCoords = require("./canvas/utils/cursorRowColFromScreenCoords");
-let rowColFromCursor = require("./utils/rowColFromCursor");
-let cursorFromRowCol = require("./utils/cursorFromRowCol");
-let countRows = require("./canvas/utils/countRows");
-let AstSelection = require("./utils/AstSelection");
-let Selection = require("./utils/Selection");
+let Selection = require("../../modules/utils/Selection");
+let AstSelection = require("../../modules/utils/AstSelection");
+let autoScroll = require("./utils/autoScroll");
+
+/*
+pick(selection) {
+	astSelection = selection;
+},
+
+setSelection(selection) {
+	setAstSelection(selection);
+},
+
+*/
 
 /*
 you can't see the data (only the types) on dragover, and types can't contain
@@ -40,14 +46,14 @@ function getData(e) {
 	return null;
 }
 
-module.exports = function(editor) {
+module.exports = function(document, editor, view, editorComponent) {
 	let drag = null;
 	let drawingSelection = false;
 	
 	function getCanvasCoords(e) {
 		let {
 			canvas,
-		} = editor;
+		} = editorComponent;
 		
 		let {
 			x: left,
@@ -62,36 +68,30 @@ module.exports = function(editor) {
 	
 	function getHilite(e, withinSelection=false) {
 		let {
-			measurements,
-			document,
-			selection,
-			isPeekingAstMode: isPeeking,
+			astSelection,
 			normalSelection,
-			scrollPosition,
-		} = editor;
+		} = view;
+		
+		let {
+			isPeekingAstMode: isPeeking,
+		} = editorComponent;
 		
 		let [x, y] = getCanvasCoords(e);
 		
-		let [row, col] = cursorRowColFromScreenCoords(
-			document.lines,
-			x,
-			y,
-			scrollPosition,
-			measurements,
-		);
+		let [row, col] = view.cursorRowColFromScreenCoords(x, y);
 		
-		if (row >= countRows(document.lines)) {
+		if (row >= view.countRows()) {
 			return null;
 		}
 		
-		let [lineIndex] = cursorFromRowCol(document.lines, row, col);
+		let [lineIndex] = view.cursorFromRowCol(row, col);
 		
 		if (!withinSelection) {
 			if (
 				(!isPeeking || Selection.isFull(normalSelection))
-				&& AstSelection.lineIsWithinSelection(lineIndex, selection)
+				&& AstSelection.lineIsWithinSelection(lineIndex, astSelection)
 			) {
-				return selection;
+				return astSelection;
 			}
 		}
 		
@@ -100,11 +100,8 @@ module.exports = function(editor) {
 	
 	function getInsertionRange(e) {
 		let {
-			document,
-			selection,
-			scrollPosition,
-			measurements,
-		} = editor;
+			astSelection,
+		} = view;
 		
 		let {lines} = document;
 		let [x, y] = getCanvasCoords(e);
@@ -113,12 +110,7 @@ module.exports = function(editor) {
 			aboveLineIndex,
 			belowLineIndex,
 			offset,
-		} = insertLineIndexFromScreenY(
-			lines,
-			y,
-			scrollPosition,
-			measurements,
-		);
+		} = view.insertLineIndexFromScreenY(y);
 		
 		let range = AstSelection.insertionRange(
 			lines,
@@ -127,7 +119,7 @@ module.exports = function(editor) {
 			offset,
 		);
 		
-		if (AstSelection.isWithin(range, selection)) {
+		if (AstSelection.isWithin(range, astSelection)) {
 			let [startLineIndex] = selection;
 			
 			return AstSelection.s(startLineIndex);
@@ -137,47 +129,21 @@ module.exports = function(editor) {
 	}
 	
 	function hilite(e) {
-		let {
-			document,
-			scrollPosition,
-			setSelectionHilite,
-			showPickOptionsFor,
-			redraw,
-		} = editor;
-		
 		let selection = getHilite(e);
 		
-		setSelectionHilite(selection);
-		
-		let {lines} = document;
-		let {codeIntel} = document.lang;
-		
-		if (selection) {
-			showPickOptionsFor(selection);
-		} else {
-			showPickOptionsFor(null);
-		}
-		
-		redraw();
+		editor.astMouse.setSelectionHilite(selection);
 	}
 	
 	function mousedown(e, option, enableDrag) {
 		let {
 			canvas,
-			measurements,
-			document,
-			hasHorizontalScrollbar,
-			scrollBy,
-			pick,
-			redraw,
-		} = editor;
+			showingHorizontalScrollbar,
+		} = editorComponent;
 		
 		autoScroll(
 			canvas,
-			measurements,
-			document,
-			hasHorizontalScrollbar,
-			scrollBy,
+			view,
+			showingHorizontalScrollbar,
 		);
 		
 		if (e.shiftKey) {
@@ -194,13 +160,13 @@ module.exports = function(editor) {
 			
 			enableDrag();
 			
-			pick(selection, null);
+			view.astSelection = selection;
 			
 			on(window, "mouseup", mouseup);
 			on(window, "dragend", dragend);
 		}
 		
-		redraw();
+		view.redraw();
 	}
 	
 	function drawSelection(e) {
@@ -222,14 +188,8 @@ module.exports = function(editor) {
 	}
 	
 	function mouseup(e) {
-		let {
-			setInsertionHilite,
-			redraw,
-		} = editor;
-		
-		setInsertionHilite(null);
-		
-		redraw();
+		view.setAstInsertionHilite(null);
+		view.redraw();
 		
 		editor.mouseup();
 		
@@ -243,25 +203,14 @@ module.exports = function(editor) {
 	}
 	
 	function mouseleave(e) {
-		let {
-			setSelectionHilite,
-			redraw,
-		} = editor;
-		
-		setSelectionHilite(null);
-		redraw();
+		editor.astMouse.setSelectionHilite(null);
 	}
 	
 	function click(e) {
-		let {
-			pick,
-			redraw,
-		} = editor;
-		
 		let selection = getHilite(e, true);
 		
 		if (selection) {
-			pick(selection, null);
+			view.astSelection = selection; // ?
 		}
 		
 		hilite(e);
@@ -280,12 +229,7 @@ module.exports = function(editor) {
 	}
 	
 	function dragstart(e, option) {
-		let {
-			document,
-			selection,
-		} = editor;
-		
-		let [startLineIndex, endLineIndex] = selection;
+		let [startLineIndex, endLineIndex] = view.astSelection;
 		let lines = AstSelection.linesToSelectionLines(document.lines.slice(startLineIndex, endLineIndex));
 		
 		drag = {
@@ -301,15 +245,6 @@ module.exports = function(editor) {
 	}
 	
 	function dragover(e, target) {
-		let {
-			document,
-			scrollPosition,
-			measurements,
-			setInsertionHilite,
-			showDropTargets,
-			redraw,
-		} = editor;
-		
 		e.dataTransfer.dropEffect = e.ctrlKey ? "copy" : "move";
 		
 		let data = getData(e);
@@ -326,15 +261,15 @@ module.exports = function(editor) {
 		
 		// TODO auto scroll at edges of code area
 		
-		showDropTargets();
+		view.showDropTargets();
 		
 		if (target) {
-			setInsertionHilite(null);
+			view.setAstInsertionHilite(null);
 		} else {
-			setInsertionHilite(getInsertionRange(e));
+			view.setAstInsertionHilite(getInsertionRange(e));
 		}
 		
-		redraw();
+		view.redraw();
 	}
 	
 	function dragenter(e) {
@@ -346,15 +281,6 @@ module.exports = function(editor) {
 	}
 	
 	function drop(e, fromUs, toUs, extra) {
-		let {
-			document,
-			setInsertionHilite,
-			setSelection,
-			applyAndAddHistoryEntry,
-			clearDropTargets,
-			redraw,
-		} = editor;
-		
 		// NOTE dropEffect doesn't work when dragging between windows
 		// (it will always be none in the source window)
 		
@@ -362,9 +288,10 @@ module.exports = function(editor) {
 		
 		e.dataTransfer.dropEffect = move ? "move" : "copy";
 		
-		clearDropTargets();
-		setInsertionHilite(null);
-		redraw();
+		view.clearDropTargets();
+		view.setAstInsertionHilite(null);
+		
+		view.redraw();
 		
 		let {
 			target,
@@ -427,7 +354,7 @@ module.exports = function(editor) {
 		);
 		
 		if (edits.length > 0) {
-			applyAndAddHistoryEntry({
+			editor.applyAndAddHistoryEntry({
 				edits,
 				astSelection: newSelection,
 			});
@@ -435,11 +362,7 @@ module.exports = function(editor) {
 	}
 	
 	function dragend() {
-		let {
-			clearDropTargets,
-		} = editor;
-		
-		clearDropTargets();
+		view.clearDropTargets();
 		
 		mouseup();
 		
@@ -447,16 +370,10 @@ module.exports = function(editor) {
 	}
 	
 	function updateHilites(e) {
-		let {
-			setSelectionHilite,
-			showPickOptionsFor,
-		} = editor;
-		
 		if (e) {
 			hilite(e);
 		} else {
-			setSelectionHilite(null);
-			showPickOptionsFor(null);
+			editor.astMouse.setSelectionHilite(null);
 		}
 	}
 

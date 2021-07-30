@@ -1,12 +1,12 @@
 let api = {
-	startOfLineContent(lines, lineIndex) {
-		let line = lines[lineIndex];
+	startOfLineContent(wrappedLines, lineIndex) {
+		let {line} = wrappedLines[lineIndex];
 		
 		return [lineIndex, line.string.length - line.trimmed.length];
 	},
 	
-	endOfLineContent(lines, lineIndex) {
-		let line = lines[lineIndex];
+	endOfLineContent(wrappedLines, lineIndex) {
+		let {line} = wrappedLines[lineIndex];
 		
 		return [lineIndex, line.string.length];
 	},

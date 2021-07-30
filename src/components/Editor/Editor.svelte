@@ -1,149 +1,22 @@
 <script>
-import {tick, onMount, createEventDispatcher, getContext} from "svelte";
+import {tick, onMount} from "svelte";
 
-import sleep from "../../utils/sleep";
 import inlineStyle from "../../utils/dom/inlineStyle";
-import {on, off} from "../../utils/dom/domEvents";
-import screenOffsets from "../../utils/dom/screenOffsets";
-import autoScroll from "../../utils/dom/autoScroll";
 import windowFocus from "../../utils/dom/windowFocus";
 import getKeyCombo from "../../utils/getKeyCombo";
 
-import calculateMarginWidth from "./canvas/utils/calculateMarginWidth";
-import calculateMarginOffset from "./canvas/utils/calculateMarginOffset";
-import screenCoordsFromRowCol from "./canvas/utils/screenCoordsFromRowCol";
-import findFirstVisibleLine from "./canvas/utils/findFirstVisibleLine";
-import countRows from "./canvas/utils/countRows";
-
-import render from "./canvas/render/render";
-
-import rowColFromCursor from "./utils/rowColFromCursor";
-import cursorFromRowCol from "./utils/cursorFromRowCol";
-import Selection from "./utils/Selection";
-import AstSelection from "./utils/AstSelection";
+import render from "./canvas/render";
 
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
-import normalKeyboard from "./normalKeyboard";
-import astKeyboard from "./astKeyboard";
 import modeSwitchKey from "./modeSwitchKey";
 
 import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer.svelte";
 
 export let document;
-
-export function focus() {
-	main.focus();
-}
-
-export function isFocused() {
-	return focused;
-}
-
-export function show() {
-	visible = true;
-	resize();
-	redraw();
-}
-
-export function hide() {
-	visible = false;
-}
-
-export function undo(...args) {
-	return _undo(...args);
-}
-
-export function redo(...args) {
-	return _redo(...args);
-}
-
-let findSession = null;
-
-export let findController = {
-	search(search, type, caseMode) {
-		if (!findSession) {
-			let cursor;
-			
-			if (mode === "normal") {
-				cursor = normalSelection.end;
-			} else {
-				let [startLineIndex] = astSelection;
-				
-				cursor = [startLineIndex, 0];
-			}
-			
-			findSession = document.find(cursor);
-		}
-		
-		findSession.find(search, type, caseMode);
-		
-		hiliteNormalSelections = findSession.all.map(result => result.selection);
-		
-		this.next();
-	},
-	
-	next() {
-		let {
-			loopedFile,
-			result,
-		} = findSession.next() || {};
-		
-		if (!result) {
-			return null;
-		}
-		
-		setNormalSelection(result.selection);
-		
-		ensureNormalCursorIsOnScreen();
-		
-		redraw();
-		
-		return {
-			loopedFile,
-		};
-	},
-	
-	previous() {
-		let {
-			loopedFile,
-			result,
-		} = findSession.previous() || {};
-		
-		if (!result) {
-			return null;
-		}
-		
-		setNormalSelection(result.selection);
-		
-		ensureNormalCursorIsOnScreen();
-		
-		redraw();
-		
-		return {
-			loopedFile,
-		};
-	},
-	
-	clearHilites() {
-		hiliteNormalSelections = [];
-		
-		redraw();
-	},
-	
-	reset() {
-		findSession = null;
-	},
-};
-
-let blur = function() {
-	focused = false;
-}
-
-let focusManager = getContext("focusManager");
-
-let fire = createEventDispatcher();
+export let editor;
+export let view;
 
 let revisionCounter = 0;
 let mounted = false;
@@ -152,247 +25,75 @@ let canvasDiv;
 let measurementsDiv;
 let canvas;
 let context;
-let measurements;
 let rowHeightPadding = 2;
 let rowBaselineHint = -1;
 
-let sizes = {
-	overallWidth: 0,
-	marginWidth: 0,
-	marginOffset: 0,
-};
+let resizeInterval;
 
 let verticalScrollbar;
 let horizontalScrollbar;
-let hasHorizontalScrollbar = !app.prefs.wrap;
+let showingHorizontalScrollbar = !app.prefs.wrap;
 
-let visible = true;
-let focused = false;
 let windowHasFocus;
 
-let mode = "normal";
 let switchToAstModeOnMouseUp = false;
-
-let normalSelection = {
-	start: [0, 0],
-	end: [0, 0],
-};
-
-let insertCursor = null;
-
-// for remembering the "intended" col when moving a cursor up/down to a line
-// that doesn't have as many cols as the cursor
-let selectionEndCol = 0;
-
-let astSelection = AstSelection.fromNormalSelection(normalSelection);
-let astSelectionHilite = null;
-let astInsertionHilite = null;
-let pickOptions = [];
-let dropTargets = [];
 let isDragging = false;
-
-let history = [];
-let historyIndex = 0;
-
-let scrollPosition = {
-	row: 0,
-	x: 0,
-};
-
-let hiliteNormalSelections = [];
-
-let cursorBlinkOn;
-let cursorInterval;
-
 let mouseIsDown = false;
 let lastMouseEvent;
 
-let normalMouseHandler = normalMouse({
+let normalMouseHandler = normalMouse(document, editor, view, {
 	get canvas() {
 		return canvas;
 	},
 	
-	get measurements() {
-		return measurements;
+	get showingHorizontalScrollbar() {
+		return showingHorizontalScrollbar;
 	},
 	
-	get document() {
-		return document;
-	},
-	
-	get hasHorizontalScrollbar() {
-		return hasHorizontalScrollbar;
-	},
-	
-	get scrollPosition() {
-		return scrollPosition;
-	},
-	
-	get selection() {
-		return normalSelection;
-	},
-	
-	scrollBy,
-	redraw,
-	startCursorBlink,
-	applyAndAddHistoryEntry,
-	
-	setSelection(selection) {
-		setNormalSelection(selection);
-		
-		let {end} = selection;
-		let [lineIndex, offset] = end;
-		let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
-		
-		selectionEndCol = endCol;
-		
-		normalKeyboardHandler.clearBatchState();
-	},
-	
-	setInsertCursor(cursor) {
-		insertCursor = cursor;
-	},
+	//setSelection(selection) {
+	//	view.setNormalSelection(selection);
+	//	
+	//	let {end} = selection;
+	//	let [lineIndex, offset] = end;
+	//	let [, endCol] = rowColFromCursor(view.wrappedLines, lineIndex, offset);
+	//	
+	//	view.selectionEndCol = endCol;
+	//	
+	//	normalKeyboardHandler.clearBatchState();
+	//},
 	
 	mouseup() {
 		mouseIsDown = false;
 		
 		if (switchToAstModeOnMouseUp) {
 			switchToAstMode();
-			redraw();
+			
+			view.redraw();
 			
 			switchToAstModeOnMouseUp = false;
 		}
 	},
 });
 
-let astMouseHandler = astMouse({
+let astMouseHandler = astMouse(document, editor, view, {
 	get canvas() {
 		return canvas;
 	},
 	
-	get measurements() {
-		return measurements;
-	},
-	
-	get document() {
-		return document;
-	},
-	
-	get hasHorizontalScrollbar() {
-		return hasHorizontalScrollbar;
-	},
-	
-	get scrollPosition() {
-		return scrollPosition;
-	},
-	
-	get selection() {
-		return astSelection;
-	},
-	
-	get normalSelection() {
-		return normalSelection;
+	get showingHorizontalScrollbar() {
+		return showingHorizontalScrollbar;
 	},
 	
 	get isPeekingAstMode() {
 		return modeSwitchKeyHandler.isPeeking;
 	},
 	
-	pick(selection) {
-		astSelection = selection;
-	},
-	
-	setSelection(selection) {
-		setAstSelection(selection);
-	},
-	
-	setSelectionHilite(selection) {
-		setAstSelectionHilite(selection);
-	},
-	
-	setInsertionHilite(selection) {
-		astInsertionHilite = selection;
-	},
-	
-	applyAndAddHistoryEntry,
-	showPickOptionsFor,
-	showDropTargets,
-	clearDropTargets,
-	scrollBy,
-	redraw,
-	
 	mouseup() {
 		mouseIsDown = false;
 	},
 });
 
-let normalKeyboardHandler = normalKeyboard({
-	get document() {
-		return document;
-	},
-	
-	get selection() {
-		return normalSelection;
-	},
-	
-	get selectionEndCol() {
-		return selectionEndCol;
-	},
-	
-	get lastHistoryEntry() {
-		return history[historyIndex - 1];
-	},
-	
-	setSelection(selection) {
-		setNormalSelection(selection);
-		
-		if (Selection.isFull(selection)) {
-			platform.clipboard.writeSelection(document.getSelectedText(selection));
-		}
-		
-		normalKeyboardHandler.clearBatchState();
-	},
-	
-	applyEdit,
-	applyAndAddHistoryEntry,
-	getCodeAreaSize,
-	updateSelectionEndCol,
-	ensureSelectionIsOnScreen,
-	updateScrollbars,
-	startCursorBlink,
-	redraw,
-});
-
-let astKeyboardHandler = astKeyboard({
-	get document() {
-		return document;
-	},
-	
-	get selection() {
-		return astSelection;
-	},
-	
-	get selectionEndCol() {
-		return selectionEndCol;
-	},
-	
-	setSelection(selection) {
-		setAstSelection(selection);
-	},
-	
-	applyAndAddHistoryEntry,
-	scrollPageUp,
-	scrollPageDown,
-	scrollBy,
-	switchToNormalMode,
-	getCodeAreaSize,
-	ensureSelectionIsOnScreen,
-	updateScrollbars,
-	startCursorBlink,
-	redraw,
-});
-
-let modeSwitchKeyHandler = modeSwitchKey({
+let modeSwitchKeyHandler = modeSwitchKey(view, {
 	switchToAstMode() {
 		if (mouseIsDown) {
 			switchToAstModeOnMouseUp = true;
@@ -401,24 +102,14 @@ let modeSwitchKeyHandler = modeSwitchKey({
 		}
 		
 		switchToAstMode();
-		redraw();
+		
+		view.redraw();
 	},
 	
 	switchToNormalMode() {
 		switchToNormalMode();
-		redraw();
-	},
-	
-	get mode() {
-		return mode;
-	},
-	
-	get minHoldTime() {
-		return app.prefs.minHoldTime;
-	},
-	
-	get modeSwitchKey() {
-		return app.prefs.modeSwitchKey;
+		
+		view.redraw();
 	},
 });
 
@@ -431,11 +122,11 @@ function mousedown({detail}) {
 	
 	mouseIsDown = true;
 	
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.mousedown(e, function() {
 			enableDrag(false);
 		});
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.mousedown(e, option, function() {
 			// if we're holding the Esc key down to peek AST mode, use synthetic
 			// drag as native will be canceled by the repeated keydown events
@@ -453,17 +144,14 @@ function mousedown({detail}) {
 
 function mousemove({detail: e}) {
 	if (isDragging) {
-		//console.log("mousemove - dragging");
 		return;
 	}
 	
-	//console.log("mousemove");
-	
 	lastMouseEvent = e;
 	
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.mousemove(e);
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.mousemove(e);
 	}
 }
@@ -473,9 +161,9 @@ function mouseenter({detail: e}) {
 		return;
 	}
 	
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.mouseenter(e);
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.mouseenter(e);
 	}
 }
@@ -485,9 +173,9 @@ function mouseleave({detail: e}) {
 		return;
 	}
 	
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.mouseleave(e);
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.mouseleave(e);
 	}
 }
@@ -497,19 +185,17 @@ function mouseup({detail: e}) {
 }
 
 function click({detail: e}) {
-	findController.clearHilites();
-	
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.click(e);
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.click(e);
 	}
 }
 
 function dblclick(e) {
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.dblclick(e);
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.dblclick(e);
 	}
 }
@@ -531,9 +217,9 @@ function dragstart({detail}) {
 	
 	isDragging = true;
 	
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.dragstart(e);
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.dragstart(e, option);
 	}
 	
@@ -546,9 +232,9 @@ function dragover({detail}) {
 		target,
 	} = detail;
 	
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.dragover(e);
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.dragover(e, target);
 	}
 	
@@ -558,9 +244,9 @@ function dragover({detail}) {
 function dragend({detail: e}) {
 	isDragging = false;
 	
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.dragend();
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.dragend();
 	}
 	
@@ -568,9 +254,9 @@ function dragend({detail: e}) {
 }
 
 function dragenter({detail: e}) {
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.dragenter(e);
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.dragenter(e);
 	}
 	
@@ -578,9 +264,9 @@ function dragenter({detail: e}) {
 }
 
 function dragleave({detail: e}) {
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.dragleave(e);
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.dragleave(e);
 	}
 	
@@ -595,35 +281,27 @@ function drop({detail}) {
 		extra,
 	} = detail;
 	
-	if (mode === "normal") {
+	if (view.mode === "normal") {
 		normalMouseHandler.drop(e, fromUs, toUs, extra);
-	} else if (mode === "ast") {
+	} else if (view.mode === "ast") {
 		astMouseHandler.drop(e, fromUs, toUs, extra);
 	}
 	
 	lastMouseEvent = e;
 }
 
-//function mouseEvent(type, e) {
-//	if (mode === "normal") {
-//		normalMouseHandler[type](e);
-//	} else if (mode === "ast") {
-//		astMouseHandler[type](e);
-//	}
-//}
-
 function wheel(e) {
 	let dir = e.deltaY > 0 ? 1 : -1;
 	
 	if (e.shiftKey) {
-		scrollBy(measurements.colWidth * 3 * dir, 0);
+		view.scrollBy(view.measurements.colWidth * 3 * dir, 0);
 	} else {
-		scrollBy(0, 3 * dir);
+		view.scrollBy(0, 3 * dir);
 	}
 }
 
-function keydown(e) {
-	if (!focused) {
+async function keydown(e) {
+	if (!view.focused) {
 		return;
 	}
 	
@@ -635,15 +313,26 @@ function keydown(e) {
 		return;
 	}
 	
-	if (mode === "normal") {
-		normalKeyboardHandler.keydown(e);
-	} else if (mode === "ast") {
-		astKeyboardHandler.keydown(e);
+	let {keyCombo, isModified} = getKeyCombo(e);
+	let {key} = e;
+	
+	if (view.mode === "normal") {
+		if (editor.willHandleNormalKeydown(key, keyCombo, isModified)) {
+			e.preventDefault();
+			
+			editor.normalKeydown(key, keyCombo, isModified);
+		}
+	} else if (view.mode === "ast") {
+		if (editor.willHandleAstKeydown(keyCombo)) {
+			e.preventDefault();
+			
+			editor.astKeydown(keyCombo);
+		}
 	}
 }
 
 function keyup(e) {
-	if (!focused) {
+	if (!view.focused) {
 		return;
 	}
 	
@@ -656,299 +345,10 @@ function keyup(e) {
 	}
 }
 
-/*
-NOTE could rename these - edit means both text edit and composite edit (text
-and selection updates)
-*/
-
-function applyEdit(edit) {
-	let {
-		edits,
-		normalSelection,
-		astSelection,
-	} = edit;
-	
-	for (let edit of edits) {
-		document.apply(edit);
-	}
-	
-	if (normalSelection) {
-		setNormalSelection(normalSelection);
-	} else if (astSelection) {
-		setAstSelection(astSelection);
-	}
-	
-	afterEdit();
-}
-
-function applyAndAddHistoryEntry(edit) {
-	let undo = {
-		normalSelection,
-		astSelection,
-		edits: [...edit.edits].reverse().map(e => document.reverse(e)),
-	};
-	
-	applyEdit(edit);
-	
-	let entry = {
-		undo,
-		redo: edit,
-	};
-	
-	if (historyIndex < history.length) {
-		history.splice(historyIndex, history.length - historyIndex);
-	}
-	
-	history.push(entry);
-	
-	historyIndex = history.length;
-}
-
-function _undo() {
-	if (historyIndex === 0) {
-		return;
-	}
-	
-	historyIndex--;
-	
-	applyEdit(history[historyIndex].undo);
-	
-	updateSelectionEndCol();
-	ensureSelectionIsOnScreen();
-	updateScrollbars();
-	startCursorBlink();
-	redraw();
-}
-
-function _redo() {
-	if (historyIndex === history.length) {
-		return;
-	}
-	
-	applyEdit(history[historyIndex].redo);
-	
-	historyIndex++;
-	
-	updateSelectionEndCol();
-	ensureSelectionIsOnScreen();
-	updateScrollbars();
-	startCursorBlink();
-	redraw();
-}
-
-/*
-general tasks to do after an edit is made and the selection has been updated
-(selections can be invalid in Document "edit" handlers)
-*/
-
-function afterEdit() {
-	findController.clearHilites();
-	
-	if (mode === "ast") {
+function onEdit() {
+	if (view.mode === "ast") {
 		astMouseHandler.updateHilites(lastMouseEvent);
 	}
-}
-
-function showPickOptionsFor(selection) {
-	if (!selection) {
-		return;
-	}
-	
-	let [startLineIndex] = selection;
-	let lineIndex = startLineIndex;
-	let {lines} = document;
-	let {codeIntel} = document.lang;
-	
-	pickOptions = [{
-		lineIndex,
-		
-		options: codeIntel.generatePickOptions(
-			lines,
-			selection,
-		).map(function(option) {
-			return {
-				lineIndex,
-				option,
-			};
-		}),
-	}];
-}
-
-function showDropTargets() {
-	let byLineIndex = new Map();
-	
-	let {lines} = document;
-	let {codeIntel} = document.lang;
-	let {lineIndex} = findFirstVisibleLine(lines, scrollPosition);
-	
-	let rowsToRender = canvas.height / measurements.rowHeight;
-	let rowsRendered = 0;
-	
-	while (lineIndex < lines.length) {
-		if (
-			AstSelection.lineIsWithinSelection(lineIndex, astSelection)
-			|| astSelectionHilite && AstSelection.lineIsWithinSelection(lineIndex, astSelectionHilite)
-		) {
-			lineIndex++;
-			
-			continue;
-		}
-		
-		let line = lines[lineIndex];
-		
-		byLineIndex.set(lineIndex, codeIntel.generateDropTargets(
-			lines,
-			lineIndex,
-		).map(function(target) {
-			return {
-				lineIndex,
-				target,
-			};
-		}));
-		
-		rowsRendered += line.height;
-		
-		if (rowsRendered >= rowsToRender) {
-			break;
-		}
-		
-		lineIndex++;
-	}
-	
-	dropTargets = [...byLineIndex.entries()].map(function([lineIndex, targets]) {
-		return {
-			lineIndex,
-			targets,
-		};
-	});
-}
-
-function clearDropTargets() {
-	dropTargets = [];
-}
-
-function setAstSelectionHilite(selection) {
-	astSelectionHilite = selection;
-}
-
-function scrollBy(x, rows) {
-	if (x !== 0) {
-		let newX = Math.round(scrollPosition.x + x);
-		
-		newX = Math.max(0, newX);
-		
-		scrollPosition.x = newX;
-	}
-	
-	if (rows !== 0) {
-		let newRow = scrollPosition.row + rows;
-		
-		newRow = Math.max(0, newRow);
-		newRow = Math.min(newRow, countRows(document.lines) - 1);
-		
-		scrollPosition.row = newRow;
-	}
-	
-	updateScrollbars();
-	redraw();
-}
-
-function scrollPage(dir) {
-	let {rows} = getCodeAreaSize();
-	
-	scrollBy(0, rows * dir);
-}
-
-function scrollPageDown() {
-	scrollPage(1);
-}
-
-function scrollPageUp() {
-	scrollPage(-1);
-}
-
-function ensureSelectionIsOnScreen() {
-	if (mode === "ast") {
-		ensureAstSelectionIsOnScreen();
-	} else {
-		ensureNormalCursorIsOnScreen();
-	}
-}
-
-function ensureAstSelectionIsOnScreen() {
-	
-}
-
-function ensureNormalCursorIsOnScreen() {
-	let {colWidth} = measurements;
-	
-	let {end} = normalSelection;
-	let [lineIndex, offset] = end;
-	let [row, col] = rowColFromCursor(document.lines, lineIndex, offset);
-	
-	let {width, rows} = getCodeAreaSize();
-	let maxRow = countRows(document.lines) - 1;
-	let firstVisibleRow = scrollPosition.row;
-	let lastFullyVisibleRow = firstVisibleRow + rows;
-	
-	let idealRowBuffer = 5;
-	
-	let topRowDiff = idealRowBuffer - (row - firstVisibleRow);
-	
-	if (topRowDiff > 0) {
-		scrollPosition.row = Math.max(0, scrollPosition.row - topRowDiff);
-	}
-	
-	let bottomRowDiff = idealRowBuffer - (lastFullyVisibleRow - row);
-	
-	if (bottomRowDiff > 0) {
-		scrollPosition.row = Math.min(scrollPosition.row + bottomRowDiff, maxRow);
-	}
-	
-	let colBuffer = 8;
-	
-	let [x] = screenCoordsFromRowCol(document.lines, row, col, scrollPosition, measurements);
-	
-	x -= calculateMarginOffset(document.lines, measurements);
-	
-	if (x < 1) {
-		scrollPosition.x = Math.max(0, scrollPosition.x - x - colBuffer * colWidth);
-	}
-}
-
-function setNormalSelection(selection) {
-	normalSelection = selection;
-	
-	updateAstSelectionFromNormalSelection();
-}
-
-function setAstSelection(selection) {
-	astSelection = selection;
-	
-	updateNormalSelectionFromAstSelection();
-}
-
-function updateSelectionEndCol() {
-	let [lineIndex, offset] = normalSelection.end;
-	let [, endCol] = rowColFromCursor(document.lines, lineIndex, offset);
-	
-	selectionEndCol = endCol;
-}
-
-function updateNormalSelectionFromAstSelection() {
-	let [, endLineIndex] = astSelection;
-
-	normalSelection = Selection.endOfLineContent(document.lines, endLineIndex - 1);
-	
-	updateSelectionEndCol();
-}
-
-function updateAstSelectionFromNormalSelection() {
-	let selection = Selection.sort(normalSelection);
-	let [startLineIndex] = selection.start;
-	let [endLineIndex] = selection.end;
-	
-	astSelection = document.lang.codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex + 1);
 }
 
 function switchToAstMode() {
@@ -956,61 +356,17 @@ function switchToAstMode() {
 		return;
 	}
 	
-	mode = "ast";
+	view.mode = "ast";
+	view.redraw();
 	
 	astMouseHandler.updateHilites(lastMouseEvent);
 }
 
 function switchToNormalMode() {
-	mode = "normal";
-	
-	setAstSelectionHilite(null);
-	startCursorBlink();
-}
-
-function startCursorBlink() {
-	if (cursorInterval) {
-		clearInterval(cursorInterval);
-	}
-	
-	cursorBlinkOn = true;
-	
-	cursorInterval = setInterval(function() {
-		cursorBlinkOn = !cursorBlinkOn;
-		
-		updateCanvas();
-	}, app.prefs.cursorBlinkPeriod);
-}
-
-function clearCursorBlink() {
-	if (cursorInterval) {
-		clearInterval(cursorInterval);
-	}
-	
-	cursorInterval = null;
-}
-
-function updateCanvasSize() {
-	canvas.width = canvasDiv.offsetWidth;
-	canvas.height = canvasDiv.offsetHeight;
-	
-	/*
-	setting width/height resets the context, so need to apply things
-	like textBaseline here
-	*/
-	
-	context.textBaseline = "bottom";
-}
-
-function updateWraps() {
-	//if (app.prefs.wrap) {
-	//	document.wrapLines(
-	//		measurements,
-	//		getCodeAreaSize().width,
-	//	);
-	//} else {
-	//	document.unwrapLines();
-	//}
+	view.mode = "normal";
+	view.astSelectionHilite = null;
+	view.startCursorBlink();
+	view.redraw();
 }
 
 let prevWidth;
@@ -1021,80 +377,69 @@ function resize() {
 		return;
 	}
 	
-	let {offsetWidth, offsetHeight} = canvasDiv;
+	if (!view.visible) {
+		return;
+	}
 	
-	if (offsetWidth !== prevWidth || offsetHeight !== prevHeight) {
-		updateCanvasSize();
+	let {
+		offsetWidth: width,
+		offsetHeight: height,
+	} = canvasDiv;
+	
+	if (width !== prevWidth || height !== prevHeight) {
+		canvas.width = width;
+		canvas.height = height;
 		
-		if (offsetWidth !== prevWidth) {
-			updateWraps();
-			updateSizes();
+		// setting width/height resets the context, so need to init the context here
+		
+		context.textBaseline = "bottom";
+		
+		view.updateSizes(width, height);
+		
+		if (width !== prevWidth) {
+			view.updateWrappedLines();
 		}
 		
-		redraw();
+		view.redraw();
 		
-		prevWidth = offsetWidth;
-		prevHeight = offsetHeight;
+		updateScrollbars();
+		
+		prevWidth = width;
+		prevHeight = height;
 	}
-	
-	if (visible) {
-		setTimeout(resize, 50);
-	}
-}
-
-function redraw() {
-	updateScrollbars();
-	updateCanvas();
 }
 
 function updateCanvas() {
 	render(
 		context,
-		mode,
-		document.lines,
-		normalSelection,
-		insertCursor,
-		astSelection,
-		astSelectionHilite,
-		astInsertionHilite,
+		view,
 		modeSwitchKeyHandler.isPeeking,
-		hiliteNormalSelections,
-		scrollPosition,
-		document.fileDetails,
-		measurements,
-		cursorBlinkOn,
-		focused && windowHasFocus,
+		windowHasFocus,
 	);
 }
 
-function updateMeasurements() {
-	measurementsDiv.style = inlineStyle({
-		font: app.prefs.font,
-	});
-	
-	measurementsDiv.innerHTML = "A".repeat(10000);
-	
-	measurements = {
-		colWidth: measurementsDiv.offsetWidth / measurementsDiv.innerHTML.length,
-		rowHeight: measurementsDiv.offsetHeight + rowHeightPadding,
-	};
-}
-
-async function updateScrollbars() {
+function updateScrollbars() {
 	updateVerticalScrollbar();
 	updateHorizontalScrollbar();
-	
-	await tick();
-	
-	updateCanvasSize();
+}
+
+function redraw() {
 	updateCanvas();
+	updateScrollbars();
 }
 
 function updateVerticalScrollbar() {
-	let {rowHeight} = measurements;
-	let {offsetHeight: height} = canvasDiv;
+	let {
+		scrollPosition,
+		measurements: {
+			rowHeight,
+		},
+		sizes: {
+			height,
+		},
+	} = view;
 	
-	let rows = countRows(document.lines);
+	let rows = view.countRows();
 	
 	let scrollHeight = (rows - 1) * rowHeight + height;
 	let scrollTop = scrollPosition.row * rowHeight;
@@ -1105,12 +450,19 @@ function updateVerticalScrollbar() {
 }
 
 function updateHorizontalScrollbar() {
-	if (!hasHorizontalScrollbar) {
+	if (!showingHorizontalScrollbar) {
 		return;
 	}
 	
-	let {colWidth} = measurements;
-	let {width} = getCodeAreaSize();
+	let {
+		scrollPosition,
+		measurements: {
+			colWidth,
+		},
+		sizes: {
+			codeWidth: width,
+		},
+	} = view;
 	
 	let longestLineWidth = document.getLongestLineWidth();
 	
@@ -1123,24 +475,23 @@ function updateHorizontalScrollbar() {
 }
 
 function verticalScroll({detail: position}) {
-	let {rowHeight} = measurements;
-	let {height} = canvas;
+	let {rowHeight} = view.measurements;
+	let {height} = view.sizes;
 	
-	let rows = countRows(document.lines);
+	let rows = view.countRows();
 	let scrollHeight = (rows - 1) * rowHeight + height;
 	let scrollMax = scrollHeight - height;
 	
 	let scrollTop = scrollMax * position;
 	let scrollRows = Math.round(scrollTop / rowHeight);
 	
-	scrollPosition.row = scrollRows;
-	
-	updateCanvas();
+	view.scrollPosition.row = scrollRows;
+	view.updateCanvas();
 }
 
 function horizontalScroll({detail: position}) {
-	let {colWidth} = measurements;
-	let {width} = canvas;
+	let {colWidth} = view.measurements;
+	let {width} = view.sizes;
 	
 	let longestLineWidth = document.getLongestLineWidth();
 	let scrollWidth = longestLineWidth * colWidth + width;
@@ -1148,37 +499,8 @@ function horizontalScroll({detail: position}) {
 	
 	let scrollLeft = scrollMax * position;
 	
-	scrollPosition.x = scrollLeft;
-	
-	updateCanvas();
-}
-
-function getCodeAreaSize() {
-	let {width, height} = canvas;
-	
-	let {
-		colWidth,
-		rowHeight,
-	} = measurements;
-	
-	return {
-		width: width - calculateMarginOffset(document.lines, measurements),
-		height,
-		rows: Math.floor(height / rowHeight),
-		cols: Math.floor(width / colWidth),
-	};
-}
-
-function updateSizes() {
-	let {width, height} = canvas;
-	let marginWidth = calculateMarginWidth(document.lines, measurements);
-	let marginOffset = calculateMarginOffset(document.lines, measurements);
-	
-	sizes = {
-		overallWidth: width,
-		marginWidth,
-		marginOffset,
-	};
+	view.scrollPosition.x = scrollLeft;
+	view.updateCanvas();
 }
 
 async function prefsUpdated() {
@@ -1186,21 +508,36 @@ async function prefsUpdated() {
 		return;
 	}
 	
-	hasHorizontalScrollbar = !app.prefs.wrap;
-	
-	await tick();
+	await toggleHorizontalScrollbar(!app.prefs.wrap);
 	
 	updateMeasurements();
-	startCursorBlink();
-	updateCanvasSize();
-	updateWraps();
-	redraw();
+	
+	resize();
+	
+	view.redraw();
+}
+
+function updateMeasurements() {
+	measurementsDiv.style = inlineStyle({
+		font: app.prefs.font,
+	});
+	
+	measurementsDiv.innerHTML = "A".repeat(10000);
+	
+	view.measurements = {
+		colWidth: measurementsDiv.offsetWidth / measurementsDiv.innerHTML.length,
+		rowHeight: measurementsDiv.offsetHeight + rowHeightPadding,
+	};
+}
+
+async function toggleHorizontalScrollbar(show) {
+	showingHorizontalScrollbar = show;
+	
+	await tick();
 }
 
 function onFocus() {
-	focused = true;
-	
-	focusManager.focus(blur);
+	view.focus();
 }
 
 onMount(async function() {
@@ -1209,41 +546,44 @@ onMount(async function() {
 	windowHasFocus = windowFocus.isFocused();
 	
 	updateMeasurements();
+	
+	view.startCursorBlink();
+	
 	resize();
-	startCursorBlink();
+	
+	resizeInterval = setInterval(resize, 50);
 	
 	let teardown = [
-		clearCursorBlink,
+		function() {
+			clearInterval(resizeInterval);
+		},
+		
+		view.on("show", function() {
+			resize();
+		}),
+		
+		view.on("updateCanvas", updateCanvas),
+		
+		view.on("updateScrollbars", updateScrollbars),
+		
+		view.on("requestFocus", function() {
+			main.focus();
+		}),
+		
+		editor.on("edit", onEdit),
+		
+		windowFocus.listen(function(isFocused) {
+			windowHasFocus = isFocused;
+			
+			if (windowHasFocus) {
+				view.startCursorBlink();
+			}
+			
+			updateCanvas();
+		}),
+		
+		app.on("prefsUpdated", prefsUpdated),
 	];
-	
-	teardown.push(document.on("edit", function() {
-		/*
-		NOTE the selections may be invalid here (e.g. if the last line
-		was selected and this edit deletes it)
-		
-		TODO if the edit wasn't made in this editor, update the selections if
-		necessary
-		*/
-		
-		revisionCounter++;
-		
-		// TODO perf - only modified lines need wraps recalculating
-		
-		updateWraps();
-		updateSizes();
-	}));
-	
-	teardown.push(windowFocus.listen(function(isFocused) {
-		windowHasFocus = isFocused;
-		
-		updateCanvas();
-	}));
-	
-	teardown.push(app.on("prefsUpdated", prefsUpdated));
-	
-	teardown.push(function() {
-		focusManager.teardown(blur);
-	});
 	
 	mounted = true;
 	
@@ -1270,10 +610,10 @@ onMount(async function() {
 	display: grid;
 	grid-template-rows: 1fr 0;
 	grid-template-columns: 1fr 13px;
-	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar blank";
+	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar spacer";
 	color: black;
 	
-	&.hasHorizontalScrollbar {
+	&.showingHorizontalScrollbar {
 		grid-template-rows: 1fr 13px;
 	}
 }
@@ -1309,7 +649,7 @@ $scrollBarBorder: 1px solid #bababa;
 }
 
 #scrollbarSpacer {
-	grid-area: blank;
+	grid-area: spacer;
 	background: #E8E8E8;
 }
 
@@ -1324,7 +664,7 @@ $scrollBarBorder: 1px solid #bababa;
 	bind:this={main}
 	id="main"
 	on:wheel={wheel}
-	class:hasHorizontalScrollbar
+	class:showingHorizontalScrollbar
 	tabindex="0"
 	on:focus={onFocus}
 >
@@ -1337,17 +677,9 @@ $scrollBarBorder: 1px solid #bababa;
 		</div>
 		<div class="layer">
 			<InteractionLayer
-				{mode}
 				{document}
-				{revisionCounter}
-				overallWidth={sizes.overallWidth}
-				marginWidth={sizes.marginWidth}
-				marginOffset={sizes.marginOffset}
-				rowHeight={measurements?.rowHeight}
-				colWidth={measurements?.colWidth}
-				{scrollPosition}
-				{pickOptions}
-				{dropTargets}
+				{editor}
+				{view}
 				on:mousedown={mousedown}
 				on:mouseenter={mouseenter}
 				on:mouseleave={mouseleave}
@@ -1377,7 +709,7 @@ $scrollBarBorder: 1px solid #bababa;
 	</div>
 	<div
 		class="scrollbar"
-		class:hide={!hasHorizontalScrollbar}
+		class:hide={!showingHorizontalScrollbar}
 		id="horizontalScrollbar"
 	>
 		<Scrollbar
@@ -1386,7 +718,7 @@ $scrollBarBorder: 1px solid #bababa;
 			on:scroll={horizontalScroll}
 		/>
 	</div>
-	{#if hasHorizontalScrollbar}
+	{#if showingHorizontalScrollbar}
 		<div id="scrollbarSpacer"></div>
 	{/if}
 </div>

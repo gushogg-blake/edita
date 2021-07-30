@@ -1,12 +1,8 @@
 let {on, off} = require("../../utils/dom/domEvents");
-let Selection = require("./utils/Selection");
-let rowColFromCursor = require("./utils/rowColFromCursor");
-let cursorFromRowCol = require("./utils/cursorFromRowCol");
-let autoScroll = require("./utils/dom/autoScroll");
-let rowColFromScreenCoords = require("./canvas/utils/rowColFromScreenCoords");
-let cursorRowColFromScreenCoords = require("./canvas/utils/cursorRowColFromScreenCoords");
+let Selection = require("../../modules/utils/Selection");
+let autoScroll = require("./utils/autoScroll");
 
-module.exports = function(editor) {
+module.exports = function(document, editor, view, editorComponent) {
 	let drawingSelection = false;
 	
 	/*
@@ -17,10 +13,7 @@ module.exports = function(editor) {
 	function getCursor(e) {
 		let {
 			canvas,
-			measurements,
-			document,
-			scrollPosition,
-		} = editor;
+		} = editorComponent;
 		
 		let {
 			x: left,
@@ -30,19 +23,9 @@ module.exports = function(editor) {
 		let x = e.clientX - left;
 		let y = e.clientY - top;
 		
-		let [row, col] = cursorRowColFromScreenCoords(
-			document.lines,
-			x,
-			y,
-			scrollPosition,
-			measurements,
-		);
+		let [row, col] = view.cursorRowColFromScreenCoords(x, y);
 		
-		return cursorFromRowCol(
-			document.lines,
-			row,
-			col,
-		);
+		return view.cursorFromRowCol(row, col);
 	}
 	
 	/*
@@ -52,10 +35,7 @@ module.exports = function(editor) {
 	function getCharCursor(e) {
 		let {
 			canvas,
-			measurements,
-			document,
-			scrollPosition,
-		} = editor;
+		} = editorComponent;
 		
 		let {
 			x: left,
@@ -65,20 +45,9 @@ module.exports = function(editor) {
 		let x = e.clientX - left;
 		let y = e.clientY - top;
 		
-		let [row, col] = rowColFromScreenCoords(
-			document.lines,
-			x,
-			y,
-			scrollPosition,
-			measurements,
-		);
+		let [row, col] = view.rowColFromScreenCoords(x, y);
 		
-		return cursorFromRowCol(
-			document.lines,
-			row,
-			col,
-			true,
-		);
+		return view.cursorFromRowCol(row, col, true);
 	}
 	
 	async function mousedown(e, enableDrag) {
@@ -88,17 +57,8 @@ module.exports = function(editor) {
 		
 		let {
 			canvas,
-			measurements,
-			document,
-			selection,
-			hasHorizontalScrollbar,
-			scrollPosition,
-			scrollBy,
-			setSelection,
-			applyAndAddHistoryEntry,
-			redraw,
-			startCursorBlink,
-		} = editor;
+			showingHorizontalScrollbar,
+		} = editorComponent;
 		
 		let cursor = getCursor(e);
 		let charCursor = getCharCursor(e);
@@ -119,27 +79,24 @@ module.exports = function(editor) {
 				newSelection,
 			} = document.replaceSelection(Selection.s(cursor), str);
 			
-			applyAndAddHistoryEntry({
+			editor.applyAndAddHistoryEntry({
 				edits: [edit],
 				normalSelection: newSelection,
 			});
 			
-			startCursorBlink();
-			
-			redraw();
+			view.startCursorBlink();
+			view.redraw();
 			
 			return;
 		}
 		
 		autoScroll(
 			canvas,
-			measurements,
-			document,
-			hasHorizontalScrollbar,
-			scrollBy,
+			view,
+			showingHorizontalScrollbar,
 		);
 		
-		if (Selection.charIsWithinSelection(selection, charCursor)) {
+		if (Selection.charIsWithinSelection(view.normalSelection, charCursor)) {
 			if (e.button === 0) {
 				mousedownInSelection(e, enableDrag);
 			}
@@ -147,11 +104,10 @@ module.exports = function(editor) {
 			return;
 		}
 		
-		setSelection(Selection.s(cursor));
+		editor.normalMouse.setSelection(Selection.s(cursor));
 		
-		startCursorBlink();
-		
-		redraw();
+		view.startCursorBlink();
+		view.redraw();
 		
 		drawingSelection = true;
 		
@@ -167,20 +123,14 @@ module.exports = function(editor) {
 	}
 	
 	function drawSelection(e) {
-		let {
-			selection,
-			setSelection,
-			redraw,
-		} = editor;
-		
 		let cursor = getCursor(e);
 		
-		setSelection({
-			...selection,
+		editor.normalMouse.setSelection({
+			start: view.normalSelection.start,
 			end: cursor,
 		});
 		
-		redraw();
+		view.redraw();
 	}
 	
 	function mousemove(e) {
@@ -190,16 +140,11 @@ module.exports = function(editor) {
 	}
 	
 	function mouseup() {
-		let {
-			document,
-			selection,
-		} = editor;
-		
-		if (Selection.isFull(selection)) {
-			platform.clipboard.writeSelection(document.getSelectedText(selection));
+		if (view.Selection.isFull()) {
+			platform.clipboard.writeSelection(editor.getSelectedText());
 		}
 		
-		editor.mouseup();
+		editorComponent.mouseup();
 		
 		drawingSelection = false;
 		
@@ -221,67 +166,40 @@ module.exports = function(editor) {
 			return;
 		}
 		
-		let {
-			canvas,
-			measurements,
-			document,
-			selection,
-			scrollPosition,
-			setSelection,
-			redraw,
-			startCursorBlink,
-		} = editor;
-		
 		let cursor = getCursor(e);
 		
-		setSelection(Selection.s(cursor));
+		editor.normalMouse.setSelection(Selection.s(cursor));
 		
-		startCursorBlink();
-		
-		redraw();
+		view.startCursorBlink();
+		view.redraw();
 	}
 	
 	function dblclick(e) {
-		let {
-			document,
-			setSelection,
-			redraw,
-			startCursorBlink,
-		} = editor;
-		
 		let cursor = getCharCursor(e);
 		
-		setSelection(Selection.wordUnderCursor(document.lines, cursor));
+		editor.normalMouse.setSelection(view.Selection.wordUnderCursor(cursor));
 		
-		startCursorBlink();
-		
-		redraw();
+		view.startCursorBlink();
+		view.redraw();
 	}
 	
 	function dragstart(e) {
 		let {
-			document,
-			selection,
-		} = editor;
+			normalSelection: selection,
+		} = view;
 		
 		e.dataTransfer.setData("text/plain", document.getSelectedText(selection));
 	}
 	
 	function dragover(e) {
-		let {
-			setInsertCursor,
-			redraw,
-		} = editor;
-		
 		if (!e.dataTransfer.types.includes("text/plain")) {
 			return;
 		}
 		
 		let cursor = getCursor(e);
 		
-		setInsertCursor(cursor);
-		
-		redraw();
+		view.insertCursor = cursor;
+		view.redraw();
 	}
 	
 	function dragenter(e) {
@@ -289,25 +207,14 @@ module.exports = function(editor) {
 	}
 	
 	function dragleave(e) {
-		let {
-			setInsertCursor,
-			redraw,
-		} = editor;
-		
-		setInsertCursor(null);
-		
-		redraw();
+		view.insertCursor = null;
+		view.redraw();
 	}
 	
 	function drop(e, fromUs, toUs, extra) {
 		let {
-			document,
-			selection,
-			setInsertCursor,
-			applyAndAddHistoryEntry,
-			redraw,
-			startCursorBlink,
-		} = editor;
+			normalSelection: selection,
+		} = view;
 		
 		if (!e.dataTransfer.types.includes("text/plain")) {
 			return;
@@ -351,27 +258,19 @@ module.exports = function(editor) {
 			} = document.replaceSelection(Selection.s(cursor), str));
 		}
 		
-		applyAndAddHistoryEntry({
+		editor.applyAndAddHistoryEntry({
 			edits,
 			normalSelection: newSelection,
 		});
 		
-		setInsertCursor(null);
-		
-		startCursorBlink();
-		
-		redraw();
+		view.insertCursor = null;
+		view.startCursorBlink();
+		view.redraw();
 	}
 	
 	function dragend() {
-		let {
-			setInsertCursor,
-			redraw,
-		} = editor;
-		
-		setInsertCursor(null);
-		
-		redraw();
+		view.insertCursor = null;
+		view.redraw();
 		
 		mouseup();
 	}

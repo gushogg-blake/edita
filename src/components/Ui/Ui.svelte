@@ -1,22 +1,19 @@
 <script>
-import {onMount, tick, setContext} from "svelte";
+import {onMount, tick} from "svelte";
 
 import getKeyCombo from "../../utils/getKeyCombo";
-import lid from "../../utils/lid";
 import {push, remove} from "../../utils/arrayMethods";
-import focusManager from "../utils/focusManager";
 import Document from "../../modules/Document";
-import Editor from "../Editor/Editor.svelte";
+import Editor from "../../modules/Editor/Editor";
+import View from "../../modules/View/View";
+import EditorComponent from "../Editor/Editor.svelte";
 import Toolbar from "./Toolbar.svelte";
 import TabBar from "./TabBar.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
 import FindBar from "./FindBar.svelte";
 
-setContext("focusManager", focusManager());
-
 let tabs = [];
-let editorsByTabId = {};
 let selectedTab = null;
 
 let showingLeftPane = true;
@@ -49,25 +46,31 @@ let functions = {
 			return;
 		}
 		
-		let {document, path} = selectedTab;
-		
-		if (path) {
-			await platform.save(path, document.toString());
+		if (selectedTab.path) {
+			//await platform.save(path, document.toString());
 		} else {
 			// TODO save dialog
 		}
 	},
 	
 	undo() {
-		getCurrentEditor()?.undo();
+		if (!selectedTab) {
+			return;
+		}
+		
+		selectedTab.editor.undo();
 	},
 	
 	redo() {
-		getCurrentEditor()?.redo();
+		if (!selectedTab) {
+			return;
+		}
+		
+		selectedTab.editor.redo();
 	},
 	
 	find() {
-		if (!getCurrentEditor()) {
+		if (!selectedTab) {
 			return;
 		}
 		
@@ -114,7 +117,7 @@ function keydown(e) {
 	}
 }
 
-async function openFile(path, code) {
+function openFile(path, code) {
 	let tab = findTabByPath(path);
 	
 	if (tab) {
@@ -131,15 +134,18 @@ async function openFile(path, code) {
 		// calculating line start offsets
 	}
 	
+	let document = new Document(code, fileDetails);
+	let view = new View(document);
+	let editor = new Editor(document, view);
+	
 	let newTab = {
-		id: lid(),
 		path,
-		document: new Document(code, fileDetails),
+		document,
+		editor,
+		view,
 	};
 	
 	tabs = push(tabs, newTab);
-	
-	await tick(); // wait for Editor to be created
 	
 	selectTab(newTab);
 }
@@ -154,29 +160,20 @@ function findTabByPath(path) {
 	return null;
 }
 
-function getEditors() {
-	return Object.values(editorsByTabId).filter(Boolean); // NOTE shouldn't have to filter it but Svelte keeps the binding around (but set to null) in some cases
-}
-
-function getCurrentEditor() {
-	return editorsByTabId[selectedTab?.id];
-}
-
 function onSelectTab({detail: tab}) {
 	selectTab(tab);
 }
 
 function selectTab(tab) {
-	for (let editor of getEditors()) {
-		editor.hide();
+	// TODO just selectedTab.view.hide?
+	for (let otherTab of tabs.filter(t => t !== tab)) {
+		otherTab.view.hide();
 	}
 	
 	selectedTab = tab;
 	
-	let editor = editorsByTabId[tab.id];
-	
-	editor.show();
-	editor.focus();
+	tab.view.show();
+	tab.view.focus();
 }
 
 function onCloseTab({detail: tab}) {
@@ -198,9 +195,9 @@ function closeTab(tab) {
 		}
 	}
 	
-	tabs = remove(tabs, tab);
+	tab.view.teardown();
 	
-	delete editorsByTabId[tab.id];
+	tabs = remove(tabs, tab);
 	
 	if (selectNext) {
 		selectTab(selectNext);
@@ -214,12 +211,8 @@ function showFindBar() {
 function hideFindBarAndFocusEditor() {
 	hideFindBar();
 	
-	let editor = getCurrentEditor();
-	
-	if (editor) {
-		if (!editor.isFocused()) {
-			editor.focus();
-		}
+	if (selectedTab) {
+		selectedTab.view.requestFocus();
 	}
 }
 
@@ -235,8 +228,8 @@ onMount(async function() {
 <svelte:window on:keydown={keydown}/>
 
 <style type="text/scss">
-@import "../css/mixins/flex-col";
-@import "../css/classes/hide";
+@import "../../css/mixins/flex-col";
+@import "../../css/classes/hide";
 
 $border: 1px solid #AFACAA;
 
@@ -258,6 +251,7 @@ $border: 1px solid #AFACAA;
 #toolbar {
 	grid-area: toolbar;
 	border-bottom: $border;
+	background: white;
 }
 
 #leftContainer {
@@ -347,9 +341,10 @@ $border: 1px solid #AFACAA;
 	<div id="editor">
 		{#each tabs as tab (tab)}
 			<div class="tab" class:hide={tab !== selectedTab}>
-				<Editor
-					bind:this={editorsByTabId[tab.id]}
+				<EditorComponent
 					document={tab.document}
+					editor={tab.editor}
+					view={tab.view}
 				/>
 			</div>
 		{/each}
@@ -360,7 +355,7 @@ $border: 1px solid #AFACAA;
 				<FindBar
 					on:close={hideFindBarAndFocusEditor}
 					on:blur={hideFindBar}
-					findController={getCurrentEditor().findController}
+					editor={selectedTab?.editor}
 				/>
 			</div>
 		{/if}

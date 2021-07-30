@@ -1,21 +1,19 @@
 <script>
-import {onMount, getContext} from "svelte";
-
-let focusManager = getContext("focusManager");
+import {onMount} from "svelte";
 
 let blur = function() {
 	
 }
 
 function onFocus() {
-	focusManager.focus(blur);
+	app.focusManager.focus(blur);
 }
 
 onMount(async function() {
 	let teardown = [];
 	
 	teardown.push(function() {
-		focusManager.teardown(blur);
+		app.focusManager.teardown(blur);
 	});
 	
 	return function() {

@@ -1,16 +1,14 @@
 <script>
-import {onMount, createEventDispatcher, getContext} from "svelte";
+import {onMount, createEventDispatcher} from "svelte";
 import getKeyCombo from "../../utils/getKeyCombo";
 import {on} from "../../utils/dom/domEvents";
 
-export let findController;
+export let editor;
 
 let fire = createEventDispatcher();
 
-let focusManager = getContext("focusManager");
-
 let blur = function() {
-	findController.reset();
+	editor.find.reset();
 	
 	fire("blur");
 }
@@ -39,10 +37,15 @@ let functions = {
 		let {
 			result,
 			loopedFile,
-		} = findController.next() || {};
+			loopedResults,
+		} = editor.find.next() || {};
 		
 		if (loopedFile) {
 			console.log("looped");
+		}
+		
+		if (loopedResults) {
+			console.log("loopedResults");
 		}
 	},
 	
@@ -50,10 +53,15 @@ let functions = {
 		let {
 			result,
 			loopedFile,
-		} = findController.previous() || {};
+			loopedResults,
+		} = editor.find.previous() || {};
 		
 		if (loopedFile) {
 			console.log("looped");
+		}
+		
+		if (loopedResults) {
+			console.log("loopedResults");
 		}
 	},
 };
@@ -78,14 +86,14 @@ function onInput(e) {
 	search = input.value;
 	
 	if (search) {
-		findController.search(search, type, caseMode);
+		editor.find.search(search, type, caseMode);
 	} else {
-		findController.reset();
+		editor.find.reset();
 	}
 }
 
 function onFocus() {
-	focusManager.focus(blur);
+	app.focusManager.focus(blur);
 }
 
 onMount(function() {
@@ -97,7 +105,7 @@ onMount(function() {
 	teardown.push(on(window, "keydown", windowKeydown));
 	
 	teardown.push(function() {
-		focusManager.teardown(blur);
+		app.focusManager.teardown(blur);
 	});
 	
 	return function() {
