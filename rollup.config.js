@@ -21,11 +21,9 @@ export default [
 		
 		plugins: [
 			svelte({
-				// we'll extract any component CSS out into
-				// a separate file - better for performance
 				preprocess: preprocess({
 					scss: {
-						includePaths: ["src"],
+						includePaths: ["src/css"],
 					},
 				}),
 				
