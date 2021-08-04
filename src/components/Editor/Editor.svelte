@@ -42,8 +42,8 @@ let mouseIsDown = false;
 let lastMouseEvent;
 
 let normalMouseHandler = normalMouse(document, editor, view, {
-	get canvas() {
-		return canvas;
+	get canvasDiv() {
+		return canvasDiv;
 	},
 	
 	get showingHorizontalScrollbar() {
@@ -76,8 +76,8 @@ let normalMouseHandler = normalMouse(document, editor, view, {
 });
 
 let astMouseHandler = astMouse(document, editor, view, {
-	get canvas() {
-		return canvas;
+	get canvasDiv() {
+		return canvasDiv;
 	},
 	
 	get showingHorizontalScrollbar() {

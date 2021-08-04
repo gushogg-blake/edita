@@ -41,13 +41,13 @@ module.exports = function(document, editor, view, editorComponent) {
 	
 	function getCanvasCoords(e) {
 		let {
-			canvas,
+			canvasDiv,
 		} = editorComponent;
 		
 		let {
 			x: left,
 			y: top,
-		} = canvas.getBoundingClientRect();
+		} = canvasDiv.getBoundingClientRect();
 		
 		let x = e.clientX - left;
 		let y = e.clientY - top;
@@ -132,12 +132,12 @@ module.exports = function(document, editor, view, editorComponent) {
 	
 	function mousedownLeft(e, option, enableDrag) {
 		let {
-			canvas,
+			canvasDiv,
 			showingHorizontalScrollbar,
 		} = editorComponent;
 		
 		autoScroll(
-			canvas,
+			canvasDiv,
 			view,
 			showingHorizontalScrollbar,
 		);

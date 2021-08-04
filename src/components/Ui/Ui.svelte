@@ -3,10 +3,13 @@ import {onMount, tick} from "svelte";
 
 import getKeyCombo from "../../utils/getKeyCombo";
 import {push, remove} from "../../utils/arrayMethods";
+
 import Document from "../../modules/Document";
 import Editor from "../../modules/Editor/Editor";
 import View from "../../modules/View/View";
+
 import EditorComponent from "../Editor/Editor.svelte";
+
 import Toolbar from "./Toolbar.svelte";
 import TabBar from "./TabBar.svelte";
 import LeftPane from "./LeftPane.svelte";

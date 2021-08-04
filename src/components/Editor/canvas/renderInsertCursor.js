@@ -14,6 +14,10 @@ module.exports = function(context, view) {
 	
 	let [x, y] = view.screenCoordsFromCursor(lineIndex, offset);
 	
+	if (x < view.sizes.marginOffset) {
+		return;
+	}
+	
 	context.fillStyle = "black";
 	context.fillRect(x + xHint, y, 1, measurements.rowHeight);
 }

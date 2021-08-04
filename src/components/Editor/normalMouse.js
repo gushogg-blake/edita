@@ -12,13 +12,13 @@ module.exports = function(document, editor, view, editorComponent) {
 	
 	function getCursor(e) {
 		let {
-			canvas,
+			canvasDiv,
 		} = editorComponent;
 		
 		let {
 			x: left,
 			y: top,
-		} = canvas.getBoundingClientRect();
+		} = canvasDiv.getBoundingClientRect();
 		
 		let x = e.clientX - left;
 		let y = e.clientY - top;
@@ -34,13 +34,13 @@ module.exports = function(document, editor, view, editorComponent) {
 	
 	function getCharCursor(e) {
 		let {
-			canvas,
+			canvasDiv,
 		} = editorComponent;
 		
 		let {
 			x: left,
 			y: top,
-		} = canvas.getBoundingClientRect();
+		} = canvasDiv.getBoundingClientRect();
 		
 		let x = e.clientX - left;
 		let y = e.clientY - top;
@@ -56,7 +56,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		}
 		
 		let {
-			canvas,
+			canvasDiv,
 			showingHorizontalScrollbar,
 		} = editorComponent;
 		
@@ -66,7 +66,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		let {
 			x: left,
 			y: top,
-		} = canvas.getBoundingClientRect();
+		} = canvasDiv.getBoundingClientRect();
 		
 		let x = e.clientX - left;
 		let y = e.clientY - top;
@@ -91,7 +91,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		}
 		
 		autoScroll(
-			canvas,
+			canvasDiv,
 			view,
 			showingHorizontalScrollbar,
 		);
