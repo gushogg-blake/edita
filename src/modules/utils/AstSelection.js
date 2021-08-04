@@ -36,9 +36,6 @@ let api = {
 		return start !== end;
 	},
 	
-	fromNormalSelection(normalSelection) {
-	},
-	
 	equals(a, b) {
 		let [aStart, aEnd] = a;
 		let [bStart, bEnd] = b;

@@ -53,7 +53,9 @@ class View extends Evented {
 		// that doesn't have as many cols as the cursor
 		this.selectionEndCol = 0;
 		
-		this.astSelection = AstSelection.fromNormalSelection(this.normalSelection);
+		this.astSelection = null;
+		
+		this.updateAstSelectionFromNormalSelection();
 		
 		this.pickOptions = [];
 		this.dropTargets = [];

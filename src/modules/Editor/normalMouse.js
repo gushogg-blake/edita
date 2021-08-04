@@ -1,6 +1,6 @@
 module.exports = {
 	setSelection(selection) {
-		this.view.normalSelection = selection;
+		this.view.setNormalSelection(selection);
 		this.view.updateSelectionEndCol();
 	},
 };
