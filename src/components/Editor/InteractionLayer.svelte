@@ -329,6 +329,12 @@ function onUpdateDropTargets() {
 	} = view);
 }
 
+function onEdit() {
+	({
+		wrappedLines,
+	} = view);
+}
+
 function calculateMarginStyle(marginWidth) {
 	return {
 		width: marginWidth,
@@ -356,7 +362,7 @@ function calculateCodeStyle(
 
 function rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition) {
 	let screenRow = view.screenRowFromLineIndex(lineIndex);
-	let screenCol = wrappedLines[lineIndex].line.width + 1; // ?
+	let screenCol = wrappedLines[lineIndex].line.width + 1;
 	
 	return {
 		top: view.sizes.topMargin + rowYHint + screenRow * rowHeight,
@@ -392,6 +398,8 @@ onMount(function() {
 		view.on("modeSwitch", onModeSwitch),
 		view.on("updatePickOptions", onUpdatePickOptions),
 		view.on("updateDropTargets", onUpdateDropTargets),
+		
+		editor.on("edit", onEdit),
 	];
 	
 	return function() {

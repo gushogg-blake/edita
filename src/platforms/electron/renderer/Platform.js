@@ -4,6 +4,7 @@ let fs = require("flowfs");
 let {systemInfo} = require("./ipc/init");
 let openDialog = require("./ipc/openDialog");
 let clipboard = require("./ipc/clipboard");
+let contextMenu = require("./ipc/contextMenu");
 
 class Platform {
 	constructor() {
@@ -39,6 +40,10 @@ class Platform {
 	
 	async save(path, code) {
 		await fs(path).write(code);
+	}
+	
+	showContextMenu(items) {
+		contextMenu(items);
 	}
 	
 	loadTreeSitterLanguage(name) {

@@ -12,12 +12,7 @@ class Line {
 			tabWidth,
 		} = app.prefs;
 		
-		let withTabsExpanded = expandTabs(string, tabWidth);
-		
-		// NOTE withTabsExpanded probs not that useful in general as hard to
-		// calculate indexes...
-		// NOTE might also be good to calculate it on the fly to avoid having
-		// to recreate lines if tab width changes
+		let width = expandTabs(string, tabWidth).length;
 		
 		let splitByTabs = string.split("\t");
 		let variableWidthParts = [];
@@ -37,11 +32,10 @@ class Line {
 			string,
 			trimmed: string.trimLeft(),
 			variableWidthParts,
-			//withTabsExpanded,
 			renderHints: [],
 			openers: [],
 			closers: [],
-			width: withTabsExpanded.length,
+			width,
 			indentLevel,
 			indentCols,
 		});

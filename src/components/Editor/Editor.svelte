@@ -120,7 +120,9 @@ function mousedown({detail}) {
 		enableDrag,
 	} = detail;
 	
-	mouseIsDown = true;
+	if (e.button === 0) {
+		mouseIsDown = true;
+	}
 	
 	if (view.mode === "normal") {
 		normalMouseHandler.mousedown(e, function() {

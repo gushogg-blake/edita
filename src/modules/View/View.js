@@ -179,17 +179,21 @@ class View extends Evented {
 	}
 	
 	switchToAstMode() {
+		console.log("switchToAstMode");
 		this.mode = "ast";
 		
 		this.fire("modeSwitch");
+		this.fire("redraw");
 	}
 	
 	switchToNormalMode() {
+		console.log("switchToNormalMode");
 		this.mode = "normal";
 		this.astSelectionHilite = null;
 		this.startCursorBlink();
 		
 		this.fire("modeSwitch");
+		this.fire("redraw");
 	}
 	
 	showPickOptionsFor(selection) {

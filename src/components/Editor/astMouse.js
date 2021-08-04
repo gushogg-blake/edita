@@ -76,10 +76,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		let [lineIndex] = view.cursorFromRowCol(row, col);
 		
 		if (!withinSelection) {
-			if (
-				(!isPeeking || Selection.isFull(normalSelection))
-				&& AstSelection.lineIsWithinSelection(lineIndex, astSelection)
-			) {
+			if (AstSelection.lineIsWithinSelection(lineIndex, astSelection)) {
 				return astSelection;
 			}
 		}
@@ -124,6 +121,16 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function mousedown(e, option, enableDrag) {
+		if (e.button === 0) {
+			mousedownLeft(e, option, enableDrag);
+		} else if (e.button === 1) {
+			mousedownMiddle(e, option);
+		} else if (e.button === 2) {
+			mousedownRight(e, option);
+		}
+	}
+	
+	function mousedownLeft(e, option, enableDrag) {
 		let {
 			canvas,
 			showingHorizontalScrollbar,
@@ -156,6 +163,14 @@ module.exports = function(document, editor, view, editorComponent) {
 		}
 		
 		view.redraw();
+	}
+	
+	function mousedownMiddle() {
+		
+	}
+	
+	function mousedownRight(e) {
+		
 	}
 	
 	function drawSelection(e) {
@@ -197,6 +212,10 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function click(e) {
+		if (e.button !== 0) {
+			return;
+		}
+		
 		let selection = getHilite(e, true);
 		
 		if (selection) {
