@@ -178,6 +178,20 @@ class View extends Evented {
 		return screenRowFromLineIndex(this.wrappedLines, lineIndex, this.scrollPosition);
 	}
 	
+	switchToAstMode() {
+		this.mode = "ast";
+		
+		this.fire("modeSwitch");
+	}
+	
+	switchToNormalMode() {
+		this.mode = "normal";
+		this.astSelectionHilite = null;
+		this.startCursorBlink();
+		
+		this.fire("modeSwitch");
+	}
+	
 	showPickOptionsFor(selection) {
 		if (!selection) {
 			return;

@@ -160,7 +160,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			
 			enableDrag();
 			
-			view.astSelection = selection;
+			editor.astMouse.pick(selection);
 			
 			on(window, "mouseup", mouseup);
 			on(window, "dragend", dragend);
@@ -188,10 +188,11 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function mouseup(e) {
-		view.setAstInsertionHilite(null);
+		editor.astMouse.setAstInsertionHilite(null);
+		
 		view.redraw();
 		
-		editor.mouseup();
+		editorComponent.mouseup();
 		
 		off(window, "mousemove", drawSelection);
 		off(window, "mouseup", finishSelection);
@@ -264,9 +265,9 @@ module.exports = function(document, editor, view, editorComponent) {
 		view.showDropTargets();
 		
 		if (target) {
-			view.setAstInsertionHilite(null);
+			editor.astMouse.setAstInsertionHilite(null);
 		} else {
-			view.setAstInsertionHilite(getInsertionRange(e));
+			editor.astMouse.setAstInsertionHilite(getInsertionRange(e));
 		}
 		
 		view.redraw();
@@ -289,7 +290,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		e.dataTransfer.dropEffect = move ? "move" : "copy";
 		
 		view.clearDropTargets();
-		view.setAstInsertionHilite(null);
+		editor.astMouse.setAstInsertionHilite(null);
 		
 		view.redraw();
 		

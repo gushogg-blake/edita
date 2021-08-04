@@ -6,6 +6,7 @@ module.exports = function(context, view, isPeeking) {
 		astSelectionHilite: hilite,
 		astSelection: selection,
 		document,
+		measurements,
 	} = view;
 	
 	if (!hilite) {

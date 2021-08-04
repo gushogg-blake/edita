@@ -294,13 +294,19 @@ function dragleave(e) {
 	fire("dragleave", e);
 }
 
-function resize() {
+function onResize() {
 	({
 		sizes: {
 			width,
 			marginWidth,
 			marginOffset,
 		},
+	} = view);
+}
+
+function onModeSwitch() {
+	({
+		mode,
 	} = view);
 }
 
@@ -362,7 +368,9 @@ $: codeStyle = calculateCodeStyle(
 
 onMount(function() {
 	let teardown = [
-		view.on("resize", resize),
+		view.on("resize", onResize),
+		
+		view.on("modeSwitch", onModeSwitch),
 	];
 	
 	return function() {

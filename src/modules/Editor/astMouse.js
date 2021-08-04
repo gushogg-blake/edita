@@ -2,15 +2,16 @@ module.exports = {
 	setSelectionHilite(selection) {
 		this.view.astSelectionHilite = selection;
 		
-		//let {lines} = this.document;
-		let {codeIntel} = this.document.lang;
-		
-		if (selection) {
-			this.view.showPickOptionsFor(selection);
-		} else {
-			this.view.showPickOptionsFor(null);
-		}
+		this.view.showPickOptionsFor(selection);
 		
 		this.view.redraw();
+	},
+	
+	setInsertionHilite(selection) {
+		this.view.astInsertionHilite = selection;
+	},
+	
+	pick(selection) {
+		this.view.astSelection = selection;
 	},
 };
