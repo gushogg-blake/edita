@@ -42,7 +42,7 @@ class View extends Evented {
 		this.focused = false;
 		this.visible = false;
 		
-		this.mode = "normal";
+		this.mode = "ast";
 		
 		this.normalSelection = {
 			start: [0, 0],
@@ -309,7 +309,18 @@ class View extends Evented {
 			this.scrollPosition.row = newRow;
 		}
 		
+		this.fire("scroll");
 		this.redraw();
+	}
+	
+	setVerticalScroll(row) {
+		this.scrollPosition.row = row;
+		this.fire("scroll");
+	}
+	
+	setHorizontalScroll(x) {
+		this.scrollPosition.x = x;
+		this.fire("scroll");
 	}
 	
 	scrollPage(dir) {
@@ -379,6 +390,8 @@ class View extends Evented {
 		if (x < 1) {
 			scrollPosition.x = Math.max(0, scrollPosition.x - x - colBuffer * colWidth);
 		}
+		
+		this.fire("scroll");
 	}
 	
 	setNormalSelection(selection) {

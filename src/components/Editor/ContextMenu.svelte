@@ -6,9 +6,7 @@ export let items;
 let fire = createEventDispatcher();
 
 function mouseup(item) {
-	item.onClick();
-	
-	fire("action");
+	fire("click", item);
 }
 </script>
 

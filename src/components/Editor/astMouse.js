@@ -170,15 +170,25 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function mousedownRight(e) {
-		//editorComponent.showMenu(e, [
-		//	{
-		//		label: "Test",
-		//		
-		//		onClick() {
-		//			console.log("tset");
-		//		},
-		//	},
-		//]);
+		let selection = getHilite(e);
+		
+		if (!selection) {
+			return;
+		}
+		
+		editor.astMouse.setSelection(selection);
+		
+		let items = editor.getAstMenuItems().map(function({code, name}) {
+			return {
+				label: name,
+				
+				onClick() {
+					editor.doAstManipulation(code);
+				},
+			};
+		});
+		
+		editorComponent.showMenu(e, items);
 	}
 	
 	function drawSelection(e) {

@@ -1,4 +1,10 @@
 module.exports = {
+	setSelection(selection) {
+		this.view.astSelection = selection;
+		
+		this.view.redraw();
+	},
+	
 	setSelectionHilite(selection) {
 		this.view.astSelectionHilite = selection;
 		

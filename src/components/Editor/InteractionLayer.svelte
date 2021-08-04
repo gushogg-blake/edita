@@ -304,6 +304,12 @@ function onResize() {
 	} = view);
 }
 
+function onScroll() {
+	({
+		scrollPosition,
+	} = view);
+}
+
 function onUpdateMeasurements() {
 	({
 		rowHeight,
@@ -395,6 +401,7 @@ onMount(function() {
 	let teardown = [
 		view.on("resize", onResize),
 		view.on("updateMeasurements", onUpdateMeasurements),
+		view.on("scroll", onScroll),
 		view.on("modeSwitch", onModeSwitch),
 		view.on("updatePickOptions", onUpdatePickOptions),
 		view.on("updateDropTargets", onUpdateDropTargets),

@@ -15,6 +15,10 @@ module.exports = {
 		this.setAstSelection(this.document.lang.codeIntel.astSelection.previous(this.document.lines, this.view.astSelection));
 	},
 	
+	insert() {
+		
+	},
+	
 	expandUp() {
 		
 	},

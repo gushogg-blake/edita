@@ -77,6 +77,7 @@ function defaultPrefs() {
 			"d": "down",
 			"j": "next",
 			"k": "previous",
+			"i": "insert",
 			"h": "collapseDown",
 			"l": "collapseUp",
 			//"e": "expandDown",

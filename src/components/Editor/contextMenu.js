@@ -41,7 +41,9 @@ export default function(e, items) {
 		off(window, "blur", close);
 	}
 	
-	contextMenu.$on("action", function() {
+	contextMenu.$on("click", function({detail: item}) {
+		item.onClick();
+		
 		close();
 	});
 	

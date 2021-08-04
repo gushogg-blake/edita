@@ -24,6 +24,27 @@ class Editor extends Evented {
 		this.historyIndex = 0;
 	}
 	
+	getAvailableAstManipulations() {
+		return this.document.lang.codeIntel.getAvailableAstManipulations(
+			this.document.lines,
+			this.view.astSelection,
+		);
+	}
+	
+	/*
+	[init:let ][name:] = {
+		[selection]
+	};
+	
+	- replace the selection with the template
+	- apply spacing rules to new selection (e.g. space if converting unspaced variable declarations to object)
+	- fill template
+	*/
+	
+	doAstManipulation(code) {
+		console.log(code);
+	}
+	
 	applyEdit(edit) {
 		let {
 			edits,
