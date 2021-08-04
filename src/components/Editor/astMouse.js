@@ -170,7 +170,15 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function mousedownRight(e) {
-		
+		//editorComponent.showMenu(e, [
+		//	{
+		//		label: "Test",
+		//		
+		//		onClick() {
+		//			console.log("tset");
+		//		},
+		//	},
+		//]);
 	}
 	
 	function drawSelection(e) {

@@ -5,6 +5,7 @@ let nonSizeProps = [
 	"opacity",
 	"flex-grow",
 	"font-weight",
+	"z-index",
 ];
 
 module.exports = function(...styles) {
