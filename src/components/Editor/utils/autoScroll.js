@@ -11,7 +11,7 @@ module.exports = function(
 	offsets.left += view.sizes.marginOffset;
 	
 	autoScroll(offsets, function(x, y) {
-		let {colWidth} = measurements;
+		let {colWidth} = view.measurements;
 		
 		let xOffset = x === 0 ? 0 : Math.round(Math.max(1, Math.abs(x) / colWidth)) * colWidth;
 		let rows = y === 0 ? 0 : Math.round(Math.max(1, Math.pow(1.3, Math.abs(y) / 25)));

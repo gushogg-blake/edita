@@ -13,8 +13,12 @@ let lineLength = 35;
 
 module.exports = function(context, view, isPeeking) {
 	let {
+		wrappedLines,
 		astInsertionHilite: hilite,
 		measurements,
+		document: {
+			fileDetails,
+		},
 	} = view;
 	
 	if (!hilite) {
@@ -27,7 +31,7 @@ module.exports = function(context, view, isPeeking) {
 	let [startLineIndex, endLineIndex] = hilite;
 	
 	if (startLineIndex === wrappedLines.length) {
-		let startRow = view.getLineStartingRow(wrappedLines, startLineIndex - 1) + 1;
+		let startRow = view.getLineStartingRow(startLineIndex - 1) + 1;
 		
 		let [x, y] = view.screenCoordsFromRowCol(startRow, 0);
 		
@@ -38,8 +42,8 @@ module.exports = function(context, view, isPeeking) {
 	
 	let startLine = wrappedLines[startLineIndex].line;
 	let lineAbove = startLineIndex === 0 ? null : wrappedLines[startLineIndex - 1].line;
-	let startRow = view.getLineStartingRow(wrappedLines, startLineIndex);
-	let height = (view.getLineRangeTotalHeight(wrappedLines, startLineIndex, endLineIndex - 1)) * rowHeight;
+	let startRow = view.getLineStartingRow(startLineIndex);
+	let height = (view.getLineRangeTotalHeight(startLineIndex, endLineIndex - 1)) * rowHeight;
 	let indentLevel = lineAbove ? Math.max(startLine.indentLevel, lineAbove.indentLevel) : startLine.indentLevel;
 	
 	let [x, y] = view.screenCoordsFromRowCol(startRow, indentLevel * fileDetails.indentation.colsPerIndent);

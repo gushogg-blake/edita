@@ -155,7 +155,7 @@ class View extends Evented {
 	}
 	
 	insertLineIndexFromScreenY(y) {
-		return insertLineIndexFromScreenY(this.wrappedLines, y);
+		return insertLineIndexFromScreenY(this.wrappedLines, y, this.scrollPosition, this.measurements);
 	}
 	
 	rowColFromCursor(lineIndex, offset) {
@@ -222,14 +222,13 @@ class View extends Evented {
 	showDropTargets() {
 		let byLineIndex = new Map();
 		
-		let {lines} = this.document;
 		let {codeIntel} = this.document.lang;
-		let {lineIndex} = findFirstVisibleLine(lines, scrollPosition);
+		let {lineIndex} = this.findFirstVisibleLine();
 		
-		let rowsToRender = canvas.height / measurements.rowHeight;
+		let rowsToRender = this.sizes.height / this.measurements.rowHeight;
 		let rowsRendered = 0;
 		
-		while (lineIndex < lines.length) {
+		while (lineIndex < this.wrappedLines.length) {
 			if (
 				AstSelection.lineIsWithinSelection(lineIndex, astSelection)
 				|| astSelectionHilite && AstSelection.lineIsWithinSelection(lineIndex, astSelectionHilite)
@@ -239,10 +238,11 @@ class View extends Evented {
 				continue;
 			}
 			
-			let line = lines[lineIndex];
+			let wrappedLine = this.wrappedLines[lineIndex];
+			let {line} = wrappedLine;
 			
 			byLineIndex.set(lineIndex, codeIntel.generateDropTargets(
-				lines,
+				this.document.lines,
 				lineIndex,
 			).map(function(target) {
 				return {
@@ -251,7 +251,7 @@ class View extends Evented {
 				};
 			}));
 			
-			rowsRendered += line.height;
+			rowsRendered += wrappedLine.height;
 			
 			if (rowsRendered >= rowsToRender) {
 				break;

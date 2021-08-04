@@ -310,6 +310,18 @@ function onModeSwitch() {
 	} = view);
 }
 
+function onUpdatePickOptions() {
+	({
+		pickOptions,
+	} = view);
+}
+
+function onUpdateDropTargets() {
+	({
+		dropTargets,
+	} = view);
+}
+
 function calculateMarginStyle(marginWidth) {
 	return {
 		width: marginWidth,
@@ -369,8 +381,9 @@ $: codeStyle = calculateCodeStyle(
 onMount(function() {
 	let teardown = [
 		view.on("resize", onResize),
-		
 		view.on("modeSwitch", onModeSwitch),
+		view.on("updatePickOptions", onUpdatePickOptions),
+		view.on("updateDropTargets", onUpdateDropTargets),
 	];
 	
 	return function() {

@@ -120,7 +120,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		);
 		
 		if (AstSelection.isWithin(range, astSelection)) {
-			let [startLineIndex] = selection;
+			let [startLineIndex] = astSelection;
 			
 			return AstSelection.s(startLineIndex);
 		}
@@ -188,7 +188,7 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function mouseup(e) {
-		editor.astMouse.setAstInsertionHilite(null);
+		editor.astMouse.setInsertionHilite(null);
 		
 		view.redraw();
 		
@@ -230,7 +230,11 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function dragstart(e, option) {
-		let [startLineIndex, endLineIndex] = view.astSelection;
+		let {
+			astSelection: selection,
+		} = view;
+		
+		let [startLineIndex, endLineIndex] = selection;
 		let lines = AstSelection.linesToSelectionLines(document.lines.slice(startLineIndex, endLineIndex));
 		
 		drag = {
@@ -265,9 +269,9 @@ module.exports = function(document, editor, view, editorComponent) {
 		view.showDropTargets();
 		
 		if (target) {
-			editor.astMouse.setAstInsertionHilite(null);
+			editor.astMouse.setInsertionHilite(null);
 		} else {
-			editor.astMouse.setAstInsertionHilite(getInsertionRange(e));
+			editor.astMouse.setInsertionHilite(getInsertionRange(e));
 		}
 		
 		view.redraw();
@@ -290,7 +294,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		e.dataTransfer.dropEffect = move ? "move" : "copy";
 		
 		view.clearDropTargets();
-		editor.astMouse.setAstInsertionHilite(null);
+		editor.astMouse.setInsertionHilite(null);
 		
 		view.redraw();
 		
