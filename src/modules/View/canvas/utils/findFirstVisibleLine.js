@@ -7,7 +7,7 @@ module.exports = function(wrappedLines, scrollPosition) {
 		if (row + wrappedLine.height > scrollPosition.row) {
 			return {
 				wrappedLine,
-				index: i,
+				lineIndex: i,
 				lineRowIndex: scrollPosition.row - row,
 			};
 		}

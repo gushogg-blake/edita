@@ -222,13 +222,26 @@ class View extends Evented {
 	showDropTargets() {
 		let byLineIndex = new Map();
 		
-		let {codeIntel} = this.document.lang;
+		let {
+			document,
+			wrappedLines,
+			astSelection,
+			astSelectionHilite,
+			measurements: {
+				rowHeight,
+			},
+			sizes: {
+				height,
+			},
+		} = this;
+		
+		let {codeIntel} = document.lang;
 		let {lineIndex} = this.findFirstVisibleLine();
 		
-		let rowsToRender = this.sizes.height / this.measurements.rowHeight;
+		let rowsToRender = height / rowHeight;
 		let rowsRendered = 0;
 		
-		while (lineIndex < this.wrappedLines.length) {
+		while (lineIndex < wrappedLines.length) {
 			if (
 				AstSelection.lineIsWithinSelection(lineIndex, astSelection)
 				|| astSelectionHilite && AstSelection.lineIsWithinSelection(lineIndex, astSelectionHilite)
@@ -238,11 +251,11 @@ class View extends Evented {
 				continue;
 			}
 			
-			let wrappedLine = this.wrappedLines[lineIndex];
+			let wrappedLine = wrappedLines[lineIndex];
 			let {line} = wrappedLine;
 			
 			byLineIndex.set(lineIndex, codeIntel.generateDropTargets(
-				this.document.lines,
+				document.lines,
 				lineIndex,
 			).map(function(target) {
 				return {

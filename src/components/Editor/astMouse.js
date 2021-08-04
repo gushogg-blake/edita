@@ -5,17 +5,6 @@ let AstSelection = require("../../modules/utils/AstSelection");
 let autoScroll = require("./utils/autoScroll");
 
 /*
-pick(selection) {
-	astSelection = selection;
-},
-
-setSelection(selection) {
-	setAstSelection(selection);
-},
-
-*/
-
-/*
 you can't see the data (only the types) on dragover, and types can't contain
 uppercase chars, so we encode all the data into a string of char codes.
 */

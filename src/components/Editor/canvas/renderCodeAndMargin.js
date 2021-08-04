@@ -45,7 +45,7 @@ module.exports = function(context, view) {
 	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
 	
 	let {
-		index: firstLineIndex,
+		lineIndex: firstLineIndex,
 		lineRowIndex,
 	} = view.findFirstVisibleLine();
 	
