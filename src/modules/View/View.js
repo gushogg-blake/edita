@@ -404,6 +404,12 @@ class View extends Evented {
 		this.astSelection = codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex + 1);
 	}
 	
+	setMeasurements(measurements) {
+		this.measurements = measurements;
+		
+		this.fire("updateMeasurements");
+	}
+	
 	updateSizes(width, height) {
 		let {
 			document,

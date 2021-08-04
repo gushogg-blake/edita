@@ -515,6 +515,10 @@ async function prefsUpdated() {
 	view.redraw();
 }
 
+/*
+TODO do this in View?
+*/
+
 function updateMeasurements() {
 	measurementsDiv.style = inlineStyle({
 		font: app.prefs.font,
@@ -522,10 +526,10 @@ function updateMeasurements() {
 	
 	measurementsDiv.innerHTML = "A".repeat(10000);
 	
-	view.measurements = {
+	view.setMeasurements({
 		colWidth: measurementsDiv.offsetWidth / measurementsDiv.innerHTML.length,
 		rowHeight: measurementsDiv.offsetHeight + rowHeightPadding,
-	};
+	});
 }
 
 async function toggleHorizontalScrollbar(show) {

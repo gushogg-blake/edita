@@ -304,6 +304,13 @@ function onResize() {
 	} = view);
 }
 
+function onUpdateMeasurements() {
+	({
+		rowHeight,
+		colWidth,
+	} = view.measurements);
+}
+
 function onModeSwitch() {
 	({
 		mode,
@@ -381,6 +388,7 @@ $: codeStyle = calculateCodeStyle(
 onMount(function() {
 	let teardown = [
 		view.on("resize", onResize),
+		view.on("updateMeasurements", onUpdateMeasurements),
 		view.on("modeSwitch", onModeSwitch),
 		view.on("updatePickOptions", onUpdatePickOptions),
 		view.on("updateDropTargets", onUpdateDropTargets),

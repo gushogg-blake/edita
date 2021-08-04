@@ -1,11 +1,11 @@
 let getLineStartingRow = require("./getLineStartingRow");
 
 module.exports = function(
-	lines,
+	wrappedLines,
 	lineIndex,
 	scrollPosition,
 ) {
-	let row = getLineStartingRow(lines, lineIndex);
+	let row = getLineStartingRow(wrappedLines, lineIndex);
 	
 	return row - scrollPosition.row;
 }
