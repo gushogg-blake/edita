@@ -119,10 +119,6 @@ class Editor extends Evented {
 		this.view.redraw();
 	}
 	
-	afterEdit() {
-		
-	}
-	
 	willHandleNormalKeydown(key, keyCombo, isModified) {
 		return base.prefs.normalKeymap[keyCombo] || key.length === 1 && !isModified;
 	}
@@ -188,10 +184,6 @@ class Editor extends Evented {
 	
 	clearBatchState() {
 		this.batchState = null;
-	}
-	
-	afterEdit() {
-		this.fire("afterEdit");
 	}
 	
 	getSelectedText() {
