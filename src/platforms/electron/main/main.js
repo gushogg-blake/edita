@@ -36,8 +36,8 @@ let syncIpcModules = {
 
 for (let [key, fns] of Object.entries(asyncIpcModules)) {
 	for (let name in fns) {
-		ipc.answerRenderer(key + "/" + name, function(args=[]) {
-			return fns[name](...args);
+		ipc.answerRenderer(key + "/" + name, function(args, browserWindow) {
+			return fns[name](...args, browserWindow);
 		});
 	}
 }

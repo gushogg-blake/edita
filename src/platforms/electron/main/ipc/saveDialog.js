@@ -1,7 +1,7 @@
 let {dialog} = require("electron");
 
 module.exports =  {
-	show(options) {
-		return dialog.showSaveDialog(options);
+	show(options, browserWindow) {
+		return dialog.showSaveDialog(browserWindow, options);
 	},
 };
