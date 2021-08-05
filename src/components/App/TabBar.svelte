@@ -32,8 +32,15 @@ function tabIsSelected(tab, selectedTab) {
 }
 
 function getTabName(tabs, tab) {
-	// TODO asterisk if modified
-	return fs(tab.path).name; // TODO display name for tab (show path parts to disambiguate from other tabs)
+	let {document} = tab;
+	let {path} = document;
+	
+	if (path) {
+		// TODO asterisk if modified
+		return fs(path).name; // TODO display name for tab (show path parts to disambiguate from other tabs)
+	} else {
+		return "New file";
+	}
 }
 
 function onUpdateTabs() {

@@ -29,3 +29,5 @@ module.exports = function(editor) {
 			if
 			editor.switchToAstMode();
 		},
+	};
+}

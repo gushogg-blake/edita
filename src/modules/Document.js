@@ -159,6 +159,16 @@ class Document extends Evented {
 		return entry;
 	}
 	
+	async save() {
+		await platform.save(this.path, this.toString());
+	}
+	
+	saveAs(path) {
+		this.path = path;
+		
+		return this.save();
+	}
+	
 	parse() {
 		console.time("parse");
 		

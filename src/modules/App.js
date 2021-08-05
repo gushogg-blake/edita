@@ -24,12 +24,14 @@ class App extends Evented {
 	}
 	
 	async save() {
-		if (!this.selectedTab) {
+		let document = this.selectedTab?.document;
+		
+		if (!document) {
 			return;
 		}
 		
-		if (this.selectedTab.path) {
-			await platform.save(this.path, document.toString());
+		if (document.path) {
+			await document.save();
 		} else {
 			// TODO save dialog
 		}
@@ -104,7 +106,6 @@ class App extends Evented {
 		let editor = new Editor(this, document, view);
 		
 		let tab = {
-			path,
 			document,
 			editor,
 			view,
@@ -125,7 +126,6 @@ class App extends Evented {
 		let editor = new Editor(this, document, view);
 		
 		let tab = {
-			path: null,
 			document,
 			editor,
 			view,
@@ -140,7 +140,7 @@ class App extends Evented {
 	
 	findTabByPath(path) {
 		for (let tab of this.tabs) {
-			if (tab.path === path) {
+			if (tab.document.path === path) {
 				return tab;
 			}
 		}
