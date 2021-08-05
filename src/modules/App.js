@@ -29,7 +29,7 @@ class App extends Evented {
 		}
 		
 		if (this.selectedTab.path) {
-			//await platform.save(path, document.toString());
+			await platform.save(this.path, document.toString());
 		} else {
 			// TODO save dialog
 		}
@@ -83,10 +83,10 @@ class App extends Evented {
 	}
 	
 	openFile(path, code) {
-		let tab = this.findTabByPath(path);
+		let existingTab = this.findTabByPath(path);
 		
-		if (tab) {
-			this.selectTab(tab);
+		if (existingTab) {
+			this.selectTab(existingTab);
 			
 			return;
 		}
@@ -99,22 +99,43 @@ class App extends Evented {
 			// calculating line start offsets
 		}
 		
-		let document = new Document(code, fileDetails);
+		let document = new Document(code, path, fileDetails);
 		let view = new View(this, document);
 		let editor = new Editor(this, document, view);
 		
-		let newTab = {
+		let tab = {
 			path,
 			document,
 			editor,
 			view,
 		};
 		
-		this.tabs.push(newTab);
+		this.tabs.push(tab);
 		
 		this.fire("updateTabs");
 		
-		this.selectTab(newTab);
+		this.selectTab(tab);
+	}
+	
+	newFile() {
+		let fileDetails = base.getDefaultFileDetails();
+		
+		let document = new Document("", null, fileDetails);
+		let view = new View(this, document);
+		let editor = new Editor(this, document, view);
+		
+		let tab = {
+			path: null,
+			document,
+			editor,
+			view,
+		};
+		
+		this.tabs.push(tab);
+		
+		this.fire("updateTabs");
+		
+		this.selectTab(tab);
 	}
 	
 	findTabByPath(path) {

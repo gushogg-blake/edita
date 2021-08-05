@@ -21,8 +21,7 @@ class Editor extends Evented {
 		
 		this.find = find(this);
 		
-		this.history = [];
-		this.historyIndex = 0;
+		this.historyEntries = new WeakMap();
 	}
 	
 	getAvailableAstManipulations() {
@@ -46,16 +45,11 @@ class Editor extends Evented {
 		console.log(code);
 	}
 	
-	applyEdit(edit) {
+	applyHistoryEntry(entry, state) {
 		let {
-			edits,
 			normalSelection,
 			astSelection,
-		} = edit;
-		
-		for (let edit of edits) {
-			this.document.apply(edit);
-		}
+		} = this.historyEntries.get(entry)[state];
 		
 		this.view.updateWrappedLines();
 		
@@ -71,45 +65,40 @@ class Editor extends Evented {
 	}
 	
 	applyAndAddHistoryEntry(edit) {
-		let {
-			normalSelection,
-			astSelection,
-		} = this.view;
+		let entry = this.document.applyAndAddHistoryEntry(edit.edits);
 		
-		let undo = {
-			normalSelection,
-			astSelection,
-			edits: [...edit.edits].reverse().map(e => this.document.reverse(e)),
-		};
+		this.historyEntries.set(entry, {
+			before: {
+				normalSelection: this.view.normalSelection,
+				astSelection: this.view.astSelection,
+			},
+			
+			after: {
+				normalSelection: edit.normalSelection,
+				astSelection: edit.astSelection,
+			},
+		});
 		
-		this.applyEdit(edit);
-		
-		let entry = {
-			undo,
-			redo: edit,
-		};
-		
-		if (this.historyIndex < this.history.length) {
-			this.history.splice(this.historyIndex, this.history.length - this.historyIndex);
-		}
-		
-		this.history.push(entry);
-		
-		this.historyIndex = this.history.length;
+		this.applyHistoryEntry(entry, "after");
 	}
 	
-	get lastHistoryEntry() {
-		return this.history[this.history.length - 1];
+	applyAndMergeWithLastHistoryEntry(edit) {
+		let entry = this.document.applyAndMergeWithLastHistoryEntry(edit.edits);
+		
+		this.historyEntries.get(entry).after = {
+			normalSelection: edit.normalSelection,
+			astSelection: edit.astSelection,
+		};
+		
+		this.applyHistoryEntry(entry, "after");
 	}
 	
 	undo() {
-		if (this.historyIndex === 0) {
-			return;
-		}
+		let entry = this.document.undo();
 		
-		this.historyIndex--;
+		this.applyHistoryEntry(entry, "before");
 		
-		this.applyEdit(this.history[this.historyIndex].undo);
+		this.clearBatchState();
 		
 		this.view.updateSelectionEndCol();
 		this.view.ensureSelectionIsOnScreen();
@@ -118,13 +107,11 @@ class Editor extends Evented {
 	}
 	
 	redo() {
-		if (this.historyIndex === this.history.length) {
-			return;
-		}
+		let entry = this.document.redo();
 		
-		this.applyEdit(this.history[this.historyIndex].redo);
+		this.applyHistoryEntry(entry, "after");
 		
-		this.historyIndex++;
+		this.clearBatchState();
 		
 		this.view.updateSelectionEndCol();
 		this.view.ensureSelectionIsOnScreen();

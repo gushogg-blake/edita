@@ -5,12 +5,16 @@ let Cursor = require("./utils/Cursor");
 let Line = require("./Line");
 
 class Document extends Evented {
-	constructor(code, fileDetails) {
+	constructor(code, path, fileDetails) {
 		super();
 		
 		this.string = code;
+		this.path = path;
 		this.fileDetails = fileDetails;
 		this.lang = fileDetails.lang;
+		
+		this.history = [];
+		this.historyIndex = 0;
 		
 		this.parse();
 	}
@@ -74,6 +78,85 @@ class Document extends Evented {
 			removeLines: insertLines,
 			insertLines: removeLines,
 		};
+	}
+	
+	applyEdits(edits) {
+		for (let edit of edits) {
+			this.apply(edit);
+		}
+	}
+	
+	applyAndAddHistoryEntry(edits) {
+		let undo = [...edits].reverse().map(e => this.reverse(e));
+		
+		this.applyEdits(edits);
+		
+		let entry = {
+			undo,
+			redo: edits,
+		};
+		
+		if (this.historyIndex < this.history.length) {
+			this.history.splice(this.historyIndex, this.history.length - this.historyIndex);
+		}
+		
+		this.history.push(entry);
+		this.historyIndex = this.history.length;
+		
+		console.log("applyAndAddHistoryEntry", this.history.length);
+		
+		return entry;
+	}
+	
+	/*
+	NOTE this doesn't change the undo of the current entry, so it relies
+	on the number of lines being the same
+	*/
+	
+	applyAndMergeWithLastHistoryEntry(edits) {
+		let entry = this.lastHistoryEntry;
+		
+		this.applyEdits(edits);
+		
+		entry.redo = edits;
+		
+		console.log(entry);
+		
+		return entry;
+	}
+	
+	get lastHistoryEntry() {
+		return this.history[this.history.length - 1];
+	}
+	
+	undo() {
+		if (this.historyIndex === 0) {
+			return;
+		}
+		
+		let entry = this.history[this.historyIndex - 1];
+		
+		this.historyIndex--;
+		this.applyEdits(entry.undo);
+		
+		this.fire("undo", entry);
+		
+		return entry;
+	}
+	
+	redo() {
+		if (this.historyIndex === this.history.length) {
+			return;
+		}
+		
+		let entry = this.history[this.historyIndex];
+		
+		this.historyIndex++;
+		this.applyEdits(entry.redo);
+		
+		this.fire("redo", entry);
+		
+		return entry;
 	}
 	
 	parse() {

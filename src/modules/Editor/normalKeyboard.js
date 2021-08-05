@@ -129,9 +129,7 @@ module.exports = {
 			};
 			
 			if (this.batchState === "backspace") {
-				this.applyEdit(apply);
-				
-				this.lastHistoryEntry.redo = apply;
+				this.applyAndMergeWithLastHistoryEntry(apply);
 			} else {
 				this.applyAndAddHistoryEntry(apply);
 			}
@@ -156,9 +154,7 @@ module.exports = {
 			};
 			
 			if (this.batchState === "delete") {
-				this.applyEdit(apply);
-				
-				this.lastHistoryEntry.redo = apply;
+				this.applyAndMergeWithLastHistoryEntry(apply);
 			} else {
 				this.applyAndAddHistoryEntry(apply);
 			}
@@ -168,7 +164,7 @@ module.exports = {
 	},
 	
 	tab() {
-		// TODO snippets, indent/dedent normalSelection
+		// TODO snippets, indent/dedent selection
 		
 		let {
 			edit,
@@ -188,7 +184,7 @@ module.exports = {
 	},
 	
 	async cut() {
-		// TODO line if not full normalSelection?
+		// TODO line if not full selection?
 		if (!this.view.Selection.isFull()) {
 			return;
 		}
@@ -245,9 +241,7 @@ module.exports = {
 		};
 		
 		if (this.batchState === "typing") {
-			this.applyEdit(apply);
-			
-			this.lastHistoryEntry.redo = apply;
+			this.applyAndMergeWithLastHistoryEntry(apply);
 		} else {
 			this.applyAndAddHistoryEntry(apply);
 		}
