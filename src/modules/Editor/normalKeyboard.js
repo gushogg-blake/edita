@@ -228,7 +228,7 @@ module.exports = {
 	},
 	
 	insert(key) {
-		let newBatchState = null;
+		let newBatchState = this.view.Selection.isFull() ? null : "typing";
 		
 		let {
 			edit,
@@ -244,10 +244,6 @@ module.exports = {
 			this.applyAndMergeWithLastHistoryEntry(apply);
 		} else {
 			this.applyAndAddHistoryEntry(apply);
-		}
-		
-		if (!this.view.Selection.isFull()) {
-			newBatchState = "typing";
 		}
 		
 		this.view.updateSelectionEndCol();

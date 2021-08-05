@@ -131,7 +131,7 @@ class Document extends Evented {
 	
 	undo() {
 		if (this.historyIndex === 0) {
-			return;
+			return null;
 		}
 		
 		let entry = this.history[this.historyIndex - 1];
@@ -146,7 +146,7 @@ class Document extends Evented {
 	
 	redo() {
 		if (this.historyIndex === this.history.length) {
-			return;
+			return null;
 		}
 		
 		let entry = this.history[this.historyIndex];

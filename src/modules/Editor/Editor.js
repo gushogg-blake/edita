@@ -96,6 +96,10 @@ class Editor extends Evented {
 	undo() {
 		let entry = this.document.undo();
 		
+		if (!entry) {
+			return;
+		}
+		
 		this.applyHistoryEntry(entry, "before");
 		
 		this.clearBatchState();
@@ -108,6 +112,10 @@ class Editor extends Evented {
 	
 	redo() {
 		let entry = this.document.redo();
+		
+		if (!entry) {
+			return;
+		}
 		
 		this.applyHistoryEntry(entry, "after");
 		
