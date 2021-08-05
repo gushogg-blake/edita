@@ -1,5 +1,3 @@
-let xHint = -1;
-
 module.exports = function(context, view) {
 	let {
 		insertCursor,
@@ -19,5 +17,5 @@ module.exports = function(context, view) {
 	}
 	
 	context.fillStyle = "black";
-	context.fillRect(x + xHint, y, 1, measurements.rowHeight);
+	context.fillRect(x, y, 1, measurements.rowHeight);
 }

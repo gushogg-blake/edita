@@ -3,6 +3,7 @@ let bluebird = require("bluebird");
 let fs = require("flowfs");
 let {systemInfo} = require("./ipc/init");
 let openDialog = require("./ipc/openDialog");
+let saveDialog = require("./ipc/saveDialog");
 let clipboard = require("./ipc/clipboard");
 let contextMenu = require("./ipc/contextMenu");
 
@@ -20,6 +21,7 @@ class Platform {
 			filePaths,
 		} = await openDialog({
 			defaultPath: path,
+			
 			properties: [
 				"openFile",
 				"multiSelections",
@@ -40,6 +42,14 @@ class Platform {
 	
 	async save(path, code) {
 		await fs(path).write(code);
+	}
+	
+	async saveAs() {
+		let {filePath} = await saveDialog({
+			
+		});
+		
+		return filePath || null;
 	}
 	
 	showContextMenu(items) {

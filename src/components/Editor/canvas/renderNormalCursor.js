@@ -1,5 +1,3 @@
-let xHint = -1;
-
 module.exports = function(context, view, windowHasFocus) {
 	let {
 		normalSelection,
@@ -16,10 +14,10 @@ module.exports = function(context, view, windowHasFocus) {
 	
 	let [x, y] = view.screenCoordsFromCursor(lineIndex, offset);
 	
-	if (x < view.sizes.marginOffset) {
+	if (x < view.sizes.marginWidth) {
 		return;
 	}
 	
 	context.fillStyle = "black";
-	context.fillRect(x + xHint, y, 1, measurements.rowHeight);
+	context.fillRect(x, y, 1, measurements.rowHeight);
 }

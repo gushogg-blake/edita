@@ -217,6 +217,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		editorComponent.mouseup();
 		
 		off(window, "mousemove", drawSelection);
+		off(window, "mouseup", mouseup);
 		off(window, "mouseup", finishSelection);
 		off(window, "dragend", dragend);
 	}

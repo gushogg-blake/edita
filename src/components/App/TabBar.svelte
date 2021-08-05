@@ -39,7 +39,7 @@ function getTabName(tabs, tab) {
 		// TODO asterisk if modified
 		return fs(path).name; // TODO display name for tab (show path parts to disambiguate from other tabs)
 	} else {
-		return "New file";
+		return "New file *";
 	}
 }
 

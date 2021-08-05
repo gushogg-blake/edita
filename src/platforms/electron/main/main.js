@@ -14,6 +14,7 @@ let config = require("./config");
 let init = require("./ipc/init");
 let clipboard = require("./ipc/clipboard");
 let openDialog = require("./ipc/openDialog");
+let saveDialog = require("./ipc/saveDialog");
 let contextMenu = require("./ipc/contextMenu");
 
 if (dev) {
@@ -24,6 +25,7 @@ app.setPath("userData", fs(config.userDataDir, "electron").path);
 
 let asyncIpcModules = {
 	openDialog,
+	saveDialog,
 	contextMenu,
 };
 

@@ -33,7 +33,11 @@ class App extends Evented {
 		if (document.path) {
 			await document.save();
 		} else {
-			// TODO save dialog
+			let path = await platform.saveAs();
+			
+			if (path) {
+				await document.saveAs(path);
+			}
 		}
 	}
 	

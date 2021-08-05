@@ -3,6 +3,7 @@ let minimatch = require("minimatch");
 
 let Evented = require("../../../utils/Evented");
 
+let getIndentationDetails = require("../../../modules/utils/getIndentationDetails");
 let guessIndent = require("../../../modules/utils/guessIndent");
 let checkNewlines = require("../../../modules/utils/checkNewlines");
 
@@ -19,6 +20,7 @@ function defaultPrefs() {
 		tabWidth: 4,
 		defaultIndent: "\t",
 		defaultNewline: platform.systemInfo.newline,
+		defaultLang: "javascript",
 		
 		lineNumberColor: "#9f9f9f",
 		marginBackground: "#f0f0f0",
@@ -219,12 +221,6 @@ class Base extends Evented {
 		return general || alternate || fallback;
 	}
 	
-	/*
-	TODO these utils should probs be moved to separate files and just attached
-	to app for access purposes -- or at least the bulk should be moved to sep files
-	and app should pass any dynamic state needed (e.g. prefs)
-	*/
-	
 	getFileDetails(code, path) {
 		let {
 			defaultIndent,
@@ -234,7 +230,6 @@ class Base extends Evented {
 		
 		let indent = guessIndent(code) || defaultIndent;
 		let lang = this.guessLang(code, path);
-		let indentType = indent[0] === "\t" ? "tab" : "space";
 		
 		let {
 			mixed: hasMixedNewlines,
@@ -244,12 +239,8 @@ class Base extends Evented {
 		if (!newline) {
 			newline = defaultNewline;
 		}
-	
-		let indentation = {
-			string: indent,
-			re: new RegExp("^(" + indent + ")*"),
-			colsPerIndent: indentType === "tab" ? indent.length * tabWidth : indent.length,
-		};
+		
+		let indentation = getIndentationDetails(indent, tabWidth);
 		
 		return {
 			indentation,
@@ -257,6 +248,26 @@ class Base extends Evented {
 			lang,
 			newline,
 			hasMixedNewlines,
+		};
+	}
+	
+	getDefaultFileDetails() {
+		let {
+			defaultIndent,
+			tabWidth,
+			defaultNewline,
+			defaultLang,
+		} = this.prefs;
+		
+		let lang = this.langs.get(defaultLang);
+		let indentation = getIndentationDetails(defaultIndent, tabWidth);
+		
+		return {
+			indentation,
+			tabWidth,
+			lang,
+			newline: defaultNewline,
+			hasMixedNewlines: false,
 		};
 	}
 }
