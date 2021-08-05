@@ -24,7 +24,7 @@ let mouseMovedDistance;
 let syntheticDrag = null;
 let dragStartedHere = false;
 let isDragging = false;
-let rowYHint = 1;
+let rowYHint = 0;
 
 let {
 	wrappedLines,
@@ -450,7 +450,7 @@ onMount(function() {
 
 .item {
 	/*font-weight: bold;*/
-	font-size: 12px;
+	font-size: 11px;
 	border: 1px solid #544200;
 	border-radius: 100px;
 	padding: 0 5px;
