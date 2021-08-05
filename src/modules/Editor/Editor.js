@@ -7,9 +7,10 @@ let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
 
 class Editor extends Evented {
-	constructor(document, view) {
+	constructor(app, document, view) {
 		super();
 		
+		this.app = app;
 		this.document = document;
 		this.view = view;
 		
@@ -136,15 +137,15 @@ class Editor extends Evented {
 	}
 	
 	willHandleNormalKeydown(key, keyCombo, isModified) {
-		return app.prefs.normalKeymap[keyCombo] || key.length === 1 && !isModified;
+		return base.prefs.normalKeymap[keyCombo] || key.length === 1 && !isModified;
 	}
 	
 	willHandleAstKeydown(keyCombo) {
-		return app.prefs.astKeymap[keyCombo];
+		return base.prefs.astKeymap[keyCombo];
 	}
 	
 	async normalKeydown(key, keyCombo, isModified) {
-		let fnName = app.prefs.normalKeymap[keyCombo];
+		let fnName = base.prefs.normalKeymap[keyCombo];
 		
 		if (fnName) {
 			await this.normalKeyboard[fnName](this);
@@ -164,7 +165,7 @@ class Editor extends Evented {
 	
 	async astKeydown(keyCombo) {
 		let handled = false;
-		let fnName = app.prefs.astKeymap[keyCombo];
+		let fnName = base.prefs.astKeymap[keyCombo];
 		
 		if (!fnName) {
 			return;

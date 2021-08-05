@@ -14,7 +14,7 @@ module.exports = function(view, editorComponent) {
 	let keyPressedWhilePeeking = false;
 	
 	function keydown(e) {
-		if (e.key === app.prefs.modeSwitchKey) {
+		if (e.key === base.prefs.modeSwitchKey) {
 			return;
 		}
 		
@@ -43,7 +43,7 @@ module.exports = function(view, editorComponent) {
 			let downTime = Date.now() - keyDownAt;
 			
 			if (view.mode === "ast") {
-				if (downTime >= app.prefs.minHoldTime || keyPressedWhilePeeking) {
+				if (downTime >= base.prefs.minHoldTime || keyPressedWhilePeeking) {
 					editorComponent.switchToNormalMode();
 				} else {
 					editorComponent.switchToAstMode(false);

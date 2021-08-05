@@ -17,7 +17,7 @@ module.exports = function(context, view, isPeeking) {
 		return;
 	}
 	
-	context.fillStyle = app.prefs.astSelectionHiliteBackground;
+	context.fillStyle = base.prefs.astSelectionHiliteBackground;
 	
 	let {colWidth, rowHeight} = measurements;
 	let [startLineIndex, endLineIndex] = hilite;

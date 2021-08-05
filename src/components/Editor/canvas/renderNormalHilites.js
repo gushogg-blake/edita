@@ -3,7 +3,7 @@ module.exports = function(context, view) {
 		normalHilites,
 	} = view;
 	
-	context.fillStyle = app.prefs.hiliteBackground;
+	context.fillStyle = base.prefs.hiliteBackground;
 	
 	for (let selection of normalHilites) {
 		let regions = view.calculateNormalSelectionRegions(selection);

@@ -10,7 +10,7 @@ class Line {
 		
 		let {
 			tabWidth,
-		} = app.prefs;
+		} = base.prefs;
 		
 		let width = expandTabs(string, tabWidth).length;
 		
@@ -32,6 +32,7 @@ class Line {
 			string,
 			trimmed: string.trimLeft(),
 			variableWidthParts,
+			nodes: [],
 			renderHints: [],
 			openers: [],
 			closers: [],

@@ -29,12 +29,13 @@ let SelectionUtils = require("./utils/Selection");
 let AstSelectionUtils = require("./utils/AstSelection");
 
 class View extends Evented {
-	constructor(document) {
+	constructor(app, document) {
 		super();
 		
 		this.Selection = bindFunctions(this, SelectionUtils);
 		this.AstSelection = bindFunctions(this, AstSelectionUtils);
 		
+		this.app = app;
 		this.document = document;
 		
 		this.updateWrappedLines();
@@ -480,7 +481,7 @@ class View extends Evented {
 			this.cursorBlinkOn = !this.cursorBlinkOn;
 			
 			this.updateCanvas();
-		}, app.prefs.cursorBlinkPeriod);
+		}, base.prefs.cursorBlinkPeriod);
 	}
 	
 	clearCursorBlink() {
@@ -510,10 +511,16 @@ class View extends Evented {
 		this.fire("show");
 	}
 	
+	hide() {
+		this.visible = false;
+		
+		this.fire("hide");
+	}
+	
 	focus() {
 		this.focused = true;
 		
-		app.focusManager.focus(this.blur);
+		this.app.focusManager.focus(this.blur);
 		
 		this.redraw();
 	}
@@ -527,7 +534,7 @@ class View extends Evented {
 	}
 	
 	teardown() {
-		app.focusManager.teardown(this.blur);
+		this.app.focusManager.teardown(this.blur);
 		
 		this.clearCursorBlink();
 	}

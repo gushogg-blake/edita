@@ -1,5 +1,5 @@
 <script>
-import {tick, onMount} from "svelte";
+import {tick, onMount, getContext} from "svelte";
 
 import inlineStyle from "../../utils/dom/inlineStyle";
 import windowFocus from "../../utils/dom/windowFocus";
@@ -15,9 +15,15 @@ import contextMenu from "./contextMenu";
 import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer.svelte";
 
-export let document;
-export let editor;
-export let view;
+export let tab;
+
+let {
+	document,
+	editor,
+	view,
+} = tab;
+
+let app = getContext("app"); //
 
 let revisionCounter = 0;
 let mounted = false;
@@ -33,7 +39,7 @@ let resizeInterval;
 
 let verticalScrollbar;
 let horizontalScrollbar;
-let showingHorizontalScrollbar = !app.prefs.wrap;
+let showingHorizontalScrollbar = !base.prefs.wrap;
 
 let windowHasFocus;
 
@@ -143,7 +149,7 @@ function mousedown({detail}) {
 			enableDrag(
 				modeSwitchKeyHandler.isPeeking
 				&& !modeSwitchKeyHandler.keyPressedWhilePeeking
-				&& app.prefs.modeSwitchKey === "Escape"
+				&& base.prefs.modeSwitchKey === "Escape"
 			);
 		});
 	}
@@ -312,7 +318,7 @@ async function keydown(e) {
 		return;
 	}
 	
-	if (e.key === app.prefs.modeSwitchKey) {
+	if (e.key === base.prefs.modeSwitchKey) {
 		e.preventDefault();
 		
 		modeSwitchKeyHandler.keydown(e);
@@ -343,7 +349,7 @@ function keyup(e) {
 		return;
 	}
 	
-	if (e.key === app.prefs.modeSwitchKey) {
+	if (e.key === base.prefs.modeSwitchKey) {
 		e.preventDefault();
 		
 		modeSwitchKeyHandler.keyup(e);
@@ -509,11 +515,7 @@ function horizontalScroll({detail: position}) {
 }
 
 async function prefsUpdated() {
-	if (!mounted) {
-		return;
-	}
-	
-	await toggleHorizontalScrollbar(!app.prefs.wrap);
+	await toggleHorizontalScrollbar(!base.prefs.wrap);
 	
 	updateMeasurements();
 	
@@ -528,7 +530,7 @@ TODO do this in View?
 
 function updateMeasurements() {
 	measurementsDiv.style = inlineStyle({
-		font: app.prefs.font,
+		font: base.prefs.font,
 	});
 	
 	measurementsDiv.innerHTML = "A".repeat(10000);
@@ -591,7 +593,7 @@ onMount(async function() {
 			updateCanvas();
 		}),
 		
-		app.on("prefsUpdated", prefsUpdated),
+		base.on("prefsUpdated", prefsUpdated),
 	];
 	
 	mounted = true;

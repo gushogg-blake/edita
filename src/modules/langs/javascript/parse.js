@@ -28,6 +28,10 @@ module.exports = async function() {
 				column: endOffset,
 			} = endPosition;
 			
+			let line = lines[startLineIndex];
+			
+			line.nodes.push(node);
+			
 			/*
 			if a node can contain tabs, we just set the hilite colour and then
 			render the contents as a string.
@@ -73,7 +77,7 @@ module.exports = async function() {
 			].includes(node.parent?.type);
 			
 			if (colour) {
-				lines[startLineIndex].renderHints.push({
+				line.renderHints.push({
 					type: "colour",
 					offset: startOffset,
 					node,
@@ -86,7 +90,7 @@ module.exports = async function() {
 				&& childCount === 0
 				&& startLineIndex === endLineIndex
 			) {
-				lines[startLineIndex].renderHints.push({
+				line.renderHints.push({
 					type: "node",
 					offset: startOffset,
 					node,
@@ -97,7 +101,7 @@ module.exports = async function() {
 				*/
 				
 				if (node.type === "}" && node.parent?.type === "template_substitution") {
-					lines[startLineIndex].renderHints.push({
+					line.renderHints.push({
 						type: "colour",
 						offset: startOffset + 1,
 						node: node.parent.parent, // the template_string node, which is just used for selecting the colour

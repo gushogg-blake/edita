@@ -1,20 +1,24 @@
 <script>
 let fs = require("flowfs");
 
-import {createEventDispatcher} from "svelte";
+import {onMount, createEventDispatcher, getContext} from "svelte";
 import Gap from "../utils/Gap.svelte";
 
 let fire = createEventDispatcher();
 
-export let tabs;
-export let selectedTab;
+let app = getContext("app");
+
+let {
+	tabs,
+	selectedTab,
+} = app;
 
 function clickTab(tab) {
-	fire("select", tab);
+	app.selectTab(tab);
 }
 
 function closeTab(tab) {
-	fire("close", tab);
+	app.closeTab(tab);
 }
 
 function auxClickTab(tab, e) {
@@ -31,6 +35,27 @@ function getTabName(tabs, tab) {
 	// TODO asterisk if modified
 	return fs(tab.path).name; // TODO display name for tab (show path parts to disambiguate from other tabs)
 }
+
+function onUpdateTabs() {
+	tabs = app.tabs;
+}
+
+function onSelectTab() {
+	selectedTab = app.selectedTab;
+}
+
+onMount(function() {
+	let teardown = [
+		app.on("updateTabs", onUpdateTabs),
+		app.on("selectTab", onSelectTab),
+	];
+	
+	return function() {
+		for (let fn of teardown) {
+			fn();
+		}
+	}
+});
 </script>
 
 <style type="text/scss">

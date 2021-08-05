@@ -1,18 +1,18 @@
 <script>
-import {createEventDispatcher} from "svelte";
+import {getContext} from "svelte";
 
-let fire = createEventDispatcher();
+let app = getContext("app");
 
 function open() {
-	fire("open");
+	app.open();
 }
 
 function _new() {
-	fire("new");
+	app.newFile();
 }
 
 function save() {
-	fire("save");
+	app.save();
 }
 </script>
 

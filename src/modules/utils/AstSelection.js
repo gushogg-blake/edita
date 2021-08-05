@@ -63,6 +63,12 @@ let api = {
 		return lineIndex >= start && lineIndex < end;
 	},
 	
+	getSelectedLines(lines, selection) {
+		let [start, end] = selection;
+		
+		return lines.slice(start, end);
+	},
+	
 	/*
 	insertion range - given line indexes above and below the mouse, and the
 	mouse's distance from the middle of the line it's on, calculate where the

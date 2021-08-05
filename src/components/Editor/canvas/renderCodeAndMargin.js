@@ -4,7 +4,7 @@ module.exports = function(context, view) {
 		tabWidth,
 		marginBackground,
 		lineNumberColor,
-	} = app.prefs;
+	} = base.prefs;
 	
 	let {
 		wrappedLines,
@@ -34,7 +34,7 @@ module.exports = function(context, view) {
 	context.font = font;
 	context.fillStyle = "black";
 	
-	let {colors} = app.prefs.langs[lang.code] || {colors: {}}; //
+	let {colors} = base.prefs.langs[lang.code] || {colors: {}}; //
 	
 	let rowsToRender = height / rowHeight;
 	let rowsRendered = 0;

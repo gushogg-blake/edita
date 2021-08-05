@@ -1,7 +1,6 @@
 module.exports = {
 	setSelection(selection) {
-		this.view.astSelection = selection;
-		
+		this.view.setAstSelection(selection);
 		this.view.redraw();
 	},
 	
@@ -15,9 +14,5 @@ module.exports = {
 	
 	setInsertionHilite(selection) {
 		this.view.astInsertionHilite = selection;
-	},
-	
-	pick(selection) {
-		this.view.astSelection = selection;
 	},
 };

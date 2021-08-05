@@ -1,5 +1,7 @@
 <script>
-import {onMount} from "svelte";
+import {onMount, getContext} from "svelte";
+
+let app = getContext("app");
 
 let blur = function() {
 	
@@ -10,11 +12,9 @@ function onFocus() {
 }
 
 onMount(async function() {
-	let teardown = [];
-	
-	teardown.push(function() {
-		app.focusManager.teardown(blur);
-	});
+	let teardown = [
+		app.focusManager.teardown(blur),
+	];
 	
 	return function() {
 		for (let fn of teardown) {
@@ -32,5 +32,5 @@ onMount(async function() {
 </style>
 
 <div id="main" tabindex="0" on:focus={onFocus}>
-	right
+	left
 </div>

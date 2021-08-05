@@ -25,7 +25,7 @@ module.exports = function(context, view, isPeeking) {
 		return;
 	}
 	
-	context.fillStyle = app.prefs.astInsertionHiliteBackground;
+	context.fillStyle = base.prefs.astInsertionHiliteBackground;
 	
 	let {colWidth, rowHeight} = measurements;
 	let [startLineIndex, endLineIndex] = hilite;

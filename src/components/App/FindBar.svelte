@@ -1,16 +1,18 @@
 <script>
-import {onMount, createEventDispatcher} from "svelte";
+import {onMount, createEventDispatcher, getContext} from "svelte";
 import getKeyCombo from "../../utils/getKeyCombo";
 import {on} from "../../utils/dom/domEvents";
 
-export let editor;
-
 let fire = createEventDispatcher();
+
+let app = getContext("app");
+
+let editor = app.selectedTab.editor;
 
 let blur = function() {
 	editor.find.reset();
 	
-	fire("blur");
+	app.hideFindBarAndFocusEditor();
 }
 
 let main;
@@ -97,16 +99,16 @@ function onFocus() {
 }
 
 onMount(function() {
-	let teardown = [];
-	
 	main.focus();
 	input.focus();
 	
-	teardown.push(on(window, "keydown", windowKeydown));
-	
-	teardown.push(function() {
-		app.focusManager.teardown(blur);
-	});
+	let teardown = [
+		on(window, "keydown", windowKeydown),
+		
+		function() {
+			app.focusManager.teardown(blur);
+		},
+	];
 	
 	return function() {
 		for (let fn of teardown) {

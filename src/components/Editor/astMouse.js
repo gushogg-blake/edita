@@ -156,7 +156,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			
 			enableDrag();
 			
-			editor.astMouse.pick(selection);
+			editor.astMouse.setSelection(selection);
 			
 			on(window, "mouseup", mouseup);
 			on(window, "dragend", dragend);
@@ -178,7 +178,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		
 		editor.astMouse.setSelection(selection);
 		
-		let items = editor.getAstMenuItems().map(function({code, name}) {
+		let items = editor.getAvailableAstManipulations().map(function({code, name}) {
 			return {
 				label: name,
 				
@@ -237,7 +237,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		let selection = getHilite(e, true);
 		
 		if (selection) {
-			view.astSelection = selection; // ?
+			view.setAstSelection(selection);
 		}
 		
 		hilite(e);

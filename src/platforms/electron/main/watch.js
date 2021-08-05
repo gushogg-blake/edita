@@ -1,4 +1,4 @@
-let electron = require("electron");
+let {app} = require("electron");
 let {spawn} = require("child_process");
 let chokidar = require("chokidar");
 let fs = require("flowfs");
@@ -29,5 +29,5 @@ watch.on("change", debounce(function() {
 	
 	child.unref();
 	
-	electron.app.quit();
+	app.quit();
 }, 300));

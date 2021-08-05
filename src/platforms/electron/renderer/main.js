@@ -1,16 +1,21 @@
 import getKeyCombo from "../../../utils/getKeyCombo";
-import Ui from "../../../components/Ui/Ui.svelte";
+import AppComponent from "../../../components/App/App.svelte";
 import Platform from "./Platform";
+import Base from "./Base";
 import App from "./App";
 
 window.platform = new Platform();
-window.app = new App();
+window.base = new Base();
 
 (async function() {
-	await app.init();
+	await base.init();
 	
-	new Ui({
+	new AppComponent({
 		target: document.body,
+		
+		props: {
+			app: new App(),
+		},
 	});
 })();
 

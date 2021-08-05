@@ -4,6 +4,6 @@ module.exports = function(context, view) {
 		height,
 	} = view.sizes;
 	
-	context.fillStyle = app.prefs.marginBackground;
+	context.fillStyle = base.prefs.marginBackground;
 	context.fillRect(0, 0, marginWidth, height);
 }

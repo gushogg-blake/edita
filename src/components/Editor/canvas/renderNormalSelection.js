@@ -3,7 +3,7 @@ module.exports = function(context, view) {
 		normalSelection,
 	} = view;
 	
-	context.fillStyle = app.prefs.selectionBackground;
+	context.fillStyle = base.prefs.selectionBackground;
 	
 	let regions = view.calculateNormalSelectionRegions(normalSelection);
 	
