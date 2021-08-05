@@ -67,7 +67,6 @@ onMount(function() {
 
 <style type="text/scss">
 #main {
-	font-size: 14px;
 	display: flex;
 	width: 100%;
 	height: 100%;

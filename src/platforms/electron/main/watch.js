@@ -14,7 +14,7 @@ function debounce(fn, delay) {
 }
 
 let watch = chokidar.watch([
-	"../../../modules/ipc",
+	"ipc",
 	"config.js",
 	"main.js",
 	"watch.js",
