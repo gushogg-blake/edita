@@ -1,4 +1,4 @@
-let nextNode = require("../common/utils/treesitter/nextNode");
+let advanceCursor = require("../common/utils/treesitter/advanceCursor");
 
 module.exports = async function() {
 	let parser = new TreeSitter();
@@ -8,9 +8,11 @@ module.exports = async function() {
 	
 	return function(code, lines, fileDetails) {
 		let tree = parser.parse(code);
-		let node = tree.rootNode;
+		let cursor = tree.walk();
 		
-		while (node) {
+		while (true) {
+			let node = cursor.currentNode();
+			
 			let {
 				type,
 				startPosition,
@@ -128,7 +130,9 @@ module.exports = async function() {
 				}
 			}
 			
-			node = nextNode(node);
+			if (!advanceCursor(cursor)) {
+				break;
+			}
 		}
 	}
 }
