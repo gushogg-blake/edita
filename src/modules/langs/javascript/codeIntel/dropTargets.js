@@ -18,6 +18,7 @@ module.exports = {
 			let edits = [];
 			let indentStr = document.fileDetails.indentation.string;
 			let [toStart, toEnd] = toSelection;
+			let removeDiff = 0;
 			
 			if (move && fromSelection) {
 				let [fromStart, fromEnd] = fromSelection;
@@ -27,15 +28,7 @@ module.exports = {
 				edits.push(edit);
 				
 				if (fromEnd < toEnd) {
-					let {
-						removedLines,
-						insertedLines,
-					} = edit;
-					
-					let removeDiff = removedLines.length - insertedLines.length;
-					
-					toStart -= removeDiff;
-					toEnd -= removeDiff;
+					removeDiff = edit.removeLines.length - edit.insertLines.length;
 				}
 			}
 			
@@ -55,7 +48,7 @@ module.exports = {
 			
 			edits.push(document.edit(insertIndex, removeLines, insertLines));
 			
-			let newStartLineIndex = footerLineIndex + 1;
+			let newStartLineIndex = footerLineIndex + 1 - removeDiff;
 			
 			return {
 				edits,

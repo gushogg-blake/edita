@@ -43,11 +43,11 @@ class View extends Evented {
 		this.focused = false;
 		this.visible = false;
 		
-		this.mode = "normal";
+		this.mode = "ast";
 		
 		this.normalSelection = {
-			start: [0, 0],
-			end: [0, 0],
+			start: [9, 0],
+			end: [9, 0],
 		};
 		
 		// for remembering the "intended" col when moving a cursor up/down to a line

@@ -94,12 +94,7 @@ module.exports = {
 				edits.push(edit);
 				
 				if (toSelection && fromEnd < toEnd) {
-					let {
-						removeLines,
-						insertLines,
-					} = edit;
-					
-					removeDiff = removeLines.length - insertLines.length;
+					removeDiff = edit.removeLines.length - edit.insertLines.length;
 				}
 				
 				// TODO newSelection
@@ -108,9 +103,6 @@ module.exports = {
 			if (toSelection) {
 				let insertIndentLevel = findIndentLevel(document.lines, toStart);
 				let lines = AstSelection.selectionLinesToStrings(selectionLines, indentStr, insertIndentLevel);
-				
-				toStart -= removeDiff;
-				toEnd -= removeDiff;
 				
 				if (toStart === toEnd) {
 					/*
@@ -123,7 +115,9 @@ module.exports = {
 					
 					edits.push(edit);
 					
-					newSelection = AstSelection.s(toStart, toStart + lines.length);
+					let newSelectionStart = toStart - removeDiff;
+					
+					newSelection = AstSelection.s(newSelectionStart, newSelectionStart + lines.length);
 				} else {
 					/*
 					insert into space - insert after the space and copy the space
@@ -139,7 +133,9 @@ module.exports = {
 					
 					edits.push(edit);
 					
-					newSelection = AstSelection.s(toEnd, toEnd + lines.length);
+					let newSelectionStart = toEnd - removeDiff;
+					
+					newSelection = AstSelection.s(newSelectionStart, newSelectionStart + lines.length);
 				}
 			}
 		}

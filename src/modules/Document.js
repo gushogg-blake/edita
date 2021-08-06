@@ -93,6 +93,17 @@ class Document extends Evented {
 	}
 	
 	applyAndAddHistoryEntry(edits) {
+		// sort by line number descending so that line numbers don't need adjusting
+		edits = [...edits].sort(function(a, b) {
+			if (a.lineIndex > b.lineIndex) {
+				return -1;
+			} else if (b.lineIndex > a.lineIndex) {
+				return 1;
+			} else {
+				return 0;
+			}
+		});
+		
 		let undo = [...edits].reverse().map(e => this.reverse(e));
 		
 		this.applyEdits(edits);
