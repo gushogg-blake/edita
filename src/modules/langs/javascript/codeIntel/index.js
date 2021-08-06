@@ -1,13 +1,12 @@
-let indentLines = require("../../../utils/indentLines");
 let AstSelection = require("../../../utils/AstSelection");
 let removeSelection = require("../../common/codeIntel/removeSelection");
 let createSpaces = require("../../common/codeIntel/utils/createSpaces");
 let findIndentLevel = require("../../common/codeIntel/utils/findIndentLevel");
 let findSiblingIndex = require("../../common/codeIntel/utils/findSiblingIndex");
 let astSelection = require("./astSelection");
+let astManipulations = require("./astManipulations");
 let pickOptions = require("./pickOptions");
 let dropTargets = require("./dropTargets");
-let astManipulations = require("./astManipulations");
 let generatePickOptions = require("./generatePickOptions");
 let generateDropTargets = require("./generateDropTargets");
 
@@ -15,6 +14,7 @@ module.exports = {
 	pickOptions,
 	dropTargets,
 	astSelection,
+	astManipulations,
 	generatePickOptions,
 	generateDropTargets,
 	

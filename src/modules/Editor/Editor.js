@@ -42,7 +42,12 @@ class Editor extends Evented {
 	*/
 	
 	doAstManipulation(code) {
-		console.log(code);
+		let {document} = this;
+		let {lines} = document;
+		
+		let snippet = this.document.lang.codeIntel.astManipulations[code].apply(this.document, this.view.astSelection);
+		
+		console.log(snippet);
 	}
 	
 	applyHistoryEntry(entry, state) {

@@ -13,6 +13,21 @@ module.exports = async function() {
 		while (true) {
 			let node = cursor.currentNode();
 			
+			/*
+			skip the root node to simplify logic
+			
+			(otherwise a line will have the root node in its nodes if it happens
+			to be the first line in the file)
+			*/
+			
+			if (node.type === "program") {
+				if (!advanceCursor(cursor)) {
+					break;
+				}
+				
+				continue;
+			}
+			
 			let {
 				type,
 				startPosition,

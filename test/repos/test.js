@@ -1,6 +1,11 @@
 module.exports = function(editor) {
 	let keyIsDown = false;
 	let keyDownAt;
+	
+	let a = {
+		prop: 123,
+	};
+	
 	let justSwitchedToNormalMode = false;
 	
 	// comment

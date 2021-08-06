@@ -129,6 +129,7 @@ module.exports = {
 		let [lineIndex, offset] = sort(this.normalSelection).start;
 		let [row, col] = this.rowColFromCursor(lineIndex, offset);
 		let wrappedLine = wrappedLines[lineIndex];
+		let {line} = wrappedLine;
 		let [innerLineIndex, innerLineOffset] = this.innerLineIndexAndOffsetFromCursor(lineIndex, offset);
 		let {indentCols} = line;
 		

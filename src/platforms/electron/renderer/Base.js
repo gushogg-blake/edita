@@ -119,6 +119,7 @@ function defaultPrefs() {
 		
 		fileAssociations: {
 			"html": ["*.svelte"],
+			//"plainText": ["*.js"],
 		},
 		
 		cursorBlinkPeriod: 700,
