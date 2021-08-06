@@ -2,8 +2,7 @@ let os = require("os");
 let bluebird = require("bluebird");
 let fs = require("flowfs");
 let {systemInfo} = require("./ipc/init");
-let openDialog = require("./ipc/openDialog");
-let saveDialog = require("./ipc/saveDialog");
+let dialog = require("./ipc/dialog");
 let clipboard = require("./ipc/clipboard");
 let contextMenu = require("./ipc/contextMenu");
 
@@ -11,6 +10,7 @@ class Platform {
 	constructor() {
 		this.systemInfo = systemInfo;
 		this.clipboard = clipboard;
+		this.fs = fs;
 	}
 	
 	async open(defaultPath, currentPath) {
@@ -19,7 +19,7 @@ class Platform {
 		let {
 			canceled,
 			filePaths,
-		} = await openDialog({
+		} = await dialog.showOpen({
 			defaultPath: path,
 			
 			properties: [
@@ -45,11 +45,15 @@ class Platform {
 	}
 	
 	async saveAs() {
-		let {filePath} = await saveDialog({
+		let {filePath} = await dialog.showSave({
 			
 		});
 		
 		return filePath || null;
+	}
+	
+	showMessageBox(options) {
+		return dialog.showMessageBox(options);
 	}
 	
 	showContextMenu(items) {

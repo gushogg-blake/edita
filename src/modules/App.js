@@ -23,11 +23,11 @@ class App extends Evented {
 		}
 	}
 	
-	async save() {
-		let document = this.selectedTab?.document;
+	async save(tab=this.selectedTab) {
+		let document = tab?.document;
 		
 		if (!document) {
-			return;
+			return null;
 		}
 		
 		if (document.path) {
@@ -38,6 +38,65 @@ class App extends Evented {
 			if (path) {
 				await document.saveAs(path);
 			}
+		}
+		
+		return document.path;
+	}
+	
+	selectTab(tab) {
+		this.selectedTab?.view.hide();
+		
+		this.selectedTab = tab;
+		
+		tab.view.show();
+		tab.view.focus();
+		
+		this.fire("selectTab")
+	}
+	
+	async closeTab(tab) {
+		let {
+			path,
+			modified,
+		} = tab.document;
+		
+		if (modified) {
+			let {response} = await platform.showMessageBox({
+				message: "Save changes to " + (path ? platform.fs(path).name : "new file") + "?",
+				buttons: ["Yes", "No", "Cancel"],
+			});
+			
+			if (response === 0) {
+				let path = await this.save(tab);
+				
+				if (!path) {
+					return;
+				}
+			} else if (response === 2) {
+				return;
+			}
+		}
+		
+		let selectNext = null;
+		
+		if (this.selectedTab === tab) {
+			let index = this.tabs.indexOf(tab);
+			
+			if (index > 0) {
+				selectNext = this.tabs[index - 1];
+			} else if (index < this.tabs.length - 1) {
+				selectNext = this.tabs[index + 1];
+			}
+		}
+		
+		tab.view.teardown();
+		
+		this.tabs = remove(this.tabs, tab);
+		
+		this.fire("updateTabs");
+		
+		if (selectNext) {
+			this.selectTab(selectNext);
 		}
 	}
 	
@@ -162,43 +221,6 @@ class App extends Evented {
 		}
 		
 		return null;
-	}
-	
-	selectTab(tab) {
-		this.selectedTab?.view.hide();
-		
-		this.selectedTab = tab;
-		
-		tab.view.show();
-		tab.view.focus();
-		
-		this.fire("selectTab")
-	}
-	
-	closeTab(tab) {
-		// TODO check if modified
-		
-		let selectNext = null;
-		
-		if (this.selectedTab === tab) {
-			let index = this.tabs.indexOf(tab);
-			
-			if (index > 0) {
-				selectNext = this.tabs[index - 1];
-			} else if (index < this.tabs.length - 1) {
-				selectNext = this.tabs[index + 1];
-			}
-		}
-		
-		tab.view.teardown();
-		
-		this.tabs = remove(this.tabs, tab);
-		
-		this.fire("updateTabs");
-		
-		if (selectNext) {
-			this.selectTab(selectNext);
-		}
 	}
 	
 	showFindBar() {
