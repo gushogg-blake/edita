@@ -1,7 +1,7 @@
 module.exports = function(editor) {
 	let keyIsDown = false;
 	let keyDownAt;
-	let justSwitchedToNormalMode = false;
+	let justasdSwitchedToNormalMode = false;
 	
 	// comment
 	

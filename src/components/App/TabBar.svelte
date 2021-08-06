@@ -33,11 +33,10 @@ function tabIsSelected(tab, selectedTab) {
 
 function getTabName(tabs, tab) {
 	let {document} = tab;
-	let {path} = document;
+	let {path, modified} = document;
 	
 	if (path) {
-		// TODO asterisk if modified
-		return fs(path).name; // TODO display name for tab (show path parts to disambiguate from other tabs)
+		return fs(path).name + (modified ? " *" : "");
 	} else {
 		return "New file *";
 	}
@@ -51,10 +50,16 @@ function onSelectTab() {
 	selectedTab = app.selectedTab;
 }
 
+function onDocumentEditOrSave() {
+	onUpdateTabs();
+}
+
 onMount(function() {
 	let teardown = [
 		app.on("updateTabs", onUpdateTabs),
 		app.on("selectTab", onSelectTab),
+		app.on("document.save", onDocumentEditOrSave),
+		app.on("document.edit", onDocumentEditOrSave),
 	];
 	
 	return function() {

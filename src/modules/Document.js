@@ -15,6 +15,8 @@ class Document extends Evented {
 		
 		this.history = [];
 		this.historyIndex = 0;
+		this.modified = false;
+		this.historyIndexAtSave = 0;
 		
 		this.parse();
 	}
@@ -64,6 +66,10 @@ class Document extends Evented {
 		this.string = lineStrings.join(newline);
 		
 		this.parse();
+		
+		this.modified = true;
+		
+		this.fire("edit");
 	}
 	
 	reverse(edit) {
@@ -103,8 +109,6 @@ class Document extends Evented {
 		this.history.push(entry);
 		this.historyIndex = this.history.length;
 		
-		console.log("applyAndAddHistoryEntry", this.history.length);
-		
 		return entry;
 	}
 	
@@ -119,8 +123,6 @@ class Document extends Evented {
 		this.applyEdits(edits);
 		
 		entry.redo = edits;
-		
-		console.log(entry);
 		
 		return entry;
 	}
@@ -139,6 +141,10 @@ class Document extends Evented {
 		this.historyIndex--;
 		this.applyEdits(entry.undo);
 		
+		if (this.historyIndex === this.historyIndexAtSave) {
+			this.modified = false;
+		}
+		
 		this.fire("undo", entry);
 		
 		return entry;
@@ -154,6 +160,10 @@ class Document extends Evented {
 		this.historyIndex++;
 		this.applyEdits(entry.redo);
 		
+		if (this.historyIndex === this.historyIndexAtSave) {
+			this.modified = false;
+		}
+		
 		this.fire("redo", entry);
 		
 		return entry;
@@ -161,6 +171,11 @@ class Document extends Evented {
 	
 	async save() {
 		await platform.save(this.path, this.toString());
+		
+		this.modified = false;
+		this.historyIndexAtSave = this.historyIndex;
+		
+		this.fire("save");
 	}
 	
 	saveAs(path) {

@@ -105,7 +105,7 @@ class App extends Evented {
 			// calculating line start offsets
 		}
 		
-		let document = new Document(code, path, fileDetails);
+		let document = this.createDocument(code, path, fileDetails);
 		let view = new View(this, document);
 		let editor = new Editor(this, document, view);
 		
@@ -125,7 +125,7 @@ class App extends Evented {
 	newFile() {
 		let fileDetails = base.getDefaultFileDetails();
 		
-		let document = new Document("", null, fileDetails);
+		let document = this.createDocument("", null, fileDetails);
 		let view = new View(this, document);
 		let editor = new Editor(this, document, view);
 		
@@ -140,6 +140,18 @@ class App extends Evented {
 		this.fire("updateTabs");
 		
 		this.selectTab(tab);
+	}
+	
+	createDocument(code, path, fileDetails) {
+		let document = new Document(code, path, fileDetails);
+		
+		for (let event of ["edit", "undo", "redo", "save"]) {
+			document.on(event, (...args) => {
+				this.fire("document." + event, document, ...args);
+			});
+		}
+		
+		return document;
 	}
 	
 	findTabByPath(path) {
