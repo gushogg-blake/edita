@@ -23,7 +23,9 @@ class Platform {
 			},
 		};
 		
-		this.fs = fs;
+		this.fs = fs({
+			
+		});
 	}
 	
 	async open(defaultPath, currentPath) {
