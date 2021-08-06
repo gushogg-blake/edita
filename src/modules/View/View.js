@@ -43,7 +43,7 @@ class View extends Evented {
 		this.focused = false;
 		this.visible = false;
 		
-		this.mode = "ast";
+		this.mode = "normal";
 		
 		this.normalSelection = {
 			start: [0, 0],

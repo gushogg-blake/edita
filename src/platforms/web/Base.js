@@ -1,16 +1,16 @@
 let minimatch = require("minimatch");
 
-let Evented = require("../../../utils/Evented");
+let Evented = require("../../utils/Evented");
 
-let getIndentationDetails = require("../../../modules/utils/getIndentationDetails");
-let guessIndent = require("../../../modules/utils/guessIndent");
-let checkNewlines = require("../../../modules/utils/checkNewlines");
+let getIndentationDetails = require("../../modules/utils/getIndentationDetails");
+let guessIndent = require("../../modules/utils/guessIndent");
+let checkNewlines = require("../../modules/utils/checkNewlines");
 
-let javascript = require("../../../modules/langs/javascript");
-let html = require("../../../modules/langs/html");
-//let svelte = require("../../../modules/langs/svelte");
-let plainText = require("../../../modules/langs/plainText");
-let langs = require("../../../modules/langs");
+let javascript = require("../../modules/langs/javascript");
+let html = require("../../modules/langs/html");
+//let svelte = require("../../modules/langs/svelte");
+let plainText = require("../../modules/langs/plainText");
+let langs = require("../../modules/langs");
 
 function defaultPrefs() {
 	return {

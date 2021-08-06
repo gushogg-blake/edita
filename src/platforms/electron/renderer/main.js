@@ -10,13 +10,19 @@ window.base = new Base();
 (async function() {
 	await base.init();
 	
+	let app = new App();
+	
 	new AppComponent({
 		target: document.body,
 		
 		props: {
-			app: new App(),
+			app,
 		},
 	});
+	
+	window.app = app;
+	
+	app.openFile("test/repos/test.js", await require("flowfs")(__dirname, "../../../../test/repos/test.js").read());
 })();
 
 // misc shims etc:

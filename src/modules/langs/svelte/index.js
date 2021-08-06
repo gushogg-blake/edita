@@ -1,4 +1,3 @@
-let fs = require("flowfs");
 let codeIntel = require("./codeIntel");
 let parse = require("./parse");
 
@@ -14,7 +13,7 @@ module.exports = async function() {
 		},
 		
 		getSupportLevel(code, path) {
-			let type = fs(path).lastType;
+			let type = platform.fs(path).lastType;
 			
 			if ([
 				"svelte",

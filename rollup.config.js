@@ -67,4 +67,62 @@ export default [
 			production && terser(),
 		],
 	},
+	{
+		input: "src/platforms/web/main.js",
+		
+		output: {
+			sourcemap: true,
+			format: "iife",
+			name: "editor",
+			file: "build/web/bundle.js",
+		},
+		
+		plugins: [
+			svelte({
+				preprocess: preprocess({
+					scss: {
+						includePaths: ["src/css"],
+					},
+				}),
+				
+				compilerOptions: {
+					// enable run-time checks when not in production
+					dev: !production,
+				},
+			}),
+			
+			cssOnly({
+				output: "bundle.css",
+			}),
+	
+			// If you have external dependencies installed from
+			// npm, you'll most likely need these plugins. In
+			// some cases you'll need additional configuration -
+			// consult the documentation for details:
+			// https://github.com/rollup/rollup-plugin-commonjs
+			resolve({
+				browser: true,
+				dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
+			}),
+			
+			commonjs({
+				ignore: [
+					"os",
+					"fs",
+					"path",
+					"constants",
+					"util",
+					"stream",
+					"assert",
+					"string_decoder",
+					"buffer",
+					"events",
+				],
+			}),
+			
+			globals(),
+			builtins(),
+			production && terser(),
+		],
+	},
 ];

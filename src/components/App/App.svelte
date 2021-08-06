@@ -60,8 +60,6 @@ onMount(async function() {
 	
 	app.uiMounted();
 	
-	app.openFile("test/repos/test.js", await require("flowfs")("test/repos/test.js").read());
-	
 	return function() {
 		for (let fn of teardown) {
 			fn();
@@ -88,8 +86,8 @@ $border: 1px solid #AFACAA;
 		"left editor right"
 		"left findBar right"
 		"bottom bottom bottom";
-	width: 100vw;
-	height: 100vh;
+	width: 100%;
+	height: 100%;
 	user-select: none;
 }
 
@@ -157,7 +155,7 @@ $border: 1px solid #AFACAA;
 }
 </style>
 
-<div id="main">
+<div id="main" class="editor">
 	<div id="toolbar">
 		<Toolbar/>
 	</div>

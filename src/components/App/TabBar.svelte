@@ -1,6 +1,4 @@
 <script>
-let fs = require("flowfs");
-
 import {onMount, createEventDispatcher, getContext} from "svelte";
 import Gap from "../utils/Gap.svelte";
 
@@ -36,13 +34,13 @@ function getTabName(tabs, tab) {
 	let {path, modified} = document;
 	
 	if (path) {
-		return fs(path).name + (modified ? " *" : "");
+		return platform.fs(path).name + (modified ? " *" : "");
 	} else {
 		return "New file *";
 	}
 }
 
-function onUpdateTabs() {
+function updateTabs() {
 	tabs = app.tabs;
 }
 
@@ -50,16 +48,12 @@ function onSelectTab() {
 	selectedTab = app.selectedTab;
 }
 
-function onDocumentEditOrSave() {
-	onUpdateTabs();
-}
-
 onMount(function() {
 	let teardown = [
-		app.on("updateTabs", onUpdateTabs),
+		app.on("updateTabs", updateTabs),
 		app.on("selectTab", onSelectTab),
-		app.on("document.save", onDocumentEditOrSave),
-		app.on("document.edit", onDocumentEditOrSave),
+		app.on("document.save", updateTabs),
+		app.on("document.edit", updateTabs),
 	];
 	
 	return function() {
