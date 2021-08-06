@@ -12,7 +12,6 @@ function mouseup(item) {
 
 <style type="text/scss">
 #main {
-	font-size: 14px;
 	border: 1px solid #B4BBC1;
 	background: white;
 }
@@ -28,7 +27,7 @@ function mouseup(item) {
 }
 </style>
 
-<div id="main">
+<div id="main" class="editor">
 	{#each items as item}
 		<div class="item" on:mouseup={() => mouseup(item)}>
 			{item.label}

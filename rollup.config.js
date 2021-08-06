@@ -6,17 +6,42 @@ import {terser} from "rollup-plugin-terser";
 import preprocess from "svelte-preprocess";
 import builtins from "rollup-plugin-node-builtins";
 import globals from "rollup-plugin-node-globals";
+import scss from "rollup-plugin-scss";
 
 let production = !process.env.ROLLUP_WATCH;
 
 export default [
+	{
+		input: "src/platforms/common/globalCss.js",
+		
+		output: {
+			format: "iife",
+			file: "src/platforms/electron/renderer/public/build/globalCss.js",
+		},
+		
+		plugins: [
+			scss(),
+		],
+	},
+	{
+		input: "src/platforms/common/globalCss.js",
+		
+		output: {
+			format: "iife",
+			file: "src/platforms/web/public/build/globalCss.js",
+		},
+		
+		plugins: [
+			scss(),
+		],
+	},
 	{
 		input: "src/platforms/electron/renderer/main.js",
 		
 		output: {
 			sourcemap: true,
 			format: "iife",
-			file: "build/electron/bundle.js",
+			file: "src/platforms/electron/renderer/public/build/bundle.js",
 		},
 		
 		plugins: [
@@ -74,7 +99,7 @@ export default [
 			sourcemap: true,
 			format: "iife",
 			name: "editor",
-			file: "build/web/bundle.js",
+			file: "src/platforms/web/public/build/bundle.js",
 		},
 		
 		plugins: [

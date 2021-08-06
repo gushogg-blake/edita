@@ -6,7 +6,7 @@ asar: true
 
 # Windows configuration
 win:
-  icon: "public/img/icon.ico"
+  icon: "src/platforms/electron/icon.ico"
   target:
     - "zip"
     - "nsis"

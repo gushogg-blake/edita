@@ -61,7 +61,7 @@ class Platform {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load(fs(__dirname, "../../../../vendor/tree-sitter/langs/" + name + ".wasm").path); // TODO portability (path separator)
+		return TreeSitter.Language.load(fs(__dirname, "./public/vendor/tree-sitter/langs/" + name + ".wasm").path); // TODO portability (path separator)
 	}
 }
 

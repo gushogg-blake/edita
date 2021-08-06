@@ -1,0 +1,16 @@
+.editor {
+	font-family: "Noto Sans";
+	font-size: 12.5px;
+	color: #444444;
+	
+	&, div {
+		box-sizing: border-box;
+		outline: none;
+	}
+	
+	button {
+		color: #333333;
+		border: 0;
+		padding: .3em .7em;
+	}
+}
