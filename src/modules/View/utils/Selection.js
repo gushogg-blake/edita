@@ -171,6 +171,38 @@ module.exports = {
 		}
 	},
 	
+	wordLeft() {
+		let {wrappedLines} = this;
+		let {start} = sort(this.normalSelection);
+		let [lineIndex, offset] = start;
+		let {line} = wrappedLines[lineIndex];
+		
+		if (offset === 0) {
+			return this.Selection.left();
+		} else {
+			let stringToCursor = line.string.substr(0, offset).split("").reverse().join("");
+			let [whiteSpaceOrWord] = stringToCursor.match(/^\s*(\s+|\w+|[^\w\s]+)/);
+			
+			return s([lineIndex, offset - whiteSpaceOrWord.length]);
+		}
+	},
+	
+	wordRight() {
+		let {wrappedLines} = this;
+		let {end} = sort(this.normalSelection);
+		let [lineIndex, offset] = end;
+		let {line} = wrappedLines[lineIndex];
+		
+		if (offset === line.string.length) {
+			return this.Selection.right();
+		} else {
+			let stringToCursor = line.string.substr(offset);
+			let [whiteSpaceOrWord] = stringToCursor.match(/^\s*(\s+|\w+|[^\w\s]+)/);
+			
+			return s([lineIndex, offset + whiteSpaceOrWord.length]);
+		}
+	},
+	
 	expandOrContractUp() {
 		let {start, end} = this.normalSelection;
 		let [lineIndex, offset] = end;
@@ -298,7 +330,7 @@ module.exports = {
 		let [lineIndex, offset] = end;
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [innerLineIndex, innerLineOffset] = innerLineIndexAndOffsetFromCursor(lineIndex, offset);
+		let [innerLineIndex, innerLineOffset] = this.innerLineIndexAndOffsetFromCursor(lineIndex, offset);
 		
 		if (wrappedLine.height > 1 && innerLineIndex < wrappedLine.height - 1) {
 			let lineRow = wrappedLine.rows[innerLineIndex];
