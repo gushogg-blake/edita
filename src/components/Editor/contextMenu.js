@@ -7,17 +7,23 @@ export default function(e, items) {
 	let x = e.clientX + 3;
 	let y = e.clientY;
 	
+	let overlay = document.createElement("div");
 	let container = document.createElement("div");
 	
-	on(container, "mousedown", function(e) {
-		e.stopPropagation();
-	});
+	document.body.appendChild(overlay);
+	overlay.appendChild(container);
 	
-	document.body.appendChild(container);
-	
-	container.style = inlineStyle({
+	overlay.style = inlineStyle({
 		position: "fixed",
 		zIndex: 100,
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0,
+	});
+	
+	container.style = inlineStyle({
+		position: "absolute",
 		top: y,
 		left: x,
 		opacity: 0,
@@ -35,9 +41,9 @@ export default function(e, items) {
 	function close() {
 		contextMenu.$destroy();
 		
-		container.parentNode.removeChild(container);
+		overlay.parentNode.removeChild(overlay);
 		
-		off(document.body, "mousedown", close);
+		off(overlay, "mousedown", close);
 		off(window, "blur", close);
 	}
 	
@@ -59,9 +65,10 @@ export default function(e, items) {
 	
 	container.style.opacity = "1";
 	
-	on(window, "blur", close);
+	on(container, "mousedown", function(e) {
+		e.stopPropagation();
+	});
 	
-	setTimeout(function() {
-		on(document.body, "mousedown", close);
-	}, 0);
+	on(window, "blur", close);
+	on(overlay, "mousedown", close);
 }
