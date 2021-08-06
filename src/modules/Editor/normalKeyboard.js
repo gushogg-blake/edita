@@ -111,10 +111,17 @@ module.exports = {
 	
 	/*
 	NOTE backspace and delete are identical except for backspace/delete
+	and the offset check for newBatchState
 	*/
 	
 	backspace() {
-		let newBatchState = this.view.Selection.isFull() ? null : "backspace";
+		let [, offset] = this.view.normalSelection.start;
+		
+		let newBatchState = (
+			this.view.Selection.isFull()
+			|| offset === 0
+		) ? null : "backspace";
+		
 		let result = this.document.backspace(this.view.normalSelection);
 		
 		if (result) {
@@ -128,7 +135,7 @@ module.exports = {
 				normalSelection: newSelection,
 			};
 			
-			if (this.batchState === "backspace") {
+			if (this.batchState === "backspace" && newBatchState === "backspace") {
 				this.applyAndMergeWithLastHistoryEntry(apply);
 			} else {
 				this.applyAndAddHistoryEntry(apply);
@@ -139,7 +146,13 @@ module.exports = {
 	},
 	
 	delete() {
-		let newBatchState = this.view.Selection.isFull() ? null : "delete";
+		let [lineIndex, offset] = this.view.normalSelection.start;
+		
+		let newBatchState = (
+			this.view.Selection.isFull()
+			|| offset === this.document.lines[lineIndex].string.length
+		) ? null : "delete";
+		
 		let result = this.document.delete(this.view.normalSelection);
 		
 		if (result) {
@@ -153,7 +166,7 @@ module.exports = {
 				normalSelection: newSelection,
 			};
 			
-			if (this.batchState === "delete") {
+			if (this.batchState === "delete" && newBatchState === "delete") {
 				this.applyAndMergeWithLastHistoryEntry(apply);
 			} else {
 				this.applyAndAddHistoryEntry(apply);
