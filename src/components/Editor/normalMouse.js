@@ -252,10 +252,10 @@ module.exports = function(document, editor, view, editorComponent) {
 				newSelection,
 			} = document.move(selection, cursor));
 		} else {
-			({
-				edits,
-				newSelection,
-			} = document.replaceSelection(Selection.s(cursor), str));
+			let edit = document.replaceSelection(Selection.s(cursor), str);
+			
+			edits = [edit.edit];
+			newSelection = edit.newSelection;
 		}
 		
 		editor.applyAndAddHistoryEntry({
