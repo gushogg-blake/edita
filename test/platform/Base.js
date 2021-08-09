@@ -41,7 +41,7 @@ function defaultPrefs() {
 	};
 }
 
-class App extends Evented {
+class Base extends Evented {
 	constructor() {
 		super();
 		
@@ -101,4 +101,4 @@ class App extends Evented {
 	}
 }
 
-module.exports = App;
+module.exports = Base;

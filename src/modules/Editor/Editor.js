@@ -1,5 +1,6 @@
 let Evented = require("../../utils/Evented");
 let bindFunctions = require("../../utils/bindFunctions");
+let parsePlaceholdersInLines = require("../utils/parsePlaceholdersInLines");
 let find = require("./find");
 let normalMouse = require("./normalMouse");
 let normalKeyboard = require("./normalKeyboard");
@@ -20,6 +21,8 @@ class Editor extends Evented {
 		this.astKeyboard = bindFunctions(this, astKeyboard);
 		
 		this.find = find(this);
+		
+		this.snippetSession = null;
 		
 		this.historyEntries = new WeakMap();
 	}
@@ -44,10 +47,66 @@ class Editor extends Evented {
 	doAstManipulation(code) {
 		let {document} = this;
 		let {lines} = document;
+		let [startLineIndex, endLineIndex] = this.view.astSelection;
 		
 		let transformedLines = this.document.lang.codeIntel.astManipulations[code].apply(this.document, this.view.astSelection);
 		
-		console.log(transformedLines);
+		let {
+			lines: replacedLines,
+			placeholders,
+		} = parsePlaceholdersInLines(transformedLines, startLineIndex);
+		
+		let edit = document.lineEdit(startLineIndex, endLineIndex - startLineIndex, replacedLines);
+		let newSelection = [startLineIndex, startLineIndex + replacedLines.length];
+		
+		this.applyAndAddHistoryEntry({
+			edits: [edit],
+			astSelection: newSelection,
+		});
+		
+		if (placeholders.length > 0) {
+			this.startSnippetSession(placeholders);
+		}
+	}
+	
+	startSnippetSession(placeholders) {
+		this.snippetSession = {
+			index: -1,
+			placeholders,
+		};
+		
+		this.nextTabstop();
+	}
+	
+	nextTabstop() {
+		let {snippetSession} = this;
+		
+		snippetSession.index++;
+		
+		let {index, placeholders} = snippetSession;
+		
+		let placeholder = placeholders[index];
+		
+		let {
+			lineIndex,
+			offset,
+			initialText,
+		} = placeholder;
+		
+		this.setNormalSelection({
+			start: [lineIndex, offset],
+			end: [lineIndex, offset + initialText.length],
+		});
+		
+		this.view.redraw();
+		
+		if (index === placeholders.length - 1) {
+			this.clearSnippetSession();
+		}
+	}
+	
+	clearSnippetSession() {
+		this.snippetSession = null;
 	}
 	
 	applyHistoryEntry(entry, state) {
@@ -86,6 +145,8 @@ class Editor extends Evented {
 		
 		this.applyHistoryEntry(entry, "after");
 	}
+	
+	// NOTE only works with same-line changes e.g. typing/deleting within a line
 	
 	applyAndMergeWithLastHistoryEntry(edit) {
 		let entry = this.document.applyAndMergeWithLastHistoryEntry(edit.edits);

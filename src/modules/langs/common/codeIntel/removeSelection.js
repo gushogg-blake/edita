@@ -29,7 +29,7 @@ module.exports = function(document, selection) {
 	
 	let spaces = createSpaces(insertSpaces, selectionHeaderLine.indentLevel, indentStr);
 	
-	return document.edit(
+	return document.lineEdit(
 		removeStart,
 		removeLines,
 		spaces,

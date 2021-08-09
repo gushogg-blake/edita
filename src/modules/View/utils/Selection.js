@@ -6,6 +6,7 @@ let {
 	s,
 	sort,
 	isFull,
+	isMultiline,
 } = Selection;
 
 let wordUnderCursorRe = {
@@ -19,6 +20,10 @@ let wordUnderCursorRe = {
 module.exports = {
 	isFull() {
 		return isFull(this.normalSelection);
+	},
+	
+	isMultiline() {
+		return isMultiline(this.normalSelection);
 	},
 	
 	up() {

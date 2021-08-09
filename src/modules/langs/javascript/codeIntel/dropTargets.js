@@ -46,7 +46,7 @@ module.exports = {
 				"}",
 			], indentStr, footerLine.indentLevel);
 			
-			edits.push(document.edit(insertIndex, removeLines, insertLines));
+			edits.push(document.lineEdit(insertIndex, removeLines, insertLines));
 			
 			let newStartLineIndex = footerLineIndex + 1 - removeDiff;
 			

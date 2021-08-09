@@ -81,7 +81,7 @@ module.exports = {
 				let spaces = (toEnd - toStart) - existingSpaces;
 				let adjustSelection = fromStart < toStart ? spaces : 0;
 				
-				edits.push(document.edit(addSpacesAt, 0, createSpaces(spaces, indentLevel, indentStr)));
+				edits.push(document.lineEdit(addSpacesAt, 0, createSpaces(spaces, indentLevel, indentStr)));
 				
 				newSelection = AstSelection.s(fromStart + adjustSelection, fromEnd + adjustSelection);
 			}
@@ -111,7 +111,7 @@ module.exports = {
 					blocks from other lines
 					*/
 					
-					let edit = document.edit(toStart, 0, lines);
+					let edit = document.lineEdit(toStart, 0, lines);
 					
 					edits.push(edit);
 					
@@ -126,7 +126,7 @@ module.exports = {
 					
 					let spaces = createSpaces(toEnd - toStart, insertIndentLevel, indentStr);
 					
-					let edit = document.edit(toEnd, 0, [
+					let edit = document.lineEdit(toEnd, 0, [
 						...lines,
 						...spaces,
 					]);

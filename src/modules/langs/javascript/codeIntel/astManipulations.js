@@ -84,7 +84,7 @@ module.exports = {
 				i = endLineIndex;
 			}
 			
-			let header = [0, "[[%tabstop:]]{"];
+			let header = [0, "[[%tabstop:]]{[[%tabstop:]]"];
 			
 			let transformedLines = statements.map(function(statement) {
 				let {type, line} = statement;
@@ -105,7 +105,7 @@ module.exports = {
 					
 					return [1, string];
 				} else if (type === "multilineContents") {
-					return [1 + line.indentLevel - baseIndentLevel, line.trimmed];
+					return [1 + line.indentLevel - baseIndentLevel, line.trimmed + "[[%tabstop:]]"];
 				} else if (type === "footer") {
 					let {trimmed: string} = line;
 					

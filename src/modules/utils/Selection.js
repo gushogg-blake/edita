@@ -41,6 +41,12 @@ function isFull(selection) {
 	return start[0] !== end[0] || start[1] !== end[1];
 }
 
+function isMultiline(selection) {
+	let {start, end} = selection;
+	
+	return start[0] !== end[0];
+}
+
 function s(start, end=null) {
 	return {
 		start,
@@ -52,6 +58,7 @@ let api = {
 	s,
 	sort,
 	isFull,
+	isMultiline,
 	isBefore,
 	
 	cursorIsWithinSelection(selection, cursor) {

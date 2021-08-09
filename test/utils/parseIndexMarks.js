@@ -15,7 +15,7 @@ e.g.
 */
 
 module.exports = function(str) {
-	let marks = [];
+	let marks = {};
 	let offset = 0;
 	
 	let string = str.replace(/<@([^>]+)>/g, function(match, name, index) {

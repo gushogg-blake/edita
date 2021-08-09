@@ -177,17 +177,21 @@ module.exports = {
 	},
 	
 	tab() {
-		// TODO snippets, indent/dedent selection
-		
-		let {
-			edit,
-			newSelection,
-		} = this.document.replaceSelection(this.view.normalSelection, this.document.fileDetails.indentation.string);
-		
-		this.applyAndAddHistoryEntry({
-			edits: [edit],
-			normalSelection: newSelection,
-		});
+		if (this.view.Selection.isMultiline()) {
+			// TODO indent/dedent selection
+		} else if (this.snippetSession) {
+			this.nextTabstop();
+		} else {
+			let {
+				edit,
+				newSelection,
+			} = this.document.replaceSelection(this.view.normalSelection, this.document.fileDetails.indentation.string);
+			
+			this.applyAndAddHistoryEntry({
+				edits: [edit],
+				normalSelection: newSelection,
+			});
+		}
 		
 		this.clearBatchState();
 	},

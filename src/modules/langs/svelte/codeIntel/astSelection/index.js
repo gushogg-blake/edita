@@ -3,9 +3,10 @@ let {
 	findPrevLineIndexAtIndentLevel,
 } = require("../../../common/codeIntel/utils");
 
+let fromLineRange = require("../../../common/codeIntel/astSelection/fromLineRange");
+
 let selectionFromLineIndex = require("./selectionFromLineIndex");
 let hiliteFromLineIndex = require("./hiliteFromLineIndex");
-let fromLineRange = require("./fromLineRange");
 
 let api = {
 	selectionFromLineIndex(lines, lineIndex) {
@@ -19,19 +20,10 @@ let api = {
 	fromLineRange,
 	
 	up(lines, selection) {
-		let [startLineIndex] = selection;
-		let line = lines[startLineIndex];
-		let headerLineIndex = findPrevLineIndexAtIndentLevel(lines, startLineIndex, line.indentLevel - 1);
-		
-		if (headerLineIndex === null) {
-			return selection;
-		}
-		
-		return selectionFromLineIndex(lines, headerLineIndex);
+		return selection;
 	},
 	
 	down(lines, selection) {
-		// if empty block, create a new blank line
 		return selection;
 	},
 	
