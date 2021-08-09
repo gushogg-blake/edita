@@ -459,7 +459,7 @@ class Document extends Evented {
 		}
 		
 		return {
-			edit: this.stringEdit(Selection.s(start, end),
+			edit: this.stringEdit(Selection.s(start, end), ""),
 			newSelection: Selection.s(end),
 		};
 	}
