@@ -46,12 +46,18 @@
 	},
 	"scripts": {
 		"start": "electron .",
-		"build": "rollup -c",
-		"autobuild": "rollup -c -w",
-		"dev": "run-p autobuild electron-dev web-dev",
-		"web-dev": "sirv src/platforms/web/public --dev",
+		"build-all": "rollup -c",
+		"autobuild-all": "rollup -c -w",
+		"build-electron": "PLATFORM=electron rollup -c",
+		"autobuild-electron": "PLATFORM=electron rollup -c -w",
+		"build-web": "PLATFORM=web rollup -c",
+		"autobuild-web": "PLATFORM=web rollup -c -w",
+		"dev": "run-p autobuild-all electron web",
+		"electron-dev": "run-p autobuild-electron electron",
+		"web-dev": "run-p autobuild-web web",
+		"electron": "NODE_ENV=development electron .",
+		"web": "sirv src/platforms/web/public --dev",
 		"dist": "run-s build pure-dist-win",
-		"electron-dev": "NODE_ENV=development electron .",
 		"pure-dist-win": "electron-builder --win --config electron-builder.yml",
 		"test": "./node_modules/mocha/bin/mocha --file test/platform/main.js 'test/tests/**/*.test.js'"
 	}

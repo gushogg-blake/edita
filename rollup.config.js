@@ -11,8 +11,11 @@ import scss from "rollup-plugin-scss";
 
 let production = !process.env.ROLLUP_WATCH;
 
-export default [
-	{
+let platforms = [];
+let platform = process.env.PLATFORM;
+
+if (!platform || platform === "all" || platform === "electron") {
+	platforms.push({
 		input: "src/platforms/common/globalCss.js",
 		
 		output: {
@@ -92,8 +95,11 @@ export default [
 			builtins(),
 			production && terser(),
 		],
-	},
-	{
+	});
+}
+
+if (!platform || platform === "all" || platform === "web") {
+	platforms.push({
 		input: "src/platforms/web/main.js",
 		
 		output: {
@@ -151,5 +157,7 @@ export default [
 			!production && livereload("src/platforms/web/public/build"),
 			production && terser(),
 		],
-	},
-];
+	});
+}
+
+export default platforms;

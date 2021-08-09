@@ -119,11 +119,11 @@ module.exports = {
 			
 			let footer = [0, "};"];
 			
-			console.log(AstSelection.selectionLinesToStrings([
+			return AstSelection.selectionLinesToStrings([
 				header,
 				...transformedLines,
 				footer,
-			], indentStr, baseIndentLevel));
+			], indentStr, baseIndentLevel);
 		},
 	},
 };
