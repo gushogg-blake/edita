@@ -214,6 +214,7 @@ class Editor extends Evented {
 			return;
 		}
 		
+		this.view.updateSizes();
 		this.view.ensureSelectionIsOnScreen();
 		this.view.startCursorBlink();
 		

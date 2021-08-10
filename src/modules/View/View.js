@@ -437,7 +437,15 @@ class View extends Evented {
 		this.fire("updateMeasurements");
 	}
 	
-	updateSizes(width, height) {
+	setCanvasSize(width, height) {
+		this.updateSizes(width, height);
+	}
+	
+	updateSizes(width=null, height=null) {
+		if (width === null && height === null) {
+			({width, height} = this.sizes);
+		}
+		
 		let {
 			document,
 			wrappedLines,
@@ -465,7 +473,7 @@ class View extends Evented {
 			cols: Math.floor(codeWidth / colWidth),
 		};
 		
-		this.fire("resize");
+		this.fire("updateSizes");
 	}
 	
 	startCursorBlink() {

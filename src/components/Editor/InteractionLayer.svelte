@@ -294,7 +294,7 @@ function dragleave(e) {
 	fire("dragleave", e);
 }
 
-function onResize() {
+function onUpdateSizes() {
 	({
 		sizes: {
 			width,
@@ -399,7 +399,7 @@ $: codeStyle = calculateCodeStyle(
 
 onMount(function() {
 	let teardown = [
-		view.on("resize", onResize),
+		view.on("updateSizes", onUpdateSizes),
 		view.on("updateMeasurements", onUpdateMeasurements),
 		view.on("scroll", onScroll),
 		view.on("modeSwitch", onModeSwitch),

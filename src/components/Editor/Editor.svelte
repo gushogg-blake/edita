@@ -358,12 +358,6 @@ function keyup(e) {
 	}
 }
 
-function onEdit() {
-	if (view.mode === "ast") {
-		astMouseHandler.updateHilites(lastMouseEvent);
-	}
-}
-
 function switchToAstMode() {
 	if (mouseIsDown) {
 		return;
@@ -405,7 +399,7 @@ function resize() {
 		
 		context.textBaseline = "bottom";
 		
-		view.updateSizes(width, height);
+		view.setCanvasSize(width, height);
 		
 		if (width !== prevWidth) {
 			view.updateWrappedLines();
@@ -549,6 +543,12 @@ async function toggleHorizontalScrollbar(show) {
 
 function onFocus() {
 	view.focus();
+}
+
+function onEdit() {
+	if (view.mode === "ast") {
+		astMouseHandler.updateHilites(lastMouseEvent);
+	}
 }
 
 onMount(async function() {
