@@ -60,8 +60,20 @@ class Document extends Evented {
 		console.log(removeLines);
 		
 		let insertString = insertLines.join(newline);
-		let start = c(lineIndex, 0);
+		let start;
 		let end;
+		
+		/*
+		we can insert lines after the last line
+		*/
+		
+		if (lineIndex === this.lines.length) {
+			start = c(lineIndex - 1, this.lines[this.lines.length - 1].string.length);
+			
+			insertString = newline + insertString;
+		} else {
+			start = c(lineIndex, 0);
+		}
 		
 		if (endLineIndex === this.lines.length) {
 			end = c(endLineIndex - 1, this.lines[endLineIndex - 1].string.length);
