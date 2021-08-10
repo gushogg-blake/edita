@@ -1,8 +1,4 @@
-let JavaScript = require("tree-sitter-javascript");
-
-let treeSitterLangs = {
-	javascript: JavaScript,
-};
+let fs = require("flowfs");
 
 class Platform {
 	constructor() {
@@ -12,7 +8,7 @@ class Platform {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return treeSitterLangs[name];
+		return TreeSitter.Language.load(fs(__dirname, "./public/vendor/tree-sitter/langs/" + name + ".wasm").path);
 	}
 }
 

@@ -17,7 +17,7 @@ let tests = [
 let fileDetails;
 
 before(function() {
-	fileDetails = app.getFileDetails("", "a.js");
+	fileDetails = base.getFileDetails("", "a.js");
 });
 
 let startComment = "/*";
@@ -41,7 +41,7 @@ describe("Line.render", function() {
 		
 		let path = "test/repos/test.js";
 		let code = await fs(path).read();
-		let fileDetails = app.getFileDetails(code, path);
+		let fileDetails = base.getFileDetails(code, path);
 		let doc = new Document(code, fileDetails);
 		
 		for (let line of doc.lines) {

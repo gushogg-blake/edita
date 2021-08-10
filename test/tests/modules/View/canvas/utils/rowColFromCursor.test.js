@@ -1,7 +1,7 @@
-let {is, deep} = require("../../../../utils/assertions");
-let dedent = require("../../../../utils/dedent");
-let createJsDoc = require("../../../../utils/createJsDoc");
-let rowColFromCursor = require("../../../../../src/components/Editor/utils/rowColFromCursor");
+let {is, deep} = require("../../../../../utils/assertions");
+let dedent = require("../../../../../utils/dedent");
+let createJsDoc = require("../../../../../utils/createJsDoc");
+let rowColFromCursor = require("../../../../../../src/modules/View/canvas/utils/rowColFromCursor");
 
 let measurements = {
 	rowHeight: 20,
