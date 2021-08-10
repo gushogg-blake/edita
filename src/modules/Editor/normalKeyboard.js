@@ -1,3 +1,5 @@
+let Selection = require("../utils/Selection");
+
 module.exports = {
 	up() {
 		this.setNormalSelection(this.view.Selection.up());
@@ -115,7 +117,7 @@ module.exports = {
 	*/
 	
 	backspace() {
-		let [, offset] = this.view.normalSelection.start;
+		let {offset} = this.view.normalSelection.start;
 		
 		let newBatchState = (
 			this.view.Selection.isFull()
@@ -146,7 +148,7 @@ module.exports = {
 	},
 	
 	delete() {
-		let [lineIndex, offset] = this.view.normalSelection.start;
+		let {lineIndex, offset} = this.view.normalSelection.start;
 		
 		let newBatchState = (
 			this.view.Selection.isFull()
@@ -180,12 +182,31 @@ module.exports = {
 		if (this.view.Selection.isMultiline()) {
 			// TODO indent/dedent selection
 		} else if (this.snippetSession) {
+			// snippet
+			
 			this.nextTabstop();
 		} else {
+			// tab
+			
+			let {indentation} = this.document.fileDetails;
+			let {normalSelection} = this.view;
+			
+			let str;
+			
+			if (indentation.type === "tab") {
+				str = "\t";
+			} else {
+				let {start} = Selection.sort(normalSelection);
+				let {colsPerIndent} = indentation;
+				let insertCols = colsPerIndent - start.offset % colsPerIndent;
+				
+				str = " ".repeat(insertCols);
+			}
+			
 			let {
 				edit,
 				newSelection,
-			} = this.document.replaceSelection(this.view.normalSelection, this.document.fileDetails.indentation.string);
+			} = this.document.replaceSelection(this.view.normalSelection, str);
 			
 			this.applyAndAddHistoryEntry({
 				edits: [edit],

@@ -39,7 +39,7 @@ class Document extends Evented {
 		
 		let newEndLineIndex = start.lineIndex + insertLines.length - 1;
 		let lastLine = insertLines[insertLines.length - 1];
-		let newSelection = s(c(newEndLineIndex, lastLine.length - suffix.length));
+		let newSelection = s(start, c(newEndLineIndex, lastLine.length - suffix.length));
 		
 		return {
 			selection,
@@ -91,14 +91,12 @@ class Document extends Evented {
 	}
 	
 	applyAndAddHistoryEntry(edits) {
-		// sort by line index descending so that line indexes don't need adjusting
+		// apply later edits first so that selections don't need adjusting
 		edits = [...edits].sort(function(a, b) {
-			if (a.lineIndex > b.lineIndex) {
-				return -1;
-			} else if (b.lineIndex > a.lineIndex) {
+			if (Selection.isBefore(a.selection, b.selection)) {
 				return 1;
 			} else {
-				return 0;
+				return -1;
 			}
 		});
 		
@@ -249,10 +247,10 @@ class Document extends Evented {
 				return {
 					edits: [this.edit(toLineIndex, 1, newString)],
 					
-					newSelection: {
-						start: [toLineIndex, insertOffset],
-						end: [toLineIndex, insertOffset + length],
-					},
+					newSelection: s(
+						c(toLineIndex, insertOffset),
+						c(toLineIndex, insertOffset + length),
+					),
 				};
 			} else {
 				// moving multiline onto same line - header & footer edits
@@ -343,7 +341,8 @@ class Document extends Evented {
 			return this.replaceSelection(selection, "");
 		}
 		
-		let {lineIndex, offset} = Selection.sort(selection).start;
+		let {start} = Selection.sort(selection);
+		let {lineIndex, offset} = start;
 		
 		if (lineIndex === 0 && offset === 0) {
 			return null;
