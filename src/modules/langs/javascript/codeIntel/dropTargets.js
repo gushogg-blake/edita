@@ -2,6 +2,8 @@ let indentLines = require("../../../utils/indentLines");
 let AstSelection = require("../../../utils/AstSelection");
 let removeSelection = require("../../common/codeIntel/removeSelection");
 
+let {s} = AstSelection;
+
 module.exports = {
 	addSelectionToNewElse: {
 		type: "addSelectionToNewElse",
@@ -17,18 +19,22 @@ module.exports = {
 		) {
 			let edits = [];
 			let indentStr = document.fileDetails.indentation.string;
-			let [toStart, toEnd] = toSelection;
+			let {startLineIndex: toStart, endLineIndex: toEnd} = toSelection;
 			let removeDiff = 0;
 			
 			if (move && fromSelection) {
-				let [fromStart, fromEnd] = fromSelection;
+				let {startLineIndex: fromStart, endLineIndex: fromEnd} = fromSelection;
 				
-				let edit = removeSelection(document, fromSelection);
+				let {
+					removeLinesCount,
+					spaces,
+					edit,
+				} = removeSelection(document, fromSelection);
 				
 				edits.push(edit);
 				
 				if (fromEnd < toEnd) {
-					removeDiff = edit.removeLines.length - edit.insertLines.length;
+					removeDiff = removeLinesCount - spaces.length;
 				}
 			}
 			
@@ -52,7 +58,7 @@ module.exports = {
 			
 			return {
 				edits,
-				newSelection: AstSelection.s(newStartLineIndex, newStartLineIndex + lines.length),
+				newSelection: s(newStartLineIndex, newStartLineIndex + lines.length),
 			};
 		},
 	},

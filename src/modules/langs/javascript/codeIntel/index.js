@@ -91,12 +91,16 @@ module.exports = {
 			let removeDiff = 0;
 			
 			if (move && fromSelection) {
-				let edit = removeSelection(document, fromSelection);
+				let {
+					removeLinesCount,
+					spaces,
+					edit,
+				} = removeSelection(document, fromSelection);
 				
 				edits.push(edit);
 				
 				if (toSelection && fromEnd < toEnd) {
-					removeDiff = edit.removeLines.length - edit.insertLines.length;
+					removeDiff = removeLinesCount - spaces.length;
 				}
 				
 				// TODO newSelection

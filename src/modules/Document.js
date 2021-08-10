@@ -49,6 +49,33 @@ class Document extends Evented {
 		};
 	}
 	
+	lineEdit(lineIndex, removeLinesCount, insertLines) {
+		let {newline} = this.fileDetails;
+		let endLineIndex = lineIndex + removeLinesCount;
+		let removeLines = this.lines.slice(lineIndex, endLineIndex);
+		
+		console.log(lineIndex, removeLinesCount);
+		
+		console.log(insertLines);
+		console.log(removeLines);
+		
+		let insertString = insertLines.join(newline);
+		let start = c(lineIndex, 0);
+		let end;
+		
+		if (endLineIndex === this.lines.length) {
+			end = c(endLineIndex - 1, this.lines[endLineIndex - 1].string.length);
+		} else {
+			end = c(endLineIndex, 0);
+			
+			if (insertString) {
+				insertString += newline;
+			}
+		}
+		
+		return this.edit(s(start, end), insertString);
+	}
+	
 	apply(edit) {
 		let {
 			selection,

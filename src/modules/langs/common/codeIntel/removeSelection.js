@@ -16,7 +16,7 @@ module.exports = function(document, selection) {
 	let removeStart = startLineIndex - spaceAbove;
 	let removeEnd = endLineIndex + spaceBelow;
 	let insertBlank = prevSiblingIndex === null && nextSiblingIndex === null;
-	let removeLines = removeEnd - removeStart;
+	let removeLinesCount = removeEnd - removeStart;
 	let insertSpaces;
 	
 	if (isFirstChild) {
@@ -29,5 +29,10 @@ module.exports = function(document, selection) {
 	
 	let spaces = createSpaces(insertSpaces, selectionHeaderLine.indentLevel, indentStr);
 	
-	return document.lineEdit(removeStart, removeLines, spaces);
+	return {
+		lineIndex: removeStart,
+		removeLinesCount,
+		spaces,
+		edit: document.lineEdit(removeStart, removeLinesCount, spaces),
+	};
 }
