@@ -20,7 +20,7 @@ module.exports = function(context, view, isPeeking) {
 	context.fillStyle = base.prefs.astSelectionHiliteBackground;
 	
 	let {colWidth, rowHeight} = measurements;
-	let [startLineIndex, endLineIndex] = hilite;
+	let {startLineIndex, endLineIndex} = hilite;
 	let startLine = wrappedLines[startLineIndex].line;
 	let startRow = view.getLineStartingRow(startLineIndex);
 	let height = (view.getLineRangeTotalHeight(startLineIndex, endLineIndex - 1)) * rowHeight;

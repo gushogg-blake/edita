@@ -197,11 +197,11 @@ class View extends Evented {
 	}
 	
 	showPickOptionsFor(astSelection) {
-		if (!selection) {
+		if (!astSelection) {
 			return;
 		}
 		
-		let [startLineIndex] = astSelection;
+		let {startLineIndex} = astSelection;
 		let lineIndex = startLineIndex;
 		let {lines} = this.document;
 		let {codeIntel} = this.document.lang;
@@ -211,7 +211,7 @@ class View extends Evented {
 			
 			options: codeIntel.generatePickOptions(
 				lines,
-				selection,
+				astSelection,
 			).map(function(option) {
 				return {
 					lineIndex,
@@ -415,9 +415,7 @@ class View extends Evented {
 	}
 	
 	updateNormalSelectionFromAstSelection() {
-		let [, endLineIndex] = this.astSelection;
-	
-		this.normalSelection = this.Selection.endOfLineContent(endLineIndex - 1);
+		this.normalSelection = this.Selection.endOfLineContent(this.astSelection.endLineIndex - 1);
 		
 		this.updateSelectionEndCol();
 	}

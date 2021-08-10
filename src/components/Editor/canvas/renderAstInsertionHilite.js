@@ -28,7 +28,7 @@ module.exports = function(context, view, isPeeking) {
 	context.fillStyle = base.prefs.astInsertionHiliteBackground;
 	
 	let {colWidth, rowHeight} = measurements;
-	let [startLineIndex, endLineIndex] = hilite;
+	let {startLineIndex, endLineIndex} = hilite;
 	
 	if (startLineIndex === wrappedLines.length) {
 		let startRow = view.getLineStartingRow(startLineIndex - 1) + 1;

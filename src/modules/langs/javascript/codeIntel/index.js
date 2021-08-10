@@ -10,6 +10,8 @@ let dropTargets = require("./dropTargets");
 let generatePickOptions = require("./generatePickOptions");
 let generateDropTargets = require("./generateDropTargets");
 
+let {s} = AstSelection;
+
 module.exports = {
 	pickOptions,
 	dropTargets,
@@ -53,11 +55,11 @@ module.exports = {
 		let indentStr = document.fileDetails.indentation.string;
 		
 		if (fromSelection) {
-			([fromStart, fromEnd] = fromSelection);
+			({startLineIndex: fromStart, endLineIndex: fromEnd} = fromSelection);
 		}
 		
 		if (toSelection) {
-			([toStart, toEnd] = toSelection);
+			({startLineIndex: toStart, endLineIndex: toEnd} = toSelection);
 		}
 		
 		if (
@@ -83,7 +85,7 @@ module.exports = {
 				
 				edits.push(document.lineEdit(addSpacesAt, 0, createSpaces(spaces, indentLevel, indentStr)));
 				
-				newSelection = AstSelection.s(fromStart + adjustSelection, fromEnd + adjustSelection);
+				newSelection = s(fromStart + adjustSelection, fromEnd + adjustSelection);
 			}
 		} else {
 			let removeDiff = 0;
@@ -117,7 +119,7 @@ module.exports = {
 					
 					let newSelectionStart = toStart - removeDiff;
 					
-					newSelection = AstSelection.s(newSelectionStart, newSelectionStart + lines.length);
+					newSelection = s(newSelectionStart, newSelectionStart + lines.length);
 				} else {
 					/*
 					insert into space - insert after the space and copy the space
@@ -135,7 +137,7 @@ module.exports = {
 					
 					let newSelectionStart = toEnd - removeDiff;
 					
-					newSelection = AstSelection.s(newSelectionStart, newSelectionStart + lines.length);
+					newSelection = s(newSelectionStart, newSelectionStart + lines.length);
 				}
 			}
 		}

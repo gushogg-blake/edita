@@ -16,7 +16,7 @@ module.exports = function(context, view, isPeeking) {
 	
 	context.fillStyle = base.prefs.astSelectionBackground;
 	
-	let [startLineIndex, endLineIndex] = astSelection;
+	let {startLineIndex, endLineIndex} = astSelection;
 	let startLine = wrappedLines[startLineIndex].line;
 	let startRow = view.getLineStartingRow(startLineIndex);
 	let height = (view.getLineRangeTotalHeight(startLineIndex, endLineIndex - 1)) * rowHeight;

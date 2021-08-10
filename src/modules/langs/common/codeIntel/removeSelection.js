@@ -4,17 +4,17 @@ let countSpace = require("./utils/countSpace");
 
 module.exports = function(document, selection) {
 	let indentStr = document.fileDetails.indentation.string;
-	let [start, end] = selection;
-	let selectionHeaderLine = document.lines[start];
-	let prevSiblingIndex = findSiblingIndex(document.lines, start - 1, selectionHeaderLine.indentLevel, -1);
-	let nextSiblingIndex = findSiblingIndex(document.lines, end, selectionHeaderLine.indentLevel, 1);
+	let {startLineIndex, endLineIndex} = selection;
+	let selectionHeaderLine = document.lines[startLineIndex];
+	let prevSiblingIndex = findSiblingIndex(document.lines, startLineIndex - 1, selectionHeaderLine.indentLevel, -1);
+	let nextSiblingIndex = findSiblingIndex(document.lines, endLineIndex, selectionHeaderLine.indentLevel, 1);
 	let isFirstChild = prevSiblingIndex === null;
 	let isLastChild = nextSiblingIndex === null;
-	let spaceAbove = countSpace(document.lines, start - 1, -1);
-	let spaceBelow = countSpace(document.lines, end, 1);
+	let spaceAbove = countSpace(document.lines, startLineIndex - 1, -1);
+	let spaceBelow = countSpace(document.lines, endLineIndex, 1);
 	let maxSpace = Math.max(spaceAbove, spaceBelow);
-	let removeStart = start - spaceAbove;
-	let removeEnd = end + spaceBelow;
+	let removeStart = startLineIndex - spaceAbove;
+	let removeEnd = endLineIndex + spaceBelow;
 	let insertBlank = prevSiblingIndex === null && nextSiblingIndex === null;
 	let removeLines = removeEnd - removeStart;
 	let insertSpaces;
@@ -29,9 +29,5 @@ module.exports = function(document, selection) {
 	
 	let spaces = createSpaces(insertSpaces, selectionHeaderLine.indentLevel, indentStr);
 	
-	return document.lineEdit(
-		removeStart,
-		removeLines,
-		spaces,
-	);
+	return document.lineEdit(removeStart, removeLines, spaces);
 }

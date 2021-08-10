@@ -37,11 +37,11 @@ module.exports = function(
 		}
 		
 		if (rowAbove >= 0) {
-			([aboveLineIndex] = cursorFromRowCol(wrappedLines, rowAbove, 0));
+			aboveLineIndex = cursorFromRowCol(wrappedLines, rowAbove, 0).lineIndex;
 		}
 		
 		if (aboveLineIndex === null || aboveLineIndex < wrappedLines.length - 1) {
-			([belowLineIndex] = cursorFromRowCol(wrappedLines, rowBelow, 0));
+			belowLineIndex = cursorFromRowCol(wrappedLines, rowBelow, 0).lineIndex;
 		}
 	}
 	

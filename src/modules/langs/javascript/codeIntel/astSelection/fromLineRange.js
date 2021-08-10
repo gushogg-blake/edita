@@ -1,4 +1,7 @@
+let AstSelection = require("../../../../utils/AstSelection");
 let selectionFromLineIndex = require("./selectionFromLineIndex");
+
+let {s} = AstSelection;
 
 /*
 trim any blank lines from the ends of the range, then go through the range
@@ -33,19 +36,16 @@ function fromLineRange(lines, startLineIndex, endLineIndex) {
 	let endIndex = startIndex;
 	
 	for (let i = startLineIndex; i <= endLineIndex - 1; i++) {
-		let [s, e] = selectionFromLineIndex(lines, i);
+		let selection = selectionFromLineIndex(lines, i);
 		
-		if (s < startIndex) {
+		if (selection.startLineIndex < startIndex) {
 			break;
 		}
 		
-		endIndex = Math.max(endIndex, e);
+		endIndex = Math.max(endIndex, selection.endLineIndex);
 	}
 	
-	return [
-		startIndex,
-		endIndex,
-	];
+	return s(startIndex, endIndex);
 }
 
 module.exports = fromLineRange;
