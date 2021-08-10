@@ -8,9 +8,7 @@ module.exports = function(context, view) {
 		return;
 	}
 	
-	let [lineIndex, offset] = insertCursor;
-	
-	let [x, y] = view.screenCoordsFromCursor(lineIndex, offset);
+	let [x, y] = view.screenCoordsFromCursor(insertCursor);
 	
 	if (x < view.sizes.marginOffset) {
 		return;

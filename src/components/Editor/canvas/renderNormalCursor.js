@@ -10,9 +10,7 @@ module.exports = function(context, view, windowHasFocus) {
 		return;
 	}
 	
-	let [lineIndex, offset] = normalSelection.end;
-	
-	let [x, y] = view.screenCoordsFromCursor(lineIndex, offset);
+	let [x, y] = view.screenCoordsFromCursor(normalSelection.end);
 	
 	if (x < view.sizes.marginWidth) {
 		return;

@@ -1,6 +1,7 @@
 let expandTabs = require("../../../utils/string/expandTabs");
 
-module.exports = function(wrappedLines, lineIndex, offset) {
+module.exports = function(wrappedLines, cursor) {
+	let {lineIndex, offset} = cursor;
 	let row = 0;
 	
 	for (let i = 0; i < lineIndex; i++) {

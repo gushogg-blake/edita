@@ -1,5 +1,6 @@
 let Evented = require("../../utils/Evented");
 let bindFunctions = require("../../utils/bindFunctions");
+let Cursor = require("../../modules/utils/Cursor");
 let Selection = require("../../modules/utils/Selection");
 let AstSelection = require("../../modules/utils/AstSelection");
 
@@ -28,6 +29,9 @@ let marginStyle = require("./canvas/marginStyle");
 let SelectionUtils = require("./utils/Selection");
 let AstSelectionUtils = require("./utils/AstSelection");
 
+let {c} = Cursor;
+let {s} = Selection;
+
 class View extends Evented {
 	constructor(app, document) {
 		super();
@@ -45,10 +49,7 @@ class View extends Evented {
 		
 		this.mode = "normal";
 		
-		this.normalSelection = {
-			start: [0, 0],
-			end: [0, 0],
-		};
+		this.normalSelection = s(c(0, 0));
 		
 		// for remembering the "intended" col when moving a cursor up/down to a line
 		// that doesn't have as many cols as the cursor
@@ -159,16 +160,16 @@ class View extends Evented {
 		return insertLineIndexFromScreenY(this.wrappedLines, y, this.scrollPosition, this.measurements);
 	}
 	
-	rowColFromCursor(lineIndex, offset) {
-		return rowColFromCursor(this.wrappedLines, lineIndex, offset);
+	rowColFromCursor(cursor) {
+		return rowColFromCursor(this.wrappedLines, cursor);
 	}
 	
 	rowColFromScreenCoords(x, y) {
 		return rowColFromScreenCoords(this.wrappedLines, x, y, this.scrollPosition, this.measurements);
 	}
 	
-	screenCoordsFromCursor(lineIndex, offset) {
-		return screenCoordsFromCursor(this.wrappedLines, lineIndex, offset, this.scrollPosition, this.measurements);
+	screenCoordsFromCursor(cursor) {
+		return screenCoordsFromCursor(this.wrappedLines, cursor, this.scrollPosition, this.measurements);
 	}
 	
 	screenCoordsFromRowCol(row, col) {
@@ -195,12 +196,12 @@ class View extends Evented {
 		this.fire("redraw");
 	}
 	
-	showPickOptionsFor(selection) {
+	showPickOptionsFor(astSelection) {
 		if (!selection) {
 			return;
 		}
 		
-		let [startLineIndex] = selection;
+		let [startLineIndex] = astSelection;
 		let lineIndex = startLineIndex;
 		let {lines} = this.document;
 		let {codeIntel} = this.document.lang;
@@ -361,8 +362,8 @@ class View extends Evented {
 		let {colWidth} = measurements;
 		
 		let {end} = this.normalSelection;
-		let [lineIndex, offset] = end;
-		let [row, col] = this.rowColFromCursor(lineIndex, offset);
+		let {lineIndex, offset} = end;
+		let [row, col] = this.rowColFromCursor(end);
 		
 		let maxRow = this.countRows() - 1;
 		let firstVisibleRow = scrollPosition.row;
@@ -408,8 +409,7 @@ class View extends Evented {
 	}
 	
 	updateSelectionEndCol() {
-		let [lineIndex, offset] = this.normalSelection.end;
-		let [, endCol] = rowColFromCursor(this.wrappedLines, lineIndex, offset);
+		let [, endCol] = rowColFromCursor(this.wrappedLines, this.normalSelection.end);
 		
 		this.selectionEndCol = endCol;
 	}
@@ -426,11 +426,9 @@ class View extends Evented {
 		let {document} = this;
 		let {codeIntel} = document.lang;
 		
-		let selection = Selection.sort(this.normalSelection);
-		let [startLineIndex] = selection.start;
-		let [endLineIndex] = selection.end;
+		let {start, end} = Selection.sort(this.normalSelection);
 		
-		this.astSelection = codeIntel.astSelection.fromLineRange(document.lines, startLineIndex, endLineIndex + 1);
+		this.astSelection = codeIntel.astSelection.fromLineRange(document.lines, start.lineIndex, end.lineIndex + 1);
 	}
 	
 	setMeasurements(measurements) {

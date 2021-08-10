@@ -8,12 +8,10 @@ sort a selection so that start is before end
 
 function sort(selection) {
 	let {start, end} = selection;
-	let [startLineIndex, startOffset] = start;
-	let [endLineIndex, endOffset] = end;
 	
 	let flip = (
-		endLineIndex < startLineIndex
-		|| endLineIndex === startLineIndex && endOffset < startOffset
+		end.lineIndex < start.lineIndex
+		|| end.lineIndex === start.lineIndex && end.offset < start.offset
 	);
 	
 	if (flip) {
@@ -38,13 +36,15 @@ function isBefore(a, b) {
 function isFull(selection) {
 	let {start, end} = selection;
 	
-	return start[0] !== end[0] || start[1] !== end[1];
+	return start.lineIndex !== end.lineIndex || start.offset !== end.offset;
 }
 
 function isMultiline(selection) {
-	let {start, end} = selection;
+	return selection.start.lineIndex !== selection.end.lineIndex;
+}
+
+function isOverlapping(a, b) {
 	
-	return start[0] !== end[0];
 }
 
 function s(start, end=null) {
@@ -63,15 +63,13 @@ let api = {
 	
 	cursorIsWithinSelection(selection, cursor) {
 		let {start, end} = sort(selection);
-		let [startLineIndex, startOffset] = start;
-		let [endLineIndex, endOffset] = end;
-		let [lineIndex, offset] = cursor;
+		let {lineIndex, offset} = cursor;
 		
 		if (
-			lineIndex < startLineIndex
-			|| lineIndex > endLineIndex
-			|| lineIndex === startLineIndex && offset <= startOffset
-			|| lineIndex === endLineIndex && offset >= endOffset
+			lineIndex < start.lineIndex
+			|| lineIndex > end.lineIndex
+			|| lineIndex === start.lineIndex && offset <= start.offset
+			|| lineIndex === end.lineIndex && offset >= end.offset
 		) {
 			return false;
 		}
@@ -81,15 +79,13 @@ let api = {
 	
 	charIsWithinSelection(selection, charCursor) {
 		let {start, end} = sort(selection);
-		let [startLineIndex, startOffset] = start;
-		let [endLineIndex, endOffset] = end;
-		let [lineIndex, offset] = charCursor;
+		let {lineIndex, offset} = charCursor;
 		
 		if (
-			lineIndex < startLineIndex
-			|| lineIndex > endLineIndex
-			|| lineIndex === startLineIndex && offset < startOffset
-			|| lineIndex === endLineIndex && offset >= endOffset
+			lineIndex < start.lineIndex
+			|| lineIndex > end.lineIndex
+			|| lineIndex === start.lineIndex && offset < start.offset
+			|| lineIndex === end.lineIndex && offset >= end.offset
 		) {
 			return false;
 		}
@@ -105,12 +101,37 @@ let api = {
 		return api.cursorIsNextToSelection(selection, cursor) || api.cursorIsWithinSelection(selection, cursor);
 	},
 	
+	isOverlapping(a, b) {
+		return (
+			api.cursorIsWithinSelection(a, b.start)
+			|| api.cursorIsWithinSelection(a, b.end)
+			|| api.cursorIsWithinSelection(b, a.start)
+			|| api.cursorIsWithinSelection(b, a.end)
+		);
+	},
+	
 	startOfLineContent(wrappedLines, lineIndex) {
 		return s(Cursor.startOfLineContent(wrappedLines, lineIndex));
 	},
 	
 	endOfLineContent(wrappedLines, lineIndex) {
 		return s(Cursor.endOfLineContent(wrappedLines, lineIndex));
+	},
+	
+	add(selection, addSelection) {
+		selection = sort(selection);
+		addSelection = sort(addSelection);
+		
+		if (isBefore(selection, addSelection)) {
+			return selection;
+		}
+		
+		
+		
+		
+	},
+	
+	subtract(selection, subtractSelection) {
 	},
 };
 

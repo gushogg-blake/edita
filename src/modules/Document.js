@@ -4,16 +4,8 @@ let Selection = require("./utils/Selection");
 let Cursor = require("./utils/Cursor");
 let Line = require("./Line");
 
-/*
-Editing
-
-editing is a two-step process: generating an edit and then applying it.
-
-There are two ways to generate an edit, linewise (lineEdit()) and stringwise
-(stringEdit()).  The edit objects created by each have the same fields, but
-string edits are more fine-grained in that they can describe exact edits within
-a line.
-*/
+let {s} = Selection;
+let {c} = Cursor;
 
 class Document extends Evented {
 	constructor(code, path, fileDetails) {
@@ -32,90 +24,42 @@ class Document extends Evented {
 		this.parse();
 	}
 	
-	/*
-	edit - accepts a starting line index, a number of lines to
-	delete, and a string of code to add (which can contain newlines)
-	
-	returns a description of the edit (use apply() to actually perform the
-	edit)
-	*/
-	
-	lineEdit(lineIndex, removeLinesCount, insertLines) {
-		let {newline} = this.fileDetails;
-		
-		if (_typeof(insertLines) === "String") {
-			insertLines = insertLines.split(newline);
-		} else if (_typeof(insertLines) !== "Array") {
-			insertLines = [];
-		}
-		
-		let removeLines = this.lines.slice(lineIndex, lineIndex + removeLinesCount).map(line => line.string);
-		
-		let index = this.indexFromCursor([lineIndex, 0]);
-		let removeString = removeLines.join(newline);
-		let insertString = insertLines.join(newline);
-		let hasLineEnding = this.string.substr(index + removeString.length, newline.length) === newline;
-		
-		if (hasLineEnding) {
-			removeString += newline;
-		}
-		
-		if (hasLineEnding || removeLinesCount === 0) {
-			insertString += newline;
-		}
-		
-		return {
-			index,
-			removeString,
-			insertString,
-			lineIndex,
-			removeLines,
-			insertLines,
-		};
-	}
-	
-	stringEdit(selection, replaceWith) {
-		let index = this.indexFromCursor(cursor);
+	edit(selection, replaceWith) {
+		let currentStr = this.getSelectedText(selection);
 		
 		let {start, end} = Selection.sort(selection);
-		let [startLineIndex, startOffset] = start;
-		let [endLineIndex, endOffset] = end;
 		
-		let prefix = this.lines[startLineIndex].string.substr(0, startOffset);
-		let suffix = this.lines[endLineIndex].string.substr(endOffset);
+		let prefix = this.lines[start.lineIndex].string.substr(0, start.offset);
+		let suffix = this.lines[end.lineIndex].string.substr(end.offset);
 		
-		let removeLines = this.lines.slice(startLineIndex, endLineIndex - startLineIndex + 1).map(line => line.string);
-		let insertLines = (prefix + replaceWith + suffix).split(this.fileDetails.newline);
+		let insertLines = replaceWith.split(this.fileDetails.newline);
+		
+		insertLines[0] = prefix + insertLines[0];
+		insertLines[insertLines.length - 1] += suffix;
+		
+		let newEndLineIndex = start.lineIndex + insertLines.length - 1;
+		let lastLine = insertLines[insertLines.length - 1];
+		let newSelection = s(c(newEndLineIndex, lastLine.length - suffix.length));
 		
 		return {
-			index,
-			removeString,
-			insertString,
-			lineIndex,
-			removeLines,
-			insertLines,
+			selection,
+			string: currentStr,
+			replaceWith,
+			newSelection,
 		};
 	}
 	
 	apply(edit) {
 		let {
-			lineIndex,
-			removeLines,
-			insertLines,
+			selection,
+			string,
+			replaceWith,
 		} = edit;
 		
-		// NOTE splicing/joining lines may not be most efficient way of editing
-		// doesn't seem too bad though and manipulating the string manually is
-		// surprisingly complex (4d3eb5 seems to work but messes up the undo
-		// history)
+		let {start} = Selection.sort(selection);
+		let index = this.indexFromCursor(start);
 		
-		let {newline} = this.fileDetails;
-		
-		let lineStrings = this.lines.map(l => l.string);
-		
-		lineStrings.splice(lineIndex, removeLines.length, ...insertLines);
-		
-		this.string = lineStrings.join(newline);
+		this.string = this.string.substr(0, index) + replaceWith + this.string.substr(index + string.length);
 		
 		this.parse();
 		
@@ -126,15 +70,17 @@ class Document extends Evented {
 	
 	reverse(edit) {
 		let {
-			lineIndex,
-			removeLines,
-			insertLines,
+			selection,
+			string,
+			newSelection,
+			replaceWith,
 		} = edit;
 		
 		return {
-			lineIndex,
-			removeLines: insertLines,
-			insertLines: removeLines,
+			selection: newSelection,
+			string: replaceWith,
+			newSelection: selection,
+			replaceWith: string,
 		};
 	}
 	
@@ -270,27 +216,8 @@ class Document extends Evented {
 	}
 	
 	replaceSelection(selection, string) {
-		let {start, end} = Selection.sort(selection);
-		let [startLineIndex, startOffset] = start;
-		let [endLineIndex, endOffset] = end;
-		
-		let prefix = this.lines[startLineIndex].string.substr(0, startOffset);
-		let suffix = this.lines[endLineIndex].string.substr(endOffset);
-		
-		let edit = this.stringEdit(
-			startLineIndex,
-			endLineIndex - startLineIndex + 1,
-			prefix + string + suffix,
-		);
-		
-		let {
-			removeLines,
-			insertLines,
-		} = edit;
-		
-		let newEndLineIndex = startLineIndex + insertLines.length - 1;
-		let lastLine = insertLines[insertLines.length - 1];
-		let newSelection = Selection.s([newEndLineIndex, lastLine.length - suffix.length]);
+		let edit = this.edit(selection, string);
+		let newSelection = s(edit.newSelection.end);
 		
 		return {
 			edit,
@@ -348,10 +275,10 @@ class Document extends Evented {
 							this.edit(fromEndLineIndex, 1, newFooter),
 						],
 						
-						newSelection: {
-							start: [fromStartLineIndex, toOffset],
-							end: [fromEndLineIndex, fromEndOffset],
-						},
+						newSelection: s(
+							c(fromStartLineIndex, toOffset),
+							c(fromEndLineIndex, fromEndOffset),
+						),
 					};
 				} else {
 					let diff = toOffset - fromEndOffset;
@@ -365,10 +292,10 @@ class Document extends Evented {
 							this.edit(fromEndLineIndex, 1, newFooter),
 						],
 						
-						newSelection: {
-							start: [fromStartLineIndex, fromStartOffset + diff],
-							end: [fromEndLineIndex, fromEndOffset],
-						},
+						newSelection: s(
+							c(fromStartLineIndex, fromStartOffset + diff),
+							c(fromEndLineIndex, fromEndOffset),
+						),
 					};
 				}
 			}
@@ -392,7 +319,7 @@ class Document extends Evented {
 				newSelectionEndOffset = fromEndOffset;
 			}
 			
-			let insertEdit = this.insert(Selection.s(toCursor), this.getSelectedText(fromSelection)).edit;
+			let insertEdit = this.insert(s(toCursor), this.getSelectedText(fromSelection)).edit;
 			let [toLineIndexAdjusted] = toCursorAdjusted;
 			
 			insertEdit.lineIndex = toLineIndexAdjusted;
@@ -403,10 +330,10 @@ class Document extends Evented {
 					insertEdit,
 				],
 				
-				newSelection: {
-					start: newSelectionStart,
-					end: [newSelectionEndLineIndex, newSelectionEndOffset],
-				},
+				newSelection: s(
+					newSelectionStart,
+					c(newSelectionEndLineIndex, newSelectionEndOffset),
+				),
 			};
 		}
 	}
@@ -416,8 +343,7 @@ class Document extends Evented {
 			return this.replaceSelection(selection, "");
 		}
 		
-		let {start} = Selection.sort(selection);
-		let [lineIndex, offset] = start;
+		let {lineIndex, offset} = Selection.sort(selection).start;
 		
 		if (lineIndex === 0 && offset === 0) {
 			return null;
@@ -426,14 +352,14 @@ class Document extends Evented {
 		let end;
 		
 		if (offset === 0) {
-			end = [lineIndex - 1, this.lines[lineIndex - 1].string.length];
+			end = c(lineIndex - 1, this.lines[lineIndex - 1].string.length);
 		} else {
-			end = [lineIndex, offset - 1];
+			end = c(lineIndex, offset - 1);
 		}
 		
 		return {
-			edit: this.stringEdit(Selection.s(start, end), ""),
-			newSelection: Selection.s(end),
+			edit: this.edit(s(start, end), ""),
+			newSelection: s(end),
 		};
 	}
 	
@@ -443,7 +369,7 @@ class Document extends Evented {
 		}
 		
 		let {start} = Selection.sort(selection);
-		let [lineIndex, offset] = start;
+		let {lineIndex, offset} = start;
 		let line = this.lines[lineIndex];
 		
 		if (lineIndex === this.lines.length - 1 && offset === line.string.length) {
@@ -453,20 +379,20 @@ class Document extends Evented {
 		let end;
 		
 		if (offset === line.string.length) {
-			end = [lineIndex + 1, 0];
+			end = c(lineIndex + 1, 0);
 		} else {
-			end = [lineIndex, offset + 1];
+			end = c(lineIndex, offset + 1);
 		}
 		
 		return {
-			edit: this.stringEdit(Selection.s(start, end), ""),
-			newSelection: Selection.s(end),
+			edit: this.stringEdit(s(start, end), ""),
+			newSelection: s(end),
 		};
 	}
 	
 	insertNewline(selection) {
 		let {start} = Selection.sort(selection);
-		let [lineIndex, offset] = start;
+		let {lineIndex, offset} = start;
 		let line = this.lines[lineIndex];
 		
 		let indentLevel = line.indentLevel;
@@ -484,7 +410,7 @@ class Document extends Evented {
 	}
 	
 	indexFromCursor(cursor) {
-		let [lineIndex, offset] = cursor;
+		let {lineIndex, offset} = cursor;
 		let index = 0;
 		
 		for (let i = 0; i < lineIndex; i++) {
@@ -501,7 +427,7 @@ class Document extends Evented {
 		
 		for (let line of this.lines) {
 			if (index <= line.string.length) {
-				return [lineIndex, index];
+				return c(lineIndex, index);
 			}
 			
 			lineIndex++;
@@ -511,13 +437,11 @@ class Document extends Evented {
 	
 	getSelectedText(selection) {
 		let {start, end} = Selection.sort(selection);
-		let [startLineIndex, startOffset] = start;
-		let [endLineIndex, endOffset] = end;
-		let lines = this.lines.slice(startLineIndex, endLineIndex + 1);
+		let lines = this.lines.slice(start.lineIndex, end.lineIndex + 1);
 		
 		let str = lines.map(line => line.string).join(this.fileDetails.newline);
-		let trimLeft = startOffset;
-		let trimRight = lines[lines.length - 1].string.length - endOffset;
+		let trimLeft = start.offset;
+		let trimRight = lines[lines.length - 1].string.length - end.offset;
 		
 		return str.substring(trimLeft, str.length - trimRight);
 	}

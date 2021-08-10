@@ -78,5 +78,5 @@ module.exports = function(wrappedLines, row, col, beforeTab=false) {
 		}
 	}
 	
-	return [lineIndex, offset];
+	return {lineIndex, offset};
 }

@@ -4,36 +4,29 @@ let getLineStartingRow = require("./getLineStartingRow");
 let screenCoordsFromCursor = require("./screenCoordsFromCursor");
 let screenCoordsFromRowCol = require("./screenCoordsFromRowCol");
 
-module.exports = function(
-	wrappedLines,
-	selection,
-	scrollPosition,
-	measurements,
-) {
+module.exports = function(wrappedLines, selection, scrollPosition, measurements) {
 	let regions = [];
 	
 	let {colWidth, rowHeight} = measurements;
 	let {start, end} = Selection.sort(selection);
-	let [startLineIndex, startOffset] = start;
-	let [endLineIndex, endOffset] = end;
 	
-	let [startRow, startCol] = rowColFromCursor(wrappedLines, startLineIndex, startOffset);
-	let [endRow, endCol] = rowColFromCursor(wrappedLines, endLineIndex, endOffset);
+	let [startRow, startCol] = rowColFromCursor(wrappedLines, start);
+	let [endRow, endCol] = rowColFromCursor(wrappedLines, end);
 	
 	let row = startRow;
 	let col = startCol;
 	
-	let lineStartingRow = getLineStartingRow(wrappedLines, startLineIndex);
+	let lineStartingRow = getLineStartingRow(wrappedLines, start.lineIndex);
 	let lineRowIndex = startRow - lineStartingRow;
 	
 	let startScreenRow = startRow - scrollPosition.row;
 	
-	for (let i = startLineIndex; i <= endLineIndex; i++) {
+	for (let i = start.lineIndex; i <= end.lineIndex; i++) {
 		let wrappedLine = wrappedLines[i];
 		let {line} = wrappedLine;
 		
 		for (let j = 0; j < wrappedLine.height; j++) {
-			if (i === startLineIndex && j < lineRowIndex) {
+			if (i === start.lineIndex && j < lineRowIndex) {
 				continue;
 			}
 			

@@ -1,8 +1,5 @@
-module.exports = function(
-	wrappedLines,
-	lineIndex,
-	offset,
-) {
+module.exports = function(wrappedLines, cursor) {
+	let {lineIndex, offset} = cursor;
 	let wrappedLine = wrappedLines[lineIndex];
 	let innerLineIndex = 0;
 	let lineRow;
