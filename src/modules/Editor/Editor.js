@@ -127,9 +127,15 @@ class Editor extends Evented {
 			this.setAstSelection(astSelection);
 		}
 		
+		this.afterEdit();
+		
 		// TODO update hilites (e.g. find) on edit
 		
 		this.fire("edit");
+	}
+	
+	afterEdit() {
+		this.view.updateSizes();
 	}
 	
 	applyAndAddHistoryEntry(edit) {
@@ -214,7 +220,6 @@ class Editor extends Evented {
 			return;
 		}
 		
-		this.view.updateSizes();
 		this.view.ensureSelectionIsOnScreen();
 		this.view.startCursorBlink();
 		
