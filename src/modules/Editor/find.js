@@ -1,4 +1,9 @@
+let Selection = require("../utils/Selection");
+let Cursor = require("../utils/Cursor");
 let FindSession = require("./FindSession");
+
+let {s} = Selection;
+let {c} = Cursor;
 
 module.exports = function(editor) {
 	let session = null;
@@ -11,9 +16,7 @@ module.exports = function(editor) {
 			if (view.mode === "normal") {
 				cursor = view.normalSelection.end;
 			} else {
-				let [startLineIndex] = view.astSelection;
-				
-				cursor = [startLineIndex, 0];
+				cursor = c(view.astSelection.startLineIndex, 0);
 			}
 			
 			return new FindSession(
@@ -22,11 +25,7 @@ module.exports = function(editor) {
 				
 				({index, match, groups, replace}) => {
 					let cursor = document.cursorFromIndex(index);
-					
-					let selection = {
-						start: cursor,
-						end: document.cursorFromIndex(index + match.length),
-					};
+					let selection = s(cursor, document.cursorFromIndex(index + match.length));
 					
 					return {
 						index,

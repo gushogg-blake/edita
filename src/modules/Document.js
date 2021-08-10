@@ -84,6 +84,24 @@ class Document extends Evented {
 		};
 	}
 	
+	/*
+	apply later edits first so that selections don't need adjusting
+	*/
+	
+	sortEdits(edits) {
+		return [...edits].sort(function(a, b) {
+			if (Selection.isBefore(a.selection, b.selection)) {
+				return 1;
+			} else {
+				return -1;
+			}
+		});
+	}
+	
+	reverseEdits(edits) {
+		return [...edits].reverse().map(e => this.reverse(e));
+	}
+	
 	applyEdits(edits) {
 		for (let edit of edits) {
 			this.apply(edit);
@@ -91,16 +109,9 @@ class Document extends Evented {
 	}
 	
 	applyAndAddHistoryEntry(edits) {
-		// apply later edits first so that selections don't need adjusting
-		edits = [...edits].sort(function(a, b) {
-			if (Selection.isBefore(a.selection, b.selection)) {
-				return 1;
-			} else {
-				return -1;
-			}
-		});
+		edits = this.sortEdits(edits);
 		
-		let undo = [...edits].reverse().map(e => this.reverse(e));
+		let undo = this.reverseEdits(edits);
 		
 		this.applyEdits(edits);
 		
@@ -119,14 +130,15 @@ class Document extends Evented {
 		return entry;
 	}
 	
-	// NOTE only works with same-line changes e.g. typing/deleting within a line
-	
 	applyAndMergeWithLastHistoryEntry(edits) {
+		edits = this.sortEdits(edits);
+		
 		let entry = this.lastHistoryEntry;
 		
 		this.applyEdits(edits);
 		
-		entry.redo = edits;
+		entry.redo = [...entry.redo, ...edits];
+		entry.undo = [...this.reverseEdits(edits), ...entry.undo];
 		
 		return entry;
 	}

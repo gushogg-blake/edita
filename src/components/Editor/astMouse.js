@@ -1,8 +1,9 @@
 let parseJson = require("../../utils/parseJson");
 let {on, off} = require("../../utils/dom/domEvents");
-let Selection = require("../../modules/utils/Selection");
 let AstSelection = require("../../modules/utils/AstSelection");
 let autoScroll = require("./utils/autoScroll");
+
+let {s} = AstSelection;
 
 /*
 you can't see the data (only the types) on dragover, and types can't contain
@@ -73,7 +74,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			return null;
 		}
 		
-		let [lineIndex] = view.cursorFromRowCol(row, col);
+		let {lineIndex} = view.cursorFromRowCol(row, col);
 		
 		if (!withinSelection) {
 			if (AstSelection.lineIsWithinSelection(lineIndex, astSelection)) {
@@ -106,9 +107,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		);
 		
 		if (AstSelection.isWithin(range, astSelection)) {
-			let [startLineIndex] = astSelection;
-			
-			return AstSelection.s(startLineIndex);
+			return s(astSelection.startLineIndex);
 		}
 		
 		return range;
@@ -261,7 +260,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			astSelection: selection,
 		} = view;
 		
-		let [startLineIndex, endLineIndex] = selection;
+		let {startLineIndex, endLineIndex} = selection;
 		let lines = AstSelection.linesToSelectionLines(document.lines.slice(startLineIndex, endLineIndex));
 		
 		drag = {

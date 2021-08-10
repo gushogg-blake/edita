@@ -1,11 +1,18 @@
 let Evented = require("../../utils/Evented");
 let bindFunctions = require("../../utils/bindFunctions");
+let AstSelection = require("../utils/AstSelection");
+let Selection = require("../utils/Selection");
+let Cursor = require("../utils/Cursor");
 let parsePlaceholdersInLines = require("../utils/parsePlaceholdersInLines");
 let find = require("./find");
 let normalMouse = require("./normalMouse");
 let normalKeyboard = require("./normalKeyboard");
 let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
+
+let {s: a} = AstSelection;
+let {s} = Selection;
+let {c} = Cursor;
 
 class Editor extends Evented {
 	constructor(app, document, view) {
@@ -47,7 +54,7 @@ class Editor extends Evented {
 	doAstManipulation(code) {
 		let {document} = this;
 		let {lines} = document;
-		let [startLineIndex, endLineIndex] = this.view.astSelection;
+		let {startLineIndex, endLineIndex} = this.view.astSelection;
 		
 		let transformedLines = this.document.lang.codeIntel.astManipulations[code].apply(this.document, this.view.astSelection);
 		
@@ -57,7 +64,7 @@ class Editor extends Evented {
 		} = parsePlaceholdersInLines(transformedLines, startLineIndex);
 		
 		let edit = document.lineEdit(startLineIndex, endLineIndex - startLineIndex, replacedLines);
-		let newSelection = [startLineIndex, startLineIndex + replacedLines.length];
+		let newSelection = a(startLineIndex, startLineIndex + replacedLines.length);
 		
 		this.applyAndAddHistoryEntry({
 			edits: [edit],
@@ -93,10 +100,7 @@ class Editor extends Evented {
 			initialText,
 		} = placeholder;
 		
-		this.setNormalSelection({
-			start: [lineIndex, offset],
-			end: [lineIndex, offset + initialText.length],
-		});
+		this.setNormalSelection(s(c(lineIndex, offset), c(lineIndex, offset + initialText.length)));
 		
 		this.view.redraw();
 		
@@ -145,8 +149,6 @@ class Editor extends Evented {
 		
 		this.applyHistoryEntry(entry, "after");
 	}
-	
-	// NOTE only works with same-line changes e.g. typing/deleting within a line
 	
 	applyAndMergeWithLastHistoryEntry(edit) {
 		let entry = this.document.applyAndMergeWithLastHistoryEntry(edit.edits);

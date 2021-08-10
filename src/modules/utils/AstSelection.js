@@ -1,8 +1,5 @@
 function s(startLineIndex, endLineIndex=startLineIndex) {
-	return [
-		startLineIndex,
-		endLineIndex,
-	];
+	return {startLineIndex, endLineIndex};
 }
 
 /*
@@ -31,42 +28,27 @@ let api = {
 	s,
 	
 	isFull(selection) {
-		let [start, end] = selection;
-		
-		return start !== end;
+		return selection.startLineIndex !== selection.endLineIndex;
 	},
 	
 	equals(a, b) {
-		let [aStart, aEnd] = a;
-		let [bStart, bEnd] = b;
-		
-		return aStart === bStart && aEnd === bEnd;
+		return a.startLineIndex === b.startLineIndex && a.endLineIndex === b.endLineIndex;
 	},
 	
 	isWithin(a, b) {
-		let [aStart, aEnd] = a;
-		let [bStart, bEnd] = b;
-		
-		return aStart >= bStart && aEnd <= bEnd;
+		return a.startLineIndex >= b.startLineIndex && a.endLineIndex <= b.endLineIndex;
 	},
 	
 	isAdjacent(a, b) {
-		let [aStart, aEnd] = a;
-		let [bStart, bEnd] = b;
-		
-		return aStart === bEnd || bStart === aEnd;
+		return a.startLineIndex === b.endLineIndex || b.startLineIndex === a.endLineIndex;
 	},
 	
 	lineIsWithinSelection(lineIndex, selection) {
-		let [start, end] = selection;
-		
-		return lineIndex >= start && lineIndex < end;
+		return lineIndex >= selection.startLineIndex && lineIndex < selection.endLineIndex;
 	},
 	
 	getSelectedLines(lines, selection) {
-		let [start, end] = selection;
-		
-		return lines.slice(start, end);
+		return lines.slice(selection.startLineIndex, selection.endLineIndex);
 	},
 	
 	/*
