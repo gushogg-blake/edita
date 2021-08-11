@@ -129,68 +129,101 @@ module.exports = {
 		
 	},
 	
-	/*
-	NOTE backspace and delete are identical except for backspace/delete
-	and the offset check for newBatchState
-	*/
-	
 	backspace() {
-		let {offset} = this.view.normalSelection.start;
+		let selection = Selection.sort(this.view.normalSelection);
+		let {start} = selection;
+		let {lineIndex, offset} = start;
+		let isFull = this.view.Selection.isFull();
 		
-		let newBatchState = (
-			this.view.Selection.isFull()
-			|| offset === 0
-		) ? null : "backspace";
+		let newBatchState = isFull || offset === 0 ? null : "backspace";
 		
-		let result = this.document.backspace(this.view.normalSelection);
+		let edit;
+		let newSelection;
 		
-		if (result) {
-			let {
+		if (isFull) {
+			({
 				edit,
 				newSelection,
-			} = result;
-			
-			let apply = {
-				edits: [edit],
-				normalSelection: newSelection,
-			};
-			
-			if (this.batchState === "backspace" && newBatchState === "backspace") {
-				this.applyAndMergeWithLastHistoryEntry(apply);
-			} else {
-				this.applyAndAddHistoryEntry(apply);
+			} = this.document.replaceSelection(selection, ""));
+		} else {
+			if (lineIndex === 0 && offset === 0) {
+				return;
 			}
+			
+			let end;
+			
+			if (offset === 0) {
+				end = c(lineIndex - 1, this.document.lines[lineIndex - 1].string.length);
+			} else {
+				end = c(lineIndex, offset - 1);
+			}
+			
+			edit = this.document.edit(s(start, end), ""),
+			newSelection = s(end);
+		}
+		
+		let apply = {
+			edits: [edit],
+			normalSelection: newSelection,
+		};
+		
+		if (this.batchState === "backspace" && newBatchState === "backspace") {
+			this.applyAndMergeWithLastHistoryEntry(apply);
+		} else {
+			this.applyAndAddHistoryEntry(apply);
 		}
 		
 		this.setBatchState(newBatchState);
 	},
 	
 	delete() {
-		let {lineIndex, offset} = this.view.normalSelection.start;
+		let selection = Selection.sort(this.view.normalSelection);
+		let {start} = selection;
+		let {lineIndex, offset} = start;
+		let isFull = this.view.Selection.isFull();
 		
 		let newBatchState = (
-			this.view.Selection.isFull()
-			|| offset === this.document.lines[lineIndex].string.length
-		) ? null : "delete";
+			isFull || offset === this.document.lines[lineIndex].string.length
+			? null
+			: "delete"
+		);
 		
-		let result = this.document.delete(this.view.normalSelection);
+		let edit;
+		let newSelection;
 		
-		if (result) {
-			let {
+		if (isFull) {
+			({
 				edit,
 				newSelection,
-			} = result;
+			} = this.document.replaceSelection(selection, ""));
+		} else {
+			let line = this.document.lines[lineIndex];
 			
-			let apply = {
-				edits: [edit],
-				normalSelection: newSelection,
-			};
-			
-			if (this.batchState === "delete" && newBatchState === "delete") {
-				this.applyAndMergeWithLastHistoryEntry(apply);
-			} else {
-				this.applyAndAddHistoryEntry(apply);
+			if (lineIndex === this.document.lines.length - 1 && offset === line.string.length) {
+				return;
 			}
+				
+			let end;
+			
+			if (offset === line.string.length) {
+				end = c(lineIndex + 1, 0);
+			} else {
+				end = c(lineIndex, offset + 1);
+			}
+			
+			edit = this.document.edit(s(start, end), ""),
+			newSelection = s(start);
+		}
+		
+		let apply = {
+			edits: [edit],
+			normalSelection: newSelection,
+		};
+		
+		if (this.batchState === "delete" && newBatchState === "delete") {
+			this.applyAndMergeWithLastHistoryEntry(apply);
+		} else {
+			this.applyAndAddHistoryEntry(apply);
 		}
 		
 		this.setBatchState(newBatchState);

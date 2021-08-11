@@ -289,59 +289,6 @@ class Document extends Evented {
 		};
 	}
 	
-	backspace(selection) {
-		if (Selection.isFull(selection)) {
-			return this.replaceSelection(selection, "");
-		}
-		
-		let {start} = Selection.sort(selection);
-		let {lineIndex, offset} = start;
-		
-		if (lineIndex === 0 && offset === 0) {
-			return null;
-		}
-		
-		let end;
-		
-		if (offset === 0) {
-			end = c(lineIndex - 1, this.lines[lineIndex - 1].string.length);
-		} else {
-			end = c(lineIndex, offset - 1);
-		}
-		
-		return {
-			edit: this.edit(s(start, end), ""),
-			newSelection: s(end),
-		};
-	}
-	
-	delete(selection) {
-		if (Selection.isFull(selection)) {
-			return this.replaceSelection(selection, "");
-		}
-		
-		let {start} = Selection.sort(selection);
-		let {lineIndex, offset} = start;
-		let line = this.lines[lineIndex];
-		
-		if (lineIndex === this.lines.length - 1 && offset === line.string.length) {
-			return null;
-		}
-		
-		let end;
-		
-		if (offset === line.string.length) {
-			end = c(lineIndex + 1, 0);
-		} else {
-			end = c(lineIndex, offset + 1);
-		}
-		
-		return {
-			edit: this.edit(s(start, end), ""),
-			newSelection: s(start),
-		};
-	}
-	
 	indexFromCursor(cursor) {
 		let {lineIndex, offset} = cursor;
 		let index = 0;
