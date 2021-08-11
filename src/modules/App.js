@@ -31,7 +31,7 @@ class App extends Evented {
 	}
 	
 	async save(tab=this.selectedTab) {
-		let document = tab?.document;
+		let document = tab?.editor.document;
 		
 		if (!document) {
 			return null;

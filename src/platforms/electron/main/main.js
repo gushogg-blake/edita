@@ -48,6 +48,8 @@ for (let [key, fns] of Object.entries(syncIpcModules)) {
 	}
 }
 
+//Menu.setApplicationMenu(null);
+
 let win;
 
 async function createWindow() {
@@ -75,9 +77,7 @@ async function createWindow() {
 		win.webContents.openDevTools();
 
 		watcher = require("chokidar").watch([
-			"../../../../build/electron",
 			"../renderer/public",
-			"../../../../vendor",
 		].map(p => path.resolve(__dirname, p)), {
 			ignoreInitial: true,
 		});

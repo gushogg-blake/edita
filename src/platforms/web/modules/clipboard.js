@@ -3,7 +3,7 @@ module.exports = {
 		return navigator.clipboard.writeText(str);
 	},
 	
-	writeSelection() { // create a selection in a hidden input?
+	writeSelection() {
 	},
 	
 	read() {

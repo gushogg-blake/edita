@@ -36,7 +36,7 @@ function getTabName(tabs, tab) {
 	if (path) {
 		return platform.fs(path).name + (modified ? " *" : "");
 	} else {
-		return "New file *";
+		return "New file" + (modified ? " *" : "");
 	}
 }
 

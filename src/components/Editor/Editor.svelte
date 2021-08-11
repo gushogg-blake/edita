@@ -611,8 +611,6 @@ onMount(async function() {
 });
 </script>
 
-<svelte:options accessors/>
-
 <svelte:window
 	on:keydown={keydown}
 	on:keyup={keyup}
