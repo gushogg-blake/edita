@@ -7,9 +7,9 @@ module.exports = {
 		name: "Convert to object",
 		
 		isAvailable(lines, selection) {
-			let [start, end] = selection;
+			let {startLineIndex, endLineIndex} = selection;
 			
-			for (let i = start; i < end; i++) {
+			for (let i = startLineIndex; i < endLineIndex; i++) {
 				let line = lines[i];
 				let {nodes} = line;
 				
@@ -38,7 +38,7 @@ module.exports = {
 		apply(document, selection) {
 			let {lines} = document;
 			let indentStr = document.fileDetails.indentation.string;
-			let [start, end] = selection;
+			let {startLineIndex: start, endLineIndex: end} = selection;
 			let {indentLevel: baseIndentLevel} = lines[start];
 			let statements = [];
 			
@@ -84,7 +84,7 @@ module.exports = {
 				i = endLineIndex;
 			}
 			
-			let header = [0, "[[%tabstop:]]{[[%tabstop:]]"];
+			let header = [0, "[[%tabstop:]]{"];
 			
 			let transformedLines = statements.map(function(statement) {
 				let {type, line} = statement;
@@ -105,7 +105,7 @@ module.exports = {
 					
 					return [1, string];
 				} else if (type === "multilineContents") {
-					return [1 + line.indentLevel - baseIndentLevel, line.trimmed + "[[%tabstop:]]"];
+					return [1 + line.indentLevel - baseIndentLevel, line.trimmed];
 				} else if (type === "footer") {
 					let {trimmed: string} = line;
 					
@@ -117,7 +117,7 @@ module.exports = {
 				}
 			});
 			
-			let footer = [0, "};"];
+			let footer = [0, "};[[%tabstop:]]"];
 			
 			return AstSelection.selectionLinesToStrings([
 				header,
