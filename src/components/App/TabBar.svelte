@@ -30,8 +30,8 @@ function tabIsSelected(tab, selectedTab) {
 }
 
 function getTabName(tabs, tab) {
-	let {document} = tab;
-	let {path, modified} = document;
+	let {editor} = tab;
+	let {path, modified} = editor.document;
 	
 	if (path) {
 		return platform.fs(path).name + (modified ? " *" : "");

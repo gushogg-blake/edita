@@ -3,10 +3,9 @@ import {onMount, setContext} from "svelte";
 
 import getKeyCombo from "../../utils/getKeyCombo";
 
-import Editor from "../Editor/Editor.svelte";
-
 import Toolbar from "./Toolbar.svelte";
 import TabBar from "./TabBar.svelte";
+import Tab from "./Tab.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
 import BottomPane from "./BottomPane.svelte";
@@ -174,7 +173,7 @@ $border: 1px solid #AFACAA;
 	<div id="editor">
 		{#each tabs as tab (tab)}
 			<div class="tab" class:hide={tab !== selectedTab}>
-				<Editor {tab}/>
+				<Tab {tab}/>
 			</div>
 		{/each}
 	</div>

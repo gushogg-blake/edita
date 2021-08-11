@@ -1,3 +1,4 @@
+let path = require("path-browserify");
 let bluebird = require("bluebird");
 let fs = require("./modules/fs");
 
@@ -26,6 +27,8 @@ class Platform {
 		this.fs = fs({
 			
 		});
+		
+		this.path = path;
 	}
 	
 	async open(defaultPath, currentPath) {

@@ -1,12 +1,12 @@
 let os = require("os");
+let path = require("path");
 let {hideBin} = require("yargs/helpers");
 let yargs = require("yargs/yargs");
-let fs = require("flowfs");
 
 let args = yargs(hideBin(process.argv));
 
 args.default({
-	userDataDir: fs(os.homedir(), ".editor").path,
+	userDataDir: path.join(os.homedir(), ".editor"),
 });
 
 let {

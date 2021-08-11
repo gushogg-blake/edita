@@ -9,7 +9,7 @@ let {
 let {ipcMain: ipc} = require("electron-better-ipc");
 let windowStateKeeper = require("electron-window-state");
 let dev = require("electron-is-dev");
-let fs = require("flowfs");
+let path = require("path");
 let config = require("./config");
 let init = require("./ipc/init");
 let clipboard = require("./ipc/clipboard");
@@ -20,7 +20,7 @@ if (dev) {
 	require("./watch");
 }
 
-app.setPath("userData", fs(config.userDataDir, "electron").path);
+app.setPath("userData", path.join(config.userDataDir, "electron"));
 
 let asyncIpcModules = {
 	dialog,
@@ -67,7 +67,7 @@ async function createWindow() {
 	
 	winState.manage(win);
 	
-	win.loadURL("file://" + fs(__dirname).sibling("renderer", "public", "index.html").path);
+	win.loadURL("file://" + path.join(__dirname, "..", "renderer", "public", "index.html"));
 
 	let watcher;
 
@@ -78,7 +78,7 @@ async function createWindow() {
 			"../../../../build/electron",
 			"../renderer/public",
 			"../../../../vendor",
-		].map(path => fs(__dirname).rel(path).path), {
+		].map(p => path.resolve(__dirname, p)), {
 			ignoreInitial: true,
 		});
 		

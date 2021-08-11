@@ -1,7 +1,7 @@
 let {app} = require("electron");
 let {spawn} = require("child_process");
+let path = require("path");
 let chokidar = require("chokidar");
-let fs = require("flowfs");
 
 function debounce(fn, delay) {
 	let timer;
@@ -18,10 +18,10 @@ let watch = chokidar.watch([
 	"config.js",
 	"main.js",
 	"watch.js",
-].map(p => fs(__dirname, p).path));
+].map(p => path.join(__dirname, p)));
 
 watch.on("change", debounce(function() {
-	let child = spawn("npm", ["run", "pure-electron-dev"], {
+	let child = spawn("npm", ["run", "dev"], {
 		cwd: __dirname,
 		detached: true,
 		stdio: "inherit",

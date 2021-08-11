@@ -15,13 +15,12 @@ import contextMenu from "./contextMenu";
 import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer.svelte";
 
-export let tab;
+export let editor;
 
 let {
 	document,
-	editor,
 	view,
-} = tab;
+} = editor;
 
 let app = getContext("app"); //
 
@@ -304,6 +303,12 @@ function drop({detail}) {
 }
 
 function wheel(e) {
+	if (e.ctrlKey || e.altKey) {
+		return;
+	}
+	
+	e.stopPropagation();
+	
 	let dir = e.deltaY > 0 ? 1 : -1;
 	
 	if (e.shiftKey) {
@@ -618,11 +623,13 @@ onMount(async function() {
 @import "../../css/classes/hide";
 
 #main {
+	color: black;
 	display: grid;
 	grid-template-rows: 1fr 0;
 	grid-template-columns: 1fr 13px;
 	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar spacer";
-	color: black;
+	width: 100%;
+	height: 100%;
 	
 	&.showingHorizontalScrollbar {
 		grid-template-rows: 1fr 13px;

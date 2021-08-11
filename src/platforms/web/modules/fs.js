@@ -65,8 +65,7 @@ module.exports = function(backend) {
 			return osPath.relative(parent, this.path);
 		}
 		
-		// is the Node a descendant of parent?
-		within(parent) {
+		isDescendantOf(parent) {
 			if (parent instanceof Node) {
 				parent = parent.path;
 			}
@@ -111,12 +110,6 @@ module.exports = function(backend) {
 	}
 	
 	return function(path="/", ...paths) {
-		let node = new Node(path);
-		
-		for (let path of paths) {
-			node = node.child(path);
-		}
-		
-		return node;
+		return new Node(path).child(...paths);
 	}
 }

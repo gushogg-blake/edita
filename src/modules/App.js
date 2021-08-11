@@ -2,6 +2,7 @@ let {remove} = require("../utils/arrayMethods");
 let Evented = require("../utils/Evented");
 let focusManager = require("../utils/focusManager");
 let Document = require("./Document");
+let Tab = require("./Tab");
 let Editor = require("./Editor/Editor");
 let View = require("./View/View");
 
@@ -44,12 +45,12 @@ class App extends Evented {
 	}
 	
 	selectTab(tab) {
-		this.selectedTab?.view.hide();
+		this.selectedTab?.editor.view.hide();
 		
 		this.selectedTab = tab;
 		
-		tab.view.show();
-		tab.view.focus();
+		tab.editor.view.show();
+		tab.editor.view.focus();
 		
 		this.fire("selectTab")
 	}
@@ -58,7 +59,7 @@ class App extends Evented {
 		let {
 			path,
 			modified,
-		} = tab.document;
+		} = tab.editor.document;
 		
 		if (modified) {
 			let {response} = await platform.showMessageBox({
@@ -168,11 +169,7 @@ class App extends Evented {
 		let view = new View(this, document);
 		let editor = new Editor(this, document, view);
 		
-		let tab = {
-			document,
-			editor,
-			view,
-		};
+		let tab = new Tab(editor);
 		
 		this.tabs.push(tab);
 		
@@ -188,11 +185,7 @@ class App extends Evented {
 		let view = new View(this, document);
 		let editor = new Editor(this, document, view);
 		
-		let tab = {
-			document,
-			editor,
-			view,
-		};
+		let tab = new Tab(editor);
 		
 		this.tabs.push(tab);
 		
@@ -215,7 +208,7 @@ class App extends Evented {
 	
 	findTabByPath(path) {
 		for (let tab of this.tabs) {
-			if (tab.document.path === path) {
+			if (tab.path === path) {
 				return tab;
 			}
 		}
@@ -235,7 +228,7 @@ class App extends Evented {
 		this.hideFindBar();
 		
 		if (this.selectedTab) {
-			this.selectedTab.view.requestFocus();
+			this.selectedTab.editor.view.requestFocus();
 		}
 	}
 	
