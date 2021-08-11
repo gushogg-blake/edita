@@ -1,3 +1,4 @@
+let bluebird = require("bluebird");
 let {remove} = require("../utils/arrayMethods");
 let Evented = require("../utils/Evented");
 let focusManager = require("../utils/focusManager");
@@ -17,7 +18,12 @@ class App extends Evented {
 	}
 	
 	async open() {
-		let files = await platform.open();
+		let files = await bluebird.map(platform.open(), async function(path) {
+			return {
+				path,
+				code: await platform.fs(path).read(),
+			};
+		});
 		
 		for (let {path, code} of files) {
 			this.openFile(path, code);
@@ -90,7 +96,7 @@ class App extends Evented {
 			}
 		}
 		
-		tab.view.teardown();
+		tab.editor.view.teardown();
 		
 		this.tabs = remove(this.tabs, tab);
 		
@@ -148,13 +154,19 @@ class App extends Evented {
 		}
 	}
 	
-	openFile(path, code) {
+	async openFile(path, code=null) {
+		path = platform.fs(path).path;
+		
 		let existingTab = this.findTabByPath(path);
 		
 		if (existingTab) {
 			this.selectTab(existingTab);
 			
 			return;
+		}
+		
+		if (!code) {
+			code = await platform.fs(path).read();
 		}
 		
 		let fileDetails = base.getFileDetails(code, path);
@@ -165,11 +177,7 @@ class App extends Evented {
 			// calculating line start offsets
 		}
 		
-		let document = this.createDocument(code, path, fileDetails);
-		let view = new View(this, document);
-		let editor = new Editor(this, document, view);
-		
-		let tab = new Tab(editor);
+		let tab = this.createTab(code, path, fileDetails);
 		
 		this.tabs.push(tab);
 		
@@ -179,19 +187,21 @@ class App extends Evented {
 	}
 	
 	newFile() {
-		let fileDetails = base.getDefaultFileDetails();
-		
-		let document = this.createDocument("", null, fileDetails);
-		let view = new View(this, document);
-		let editor = new Editor(this, document, view);
-		
-		let tab = new Tab(editor);
+		let tab = this.createTab("", null, base.getDefaultFileDetails());
 		
 		this.tabs.push(tab);
 		
 		this.fire("updateTabs");
 		
 		this.selectTab(tab);
+	}
+	
+	createTab(code, path, fileDetails) {
+		let document = this.createDocument(code, path, fileDetails);
+		let view = new View(this, document);
+		let editor = new Editor(this, document, view);
+		
+		return new Tab(this, editor);
 	}
 	
 	createDocument(code, path, fileDetails) {
@@ -208,7 +218,7 @@ class App extends Evented {
 	
 	findTabByPath(path) {
 		for (let tab of this.tabs) {
-			if (tab.path === path) {
+			if (tab.editor.document.path === path) {
 				return tab;
 			}
 		}

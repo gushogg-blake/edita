@@ -34,12 +34,7 @@ class Platform {
 			return [];
 		}
 		
-		return bluebird.map(filePaths, async function(path) {
-			return {
-				path,
-				code: await fs(path).read(),
-			};
-		});
+		return filePaths;
 	}
 	
 	async save(path, code) {

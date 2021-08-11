@@ -26,20 +26,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		plugins: [
 			scss(),
 		],
-	},
-	{
-		input: "src/platforms/common/globalCss.js",
-		
-		output: {
-			format: "iife",
-			file: "src/platforms/web/public/build/globalCss.js",
-		},
-		
-		plugins: [
-			scss(),
-		],
-	},
-	{
+	}, {
 		input: "src/platforms/electron/renderer/main.js",
 		
 		output: {
@@ -66,11 +53,6 @@ if (!platform || platform === "all" || platform === "electron") {
 				output: "bundle.css",
 			}),
 	
-			// If you have external dependencies installed from
-			// npm, you'll most likely need these plugins. In
-			// some cases you'll need additional configuration -
-			// consult the documentation for details:
-			// https://github.com/rollup/rollup-plugin-commonjs
 			resolve({
 				browser: true,
 				dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
@@ -80,6 +62,7 @@ if (!platform || platform === "all" || platform === "electron") {
 				ignore: [
 					"os",
 					"fs",
+					"fs-extra",
 					"path",
 					"constants",
 					"util",
@@ -100,6 +83,17 @@ if (!platform || platform === "all" || platform === "electron") {
 
 if (!platform || platform === "all" || platform === "web") {
 	platforms.push({
+		input: "src/platforms/common/globalCss.js",
+		
+		output: {
+			format: "iife",
+			file: "src/platforms/web/public/build/globalCss.js",
+		},
+		
+		plugins: [
+			scss(),
+		],
+	}, {
 		input: "src/platforms/web/main.js",
 		
 		output: {
@@ -126,34 +120,13 @@ if (!platform || platform === "all" || platform === "web") {
 			cssOnly({
 				output: "bundle.css",
 			}),
-	
-			// If you have external dependencies installed from
-			// npm, you'll most likely need these plugins. In
-			// some cases you'll need additional configuration -
-			// consult the documentation for details:
-			// https://github.com/rollup/rollup-plugin-commonjs
+			
 			resolve({
 				browser: true,
 				dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
 			}),
 			
-			commonjs({
-				ignore: [
-					"os",
-					"fs",
-					"path",
-					"constants",
-					"util",
-					"stream",
-					"assert",
-					"string_decoder",
-					"buffer",
-					"events",
-				],
-			}),
-			
-			globals(),
-			builtins(),
+			commonjs(),
 			!production && livereload("src/platforms/web/public/build"),
 			production && terser(),
 		],

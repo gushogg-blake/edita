@@ -1,5 +1,5 @@
 let osPath = require("path-browserify");
-let minimatch = require("minimatch");
+let minimatch = require("minimatch-browser");
 
 module.exports = function(backend) {
 	class Node {

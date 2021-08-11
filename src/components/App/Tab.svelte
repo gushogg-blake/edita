@@ -26,6 +26,18 @@ function wheel(e) {
 	}
 }
 
+function switchToFile(file) {
+	tab.switchToFile(file);
+}
+
+function openFile(file) {
+	tab.openFile(file);
+}
+
+function openContextMenuForFile(file) {
+	
+}
+
 function onZoomChange() {
 	({currentPath} = tab);
 	
@@ -53,19 +65,42 @@ onMount(function() {
 <style type="text/scss">
 @import "../../css/classes/hide";
 
-#main {
+#main, #editor, #files {
 	width: 100%;
 	height: 100%;
 }
 
 #editor {
-	width: 100%;
-	height: 100%;
+	
 }
 
 #files {
-	width: 100%;
-	height: 100%;
+	display: flex;
+	align-content: flex-start;
+	justify-content: flex-start;
+	flex-wrap: wrap;
+	gap: 1em;
+	padding: 1em;
+}
+
+.file {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: .4em;
+	width: 120px;
+	cursor: pointer;
+	
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+.icon {
+	width: 48px;
+	height: 48px;
+	border-radius: 5px;
+	background: #eeeeee;
 }
 </style>
 
@@ -75,8 +110,18 @@ onMount(function() {
 	</div>
 	<div id="files" class:hide={currentPath === originalPath}>
 		{#each files as file}
-			<div class="file">
-				{file}
+			<div
+				class="file"
+				on:click={(e) => switchToFile(file)}
+				on:auxclick={(e) => openFile(file)}
+				on:contextmenu={(e) => openContextMenuForFile(file)}
+			>
+				<div class="icon {file.isDir ? "dirIcon" : "fileIcon"}">
+					
+				</div>
+				<div class="name">
+					{file.name}
+				</div>
 			</div>
 		{/each}
 	</div>

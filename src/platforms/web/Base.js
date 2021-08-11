@@ -1,4 +1,4 @@
-let minimatch = require("minimatch");
+let minimatch = require("minimatch-browser");
 
 let Evented = require("../../utils/Evented");
 

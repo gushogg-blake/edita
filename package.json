@@ -14,9 +14,10 @@
 		"electron-is-dev": "^2.0.0",
 		"electron-settings": "^4.0.2",
 		"electron-window-state": "^5.0.3",
-		"flowfs": "^5.1.2",
+		"fs-extra": "^10.0.0",
 		"get-port": "^5.1.1",
 		"minimatch": "^3.0.4",
+		"minimatch-browser": "^1.0.0",
 		"path-browserify": "^1.0.1",
 		"yargs": "^17.0.1"
 	},

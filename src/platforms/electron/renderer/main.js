@@ -22,8 +22,8 @@ window.base = new Base();
 	
 	window.app = app;
 	
-	app.openFile("test/repos/test.js", (await require("fs-extra").readFile(__dirname + "/../../../../test/repos/test.js")).toString());
-	app.openFile("src/components/App/App.svelte", (await require("fs-extra").readFile(__dirname + "/../../../components/App/App.svelte")).toString());
+	app.openFile("test/repos/test.js");
+	app.openFile("src/components/App/App.svelte");
 })();
 
 // misc shims etc:
