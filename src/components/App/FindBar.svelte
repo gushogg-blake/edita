@@ -1,9 +1,7 @@
 <script>
-import {onMount, createEventDispatcher, getContext} from "svelte";
+import {onMount, getContext} from "svelte";
 import getKeyCombo from "../../utils/getKeyCombo";
 import {on} from "../../utils/dom/domEvents";
-
-let fire = createEventDispatcher();
 
 let app = getContext("app");
 
@@ -32,7 +30,7 @@ let inputKeymap = {
 
 let functions = {
 	close() {
-		fire("close");
+		blur();
 	},
 	
 	findNext() {
