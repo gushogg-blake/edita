@@ -7,7 +7,7 @@ module.exports = async function() {
 		code: "html",
 		name: "HTML",
 		astMode,
-		astMode,
+		codeIntel,
 		parse: await parse(),
 		
 		getHiliteClass(node) {
