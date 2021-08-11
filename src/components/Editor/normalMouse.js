@@ -233,7 +233,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		let cursor = getCursor(e);
 		let isWithinSelection = Selection.cursorIsWithinSelection(selection, cursor);
 		
-		if (move) {
+		if (move && fromUs) {
 			if (Selection.cursorIsWithinOrNextToSelection(selection, cursor)) {
 				return;
 			}
@@ -255,7 +255,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			let edit = document.replaceSelection(Selection.s(cursor), str);
 			
 			edits = [edit.edit];
-			newSelection = edit.newSelection;
+			newSelection = Selection.containString(cursor, str, document.fileDetails.newline);
 		}
 		
 		editor.applyAndAddHistoryEntry({
