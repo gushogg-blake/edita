@@ -1,7 +1,17 @@
-let AstSelection = require("../../../../utils/AstSelection");
-let selectionFromLineIndex = require("./selectionFromLineIndex");
+function fromLineIndex(lines, lineIndex, forHilite) {
+	return [
+		lineIndex,
+		lineIndex,
+	];
+}
 
-let {s} = AstSelection;
+function selectionFromLineIndex(lines, lineIndex) {
+	return fromLineIndex(lines, lineIndex, false);
+}
+
+function hiliteFromLineIndex(lines, lineIndex) {
+	return fromLineIndex(lines, lineIndex, true);
+}
 
 /*
 trim any blank lines from the ends of the range, then go through the range
@@ -36,16 +46,41 @@ function fromLineRange(lines, startLineIndex, endLineIndex) {
 	let endIndex = startIndex;
 	
 	for (let i = startLineIndex; i <= endLineIndex - 1; i++) {
-		let selection = selectionFromLineIndex(lines, i);
+		let [s, e] = selectionFromLineIndex(lines, i);
 		
-		if (selection.startLineIndex < startIndex) {
+		if (s < startIndex) {
 			break;
 		}
 		
-		endIndex = Math.max(endIndex, selection.endLineIndex);
+		endIndex = Math.max(endIndex, e);
 	}
 	
-	return s(startIndex, endIndex);
+	return [
+		startIndex,
+		endIndex,
+	];
 }
 
-module.exports = fromLineRange;
+let api = {
+	selectionFromLineIndex,
+	hiliteFromLineIndex,
+	fromLineRange,
+	
+	up(lines, selection) {
+		return selection;
+	},
+	
+	down(lines, selection) {
+		return selection;
+	},
+	
+	next(lines, selection) {
+		return selection;
+	},
+	
+	previous(lines, selection) {
+		return selection;
+	},
+}
+
+module.exports = api;

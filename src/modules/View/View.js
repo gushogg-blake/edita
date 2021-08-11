@@ -204,12 +204,12 @@ class View extends Evented {
 		let {startLineIndex} = astSelection;
 		let lineIndex = startLineIndex;
 		let {lines} = this.document;
-		let {codeIntel} = this.document.lang;
+		let {astMode} = this.document.lang;
 		
 		this.pickOptions = [{
 			lineIndex,
 			
-			options: codeIntel.generatePickOptions(
+			options: astMode.generatePickOptions(
 				lines,
 				astSelection,
 			).map(function(option) {
@@ -239,7 +239,7 @@ class View extends Evented {
 			},
 		} = this;
 		
-		let {codeIntel} = document.lang;
+		let {astMode} = document.lang;
 		let {lineIndex} = this.findFirstVisibleLine();
 		
 		let rowsToRender = height / rowHeight;
@@ -258,7 +258,7 @@ class View extends Evented {
 			let wrappedLine = wrappedLines[lineIndex];
 			let {line} = wrappedLine;
 			
-			byLineIndex.set(lineIndex, codeIntel.generateDropTargets(
+			byLineIndex.set(lineIndex, astMode.generateDropTargets(
 				document.lines,
 				lineIndex,
 			).map(function(target) {
@@ -422,11 +422,11 @@ class View extends Evented {
 	
 	updateAstSelectionFromNormalSelection() {
 		let {document} = this;
-		let {codeIntel} = document.lang;
+		let {astMode} = document.lang;
 		
 		let {start, end} = Selection.sort(this.normalSelection);
 		
-		this.astSelection = codeIntel.astSelection.fromLineRange(document.lines, start.lineIndex, end.lineIndex + 1);
+		this.astSelection = astMode.selection.fromLineRange(document.lines, start.lineIndex, end.lineIndex + 1);
 	}
 	
 	setMeasurements(measurements) {

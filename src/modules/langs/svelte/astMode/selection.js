@@ -1,4 +1,17 @@
-let selectionFromLineIndex = require("./selectionFromLineIndex");
+function fromLineIndex(lines, lineIndex, forHilite) {
+	return [
+		lineIndex,
+		lineIndex,
+	];
+}
+
+function selectionFromLineIndex(lines, lineIndex) {
+	return fromLineIndex(lines, lineIndex, false);
+}
+
+function hiliteFromLineIndex(lines, lineIndex) {
+	return fromLineIndex(lines, lineIndex, true);
+}
 
 /*
 trim any blank lines from the ends of the range, then go through the range
@@ -48,4 +61,26 @@ function fromLineRange(lines, startLineIndex, endLineIndex) {
 	];
 }
 
-module.exports = fromLineRange;
+let api = {
+	selectionFromLineIndex,
+	hiliteFromLineIndex,
+	fromLineRange,
+	
+	up(lines, selection) {
+		return selection;
+	},
+	
+	down(lines, selection) {
+		return selection;
+	},
+	
+	next(lines, selection) {
+		return selection;
+	},
+	
+	previous(lines, selection) {
+		return selection;
+	},
+}
+
+module.exports = api;

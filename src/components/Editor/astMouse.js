@@ -82,7 +82,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			}
 		}
 		
-		return document.lang.codeIntel.astSelection.hiliteFromLineIndex(document.lines, lineIndex);
+		return document.lang.astMode.selection.hiliteFromLineIndex(document.lines, lineIndex);
 	}
 	
 	function getInsertionRange(e) {
@@ -369,12 +369,12 @@ module.exports = function(document, editor, view, editorComponent) {
 			return;
 		}
 		
-		let {codeIntel} = document.lang;
+		let {astMode} = document.lang;
 		
 		let {
 			edits,
 			newSelection,
-		} = codeIntel.drop(
+		} = astMode.drop(
 			document,
 			fromSelection,
 			toSelection,

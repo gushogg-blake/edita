@@ -1,3 +1,4 @@
+let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
 let parse = require("./parse");
 
@@ -7,6 +8,7 @@ module.exports = async function() {
 	return {
 		code: "javascript",
 		name: "JavaScript",
+		astMode,
 		codeIntel,
 		parse: await parse(),
 		

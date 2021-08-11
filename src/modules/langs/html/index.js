@@ -1,3 +1,4 @@
+let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
 let parse = require("./parse");
 
@@ -5,7 +6,8 @@ module.exports = async function() {
 	return {
 		code: "html",
 		name: "HTML",
-		codeIntel,
+		astMode,
+		astMode,
 		parse: await parse(),
 		
 		getHiliteClass(node) {

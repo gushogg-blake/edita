@@ -54,17 +54,13 @@ class Document extends Evented {
 		let endLineIndex = lineIndex + removeLinesCount;
 		let removeLines = this.lines.slice(lineIndex, endLineIndex);
 		
-		console.log(lineIndex, removeLinesCount);
-		
-		console.log(insertLines);
-		console.log(removeLines);
-		
 		let insertString = insertLines.join(newline);
 		let start;
 		let end;
 		
 		/*
-		we can insert lines after the last line
+		removing/inserting at the last line needs special handling as the
+		last line doesn't end with a newline
 		*/
 		
 		if (lineIndex === this.lines.length) {
@@ -438,25 +434,6 @@ class Document extends Evented {
 			edit: this.edit(s(start, end), ""),
 			newSelection: s(start),
 		};
-	}
-	
-	insertNewline(selection) {
-		let {start} = Selection.sort(selection);
-		let {lineIndex, offset} = start;
-		let line = this.lines[lineIndex];
-		
-		let indentLevel = line.indentLevel;
-		
-		if (
-			offset === line.string.length
-			&& line.openers.length > 0
-		) {
-			indentLevel++;
-		}
-		
-		let indent = this.fileDetails.indentation.string.repeat(indentLevel);
-		
-		return this.replaceSelection(selection, this.fileDetails.newline + indent);
 	}
 	
 	indexFromCursor(cursor) {

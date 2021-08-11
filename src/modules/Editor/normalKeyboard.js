@@ -94,10 +94,26 @@ module.exports = {
 	},
 	
 	enter() {
+		let {newline} = this.document.fileDetails;
+		let {normalSelection: selection} = this.view;
+		let {start} = Selection.sort(selection);
+		let {lineIndex, offset} = start;
+		let line = this.document.lines[lineIndex];
+		let indentLevel = line.indentLevel;
+		
+		if (
+			offset === line.string.length
+			&& this.document.lang.codeIntel.lineIsOpener(this.document.lines, lineIndex)
+		) {
+			indentLevel++;
+		}
+		
+		let indent = this.fileDetails.indentation.string.repeat(indentLevel);
+		
 		let {
 			edit,
 			newSelection,
-		} = this.document.insertNewline(this.view.normalSelection);
+		} = this.document.replaceSelection(this.view.normalSelection, newline + indent);
 		
 		this.applyAndAddHistoryEntry({
 			edits: [edit],

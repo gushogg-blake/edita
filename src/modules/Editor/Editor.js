@@ -35,7 +35,7 @@ class Editor extends Evented {
 	}
 	
 	getAvailableAstManipulations() {
-		return this.document.lang.codeIntel.getAvailableAstManipulations(
+		return this.document.lang.astMode.getAvailableAstManipulations(
 			this.document.lines,
 			this.view.astSelection,
 		);
@@ -56,7 +56,7 @@ class Editor extends Evented {
 		let {lines} = document;
 		let {startLineIndex, endLineIndex} = this.view.astSelection;
 		
-		let transformedLines = this.document.lang.codeIntel.astManipulations[code].apply(this.document, this.view.astSelection);
+		let transformedLines = this.document.lang.astMode.astManipulations[code].apply(this.document, this.view.astSelection);
 		
 		let {
 			lines: replacedLines,
