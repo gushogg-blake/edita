@@ -1,5 +1,7 @@
 let Cursor = require("./Cursor");
 
+let {c} = Cursor;
+
 /*
 sort a selection so that start is before end
 
@@ -45,6 +47,57 @@ function isMultiline(selection) {
 
 function isOverlapping(a, b) {
 	
+}
+
+/*
+adjust a selection to account for insertions/deletions earlier in the document
+
+for insertions, the adjustment is a selection containing the inserted text
+
+for deletions, the adjustment is a selection containing the deleted text
+
+sign is 1 (insertion) or -1 (deletion)
+*/
+
+function adjustSelection(selection, adjustment, sign) {
+	selection = sort(selection);
+	adjustment = sort(adjustment);
+	
+	if (isBefore(selection, adjustment)) {
+		return selection;
+	}
+	
+	let newStartLineIndex = selection.start.lineIndex;
+	let newStartOffset = selection.start.offset;
+	let newEndLineIndex = selection.end.lineIndex;
+	let newEndOffset = selection.end.offset;
+	
+	if (adjustment.start.lineIndex === selection.start.lineIndex) {
+		let adjustOffset = (adjustment.end.offset - adjustment.start.offset) * sign;
+		
+		newStartOffset += adjustOffset;
+		
+		if (selection.end.lineIndex === selection.start.lineIndex) {
+			newEndOffset += adjustOffset;
+		}
+	} else {
+		let adjustLineIndex = (adjustment.end.lineIndex - adjustment.start.lineIndex) * sign;
+		
+		newStartLineIndex += adjustLineIndex;
+		newEndLineIndex += adjustLineIndex;
+		
+		if (adjustment.end.lineIndex === selection.start.lineIndex) {
+			let adjustOffset = adjustment.end.offset * sign;
+			
+			newStartOffset += adjustOffset;
+			
+			if (selection.end.lineIndex === selection.start.lineIndex) {
+				newEndOffset += adjustOffset;
+			}
+		}
+	}
+	
+	return s(c(newStartLineIndex,newStartOffset), c(newEndLineIndex, newEndOffset));
 }
 
 function s(start, end=null) {
@@ -119,19 +172,20 @@ let api = {
 	},
 	
 	add(selection, addSelection) {
-		selection = sort(selection);
-		addSelection = sort(addSelection);
-		
-		if (isBefore(selection, addSelection)) {
-			return selection;
-		}
-		
-		
-		
-		
+		return adjustSelection(selection, addSelection, 1);
 	},
 	
 	subtract(selection, subtractSelection) {
+		return adjustSelection(selection, subtractSelection, -1);
+	},
+	
+	containString(start, str, newline) {
+		let lines = str.split(newline);
+		
+		let endLineIndex = start.lineIndex + lines.length - 1;
+		let endOffset = lines.length === 1 ? start.offset + lines[0].length : lines[lines.length - 1].length;
+		
+		return s(start, c(endLineIndex, endOffset));
 	},
 };
 
