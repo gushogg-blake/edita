@@ -26,13 +26,12 @@ function sort(selection) {
 	return {start, end};
 }
 
-// is a before b (and not overlapping)?
-
 function isBefore(a, b) {
-	let {end} = sort(a);
-	let {start} = sort(b);
-	
-	return Cursor.isBefore(end, start);
+	return Cursor.isBefore(sort(a).end, sort(b).start);
+}
+
+function startsBefore(a, b) {
+	return Cursor.isBefore(sort(a).start, sort(b).start);
 }
 
 function isFull(selection) {
@@ -63,7 +62,7 @@ function adjustSelection(selection, adjustment, sign) {
 	selection = sort(selection);
 	adjustment = sort(adjustment);
 	
-	if (Cursor.isBefore(selection.start, adjustment.start)) {
+	if (startsBefore(selection, adjustment)) {
 		return selection;
 	}
 	
