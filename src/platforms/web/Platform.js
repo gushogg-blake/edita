@@ -1,5 +1,6 @@
 let path = require("path-browserify");
 let bluebird = require("bluebird");
+let clipboard = require("./modules/clipboard");
 let fs = require("./modules/fs");
 
 class Platform {
@@ -8,21 +9,7 @@ class Platform {
 			newline: "\n",
 		};
 		
-		this.clipboard = {
-			write() {
-			},
-			
-			writeSelection() {
-			},
-			
-			read() {
-				return "";
-			},
-			
-			readSelection() {
-				return "";
-			},
-		};
+		this.clipboard = clipboard;
 		
 		this.fs = fs({
 			
