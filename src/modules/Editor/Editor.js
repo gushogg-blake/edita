@@ -254,6 +254,8 @@ class Editor extends Evented {
 	
 	setNormalSelection(selection) {
 		this.view.setNormalSelection(selection);
+		
+		console.log(this.document.lines[selection.start.lineIndex]);
 	}
 	
 	setAstSelection(selection) {

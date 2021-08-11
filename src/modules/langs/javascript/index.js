@@ -15,7 +15,7 @@ module.exports = async function() {
 		getHiliteClass(node) {
 			let {type} = node;
 			
-			if (type === "identifier" || type === "property_identifier") {
+			if (type.endsWith("identifier")) {
 				return "id";
 			}
 			
