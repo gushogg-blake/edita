@@ -1,8 +1,9 @@
+let AstSelection = require("../../../utils/AstSelection");
+
+let {s} = AstSelection;
+
 function fromLineIndex(lines, lineIndex, forHilite) {
-	return [
-		lineIndex,
-		lineIndex,
-	];
+	return s(lineIndex, lineIndex + 1);
 }
 
 function selectionFromLineIndex(lines, lineIndex) {
@@ -46,19 +47,16 @@ function fromLineRange(lines, startLineIndex, endLineIndex) {
 	let endIndex = startIndex;
 	
 	for (let i = startLineIndex; i <= endLineIndex - 1; i++) {
-		let [s, e] = selectionFromLineIndex(lines, i);
+		let selection = selectionFromLineIndex(lines, i);
 		
-		if (s < startIndex) {
+		if (selection.startLineIndex < startIndex) {
 			break;
 		}
 		
-		endIndex = Math.max(endIndex, e);
+		endIndex = Math.max(endIndex, selection.endLineIndex);
 	}
 	
-	return [
-		startIndex,
-		endIndex,
-	];
+	return s(startIndex, endIndex);
 }
 
 let api = {

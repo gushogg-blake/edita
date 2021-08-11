@@ -44,10 +44,6 @@ function isMultiline(selection) {
 	return selection.start.lineIndex !== selection.end.lineIndex;
 }
 
-function isOverlapping(a, b) {
-	
-}
-
 /*
 adjust a selection to account for insertions/deletions earlier in the document
 

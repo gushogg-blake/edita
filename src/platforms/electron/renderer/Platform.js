@@ -53,7 +53,10 @@ class Platform {
 	}
 	
 	showMessageBox(options) {
-		return dialog.showMessageBox(options);
+		return dialog.showMessageBox({
+			normalizeAccessKeys: true,
+			...options,
+		});
 	}
 	
 	showContextMenu(items) {

@@ -342,7 +342,7 @@ module.exports = {
 		
 		let line = document.lines[lineIndex];
 		
-		let indentAdjustment = document.lang.codeIntel?.shouldAdjustIndentAfterInsertion(line, document.lines, lineIndex);
+		let indentAdjustment = document.lang.codeIntel?.indentAdjustmentAfterInsertion(line, document.lines, lineIndex);
 		
 		if (indentAdjustment !== 0) {
 			let {string: indentStr} = document.fileDetails.indentation;

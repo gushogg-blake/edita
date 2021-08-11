@@ -255,7 +255,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			let edit = document.replaceSelection(Selection.s(cursor), str);
 			
 			edits = [edit.edit];
-			newSelection = document.selectString(cursor, str);
+			newSelection = document.getSelectionContainingString(cursor, str);
 		}
 		
 		editor.applyAndAddHistoryEntry({

@@ -21,9 +21,9 @@ let {
 	selectedTab,
 } = app;
 
-let showingLeftPane = true;
-let showingRightPane = true;
-let showingBottomPane = true;
+let showingLeftPane = false;
+let showingRightPane = false;
+let showingBottomPane = false;
 let showingFindBar = false;
 
 function keydown(e) {

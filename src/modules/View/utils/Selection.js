@@ -48,7 +48,7 @@ module.exports = {
 		let [endRow, endCol] = this.rowColFromCursor(end);
 		
 		if (endRow === this.countRows() - 1) {
-			return s(c(end.lineIndex, wrappedLines[end.lineIndex].string.length));
+			return s(c(end.lineIndex, wrappedLines[end.lineIndex].line.string.length));
 		}
 		
 		let row = endRow + 1;

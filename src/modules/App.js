@@ -63,7 +63,7 @@ class App extends Evented {
 		if (modified) {
 			let {response} = await platform.showMessageBox({
 				message: "Save changes to " + (path ? platform.fs(path).name : "new file") + "?",
-				buttons: ["Yes", "No", "Cancel"],
+				buttons: ["&Yes", "&No", "&Cancel"],
 			});
 			
 			if (response === 0) {

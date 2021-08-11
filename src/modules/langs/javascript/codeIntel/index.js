@@ -3,11 +3,11 @@ module.exports = {
 		return line.string.substr(0, cursor.offset).match(/[\[{(]$/);
 	},
 	
-	shouldAdjustIndentAfterInsertion(line, lines, lineIndex) {
+	indentAdjustmentAfterInsertion(line, lines, lineIndex) {
 		let lastNode = line.nodes[line.nodes.length - 1];
 		
 		if (!lastNode || !lastNode.type.match(/[\]})]/)) {
-			return false;
+			return 0;
 		}
 		
 		let headerIndentLevel = lines[lastNode.parent.startPosition.row].indentLevel;

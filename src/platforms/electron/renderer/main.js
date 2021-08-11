@@ -23,6 +23,7 @@ window.base = new Base();
 	window.app = app;
 	
 	app.openFile("test/repos/test.js", await require("flowfs")(__dirname, "../../../../test/repos/test.js").read());
+	app.openFile("src/components/App/App.svelte", await require("flowfs")(__dirname, "../../../components/App/App.svelte").read());
 })();
 
 // misc shims etc:

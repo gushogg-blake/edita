@@ -279,7 +279,7 @@ class Document extends Evented {
 		let remove = this.edit(fromSelection, "");
 		let insert = this.edit(s(toCursor), str);
 		
-		let newSelection = this.selectString(toCursor, str);
+		let newSelection = this.getSelectionContainingString(toCursor, str);
 		
 		newSelection = Selection.subtract(newSelection, fromSelection);
 		
@@ -326,7 +326,7 @@ class Document extends Evented {
 		return str.substring(trimLeft, str.length - trimRight);
 	}
 	
-	selectString(cursor, str) {
+	getSelectionContainingString(cursor, str) {
 		return Selection.containString(cursor, str, this.fileDetails.newline);
 	}
 	
