@@ -1,4 +1,8 @@
 let Selection = require("../utils/Selection");
+let Cursor = require("../utils/Cursor");
+
+let {s} = Selection;
+let {c} = Cursor;
 
 module.exports = {
 	up() {
@@ -94,26 +98,24 @@ module.exports = {
 	},
 	
 	enter() {
-		let {newline} = this.document.fileDetails;
+		let {document} = this;
+		let {newline} = document.fileDetails;
 		let {normalSelection: selection} = this.view;
 		let {start} = Selection.sort(selection);
-		let {lineIndex, offset} = start;
-		let line = this.document.lines[lineIndex];
-		let indentLevel = line.indentLevel;
+		let {lineIndex} = start;
+		let line = document.lines[lineIndex];
+		let {indentLevel} = line;
 		
-		if (
-			offset === line.string.length
-			&& this.document.lang.codeIntel.lineIsOpener(this.document.lines, lineIndex)
-		) {
+		if (document.lang.codeIntel?.shouldIndentOnNewline(line, document.lines, lineIndex, start)) {
 			indentLevel++;
 		}
 		
-		let indent = this.fileDetails.indentation.string.repeat(indentLevel);
+		let indent = document.fileDetails.indentation.string.repeat(indentLevel);
 		
 		let {
 			edit,
 			newSelection,
-		} = this.document.replaceSelection(this.view.normalSelection, newline + indent);
+		} = document.replaceSelection(selection, newline + indent);
 		
 		this.applyAndAddHistoryEntry({
 			edits: [edit],
@@ -284,10 +286,15 @@ module.exports = {
 	insert(key) {
 		let newBatchState = this.view.Selection.isFull() ? null : "typing";
 		
+		let {document} = this;
+		let {normalSelection: selection} = this.view;
+		let {start} = Selection.sort(selection);
+		let {lineIndex} = start;
+		
 		let {
 			edit,
 			newSelection,
-		} = this.document.insert(this.view.normalSelection, key);
+		} = document.insert(selection, key);
 		
 		let apply = {
 			edits: [edit],
@@ -298,6 +305,31 @@ module.exports = {
 			this.applyAndMergeWithLastHistoryEntry(apply);
 		} else {
 			this.applyAndAddHistoryEntry(apply);
+		}
+		
+		let line = document.lines[lineIndex];
+		
+		let indentAdjustment = document.lang.codeIntel?.shouldAdjustIndentAfterInsertion(line, document.lines, lineIndex);
+		
+		if (indentAdjustment !== 0) {
+			let {string: indentStr} = document.fileDetails.indentation;
+			let {indentLevel} = line;
+			let newIndentLevel = indentLevel + indentAdjustment;
+			let oldIndentStr = indentStr.repeat(indentLevel);
+			let newIndentStr = indentStr.repeat(newIndentLevel);
+			
+			let {
+				edit,
+			} = document.replaceSelection(s(c(lineIndex, 0), c(lineIndex, oldIndentStr.length)), newIndentStr);
+			
+			let apply = {
+				edits: [edit],
+				normalSelection: s(c(newSelection.start.lineIndex, newSelection.start.offset + (newIndentStr.length - oldIndentStr.length))),
+			};
+			
+			this.applyAndAddHistoryEntry(apply);
+			
+			newBatchState = null;
 		}
 		
 		this.view.updateSelectionEndCol();
