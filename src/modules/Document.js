@@ -279,7 +279,7 @@ class Document extends Evented {
 		let remove = this.edit(fromSelection, "");
 		let insert = this.edit(s(toCursor), str);
 		
-		let newSelection = Selection.containString(toCursor, str, this.fileDetails.newline);
+		let newSelection = this.selectString(toCursor, str);
 		
 		newSelection = Selection.subtract(newSelection, fromSelection);
 		
@@ -324,6 +324,10 @@ class Document extends Evented {
 		let trimRight = lines[lines.length - 1].string.length - end.offset;
 		
 		return str.substring(trimLeft, str.length - trimRight);
+	}
+	
+	selectString(cursor, str) {
+		return Selection.containString(cursor, str, this.fileDetails.newline);
 	}
 	
 	getLongestLineWidth() {
