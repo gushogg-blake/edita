@@ -63,7 +63,7 @@ function adjustSelection(selection, adjustment, sign) {
 	selection = sort(selection);
 	adjustment = sort(adjustment);
 	
-	if (isBefore(selection, adjustment)) {
+	if (Cursor.isBefore(selection.start, adjustment.start)) {
 		return selection;
 	}
 	
