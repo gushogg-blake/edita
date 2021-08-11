@@ -29,6 +29,7 @@ let marginStyle = require("./canvas/marginStyle");
 let SelectionUtils = require("./utils/Selection");
 let AstSelectionUtils = require("./utils/AstSelection");
 
+let {s: a} = AstSelection;
 let {c} = Cursor;
 let {s} = Selection;
 
@@ -426,7 +427,11 @@ class View extends Evented {
 		
 		let {start, end} = Selection.sort(this.normalSelection);
 		
-		this.astSelection = astMode.selection.fromLineRange(document.lines, start.lineIndex, end.lineIndex + 1);
+		if (astMode) {
+			this.astSelection = astMode.selection.fromLineRange(document.lines, start.lineIndex, end.lineIndex + 1);
+		} else {
+			this.astSelection = a(0, 0);
+		}
 	}
 	
 	setMeasurements(measurements) {
