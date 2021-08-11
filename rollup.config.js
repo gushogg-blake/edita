@@ -44,7 +44,6 @@ if (!platform || platform === "all" || platform === "electron") {
 				}),
 				
 				compilerOptions: {
-					// enable run-time checks when not in production
 					dev: !production,
 				},
 			}),
@@ -112,7 +111,6 @@ if (!platform || platform === "all" || platform === "web") {
 				}),
 				
 				compilerOptions: {
-					// enable run-time checks when not in production
 					dev: !production,
 				},
 			}),
