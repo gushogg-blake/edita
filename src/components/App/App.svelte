@@ -166,9 +166,11 @@ $border: 1px solid #AFACAA;
 		{/if}
 	</div>
 	<div id="tabBarContainer">
-		<div id="tabBar">
-			<TabBar/>
-		</div>
+		{#if tabs.length > 0}
+			<div id="tabBar">
+				<TabBar/>
+			</div>
+		{/if}
 	</div>
 	<div id="editor">
 		{#each tabs as tab (tab)}
