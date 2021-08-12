@@ -272,6 +272,14 @@ class Editor extends Evented {
 		this.clearBatchState();
 	}
 	
+	setSelectionFromNormalMouse(selection) {
+		this.view.setNormalSelection(selection);
+		this.view.updateSelectionEndCol();
+		
+		this.clearSnippetSession();
+		this.clearBatchState();
+	}
+	
 	setNormalSelection(selection) {
 		this.view.setNormalSelection(selection);
 		

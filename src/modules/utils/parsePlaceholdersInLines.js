@@ -16,7 +16,7 @@ output:
 	- lines with placeholders replaced with default (for e.g. tabstops) or empty
 	string
 	- array of placeholder details - type, value, initialText (e.g. default value)
-	and cursor (actual line index calculated from baseLineIndex, and offset)
+	and selection
 */
 
 module.exports = function(lines, baseLineIndex=0) {

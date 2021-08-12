@@ -84,7 +84,7 @@ module.exports = {
 				i = endLineIndex;
 			}
 			
-			let header = [0, "[[%tabstop:]]{"];
+			let header = [0, "let [[%tabstop:name]] = {"];
 			
 			let transformedLines = statements.map(function(statement) {
 				let {type, line} = statement;
