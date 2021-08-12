@@ -93,7 +93,6 @@ $border: 1px solid #AFACAA;
 #toolbar {
 	grid-area: toolbar;
 	border-bottom: $border;
-	background: white;
 }
 
 #leftContainer {

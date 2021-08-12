@@ -33,7 +33,7 @@ class Editor extends Evented {
 		
 		this.historyEntries = new WeakMap();
 		
-		this.teardown = [
+		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
 		];
 	}
@@ -316,6 +316,12 @@ class Editor extends Evented {
 	
 	get astSelection() {
 		return this.view.astSelection;
+	}
+	
+	teardown() {
+		for (let fn of this.teardownCallbacks) {
+			fn();
+		}
 	}
 }
 
