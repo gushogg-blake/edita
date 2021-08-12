@@ -53,9 +53,11 @@ module.exports = function(context, view) {
 		for (let lineRow of [...rows.reverse()]) {
 			let commands = [...view.generateRenderCommandsForLine(line, lineRow)].reverse();
 			
-			for (let [type, value] of commands) {
+			for (let command of commands) {
+				let {type} = command;
+				
 				if (type === "colour") {
-					let {lang, node} = value;
+					let {lang, node} = command;
 					
 					context.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
 					

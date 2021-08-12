@@ -126,7 +126,7 @@ function defaultPrefs() {
 					tagName: "#0032ff",
 					className: "#008b8b",
 					idName: "#8b0000",
-					property: "#0032ff",
+					property: "#333333",
 					attribute: "#871f78",
 					string: "#2233bb",
 					comment: "#7f7f7f",

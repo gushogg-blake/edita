@@ -74,7 +74,6 @@ module.exports = async function(lang) {
 			].includes(type);
 			
 			let renderAsText = [
-				"comment",
 				"string_value",
 				"integer_value",
 				"float_value",
