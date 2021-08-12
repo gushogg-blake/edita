@@ -72,20 +72,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		let y = e.clientY - top;
 		
 		if (e.button === 1) {
-			let str = await platform.clipboard.readSelection();
-			
-			let {
-				edit,
-				newSelection,
-			} = document.replaceSelection(Selection.s(cursor), str);
-			
-			editor.applyAndAddHistoryEntry({
-				edits: [edit],
-				normalSelection: newSelection,
-			});
-			
-			view.startCursorBlink();
-			view.redraw();
+			editor.normalMouse.insertSelectionClipboard();
 			
 			return;
 		}
@@ -104,10 +91,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			return;
 		}
 		
-		editor.normalMouse.setSelection(Selection.s(cursor));
-		
-		view.startCursorBlink();
-		view.redraw();
+		editor.normalMouse.setSelectionAndStartCursorBlink(Selection.s(cursor));
 		
 		drawingSelection = true;
 		
@@ -168,19 +152,13 @@ module.exports = function(document, editor, view, editorComponent) {
 		
 		let cursor = getCursor(e);
 		
-		editor.normalMouse.setSelection(Selection.s(cursor));
-		
-		view.startCursorBlink();
-		view.redraw();
+		editor.normalMouse.setSelectionAndStartCursorBlink(Selection.s(cursor));
 	}
 	
 	function dblclick(e) {
 		let cursor = getCharCursor(e);
 		
-		editor.normalMouse.setSelection(view.Selection.wordUnderCursor(cursor));
-		
-		view.startCursorBlink();
-		view.redraw();
+		editor.normalMouse.setSelectionAndStartCursorBlink(view.Selection.wordUnderCursor(cursor));
 	}
 	
 	function dragstart(e) {
@@ -212,10 +190,6 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function drop(e, fromUs, toUs, extra) {
-		let {
-			normalSelection: selection,
-		} = view;
-		
 		if (!e.dataTransfer.types.includes("text/plain")) {
 			return;
 		}
@@ -226,46 +200,12 @@ module.exports = function(document, editor, view, editorComponent) {
 			return;
 		}
 		
+		let cursor = getCursor(e);
 		let move = !e.ctrlKey;
 		
 		e.dataTransfer.dropEffect = move ? "move" : "copy";
 		
-		let cursor = getCursor(e);
-		let isWithinSelection = Selection.cursorIsWithinSelection(selection, cursor);
-		
-		if (move && fromUs) {
-			if (Selection.cursorIsWithinOrNextToSelection(selection, cursor)) {
-				return;
-			}
-		} else {
-			if (Selection.cursorIsWithinSelection(selection, cursor)) {
-				return;
-			}
-		}
-		
-		let edits;
-		let newSelection;
-		
-		if (move && fromUs) {
-			({
-				edits,
-				newSelection,
-			} = document.move(selection, cursor));
-		} else {
-			let edit = document.replaceSelection(Selection.s(cursor), str);
-			
-			edits = [edit.edit];
-			newSelection = document.getSelectionContainingString(cursor, str);
-		}
-		
-		editor.applyAndAddHistoryEntry({
-			edits,
-			normalSelection: newSelection,
-		});
-		
-		view.insertCursor = null;
-		view.startCursorBlink();
-		view.redraw();
+		editor.normalMouse.drop(cursor, str, move, fromUs, toUs);
 	}
 	
 	function dragend() {

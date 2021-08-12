@@ -628,6 +628,7 @@ onMount(async function() {
 	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar spacer";
 	width: 100%;
 	height: 100%;
+	background: white;
 	
 	&.showingHorizontalScrollbar {
 		grid-template-rows: 1fr 13px;

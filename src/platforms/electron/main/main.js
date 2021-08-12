@@ -48,7 +48,7 @@ for (let [key, fns] of Object.entries(syncIpcModules)) {
 	}
 }
 
-//Menu.setApplicationMenu(null);
+Menu.setApplicationMenu(null);
 
 let win;
 
@@ -65,6 +65,8 @@ async function createWindow() {
 			nodeIntegration: true,
 			contextIsolation: false,
 		},
+		
+		backgroundColor: "#edecea",
 	});
 	
 	winState.manage(win);
