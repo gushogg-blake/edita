@@ -3,13 +3,13 @@ let rangeToTreeSitterRange = require("../common/utils/treesitter/rangeToTreeSitt
 let treeSitterRangeToRange = require("../common/utils/treesitter/treeSitterRangeToRange");
 
 module.exports = async function(lang) {
-	let HTML = await platform.loadTreeSitterLanguage("html");
+	let CSS = await platform.loadTreeSitterLanguage("css");
 	
 	return function(code, lines, langRange) {
 		// NOTE perf - parser instance is reusable but need to recreate it if parse() throws
 		let parser = new TreeSitter();
 		
-		parser.setLanguage(HTML);
+		parser.setLanguage(CSS);
 		
 		let treeSitterRange = rangeToTreeSitterRange(langRange.range);
 		
@@ -29,7 +29,7 @@ module.exports = async function(lang) {
 			to be the first line in the file)
 			*/
 			
-			if (node.type === "fragment") {
+			if (node.type === "stylesheet") {
 				if (!advanceCursor(cursor)) {
 					break;
 				}
@@ -63,21 +63,21 @@ module.exports = async function(lang) {
 			
 			let canIncludeTabs = [
 				"comment",
-				"text",
-				"raw_text",
-				"quoted_attribute_value",
+				"string_value",
 			].includes(type);
 			
 			let colour = [
 				"comment",
-				"quoted_attribute_value",
-				"text",
-				"raw_text",
+				"string_value",
+				"integer_value",
+				"float_value",
 			].includes(type);
 			
 			let renderAsText = [
-				"quoted_attribute_value",
-				"doctype",
+				"comment",
+				"string_value",
+				"integer_value",
+				"float_value",
 			].includes(node.parent?.type);
 			
 			if (colour) {
@@ -121,34 +121,6 @@ module.exports = async function(lang) {
 						lang,
 						ndoe: closer,
 					});
-				}
-			}
-			
-			if (type === "raw_text" && parent) {
-				if (parent.type === "style_element") {
-					let css = base.langs.get("css");
-					
-					let newLangRange = {
-						lang: css,
-						range: treeSitterRangeToRange(node),
-						children: [],
-					};
-					
-					langRange.children.push(newLangRange);
-					
-					css.parse(code, lines, newLangRange);
-				} else if (parent.type === "script_element") {
-					let javascript = base.langs.get("javascript");
-					
-					let newLangRange = {
-						lang: javascript,
-						range: treeSitterRangeToRange(node),
-						children: [],
-					};
-					
-					langRange.children.push(newLangRange);
-					
-					javascript.parse(code, lines, newLangRange);
 				}
 			}
 			

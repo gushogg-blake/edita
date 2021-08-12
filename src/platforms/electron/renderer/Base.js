@@ -8,6 +8,7 @@ let checkNewlines = require("../../../modules/utils/checkNewlines");
 
 let javascript = require("../../../modules/langs/javascript");
 let html = require("../../../modules/langs/html");
+let css = require("../../../modules/langs/css");
 //let svelte = require("../../../modules/langs/svelte");
 let plainText = require("../../../modules/langs/plainText");
 let langs = require("../../../modules/langs");
@@ -119,6 +120,20 @@ function defaultPrefs() {
 					text: "#000000",
 				},
 			},
+			
+			css: {
+				colors: {
+					tagName: "#0032ff",
+					className: "#008b8b",
+					idName: "#8b0000",
+					property: "#0032ff",
+					attribute: "#871f78",
+					string: "#2233bb",
+					comment: "#7f7f7f",
+					symbol: "#333333",
+					text: "#000000",
+				},
+			},
 		},
 		
 		fileAssociations: {
@@ -168,6 +183,7 @@ class Base extends Evented {
 			javascript(),
 			//svelte(),
 			html(),
+			css(),
 			plainText(),
 		]);
 		
