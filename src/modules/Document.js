@@ -14,7 +14,10 @@ class Document extends Evented {
 		this.string = code;
 		this.path = path;
 		this.fileDetails = fileDetails;
-		this.lang = fileDetails.lang;
+		
+		this.mainLang = fileDetails.lang;
+		
+		this.lang = fileDetails.lang; //
 		
 		this.history = [];
 		this.historyIndex = 0;
@@ -250,12 +253,27 @@ class Document extends Evented {
 			lineStartIndex += lineString.length + fileDetails.newline.length;
 		}
 		
-		try {
-			this.lang.parse(this.string, this.lines, this.fileDetails);
-		} catch (e) {
-			console.error("Parse error");
-			console.error(e);
-		}
+		let lastIndex = this.lines.length - 1;
+		let lastLine = this.lines[lastIndex];
+		
+		this.mainLangRange = {
+			lang: this.mainLang,
+			
+			range: {
+				startIndex: 0,
+				endIndex: this.string.length,
+				selection: s(c(0, 0), c(lastIndex, lastLine.string.length)),
+			},
+			
+			childRanges: [],
+		};
+		
+		//try {
+			this.mainLang.parse(this.string, this.lines, this.mainLangRange);
+		//} catch (e) {
+		//	console.error("Parse error");
+		//	console.error(e);
+		//}
 		
 		console.timeEnd("parse");
 	}

@@ -27,14 +27,8 @@ module.exports = function(context, view) {
 		marginStyle,
 	} = view.sizes;
 	
-	let {
-		lang,
-	} = document.fileDetails;
-	
 	context.font = font;
 	context.fillStyle = "black";
-	
-	let {colors} = base.prefs.langs[lang.code] || {colors: {}}; //
 	
 	let rowsToRender = height / rowHeight;
 	let rowsRendered = 0;
@@ -61,9 +55,9 @@ module.exports = function(context, view) {
 			
 			for (let [type, value] of commands) {
 				if (type === "colour") {
-					let node = value;
+					let {lang, node} = value;
 					
-					context.fillStyle = colors[lang.getHiliteClass(node)];
+					context.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
 					
 					break findPreviousColourHint;
 				}
@@ -76,6 +70,7 @@ module.exports = function(context, view) {
 	}
 	
 	let lineIndex = firstLineIndex;
+	let offset = 0;
 	
 	while (true) {
 		let wrappedLine = wrappedLines[lineIndex];
@@ -90,33 +85,34 @@ module.exports = function(context, view) {
 				x += line.indentCols * colWidth;
 			}
 			
-			for (let [type, value] of view.generateRenderCommandsForLine(line, lineRow)) {
+			for (let command of view.generateRenderCommandsForLine(line, lineRow)) {
+				let {type} = command;
+				
 				if (type === "colour") {
-					let node = value;
+					let {lang, node} = command;
 					
-					context.fillStyle = colors[lang.getHiliteClass(node)];
-				}
-				
-				if (lineIndex === firstLineIndex && i < lineRowIndex) {
-					continue;
-				}
-				
-				if (type === "string") {
-					let string = value;
+					context.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+				} else if (type === "string") {
+					let {string: str} = command;
 					
-					context.fillText(string, x, y);
-					
-					x += string.length * colWidth;
-				} else if (type === "node") {
-					let node = value;
-					let str = node.text;
-					
-					context.fillStyle = colors[lang.getHiliteClass(node)];
 					context.fillText(str, x, y);
 					
 					x += str.length * colWidth;
+					offset += str.length;
+				} else if (type === "node") {
+					let {lang, node} = command;
+					let str = node.text;
+					
+					context.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+					context.fillText(str, x, y);
+					
+					x += str.length * colWidth;
+					offset += str.length;
 				} else if (type === "tab") {
-					x += value * colWidth;
+					let {width} = command;
+					
+					x += width * colWidth;
+					offset++;
 				}
 			}
 			
@@ -124,6 +120,8 @@ module.exports = function(context, view) {
 			x = leftEdge;
 			y += rowHeight;
 		}
+		
+		offset = 0;
 		
 		let {fillStyle} = context;
 		

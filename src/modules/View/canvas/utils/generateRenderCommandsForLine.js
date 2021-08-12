@@ -49,7 +49,10 @@ module.exports = function*(line, lineRow) {
 				if (!nextHint && offset - stringStartOffset < string.length) {
 					let str = string.substr(offset - stringStartOffset);
 					
-					yield ["string", str];
+					yield {
+						type: "string",
+						string: str,
+					};
 					
 					offset += str.length;
 				}
@@ -57,7 +60,10 @@ module.exports = function*(line, lineRow) {
 				if (nextHint && nextHint.offset > offset) {
 					let str = string.substring(offset - stringStartOffset, nextHint.offset - stringStartOffset);
 					
-					yield ["string", str];
+					yield {
+						type: "string",
+						string: str,
+					};
 					
 					offset += str.length;
 				}
@@ -68,13 +74,11 @@ module.exports = function*(line, lineRow) {
 				
 				while (nextHint && nextHint.offset === offset) {
 					if (nextHint.type === "node") {
-						let {node} = nextHint;
+						yield nextHint;
 						
-						yield ["node", nextHint.node];
-						
-						offset = node.startPosition.column + node.text.length;
+						offset = nextHint.node.startPosition.column + nextHint.node.text.length;
 					} else if (nextHint.type === "colour") {
-						yield ["colour", nextHint.node];
+						yield nextHint;
 					}
 					
 					hintIndex++;
@@ -88,7 +92,10 @@ module.exports = function*(line, lineRow) {
 			
 			stringStartOffset += string.length;
 		} else if (type === "tab") {
-			yield [type, value];
+			yield {
+				type,
+				width: value,
+			};
 			
 			offset++;
 			stringStartOffset++;

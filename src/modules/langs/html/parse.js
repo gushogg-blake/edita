@@ -1,15 +1,22 @@
 let advanceCursor = require("../common/utils/treesitter/advanceCursor");
+let rangeToTreeSitterRange = require("../common/utils/treesitter/rangeToTreeSitterRange");
+let treeSitterRangeToRange = require("../common/utils/treesitter/treeSitterRangeToRange");
 
-module.exports = async function() {
+module.exports = async function(lang) {
 	let HTML = await platform.loadTreeSitterLanguage("html");
 	
-	return function(code, lines, fileDetails) {
-		// NOTE parser instance is reusable but need to recreate it if parse() throws
+	return function(code, lines, range) {
+		// NOTE perf - parser instance is reusable but need to recreate it if parse() throws
 		let parser = new TreeSitter();
 		
 		parser.setLanguage(HTML);
 		
-		let tree = parser.parse(code);
+		let treeSitterRange = rangeToTreeSitterRange(range.range);
+		
+		let tree = parser.parse(code, null, {
+			includedRanges: [treeSitterRange],
+		});
+		
 		let cursor = tree.walk();
 		
 		while (true) {
@@ -32,8 +39,11 @@ module.exports = async function() {
 			
 			let {
 				type,
+				startIndex,
+				endIndex,
 				startPosition,
 				endPosition,
+				parent,
 				childCount,
 			} = node;
 			
@@ -74,6 +84,7 @@ module.exports = async function() {
 				line.renderHints.push({
 					type: "colour",
 					offset: startOffset,
+					lang,
 					node,
 				});
 			}
@@ -87,6 +98,7 @@ module.exports = async function() {
 				line.renderHints.push({
 					type: "node",
 					offset: startOffset,
+					lang,
 					node,
 				});
 			}
@@ -100,8 +112,33 @@ module.exports = async function() {
 					let opener = node.firstChild;
 					let closer = node.lastChild;
 					
-					lines[opener.startPosition.row].openers.push(opener);
-					lines[closer.startPosition.row].closers.unshift(closer);
+					lines[opener.startPosition.row].openers.push({
+						lang,
+						node: opener,
+					});
+					
+					lines[closer.startPosition.row].closers.unshift({
+						lang,
+						ndoe: closer,
+					});
+				}
+			}
+			
+			if (type === "raw_text" && parent) {
+				if (parent.type === "style_element") {
+					
+				} else if (parent.type === "script_element") {
+					let javascript = base.langs.get("javascript");
+					
+					let newRange = {
+						lang: javascript,
+						range: treeSitterRangeToRange(node),
+						childRanges: [],
+					};
+					
+					range.childRanges.push(newRange);
+					
+					javascript.parse(code, lines, newRange);
 				}
 			}
 			

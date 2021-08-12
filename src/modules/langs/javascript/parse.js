@@ -1,15 +1,22 @@
 let advanceCursor = require("../common/utils/treesitter/advanceCursor");
+let rangeToTreeSitterRange = require("../common/utils/treesitter/rangeToTreeSitterRange");
+let treeSitterRangeToRange = require("../common/utils/treesitter/treeSitterRangeToRange");
 
-module.exports = async function() {
+module.exports = async function(lang) {
 	let JavaScript = await platform.loadTreeSitterLanguage("javascript");
 	
-	return function(code, lines, fileDetails) {
-		// NOTE parser instance is reusable but need to recreate it if parse() throws
+	return function(code, lines, range) {
+		// NOTE perf - parser instance is reusable but need to recreate it if parse() throws
 		let parser = new TreeSitter();
 		
 		parser.setLanguage(JavaScript);
 		
-		let tree = parser.parse(code);
+		let treeSitterRange = rangeToTreeSitterRange(range.range);
+		
+		let tree = parser.parse(code, null, {
+			includedRanges: [treeSitterRange],
+		});
+		
 		let cursor = tree.walk();
 		
 		while (true) {
@@ -41,6 +48,9 @@ module.exports = async function() {
 				row: startLineIndex,
 				column: startOffset,
 			} = startPosition;
+			
+			console.log(node);
+			console.log(startLineIndex);
 			
 			let {
 				row: endLineIndex,
@@ -100,6 +110,7 @@ module.exports = async function() {
 				line.renderHints.push({
 					type: "colour",
 					offset: startOffset,
+					lang,
 					node,
 				});
 			}
@@ -113,6 +124,7 @@ module.exports = async function() {
 				line.renderHints.push({
 					type: "node",
 					offset: startOffset,
+					lang,
 					node,
 				});
 				
@@ -124,6 +136,7 @@ module.exports = async function() {
 					line.renderHints.push({
 						type: "colour",
 						offset: startOffset + 1,
+						lang,
 						node: node.parent.parent, // the template_string node, which is just used for selecting the colour
 					});
 				}
@@ -143,8 +156,15 @@ module.exports = async function() {
 					let opener = node.firstChild;
 					let closer = node.lastChild;
 					
-					lines[opener.startPosition.row].openers.push(opener);
-					lines[closer.startPosition.row].closers.unshift(closer);
+					lines[opener.startPosition.row].openers.push({
+						lang,
+						node: opener,
+					});
+					
+					lines[closer.startPosition.row].closers.unshift({
+						lang,
+						node: closer,
+					});
 				}
 			}
 			
