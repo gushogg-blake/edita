@@ -32,6 +32,10 @@ class Editor extends Evented {
 		this.snippetSession = null;
 		
 		this.historyEntries = new WeakMap();
+		
+		this.teardown = [
+			document.on("edit", this.onDocumentEdit.bind(this)),
+		];
 	}
 	
 	getAvailableAstManipulations() {
@@ -101,13 +105,9 @@ class Editor extends Evented {
 		
 		let placeholder = placeholders[index];
 		
-		let {
-			lineIndex,
-			offset,
-			initialText,
-		} = placeholder;
+		let {selection} = placeholder;
 		
-		this.setNormalSelection(s(c(lineIndex, offset), c(lineIndex, offset + initialText.length)));
+		this.setNormalSelection(selection);
 		
 		this.view.redraw();
 		
@@ -118,6 +118,27 @@ class Editor extends Evented {
 	
 	clearSnippetSession() {
 		this.snippetSession = null;
+	}
+	
+	onDocumentEdit(edit) {
+		let {selection: oldSelection, newSelection} = edit;
+		let {normalHilites} = this.view;
+		
+		this.view.normalHilites = normalHilites.map(function(hilite) {
+			return Selection.add(Selection.subtract(hilite, oldSelection), newSelection);
+		});
+		
+		if (this.snippetSession) {
+			let {index, placeholders} = this.snippetSession;
+			
+			for (let i = index; i < placeholders.length; i++) {
+				let placeholder = placeholders[i];
+				
+				placeholder.selection = Selection.add(Selection.subtract(placeholder.selection, oldSelection), newSelection);
+			}
+		}
+		
+		this.view.updateSizes();
 	}
 	
 	applyHistoryEntry(entry, state) {
@@ -134,15 +155,7 @@ class Editor extends Evented {
 			this.setAstSelection(astSelection);
 		}
 		
-		this.afterEdit();
-		
-		// TODO update hilites (e.g. find) on edit
-		
 		this.fire("edit");
-	}
-	
-	afterEdit() {
-		this.view.updateSizes();
 	}
 	
 	applyAndAddHistoryEntry(edit) {

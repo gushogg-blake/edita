@@ -101,7 +101,7 @@ class Document extends Evented {
 		
 		this.modified = true;
 		
-		this.fire("edit");
+		this.fire("edit", edit);
 	}
 	
 	reverse(edit) {

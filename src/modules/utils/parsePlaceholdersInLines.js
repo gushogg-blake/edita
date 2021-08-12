@@ -1,4 +1,9 @@
+let Cursor = require("./Cursor");
+let Selection = require("./Selection");
 let parsePlaceholders = require("./parsePlaceholders");
+
+let {c} = Cursor;
+let {s} = Selection;
 
 /*
 input:
@@ -27,9 +32,13 @@ module.exports = function(lines, baseLineIndex=0) {
 		} = parsePlaceholders(line);
 		
 		placeholders.push(...linePlaceholders.map(function(placeholder) {
+			let {offset, initialText} = placeholder;
+			let lineIndex = baseLineIndex + i;
+			let selection = s(c(lineIndex, offset), c(lineIndex, offset + initialText.length));
+			
 			return {
 				...placeholder,
-				lineIndex: baseLineIndex + i,
+				selection,
 			};
 		}));
 		

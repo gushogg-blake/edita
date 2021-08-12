@@ -24,8 +24,8 @@ window.base = new Base();
 	
 	app.openFile("test/repos/test.js");
 	//app.openFile("src/components/App/App.svelte");
-	app.openFile("test/repos/test.html");
-	app.openFile("test/repos/test.css");
+	//app.openFile("test/repos/test.html");
+	//app.openFile("test/repos/test.css");
 })();
 
 // misc shims etc:
