@@ -1,12 +1,14 @@
 let advanceCursor = require("../common/utils/treesitter/advanceCursor");
 
 module.exports = async function() {
-	let parser = new TreeSitter();
 	let JavaScript = await platform.loadTreeSitterLanguage("javascript");
 	
-	parser.setLanguage(JavaScript);
-	
 	return function(code, lines, fileDetails) {
+		// NOTE parser instance is reusable but need to recreate it if parse() throws
+		let parser = new TreeSitter();
+		
+		parser.setLanguage(JavaScript);
+		
 		let tree = parser.parse(code);
 		let cursor = tree.walk();
 		
@@ -69,8 +71,9 @@ module.exports = async function() {
 			renderAsText is for the children of regexes and strings (e.g. opening
 			and closing delims).  not having nodes for these allows the render
 			logic to break as soon as it encounters a node when looking for the
-			previous colour hint (see renderCodeAndMargin); and also means we
-			don't need to specify colours for these chars.
+			previous colour hint (otherwise the closing quote would cause subsequent
+			text to be coloured as a string) (see renderCodeAndMargin); and also
+			means we don't need to specify colours for these chars.
 			*/
 			
 			let canIncludeTabs = [

@@ -88,6 +88,7 @@ function defaultPrefs() {
 		globalKeymap: {
 			"Ctrl+O": "open",
 			"Ctrl+S": "save",
+			"Ctrl+N": "_new",
 			"Ctrl+Z": "undo",
 			"Ctrl+Y": "redo",
 			"Ctrl+F": "find",
@@ -112,7 +113,10 @@ function defaultPrefs() {
 			
 			html: {
 				colors: {
-					
+					tag: "#0032ff",
+					attribute: "#871f78",
+					string: "#2233bb",
+					text: "#000000",
 				},
 			},
 		},

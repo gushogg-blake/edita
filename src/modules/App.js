@@ -18,7 +18,14 @@ class App extends Evented {
 	}
 	
 	async open() {
-		let files = await bluebird.map(platform.open(), async function(path) {
+		let dir = null;
+		let currentPath = this.selectedTab?.editor.document.path;
+		
+		if (currentPath) {
+			dir = platform.path.resolve(currentPath, "..");
+		}
+		
+		let files = await bluebird.map(platform.open(dir), async function(path) {
 			return {
 				path,
 				code: await platform.fs(path).read(),
@@ -44,10 +51,16 @@ class App extends Evented {
 			
 			if (path) {
 				await document.saveAs(path);
+				
+				// re-guess file details
 			}
 		}
 		
 		return document.path;
+	}
+	
+	_new() {
+		this.newFile();
 	}
 	
 	selectTab(tab) {

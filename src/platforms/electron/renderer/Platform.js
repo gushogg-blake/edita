@@ -15,14 +15,14 @@ class Platform {
 		this.path = path;
 	}
 	
-	async open(defaultPath, currentPath) {
-		let path = currentPath ? path.resolve(currentPath, "..") : defaultPath || os.homedir();
+	async open(dir=null) {
+		let defaultPath = dir || os.homedir();
 		
 		let {
 			canceled,
 			filePaths,
 		} = await dialog.showOpen({
-			defaultPath: path,
+			defaultPath,
 			
 			properties: [
 				"openFile",

@@ -11,7 +11,27 @@ module.exports = async function() {
 		parse: await parse(),
 		
 		getHiliteClass(node) {
+			let {type} = node;
 			
+			if ([
+				"<",
+				">",
+				"/>",
+				"</",
+				"tag_name",
+			].includes(type)) {
+				return "tag";
+			}
+			
+			if (type === "attribute_name") {
+				return "attribute";
+			}
+			
+			if (type === "quoted_attribute_value") {
+				return "string";
+			}
+			
+			return "text";
 		},
 		
 		getSupportLevel(code, path) {

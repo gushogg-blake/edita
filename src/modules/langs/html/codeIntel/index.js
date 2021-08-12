@@ -1,5 +1,5 @@
 module.exports = {
-	lineIsOpener(line, lines, lineIndex) {
+	shouldIndentOnNewline(line, lines, lineIndex) {
 		
 	},
 	
