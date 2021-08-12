@@ -5,13 +5,13 @@ let treeSitterRangeToRange = require("../common/utils/treesitter/treeSitterRange
 module.exports = async function(lang) {
 	let JavaScript = await platform.loadTreeSitterLanguage("javascript");
 	
-	return function(code, lines, range) {
+	return function(code, lines, langRange) {
 		// NOTE perf - parser instance is reusable but need to recreate it if parse() throws
 		let parser = new TreeSitter();
 		
 		parser.setLanguage(JavaScript);
 		
-		let treeSitterRange = rangeToTreeSitterRange(range.range);
+		let treeSitterRange = rangeToTreeSitterRange(langRange.range);
 		
 		let tree = parser.parse(code, null, {
 			includedRanges: [treeSitterRange],
@@ -48,9 +48,6 @@ module.exports = async function(lang) {
 				row: startLineIndex,
 				column: startOffset,
 			} = startPosition;
-			
-			console.log(node);
-			console.log(startLineIndex);
 			
 			let {
 				row: endLineIndex,

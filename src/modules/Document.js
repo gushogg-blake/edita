@@ -17,8 +17,6 @@ class Document extends Evented {
 		
 		this.mainLang = fileDetails.lang;
 		
-		this.lang = fileDetails.lang; //
-		
 		this.history = [];
 		this.historyIndex = 0;
 		this.modified = false;
@@ -265,15 +263,15 @@ class Document extends Evented {
 				selection: s(c(0, 0), c(lastIndex, lastLine.string.length)),
 			},
 			
-			childRanges: [],
+			children: [],
 		};
 		
-		//try {
+		try {
 			this.mainLang.parse(this.string, this.lines, this.mainLangRange);
-		//} catch (e) {
-		//	console.error("Parse error");
-		//	console.error(e);
-		//}
+		} catch (e) {
+			console.error("Parse error");
+			console.error(e);
+		}
 		
 		console.timeEnd("parse");
 	}
@@ -305,6 +303,36 @@ class Document extends Evented {
 			edits: [remove, insert],
 			newSelection,
 		};
+	}
+	
+	langFromCursor(cursor, langRange=this.mainLangRange) {
+		if (cursor.lineIndex === this.lines.length - 1 && cursor.offset === this.lines[this.lines.length - 1].string.length) {
+			return this.mainLang;
+		}
+		
+		let {selection} = langRange.range;
+		
+		if (!Selection.charIsWithinSelection(selection, cursor)) {
+			return null;
+		}
+		
+		for (let childLangRange of langRange.children) {
+			let langFromChild = this.langFromCursor(cursor, childLangRange);
+			
+			if (langFromChild) {
+				return langFromChild;
+			}
+		}
+		
+		return langRange.lang;
+	}
+	
+	langFromLineIndex(lineIndex) {
+		return this.langFromCursor(c(lineIndex, 0));
+	}
+	
+	langFromAstSelection(astSelection) {
+		return this.langFromCursor(c(astSelection.startLineIndex, 0));
 	}
 	
 	indexFromCursor(cursor) {

@@ -1,18 +1,18 @@
 module.exports = {
 	up() {
-		this.setAstSelection(this.document.lang.astMode.selection.up(this.document.lines, this.view.astSelection));
+		this.setAstSelection(this.view.lang.astMode.selection.up(this.document.lines, this.view.astSelection));
 	},
 	
 	down() {
-		this.setAstSelection(this.document.lang.astMode.selection.down(this.document.lines, this.view.astSelection));
+		this.setAstSelection(this.view.lang.astMode.selection.down(this.document.lines, this.view.astSelection));
 	},
 	
 	next() {
-		this.setAstSelection(this.document.lang.astMode.selection.next(this.document.lines, this.view.astSelection));
+		this.setAstSelection(this.view.lang.astMode.selection.next(this.document.lines, this.view.astSelection));
 	},
 	
 	previous() {
-		this.setAstSelection(this.document.lang.astMode.selection.previous(this.document.lines, this.view.astSelection));
+		this.setAstSelection(this.view.lang.astMode.selection.previous(this.document.lines, this.view.astSelection));
 	},
 	
 	insert() {

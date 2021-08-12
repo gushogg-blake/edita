@@ -197,6 +197,21 @@ class View extends Evented {
 		this.fire("redraw");
 	}
 	
+	get lang() {
+		if (this.mode === "ast") {
+			return this.document.langFromAstSelection(this.astSelection);
+		} else {
+			let startLang = this.document.langFromCursor(this.normalSelection.start);
+			let endLang = this.document.langFromCursor(this.normalSelection.end);
+			
+			if (startLang === endLang) {
+				return startLang;
+			} else {
+				return this.document.mainLang;
+			}
+		}
+	}
+	
 	showPickOptionsFor(astSelection) {
 		if (!astSelection) {
 			return;
@@ -205,7 +220,7 @@ class View extends Evented {
 		let {startLineIndex} = astSelection;
 		let lineIndex = startLineIndex;
 		let {lines} = this.document;
-		let {astMode} = this.document.lang;
+		let {astMode} = this.document.langFromAstSelection(astSelection);
 		
 		this.pickOptions = [{
 			lineIndex,
@@ -240,11 +255,10 @@ class View extends Evented {
 			},
 		} = this;
 		
-		let {astMode} = document.lang;
 		let {lineIndex} = this.findFirstVisibleLine();
 		
 		let rowsToRender = height / rowHeight;
-		let rowsRendered = 0;
+		let rowsRenderedOrSkipped = 0;
 		
 		while (lineIndex < wrappedLines.length) {
 			if (
@@ -252,6 +266,15 @@ class View extends Evented {
 				|| astSelectionHilite && AstSelection.lineIsWithinSelection(lineIndex, astSelectionHilite)
 			) {
 				lineIndex++;
+				
+				continue;
+			}
+			
+			let {astMode} = document.langFromLineIndex(lineIndex);
+			
+			if (!astMode) {
+				lineIndex++;
+				rowsRenderedOrSkipped += wrappedLine.height;
 				
 				continue;
 			}
@@ -269,9 +292,9 @@ class View extends Evented {
 				};
 			}));
 			
-			rowsRendered += wrappedLine.height;
+			rowsRenderedOrSkipped += wrappedLine.height;
 			
-			if (rowsRendered >= rowsToRender) {
+			if (rowsRenderedOrSkipped >= rowsToRender) {
 				break;
 			}
 			
@@ -423,9 +446,8 @@ class View extends Evented {
 	
 	updateAstSelectionFromNormalSelection() {
 		let {document} = this;
-		let {astMode} = document.lang;
-		
 		let {start, end} = Selection.sort(this.normalSelection);
+		let {astMode} = this.lang;
 		
 		if (astMode) {
 			this.astSelection = astMode.selection.fromLineRange(document.lines, start.lineIndex, end.lineIndex + 1);
