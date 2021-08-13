@@ -103,65 +103,79 @@ module.exports = async function(lang) {
 				"regex",
 			].includes(node.parent?.type);
 			
-			if (colour) {
-				line.renderHints.push({
-					type: "colour",
-					offset: startOffset,
-					lang,
-					node,
-				});
-			}
+			// "ERROR" nodes have to be handled specially as they have .text
+			// but don't actually consume chars (the chars will also appear as
+			// nodes)
+			let isError = node.type === "ERROR";
 			
-			if (
-				!canIncludeTabs
-				&& !renderAsText
-				&& childCount === 0
-				&& startLineIndex === endLineIndex
-			) {
+			if (isError) {
 				line.renderHints.push({
-					type: "node",
+					type: "parseError",
 					offset: startOffset,
 					lang,
 					node,
 				});
-				
-				/*
-				reset colour to string after template string interpolation
-				*/
-				
-				if (node.type === "}" && node.parent?.type === "template_substitution") {
+			} else {
+				if (colour) {
 					line.renderHints.push({
 						type: "colour",
-						offset: startOffset + 1,
+						offset: startOffset,
 						lang,
-						node: node.parent.parent, // the template_string node, which is just used for selecting the colour
+						node,
 					});
 				}
-			}
-			
-			if (startLineIndex !== endLineIndex) {
-				// opener/closer
 				
-				if ([
-					"object",
-					"array",
-					"parenthesized_expression", // includes if condition brackets
-					"statement_block",
-					"class_body",
-					"template_string",
-				].includes(type)) {
-					let opener = node.firstChild;
-					let closer = node.lastChild;
-					
-					lines[opener.startPosition.row].openers.push({
+				if (
+					!canIncludeTabs
+					&& !renderAsText
+					&& childCount === 0
+					&& startLineIndex === endLineIndex
+				) {
+					line.renderHints.push({
+						type: "node",
+						offset: startOffset,
 						lang,
-						node: opener,
+						node,
 					});
 					
-					lines[closer.startPosition.row].closers.unshift({
-						lang,
-						node: closer,
-					});
+					/*
+					reset colour to string after template string interpolation
+					*/
+					
+					if (node.type === "}" && node.parent?.type === "template_substitution") {
+						line.renderHints.push({
+							type: "colour",
+							offset: startOffset + 1,
+							lang,
+							node: node.parent.parent, // the template_string node, which is just used for selecting the colour
+						});
+					}
+				}
+				
+				if (startLineIndex !== endLineIndex) {
+					// opener/closer
+					
+					if ([
+						"object",
+						"array",
+						"parenthesized_expression", // includes if condition brackets
+						"statement_block",
+						"class_body",
+						"template_string",
+					].includes(type)) {
+						let opener = node.firstChild;
+						let closer = node.lastChild;
+						
+						lines[opener.startPosition.row].openers.push({
+							lang,
+							node: opener,
+						});
+						
+						lines[closer.startPosition.row].closers.unshift({
+							lang,
+							node: closer,
+						});
+					}
 				}
 			}
 			

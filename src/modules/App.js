@@ -117,7 +117,7 @@ class App extends Evented {
 			}
 		}
 		
-		tab.editor.view.teardown();
+		tab.teardown();
 		
 		this.tabs = remove(this.tabs, tab);
 		
@@ -172,6 +172,22 @@ class App extends Evented {
 			});
 		} else {
 			// TODO
+		}
+	}
+	
+	showFindBar() {
+		this.fire("showFindBar");
+	}
+	
+	hideFindBar() {
+		this.fire("hideFindBar");
+	}
+	
+	hideFindBarAndFocusEditor() {
+		this.hideFindBar();
+		
+		if (this.selectedTab) {
+			this.selectedTab.editor.view.requestFocus();
 		}
 	}
 	
@@ -245,22 +261,6 @@ class App extends Evented {
 		}
 		
 		return null;
-	}
-	
-	showFindBar() {
-		this.fire("showFindBar");
-	}
-	
-	hideFindBar() {
-		this.fire("hideFindBar");
-	}
-	
-	hideFindBarAndFocusEditor() {
-		this.hideFindBar();
-		
-		if (this.selectedTab) {
-			this.selectedTab.editor.view.requestFocus();
-		}
 	}
 	
 	uiMounted() {

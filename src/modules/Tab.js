@@ -139,6 +139,10 @@ class Tab extends Evented {
 		
 		platform.showContextMenu(items);
 	}
+	
+	teardown() {
+		this.editor.teardown();
+	}
 }
 
 module.exports = Tab;

@@ -319,6 +319,8 @@ class Editor extends Evented {
 	}
 	
 	teardown() {
+		this.view.teardown();
+		
 		for (let fn of this.teardownCallbacks) {
 			fn();
 		}

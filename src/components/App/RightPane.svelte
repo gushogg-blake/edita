@@ -11,7 +11,7 @@ function onFocus() {
 	app.focusManager.focus(blur);
 }
 
-onMount(async function() {
+onMount(function() {
 	let teardown = [
 		app.focusManager.teardown(blur),
 	];

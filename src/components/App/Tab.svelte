@@ -4,6 +4,8 @@ import Editor from "../Editor/Editor.svelte";
 
 export let tab;
 
+let {platform} = window;
+
 let {
 	originalPath,
 	currentPath,

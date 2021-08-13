@@ -25,7 +25,7 @@ window.base = new Base();
 	//app.openFile("test/repos/test.js");
 	//app.openFile("src/components/App/App.svelte");
 	app.openFile("test/repos/test.html");
-	app.openFile("src/modules/Editor/normalKeyboard.js");
+	//app.openFile("src/modules/Editor/normalKeyboard.js");
 	//app.openFile("test/repos/test.css");
 })();
 

@@ -556,7 +556,7 @@ function onEdit() {
 	}
 }
 
-onMount(async function() {
+onMount(function() {
 	context = canvas.getContext("2d");
 	
 	windowHasFocus = windowFocus.isFocused();

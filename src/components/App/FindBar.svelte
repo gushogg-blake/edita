@@ -15,9 +15,17 @@ let blur = function() {
 
 let main;
 let input;
-let search = "";
+let search;
 let type = "plain";
 let caseMode = "caseSensitive";
+
+if (editor.view.Selection.isMultiline()) {
+	console.log(editor.view.normalSelection)
+	search = "";
+} else {
+	console.log(editor.view.normalSelection)
+	search = editor.getSelectedText();
+}
 
 let windowKeymap = {
 	"Escape": "close",

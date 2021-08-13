@@ -79,47 +79,61 @@ module.exports = async function(lang) {
 				"float_value",
 			].includes(node.parent?.type);
 			
-			if (colour) {
+			// "ERROR" nodes have to be handled specially as they have .text
+			// but don't actually consume chars (the chars will also appear as
+			// nodes)
+			let isError = node.type === "ERROR";
+			
+			if (isError) {
 				line.renderHints.push({
-					type: "colour",
+					type: "parseError",
 					offset: startOffset,
 					lang,
 					node,
 				});
-			}
-			
-			if (
-				!canIncludeTabs
-				&& !renderAsText
-				&& childCount === 0
-				&& startLineIndex === endLineIndex
-			) {
-				line.renderHints.push({
-					type: "node",
-					offset: startOffset,
-					lang,
-					node,
-				});
-			}
-			
-			if (startLineIndex !== endLineIndex) {
-				// opener/closer
+			} else {
+				if (colour) {
+					line.renderHints.push({
+						type: "colour",
+						offset: startOffset,
+						lang,
+						node,
+					});
+				}
 				
-				if ([
-					
-				].includes(type)) {
-					let opener = node.firstChild;
-					let closer = node.lastChild;
-					
-					lines[opener.startPosition.row].openers.push({
+				if (
+					!canIncludeTabs
+					&& !renderAsText
+					&& childCount === 0
+					&& startLineIndex === endLineIndex
+				) {
+					line.renderHints.push({
+						type: "node",
+						offset: startOffset,
 						lang,
-						node: opener,
+						node,
 					});
+				}
+				
+				if (startLineIndex !== endLineIndex) {
+					// opener/closer
 					
-					lines[closer.startPosition.row].closers.unshift({
-						lang,
-						ndoe: closer,
-					});
+					if ([
+						
+					].includes(type)) {
+						let opener = node.firstChild;
+						let closer = node.lastChild;
+						
+						lines[opener.startPosition.row].openers.push({
+							lang,
+							node: opener,
+						});
+						
+						lines[closer.startPosition.row].closers.unshift({
+							lang,
+							ndoe: closer,
+						});
+					}
 				}
 			}
 			

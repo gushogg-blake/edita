@@ -49,7 +49,7 @@ function onHideFindBar() {
 	showingFindBar = false;
 }
 
-onMount(async function() {
+onMount(function() {
 	let teardown = [
 		app.on("updateTabs", onUpdateTabs),
 		app.on("selectTab", onSelectTab),
