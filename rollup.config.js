@@ -1,5 +1,6 @@
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
+import alias from "@rollup/plugin-alias";
 import livereload from "rollup-plugin-livereload";
 import svelte from "rollup-plugin-svelte";
 import cssOnly from "rollup-plugin-css-only";

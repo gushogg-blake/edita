@@ -21,7 +21,11 @@
 		</div>
 		<script>
 			(async function() {
-				let app = await editor(document.getElementById("editorContainer"));
+				let createEditor = await editor({
+					
+				});
+				
+				let app = createEditor(document.getElementById("editorContainer"));
 				
 				app.openFile("/test.js", await (await fetch("../../../../test/repos/test.js")).text());
 			})();

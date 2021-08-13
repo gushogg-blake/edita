@@ -8,12 +8,9 @@ window.base = new Base();
 
 let initialised = false;
 
-export default async function(el) {
-	if (!initialised) {
-		await base.init();
-		
-		initialised = true;
-	}
+export default async function(options) {
+	await platform.init(options);
+	await base.init();
 	
 	let app = new App();
 	
@@ -25,5 +22,17 @@ export default async function(el) {
 		},
 	});
 	
-	return app;
+	return function(el) {
+		let app = new App();
+		
+		new AppComponent({
+			target: el,
+			
+			props: {
+				app,
+			},
+		});
+		
+		return app;
+	}
 }
