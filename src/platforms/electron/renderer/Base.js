@@ -218,10 +218,12 @@ class Base extends Evented {
 	*/
 	
 	guessLang(code, path) {
-		for (let [langCode, patterns] of Object.entries(this.prefs.fileAssociations)) {
-			for (let pattern of patterns) {
-				if (minimatch(platform.fs(path).name, pattern)) {
-					return this.langs.get(langCode);
+		if (path) {
+			for (let [langCode, patterns] of Object.entries(this.prefs.fileAssociations)) {
+				for (let pattern of patterns) {
+					if (minimatch(platform.fs(path).name, pattern)) {
+						return this.langs.get(langCode);
+					}
 				}
 			}
 		}

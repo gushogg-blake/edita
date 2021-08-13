@@ -122,6 +122,23 @@ class Tab extends Evented {
 		
 		this.fire("updateDirListing");
 	}
+	
+	showContextMenuForTabButton() {
+		let items = [];
+		
+		if (this.editor.document.path) {
+			items.push({
+				id: "rename",
+				label: "&Rename",
+				
+				onClick: () => {
+					app.renameTab(this);
+				},
+			});
+		}
+		
+		platform.showContextMenu(items);
+	}
 }
 
 module.exports = Tab;

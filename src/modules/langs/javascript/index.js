@@ -23,6 +23,7 @@ class JavaScript {
 			"identifier",
 			"property_identifier",
 			"shorthand_property_identifier",
+			"shorthand_property_identifier_pattern",
 		].includes(type)) {
 			return "id";
 		}
@@ -55,6 +56,10 @@ class JavaScript {
 	}
 	
 	getSupportLevel(code, path) {
+		if (!path) {
+			return null; //
+		}
+		
 		let type = platform.fs(path).lastType;
 		
 		if ([

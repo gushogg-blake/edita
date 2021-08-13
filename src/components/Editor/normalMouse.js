@@ -159,6 +159,10 @@ module.exports = function(document, editor, view, editorComponent) {
 		let cursor = getCharCursor(e);
 		
 		editor.normalMouse.setSelectionAndStartCursorBlink(view.Selection.wordUnderCursor(cursor));
+		
+		if (view.Selection.isFull()) {
+			platform.clipboard.writeSelection(editor.getSelectedText());
+		}
 	}
 	
 	function dragstart(e) {

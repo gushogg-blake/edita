@@ -20,7 +20,7 @@ let {
 	selectedTab,
 } = app;
 
-let showingLeftPane = false;
+let showingLeftPane = true;
 let showingRightPane = false;
 let showingBottomPane = false;
 let showingFindBar = false;

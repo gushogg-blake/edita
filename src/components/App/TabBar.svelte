@@ -6,6 +6,8 @@ let fire = createEventDispatcher();
 
 let app = getContext("app");
 
+let main;
+
 let {
 	tabs,
 	selectedTab,
@@ -19,10 +21,14 @@ function closeTab(tab) {
 	app.closeTab(tab);
 }
 
-function auxClickTab(tab, e) {
+function auxClickTab(e, tab) {
 	if (e.button === 1) {
 		closeTab(tab);
 	}
+}
+
+function showContextMenu(tab) {
+	tab.showContextMenuForTabButton();
 }
 
 function tabIsSelected(tab, selectedTab) {
@@ -48,6 +54,10 @@ function onSelectTab() {
 	selectedTab = app.selectedTab;
 }
 
+function wheel(e) {
+	main.scrollLeft += e.deltaY;
+}
+
 onMount(function() {
 	let teardown = [
 		app.on("updateTabs", updateTabs),
@@ -70,6 +80,10 @@ onMount(function() {
 	padding: 1px 3px 0;
 	overflow-x: auto;
 	background: var(--appBackgroundColor);
+	
+	&::-webkit-scrollbar {
+	    display: none;
+	}
 }
 
 .tabButton {
@@ -87,13 +101,14 @@ onMount(function() {
 }
 </style>
 
-<div id="main">
+<div bind:this={main} id="main" on:wheel={wheel}>
 	{#each tabs as tab}
 		<div
 			class="tabButton"
 			class:isSelected={tabIsSelected(tab, selectedTab)}
 			on:click={() => clickTab(tab)}
-			on:auxclick={(e) => auxClickTab(tab, e)}
+			on:auxclick={(e) => auxClickTab(e, tab)}
+			on:contextmenu={(e) => showContextMenu(tab)}
 		>
 			<div class="name">
 				{getTabName(tabs, tab)}

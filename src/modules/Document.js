@@ -8,14 +8,12 @@ let {s} = Selection;
 let {c} = Cursor;
 
 class Document extends Evented {
-	constructor(code, path, fileDetails) {
+	constructor(code, path) {
 		super();
 		
 		this.string = code;
 		this.path = path;
-		this.fileDetails = fileDetails;
-		
-		this.mainLang = fileDetails.lang;
+		this.updateFileDetails();
 		
 		this.history = [];
 		this.historyIndex = 0;
@@ -221,9 +219,15 @@ class Document extends Evented {
 		return entry;
 	}
 	
+	updateFileDetails() {
+		this.fileDetails = base.getFileDetails(this.string, this.path);
+		this.mainLang = this.fileDetails.lang;
+	}
+	
 	async save() {
 		await platform.save(this.path, this.toString());
 		
+		this.updateFileDetails();
 		this.modified = false;
 		this.historyIndexAtSave = this.historyIndex;
 		

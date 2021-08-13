@@ -51,8 +51,6 @@ class App extends Evented {
 			
 			if (path) {
 				await document.saveAs(path);
-				
-				// re-guess file details
 			}
 		}
 		
@@ -61,6 +59,16 @@ class App extends Evented {
 	
 	_new() {
 		this.newFile();
+	}
+	
+	async renameTab(tab) {
+		let oldPath = tab.editor.document.path;
+		let path = await platform.saveAs();
+		
+		if (path) {
+			await tab.editor.document.saveAs(path);
+			await platform.fs(oldPath).delete();
+		}
 	}
 	
 	selectTab(tab) {
@@ -190,7 +198,7 @@ class App extends Evented {
 			// calculating line start offsets
 		}
 		
-		let tab = this.createTab(code, path, fileDetails);
+		let tab = this.createTab(code, path);
 		
 		this.tabs.push(tab);
 		
@@ -200,7 +208,7 @@ class App extends Evented {
 	}
 	
 	newFile() {
-		let tab = this.createTab("", null, base.getDefaultFileDetails());
+		let tab = this.createTab("", null);
 		
 		this.tabs.push(tab);
 		
@@ -209,16 +217,16 @@ class App extends Evented {
 		this.selectTab(tab);
 	}
 	
-	createTab(code, path, fileDetails) {
-		let document = this.createDocument(code, path, fileDetails);
+	createTab(code, path) {
+		let document = this.createDocument(code, path);
 		let view = new View(this, document);
 		let editor = new Editor(this, document, view);
 		
 		return new Tab(this, editor);
 	}
 	
-	createDocument(code, path, fileDetails) {
-		let document = new Document(code, path, fileDetails);
+	createDocument(code, path) {
+		let document = new Document(code, path);
 		
 		for (let event of ["edit", "undo", "redo", "save"]) {
 			document.on(event, (...args) => {
