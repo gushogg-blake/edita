@@ -66,17 +66,16 @@ onMount(function() {
 
 <style type="text/scss">
 #main {
-	display: flex;
-	width: 100%;
-	height: 100%;
+	white-space: nowrap;
 	padding: 1px 3px 0;
+	overflow-x: auto;
 	background: var(--appBackgroundColor);
 }
 
 .tabButton {
 	$radius: 3px;
 	
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 	border-radius: $radius $radius 0 0;
 	padding: 6px 12px;

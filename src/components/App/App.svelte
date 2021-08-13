@@ -92,11 +92,13 @@ $border: 1px solid #AFACAA;
 
 #toolbar {
 	grid-area: toolbar;
+	min-width: 0;
 	border-bottom: $border;
 }
 
 #leftContainer {
 	grid-area: left;
+	min-width: 0;
 }
 
 #left {
@@ -107,6 +109,7 @@ $border: 1px solid #AFACAA;
 
 #tabBarContainer {
 	grid-area: tabBar;
+	min-width: 0;
 }
 
 #tabBar {
@@ -118,6 +121,7 @@ $border: 1px solid #AFACAA;
 	grid-template-rows: 1fr auto;
 	grid-template-columns: 1fr;
 	grid-area: editor;
+	min-width: 0;
 }
 
 .tab {
@@ -128,6 +132,7 @@ $border: 1px solid #AFACAA;
 
 #findBarContainer {
 	grid-area: findBar;
+	min-width: 0;
 }
 
 #findBar {
@@ -136,6 +141,7 @@ $border: 1px solid #AFACAA;
 
 #rightContainer {
 	grid-area: right;
+	min-width: 0;
 }
 
 #right {
@@ -146,6 +152,7 @@ $border: 1px solid #AFACAA;
 
 #bottomContainer {
 	grid-area: bottom;
+	min-width: 0;
 }
 
 #bottom {

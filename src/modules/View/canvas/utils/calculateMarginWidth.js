@@ -1,5 +1,5 @@
 let {paddingLeft, paddingRight} = require("../marginStyle");
 
-module.exports = function(wrappedLines, measurements) {
-	return Math.round(paddingLeft + String(wrappedLines.length).length * measurements.colWidth + paddingRight);
+module.exports = function(lines, measurements) {
+	return Math.round(paddingLeft + String(lines.length).length * measurements.colWidth + paddingRight);
 }

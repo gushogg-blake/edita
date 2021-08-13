@@ -60,6 +60,7 @@ function setScrollPosition(position) {
 
 function scroll() {
 	if (settingScrollPosition) {
+		console.log("setting");
 		return;
 	}
 	
@@ -69,13 +70,20 @@ function scroll() {
 	let max = scrollSize - divSize;
 	
 	if (divSize === 0 || scrollSize === 0) {
+		console.log("size = 0");
 		return;
 	}
+	
+	console.log("scroll", position / max);
 	
 	fire("scroll", position / max);
 }
 
 function _update(_totalSize, _pageSize, position) {
+	if (orientation === "vertical") {
+		console.log("update", _totalSize, _pageSize, position);
+	}
+	
 	totalSize = _totalSize;
 	pageSize = _pageSize;
 	

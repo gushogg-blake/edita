@@ -138,7 +138,7 @@ class Editor extends Evented {
 			}
 		}
 		
-		this.view.updateSizes();
+		this.view.updateMarginSize();
 	}
 	
 	applyHistoryEntry(entry, state) {

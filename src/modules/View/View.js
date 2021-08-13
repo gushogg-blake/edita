@@ -472,18 +472,18 @@ class View extends Evented {
 		}
 		
 		let {
-			document,
-			wrappedLines,
 			measurements,
 		} = this;
+		
+		let {lines} = this.document;
 		
 		let {
 			colWidth,
 			rowHeight,
 		} = measurements;
 		
-		let marginWidth = calculateMarginWidth(wrappedLines, measurements);
-		let marginOffset = calculateMarginOffset(wrappedLines, measurements);
+		let marginWidth = calculateMarginWidth(lines, measurements);
+		let marginOffset = calculateMarginOffset(lines, measurements);
 		let codeWidth = width - marginOffset;
 		
 		this.sizes = {
@@ -499,6 +499,17 @@ class View extends Evented {
 		};
 		
 		this.fire("updateSizes");
+	}
+	
+	updateMarginSize() {
+		let {marginWidth} = this.sizes;
+		
+		this.updateSizes();
+		
+		if (marginWidth !== this.sizes.marginWidth) {
+			this.updateWrappedLines();
+			this.redraw();
+		}
 	}
 	
 	startCursorBlink() {

@@ -141,13 +141,15 @@ onMount(function() {
 		<Editor editor={tab.editor}/>
 	</div>
 	<div id="files" class:hide={currentPath === originalPath}>
-		<div id="breadcrumbs">
-			{#each currentPath.split(platform.path.sep).filter(Boolean) as part}
-				<div class="breadcrumb">
-					{part}
-				</div>
-			{/each}
-		</div>
+		{#if currentPath}
+			<div id="breadcrumbs">
+				{#each currentPath.split(platform.path.sep).filter(Boolean) as part}
+					<div class="breadcrumb">
+						{part}
+					</div>
+				{/each}
+			</div>
+		{/if}
 		<div id="list">
 			{#each [...dirs, ...files] as file}
 				<div
