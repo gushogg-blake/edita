@@ -41,7 +41,12 @@ let offsetSizeKey = {
 };
 
 function setScrollPosition(position) {
-	settingScrollPosition = true;
+	/*
+	NOTE scrollbars are updated on window focus so need to disable
+	this in that case (for scrolling the window when not already
+	focused) - and it doesn't seem to be needed anyway
+	*/
+	//settingScrollPosition = true;
 	
 	let divSize = main[offsetSizeKey[orientation]];
 	let scrollSize = main[scrollSizeKey[orientation]];
@@ -60,7 +65,6 @@ function setScrollPosition(position) {
 
 function scroll() {
 	if (settingScrollPosition) {
-		console.log("setting");
 		return;
 	}
 	
@@ -70,20 +74,13 @@ function scroll() {
 	let max = scrollSize - divSize;
 	
 	if (divSize === 0 || scrollSize === 0) {
-		console.log("size = 0");
 		return;
 	}
-	
-	console.log("scroll", position / max);
 	
 	fire("scroll", position / max);
 }
 
 function _update(_totalSize, _pageSize, position) {
-	if (orientation === "vertical") {
-		console.log("update", _totalSize, _pageSize, position);
-	}
-	
 	totalSize = _totalSize;
 	pageSize = _pageSize;
 	
