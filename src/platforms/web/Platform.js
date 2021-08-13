@@ -11,11 +11,13 @@ class Platform {
 		
 		this.clipboard = clipboard;
 		
+		this.path = path;
+	}
+	
+	async init(options) {
 		this.fs = fs({
 			
 		});
-		
-		this.path = path;
 	}
 	
 	async open(defaultPath, currentPath) {

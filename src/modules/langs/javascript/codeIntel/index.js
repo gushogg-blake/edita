@@ -14,4 +14,8 @@ module.exports = {
 		
 		return headerIndentLevel - line.indentLevel;
 	},
+	
+	async isProjectRoot(dir) {
+		return (await platform.fs(dir).readdir()).includes("package.json");
+	},
 };

@@ -5,7 +5,6 @@ function fs(...args) {
 	return platform.fs(...args);
 }
 
-
 class Tab extends Evented {
 	constructor(app, editor) {
 		super();
@@ -15,21 +14,42 @@ class Tab extends Evented {
 		this.originalPath = this.editor.document.path;
 		this.currentPath = this.originalPath;
 		this.files = [];
+		this.loading = false;
 	}
 	
-	zoomOut() {
+	async zoomOut() {
+		if (this.loading) {
+			return;
+		}
+		
 		if (!this.currentPath) {
 			return;
 		}
+		
+		if (
+			base.prefs.zoom.stopAtProjectRoot
+			&& this.currentPath !== this.originalPath
+			&& await this.editor.document.mainLang.codeIntel?.isProjectRoot(this.currentPath)
+		) {
+			return;
+		}
+		
+		this.loading = true;
 		
 		this.currentPath = fs(this.currentPath).parent.path;
 		
 		this.fire("zoomChange");
 		
-		this.updateDirListing();
+		await this.updateDirListing();
+		
+		this.loading = false;
 	}
 	
-	zoomIn() {
+	async zoomIn() {
+		if (this.loading) {
+			return;
+		}
+		
 		if (!this.currentPath) {
 			return;
 		}
@@ -47,6 +67,8 @@ class Tab extends Evented {
 			return;
 		}
 		
+		this.loading = true;
+		
 		if (pathToOriginal.length === 1) {
 			this.currentPath = this.originalPath;
 		} else {
@@ -55,7 +77,9 @@ class Tab extends Evented {
 		
 		this.fire("zoomChange");
 		
-		this.updateDirListing();
+		await this.updateDirListing();
+		
+		this.loading = false;
 	}
 	
 	switchToFile(file) {
@@ -88,7 +112,8 @@ class Tab extends Evented {
 				} = node;
 				
 				return {
-					isDir: await node.isDir(),
+					isDir,
+					isFile: !isDir,
 					path,
 					name,
 				};

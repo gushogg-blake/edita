@@ -16,7 +16,7 @@ module.exports = {
 		this.view.redraw();
 	},
 	
-	async insertSelectionClipboard(){
+	async insertSelectionClipboard(cursor) {
 		let str = await platform.clipboard.readSelection();
 		
 		let {

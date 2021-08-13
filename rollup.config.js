@@ -37,6 +37,12 @@ if (!platform || platform === "all" || platform === "electron") {
 		},
 		
 		plugins: [
+			alias({
+				entries: {
+					
+				},
+			}),
+			
 			svelte({
 				preprocess: preprocess({
 					scss: {
@@ -104,6 +110,12 @@ if (!platform || platform === "all" || platform === "web") {
 		},
 		
 		plugins: [
+			alias({
+				entries: {
+					
+				},
+			}),
+			
 			svelte({
 				preprocess: preprocess({
 					scss: {

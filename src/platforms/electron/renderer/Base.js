@@ -35,6 +35,10 @@ function defaultPrefs() {
 		modeSwitchKey: "Escape",
 		minHoldTime: 200,
 		
+		zoom: {
+			stopAtProjectRoot: true,
+		},
+		
 		normalKeymap: {
 			"ArrowUp": "up",
 			"ArrowDown": "down",

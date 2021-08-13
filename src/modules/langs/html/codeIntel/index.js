@@ -6,4 +6,8 @@ module.exports = {
 	indentAdjustmentAfterInsertion(line, lines, lineIndex) {
 		return 0;
 	},
+	
+	async isProjectRoot(dir) {
+		return (await platform.fs(dir).readdir()).includes("package.json");
+	},
 };

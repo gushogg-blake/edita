@@ -72,7 +72,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		let y = e.clientY - top;
 		
 		if (e.button === 1) {
-			editor.normalMouse.insertSelectionClipboard();
+			editor.normalMouse.insertSelectionClipboard(cursor);
 			
 			return;
 		}
