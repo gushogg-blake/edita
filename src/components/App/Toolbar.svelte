@@ -19,8 +19,8 @@ function save() {
 <style type="text/scss">
 #main {
 	padding: 3px;
-	background: white;
-	/*background: #E5E5E3;*/
+	background: #f2f2f0;
+	//background: white;
 }
 </style>
 

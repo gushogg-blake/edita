@@ -109,6 +109,13 @@ let api = {
 	isMultiline,
 	isBefore,
 	
+	equals(a, b) {
+		a = sort(a);
+		b = sort(b);
+		
+		return Cursor.equals(a.start, b.start) && Cursor.equals(a.end, b.end);
+	},
+	
 	cursorIsWithinSelection(selection, cursor) {
 		let {start, end} = sort(selection);
 		let {lineIndex, offset} = cursor;

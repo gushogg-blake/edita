@@ -310,7 +310,7 @@ class Document extends Evented {
 	}
 	
 	langFromCursor(cursor, langRange=this.mainLangRange) {
-		if (cursor.lineIndex === this.lines.length - 1 && cursor.offset === this.lines[this.lines.length - 1].string.length) {
+		if (Cursor.equals(cursor, this.getEndCursor())) {
 			return this.mainLang;
 		}
 		
@@ -378,6 +378,10 @@ class Document extends Evented {
 	
 	getSelectionContainingString(cursor, str) {
 		return Selection.containString(cursor, str, this.fileDetails.newline);
+	}
+	
+	getEndCursor() {
+		return c(this.lines.length - 1, this.lines[this.lines.length - 1].string.length);
 	}
 	
 	getLongestLineWidth() {

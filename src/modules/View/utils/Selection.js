@@ -409,4 +409,8 @@ module.exports = {
 		
 		return s(c(lineIndex, offset - left), c(lineIndex, offset + right));
 	},
+	
+	all() {
+		return s(c(0, 0), this.document.getEndCursor());
+	},
 };

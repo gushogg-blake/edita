@@ -72,6 +72,7 @@ function defaultPrefs() {
 			"Ctrl+X": "cut",
 			"Ctrl+C": "copy",
 			"Ctrl+V": "paste",
+			"Ctrl+A": "selectAll",
 		},
 		
 		astKeymap: {

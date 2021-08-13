@@ -97,6 +97,11 @@ module.exports = {
 		this.view.updateSelectionEndCol();
 	},
 	
+	selectAll() {
+		this.setNormalSelection(this.view.Selection.all());
+		this.view.updateSelectionEndCol();
+	},
+	
 	enter() {
 		let {document} = this;
 		let {newline} = document.fileDetails;
