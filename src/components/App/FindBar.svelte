@@ -106,7 +106,16 @@ function onFocus() {
 
 onMount(function() {
 	main.focus();
+	
+	input.value = search;
+	
 	input.focus();
+	
+	if (search) {
+		 input.select();
+		 
+		 editor.find.search(search, type, caseMode);
+	}
 	
 	let teardown = [
 		on(window, "keydown", windowKeydown),

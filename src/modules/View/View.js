@@ -515,7 +515,6 @@ class View extends Evented {
 	}
 	
 	startCursorBlink() {
-		console.trace("startCursorBlink");
 		if (this.cursorInterval) {
 			clearInterval(this.cursorInterval);
 		}

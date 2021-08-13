@@ -14,7 +14,7 @@ module.exports = function(editor) {
 			let cursor;
 			
 			if (view.mode === "normal") {
-				cursor = view.normalSelection.end;
+				cursor = view.normalSelection.start;
 			} else {
 				cursor = c(view.astSelection.startLineIndex, 0);
 			}
