@@ -1,7 +1,7 @@
 <script>
 import {onMount, setContext} from "svelte";
 
-import getKeyCombo from "../../utils/getKeyCombo";
+import getKeyCombo from "utils/getKeyCombo";
 
 import Toolbar from "./Toolbar.svelte";
 import TabBar from "./TabBar.svelte";

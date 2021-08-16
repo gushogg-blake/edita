@@ -1,6 +1,6 @@
 <script>
 import {onMount} from "svelte";
-import Editor from "../Editor/Editor.svelte";
+import Editor from "components/Editor/Editor.svelte";
 
 export let tab;
 

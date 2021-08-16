@@ -1,9 +1,9 @@
 <script>
 import {tick, onMount, getContext} from "svelte";
 
-import inlineStyle from "../../utils/dom/inlineStyle";
-import windowFocus from "../../utils/dom/windowFocus";
-import getKeyCombo from "../../utils/getKeyCombo";
+import inlineStyle from "utils/dom/inlineStyle";
+import windowFocus from "utils/dom/windowFocus";
+import getKeyCombo from "utils/getKeyCombo";
 
 import render from "./canvas/render";
 

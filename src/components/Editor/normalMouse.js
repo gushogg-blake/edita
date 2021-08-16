@@ -1,5 +1,5 @@
-let {on, off} = require("../../utils/dom/domEvents");
-let Selection = require("../../modules/utils/Selection");
+let {on, off} = require("utils/dom/domEvents");
+let Selection = require("modules/utils/Selection");
 let autoScroll = require("./utils/autoScroll");
 
 module.exports = function(document, editor, view, editorComponent) {

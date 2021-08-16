@@ -1,6 +1,6 @@
-import inlineStyle from "../../utils/dom/inlineStyle";
-import {on, off} from "../../utils/dom/domEvents";
-import screenOffsets from "../../utils/dom/screenOffsets";
+import inlineStyle from "utils/dom/inlineStyle";
+import {on, off} from "utils/dom/domEvents";
+import screenOffsets from "utils/dom/screenOffsets";
 import ContextMenu from "./ContextMenu.svelte";
 
 export default function(e, items) {

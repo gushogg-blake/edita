@@ -1,6 +1,6 @@
 <script>
 import {onMount, createEventDispatcher, getContext} from "svelte";
-import Gap from "../utils/Gap.svelte";
+import Gap from "components/utils/Gap.svelte";
 
 let fire = createEventDispatcher();
 

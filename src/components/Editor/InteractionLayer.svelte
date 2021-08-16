@@ -1,9 +1,9 @@
 <script>
 import {onMount, createEventDispatcher} from "svelte";
 import {fade} from "svelte/transition";
-import unique from "../../utils/array/unique";
-import {on, off} from "../../utils/dom/domEvents";
-import inlineStyle from "../../utils/dom/inlineStyle";
+import unique from "utils/array/unique";
+import {on, off} from "utils/dom/domEvents";
+import inlineStyle from "utils/dom/inlineStyle";
 import drag from "./utils/drag";
 import createDragEvent from "./utils/createDragEvent";
 

@@ -1,7 +1,7 @@
 <script>
 import {onMount, getContext} from "svelte";
-import getKeyCombo from "../../utils/getKeyCombo";
-import {on} from "../../utils/dom/domEvents";
+import getKeyCombo from "utils/getKeyCombo";
+import {on} from "utils/dom/domEvents";
 
 let app = getContext("app");
 

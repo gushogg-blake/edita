@@ -1,7 +1,7 @@
 <script>
 import {createEventDispatcher, tick} from "svelte";
-import inlineStyle from "../../utils/dom/inlineStyle";
-import sleep from "../../utils/sleep";
+import inlineStyle from "utils/dom/inlineStyle";
+import sleep from "utils/sleep";
 
 export let orientation;
 
