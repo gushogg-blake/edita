@@ -15,10 +15,11 @@ module.exports = function(wrappedLines, row, col, beforeTab=false) {
 	lineIndex = Math.min(lineIndex, wrappedLines.length - 1);
 	
 	let wrappedLine = wrappedLines[lineIndex];
-	
 	let lineRowIndex = row - r;
 	
-	lineRowIndex = Math.min(lineRowIndex, wrappedLine.height - 1);
+	if (lineRowIndex > wrappedLine.height - 1) { // mouse is below text
+		return {lineIndex, offset: wrappedLine.line.string.length};
+	}
 	
 	let i = 0;
 	
