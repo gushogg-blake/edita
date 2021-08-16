@@ -1,4 +1,4 @@
-let regexMatches = require("../../utils/regexMatches");
+let regexMatches = require("utils/regexMatches");
 
 module.exports = function(code, word, index) {
 	let re = new RegExp("\\b" + word + "\\w+", "g");

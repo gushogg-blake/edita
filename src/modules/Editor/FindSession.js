@@ -1,4 +1,4 @@
-let find = require("../../modules/find");
+let find = require("modules/find");
 
 /*
 there are a few layers to the find/replace system

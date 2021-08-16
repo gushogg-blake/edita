@@ -1,5 +1,5 @@
 let bluebird = require("bluebird");
-let Evented = require("../utils/Evented");
+let Evented = require("utils/Evented");
 
 function fs(...args) {
 	return platform.fs(...args);

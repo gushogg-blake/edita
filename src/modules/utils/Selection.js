@@ -1,4 +1,4 @@
-let Cursor = require("./Cursor");
+let Cursor = require("modules/utils/Cursor");
 
 let {c} = Cursor;
 

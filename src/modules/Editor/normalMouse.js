@@ -1,5 +1,5 @@
-let Selection = require("../utils/Selection");
-let Cursor = require("../utils/Cursor");
+let Selection = require("modules/utils/Selection");
+let Cursor = require("modules/utils/Cursor");
 
 let {s} = Selection;
 let {c} = Cursor;

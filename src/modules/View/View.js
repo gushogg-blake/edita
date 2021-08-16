@@ -1,8 +1,8 @@
-let Evented = require("../../utils/Evented");
-let bindFunctions = require("../../utils/bindFunctions");
-let Cursor = require("../../modules/utils/Cursor");
-let Selection = require("../../modules/utils/Selection");
-let AstSelection = require("../../modules/utils/AstSelection");
+let Evented = require("utils/Evented");
+let bindFunctions = require("utils/bindFunctions");
+let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/utils/Selection");
+let AstSelection = require("modules/utils/AstSelection");
 
 let calculateMarginOffset = require("./canvas/utils/calculateMarginOffset");
 let calculateMarginWidth = require("./canvas/utils/calculateMarginWidth");

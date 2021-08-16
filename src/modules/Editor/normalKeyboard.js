@@ -1,6 +1,6 @@
-let Selection = require("../utils/Selection");
-let Cursor = require("../utils/Cursor");
-let findWordCompletions = require("../utils/findWordCompletions");
+let Selection = require("modules/utils/Selection");
+let Cursor = require("modules/utils/Cursor");
+let findWordCompletions = require("modules/utils/findWordCompletions");
 
 let {s} = Selection;
 let {c} = Cursor;

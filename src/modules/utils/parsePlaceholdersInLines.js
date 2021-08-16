@@ -1,6 +1,6 @@
-let Cursor = require("./Cursor");
-let Selection = require("./Selection");
-let parsePlaceholders = require("./parsePlaceholders");
+let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/utils/Selection");
+let parsePlaceholders = require("modules/utils/parsePlaceholders");
 
 let {c} = Cursor;
 let {s} = Selection;

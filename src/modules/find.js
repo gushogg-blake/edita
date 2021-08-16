@@ -1,4 +1,4 @@
-let escapeRe = require("../utils/escapeRe");
+let escapeRe = require("utils/escapeRe");
 
 /*
 generate a placeholder that doesn't appear in the given string
