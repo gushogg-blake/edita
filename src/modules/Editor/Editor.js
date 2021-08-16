@@ -281,7 +281,12 @@ class Editor extends Evented {
 			return;
 		}
 		
-		this.view.ensureSelectionIsOnScreen();
+		if (![
+			"copy",
+		].includes(fnName)) {
+			this.view.ensureSelectionIsOnScreen();
+		}
+		
 		this.view.startCursorBlink();
 		
 		console.time("redraw");
