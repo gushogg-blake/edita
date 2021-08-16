@@ -84,16 +84,10 @@ function adjustSelection(selection, adjustment, sign) {
 	selection = sort(selection);
 	adjustment = sort(adjustment);
 	
-	//debugger
-	
 	if (
 		sign === 1 && cursorIsWithinSelection(selection, adjustment.start)
 		|| sign === -1 && isOverlapping(selection, adjustment)
 	) {
-		console.log(sign);
-		console.log(selection);
-		console.log(adjustment);
-		debugger
 		return null;
 	}
 	
@@ -125,42 +119,12 @@ function adjustSelection(selection, adjustment, sign) {
 	}
 	
 	if (linesOverlap) {
-		if (adjustmentIsMultiline) {
-			if (sign === 1) {
-				let adjustOffset = adjustment.end.offset - adjustment.start.offset
-				
-				newStartOffset += adjustOffset;
-				
-				if (!selectionIsMultiline) {
-					newEndOffset += adjustOffset;
-				}
-			} else {
-				let adjustOffset = adjustment.start.offset - adjustment.end.offset;
-				
-				newStartOffset += adjustOffset;
-				
-				if (!selectionIsMultiline) {
-					newEndOffset += adjustOffset;
-				}
-			}
-		} else {
-			if (sign === 1) {
-				let adjustOffset = adjustment.end.offset - adjustment.start.offset
-				
-				newStartOffset += adjustOffset;
-				
-				if (!selectionIsMultiline) {
-					newEndOffset += adjustOffset;
-				}
-			} else {
-				let adjustOffset = adjustment.end.offset - adjustment.start.offset;
-				
-				newStartOffset -= adjustOffset;
-				
-				if (!selectionIsMultiline) {
-					newEndOffset -= adjustOffset;
-				}
-			}
+		let adjustOffset = (adjustment.end.offset - adjustment.start.offset) * sign;
+		
+		newStartOffset += adjustOffset;
+		
+		if (!selectionIsMultiline) {
+			newEndOffset += adjustOffset;
 		}
 	}
 	
