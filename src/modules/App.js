@@ -15,6 +15,10 @@ class App extends Evented {
 		this.selectedTab = null;
 		
 		this.focusManager = focusManager();
+		
+		this.teardownCallbacks = [
+			platform.on("closeWindow", this.onCloseWindow.bind(this)),
+		];
 	}
 	
 	async open() {
@@ -264,6 +268,22 @@ class App extends Evented {
 	}
 	
 	uiMounted() {
+	}
+	
+	onCloseWindow(e) {
+		for (let tab of this.tabs) {
+			if (tab.editor.document.modified) {
+				e.preventDefault();
+				
+				break;
+			}
+		}
+	}
+	
+	teardown() {
+		for (let fn of this.teardownCallbacks) {
+			fn();
+		}
 	}
 }
 

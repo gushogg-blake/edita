@@ -1,4 +1,4 @@
-let {ipcRenderer: ipc} = window.require("electron-better-ipc");
+let {ipcRenderer: ipc} = require("electron-better-ipc");
 
 module.exports = {
 	showSave(options) {

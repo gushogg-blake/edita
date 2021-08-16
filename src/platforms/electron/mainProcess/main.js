@@ -50,12 +50,12 @@ for (let [key, fns] of Object.entries(syncIpcModules)) {
 
 Menu.setApplicationMenu(null);
 
-let win;
+let browserWindow;
 
 async function createWindow() {
 	let winState = windowStateKeeper();
 	
-	win = new BrowserWindow({
+	browserWindow = new BrowserWindow({
 		x: winState.x,
 		y: winState.y,
 		width: winState.width,
@@ -69,14 +69,14 @@ async function createWindow() {
 		backgroundColor: "#edecea",
 	});
 	
-	winState.manage(win);
+	winState.manage(browserWindow);
 	
-	win.loadURL("file://" + path.join(__dirname, "..", "public", "index.html"));
+	browserWindow.loadURL("file://" + path.join(__dirname, "..", "public", "index.html"));
 
 	let watcher;
 
 	if (dev) {
-		win.webContents.openDevTools();
+		browserWindow.webContents.openDevTools();
 
 		watcher = require("chokidar").watch([
 			"../public",
@@ -85,16 +85,32 @@ async function createWindow() {
 		});
 		
 		watcher.on("change", function() {
-			win.reload();
+			browserWindow.reload();
 		});
 	}
 	
-	win.on("closed", function() {
+	let close = false;
+	
+	browserWindow.on("close", function(e) {
+		if (!close) {
+			e.preventDefault();
+		
+			browserWindow.webContents.send("closeWindow");
+		}
+	});
+	
+	ipcMain.on("closeWindow", function(e, browserWindow) {
+		close = true;
+		
+		BrowserWindow.fromWebContents(e.sender).close();
+	});
+	
+	browserWindow.on("closed", function() {
 		if (watcher) {
 			watcher.close();
 		}
 
-		win = null;
+		browserWindow = null;
 	});
 	
 	globalShortcut.register("CommandOrControl+Q", function() {

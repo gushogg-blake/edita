@@ -1,4 +1,4 @@
-let {ipcRenderer} = window.require("electron");
+let {ipcRenderer} = require("electron");
 
 /*
 note - these methods are sync, but code should treat platform.clipboard

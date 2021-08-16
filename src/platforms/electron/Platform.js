@@ -1,19 +1,37 @@
+let {ipcRenderer} = require("electron");
 let os = require("os");
 let path = require("path");
 let bluebird = require("bluebird");
+let Evented = require("utils/Evented");
 let fs = require("./modules/fs");
 let {config, systemInfo} = require("./modules/ipc/init");
 let dialog = require("./modules/ipc/dialog");
 let clipboard = require("./modules/ipc/clipboard");
 let contextMenu = require("./modules/ipc/contextMenu");
 
-class Platform {
+class Platform extends Evented {
 	constructor() {
+		super();
+		
 		this.config = config;
 		this.systemInfo = systemInfo;
 		this.clipboard = clipboard;
 		this.fs = fs;
 		this.path = path;
+		
+		ipcRenderer.on("closeWindow", () => {
+			let defaultPrevented = false;
+			
+			this.fire("closeWindow", {
+				preventDefault() {
+					defaultPrevented = true;
+				},
+			});
+			
+			if (!defaultPrevented) {
+				ipcRenderer.send("closeWindow");
+			}
+		});
 		
 		this.snippetsDir = path.join(config.userDataDir, "snippets");
 	}

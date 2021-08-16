@@ -84,6 +84,8 @@ if (!platform || platform === "all" || platform === "electron") {
 					"string_decoder",
 					"buffer",
 					"events",
+					"electron",
+					"electron-better-ipc",
 				],
 			}),
 			
