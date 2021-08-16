@@ -96,7 +96,7 @@ class Editor extends Evented {
 		let indentStr = this.document.fileDetails.indentation.string;
 		let lineTuples = stringToLineTuples(snippet.text);
 		let lineStrings = lineTuplesToStrings(lineTuples, indentStr, indentLevel, true);
-		console.log(lineTuples);
+		
 		let selection = (
 			replaceWord
 			? s(c(lineIndex, offset - replaceWord.length), start)
