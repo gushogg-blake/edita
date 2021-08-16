@@ -255,7 +255,7 @@ module.exports = {
 			}
 			
 			if (snippet) {
-				console.log(snippet);
+				this.insertSnippet(snippet, snippet.name);
 			} else {
 				// tab
 				

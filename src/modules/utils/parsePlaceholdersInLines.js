@@ -10,6 +10,7 @@ input:
 
 	- lines (array of strings) with [[%type:value]] placeholders
 	- baseLineIndex - line index of the first line
+	- baseOffset - start offset on first line
 
 output:
 
@@ -19,11 +20,12 @@ output:
 	and selection
 */
 
-module.exports = function(lines, baseLineIndex=0) {
+module.exports = function(lines, baseLineIndex=0, baseOffset=0) {
 	let replacedLines = [];
 	let placeholders = [];
 	
 	for (let i = 0; i < lines.length; i++) {
+		let startOffset = i === 0 ? baseOffset : 0;
 		let line = lines[i];
 		
 		let {
@@ -34,7 +36,7 @@ module.exports = function(lines, baseLineIndex=0) {
 		placeholders.push(...linePlaceholders.map(function(placeholder) {
 			let {offset, initialText} = placeholder;
 			let lineIndex = baseLineIndex + i;
-			let selection = s(c(lineIndex, offset), c(lineIndex, offset + initialText.length));
+			let selection = s(c(lineIndex, startOffset + offset), c(lineIndex, startOffset + offset + initialText.length));
 			
 			return {
 				...placeholder,

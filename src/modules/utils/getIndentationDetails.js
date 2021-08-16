@@ -1,4 +1,4 @@
-module.exports = function(indent, tabWidth) {
+module.exports = function(indent, tabWidth=4) {
 	let type = indent[0] === "\t" ? "tab" : "space";
 	
 	return {

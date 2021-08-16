@@ -302,6 +302,10 @@ class Base extends Evented {
 	async loadSnippets() {
 		this.snippets = await platform.loadSnippets();
 	}
+	
+	getSnippet(name) {
+		return this.snippets.find(s => s.name === name);
+	}
 }
 
 module.exports = Base;

@@ -1,9 +1,11 @@
-let Evented = require("../../utils/Evented");
-let bindFunctions = require("../../utils/bindFunctions");
-let AstSelection = require("../utils/AstSelection");
-let Selection = require("../utils/Selection");
-let Cursor = require("../utils/Cursor");
-let parsePlaceholdersInLines = require("../utils/parsePlaceholdersInLines");
+let Evented = require("utils/Evented");
+let bindFunctions = require("utils/bindFunctions");
+let AstSelection = require("modules/utils/AstSelection");
+let Selection = require("modules/utils/Selection");
+let Cursor = require("modules/utils/Cursor");
+let parsePlaceholdersInLines = require("modules/utils/parsePlaceholdersInLines");
+let stringToLineTuples = require("modules/utils/stringToLineTuples");
+let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let find = require("./find");
 let normalMouse = require("./normalMouse");
 let normalKeyboard = require("./normalKeyboard");
@@ -80,6 +82,40 @@ class Editor extends Evented {
 		this.applyAndAddHistoryEntry({
 			edits: [edit],
 			astSelection: newSelection,
+		});
+		
+		if (placeholders.length > 0) {
+			this.startSnippetSession(placeholders);
+		}
+	}
+	
+	insertSnippet(snippet, replaceWord=null) {
+		let {start} = this.view.normalSelection;
+		let {lineIndex, offset} = start;
+		let {indentLevel} = this.document.lines[lineIndex];
+		let indentStr = this.document.fileDetails.indentation.string;
+		let lineTuples = stringToLineTuples(snippet.text);
+		let lineStrings = lineTuplesToStrings(lineTuples, indentStr, indentLevel, true);
+		console.log(lineTuples);
+		let selection = (
+			replaceWord
+			? s(c(lineIndex, offset - replaceWord.length), start)
+			: this.view.normalSelection
+		);
+		
+		let {
+			lines: replacedLines,
+			placeholders,
+		} = parsePlaceholdersInLines(lineStrings, lineIndex, selection.start.offset);
+		
+		let str = replacedLines.join(this.document.fileDetails.newline);
+		let {end: cursor} = this.document.getSelectionContainingString(selection.start, str);
+		let edit = this.document.edit(selection, str);
+		let newSelection = s(cursor);
+		
+		this.applyAndAddHistoryEntry({
+			edits: [edit],
+			normalSelection: newSelection,
 		});
 		
 		if (placeholders.length > 0) {
