@@ -510,7 +510,6 @@ class View extends Evented {
 		
 		if (marginWidth !== this.sizes.marginWidth) {
 			this.updateWrappedLines();
-			this.redraw();
 		}
 	}
 	
