@@ -34,6 +34,31 @@ function startsBefore(a, b) {
 	return Cursor.isBefore(sort(a).start, sort(b).start);
 }
 
+function cursorIsWithinSelection(selection, cursor) {
+	let {start, end} = sort(selection);
+	let {lineIndex, offset} = cursor;
+	
+	if (
+		lineIndex < start.lineIndex
+		|| lineIndex > end.lineIndex
+		|| lineIndex === start.lineIndex && offset <= start.offset
+		|| lineIndex === end.lineIndex && offset >= end.offset
+	) {
+		return false;
+	}
+	
+	return true;
+}
+
+function isOverlapping(a, b) {
+	return (
+		cursorIsWithinSelection(a, b.start)
+		|| cursorIsWithinSelection(a, b.end)
+		|| cursorIsWithinSelection(b, a.start)
+		|| cursorIsWithinSelection(b, a.end)
+	);
+}
+
 function isFull(selection) {
 	let {start, end} = selection;
 	
@@ -46,6 +71,7 @@ function isMultiline(selection) {
 
 /*
 adjust a selection to account for insertions/deletions earlier in the document
+or overlapping with the selection (if overlapping, the result is null)
 
 for insertions, the adjustment is a selection containing the inserted text
 
@@ -58,6 +84,19 @@ function adjustSelection(selection, adjustment, sign) {
 	selection = sort(selection);
 	adjustment = sort(adjustment);
 	
+	//debugger
+	
+	if (
+		sign === 1 && cursorIsWithinSelection(selection, adjustment.start)
+		|| sign === -1 && isOverlapping(selection, adjustment)
+	) {
+		console.log(sign);
+		console.log(selection);
+		console.log(adjustment);
+		debugger
+		return null;
+	}
+	
 	if (startsBefore(selection, adjustment)) {
 		return selection;
 	}
@@ -67,32 +106,65 @@ function adjustSelection(selection, adjustment, sign) {
 	let newEndLineIndex = selection.end.lineIndex;
 	let newEndOffset = selection.end.offset;
 	
-	if (adjustment.start.lineIndex === selection.start.lineIndex) {
-		let adjustOffset = (adjustment.end.offset - adjustment.start.offset) * sign;
-		
-		newStartOffset += adjustOffset;
-		
-		if (selection.end.lineIndex === selection.start.lineIndex) {
-			newEndOffset += adjustOffset;
-		}
-	} else {
-		let adjustLineIndex = (adjustment.end.lineIndex - adjustment.start.lineIndex) * sign;
+	let selectionIsMultiline = isMultiline(selection);
+	let adjustmentIsMultiline = isMultiline(adjustment);
+	
+	let linesOverlap = (
+		sign === 1
+		? adjustment.start.lineIndex === selection.start.lineIndex
+		: adjustment.end.lineIndex === selection.start.lineIndex
+	);
+	
+	let adjustmentLines = adjustment.end.lineIndex - adjustment.start.lineIndex;
+	
+	if (adjustmentIsMultiline) {
+		let adjustLineIndex = (linesOverlap ? adjustmentLines : adjustmentLines) * sign;
 		
 		newStartLineIndex += adjustLineIndex;
 		newEndLineIndex += adjustLineIndex;
-		
-		if (adjustment.end.lineIndex === selection.start.lineIndex) {
-			let adjustOffset = adjustment.end.offset * sign;
-			
-			newStartOffset += adjustOffset;
-			
-			if (selection.end.lineIndex === selection.start.lineIndex) {
-				newEndOffset += adjustOffset;
+	}
+	
+	if (linesOverlap) {
+		if (adjustmentIsMultiline) {
+			if (sign === 1) {
+				let adjustOffset = adjustment.end.offset - adjustment.start.offset
+				
+				newStartOffset += adjustOffset;
+				
+				if (!selectionIsMultiline) {
+					newEndOffset += adjustOffset;
+				}
+			} else {
+				let adjustOffset = adjustment.start.offset - adjustment.end.offset;
+				
+				newStartOffset += adjustOffset;
+				
+				if (!selectionIsMultiline) {
+					newEndOffset += adjustOffset;
+				}
+			}
+		} else {
+			if (sign === 1) {
+				let adjustOffset = adjustment.end.offset - adjustment.start.offset
+				
+				newStartOffset += adjustOffset;
+				
+				if (!selectionIsMultiline) {
+					newEndOffset += adjustOffset;
+				}
+			} else {
+				let adjustOffset = adjustment.end.offset - adjustment.start.offset;
+				
+				newStartOffset -= adjustOffset;
+				
+				if (!selectionIsMultiline) {
+					newEndOffset -= adjustOffset;
+				}
 			}
 		}
 	}
 	
-	return s(c(newStartLineIndex,newStartOffset), c(newEndLineIndex, newEndOffset));
+	return s(c(newStartLineIndex, newStartOffset), c(newEndLineIndex, newEndOffset));
 }
 
 function s(start, end=null) {
@@ -114,22 +186,6 @@ let api = {
 		b = sort(b);
 		
 		return Cursor.equals(a.start, b.start) && Cursor.equals(a.end, b.end);
-	},
-	
-	cursorIsWithinSelection(selection, cursor) {
-		let {start, end} = sort(selection);
-		let {lineIndex, offset} = cursor;
-		
-		if (
-			lineIndex < start.lineIndex
-			|| lineIndex > end.lineIndex
-			|| lineIndex === start.lineIndex && offset <= start.offset
-			|| lineIndex === end.lineIndex && offset >= end.offset
-		) {
-			return false;
-		}
-		
-		return true;
 	},
 	
 	charIsWithinSelection(selection, charCursor) {
@@ -154,15 +210,6 @@ let api = {
 	
 	cursorIsWithinOrNextToSelection(selection, cursor) {
 		return api.cursorIsNextToSelection(selection, cursor) || api.cursorIsWithinSelection(selection, cursor);
-	},
-	
-	isOverlapping(a, b) {
-		return (
-			api.cursorIsWithinSelection(a, b.start)
-			|| api.cursorIsWithinSelection(a, b.end)
-			|| api.cursorIsWithinSelection(b, a.start)
-			|| api.cursorIsWithinSelection(b, a.end)
-		);
 	},
 	
 	startOfLineContent(wrappedLines, lineIndex) {
