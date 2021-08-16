@@ -236,12 +236,11 @@ module.exports = {
 	},
 	
 	tab() {
-		// TODO setSelectionFromNormalKeyboard (to update selection clipboard etc)
-		
 		if (this.view.Selection.isMultiline()) {
 			// TODO indent/dedent selection
+			// TODO setSelectionFromNormalKeyboard (to update selection clipboard etc)
 		} else if (this.snippetSession) {
-			// snippet
+			// next tabstop
 			
 			this.nextTabstop();
 		} else {
@@ -255,6 +254,8 @@ module.exports = {
 			}
 			
 			if (snippet) {
+				// insert snippet
+				
 				this.insertSnippet(snippet, snippet.name);
 			} else {
 				// tab
