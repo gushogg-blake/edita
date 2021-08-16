@@ -3,7 +3,7 @@
 	"description": "editor",
 	"author": "Gus Hogg-Blake",
 	"version": "1.0.0",
-	"main": "./src/platforms/electron/main/main.js",
+	"main": "./src/platforms/electron/mainProcess/main.js",
 	"electronVersion": "13.1.6",
 	"dependencies": {
 		"bluebird": "^3.7.2",

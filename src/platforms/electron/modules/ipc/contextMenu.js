@@ -1,5 +1,5 @@
 let {ipcRenderer: ipc} = window.require("electron-better-ipc");
-let lid = require("../../../../utils/lid");
+let lid = require("utils/lid");
 
 let clickHandlers = {};
 

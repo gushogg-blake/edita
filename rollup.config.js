@@ -1,3 +1,5 @@
+import path from "path";
+
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import alias from "@rollup/plugin-alias";
@@ -12,6 +14,8 @@ import scss from "rollup-plugin-scss";
 
 let production = !process.env.ROLLUP_WATCH;
 
+let root = __dirname;
+
 let platforms = [];
 let platform = process.env.PLATFORM;
 
@@ -21,25 +25,28 @@ if (!platform || platform === "all" || platform === "electron") {
 		
 		output: {
 			format: "iife",
-			file: "src/platforms/electron/renderer/public/build/globalCss.js",
+			file: "src/platforms/electron/public/build/globalCss.js",
 		},
 		
 		plugins: [
 			scss(),
 		],
 	}, {
-		input: "src/platforms/electron/renderer/main.js",
+		input: "src/platforms/electron/main.js",
 		
 		output: {
 			sourcemap: true,
 			format: "iife",
-			file: "src/platforms/electron/renderer/public/build/bundle.js",
+			file: "src/platforms/electron/public/build/bundle.js",
 		},
 		
 		plugins: [
 			alias({
 				entries: {
-					
+					"platform": path.resolve(root, "src/platforms/electron"),
+					"components": path.resolve(root, "src/components"),
+					"modules": path.resolve(root, "src/modules"),
+					"utils": path.resolve(root, "src/utils"),
 				},
 			}),
 			
@@ -112,7 +119,10 @@ if (!platform || platform === "all" || platform === "web") {
 		plugins: [
 			alias({
 				entries: {
-					
+					"platform": path.resolve(root, "src/platforms/web"),
+					"components": path.resolve(root, "src/components"),
+					"modules": path.resolve(root, "src/modules"),
+					"utils": path.resolve(root, "src/utils"),
 				},
 			}),
 			

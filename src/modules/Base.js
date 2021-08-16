@@ -1,17 +1,15 @@
-let minimatch = require("minimatch");
+let Evented = require("utils/Evented");
 
-let Evented = require("../../../utils/Evented");
+let getIndentationDetails = require("modules/utils/getIndentationDetails");
+let guessIndent = require("modules/utils/guessIndent");
+let checkNewlines = require("modules/utils/checkNewlines");
 
-let getIndentationDetails = require("../../../modules/utils/getIndentationDetails");
-let guessIndent = require("../../../modules/utils/guessIndent");
-let checkNewlines = require("../../../modules/utils/checkNewlines");
-
-let javascript = require("../../../modules/langs/javascript");
-let html = require("../../../modules/langs/html");
-let css = require("../../../modules/langs/css");
-//let svelte = require("../../../modules/langs/svelte");
-let plainText = require("../../../modules/langs/plainText");
-let langs = require("../../../modules/langs");
+let javascript = require("modules/langs/javascript");
+let html = require("modules/langs/html");
+let css = require("modules/langs/css");
+//let svelte = require("modules/langs/svelte");
+let plainText = require("modules/langs/plainText");
+let langs = require("modules/langs");
 
 function defaultPrefs() {
 	return {
@@ -196,6 +194,8 @@ class Base extends Evented {
 		for (let lang of langs) {
 			this.langs.add(lang);
 		}
+		
+		this.loadSnippets();
 	}
 	
 	/*
@@ -223,7 +223,7 @@ class Base extends Evented {
 		if (path) {
 			for (let [langCode, patterns] of Object.entries(this.prefs.fileAssociations)) {
 				for (let pattern of patterns) {
-					if (minimatch(platform.fs(path).name, pattern)) {
+					if (platform.fs(path).match(pattern)) {
 						return this.langs.get(langCode);
 					}
 				}
@@ -297,6 +297,10 @@ class Base extends Evented {
 			newline: defaultNewline,
 			hasMixedNewlines: false,
 		};
+	}
+	
+	async loadSnippets() {
+		this.snippets = await platform.loadSnippets();
 	}
 }
 

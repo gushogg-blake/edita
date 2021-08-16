@@ -1,8 +1,8 @@
-import getKeyCombo from "../../../utils/getKeyCombo";
-import AppComponent from "../../../components/App/App.svelte";
+import getKeyCombo from "utils/getKeyCombo";
+import Base from "modules/Base";
+import App from "modules/App";
+import AppComponent from "components/App/App.svelte";
 import Platform from "./Platform";
-import Base from "./Base";
-import App from "./App";
 
 window.platform = new Platform();
 window.base = new Base();

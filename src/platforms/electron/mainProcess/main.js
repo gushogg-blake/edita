@@ -71,7 +71,7 @@ async function createWindow() {
 	
 	winState.manage(win);
 	
-	win.loadURL("file://" + path.join(__dirname, "..", "renderer", "public", "index.html"));
+	win.loadURL("file://" + path.join(__dirname, "..", "public", "index.html"));
 
 	let watcher;
 
@@ -79,7 +79,7 @@ async function createWindow() {
 		win.webContents.openDevTools();
 
 		watcher = require("chokidar").watch([
-			"../renderer/public",
+			"../public",
 		].map(p => path.resolve(__dirname, p)), {
 			ignoreInitial: true,
 		});

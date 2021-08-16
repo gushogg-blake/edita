@@ -237,6 +237,7 @@ module.exports = {
 	
 	tab() {
 		// TODO setSelectionFromNormalKeyboard (to update selection clipboard etc)
+		
 		if (this.view.Selection.isMultiline()) {
 			// TODO indent/dedent selection
 		} else if (this.snippetSession) {
@@ -244,32 +245,45 @@ module.exports = {
 			
 			this.nextTabstop();
 		} else {
-			// tab
+			let snippet = null;
 			
-			let {indentation} = this.document.fileDetails;
-			let {normalSelection} = this.view;
-			
-			let str;
-			
-			if (indentation.type === "tab") {
-				str = "\t";
-			} else {
-				let {start} = Selection.sort(normalSelection);
-				let {colsPerIndent} = indentation;
-				let insertCols = colsPerIndent - start.offset % colsPerIndent;
+			if (!this.view.Selection.isFull()) {
+				let {start: cursor} = this.view.normalSelection;
+				let wordAtCursor = this.document.wordAtCursor(cursor);
 				
-				str = " ".repeat(insertCols);
+				snippet = base.getSnippet(wordAtCursor);
 			}
 			
-			let {
-				edit,
-				newSelection,
-			} = this.document.replaceSelection(this.view.normalSelection, str);
-			
-			this.applyAndAddHistoryEntry({
-				edits: [edit],
-				normalSelection: newSelection,
-			});
+			if (snippet) {
+				console.log(snippet);
+			} else {
+				// tab
+				
+				let {indentation} = this.document.fileDetails;
+				let {normalSelection} = this.view;
+				
+				let str;
+				
+				if (indentation.type === "tab") {
+					str = "\t";
+				} else {
+					let {start} = Selection.sort(normalSelection);
+					let {colsPerIndent} = indentation;
+					let insertCols = colsPerIndent - start.offset % colsPerIndent;
+					
+					str = " ".repeat(insertCols);
+				}
+				
+				let {
+					edit,
+					newSelection,
+				} = this.document.replaceSelection(this.view.normalSelection, str);
+				
+				this.applyAndAddHistoryEntry({
+					edits: [edit],
+					normalSelection: newSelection,
+				});
+			}
 		}
 		
 		this.clearBatchState();

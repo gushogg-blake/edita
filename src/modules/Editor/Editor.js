@@ -124,9 +124,6 @@ class Editor extends Evented {
 		let {selection: oldSelection, newSelection} = edit;
 		let {normalHilites} = this.view;
 		
-		console.log(oldSelection);
-		console.log(newSelection);
-		
 		this.view.normalHilites = normalHilites.map(function(hilite) {
 			return Selection.add(Selection.subtract(hilite, oldSelection), newSelection);
 		});
