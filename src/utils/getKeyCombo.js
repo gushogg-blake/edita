@@ -22,7 +22,11 @@ module.exports = function(e) {
 		}
 	}
 	
-	keyCombo += isModified && e.key.length === 1 ? e.key.toUpperCase() : e.key;
+	if (e.code === "Space") {
+		keyCombo += "Space";
+	} else {
+		keyCombo += isModified && e.key.length === 1 ? e.key.toUpperCase() : e.key;
+	}
 	
 	return {
 		keyCombo,

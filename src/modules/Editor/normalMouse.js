@@ -16,6 +16,10 @@ module.exports = {
 		this.view.redraw();
 	},
 	
+	setSelectionClipboard() {
+		platform.clipboard.writeSelection(this.getSelectedText());
+	},
+	
 	async insertSelectionClipboard(cursor) {
 		let str = await platform.clipboard.readSelection();
 		

@@ -1,3 +1,3 @@
 module.exports = function(string, re) {
-	return string.match(re)?.[0] || "";
+	return string.match(re) || [];
 }

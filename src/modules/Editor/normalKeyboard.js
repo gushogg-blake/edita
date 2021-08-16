@@ -1,104 +1,105 @@
 let Selection = require("../utils/Selection");
 let Cursor = require("../utils/Cursor");
+let findWordCompletions = require("../utils/findWordCompletions");
 
 let {s} = Selection;
 let {c} = Cursor;
 
 module.exports = {
 	up() {
-		this.setNormalSelection(this.view.Selection.up());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.up());
 	},
 	
 	down() {
-		this.setNormalSelection(this.view.Selection.down());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.down());
 	},
 	
 	left() {
-		this.setNormalSelection(this.view.Selection.left());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.left());
 		this.view.updateSelectionEndCol();
 	},
 	
 	right() {
-		this.setNormalSelection(this.view.Selection.right());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.right());
 		this.view.updateSelectionEndCol();
 	},
 	
 	pageUp() {
-		this.setNormalSelection(this.view.Selection.pageUp());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.pageUp());
 	},
 	
 	pageDown() {
-		this.setNormalSelection(this.view.Selection.pageDown());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.pageDown());
 	},
 	
 	end() {
-		this.setNormalSelection(this.view.Selection.end());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.end());
 		this.view.updateSelectionEndCol();
 	},
 	
 	home() {
-		this.setNormalSelection(this.view.Selection.home());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.home());
 		this.view.updateSelectionEndCol();
 	},
 	
 	wordLeft() {
-		this.setNormalSelection(this.view.Selection.wordLeft());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.wordLeft());
 		this.view.updateSelectionEndCol();
 	},
 	
 	wordRight() {
-		this.setNormalSelection(this.view.Selection.wordRight());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.wordRight());
 		this.view.updateSelectionEndCol();
 	},
 	
 	expandOrContractSelectionUp() {
-		this.setNormalSelection(this.view.Selection.expandOrContractUp());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractUp());
 	},
 	
 	expandOrContractSelectionDown() {
-		this.setNormalSelection(this.view.Selection.expandOrContractDown());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractDown());
 	},
 	
 	expandOrContractSelectionLeft() {
-		this.setNormalSelection(this.view.Selection.expandOrContractLeft());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractLeft());
 		this.view.updateSelectionEndCol();
 	},
 	
 	expandOrContractSelectionRight() {
-		this.setNormalSelection(this.view.Selection.expandOrContractRight());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractRight());
 		this.view.updateSelectionEndCol();
 	},
 	
 	expandOrContractSelectionPageUp() {
-		this.setNormalSelection(this.view.Selection.expandOrContractPageUp());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractPageUp());
 	},
 	
 	expandOrContractSelectionPageDown() {
-		this.setNormalSelection(this.view.Selection.expandOrContractPageDown());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractPageDown());
 	},
 	
 	expandOrContractSelectionEnd() {
-		this.setNormalSelection(this.view.Selection.expandOrContractEnd());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractEnd());
 		this.view.updateSelectionEndCol();
 	},
 	
 	expandOrContractSelectionHome() {
-		this.setNormalSelection(this.view.Selection.expandOrContractHome());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractHome());
 		this.view.updateSelectionEndCol();
 	},
 	
 	expandOrContractSelectionWordLeft() {
-		this.setNormalSelection(this.view.Selection.expandOrContractWordLeft());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractWordLeft());
 		this.view.updateSelectionEndCol();
 	},
 	
 	expandOrContractSelectionWordRight() {
-		this.setNormalSelection(this.view.Selection.expandOrContractWordRight());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractWordRight());
 		this.view.updateSelectionEndCol();
 	},
 	
 	selectAll() {
-		this.setNormalSelection(this.view.Selection.all());
+		this.setSelectionFromNormalKeyboard(this.view.Selection.all());
 		this.view.updateSelectionEndCol();
 	},
 	
@@ -235,6 +236,7 @@ module.exports = {
 	},
 	
 	tab() {
+		// TODO setSelectionFromNormalKeyboard (to update selection clipboard etc)
 		if (this.view.Selection.isMultiline()) {
 			// TODO indent/dedent selection
 		} else if (this.snippetSession) {
@@ -275,6 +277,89 @@ module.exports = {
 	
 	shiftTab() {
 		// TODO
+	},
+	
+	completeWord() {
+		if (this.view.Selection.isFull()) {
+			return;
+		}
+		
+		this.inWordComplete = true;
+		
+		let {normalSelection} = this.view;
+		let cursor = Selection.sort(normalSelection).start;
+		let {lineIndex, offset} = cursor;
+		
+		if (this.completeWordSession) {
+			let {
+				words,
+				index,
+				selection,
+				originalWord,
+			} = this.completeWordSession;
+			
+			let {lineIndex, offset} = selection.start;
+			
+			let newIndex = index + 1;
+			
+			if (newIndex === words.length) {
+				newIndex = -1;
+			}
+			
+			let nextWord;
+			
+			if (newIndex === -1) {
+				nextWord = originalWord;
+			} else {
+				nextWord = words[newIndex];
+			}
+			
+			let {
+				edit,
+				newSelection,
+			} = this.document.replaceSelection(selection, nextWord);
+			
+			this.applyAndAddHistoryEntry({
+				edits: [edit],
+				normalSelection: newSelection,
+			});
+			
+			this.completeWordSession = {
+				...this.completeWordSession,
+				currentWord: nextWord,
+				selection: s(selection.start, c(lineIndex, offset + nextWord.length)),
+				index: newIndex,
+			};
+		} else {
+			let index = this.document.indexFromCursor(cursor);
+			let wordAtCursor = this.document.wordAtCursor(cursor);
+			let words = findWordCompletions(this.document.string, wordAtCursor, index);
+			
+			if (words.length > 0) {
+				let currentWord = words[0];
+				let selection = s(c(lineIndex, offset - wordAtCursor.length), cursor);
+				
+				let {
+					edit,
+					newSelection,
+				} = this.document.replaceSelection(selection, currentWord);
+				
+				this.applyAndAddHistoryEntry({
+					edits: [edit],
+					normalSelection: newSelection,
+				});
+				
+				this.completeWordSession = {
+					originalWord: wordAtCursor,
+					currentWord,
+					selection: s(selection.start, c(lineIndex, selection.start.offset + currentWord.length)),
+					words,
+					index: 0,
+				};
+			}
+		}
+		
+		this.inWordComplete = false;
 	},
 	
 	async cut() {

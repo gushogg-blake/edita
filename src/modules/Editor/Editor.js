@@ -233,9 +233,9 @@ class Editor extends Evented {
 		let fnName = base.prefs.normalKeymap[keyCombo];
 		
 		if (fnName) {
-			await this.normalKeyboard[fnName](this);
+			await this.normalKeyboard[fnName]();
 		} else if (!isModified && key.length === 1) {
-			this.normalKeyboard.insert(key, this);
+			this.normalKeyboard.insert(key);
 		} else {
 			return;
 		}
@@ -263,10 +263,10 @@ class Editor extends Evented {
 	}
 	
 	setSelectionFromNormalKeyboard(selection) {
-		this.view.setNormalSelection(selection);
+		this.setNormalSelection(selection);
 		
 		if (Selection.isFull(selection)) {
-			platform.clipboard.writeSelection(document.getSelectedText(selection));
+			platform.clipboard.writeSelection(this.document.getSelectedText(selection));
 		}
 		
 		this.clearBatchState();
@@ -282,6 +282,12 @@ class Editor extends Evented {
 	
 	setNormalSelection(selection) {
 		this.view.setNormalSelection(selection);
+		
+		// clear word completion session (word completion changes the selection,
+		// so only clear it if something else changed the selection)
+		if (!this.inWordComplete) {
+			this.completeWordSession = null;
+		}
 		
 		console.log(this.document.lines[selection.start.lineIndex]);
 	}

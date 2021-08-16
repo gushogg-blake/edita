@@ -310,7 +310,7 @@ class Document extends Evented {
 	}
 	
 	langFromCursor(cursor, langRange=this.mainLangRange) {
-		if (Cursor.equals(cursor, this.getEndCursor())) {
+		if (Cursor.equals(cursor, this.cursorAtEnd())) {
 			return this.mainLang;
 		}
 		
@@ -380,7 +380,21 @@ class Document extends Evented {
 		return Selection.containString(cursor, str, this.fileDetails.newline);
 	}
 	
-	getEndCursor() {
+	wordAtCursor(cursor) {
+		let {lineIndex, offset} = cursor;
+		
+		if (offset === 0) {
+			return null;
+		}
+		
+		let line = this.lines[lineIndex];
+		let stringToCursor = line.string.substr(0, offset).split("").reverse().join("");
+		let match = stringToCursor.match(/^(\w+)/);
+		
+		return match?.[0].split("").reverse().join("") || null;
+	}
+	
+	cursorAtEnd() {
 		return c(this.lines.length - 1, this.lines[this.lines.length - 1].string.length);
 	}
 	

@@ -411,6 +411,6 @@ module.exports = {
 	},
 	
 	all() {
-		return s(c(0, 0), this.document.getEndCursor());
+		return s(c(0, 0), this.document.cursorAtEnd());
 	},
 };

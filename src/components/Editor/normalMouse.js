@@ -125,7 +125,7 @@ module.exports = function(document, editor, view, editorComponent) {
 	
 	function mouseup() {
 		if (view.Selection.isFull()) {
-			platform.clipboard.writeSelection(editor.getSelectedText());
+			editor.normalMouse.setSelectionClipboard();
 		}
 		
 		editorComponent.mouseup();

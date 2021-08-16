@@ -73,6 +73,7 @@ function defaultPrefs() {
 			"Ctrl+C": "copy",
 			"Ctrl+V": "paste",
 			"Ctrl+A": "selectAll",
+			"Ctrl+Space": "completeWord",
 		},
 		
 		astKeymap: {
