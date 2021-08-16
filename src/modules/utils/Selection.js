@@ -192,6 +192,12 @@ let api = {
 		return adjustSelection(selection, subtractSelection, -1);
 	},
 	
+	adjust(selection, subtractSelection, addSelection) {
+		selection = api.subtract(selection, subtractSelection);
+		
+		return selection && api.add(selection, addSelection);
+	},
+	
 	containString(start, str, newline) {
 		let lines = str.split(newline);
 		

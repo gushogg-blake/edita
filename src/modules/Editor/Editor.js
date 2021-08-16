@@ -161,8 +161,8 @@ class Editor extends Evented {
 		let {normalHilites} = this.view;
 		
 		this.view.normalHilites = normalHilites.map(function(hilite) {
-			return Selection.add(Selection.subtract(hilite, oldSelection), newSelection);
-		});
+			return Selection.adjust(hilite, oldSelection, newSelection);
+		}).filter(Boolean);
 		
 		if (this.snippetSession) {
 			let {index, placeholders} = this.snippetSession;
@@ -170,7 +170,12 @@ class Editor extends Evented {
 			for (let i = index; i < placeholders.length; i++) {
 				let placeholder = placeholders[i];
 				
-				placeholder.selection = Selection.add(Selection.subtract(placeholder.selection, oldSelection), newSelection);
+				placeholder.selection = Selection.adjust(placeholder.selection, oldSelection, newSelection);
+				
+				if (!placeholder.selection) {
+					placeholders.splice(i, 1);
+					i--;
+				}
 			}
 		}
 		
