@@ -72,7 +72,23 @@ module.exports = function*(line, lineRow) {
 				2. render the next hint
 				*/
 				
-				while (nextHint && nextHint.offset === offset) {
+				/*
+				NOTE logically this should be nextHint.offset === offset, as the
+				hint offsets should match where we are in the line, (ie. after
+				parsing a combination of hints, strings, and tabs, the next hint's
+				offset should always be the number of chars encountered up to now)
+				but because of parse errors we can get characters counted twice,
+				e.g. with an empty script tag we see "<" and then "</" at the same
+				offset for the closing tag.  by checking nextHint.offset <= offset,
+				we make sure not to skip any hints when the offset doesn't match
+				(ie. in the case above, the < will increase the offset erroneously,
+				so the </ will be missed).
+				
+				this means that the renderer has to accept hints that start before
+				the current offset and "rewind" to correct for them.
+				*/
+				
+				while (nextHint && nextHint.offset <= offset) {
 					if (nextHint.type === "node") {
 						yield nextHint;
 						

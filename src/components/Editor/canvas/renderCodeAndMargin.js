@@ -102,8 +102,22 @@ module.exports = function(context, view) {
 					x += str.length * colWidth;
 					offset += str.length;
 				} else if (type === "node") {
-					let {lang, node} = command;
+					let {lang, node, offset: hintOffset} = command;
 					let str = node.text;
+					
+					/*
+					NOTE hint offsets don't always start at the current offset -
+					see generateRenderCommandsForLine
+					*/
+					
+					if (hintOffset < offset) {
+						let diff = hintOffset - offset;
+						
+						x += diff * colWidth;
+						offset += diff;
+						
+						context.clearRect(x, y - rowHeight, -diff * colWidth, rowHeight);
+					}
 					
 					context.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
 					context.fillText(str, x, y);
