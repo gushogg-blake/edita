@@ -15,10 +15,14 @@ class Tab extends Evented {
 		this.currentPath = this.originalPath;
 		this.files = [];
 		this.loading = false;
+		
+		this.pendingActions = [];
 	}
 	
 	async zoomOut() {
 		if (this.loading) {
+			this.pendingActions.push(this.zoomOut.bind(this));
+			
 			return;
 		}
 		
@@ -43,10 +47,16 @@ class Tab extends Evented {
 		await this.updateDirListing();
 		
 		this.loading = false;
+		
+		if (this.pendingActions.length > 0) {
+			this.pendingActions.pop()();
+		}
 	}
 	
 	async zoomIn() {
 		if (this.loading) {
+			this.pendingActions.push(this.zoomIn.bind(this));
+			
 			return;
 		}
 		
@@ -80,6 +90,10 @@ class Tab extends Evented {
 		await this.updateDirListing();
 		
 		this.loading = false;
+		
+		if (this.pendingActions.length > 0) {
+			this.pendingActions.pop()();
+		}
 	}
 	
 	switchToFile(file) {
