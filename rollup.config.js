@@ -21,7 +21,7 @@ let platform = process.env.PLATFORM;
 
 if (!platform || platform === "all" || platform === "electron") {
 	platforms.push({
-		input: "src/platforms/common/globalCss.js",
+		input: "src/platforms/common/public/globalCss.js",
 		
 		output: {
 			format: "iife",
@@ -98,7 +98,7 @@ if (!platform || platform === "all" || platform === "electron") {
 
 if (!platform || platform === "all" || platform === "web") {
 	platforms.push({
-		input: "src/platforms/common/globalCss.js",
+		input: "src/platforms/common/public/globalCss.js",
 		
 		output: {
 			format: "iife",
