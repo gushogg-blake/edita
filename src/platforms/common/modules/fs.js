@@ -1,7 +1,13 @@
-let osPath = require("path-browserify");
-let minimatch = require("minimatch-browser");
+let bluebird = require("bluebird");
 
-module.exports = function(backend) {
+module.exports = function(backends) {
+	let {
+		fs,
+		path: osPath,
+		minimatch,
+		cwd,
+	} = backends;
+	
 	class Node {
 		constructor(path) {
 			if (path instanceof Node) {
@@ -65,6 +71,10 @@ module.exports = function(backend) {
 			return osPath.relative(parent, this.path);
 		}
 		
+		async mkdirp() {
+			await mkdirp(this.path);
+		}
+		
 		isDescendantOf(parent) {
 			if (parent instanceof Node) {
 				parent = parent.path;
@@ -77,6 +87,12 @@ module.exports = function(backend) {
 		
 		match(pattern) {
 			return minimatch(this.path, pattern);
+		}
+		
+		matchName(pattern) {
+			return minimatch(this.path, pattern, {
+				matchBase: true,
+			});
 		}
 		
 		setPath(path) {
@@ -107,9 +123,137 @@ module.exports = function(backend) {
 				this.lastType = this.lastExtension.substr(1);
 			}
 		}
+		
+		stat() {
+			return fs.stat(this.path);
+		}
+		
+		lstat() {
+			return fs.lstat(this.path);
+		}
+		
+		async _delete(ignoreEnoent=false) {
+			try {
+				if (await this.isDir()) {
+					await this.rmdir();
+				} else {
+					await this.unlink();
+				}
+			} catch (e) {
+				if (!ignoreEnoent || e.code !== "ENOENT") {
+					throw e;
+				}
+			}
+		}
+		
+		delete() {
+			return this._delete();
+		}
+		
+		deleteIfExists() {
+			return this._delete(true);
+		}
+		
+		async rename(find, replace) {
+			let newPath;
+			
+			if (replace) {
+				newPath = this.name.replace(find, replace);
+			} else {
+				newPath = find;
+			}
+			
+			let newFile = this.sibling(newPath);
+			
+			await fs.rename(this.path, newFile.path);
+			
+			this.setPath(newFile.path);
+		}
+		
+		async move(dest) {
+			await this.rename(dest);
+		}
+		
+		async copy(dest) {
+			if (dest instanceof Node) {
+				dest = dest.path;
+			}
+			
+			await fs.copy(this.path, dest);
+		}
+		
+		readdir() {
+			return fs.readdir(this.path);
+		}
+		
+		async ls() {
+			return (await this.readdir()).map((path) => {
+				return new Node(osPath.resolve(this.path, path));
+			});
+		}
+		
+		async lsFiles() {
+			return bluebird.filter(this.ls(), node => node.isFile());
+		}
+		
+		async lsDirs() {
+			return bluebird.filter(this.ls(), node => node.isDir());
+		}
+		
+		async contains(filename) {
+			return (await this.readdir()).indexOf(filename) !== -1;
+		}
+		
+		async isDir() {
+			try {
+				return (await fs.stat(this.path)).isDirectory();
+			} catch (e) {
+				return false;
+			}
+		}
+		
+		async isFile() {
+			try {
+				return (await fs.stat(this.path)).isFile();
+			} catch (e) {
+				return false;
+			}
+		}
+		
+		async readJson() {
+			return JSON.parse(await this.read());
+		}
+		
+		writeJson(json) {
+			return this.write(JSON.stringify(json, null, 4));
+		}
+		
+		async read() {
+			return (await fs.readFile(this.path)).toString();
+		}
+		
+		async write(data) {
+			return fs.writeFile(this.path, data);
+		}
+		
+		exists() {
+			return fs.exists(this.path);
+		}
+		
+		rmdir() {
+			return fs.rmdir(this.path);
+		}
+		
+		unlink() {
+			return fs.unlink(this.path);
+		}
+		
+		rmrf() {
+			return fs.remove(this.path);
+		}
 	}
 	
-	return function(path="/", ...paths) {
+	return function(path=cwd(), ...paths) {
 		return new Node(path).child(...paths);
 	}
 }

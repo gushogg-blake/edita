@@ -1,9 +1,11 @@
 let {ipcRenderer} = require("electron");
 let os = require("os");
 let path = require("path");
+let fsExtra = require("fs-extra");
+let minimatch = require("minimatch");
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
-let fs = require("./modules/fs");
+let fs = require("../common/modules/fs");
 let {config, systemInfo} = require("./modules/ipc/init");
 let dialog = require("./modules/ipc/dialog");
 let clipboard = require("./modules/ipc/clipboard");
@@ -16,8 +18,17 @@ class Platform extends Evented {
 		this.config = config;
 		this.systemInfo = systemInfo;
 		this.clipboard = clipboard;
-		this.fs = fs;
 		this.path = path;
+		
+		this.fs = fs({
+			fs: fsExtra,
+			path,
+			minimatch,
+			
+			cwd() {
+				return process.cwd();
+			},
+		});
 		
 		ipcRenderer.on("closeWindow", () => {
 			let defaultPrevented = false;
@@ -59,7 +70,7 @@ class Platform extends Evented {
 	}
 	
 	async save(path, code) {
-		await fs(path).write(code);
+		await this.fs(path).write(code);
 	}
 	
 	async saveAs() {
@@ -86,7 +97,7 @@ class Platform extends Evented {
 	}
 	
 	async loadSnippets() {
-		let dir = fs(this.snippetsDir);
+		let dir = this.fs(this.snippetsDir);
 		
 		if (!await dir.exists()) {
 			return [];

@@ -223,7 +223,7 @@ class Base extends Evented {
 		if (path) {
 			for (let [langCode, patterns] of Object.entries(this.prefs.fileAssociations)) {
 				for (let pattern of patterns) {
-					if (platform.fs(path).match(pattern)) {
+					if (platform.fs(path).matchName(pattern)) {
 						return this.langs.get(langCode);
 					}
 				}

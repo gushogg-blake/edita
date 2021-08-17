@@ -1,7 +1,8 @@
 let path = require("path-browserify");
+let minimatch = require("minimatch-browser");
 let bluebird = require("bluebird");
+let fs = require("../common/modules/fs");
 let clipboard = require("./modules/clipboard");
-let fs = require("./modules/fs");
 
 class Platform {
 	constructor() {
@@ -16,7 +17,16 @@ class Platform {
 	
 	async init(options) {
 		this.fs = fs({
+			fs: {
+				
+			},
 			
+			path,
+			minimatch,
+			
+			cwd() {
+				return "/";
+			},
 		});
 	}
 	
