@@ -6,15 +6,13 @@ let {
 	ipcMain,
 } = require("electron");
 
-let {ipcMain: ipc} = require("electron-better-ipc");
 let windowStateKeeper = require("electron-window-state");
 let dev = require("electron-is-dev");
 let path = require("path");
+let {removeInPlace} = require("../../../utils/arrayMethods");
 let config = require("./config");
-let init = require("./ipc/init");
-let clipboard = require("./ipc/clipboard");
-let dialog = require("./ipc/dialog");
-let contextMenu = require("./ipc/contextMenu");
+
+require("./ipc");
 
 if (dev) {
 	require("./watch");
@@ -22,35 +20,23 @@ if (dev) {
 
 app.setPath("userData", path.join(config.userDataDir, "electron"));
 
-let asyncIpcModules = {
-	dialog,
-	contextMenu,
-};
-
-let syncIpcModules = {
-	init,
-	clipboard,
-};
-
-for (let [key, fns] of Object.entries(asyncIpcModules)) {
-	for (let name in fns) {
-		ipc.answerRenderer(key + "/" + name, function(args, browserWindow) {
-			return fns[name](...args, browserWindow);
-		});
-	}
-}
-
-for (let [key, fns] of Object.entries(syncIpcModules)) {
-	for (let name in fns) {
-		ipcMain.addListener(key + "/" + name, async function(event, ...args) {
-			event.returnValue = await fns[name](...args);
-		});
-	}
-}
-
 Menu.setApplicationMenu(null);
 
-let browserWindow;
+let browserWindows = [];
+
+let watcher;
+
+if (dev) {
+	watcher = require("chokidar").watch([
+		"../public",
+	].map(p => path.resolve(__dirname, p)), {
+		ignoreInitial: true,
+	});
+	
+	watcher.on("change", function() {
+		browserWindows.forEach(win => win.reload());
+	});
+}
 
 async function createWindow() {
 	let winState = windowStateKeeper();
@@ -72,21 +58,9 @@ async function createWindow() {
 	winState.manage(browserWindow);
 	
 	browserWindow.loadURL("file://" + path.join(__dirname, "..", "public", "index.html"));
-
-	let watcher;
-
+	
 	if (dev) {
 		browserWindow.webContents.openDevTools();
-
-		watcher = require("chokidar").watch([
-			"../public",
-		].map(p => path.resolve(__dirname, p)), {
-			ignoreInitial: true,
-		});
-		
-		watcher.on("change", function() {
-			browserWindow.reload();
-		});
 	}
 	
 	let close = false;
@@ -94,7 +68,7 @@ async function createWindow() {
 	browserWindow.on("close", function(e) {
 		if (!close) {
 			e.preventDefault();
-		
+			
 			browserWindow.webContents.send("closeWindow");
 		}
 	});
@@ -109,19 +83,27 @@ async function createWindow() {
 		if (watcher) {
 			watcher.close();
 		}
-
-		browserWindow = null;
+		
+		removeInPlace(browserWindows, browserWindow);
 	});
 	
-	globalShortcut.register("CommandOrControl+Q", function() {
-		app.quit();
-	});
+	browserWindows.push(browserWindow);
 }
 
 app.on("ready", function() {
 	createWindow();
+	
+	globalShortcut.register("CommandOrControl+Q", function() {
+		app.quit();
+	});
 });
 
 app.on("window-all-closed", function() {
 	app.quit();
+});
+
+app.on("before-quit", function() {
+	if (watcher) {
+		watcher.close();
+	}
 });

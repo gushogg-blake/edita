@@ -21,7 +21,7 @@ let watch = chokidar.watch([
 ].map(p => path.join(__dirname, p)));
 
 watch.on("change", debounce(function() {
-	let child = spawn("npm", ["run", "dev"], {
+	let child = spawn("npm", ["run", "electron"], {
 		cwd: __dirname,
 		detached: true,
 		stdio: "inherit",
@@ -29,5 +29,11 @@ watch.on("change", debounce(function() {
 	
 	child.unref();
 	
+	watch.close();
+	
 	app.quit();
 }, 300));
+
+app.on("before-quit", function() {
+	watch.close();
+});
