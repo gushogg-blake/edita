@@ -1,11 +1,14 @@
 let path = require("path-browserify");
 let minimatch = require("minimatch-browser");
 let bluebird = require("bluebird");
+let Evented = require("utils/Evented");
 let fs = require("../common/modules/fs");
 let clipboard = require("./modules/clipboard");
 
-class Platform {
+class Platform extends Evented {
 	constructor() {
+		super();
+		
 		this.systemInfo = {
 			newline: "\n",
 		};
@@ -52,6 +55,10 @@ class Platform {
 	
 	loadTreeSitterLanguage(name) {
 		return TreeSitter.Language.load("./vendor/tree-sitter/langs/" + name + ".wasm");
+	}
+	
+	async loadSnippets() {
+		return [];
 	}
 }
 
