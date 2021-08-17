@@ -1,4 +1,4 @@
-let {app} = require("electron");
+let {app: electronApp} = require("electron");
 let {spawn} = require("child_process");
 let path = require("path");
 let chokidar = require("chokidar");
@@ -13,27 +13,35 @@ function debounce(fn, delay) {
 	}
 }
 
-let watch = chokidar.watch([
-	"ipc",
-	"config.js",
-	"main.js",
-	"watch.js",
-].map(p => path.join(__dirname, p)));
-
-watch.on("change", debounce(function() {
-	let child = spawn("npm", ["run", "electron"], {
-		cwd: __dirname,
-		detached: true,
-		stdio: "inherit",
+module.exports = function(app) {
+	let watchRenderer = chokidar.watch(path.resolve(__dirname, "../public"), {
+		ignoreInitial: true,
 	});
 	
-	child.unref();
+	let watchMain = chokidar.watch(__dirname);
 	
-	watch.close();
+	let watchers = [watchMain, watchRenderer];
 	
-	app.quit();
-}, 300));
-
-app.on("before-quit", function() {
-	watch.close();
-});
+	watchRenderer.on("change", function() {
+		app.browserWindows.forEach(win => win.reload());
+	});
+	
+	watchMain.on("change", debounce(function() {
+		let child = spawn("npm", ["run", "electron"], {
+			detached: true,
+			stdio: "inherit",
+		});
+		
+		child.unref();
+		
+		closeWatchers();
+		
+		electronApp.quit();
+	}, 300));
+	
+	function closeWatchers() {
+		watchers.forEach(w => w.close());
+	}
+	
+	electronApp.on("before-quit", closeWatchers);
+}
