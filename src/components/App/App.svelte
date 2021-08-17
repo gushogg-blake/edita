@@ -70,8 +70,8 @@ onMount(function() {
 <svelte:window on:keydown={keydown}/>
 
 <style type="text/scss">
-@import "../../css/mixins/flex-col";
-@import "../../css/classes/hide";
+@import "mixins/flex-col";
+@import "classes/hide";
 
 $border: 1px solid #AFACAA;
 

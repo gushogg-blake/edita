@@ -617,8 +617,8 @@ onMount(function() {
 />
 
 <style type="text/scss">
-@import "../../css/mixins/abs-sticky";
-@import "../../css/classes/hide";
+@import "mixins/abs-sticky";
+@import "classes/hide";
 
 #main {
 	color: black;

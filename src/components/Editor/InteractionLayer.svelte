@@ -418,7 +418,7 @@ onMount(function() {
 </script>
 
 <style type="text/scss">
-@import "../../css/mixins/abs-sticky";
+@import "mixins/abs-sticky";
 
 #main {
 	@include abs-sticky;

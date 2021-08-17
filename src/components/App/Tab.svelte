@@ -68,7 +68,7 @@ onMount(function() {
 </script>
 
 <style type="text/scss">
-@import "../../css/classes/hide";
+@import "classes/hide";
 
 #main, #editor, #files {
 	width: 100%;
