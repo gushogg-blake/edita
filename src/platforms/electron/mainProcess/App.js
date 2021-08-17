@@ -16,6 +16,7 @@ let config = require("./config");
 
 class App {
 	constructor() {
+		this.config = config;
 		this.browserWindows = [];
 	}
 	
@@ -30,7 +31,7 @@ class App {
 	}
 	
 	init() {
-		ipc();
+		ipc(this);
 		
 		Menu.setApplicationMenu(null);
 		
@@ -87,7 +88,7 @@ class App {
 		});
 		
 		ipcMain.on("closeWindow", (e) => {
-			if (BrowserWindow.fromWebContents(e.sender) !== browserWindow) {
+			if (this.browserWindowFromEvent(e) !== browserWindow) {
 				return;
 			}
 			
@@ -101,6 +102,10 @@ class App {
 		});
 		
 		this.browserWindows.push(browserWindow);
+	}
+	
+	browserWindowFromEvent(e) {
+		return BrowserWindow.fromWebContents(e.sender);
 	}
 }
 

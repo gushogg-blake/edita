@@ -6,7 +6,7 @@ let minimatch = require("minimatch");
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 let fs = require("../common/modules/fs");
-let {config, systemInfo} = require("./modules/ipc/init");
+let init = require("./modules/ipc/init");
 let dialog = require("./modules/ipc/dialog");
 let clipboard = require("./modules/ipc/clipboard");
 let contextMenu = require("./modules/ipc/contextMenu");
@@ -15,8 +15,16 @@ class Platform extends Evented {
 	constructor() {
 		super();
 		
+		let {
+			config,
+			systemInfo,
+			isMainWindow,
+		} = init;
+		
 		this.config = config;
 		this.systemInfo = systemInfo;
+		this.isMainWindow = isMainWindow;
+		
 		this.clipboard = clipboard;
 		this.path = path;
 		

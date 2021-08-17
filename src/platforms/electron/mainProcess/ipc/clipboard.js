@@ -1,19 +1,21 @@
 let {clipboard} = require("electron");
 
-module.exports = {
-	read() {
-		return clipboard.readText();
-	},
-	
-	write(str) {
-		clipboard.writeText(str);
-	},
-	
-	readSelection() {
-		return clipboard.readText("selection");
-	},
-	
-	writeSelection(str) {
-		clipboard.writeText(str, "selection");
-	},
-};
+module.exports = function(app) {
+	return {
+		read() {
+			return clipboard.readText();
+		},
+		
+		write(e, str) {
+			clipboard.writeText(str);
+		},
+		
+		readSelection() {
+			return clipboard.readText("selection");
+		},
+		
+		writeSelection(e, str) {
+			clipboard.writeText(str, "selection");
+		},
+	};
+}

@@ -1,14 +1,24 @@
 let os = require("os");
-let config = require("../config");
 
-module.exports = {
-	init() {
-		return {
-			config,
+module.exports = function(app) {
+	return {
+		init(e) {
+			let {config} = app;
 			
-			systemInfo:{
-				newline: os.EOL,
-			},
-		};
-	},
-};
+			let isMainWindow = (
+				app.browserWindows.length === 1
+				&& app.browserWindows[0] === app.browserWindowFromEvent(e)
+			);
+			
+			return {
+				config,
+				
+				isMainWindow,
+				
+				systemInfo:{
+					newline: os.EOL,
+				},
+			};
+		},
+	};
+}

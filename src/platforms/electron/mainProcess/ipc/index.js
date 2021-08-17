@@ -15,8 +15,10 @@ let syncModules = {
 	clipboard,
 };
 
-module.exports = function() {
-	for (let [key, fns] of Object.entries(asyncModules)) {
+module.exports = function(app) {
+	for (let [key, module] of Object.entries(asyncModules)) {
+		let fns = module(app);
+		
 		for (let name in fns) {
 			ipc.answerRenderer(key + "/" + name, function(args, browserWindow) {
 				return fns[name](...args, browserWindow);
@@ -24,10 +26,12 @@ module.exports = function() {
 		}
 	}
 	
-	for (let [key, fns] of Object.entries(syncModules)) {
+	for (let [key, module] of Object.entries(syncModules)) {
+		let fns = module(app);
+		
 		for (let name in fns) {
 			ipcMain.addListener(key + "/" + name, async function(event, ...args) {
-				event.returnValue = await fns[name](...args);
+				event.returnValue = await fns[name](event, ...args);
 			});
 		}
 	}
