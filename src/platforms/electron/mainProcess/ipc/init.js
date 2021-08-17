@@ -12,7 +12,6 @@ module.exports = function(app) {
 			
 			return {
 				config,
-				
 				isMainWindow,
 				
 				systemInfo:{

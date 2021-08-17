@@ -13,8 +13,9 @@ class Platform extends Evented {
 			newline: "\n",
 		};
 		
-		this.clipboard = clipboard;
+		this.isMainWindow = true;
 		
+		this.clipboard = clipboard;
 		this.path = path;
 	}
 	
