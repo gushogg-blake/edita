@@ -30,7 +30,7 @@ class App {
 	}
 	
 	init() {
-		ipc(this);
+		ipc();
 		
 		Menu.setApplicationMenu(null);
 		

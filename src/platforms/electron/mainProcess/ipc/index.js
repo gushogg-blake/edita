@@ -15,7 +15,7 @@ let syncModules = {
 	clipboard,
 };
 
-module.exports = function(app) {
+module.exports = function() {
 	for (let [key, fns] of Object.entries(asyncModules)) {
 		for (let name in fns) {
 			ipc.answerRenderer(key + "/" + name, function(args, browserWindow) {
