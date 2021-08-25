@@ -8,7 +8,7 @@ let api = {
 	startOfLineContent(wrappedLines, lineIndex) {
 		let {line} = wrappedLines[lineIndex];
 		
-		return c(lineIndex, line.string.length - line.trimmed.length);
+		return c(lineIndex, line.indentOffset);
 	},
 	
 	endOfLineContent(wrappedLines, lineIndex) {

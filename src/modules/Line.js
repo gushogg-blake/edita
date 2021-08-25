@@ -6,6 +6,7 @@ class Line {
 		let {
 			level: indentLevel,
 			cols: indentCols,
+			offset: indentOffset,
 		} = getIndentLevel(string, fileDetails.indentation);
 		
 		let {
@@ -39,6 +40,7 @@ class Line {
 			width,
 			indentLevel,
 			indentCols,
+			indentOffset,
 		});
 	}
 }

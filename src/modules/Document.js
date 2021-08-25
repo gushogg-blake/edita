@@ -332,11 +332,16 @@ class Document extends Evented {
 	}
 	
 	langFromLineIndex(lineIndex) {
-		return this.langFromCursor(c(lineIndex, 0));
+		let line = this.lines[lineIndex];
+		
+		return this.langFromCursor(c(lineIndex, line.indentOffset));
 	}
 	
 	langFromAstSelection(astSelection) {
-		return this.langFromCursor(c(astSelection.startLineIndex, 0));
+		let {startLineIndex} = astSelection;
+		let line = this.lines[startLineIndex];
+		
+		return this.langFromCursor(c(startLineIndex, line.indentOffset));
 	}
 	
 	indexFromCursor(cursor) {

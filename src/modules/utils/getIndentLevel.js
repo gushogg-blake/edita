@@ -6,5 +6,6 @@ module.exports = function(str, indentation) {
 	return {
 		level,
 		cols,
+		offset: indentStr.length,
 	};
 }

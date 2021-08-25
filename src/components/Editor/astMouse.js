@@ -325,23 +325,16 @@ module.exports = function(document, editor, view, editorComponent) {
 		
 		e.dataTransfer.dropEffect = move ? "move" : "copy";
 		
-		view.clearDropTargets();
-		editor.astMouse.setInsertionHilite(null);
-		
-		view.redraw();
-		
-		let {
-			target,
-		} = extra;
-		
+		let {target} = extra;
 		let fromSelection;
 		let toSelection;
 		let lines;
 		let option;
-		
 		let data = getData(e);
 		
 		if (toUs && !data) {
+			editor.astMode.invalidDrop();
+			
 			return;
 		}
 		
@@ -366,22 +359,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			toSelection = null;
 		}
 		
-		if (
-			fromSelection
-			&& toSelection
-			&& !AstSelection.isFull(toSelection)
-			&& AstSelection.isAdjacent(fromSelection, toSelection)
-		) {
-			return;
-		}
-		
-		let {astMode} = document.langFromAstSelection(fromSelection || toSelection);
-		
-		let {
-			edits,
-			newSelection,
-		} = astMode.drop(
-			document,
+		editor.astMouse.drop(
 			fromSelection,
 			toSelection,
 			lines,
@@ -389,13 +367,6 @@ module.exports = function(document, editor, view, editorComponent) {
 			option,
 			target,
 		);
-		
-		if (edits.length > 0) {
-			editor.applyAndAddHistoryEntry({
-				edits,
-				astSelection: newSelection,
-			});
-		}
 	}
 	
 	function dragend() {
