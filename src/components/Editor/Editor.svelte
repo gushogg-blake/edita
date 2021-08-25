@@ -523,10 +523,6 @@ async function prefsUpdated() {
 	view.redraw();
 }
 
-/*
-TODO do this in View?
-*/
-
 function updateMeasurements() {
 	measurementsDiv.style = inlineStyle({
 		font: base.prefs.font,

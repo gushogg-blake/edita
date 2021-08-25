@@ -48,10 +48,13 @@ class Platform extends Evented {
 			});
 			
 			if (!defaultPrevented) {
+				this.fire("windowClosing");
+				
 				ipcRenderer.send("closeWindow");
 			}
 		});
 		
+		this.dataDirNode = this.fs(config.userDataDir);
 		this.snippetsDir = path.join(config.userDataDir, "snippets");
 	}
 	
@@ -112,6 +115,14 @@ class Platform extends Evented {
 		}
 		
 		return bluebird.map(dir.ls(), node => node.readJson());
+	}
+	
+	loadJson(key) {
+		return this.dataDirNode.child(key + ".json").readJson();
+	}
+	
+	saveJson(key, data) {
+		return this.dataDirNode.child(key + ".json").writeJson(data);
 	}
 }
 

@@ -349,6 +349,12 @@ class View extends Evented {
 		this.fire("scroll");
 	}
 	
+	setScrollPosition(scrollPosition) {
+		this.scrollPosition = scrollPosition;
+		this.updateScrollbars();
+		this.fire("scroll");
+	}
+	
 	scrollPage(dir) {
 		let {rows} = this.sizes;
 		

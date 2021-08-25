@@ -20,13 +20,17 @@ window.base = new Base();
 		},
 	});
 	
-	window.app = app;
+	if (platform.isMainWindow) {
+		app.loadSession();
+		
+		window.addEventListener("beforeunload", function() {
+			app.saveSession();
+		});
+	}
 	
-	//app.openFile("test/repos/test.js");
-	//app.openFile("src/components/App/App.svelte");
-	app.openFile("test/repos/test.html");
-	//app.openFile("src/modules/Editor/normalKeyboard.js");
-	//app.openFile("test/repos/test.css");
+	// DEV:
+	
+	window.app = app;
 })();
 
 // misc shims etc:

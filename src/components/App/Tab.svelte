@@ -7,7 +7,7 @@ export let tab;
 let {platform} = window;
 
 let {
-	originalPath,
+	path,
 	currentPath,
 	files: nodes,
 } = tab;
@@ -139,10 +139,10 @@ onMount(function() {
 </style>
 
 <div id="main" on:wheel={wheel}>
-	<div id="editor" class:hide={currentPath !== originalPath}>
+	<div id="editor" class:hide={currentPath !== path}>
 		<Editor editor={tab.editor}/>
 	</div>
-	<div id="files" class:hide={currentPath === originalPath}>
+	<div id="files" class:hide={currentPath === path}>
 		{#if currentPath}
 			<div id="breadcrumbs">
 				{#each currentPath.split(platform.path.sep).filter(Boolean) as part}

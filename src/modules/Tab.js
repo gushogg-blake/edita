@@ -11,8 +11,8 @@ class Tab extends Evented {
 		
 		this.app = app;
 		this.editor = editor;
-		this.originalPath = this.editor.document.path;
-		this.currentPath = this.originalPath;
+		this.path = this.editor.document.path;
+		this.currentPath = this.path;
 		this.files = [];
 		this.loading = false;
 		
@@ -32,7 +32,7 @@ class Tab extends Evented {
 		
 		if (
 			base.prefs.zoom.stopAtProjectRoot
-			&& this.currentPath !== this.originalPath
+			&& this.currentPath !== this.path
 			&& await this.editor.document.mainLang.codeIntel?.isProjectRoot(this.currentPath)
 		) {
 			return;
@@ -64,7 +64,7 @@ class Tab extends Evented {
 			return;
 		}
 		
-		let original = fs(this.originalPath);
+		let original = fs(this.path);
 		let current = fs(this.currentPath);
 		
 		if (!original.isDescendantOf(current)) {
@@ -80,7 +80,7 @@ class Tab extends Evented {
 		this.loading = true;
 		
 		if (pathToOriginal.length === 1) {
-			this.currentPath = this.originalPath;
+			this.currentPath = this.path;
 		} else {
 			this.currentPath = current.child(pathToOriginal[0]).path;
 		}
@@ -104,7 +104,7 @@ class Tab extends Evented {
 		} else {
 			this.app.openFile(file.path);
 		
-			this.currentPath = this.originalPath;
+			this.currentPath = this.path;
 		}
 		
 		this.fire("zoomChange");
@@ -114,7 +114,7 @@ class Tab extends Evented {
 	}
 	
 	async updateDirListing() {
-		if (this.currentPath === this.originalPath) {
+		if (this.currentPath === this.path) {
 			this.files = [];
 		} else {
 			this.files = await bluebird.map(platform.fs(this.currentPath).ls(), async function(node) {

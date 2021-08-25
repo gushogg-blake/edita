@@ -267,6 +267,65 @@ class App extends Evented {
 		return null;
 	}
 	
+	async loadSession() {
+		try {
+			let session = await platform.loadJson("session");
+			
+			if (!session) {
+				return;
+			}
+			
+			await bluebird.each(session, async (savedTab) => {
+				let {
+					path,
+					mode,
+					normalSelection,
+					astSelection,
+					scrollPosition,
+				} = savedTab;
+				
+				await this.openFile(path);
+				
+				let tab = this.findTabByPath(path);
+				
+				if (!tab) {
+					return;
+				}
+				
+				let {editor} = tab;
+				
+				editor.view.setScrollPosition(scrollPosition);
+				
+				if (mode === "normal") {
+					editor.setNormalSelection(normalSelection);
+				} else {
+					editor.setAstSelection(astSelection);
+				}
+				
+				editor.view.ensureSelectionIsOnScreen();
+			});
+		} catch (e) {
+			console.error(e);
+		}
+	}
+	
+	async saveSession() {
+		let tabs = this.tabs.map(function(tab) {
+			let {path, editor} = tab;
+			let {mode, normalSelection, astSelection, scrollPosition} = editor.view;
+			
+			return {
+				path,
+				mode,
+				normalSelection,
+				astSelection,
+				scrollPosition,
+			};
+		});
+		
+		await platform.saveJson("session", tabs);
+	}
+	
 	uiMounted() {
 	}
 	
