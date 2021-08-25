@@ -275,7 +275,7 @@ class App extends Evented {
 				return;
 			}
 			
-			await bluebird.each(session, async (savedTab) => {
+			await bluebird.map(session.tabs, async (savedTab) => {
 				let {
 					path,
 					mode,
@@ -304,6 +304,10 @@ class App extends Evented {
 				
 				editor.view.ensureSelectionIsOnScreen();
 			});
+			
+			if (this.tabs.length > 0) {
+				this.selectTab(this.findTabByPath(session.selectedTabPath));
+			}
 		} catch (e) {
 			console.error(e);
 		}
@@ -323,7 +327,10 @@ class App extends Evented {
 			};
 		});
 		
-		await platform.saveJson("session", tabs);
+		await platform.saveJson("session", {
+			tabs,
+			selectedTabPath: this.selectedTab?.path,
+		});
 	}
 	
 	uiMounted() {
