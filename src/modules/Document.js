@@ -301,7 +301,7 @@ class Document extends Evented {
 		
 		let newSelection = this.getSelectionContainingString(toCursor, str);
 		
-		newSelection = Selection.subtract(newSelection, fromSelection);
+		newSelection = Selection.subtractEarlierSelection(newSelection, fromSelection);
 		
 		return {
 			edits: [remove, insert],

@@ -80,7 +80,7 @@ for deletions, the adjustment is a selection containing the deleted text
 sign is 1 (insertion) or -1 (deletion)
 */
 
-function adjustSelection(selection, adjustment, sign) {
+function addOrSubtractEarlierSelection(selection, adjustment, sign) {
 	selection = sort(selection);
 	adjustment = sort(adjustment);
 	
@@ -144,6 +144,7 @@ let api = {
 	isFull,
 	isMultiline,
 	isBefore,
+	isOverlapping,
 	
 	equals(a, b) {
 		a = sort(a);
@@ -184,18 +185,41 @@ let api = {
 		return s(Cursor.endOfLineContent(wrappedLines, lineIndex));
 	},
 	
-	add(selection, addSelection) {
-		return adjustSelection(selection, addSelection, 1);
+	addEarlierSelection(selection, addSelection) {
+		return addOrSubtractEarlierSelection(selection, addSelection, 1);
 	},
 	
-	subtract(selection, subtractSelection) {
-		return adjustSelection(selection, subtractSelection, -1);
+	subtractEarlierSelection(selection, subtractSelection) {
+		return addOrSubtractEarlierSelection(selection, subtractSelection, -1);
 	},
 	
-	adjust(selection, subtractSelection, addSelection) {
-		selection = api.subtract(selection, subtractSelection);
+	/*
+	adjust a selection to account for an edit earlier in the document
+	*/
+	
+	adjustForEarlierEdit(selection, oldSelection, newSelection) {
+		selection = api.subtractEarlierSelection(selection, oldSelection);
 		
-		return selection && api.add(selection, addSelection);
+		return selection && api.addEarlierSelection(selection, newSelection);
+	},
+	
+	/*
+	adjust a selection to account for an edit within the selection
+	*/
+	
+	edit(selection, oldSelection, newSelection) {
+		
+	},
+	
+	/*
+	expand a selection to include chars added at the end
+	*/
+	
+	expand(selection, newSelection) {
+		return {
+			start: sort(selection).start,
+			end: sort(newSelection).end,
+		};
 	},
 	
 	containString(start, str, newline) {

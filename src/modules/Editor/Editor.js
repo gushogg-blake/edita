@@ -1,5 +1,6 @@
 let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
+let {removeInPlace} = require("utils/arrayMethods");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
@@ -79,14 +80,16 @@ class Editor extends Evented {
 		let edit = document.lineEdit(startLineIndex, endLineIndex - startLineIndex, replacedLines);
 		let newSelection = a(startLineIndex, startLineIndex + replacedLines.length);
 		
+		let snippetSession = placeholders.length > 0 ? {
+			index: 0,
+			placeholders,
+		} : null;
+		
 		this.applyAndAddHistoryEntry({
 			edits: [edit],
 			astSelection: newSelection,
+			snippetSession,
 		});
-		
-		if (placeholders.length > 0) {
-			this.startSnippetSession(placeholders);
-		}
 	}
 	
 	insertSnippet(snippet, replaceWord=null) {
@@ -112,24 +115,22 @@ class Editor extends Evented {
 		let {end: cursor} = this.document.getSelectionContainingString(selection.start, str);
 		let edit = this.document.edit(selection, str);
 		let newSelection = s(cursor);
+		let snippetSession = null;
+		
+		if (placeholders.length > 0) {
+			snippetSession = {
+				index: 0,
+				placeholders,
+			};
+			
+			newSelection = placeholders[0].selection;
+		}
 		
 		this.applyAndAddHistoryEntry({
 			edits: [edit],
 			normalSelection: newSelection,
+			snippetSession,
 		});
-		
-		if (placeholders.length > 0) {
-			this.startSnippetSession(placeholders);
-		}
-	}
-	
-	startSnippetSession(placeholders) {
-		this.snippetSession = {
-			index: -1,
-			placeholders,
-		};
-		
-		this.nextTabstop();
 	}
 	
 	nextTabstop() {
@@ -138,13 +139,10 @@ class Editor extends Evented {
 		snippetSession.index++;
 		
 		let {index, placeholders} = snippetSession;
-		
 		let placeholder = placeholders[index];
-		
 		let {selection} = placeholder;
 		
 		this.setNormalSelection(selection);
-		
 		this.view.redraw();
 		
 		if (index === placeholders.length - 1) {
@@ -156,28 +154,47 @@ class Editor extends Evented {
 		this.snippetSession = null;
 	}
 	
+	adjustSnippetSession(edits) {
+		let {index, placeholders} = this.snippetSession;
+		
+		placeholders = placeholders.map(function(placeholder, i) {
+			let {selection} = placeholder;
+			
+			for (let edit of edits) {
+				let {
+					selection: oldSelection,
+					string,
+					newSelection,
+				} = edit;
+				
+				if (Selection.isBefore(oldSelection, selection)) {
+					selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
+				} else if (i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
+					selection = Selection.expand(selection, newSelection);
+				} else if (Selection.isOverlapping(selection, oldSelection)) {
+					selection = Selection.edit(selection, oldSelection, newSelection);
+				}
+			}
+			
+			return selection ? {
+				...placeholder,
+				selection,
+			} : null;
+		}).filter(Boolean);
+		
+		return {
+			index,
+			placeholders,
+		};
+	}
+	
 	onDocumentEdit(edit) {
 		let {selection: oldSelection, newSelection} = edit;
 		let {normalHilites} = this.view;
 		
 		this.view.normalHilites = normalHilites.map(function(hilite) {
-			return Selection.adjust(hilite, oldSelection, newSelection);
+			return Selection.adjustForEarlierEdit(hilite, oldSelection, newSelection);
 		}).filter(Boolean);
-		
-		if (this.snippetSession) {
-			let {index, placeholders} = this.snippetSession;
-			
-			for (let i = index; i < placeholders.length; i++) {
-				let placeholder = placeholders[i];
-				
-				placeholder.selection = Selection.adjust(placeholder.selection, oldSelection, newSelection);
-				
-				if (!placeholder.selection) {
-					placeholders.splice(i, 1);
-					i--;
-				}
-			}
-		}
 		
 		this.view.updateMarginSize();
 	}
@@ -186,14 +203,21 @@ class Editor extends Evented {
 		let {
 			normalSelection,
 			astSelection,
+			snippetSession,
 		} = this.historyEntries.get(entry)[state];
 		
 		this.view.updateWrappedLines();
 		
-		if (normalSelection) {
+		if (normalSelection !== undefined) {
 			this.setNormalSelection(normalSelection);
-		} else if (astSelection) {
+		}
+		
+		if (astSelection !== undefined) {
 			this.setAstSelection(astSelection);
+		}
+		
+		if (snippetSession !== undefined) {
+			this.snippetSession = snippetSession;
 		}
 		
 		this.fire("edit");
@@ -202,15 +226,23 @@ class Editor extends Evented {
 	applyAndAddHistoryEntry(edit) {
 		let entry = this.document.applyAndAddHistoryEntry(edit.edits);
 		
+		let newSnippetSession = null;
+		
+		if (this.snippetSession) {
+			newSnippetSession = this.adjustSnippetSession(edit.edits);
+		}
+		
 		this.historyEntries.set(entry, {
 			before: {
-				normalSelection: this.view.normalSelection,
-				astSelection: this.view.astSelection,
+				normalSelection: this.view.mode === "normal" ? this.view.normalSelection : undefined,
+				astSelection: this.view.mode === "ast" ? this.view.astSelection : undefined,
+				snippetSession: this.snippetSession,
 			},
 			
 			after: {
 				normalSelection: edit.normalSelection,
 				astSelection: edit.astSelection,
+				snippetSession: edit.snippetSession || newSnippetSession || null,
 			},
 		});
 		
@@ -219,11 +251,13 @@ class Editor extends Evented {
 	
 	applyAndMergeWithLastHistoryEntry(edit) {
 		let entry = this.document.applyAndMergeWithLastHistoryEntry(edit.edits);
+		let {after} = this.historyEntries.get(entry);
 		
-		this.historyEntries.get(entry).after = {
-			normalSelection: edit.normalSelection,
-			astSelection: edit.astSelection,
-		};
+		after.normalSelection = edit.normalSelection;
+		
+		if (this.snippetSession) {
+			after.snippetSession = this.adjustSnippetSession(edit.edits);
+		}
 		
 		this.applyHistoryEntry(entry, "after");
 	}
@@ -335,7 +369,7 @@ class Editor extends Evented {
 			this.completeWordSession = null;
 		}
 		
-		console.log(this.document.lines[selection.start.lineIndex]);
+		//console.log(this.document.lines[selection.start.lineIndex]);
 	}
 	
 	setAstSelection(selection) {
