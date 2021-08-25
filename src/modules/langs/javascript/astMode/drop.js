@@ -1,4 +1,4 @@
-let AstSelection = require("../../../utils/AstSelection");
+let AstSelection = require("modules/utils/AstSelection");
 let removeSelection = require("../../common/astMode/removeSelection");
 let createSpaces = require("../../common/astMode/utils/createSpaces");
 let findIndentLevel = require("../../common/astMode/utils/findIndentLevel");

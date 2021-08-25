@@ -2,10 +2,10 @@ let bluebird = require("bluebird");
 let {remove} = require("utils/arrayMethods");
 let Evented = require("utils/Evented");
 let focusManager = require("utils/focusManager");
-let Document = require("./Document");
-let Tab = require("./Tab");
-let Editor = require("./Editor/Editor");
-let View = require("./View/View");
+let Document = require("modules/Document");
+let Tab = require("modules/Tab");
+let Editor = require("modules/Editor/Editor");
+let View = require("modules/View/View");
 
 class App extends Evented {
 	constructor() {

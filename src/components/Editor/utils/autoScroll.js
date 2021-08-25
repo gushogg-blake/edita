@@ -1,5 +1,5 @@
-let autoScroll = require("../../../utils/dom/autoScroll");
-let screenOffsets = require("../../../utils/dom/screenOffsets");
+let autoScroll = require("utils/dom/autoScroll");
+let screenOffsets = require("utils/dom/screenOffsets");
 
 module.exports = function(
 	canvas,

@@ -1,6 +1,6 @@
-let regexMatch = require("../../../utils/regexMatch");
-let Selection = require("../../utils/Selection");
-let Cursor = require("../../utils/Cursor");
+let regexMatch = require("utils/regexMatch");
+let Selection = require("modules/utils/Selection");
+let Cursor = require("modules/utils/Cursor");
 
 let {c} = Cursor;
 

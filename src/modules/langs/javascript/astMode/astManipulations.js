@@ -1,5 +1,5 @@
-//let indentLines = require("../../../utils/indentLines");
-let AstSelection = require("../../../utils/AstSelection");
+//let indentLines = require("modules/utils/indentLines");
+let AstSelection = require("modules/utils/AstSelection");
 
 module.exports = {
 	convertVariableAssignmentsToObject: { // TODO support functions as well?

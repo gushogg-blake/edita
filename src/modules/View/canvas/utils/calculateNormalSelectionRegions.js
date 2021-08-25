@@ -1,4 +1,4 @@
-let Selection = require("../../../utils/Selection");
+let Selection = require("modules/utils/Selection");
 let rowColFromCursor = require("./rowColFromCursor");
 let getLineStartingRow = require("./getLineStartingRow");
 let screenCoordsFromCursor = require("./screenCoordsFromCursor");

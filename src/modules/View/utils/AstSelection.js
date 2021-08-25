@@ -1,4 +1,4 @@
-let AstSelection = require("../../utils/AstSelection");
+let AstSelection = require("modules/utils/AstSelection");
 
 module.exports = {
 	...AstSelection,

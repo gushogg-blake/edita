@@ -2,7 +2,7 @@ let Evented = require("utils/Evented");
 let _typeof = require("utils/typeof");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let Line = require("./Line");
+let Line = require("modules/Line");
 
 let {s} = Selection;
 let {c} = Cursor;
