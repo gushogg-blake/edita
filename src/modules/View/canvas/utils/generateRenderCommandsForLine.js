@@ -90,11 +90,16 @@ module.exports = function*(line, lineRow) {
 				
 				while (nextHint && nextHint.offset <= offset) {
 					if (nextHint.type === "node") {
+						let {node} = nextHint;
+						let newOffset = node.startPosition.column + node.text.length;
+						
+						if (newOffset > stringStartOffset + string.length) {
+							break;
+						}
+						
 						yield nextHint;
 						
-						let {node} = nextHint;
-						
-						offset = node.startPosition.column + node.text.length;
+						offset = newOffset;
 					} else if (nextHint.type === "colour") {
 						yield nextHint;
 					} else if (nextHint.type === "parseError") {
