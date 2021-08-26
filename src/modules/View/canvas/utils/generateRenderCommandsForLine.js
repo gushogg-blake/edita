@@ -18,7 +18,7 @@ concerned.)
 
 module.exports = function*(line, lineRow) {
 	let stringStartOffset = lineRow.startOffset;
-	let offset = 0;
+	let offset = stringStartOffset;
 	let hintIndex = 0;
 	
 	while (

@@ -4,13 +4,13 @@ module.exports = {
 	},
 	
 	indentAdjustmentAfterInsertion(line, lines, lineIndex) {
-		let lastNode = line.nodes[line.nodes.length - 1];
+		let firstNode = line.nodes[line.nodes.length - 1];
 		
-		if (!lastNode || !lastNode.type.match(/[\]})]/)) {
+		if (!firstNode || !firstNode.type.match(/[\]})]/)) {
 			return 0;
 		}
 		
-		let headerIndentLevel = lines[lastNode.parent.startPosition.row].indentLevel;
+		let headerIndentLevel = lines[firstNode.parent.startPosition.row].indentLevel;
 		
 		return headerIndentLevel - line.indentLevel;
 	},

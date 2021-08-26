@@ -145,6 +145,7 @@ let api = {
 	isMultiline,
 	isBefore,
 	isOverlapping,
+	cursorIsWithinSelection,
 	
 	equals(a, b) {
 		a = sort(a);

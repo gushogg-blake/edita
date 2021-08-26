@@ -28,6 +28,7 @@ let marginStyle = require("./canvas/marginStyle");
 
 let SelectionUtils = require("./utils/Selection");
 let AstSelectionUtils = require("./utils/AstSelection");
+let wrapLine = require("./utils/wrapLine");
 
 let {s: a} = AstSelection;
 let {c} = Cursor;
@@ -42,8 +43,6 @@ class View extends Evented {
 		
 		this.app = app;
 		this.document = document;
-		
-		this.updateWrappedLines();
 		
 		this.focused = false;
 		this.visible = false;
@@ -84,28 +83,14 @@ class View extends Evented {
 		
 		this.updateSizes(0, 0);
 		
+		this.updateWrappedLines();
+		
 		this.blur = this.blur.bind(this);
 	}
 	
 	updateWrappedLines() {
 		this.wrappedLines = this.document.lines.map((line) => {
-			let {
-				string,
-				variableWidthParts,
-			} = line;
-			
-			return {
-				line,
-				height: 1,
-				rows: [
-					{
-						startOffset: 0,
-						string,
-						width: line.width,
-						variableWidthParts,
-					},
-				],
-			};
+			return wrapLine(line, this.document.fileDetails.indentation, this.measurements, this.sizes.codeWidth);
 		});
 	}
 	

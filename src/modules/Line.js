@@ -21,7 +21,9 @@ class Line {
 		for (let i = 0; i < splitByTabs.length; i++) {
 			let str = splitByTabs[i];
 			
-			variableWidthParts.push(["string", str]);
+			if (str) {
+				variableWidthParts.push(["string", str]);
+			}
 			
 			if (i < splitByTabs.length - 1) {
 				variableWidthParts.push(["tab", tabWidth - str.length % tabWidth]);
