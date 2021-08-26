@@ -22,7 +22,11 @@ function findNextBreakPoint(string, stringStartOffset, currentlyAvailableCols, a
 	if (lastWord.length > availableCols) {
 		return stringStartOffset + currentlyAvailableCols;
 	} else {
-		return stringStartOffset + lastWordIndex;
+		if (lastWordIndex + lastWord.length > currentlyAvailableCols) {
+			return stringStartOffset + lastWordIndex;
+		} else {
+			return stringStartOffset + lastWordIndex + lastWord.length;
+		}
 	}
 }
 

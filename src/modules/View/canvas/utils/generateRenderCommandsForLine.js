@@ -32,7 +32,7 @@ module.exports = function*(line, lineRow) {
 		if (type === "string") {
 			let string = value;
 			
-			while (true) {
+			renderStringPart: while (true) {
 				/*
 				1. render any misc text between the current offset
 				and either the next hint or the end of the string
@@ -94,7 +94,7 @@ module.exports = function*(line, lineRow) {
 						let newOffset = node.startPosition.column + node.text.length;
 						
 						if (newOffset > stringStartOffset + string.length) {
-							break;
+							break renderStringPart;
 						}
 						
 						yield nextHint;
