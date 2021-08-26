@@ -31,7 +31,6 @@ module.exports = function(layers, view) {
 	layers.code.fillStyle = "black";
 	
 	layers.margin.font = font;
-	layers.margin.fillStyle = "black";
 	
 	let rowsToRender = height / rowHeight;
 	let rowsRendered = 0;

@@ -376,6 +376,10 @@ class Editor extends Evented {
 		this.view.setAstSelection(selection);
 	}
 	
+	setMode(mode) {
+		this.view.setMode(mode);
+	}
+	
 	setBatchState(state) {
 		this.batchState = state;
 	}

@@ -296,6 +296,8 @@ class App extends Evented {
 				
 				editor.view.setScrollPosition(scrollPosition);
 				
+				editor.setMode(mode);
+				
 				if (mode === "normal") {
 					editor.setNormalSelection(normalSelection);
 				} else {

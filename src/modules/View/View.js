@@ -197,6 +197,15 @@ class View extends Evented {
 		this.fire("redraw");
 	}
 	
+	setMode(mode) {
+		if (this.mode === mode) {
+			return;
+		}
+		
+		this.mode = mode;
+		this.fire("modeSwitch");
+	}
+	
 	get lang() {
 		if (this.mode === "ast") {
 			return this.document.langFromAstSelection(this.astSelection);
