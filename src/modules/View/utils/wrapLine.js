@@ -15,14 +15,14 @@ function getCurrentWordWidth(type, value, stringStartOffset) {
 	}
 }
 
-	/*
-	3 scenarios:
-	
-	- current word fits on line -- add to current line
-	- current word doesn't fit on line, and current word is bigger than an entire line -- fill current line with substring of current word and start a new line
-	- current word doesn't fit on line, and current word fits on a line -- start a new line
-	*/
-	
+/*
+- if the whole string fits on the line, next break point is the end of
+  the string (no wrap)
+
+- otherwise, find the last word, and if it fits on a line, break before it
+  - else break at the end col
+*/
+
 function findNextBreakPoint(string, stringStartOffset, currentlyAvailableCols, availableCols) {
 	let str = string.substr(stringStartOffset);
 	
@@ -126,42 +126,34 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 				
 				i--;
 			}
+		} else {
+			let breakPoint = findNextBreakPoint(value, stringStartOffset, currentlyAvailableCols, availableCols);
 			
-			continue;
+			let part = value.substring(stringStartOffset, breakPoint);
+			
+			row.variableWidthParts.push([type, part]);
+			row.string += part;
+			row.width += part.length;
+			
+			startOffset += part.length;
+			stringStartOffset += part.length;
+			
+			currentlyAvailableCols -= part.length;
+			
+			if (breakPoint !== value.length) {
+				rows.push({
+					startOffset,
+					string: "",
+					width: 0,
+					variableWidthParts: [],
+				});
+				
+				availableCols = textCols;
+				currentlyAvailableCols = availableCols;
+				
+				i--;
+			}
 		}
-		
-		//debugger;
-		
-		let breakPoint = findNextBreakPoint(value, stringStartOffset, currentlyAvailableCols, availableCols);
-		
-		let part = value.substring(stringStartOffset, breakPoint);
-		
-		row.variableWidthParts.push([type, part]);
-		row.string += part;
-		row.width += part.length;
-		
-		startOffset += part.length;
-		stringStartOffset += part.length;
-		
-		currentlyAvailableCols -= part.length;
-		
-		if (breakPoint !== value.length) {
-			rows.push({
-				startOffset,
-				string: "",
-				width: 0,
-				variableWidthParts: [],
-			});
-			
-			availableCols = textCols;
-			currentlyAvailableCols = availableCols;
-			
-			i--;
-		}
-	}
-	
-	if (rows.length > 1) {
-		console.log(rows);
 	}
 	
 	return {

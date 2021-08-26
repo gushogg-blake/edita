@@ -82,8 +82,6 @@ module.exports = function(layers, view) {
 		
 		// code
 		
-		//if (wrappedLine.height > 1) debugger;
-		
 		for (let i = 0; i < wrappedLine.height; i++) {
 			let lineRow = wrappedLine.rows[i];
 			
