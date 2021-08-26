@@ -53,7 +53,7 @@ module.exports = function(layers, view) {
 		let {line, rows} = wrappedLine;
 		
 		for (let lineRow of [...rows.reverse()]) {
-			let commands = [...view.generateRenderCommandsForLine(line, lineRow)].reverse();
+			let commands = [...lineRow.renderCommands].reverse();
 			
 			for (let command of commands) {
 				let {type} = command;
@@ -74,11 +74,11 @@ module.exports = function(layers, view) {
 	}
 	
 	let lineIndex = firstLineIndex;
-	let offset = 0;
 	
 	while (true) {
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
+		let offset = 0;
 		
 		// code
 		
@@ -89,7 +89,7 @@ module.exports = function(layers, view) {
 				x += line.indentCols * colWidth;
 			}
 			
-			for (let command of view.generateRenderCommandsForLine(line, lineRow)) {
+			for (let command of lineRow.renderCommands) {
 				let {type} = command;
 				
 				if (type === "colour") {
@@ -138,8 +138,6 @@ module.exports = function(layers, view) {
 			x = leftEdge;
 			y += rowHeight;
 		}
-		
-		offset = 0;
 		
 		// margin background
 		// rendered after code so that it covers it if code is scrolled horizontally

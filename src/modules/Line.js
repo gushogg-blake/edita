@@ -35,6 +35,7 @@ class Line {
 			string,
 			trimmed: string.trimLeft(),
 			variableWidthParts,
+			renderCommands: [],
 			nodes: [],
 			renderHints: [],
 			openers: [],

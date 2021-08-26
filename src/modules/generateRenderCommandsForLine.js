@@ -4,9 +4,9 @@ have to be handled specially because they're variable width -- hence
 variableWidthParts), and any hints provided by the language.
 
 Hints are e.g. "nodes", indicating that a particular range of text contains
-a discrete syntax node that doesn't span multiple wrappedLines and can all be
-rendered a particular colour; or "colour" hints, indicating that following
-text should be rendered a particular colour (e.g. "comment").
+a discrete syntax node that can be rendered as a unit (these won't be broken by
+wrapping); or "colour" hints, indicating that following text should be rendered
+a particular colour (e.g. "comment").
 
 Ranges of text that aren't covered by hints are rendered in whatever colour
 was last used, which will be set by the previous "node" or "colour" command.
@@ -16,23 +16,16 @@ ranges are the fundamental components of the line as far as rendering is
 concerned.)
 */
 
-module.exports = function*(line, lineRow) {
-	let stringStartOffset = lineRow.startOffset;
-	let offset = stringStartOffset;
+module.exports = function*(line) {
+	let stringStartOffset = 0;
+	let offset = 0;
 	let hintIndex = 0;
 	
-	while (
-		line.renderHints[hintIndex]
-		&& line.renderHints[hintIndex].offset < lineRow.startOffset
-	) {
-		hintIndex++;
-	}
-	
-	for (let [type, value] of lineRow.variableWidthParts) {
+	for (let [type, value] of line.variableWidthParts) {
 		if (type === "string") {
 			let string = value;
 			
-			renderStringPart: while (true) {
+			while (true) {
 				/*
 				1. render any misc text between the current offset
 				and either the next hint or the end of the string
@@ -41,7 +34,7 @@ module.exports = function*(line, lineRow) {
 				let nextHint = line.renderHints[hintIndex];
 				
 				if (nextHint && nextHint.offset >= stringStartOffset + string.length) {
-					// next hint is not within the current substring, so ignore
+					// next hint is not within the current string part, so ignore
 					
 					nextHint = null;
 				}
@@ -91,15 +84,10 @@ module.exports = function*(line, lineRow) {
 				while (nextHint && nextHint.offset <= offset) {
 					if (nextHint.type === "node") {
 						let {node} = nextHint;
-						let newOffset = node.startPosition.column + node.text.length;
-						
-						if (newOffset > stringStartOffset + string.length) {
-							break renderStringPart;
-						}
 						
 						yield nextHint;
 						
-						offset = newOffset;
+						offset = node.startPosition.column + node.text.length;
 					} else if (nextHint.type === "colour") {
 						yield nextHint;
 					} else if (nextHint.type === "parseError") {

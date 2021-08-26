@@ -34,6 +34,11 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 	let {colWidth} = measurements;
 	let screenCols = Math.floor(availableWidth / colWidth);
 	
+	let {
+		variableWidthParts,
+		renderCommands,
+	} = line;
+	
 	let unwrapped = {
 		line,
 		height: 1,
@@ -42,10 +47,13 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 				startOffset: 0,
 				string: line.string,
 				width: line.width,
-				variableWidthParts: line.variableWidthParts,
+				variableWidthParts,
+				renderCommands,
 			},
 		],
 	};
+	
+	return unwrapped; //
 	
 	if (availableWidth < colWidth) {
 		return unwrapped;
@@ -68,6 +76,10 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 		return unwrapped;
 	}
 	
+	/*
+	TODO give each row variableWidthParts and renderCommands
+	*/
+	
 	let availableCols = screenCols;
 	let currentlyAvailableCols = availableCols;
 	
@@ -79,24 +91,27 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 		string: "",
 		width: 0,
 		variableWidthParts: [],
+		renderCommands: [],
 	}];
 	
-	for (let i = 0; i < line.variableWidthParts.length; i++) {
-		let [type, value] = line.variableWidthParts[i];
+	for (let i = 0; i < renderCommands.length; i++) {
+		let command = renderCommands[i];
 		
 		let row = rows[rows.length - 1];
 		
-		if (type === "tab") {
+		if (command.type === "tab") {
+			let {width} = command;
+			
 			stringStartOffset = 0;
 			
-			if (value <= currentlyAvailableCols) {
-				row.variableWidthParts.push([type, value]);
+			if (width <= currentlyAvailableCols) {
+				row.variableWidthParts.push(["tab", width]);
 				row.string += "\t";
-				row.width += value;
+				row.width += width;
 				
 				startOffset++;
 				
-				currentlyAvailableCols -= value;
+				currentlyAvailableCols -= width;
 			} else {
 				// tab doesn't fit on current line (but will fit on next line because textCols
 				// >= indent width) - start a new line
@@ -113,12 +128,47 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 				
 				i--;
 			}
-		} else {
-			let breakPoint = findNextBreakPoint(value, stringStartOffset, currentlyAvailableCols, availableCols);
+		} else if (command.type === "node") {
+			let {node} = command;
+			let str = node.text;
 			
-			let part = value.substring(stringStartOffset, breakPoint);
+			stringStartOffset = 0;
 			
-			row.variableWidthParts.push([type, part]);
+			/*
+			language nodes can go off the end, as we don't want to deal with
+			breaking in the middle of them for ease of rendering
+			*/
+			
+			if (str.length <= currentlyAvailableCols || str.length > availableCols) {
+				row.variableWidthParts.push(["string", str]);
+				row.string += str;
+				row.width += str.length;
+				
+				startOffset += str.length;
+				
+				currentlyAvailableCols -= str.length;
+				currentlyAvailableCols = Math.max(0, currentlyAvailableCols);
+			}
+			
+			if (currentlyAvailableCols === 0 && i < renderCommands.length - 1) {
+				rows.push({
+					startOffset,
+					string: "",
+					width: 0,
+					variableWidthParts: [],
+				});
+				
+				availableCols = textCols;
+				currentlyAvailableCols = availableCols;
+			}
+		} else if (command.type === "string") {
+			let {string} = command;
+			
+			let breakPoint = findNextBreakPoint(string, stringStartOffset, currentlyAvailableCols, availableCols);
+			
+			let part = string.substring(stringStartOffset, breakPoint);
+			
+			row.variableWidthParts.push(["string", part]);
 			row.string += part;
 			row.width += part.length;
 			
@@ -127,7 +177,7 @@ module.exports = function(line, indentation, measurements, availableWidth) {
 			
 			currentlyAvailableCols -= part.length;
 			
-			if (breakPoint !== value.length) {
+			if (breakPoint !== string.length) {
 				rows.push({
 					startOffset,
 					string: "",

@@ -12,7 +12,6 @@ let cursorFromRowCol = require("./canvas/utils/cursorFromRowCol");
 let cursorFromScreenCoords = require("./canvas/utils/cursorFromScreenCoords");
 let cursorRowColFromScreenCoords = require("./canvas/utils/cursorRowColFromScreenCoords");
 let findFirstVisibleLine = require("./canvas/utils/findFirstVisibleLine");
-let generateRenderCommandsForLine = require("./canvas/utils/generateRenderCommandsForLine");
 let getLineRangeTotalHeight = require("./canvas/utils/getLineRangeTotalHeight");
 let getLineStartingRow = require("./canvas/utils/getLineStartingRow");
 let innerLineIndexAndOffsetFromCursor = require("./canvas/utils/innerLineIndexAndOffsetFromCursor");
@@ -89,9 +88,11 @@ class View extends Evented {
 	}
 	
 	updateWrappedLines() {
+		console.time("updateWrappedLines");
 		this.wrappedLines = this.document.lines.map((line) => {
 			return wrapLine(line, this.document.fileDetails.indentation, this.measurements, this.sizes.codeWidth);
 		});
+		console.timeEnd("updateWrappedLines");
 	}
 	
 	calculateMarginOffset() {
@@ -124,10 +125,6 @@ class View extends Evented {
 	
 	findFirstVisibleLine() {
 		return findFirstVisibleLine(this.wrappedLines, this.scrollPosition);
-	}
-	
-	generateRenderCommandsForLine(line, lineRow) {
-		return generateRenderCommandsForLine(line, lineRow);
 	}
 	
 	getLineRangeTotalHeight(startLineIndex, endLineIndex) {

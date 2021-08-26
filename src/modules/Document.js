@@ -3,6 +3,7 @@ let _typeof = require("utils/typeof");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let Line = require("modules/Line");
+let generateRenderCommandsForLine = require("modules/generateRenderCommandsForLine");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -272,6 +273,10 @@ class Document extends Evented {
 		
 		try {
 			this.mainLang.parse(this.string, this.lines, this.mainLangRange);
+			
+			for (let line of this.lines) {
+				line.renderCommands = [...generateRenderCommandsForLine(line)];
+			}
 		} catch (e) {
 			console.error("Parse error");
 			console.error(e);
