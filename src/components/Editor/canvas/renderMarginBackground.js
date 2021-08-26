@@ -1,8 +1,10 @@
-module.exports = function(context, view) {
+module.exports = function(layers, view) {
 	let {
 		marginWidth,
 		height,
 	} = view.sizes;
+	
+	let context = layers.margin;
 	
 	context.fillStyle = base.prefs.marginBackground;
 	context.fillRect(0, 0, marginWidth, height);

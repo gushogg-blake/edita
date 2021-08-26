@@ -1,6 +1,6 @@
 let AstSelection = require("modules/utils/AstSelection");
 
-module.exports = function(context, view, isPeeking) {
+module.exports = function(layers, view, isPeeking) {
 	let {
 		wrappedLines,
 		astSelectionHilite: hilite,
@@ -16,6 +16,8 @@ module.exports = function(context, view, isPeeking) {
 	if (!isPeeking && AstSelection.equals(hilite, selection)) {
 		return;
 	}
+	
+	let context = layers.hilites;
 	
 	context.fillStyle = base.prefs.astSelectionHiliteBackground;
 	

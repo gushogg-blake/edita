@@ -11,7 +11,7 @@
 let lineWidth = 2;
 let lineLength = 35;
 
-module.exports = function(context, view, isPeeking) {
+module.exports = function(layers, view, isPeeking) {
 	let {
 		wrappedLines,
 		astInsertionHilite: hilite,
@@ -24,6 +24,8 @@ module.exports = function(context, view, isPeeking) {
 	if (!hilite) {
 		return;
 	}
+	
+	let context = layers.hilites;
 	
 	context.fillStyle = base.prefs.astInsertionHiliteBackground;
 	

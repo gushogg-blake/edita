@@ -1,4 +1,4 @@
-module.exports = function(context, view) {
+module.exports = function(layers, view) {
 	let {
 		insertCursor,
 		measurements,
@@ -13,6 +13,8 @@ module.exports = function(context, view) {
 	if (x < view.sizes.marginOffset) {
 		return;
 	}
+	
+	let context = layers.hilites;
 	
 	context.fillStyle = "black";
 	context.fillRect(x, y, 1, measurements.rowHeight);

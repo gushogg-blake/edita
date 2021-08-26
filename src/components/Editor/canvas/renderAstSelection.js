@@ -1,4 +1,4 @@
-module.exports = function(context, view, isPeeking) {
+module.exports = function(layers, view, isPeeking) {
 	let {
 		wrappedLines,
 		astSelection,
@@ -9,6 +9,8 @@ module.exports = function(context, view, isPeeking) {
 			rowHeight,
 		},
 	} = view;
+	
+	let context = layers.hilites;
 	
 	let {
 		fileDetails,

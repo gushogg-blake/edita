@@ -1,4 +1,4 @@
-module.exports = function(context, view) {
+module.exports = function(layers, view) {
 	let {
 		font,
 		tabWidth,
@@ -27,8 +27,11 @@ module.exports = function(context, view) {
 		marginStyle,
 	} = view.sizes;
 	
-	context.font = font;
-	context.fillStyle = "black";
+	layers.code.font = font;
+	layers.code.fillStyle = "black";
+	
+	layers.margin.font = font;
+	layers.margin.fillStyle = "black";
 	
 	let rowsToRender = height / rowHeight;
 	let rowsRendered = 0;
@@ -59,7 +62,7 @@ module.exports = function(context, view) {
 				if (type === "colour") {
 					let {lang, node} = command;
 					
-					context.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+					layers.code.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
 					
 					break findPreviousColourHint;
 				}
@@ -93,11 +96,11 @@ module.exports = function(context, view) {
 				if (type === "colour") {
 					let {lang, node} = command;
 					
-					context.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+					layers.code.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
 				} else if (type === "string") {
 					let {string: str} = command;
 					
-					context.fillText(str, x, y);
+					layers.code.fillText(str, x, y);
 					
 					x += str.length * colWidth;
 					offset += str.length;
@@ -116,11 +119,11 @@ module.exports = function(context, view) {
 						x += diff * colWidth;
 						offset += diff;
 						
-						context.clearRect(x, y - rowHeight, -diff * colWidth, rowHeight);
+						layers.code.clearRect(x, y - rowHeight, -diff * colWidth, rowHeight);
 					}
 					
-					context.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
-					context.fillText(str, x, y);
+					layers.code.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+					layers.code.fillText(str, x, y);
 					
 					x += str.length * colWidth;
 					offset += str.length;
@@ -139,29 +142,25 @@ module.exports = function(context, view) {
 		
 		offset = 0;
 		
-		let {fillStyle} = context;
-		
 		// margin background
 		// rendered after code so that it covers it if code is scrolled horizontally
 		
 		let marginHeight = wrappedLine.height * rowHeight;
 		
-		context.fillStyle = marginBackground;
-		context.fillRect(0, y - marginHeight - rowHeight, marginWidth, marginHeight);
+		layers.margin.fillStyle = marginBackground;
+		layers.margin.fillRect(0, y - marginHeight - rowHeight, marginWidth, marginHeight);
 		
 		// line number
 		
 		let lineNumber = String(lineIndex + 1);
 		
-		context.fillStyle = lineNumberColor;
+		layers.margin.fillStyle = lineNumberColor;
 		
-		context.fillText(
+		layers.margin.fillText(
 			lineNumber,
 			marginWidth - marginStyle.paddingRight - lineNumber.length * colWidth,
 			y - marginHeight,
 		);
-		
-		context.fillStyle = fillStyle;
 		
 		// TODO folding
 		

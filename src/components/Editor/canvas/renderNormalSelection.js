@@ -1,7 +1,9 @@
-module.exports = function(context, view) {
+module.exports = function(layers, view) {
 	let {
 		normalSelection,
 	} = view;
+	
+	let context = layers.hilites;
 	
 	context.fillStyle = base.prefs.selectionBackground;
 	

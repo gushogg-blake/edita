@@ -1,7 +1,9 @@
-module.exports = function(context, view) {
+module.exports = function(layers, view) {
 	let {
 		normalHilites,
 	} = view;
+	
+	let context = layers.hilites;
 	
 	context.fillStyle = base.prefs.hiliteBackground;
 	

@@ -9,7 +9,7 @@ let renderCodeAndMargin = require("./renderCodeAndMargin");
 let renderNormalCursor = require("./renderNormalCursor");
 let renderInsertCursor = require("./renderInsertCursor");
 
-module.exports = function(context, view, isPeekingAstMode, windowHasFocus) {
+module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	let {
 		width,
 		height,
@@ -19,39 +19,41 @@ module.exports = function(context, view, isPeekingAstMode, windowHasFocus) {
 		mode,
 	} = view;
 	
-	context.clearRect(0, 0, width, height);
-	
-	renderMarginBackground(context, view);
-	
-	if (mode === "normal") {
-		renderCurrentLineHilite(context, view, windowHasFocus);
+	for (let context of Object.values(layers)) {
+		context.clearRect(0, 0, width, height);
 	}
 	
-	renderNormalHilites(context, view);
+	renderMarginBackground(layers, view);
 	
 	if (mode === "normal") {
-		renderNormalSelection(context, view);
+		renderCurrentLineHilite(layers, view, windowHasFocus);
+	}
+	
+	renderNormalHilites(layers, view);
+	
+	if (mode === "normal") {
+		renderNormalSelection(layers, view);
 	}
 	
 	if (mode === "ast") {
-		renderAstSelection(context, view, isPeekingAstMode);
+		renderAstSelection(layers, view, isPeekingAstMode);
 	}
 	
 	if (mode === "ast") {
-		renderAstSelectionHilite(context, view, isPeekingAstMode);
+		renderAstSelectionHilite(layers, view, isPeekingAstMode);
 	}
 	
 	if (mode === "ast") {
-		renderAstInsertionHilite(context, view, isPeekingAstMode);
+		renderAstInsertionHilite(layers, view, isPeekingAstMode);
 	}
 	
-	renderCodeAndMargin(context, view);
+	renderCodeAndMargin(layers, view);
 	
 	if (mode === "normal") {
-		renderNormalCursor(context, view, windowHasFocus);
+		renderNormalCursor(layers, view, windowHasFocus);
 	}
 	
 	if (mode === "normal") {
-		renderInsertCursor(context, view);
+		renderInsertCursor(layers, view);
 	}
 }

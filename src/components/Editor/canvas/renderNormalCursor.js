@@ -1,4 +1,4 @@
-module.exports = function(context, view, windowHasFocus) {
+module.exports = function(layers, view, windowHasFocus) {
 	let {
 		normalSelection,
 		insertCursor,
@@ -15,6 +15,8 @@ module.exports = function(context, view, windowHasFocus) {
 	if (x < view.sizes.marginWidth) {
 		return;
 	}
+	
+	let context = layers.code;
 	
 	context.fillStyle = "black";
 	context.fillRect(x, y, 1, measurements.rowHeight);

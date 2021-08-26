@@ -29,8 +29,8 @@ let mounted = false;
 let main;
 let canvasDiv;
 let measurementsDiv;
-let canvas;
-let context;
+let canvases = {};
+let contexts = {};
 let rowHeightPadding = 2;
 let rowBaselineHint = -1;
 
@@ -397,12 +397,16 @@ function resize() {
 	} = canvasDiv;
 	
 	if (width !== prevWidth || height !== prevHeight) {
-		canvas.width = width;
-		canvas.height = height;
+		for (let canvas of Object.values(canvases)) {
+			canvas.width = width;
+			canvas.height = height;
+		}
 		
 		// setting width/height resets the context, so need to init the context here
 		
-		context.textBaseline = "bottom";
+		for (let context of Object.values(contexts)) {
+			context.textBaseline = "bottom";
+		}
 		
 		view.setCanvasSize(width, height);
 		
@@ -421,7 +425,7 @@ function resize() {
 
 function updateCanvas() {
 	render(
-		context,
+		contexts,
 		view,
 		modeSwitchKeyHandler.isPeeking,
 		windowHasFocus,
@@ -553,7 +557,9 @@ function onEdit() {
 }
 
 onMount(function() {
-	context = canvas.getContext("2d");
+	for (let [name, canvas] of Object.entries(canvases)) {
+		contexts[name] = canvas.getContext("2d");
+	}
 	
 	windowHasFocus = windowFocus.isFocused();
 	
@@ -686,7 +692,13 @@ $scrollBarBorder: 1px solid #bababa;
 		bind:this={canvasDiv}
 	>
 		<div class="layer">
-			<canvas bind:this={canvas}/>
+			<canvas bind:this={canvases.hilites}/>
+		</div>
+		<div class="layer">
+			<canvas bind:this={canvases.code}/>
+		</div>
+		<div class="layer">
+			<canvas bind:this={canvases.margin}/>
 		</div>
 		<div class="layer">
 			<InteractionLayer

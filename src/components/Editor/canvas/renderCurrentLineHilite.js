@@ -1,3 +1,3 @@
-module.exports = function(context, view, windowHasFocus) {
+module.exports = function(layers, view, windowHasFocus) {
 	
 }
