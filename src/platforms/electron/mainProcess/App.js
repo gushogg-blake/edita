@@ -21,7 +21,7 @@ class App {
 	}
 	
 	async launch() {
-		if (!electronApp.requestSingleInstanceLock()) {
+		if (!config.forceNewInstance && !electronApp.requestSingleInstanceLock()) {
 			electronApp.quit();
 			
 			return;
