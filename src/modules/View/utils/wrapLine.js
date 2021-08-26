@@ -1,20 +1,3 @@
-let regexMatch = require("utils/regexMatch");
-
-let re = {
-	multiCharWord: /^[\w_]+/,
-	word: /[\w_]/,
-};
-
-function getCurrentWordWidth(type, value, stringStartOffset) {
-	let str = value.substr(stringStartOffset);
-	
-	if (str[0].match(re.word)) {
-		return str.match(re.multiCharWord)[0].length;
-	} else {
-		return 1;
-	}
-}
-
 /*
 - if the whole string fits on the line, next break point is the end of
   the string (no wrap)
