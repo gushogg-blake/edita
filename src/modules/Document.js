@@ -273,13 +273,13 @@ class Document extends Evented {
 		
 		try {
 			this.mainLang.parse(this.string, this.lines, this.mainLangRange);
-			
-			for (let line of this.lines) {
-				line.renderCommands = [...generateRenderCommandsForLine(line)];
-			}
 		} catch (e) {
 			console.error("Parse error");
 			console.error(e);
+		}
+		
+		for (let line of this.lines) {
+			line.renderCommands = [...generateRenderCommandsForLine(line)];
 		}
 		
 		console.timeEnd("parse");
