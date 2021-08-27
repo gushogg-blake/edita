@@ -524,6 +524,8 @@ async function prefsUpdated() {
 	
 	resize();
 	
+	view.updateWrappedLines();
+	
 	view.redraw();
 }
 

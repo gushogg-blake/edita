@@ -28,7 +28,7 @@ function defaultPrefs() {
 		astSelectionHiliteBackground: "#F2F2F2",
 		astInsertionHiliteBackground: "#606060",
 		
-		wrap: true,
+		wrap: false,
 		
 		modeSwitchKey: "Escape",
 		minHoldTime: 200,

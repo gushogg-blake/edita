@@ -88,11 +88,9 @@ class View extends Evented {
 	}
 	
 	updateWrappedLines() {
-		console.time("updateWrappedLines");
 		this.wrappedLines = this.document.lines.map((line) => {
 			return wrapLine(line, this.document.fileDetails.indentation, this.measurements, this.sizes.codeWidth);
 		});
-		console.timeEnd("updateWrappedLines");
 	}
 	
 	calculateMarginOffset() {
@@ -406,14 +404,18 @@ class View extends Evented {
 			scrollPosition.row = Math.min(scrollPosition.row + bottomRowDiff, maxRow);
 		}
 		
-		let colBuffer = 8;
+		let colBuffer = colWidth * 8;
 		
 		let [x] = this.screenCoordsFromRowCol(row, col);
 		
 		x -= this.sizes.marginOffset;
 		
 		if (x < 1) {
-			scrollPosition.x = Math.max(0, scrollPosition.x - x - colBuffer * colWidth);
+			scrollPosition.x = Math.max(0, x - colBuffer);
+		}
+		
+		if (x > this.sizes.codeWidth - colBuffer) {
+			scrollPosition.x += x - this.sizes.codeWidth + colBuffer;
 		}
 		
 		this.fire("scroll");
