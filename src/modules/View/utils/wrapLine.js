@@ -1,35 +1,3 @@
-/*
-- if the whole string fits on the line, next break point is the end of
-  the string (no wrap)
-
-- otherwise, find the last word, and if it fits on a line, break before it
-  - else break at the end col
-*/
-
-function findNextBreakPoint(string, stringStartOffset, currentlyAvailableCols, availableCols) {
-	let str = string.substr(stringStartOffset);
-	
-	if (str.length <= currentlyAvailableCols) {
-		return string.length;
-	}
-	
-	let beforeEnd = str.substr(0, currentlyAvailableCols);
-	
-	let {index: lastWordIndex} = beforeEnd.match(/([^\w_]|[\w_]+)$/);
-	
-	let [lastWord] = str.substr(lastWordIndex).match(/^([^\w_]|[\w_]+)/);
-	
-	if (lastWord.length > availableCols) {
-		return stringStartOffset + currentlyAvailableCols;
-	} else {
-		if (lastWordIndex + lastWord.length > currentlyAvailableCols) {
-			return stringStartOffset + lastWordIndex;
-		} else {
-			return stringStartOffset + lastWordIndex + lastWord.length;
-		}
-	}
-}
-
 class LineWrapper {
 	constructor(line, indentation, measurements, availableWidth) {
 		this.line = line;
