@@ -1,3 +1,45 @@
+function findPrevColourHint(wrappedLines, firstLineIndex, lineRowIndex) {
+	let wrappedLine = wrappedLines[firstLineIndex];
+	
+	for (let i = lineRowIndex - 1; i >= 0; i--) {
+		let commands = [...wrappedLine.rows[i].renderCommands].reverse();
+		
+		for (let command of commands) {
+			let {type} = command;
+			
+			if (type === "colour") {
+				return command;
+			}
+			
+			if (type === "node") {
+				return null;
+			}
+		}
+	}
+	
+	for (let i = firstLineIndex - 1; i >= 0; i--) {
+		let wrappedLine = wrappedLines[i];
+		
+		for (let lineRow of [...wrappedLine.rows.reverse()]) {
+			let commands = [...lineRow.renderCommands].reverse();
+			
+			for (let command of commands) {
+				let {type} = command;
+				
+				if (type === "colour") {
+					return command;
+				}
+				
+				if (type === "node") {
+					return null;
+				}
+			}
+		}
+	}
+	
+	return null;
+}
+
 module.exports = function(layers, view) {
 	let {
 		font,
@@ -48,29 +90,12 @@ module.exports = function(layers, view) {
 	// find the previous colour hint, if any (otherwise e.g. multiline comments
 	// won't be coloured as comments if the opener is not on screen)
 	
-	findPreviousColourHint: for (let i = firstLineIndex - 1; i >= 0; i--) {
-		let wrappedLine = wrappedLines[i];
-		let {line, rows} = wrappedLine;
+	let prevColourHint = findPrevColourHint(wrappedLines, firstLineIndex, lineRowIndex);
+	
+	if (prevColourHint) {
+		let {lang, node} = prevColourHint;
 		
-		for (let lineRow of [...rows.reverse()]) {
-			let commands = [...lineRow.renderCommands].reverse();
-			
-			for (let command of commands) {
-				let {type} = command;
-				
-				if (type === "colour") {
-					let {lang, node} = command;
-					
-					layers.code.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
-					
-					break findPreviousColourHint;
-				}
-				
-				if (type === "node") {
-					break findPreviousColourHint;
-				}
-			}
-		}
+		layers.code.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
 	}
 	
 	let lineIndex = firstLineIndex;
@@ -83,6 +108,10 @@ module.exports = function(layers, view) {
 		// code
 		
 		for (let i = 0; i < wrappedLine.height; i++) {
+			if (i < lineRowIndex) {
+				continue;
+			}
+			
 			let lineRow = wrappedLine.rows[i];
 			
 			if (i > 0) {
