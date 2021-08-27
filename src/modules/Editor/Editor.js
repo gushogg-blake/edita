@@ -150,6 +150,10 @@ class Editor extends Evented {
 		}
 	}
 	
+	prevTabstop() {
+		
+	}
+	
 	clearSnippetSession() {
 		this.snippetSession = null;
 	}
@@ -374,6 +378,34 @@ class Editor extends Evented {
 	
 	setAstSelection(selection) {
 		this.view.setAstSelection(selection);
+	}
+	
+	adjustIndent(adjustment) {
+		let {start, end} = Selection.sort(this.normalSelection);
+		let edits = [];
+		
+		for (let lineIndex = start.lineIndex; lineIndex <= end.lineIndex; lineIndex++) {
+			let line = this.document.lines[lineIndex];
+			let indentLevel = Math.max(0, line.indentLevel + adjustment);
+			let indentationSelection = s(c(lineIndex, 0), c(lineIndex, line.indentOffset));
+			
+			edits.push(this.document.edit(indentationSelection, this.document.fileDetails.indentation.string.repeat(indentLevel)));
+		}
+		
+		let newSelection = s(c(start.lineIndex, 0), c(end.lineIndex, this.document.lines[end.lineIndex].string.length + adjustment));
+		
+		this.applyAndAddHistoryEntry({
+			edits,
+			normalSelection: newSelection,
+		});
+	}
+	
+	indentSelection() {
+		this.adjustIndent(1);
+	}
+	
+	dedentSelection() {
+		this.adjustIndent(-1);
 	}
 	
 	setMode(mode) {

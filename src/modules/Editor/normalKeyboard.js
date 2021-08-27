@@ -236,13 +236,10 @@ module.exports = {
 	},
 	
 	tab() {
-		if (this.view.Selection.isMultiline()) {
-			// TODO indent/dedent selection
-			// TODO setSelectionFromNormalKeyboard (to update selection clipboard etc)
-		} else if (this.snippetSession) {
-			// next tabstop
-			
+		if (this.snippetSession) {
 			this.nextTabstop();
+		} else if (this.view.Selection.isMultiline()) {
+			this.indentSelection();
 		} else {
 			let snippet = null;
 			
@@ -254,11 +251,9 @@ module.exports = {
 			}
 			
 			if (snippet) {
-				// insert snippet
-				
 				this.insertSnippet(snippet, snippet.name);
 			} else {
-				// tab
+				// insert tab
 				
 				let {indentation} = this.document.fileDetails;
 				let {normalSelection} = this.view;
@@ -291,7 +286,13 @@ module.exports = {
 	},
 	
 	shiftTab() {
-		// TODO
+		if (this.snippetSession) {
+			this.prevTabstop();
+		} else if (this.view.Selection.isMultiline()) {
+			this.dedentSelection();
+		}
+		
+		this.clearBatchState();
 	},
 	
 	completeWord() {
