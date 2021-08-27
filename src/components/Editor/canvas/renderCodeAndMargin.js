@@ -82,10 +82,23 @@ module.exports = function(layers, view) {
 	let x = leftEdge;
 	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
 	
+	let firstVisibleLine = view.findFirstVisibleLine();
+	
+	/*
+	when switching away from a tab the view will unwrap all lines, so if the last
+	line is wrapped and we're scrolled right to the bottom, there will be no
+	visible line at first when switching back to the tab.  the next resize will
+	re-wrap the lines and rerender.
+	*/
+	
+	if (!firstVisibleLine) {
+		return;
+	}
+	
 	let {
 		lineIndex: firstLineIndex,
 		lineRowIndex,
-	} = view.findFirstVisibleLine();
+	} = firstVisibleLine;
 	
 	// find the previous colour hint, if any (otherwise e.g. multiline comments
 	// won't be coloured as comments if the opener is not on screen)
