@@ -21,9 +21,9 @@ module.exports = function*(line) {
 	let offset = 0;
 	let hintIndex = 0;
 	
-	for (let [type, value] of line.variableWidthParts) {
-		if (type === "string") {
-			let string = value;
+	for (let part of line.variableWidthParts) {
+		if (part.type === "string") {
+			let {string} = part;
 			
 			while (true) {
 				/*
@@ -88,10 +88,10 @@ module.exports = function*(line) {
 			}
 			
 			stringStartOffset += string.length;
-		} else if (type === "tab") {
+		} else if (part.type === "tab") {
 			yield {
-				type,
-				width: value,
+				type: "tab",
+				width: part.width,
 			};
 			
 			offset++;

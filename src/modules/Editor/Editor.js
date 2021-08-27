@@ -369,7 +369,7 @@ class Editor extends Evented {
 			this.completeWordSession = null;
 		}
 		
-		//console.log(this.document.lines[selection.start.lineIndex]);
+		console.log(this.document.lines[selection.start.lineIndex]);
 	}
 	
 	setAstSelection(selection) {

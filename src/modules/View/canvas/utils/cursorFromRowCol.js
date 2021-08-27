@@ -45,13 +45,13 @@ module.exports = function(wrappedLines, row, col, beforeTab=false) {
 	
 	let {variableWidthParts} = wrappedLine.rows[lineRowIndex];
 	
-	for (let [type, value] of variableWidthParts) {
+	for (let part of variableWidthParts) {
 		if (c === col) {
 			break;
 		}
 		
-		if (type === "tab") {
-			let width = value;
+		if (part.type === "tab") {
+			let {width} = part;
 			
 			if (c + width > col) {
 				// the col is within the tab
@@ -67,8 +67,10 @@ module.exports = function(wrappedLines, row, col, beforeTab=false) {
 			
 			c += width;
 			offset++;
-		} else if (type === "string") {
-			if (c + value.length > col) {
+		} else if (part.type === "string") {
+			let {string} = part;
+			
+			if (c + string.length > col) {
 				// col is within the current string
 				// add the remaining cols to the offset
 				
@@ -77,8 +79,8 @@ module.exports = function(wrappedLines, row, col, beforeTab=false) {
 				break;
 			}
 			
-			c += value.length;
-			offset += value.length;
+			c += string.length;
+			offset += string.length;
 		}
 	}
 	

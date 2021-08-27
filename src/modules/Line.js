@@ -22,11 +22,17 @@ class Line {
 			let str = splitByTabs[i];
 			
 			if (str) {
-				variableWidthParts.push(["string", str]);
+				variableWidthParts.push({
+					type: "string",
+					string: str,
+				});
 			}
 			
 			if (i < splitByTabs.length - 1) {
-				variableWidthParts.push(["tab", tabWidth - str.length % tabWidth]);
+				variableWidthParts.push({
+					type: "tab",
+					width: tabWidth - str.length % tabWidth,
+				});
 			}
 		}
 		

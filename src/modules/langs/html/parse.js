@@ -139,7 +139,8 @@ module.exports = async function(lang) {
 				
 				/*
 				NOTE node.text.length > 0 prevents an error where the JavaScript
-				parser tries to parse the < even though the range is 0-length
+				parser tries to parse the < of an empty script tag even though the
+				range is 0-length
 				*/
 				
 				if (
