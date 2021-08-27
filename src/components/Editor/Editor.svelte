@@ -315,6 +315,8 @@ function wheel(e) {
 		view.scrollBy(view.measurements.colWidth * 3 * dir, 0);
 	} else {
 		view.scrollBy(0, 3 * dir);
+		
+		console.log(view.scrollPosition.row);
 	}
 }
 

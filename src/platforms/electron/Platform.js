@@ -99,7 +99,7 @@ class Platform extends Evented {
 		});
 	}
 	
-	showContextMenu(items) {
+	showContextMenu(e, items) {
 		contextMenu(items);
 	}
 	

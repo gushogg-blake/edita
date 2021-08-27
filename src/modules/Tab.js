@@ -137,7 +137,7 @@ class Tab extends Evented {
 		this.fire("updateDirListing");
 	}
 	
-	showContextMenuForTabButton() {
+	showContextMenuForTabButton(e) {
 		let items = [];
 		
 		if (this.editor.document.path) {
@@ -151,7 +151,7 @@ class Tab extends Evented {
 			});
 		}
 		
-		platform.showContextMenu(items);
+		platform.showContextMenu(e, items);
 	}
 	
 	teardown() {

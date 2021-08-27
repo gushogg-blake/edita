@@ -1,5 +1,6 @@
 <script>
 import {onMount, createEventDispatcher, getContext} from "svelte";
+import screenOffsets from "utils/dom/screenOffsets";
 import Gap from "components/utils/Gap.svelte";
 
 let fire = createEventDispatcher();
@@ -13,7 +14,11 @@ let {
 	selectedTab,
 } = app;
 
-function clickTab(tab) {
+function mousedownTab(e, tab) {
+	if (e.button !== 0) {
+		return;
+	}
+	
 	app.selectTab(tab);
 }
 
@@ -21,14 +26,14 @@ function closeTab(tab) {
 	app.closeTab(tab);
 }
 
-function auxClickTab(e, tab) {
+function auxclickTab(e, tab) {
 	if (e.button === 1) {
 		closeTab(tab);
 	}
 }
 
-function showContextMenu(tab) {
-	tab.showContextMenuForTabButton();
+function showContextMenu(e, tab) {
+	tab.showContextMenuForTabButton(e);
 }
 
 function tabIsSelected(tab, selectedTab) {
@@ -58,6 +63,43 @@ function wheel(e) {
 	main.scrollLeft += e.deltaY;
 }
 
+let dropIndex = null;
+
+function tabIndexFromMouseEvent(e) {
+	let tabButtons = [...main.querySelectorAll(".tabButton")];
+	let index = 0;
+	
+	for (let tabButton of tabButtons) {
+		let offsets = screenOffsets(tabButton);
+		
+		if (e.clientX > offsets.x + offsets.width / 2) {
+			index++;
+		}
+	}
+	
+	return index;
+}
+
+function dragstart(e) {
+	e.dataTransfer.effectAllowed = "all";
+}
+
+function dragover(e) {
+	e.preventDefault();
+	
+	dropIndex = tabIndexFromMouseEvent(e);
+}
+
+function drop(e) {
+	e.preventDefault();
+	
+	console.log("drop");
+}
+
+function dragend(e) {
+	dropIndex = null;
+}
+
 onMount(function() {
 	let teardown = [
 		app.on("updateTabs", updateTabs),
@@ -79,6 +121,7 @@ onMount(function() {
 	white-space: nowrap;
 	padding: 1px 3px 0;
 	overflow-x: auto;
+	overflow-y: hidden;
 	background: var(--appBackgroundColor);
 	
 	&::-webkit-scrollbar {
@@ -99,16 +142,44 @@ onMount(function() {
 		background: white;
 	}
 }
+
+#dropMarker {
+	position: relative;
+	display: inline-block;
+	height: 25px;
+	vertical-align: middle;
+	
+	div {
+		position: absolute;
+		width: 2px;
+		height: 100%;
+		background: #323232;
+	}
+}
 </style>
 
-<div bind:this={main} id="main" on:wheel={wheel}>
-	{#each tabs as tab}
+<div
+	bind:this={main}
+	id="main"
+	on:wheel={wheel}
+	on:dragover={dragover}
+	on:drop={drop}
+>
+	{#each tabs as tab, i}
+		{#if dropIndex === i}
+			<div id="dropMarker">
+				<div></div>
+			</div>
+		{/if}
 		<div
 			class="tabButton"
 			class:isSelected={tabIsSelected(tab, selectedTab)}
-			on:click={() => clickTab(tab)}
-			on:auxclick={(e) => auxClickTab(e, tab)}
-			on:contextmenu={(e) => showContextMenu(tab)}
+			on:mousedown={(e) => mousedownTab(e, tab)}
+			on:auxclick={(e) => auxclickTab(e, tab)}
+			on:contextmenu={(e) => showContextMenu(e, tab)}
+			draggable="true"
+			on:dragstart={dragstart}
+			on:dragend={dragend}
 		>
 			<div class="name">
 				{getTabName(tabs, tab)}
@@ -119,4 +190,9 @@ onMount(function() {
 			</div>
 		</div>
 	{/each}
+	{#if dropIndex === tabs.length}
+		<div id="dropMarker">
+			<div></div>
+		</div>
+	{/if}
 </div>
