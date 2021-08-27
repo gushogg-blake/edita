@@ -1,4 +1,4 @@
-module.exports = {
+let api = {
 	splice(array, ...args) {
 		return module.exports.spliceInPlace(array.slice(), ...args);
 	},
@@ -25,6 +25,10 @@ module.exports = {
 	
 	remove(array, item) {
 		return array.filter(_item => _item !== item);
+	},
+	
+	move(array, item, newIndex) {
+		return api.moveInPlace([...array], item, newIndex);
 	},
 	
 	sort(array, comparator) {
@@ -83,6 +87,24 @@ module.exports = {
 		return array;
 	},
 	
+	moveInPlace(array, item, newIndex) {
+		let oldIndex = array.indexOf(item);
+		
+		if (oldIndex === -1 || oldIndex === newIndex) {
+			return array;
+		}
+		
+		array.splice(oldIndex, 1);
+		
+		if (oldIndex < newIndex) {
+			newIndex--;
+		}
+		
+		array.splice(newIndex, 0, item);
+		
+		return array;
+	},
+	
 	sortInPlace(array, comparator) {
 		array.sort(comparator);
 		
@@ -95,3 +117,5 @@ module.exports = {
 		return array;
 	},
 };
+
+module.exports = api;

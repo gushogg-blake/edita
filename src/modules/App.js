@@ -1,5 +1,5 @@
 let bluebird = require("bluebird");
-let {remove} = require("utils/arrayMethods");
+let {remove, moveInPlace} = require("utils/arrayMethods");
 let Evented = require("utils/Evented");
 let focusManager = require("utils/focusManager");
 let Document = require("modules/Document");
@@ -73,6 +73,12 @@ class App extends Evented {
 			await tab.editor.document.saveAs(path);
 			await platform.fs(oldPath).delete();
 		}
+	}
+	
+	reorderTab(tab, index) {
+		moveInPlace(this.tabs, tab, index);
+		
+		this.fire("updateTabs");
 	}
 	
 	selectTab(tab) {

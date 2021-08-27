@@ -93,7 +93,7 @@ function dragover(e) {
 function drop(e) {
 	e.preventDefault();
 	
-	console.log("drop");
+	app.reorderTab(selectedTab, tabIndexFromMouseEvent(e));
 }
 
 function dragend(e) {
