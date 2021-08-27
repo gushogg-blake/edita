@@ -137,7 +137,16 @@ module.exports = async function(lang) {
 					}
 				}
 				
-				if (type === "raw_text" && parent) {
+				/*
+				NOTE node.text.length > 0 prevents an error where the JavaScript
+				parser tries to parse the < even though the range is 0-length
+				*/
+				
+				if (
+					type === "raw_text"
+					&& parent
+					&& node.text.length > 0
+				) {
 					if (parent.type === "style_element") {
 						let css = base.langs.get("css");
 						
