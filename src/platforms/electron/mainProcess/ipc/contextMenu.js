@@ -1,5 +1,4 @@
 let {Menu} = require("electron");
-let {ipcMain: ipc} = require("electron-better-ipc");
 
 module.exports = function(app) {
 	return {
@@ -13,14 +12,14 @@ module.exports = function(app) {
 					...item,
 					
 					click() {
-						ipc.callFocusedRenderer("contextMenu/click", [id, item.id]);
+						app.callFocusedRenderer("contextMenu/click", [id, item.id]);
 					},
 				};
 			}));
 			
 			menu.popup({
 				callback() {
-					ipc.callFocusedRenderer("contextMenu/close", [id]);
+					app.callFocusedRenderer("contextMenu/close", [id]);
 				},
 			});
 		},

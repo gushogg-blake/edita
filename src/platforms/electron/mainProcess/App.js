@@ -8,9 +8,9 @@ let {
 
 let windowStateKeeper = require("electron-window-state");
 let dev = require("electron-is-dev");
-let fs = require("fs-extra");
 let path = require("path");
 let {removeInPlace} = require("../../../utils/arrayMethods");
+let fs = require("./modules/fs");
 let ipc = require("./ipc");
 let config = require("./config");
 
@@ -107,6 +107,30 @@ class App {
 	
 	browserWindowFromEvent(e) {
 		return BrowserWindow.fromWebContents(e.sender);
+	}
+	
+	callFocusedRenderer(channel, ...args) {
+		let browserWindow = BrowserWindow.getFocusedWindow();
+		
+		if (!browserWindow) {
+			return;
+		}
+		
+		browserWindow.webContents.send(channel, ...args);
+	}
+	
+	callRenderers(channel, ...args) {
+		for (let browserWindow of this.browserWindows) {
+			browserWindow.webContents.send(channel, ...args);
+		}
+	}
+	
+	loadJson(key) {
+		return fs(this.config.userDataDir).child(key + ".json").readJson();
+	}
+	
+	saveJson(key, data) {
+		return fs(this.config.userDataDir).child(key + ".json").writeJson(data);
 	}
 }
 

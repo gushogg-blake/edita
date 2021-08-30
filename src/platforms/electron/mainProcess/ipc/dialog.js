@@ -2,16 +2,16 @@ let {dialog} = require("electron");
 
 module.exports = function(app) {
 	return {
-		showOpen(options, browserWindow) {
-			return dialog.showOpenDialog(browserWindow, options);
+		showOpen(e, options) {
+			return dialog.showOpenDialog(app.browserWindowFromEvent(e), options);
 		},
 		
-		showSave(options, browserWindow) {
-			return dialog.showSaveDialog(browserWindow, options);
+		showSave(e, options) {
+			return dialog.showSaveDialog(app.browserWindowFromEvent(e), options);
 		},
 		
-		showMessageBox(options, browserWindow) {
-			return dialog.showMessageBox(browserWindow, options);
+		showMessageBox(e, options) {
+			return dialog.showMessageBox(app.browserWindowFromEvent(e), options);
 		},
 	};
 }

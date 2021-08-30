@@ -13,6 +13,8 @@ import FindBar from "./FindBar.svelte";
 
 export let app;
 
+let main;
+
 setContext("app", app);
 
 let {
@@ -26,8 +28,8 @@ let showingFindBar = false;
 function keydown(e) {
 	let {keyCombo} = getKeyCombo(e);
 	
-	if (base.prefs.globalKeymap[keyCombo]) {
-		app[base.prefs.globalKeymap[keyCombo]]();
+	if (platform.prefs.globalKeymap[keyCombo]) {
+		app[platform.prefs.globalKeymap[keyCombo]]();
 	}
 }
 
@@ -62,7 +64,7 @@ onMount(function() {
 		app.on("updatePanes", onUpdatePanes),
 	];
 	
-	app.uiMounted();
+	app.uiMounted(main);
 	
 	return function() {
 		for (let fn of teardown) {
@@ -165,7 +167,7 @@ $border: 1px solid #AFACAA;
 }
 </style>
 
-<div id="main" class="editor">
+<div bind:this={main} id="main" class="editor">
 	<div id="toolbar">
 		<Toolbar/>
 	</div>

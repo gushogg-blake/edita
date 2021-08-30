@@ -173,7 +173,7 @@ class LineWrapper {
 	}
 	
 	wrap() {
-		if (!base.prefs.wrap || !this.requiresWrapping()) {
+		if (!platform.prefs.wrap || !this.requiresWrapping()) {
 			return this.unwrapped();
 		}
 		

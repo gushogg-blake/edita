@@ -31,7 +31,7 @@ class Tab extends Evented {
 		}
 		
 		if (
-			base.prefs.zoom.stopAtProjectRoot
+			platform.prefs.zoom.stopAtProjectRoot
 			&& this.currentPath !== this.path
 			&& await this.editor.document.mainLang.codeIntel?.isProjectRoot(this.currentPath)
 		) {

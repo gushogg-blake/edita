@@ -16,7 +16,7 @@ module.exports = function(layers, view, isPeeking) {
 		fileDetails,
 	} = view.document;
 	
-	context.fillStyle = base.prefs.astSelectionBackground;
+	context.fillStyle = platform.prefs.astSelectionBackground;
 	
 	let {startLineIndex, endLineIndex} = astSelection;
 	let startLine = wrappedLines[startLineIndex].line;

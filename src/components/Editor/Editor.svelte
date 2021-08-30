@@ -38,7 +38,7 @@ let resizeInterval;
 
 let verticalScrollbar;
 let horizontalScrollbar;
-let showingHorizontalScrollbar = !base.prefs.wrap;
+let showingHorizontalScrollbar = !platform.prefs.wrap;
 
 let windowHasFocus;
 
@@ -148,7 +148,7 @@ function mousedown({detail}) {
 			enableDrag(
 				modeSwitchKeyHandler.isPeeking
 				&& !modeSwitchKeyHandler.keyPressedWhilePeeking
-				&& base.prefs.modeSwitchKey === "Escape"
+				&& platform.prefs.modeSwitchKey === "Escape"
 			);
 		});
 	}
@@ -323,7 +323,7 @@ async function keydown(e) {
 		return;
 	}
 	
-	if (e.key === base.prefs.modeSwitchKey) {
+	if (e.key === platform.prefs.modeSwitchKey) {
 		e.preventDefault();
 		
 		modeSwitchKeyHandler.keydown(e);
@@ -354,7 +354,7 @@ function keyup(e) {
 		return;
 	}
 	
-	if (e.key === base.prefs.modeSwitchKey) {
+	if (e.key === platform.prefs.modeSwitchKey) {
 		e.preventDefault();
 		
 		modeSwitchKeyHandler.keyup(e);
@@ -518,7 +518,7 @@ function horizontalScroll({detail: position}) {
 }
 
 async function prefsUpdated() {
-	await toggleHorizontalScrollbar(!base.prefs.wrap);
+	await toggleHorizontalScrollbar(!platform.prefs.wrap);
 	
 	updateMeasurements();
 	
@@ -531,7 +531,7 @@ async function prefsUpdated() {
 
 function updateMeasurements() {
 	measurementsDiv.style = inlineStyle({
-		font: base.prefs.font,
+		font: platform.prefs.font,
 	});
 	
 	measurementsDiv.innerHTML = "A".repeat(10000);
@@ -602,7 +602,7 @@ onMount(function() {
 			updateCanvas();
 		}),
 		
-		base.on("prefsUpdated", prefsUpdated),
+		platform.on("prefsUpdated", prefsUpdated),
 	];
 	
 	mounted = true;

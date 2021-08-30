@@ -11,7 +11,7 @@ class Line {
 		
 		let {
 			tabWidth,
-		} = base.prefs;
+		} = platform.prefs;
 		
 		let width = expandTabs(string, tabWidth).length;
 		

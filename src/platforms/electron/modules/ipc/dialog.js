@@ -1,15 +1,15 @@
-let {ipcRenderer: ipc} = require("electron-better-ipc");
+let {ipcRenderer} = require("electron");
 
 module.exports = {
 	showSave(options) {
-		return ipc.callMain("dialog/showSave", [options]);
+		return ipcRenderer.invoke("dialog/showSave", options);
 	},
 	
 	showOpen(options) {
-		return ipc.callMain("dialog/showOpen", [options]);
+		return ipcRenderer.invoke("dialog/showOpen", options);
 	},
 	
 	showMessageBox(options) {
-		return ipc.callMain("dialog/showMessageBox", [options]);
+		return ipcRenderer.invoke("dialog/showMessageBox", options);
 	},
 }

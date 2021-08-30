@@ -19,7 +19,7 @@ module.exports = function(layers, view, isPeeking) {
 	
 	let context = layers.hilites;
 	
-	context.fillStyle = base.prefs.astSelectionHiliteBackground;
+	context.fillStyle = platform.prefs.astSelectionHiliteBackground;
 	
 	let {colWidth, rowHeight} = measurements;
 	let {startLineIndex, endLineIndex} = hilite;

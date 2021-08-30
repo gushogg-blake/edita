@@ -10,7 +10,7 @@ let snippetsByLang;
 function updateSnippetGroups() {
 	snippetsByLang = {};
 	
-	for (let snippet of base.snippets) {
+	for (let snippet of platform.snippets) {
 		let langs = snippet.langs.join(", ");
 		let groups = snippet.langGroups.join(", ");
 		let key = langs + (langs && groups ? ", " : "") + groups;
@@ -27,7 +27,7 @@ updateSnippetGroups();
 
 onMount(function() {
 	let teardown = [
-		base.on("snippetsUpdated", updateSnippetGroups),
+		platform.on("snippetsUpdated", updateSnippetGroups),
 	];
 	
 	return function() {

@@ -523,7 +523,7 @@ class View extends Evented {
 			this.cursorBlinkOn = !this.cursorBlinkOn;
 			
 			this.updateCanvas();
-		}, base.prefs.cursorBlinkPeriod);
+		}, platform.prefs.cursorBlinkPeriod);
 	}
 	
 	clearCursorBlink() {

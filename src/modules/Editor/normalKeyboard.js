@@ -247,7 +247,7 @@ module.exports = {
 				let {start: cursor} = this.view.normalSelection;
 				let wordAtCursor = this.document.wordAtCursor(cursor);
 				
-				snippet = base.getSnippet(wordAtCursor);
+				snippet = platform.getSnippet(wordAtCursor);
 			}
 			
 			if (snippet) {

@@ -1,13 +1,13 @@
-let {ipcRenderer: ipc} = require("electron-better-ipc");
+let {ipcRenderer} = require("electron");
 let lid = require("utils/lid");
 
 let clickHandlers = {};
 
-ipc.answerMain("contextMenu/click", function([id, itemId]) {
+ipcRenderer.on("contextMenu/click", function(e, id, itemId) {
 	clickHandlers[id][itemId]();
 });
 
-ipc.answerMain("contextMenu/close", function([id]) {
+ipcRenderer.on("contextMenu/close", function(e, id) {
 	delete clickHandlers[id];
 });
 
@@ -20,10 +20,10 @@ module.exports = function(items) {
 		clickHandlers[id][item.id] = item.onClick;
 	}
 	
-	ipc.callMain("contextMenu/show", [id, items.map(function(item) {
+	ipcRenderer.invoke("contextMenu/show", id, items.map(function(item) {
 		return {
 			...item,
 			onClick: undefined,
 		};
-	})]);
+	}));
 }

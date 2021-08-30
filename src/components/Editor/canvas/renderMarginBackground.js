@@ -6,6 +6,6 @@ module.exports = function(layers, view) {
 	
 	let context = layers.margin;
 	
-	context.fillStyle = base.prefs.marginBackground;
+	context.fillStyle = platform.prefs.marginBackground;
 	context.fillRect(0, 0, marginWidth, height);
 }

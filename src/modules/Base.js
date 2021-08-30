@@ -1,8 +1,3 @@
-let get = require("lodash.get");
-let set = require("lodash.set");
-
-let Evented = require("utils/Evented");
-
 let getIndentationDetails = require("modules/utils/getIndentationDetails");
 let guessIndent = require("modules/utils/guessIndent");
 let checkNewlines = require("modules/utils/checkNewlines");
@@ -13,144 +8,6 @@ let css = require("modules/langs/css");
 //let svelte = require("modules/langs/svelte");
 let plainText = require("modules/langs/plainText");
 let langs = require("modules/langs");
-
-function defaultPrefs() {
-	return {
-		font: "14px DejaVu Sans Mono",
-		
-		tabWidth: 4,
-		defaultIndent: "\t",
-		defaultNewline: platform.systemInfo.newline,
-		defaultLang: "javascript",
-		
-		lineNumberColor: "#9f9f9f",
-		marginBackground: "#f0f0f0",
-		selectionBackground: "#d0d0d0",
-		hiliteBackground: "#fdee20",
-		astSelectionBackground: "#c5e4ff",
-		astSelectionHiliteBackground: "#F2F2F2",
-		astInsertionHiliteBackground: "#606060",
-		
-		wrap: false,
-		
-		modeSwitchKey: "Escape",
-		minHoldTime: 200,
-		
-		zoom: {
-			stopAtProjectRoot: true,
-		},
-		
-		normalKeymap: {
-			"ArrowUp": "up",
-			"ArrowDown": "down",
-			"ArrowLeft": "left",
-			"ArrowRight": "right",
-			"PageUp": "pageUp",
-			"PageDown": "pageDown",
-			"End": "end",
-			"Home": "home",
-			"Ctrl+ArrowLeft": "wordLeft",
-			"Ctrl+ArrowRight": "wordRight",
-			"Shift+ArrowUp": "expandOrContractSelectionUp",
-			"Shift+ArrowDown": "expandOrContractSelectionDown",
-			"Shift+ArrowLeft": "expandOrContractSelectionLeft",
-			"Shift+ArrowRight": "expandOrContractSelectionRight",
-			"Shift+PageUp": "expandOrContractSelectionPageUp",
-			"Shift+PageDown": "expandOrContractSelectionPageDown",
-			"Shift+End": "expandOrContractSelectionEnd",
-			"Shift+Home": "expandOrContractSelectionHome",
-			"Ctrl+Shift+ArrowLeft": "expandOrContractSelectionWordLeft",
-			"Ctrl+Shift+ArrowRight": "expandOrContractSelectionWordRight",
-			"Backspace": "backspace",
-			"Delete": "delete",
-			"Enter": "enter",
-			"Tab": "tab",
-			"Shift+Backspace": "backspace",
-			"Shift+Delete": "delete",
-			"Shift+Enter": "enter",
-			"Ctrl+Enter": "enterNoAutoIndent",
-			"Shift+Tab": "shiftTab",
-			"Ctrl+X": "cut",
-			"Ctrl+C": "copy",
-			"Ctrl+V": "paste",
-			"Ctrl+A": "selectAll",
-			"Ctrl+Space": "completeWord",
-		},
-		
-		astKeymap: {
-			"PageUp": "pageUp",
-			"PageDown": "pageDown",
-			"s": "up",
-			"d": "down",
-			"j": "next",
-			"k": "previous",
-			"i": "insert",
-			"h": "collapseDown",
-			"l": "collapseUp",
-			//"e": "expandDown",
-			"a": "selectSelection",
-			"Space": "toggleSpaceBelow",
-			"Shift+Space": "toggleSpaceAbove",
-		},
-		
-		globalKeymap: {
-			"Ctrl+O": "open",
-			"Ctrl+S": "save",
-			"Ctrl+N": "_new",
-			"Ctrl+Z": "undo",
-			"Ctrl+Y": "redo",
-			"Ctrl+F": "find",
-			"Ctrl+Shift+F": "findInOpenFiles",
-			"Ctrl+H": "findAndReplace",
-			"Ctrl+Shift+H": "findAndReplaceInOpenFiles",
-		},
-		
-		langs: {
-			javascript: {
-				colors: {
-					keyword: "#aa33aa",
-					id: "#202020",
-					comment: "#7f7f7f",
-					symbol: "#bb22bb",
-					bracket: "#202020",
-					number: "#cc2222",
-					string: "#2233bb",
-					regex: "#cc7030",
-				},
-			},
-			
-			html: {
-				colors: {
-					tag: "#0032ff",
-					attribute: "#871f78",
-					string: "#2233bb",
-					text: "#000000",
-				},
-			},
-			
-			css: {
-				colors: {
-					tagName: "#0032ff",
-					className: "#008b8b",
-					idName: "#8b0000",
-					property: "#333333",
-					attribute: "#871f78",
-					string: "#2233bb",
-					comment: "#7f7f7f",
-					symbol: "#333333",
-					text: "#000000",
-				},
-			},
-		},
-		
-		fileAssociations: {
-			"html": ["*.svelte"],
-			//"plainText": ["*.js"],
-		},
-		
-		cursorBlinkPeriod: 700,
-	};
-}
 
 /*
 top-level object for general, global things like langs, as well as any
@@ -172,10 +29,8 @@ instances embedded in a web page, so doesn't know anything about the state of th
 UI.
 */
 
-class Base extends Evented {
+class Base {
 	constructor(components) {
-		super();
-		
 		this.langs = langs;
 		this.components = components;
 	}
@@ -194,9 +49,6 @@ class Base extends Evented {
 		for (let lang of langs) {
 			this.langs.add(lang);
 		}
-		
-		this.prefs = await platform.loadJson("prefs") || defaultPrefs();
-		this.snippets = await platform.loadSnippets();
 	}
 	
 	/*
@@ -222,7 +74,7 @@ class Base extends Evented {
 	
 	guessLang(code, path) {
 		if (path) {
-			for (let [langCode, patterns] of Object.entries(this.prefs.fileAssociations)) {
+			for (let [langCode, patterns] of Object.entries(platform.prefs.fileAssociations)) {
 				for (let pattern of patterns) {
 					if (platform.fs(path).matchName(pattern)) {
 						return this.langs.get(langCode);
@@ -255,7 +107,7 @@ class Base extends Evented {
 			defaultIndent,
 			tabWidth,
 			defaultNewline,
-		} = this.prefs;
+		} = platform.prefs;
 		
 		let indent = guessIndent(code) || defaultIndent;
 		let lang = this.guessLang(code, path);
@@ -286,7 +138,7 @@ class Base extends Evented {
 			tabWidth,
 			defaultNewline,
 			defaultLang,
-		} = this.prefs;
+		} = platform.prefs;
 		
 		let lang = this.langs.get(defaultLang);
 		let indentation = getIndentationDetails(defaultIndent, tabWidth);
@@ -298,22 +150,6 @@ class Base extends Evented {
 			newline: defaultNewline,
 			hasMixedNewlines: false,
 		};
-	}
-	
-	getPref(key) {
-		return get(this.prefs, key);
-	}
-	
-	setPref(key, value) {
-		set(this.prefs, key, value);
-		
-		platform.saveJson("prefs", this.prefs);
-		
-		this.fire("prefsUpdated");
-	}
-	
-	getSnippet(name) {
-		return this.snippets.find(s => s.name === name);
 	}
 }
 

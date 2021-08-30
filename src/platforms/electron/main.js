@@ -8,6 +8,7 @@ window.platform = new Platform();
 window.base = new Base(components);
 
 (async function() {
+	await platform.init();
 	await base.init();
 	
 	let app = new App();

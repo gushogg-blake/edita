@@ -301,15 +301,15 @@ class Editor extends Evented {
 	}
 	
 	willHandleNormalKeydown(key, keyCombo, isModified) {
-		return base.prefs.normalKeymap[keyCombo] || key.length === 1 && !isModified;
+		return platform.prefs.normalKeymap[keyCombo] || key.length === 1 && !isModified;
 	}
 	
 	willHandleAstKeydown(keyCombo) {
-		return base.prefs.astKeymap[keyCombo];
+		return platform.prefs.astKeymap[keyCombo];
 	}
 	
 	async normalKeydown(key, keyCombo, isModified) {
-		let fnName = base.prefs.normalKeymap[keyCombo];
+		let fnName = platform.prefs.normalKeymap[keyCombo];
 		
 		if (fnName) {
 			await this.normalKeyboard[fnName]();
@@ -334,7 +334,7 @@ class Editor extends Evented {
 	
 	async astKeydown(keyCombo) {
 		let handled = false;
-		let fnName = base.prefs.astKeymap[keyCombo];
+		let fnName = platform.prefs.astKeymap[keyCombo];
 		
 		if (!fnName) {
 			return;

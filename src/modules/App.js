@@ -15,9 +15,9 @@ class App extends Evented {
 		this.selectedTab = null;
 		
 		this.showingPane = {
-			left: base.getPref("showPane.left"),
-			bottom: base.getPref("showPane.bottom"),
-			right: base.getPref("showPane.right"),
+			left: platform.getPref("showPane.left"),
+			bottom: platform.getPref("showPane.bottom"),
+			right: platform.getPref("showPane.right"),
 		};
 		
 		this.focusManager = focusManager();
@@ -147,7 +147,7 @@ class App extends Evented {
 	togglePane(name) {
 		this.showingPane[name] = !this.showingPane[name];
 		
-		base.setPref("showPane." + name, this.showingPane[name]);
+		platform.setPref("showPane." + name, this.showingPane[name]);
 		
 		this.fire("updatePanes");
 	}
@@ -277,6 +277,13 @@ class App extends Evented {
 		return document;
 	}
 	
+	createEditor() {
+		let document = new Document("");
+		let view = new View(this, document);
+		
+		return new Editor(this, document, view);
+	}
+	
 	findTabByPath(path) {
 		for (let tab of this.tabs) {
 			if (tab.editor.document.path === path) {
@@ -289,7 +296,7 @@ class App extends Evented {
 	
 	async loadSession() {
 		try {
-			let session = await platform.loadJson("session");
+			let session = await platform.loadSession();
 			
 			if (!session) {
 				return;
@@ -349,27 +356,30 @@ class App extends Evented {
 			};
 		});
 		
-		await platform.saveJson("session", {
+		await platform.saveSession({
 			tabs,
 			selectedTabPath: this.selectedTab?.path,
 		});
 	}
 	
 	editSnippet(snippet) {
-		platform.openWindow({
-			title: snippet.name,
-			width: 700,
-			height: 500,
-		}, ({el, closeWindow}) => {
-			let editor = new base.components.SnippetEditor({
+		platform.editSnippet(snippet, () => {
+			this.editSnippetInApp(snippet);
+		});
+	}
+	
+	editSnippetInApp(snippet) {
+		this.openModal((el, closeWindow) => {
+			let snippetEditor = new base.components.SnippetEditor({
 				target: el,
 				
 				props: {
+					app: this,
 					snippet,
 				},
 			});
 			
-			editor.$on("close", () => {
+			snippetEditor.$on("save", () => {
 				console.log("save");
 				
 				closeWindow();
@@ -377,7 +387,8 @@ class App extends Evented {
 		});
 	}
 	
-	uiMounted() {
+	uiMounted(mainDiv) {
+		this.mainDiv = mainDiv;
 	}
 	
 	onCloseWindow(e) {

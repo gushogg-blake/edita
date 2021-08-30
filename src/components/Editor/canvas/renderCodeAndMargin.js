@@ -46,7 +46,7 @@ module.exports = function(layers, view) {
 		tabWidth,
 		marginBackground,
 		lineNumberColor,
-	} = base.prefs;
+	} = platform.prefs;
 	
 	let {
 		wrappedLines,
@@ -108,7 +108,7 @@ module.exports = function(layers, view) {
 	if (prevColourHint) {
 		let {lang, node} = prevColourHint;
 		
-		layers.code.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+		layers.code.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
 	}
 	
 	let lineIndex = firstLineIndex;
@@ -137,7 +137,7 @@ module.exports = function(layers, view) {
 				if (type === "colour") {
 					let {lang, node} = command;
 					
-					layers.code.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+					layers.code.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
 				} else if (type === "string") {
 					let {string: str} = command;
 					
@@ -149,7 +149,7 @@ module.exports = function(layers, view) {
 					let {lang, node, offset: hintOffset} = command;
 					let str = node.text;
 					
-					layers.code.fillStyle = base.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+					layers.code.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
 					layers.code.fillText(str, x, y);
 					
 					x += str.length * colWidth;

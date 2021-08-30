@@ -1,5 +1,5 @@
 module.exports = function(string) {
-	let {tabWidth} = base.prefs;
+	let {tabWidth} = platform.prefs;
 	
 	let colsAdded = 0;
 	
