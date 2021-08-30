@@ -37,7 +37,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		output: {
 			sourcemap: true,
 			format: "iife",
-			file: "src/platforms/electron/public/build/bundle.js",
+			file: "src/platforms/electron/public/build/main.js",
 		},
 		
 		plugins: [
@@ -63,7 +63,7 @@ if (!platform || platform === "all" || platform === "electron") {
 			}),
 			
 			cssOnly({
-				output: "bundle.css",
+				output: "main.css",
 			}),
 	
 			resolve({
@@ -116,7 +116,7 @@ if (!platform || platform === "all" || platform === "web") {
 			sourcemap: true,
 			format: "iife",
 			name: "editor",
-			file: "src/platforms/web/public/build/bundle.js",
+			file: "src/platforms/web/public/build/main.js",
 		},
 		
 		plugins: [
@@ -142,7 +142,7 @@ if (!platform || platform === "all" || platform === "web") {
 			}),
 			
 			cssOnly({
-				output: "bundle.css",
+				output: "main.css",
 			}),
 			
 			resolve({
