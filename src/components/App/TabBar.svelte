@@ -146,11 +146,14 @@ onMount(function() {
 #dropMarker {
 	position: relative;
 	display: inline-block;
+	width: 0;
 	height: 25px;
 	vertical-align: middle;
 	
 	div {
 		position: absolute;
+		top: 0;
+		left: 0;
 		width: 2px;
 		height: 100%;
 		background: #323232;

@@ -64,6 +64,7 @@ class App {
 			webPreferences: {
 				nodeIntegration: true,
 				contextIsolation: false,
+				nativeWindowOpen: true,
 			},
 			
 			backgroundColor: "#edecea",
