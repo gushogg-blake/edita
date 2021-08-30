@@ -73,7 +73,7 @@ class Platform extends Evented {
 	setPref(key, value) {
 		set(this.prefs, key, value);
 		
-		prefs.save(this.prefs);
+		this.fire("prefsUpdated");
 	}
 	
 	loadPrefs() {
@@ -82,18 +82,6 @@ class Platform extends Evented {
 	
 	loadSnippets() {
 		return []; //
-	}
-	
-	onPrefsUpdate() {
-		this.fire("prefsUpdated");
-	}
-	
-	onNewSnippet() {
-		
-	}
-	
-	onSnippetUpdate() {
-		
 	}
 	
 	editSnippet(snippet) {
@@ -105,11 +93,11 @@ class Platform extends Evented {
 	}
 	
 	loadSession() {
-		return session.load();
+		return null; //
 	}
 	
-	saveSession(data) {
-		return session.save(data);
+	saveSession(session) {
+		
 	}
 }
 
