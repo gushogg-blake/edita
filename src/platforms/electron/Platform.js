@@ -117,8 +117,12 @@ class Platform extends Evented {
 		return bluebird.map(dir.ls(), node => node.readJson());
 	}
 	
-	loadJson(key) {
-		return this.dataDirNode.child(key + ".json").readJson();
+	async loadJson(key) {
+		try {
+			return await this.dataDirNode.child(key + ".json").readJson();
+		} catch (e) {
+			return null;
+		}
 	}
 	
 	saveJson(key, data) {

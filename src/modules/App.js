@@ -14,6 +14,12 @@ class App extends Evented {
 		this.tabs = [];
 		this.selectedTab = null;
 		
+		this.showingPane = {
+			left: base.getPref("showPane.left"),
+			bottom: base.getPref("showPane.bottom"),
+			right: base.getPref("showPane.right"),
+		};
+		
 		this.focusManager = focusManager();
 		
 		this.teardownCallbacks = [
@@ -136,6 +142,14 @@ class App extends Evented {
 		if (selectNext) {
 			this.selectTab(selectNext);
 		}
+	}
+	
+	togglePane(name) {
+		this.showingPane[name] = !this.showingPane[name];
+		
+		base.setPref("showPane." + name, this.showingPane[name]);
+		
+		this.fire("updatePanes");
 	}
 	
 	undo() {

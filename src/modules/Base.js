@@ -1,3 +1,6 @@
+let get = require("lodash.get");
+let set = require("lodash.set");
+
 let Evented = require("utils/Evented");
 
 let getIndentationDetails = require("modules/utils/getIndentationDetails");
@@ -164,9 +167,6 @@ means that code that runs subsequently (which includes the entire UI, so basical
 the whole app) can get stuff from the global app object without having to
 await it.
 
-this will be passed to plugins etc that need to interact with the app via a
-consistent interface.
-
 this can be shared between multiple instances of the UI, e.g. with multiple
 instances embedded in a web page, so doesn't know anything about the state of the
 UI.
@@ -176,7 +176,6 @@ class Base extends Evented {
 	constructor() {
 		super();
 		
-		this.prefs = defaultPrefs();
 		this.langs = langs;
 	}
 	
@@ -195,7 +194,8 @@ class Base extends Evented {
 			this.langs.add(lang);
 		}
 		
-		this.loadSnippets();
+		this.prefs = await platform.loadJson("prefs") || defaultPrefs();
+		this.snippets = await platform.loadSnippets();
 	}
 	
 	/*
@@ -299,8 +299,16 @@ class Base extends Evented {
 		};
 	}
 	
-	async loadSnippets() {
-		this.snippets = await platform.loadSnippets();
+	getPref(key) {
+		return get(this.prefs, key);
+	}
+	
+	setPref(key, value) {
+		set(this.prefs, key, value);
+		
+		platform.saveJson("prefs", this.prefs);
+		
+		this.fire("prefsUpdated");
 	}
 	
 	getSnippet(name) {
