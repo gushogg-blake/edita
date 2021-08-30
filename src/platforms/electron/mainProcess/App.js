@@ -156,11 +156,11 @@ class App {
 	}
 	
 	loadJson(key) {
-		return fs(this.config.userDataDir).child(key + ".json").readJson();
+		return fs(this.config.userDataDir, ...key.split("/")).withExt(".json").readJson();
 	}
 	
 	saveJson(key, data) {
-		return fs(this.config.userDataDir).child(key + ".json").writeJson(data);
+		return fs(this.config.userDataDir, ...key.split("/")).withExt(".json").writeJson(data);
 	}
 }
 

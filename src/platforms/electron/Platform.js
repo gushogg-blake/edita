@@ -1,8 +1,6 @@
 let {ipcRenderer} = require("electron");
 let os = require("os");
 let path = require("path");
-let fsExtra = require("fs-extra");
-let minimatch = require("minimatch");
 let glob = require("glob");
 let bluebird = require("bluebird");
 let get = require("lodash.get");
@@ -11,14 +9,8 @@ let set = require("lodash.set");
 let Evented = require("utils/Evented");
 let defaultPrefs = require("modules/defaultPrefs");
 
-let fs = require("../common/modules/fs");
-let init = require("./modules/ipc/init");
-let dialog = require("./modules/ipc/dialog");
-let clipboard = require("./modules/ipc/clipboard");
-let contextMenu = require("./modules/ipc/contextMenu");
-let prefs = require("./modules/ipc/prefs");
-let snippets = require("./modules/ipc/snippets");
-let session = require("./modules/ipc/session");
+let fs = require("./modules/fs");
+let ipc = require("./modules/ipc");
 
 class Platform extends Evented {
 	constructor() {
@@ -28,29 +20,19 @@ class Platform extends Evented {
 			config,
 			systemInfo,
 			isMainWindow,
-		} = init;
+		} = ipc.init;
 		
 		this.config = config;
 		this.systemInfo = systemInfo;
 		this.isMainWindow = isMainWindow;
 		
-		this.clipboard = clipboard;
+		this.clipboard = ipc.clipboard;
 		this.path = path;
+		this.fs = fs;
 		
-		this.fs = fs({
-			fs: fsExtra,
-			path,
-			minimatch,
-			glob,
-			
-			cwd() {
-				return process.cwd();
-			},
-		});
-		
-		prefs.on("update", this.onPrefsUpdate.bind(this));
-		snippets.on("new", this.onNewSnippet.bind(this));
-		snippets.on("update", this.onSnippetUpdate.bind(this));
+		ipc.prefs.on("update", this.onPrefsUpdate.bind(this));
+		ipc.snippets.on("new", this.onNewSnippet.bind(this));
+		ipc.snippets.on("update", this.onSnippetUpdate.bind(this));
 		
 		ipcRenderer.on("closeWindow", () => {
 			let defaultPrevented = false;
@@ -70,8 +52,8 @@ class Platform extends Evented {
 	}
 	
 	async init() {
-		this.prefs = await prefs.load() || defaultPrefs(this.systemInfo);
-		this.snippets = await snippets.load();
+		this.prefs = await ipc.prefs.load() || defaultPrefs(this.systemInfo);
+		this.snippets = await ipc.snippets.load();
 	}
 	
 	async open(dir=null) {
@@ -80,7 +62,7 @@ class Platform extends Evented {
 		let {
 			canceled,
 			filePaths,
-		} = await dialog.showOpen({
+		} = await ipc.dialog.showOpen({
 			defaultPath,
 			
 			properties: [
@@ -97,11 +79,11 @@ class Platform extends Evented {
 	}
 	
 	async save(path, code) {
-		await this.fs(path).write(code);
+		await fs(path).write(code);
 	}
 	
 	async saveAs() {
-		let {filePath} = await dialog.showSave({
+		let {filePath} = await ipc.dialog.showSave({
 			
 		});
 		
@@ -109,19 +91,18 @@ class Platform extends Evented {
 	}
 	
 	showMessageBox(options) {
-		return dialog.showMessageBox({
+		return ipc.dialog.showMessageBox({
 			normalizeAccessKeys: true,
 			...options,
 		});
 	}
 	
 	showContextMenu(e, items) {
-		contextMenu(items);
+		ipc.contextMenu(items);
 	}
 	
-	openWindow(url, options, callback) {
+	openWindow(url, options) {
 		let {
-			title = "Editor",
 			width = 800,
 			height = 600,
 			top = null,
@@ -137,18 +118,6 @@ class Platform extends Evented {
 		}
 		
 		let win = window.open(url, "", "width=" + width + ",height=" + height + ",top=" + top + ",left=" + left);
-		
-		win.addEventListener("load", function() {
-			win.document.title = title;
-			
-			callback({
-				el: win.document.body,
-				
-				closeWindow() {
-					win.close();
-				},
-			});
-		});
 	}
 	
 	loadTreeSitterLanguage(name) {
@@ -162,7 +131,7 @@ class Platform extends Evented {
 	setPref(key, value) {
 		set(this.prefs, key, value);
 		
-		prefs.save(this.prefs);
+		ipc.prefs.save(this.prefs);
 	}
 	
 	onPrefsUpdate() {
@@ -178,7 +147,10 @@ class Platform extends Evented {
 	}
 	
 	editSnippet(snippet) {
-		
+		this.openWindow("blank.html", {
+			width: 680,
+			height: 480,
+		});
 	}
 	
 	getSnippet(name) {
@@ -186,11 +158,11 @@ class Platform extends Evented {
 	}
 	
 	loadSession() {
-		return session.load();
+		return ipc.session.load();
 	}
 	
-	saveSession(data) {
-		return session.save(data);
+	saveSession(session) {
+		return ipc.session.save(session);
 	}
 }
 
