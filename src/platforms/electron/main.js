@@ -1,18 +1,18 @@
 import getKeyCombo from "utils/getKeyCombo";
 import Base from "modules/Base";
 import App from "modules/App";
-import AppComponent from "components/App/App.svelte";
+import components from "components";
 import Platform from "./Platform";
 
 window.platform = new Platform();
-window.base = new Base();
+window.base = new Base(components);
 
 (async function() {
 	await base.init();
 	
 	let app = new App();
 	
-	new AppComponent({
+	new components.App({
 		target: document.body,
 		
 		props: {

@@ -355,6 +355,28 @@ class App extends Evented {
 		});
 	}
 	
+	editSnippet(snippet) {
+		platform.openWindow({
+			title: snippet.name,
+			width: 700,
+			height: 500,
+		}, ({el, closeWindow}) => {
+			let editor = new base.components.SnippetEditor({
+				target: el,
+				
+				props: {
+					snippet,
+				},
+			});
+			
+			editor.$on("close", () => {
+				console.log("save");
+				
+				closeWindow();
+			});
+		});
+	}
+	
 	uiMounted() {
 	}
 	

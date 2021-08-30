@@ -3,6 +3,7 @@ let os = require("os");
 let path = require("path");
 let fsExtra = require("fs-extra");
 let minimatch = require("minimatch");
+let glob = require("glob");
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 let fs = require("../common/modules/fs");
@@ -32,6 +33,7 @@ class Platform extends Evented {
 			fs: fsExtra,
 			path,
 			minimatch,
+			glob,
 			
 			cwd() {
 				return process.cwd();
@@ -103,6 +105,38 @@ class Platform extends Evented {
 		contextMenu(items);
 	}
 	
+	openWindow(options, callback) {
+		let {
+			title = "Editor",
+			width = 800,
+			height = 600,
+			top = null,
+			left = null,
+		} = options;
+		
+		if (top === null) {
+			top = Math.round(window.screenTop + (window.outerHeight - height) / 2);
+		}
+		
+		if (left === null) {
+			left = Math.round(window.screenLeft + (window.outerWidth - width) / 2);
+		}
+		
+		let win = window.open("blank.html", "", "width=" + width + ",height=" + height + ",top=" + top + ",left=" + left);
+		
+		win.addEventListener("load", function() {
+			win.document.title = title;
+			
+			callback({
+				el: win.document.body,
+				
+				closeWindow() {
+					win.close();
+				},
+			});
+		});
+	}
+	
 	loadTreeSitterLanguage(name) {
 		return TreeSitter.Language.load(path.join(__dirname, "public", "vendor", "tree-sitter", "langs", name + ".wasm"));
 	}
@@ -114,7 +148,7 @@ class Platform extends Evented {
 			return [];
 		}
 		
-		return bluebird.map(dir.ls(), node => node.readJson());
+		return bluebird.map(dir.glob("*.json"), node => node.readJson());
 	}
 	
 	async loadJson(key) {

@@ -5,6 +5,7 @@ module.exports = function(backends) {
 		fs,
 		path: osPath,
 		minimatch,
+		glob,
 		cwd,
 	} = backends;
 	
@@ -198,6 +199,18 @@ module.exports = function(backends) {
 		
 		async lsDirs() {
 			return bluebird.filter(this.ls(), node => node.isDir());
+		}
+		
+		glob(pattern, options) {
+			return new Promise((resolve, reject) => {
+				glob(osPath.resolve(this.path, pattern), options, (e, files) => {
+					if (e) {
+						reject(e);
+					} else {
+						resolve(files.map(file => this.child(file)));
+					}
+				});
+			});
 		}
 		
 		async contains(filename) {

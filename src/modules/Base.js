@@ -173,10 +173,11 @@ UI.
 */
 
 class Base extends Evented {
-	constructor() {
+	constructor(components) {
 		super();
 		
 		this.langs = langs;
+		this.components = components;
 	}
 	
 	async init() {

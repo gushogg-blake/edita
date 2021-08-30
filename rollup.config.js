@@ -76,6 +76,7 @@ if (!platform || platform === "all" || platform === "electron") {
 					"os",
 					"fs",
 					"fs-extra",
+					"glob",
 					"path",
 					"constants",
 					"util",
