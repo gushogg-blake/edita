@@ -1,27 +1,10 @@
 <script>
 import {onMount, getContext} from "svelte";
+import FocusablePane from "./FocusablePane.svelte";
 
 let app = getContext("app");
 
-let blur = function() {
-	
-}
 
-function onFocus() {
-	app.focusManager.focus(blur);
-}
-
-onMount(function() {
-	let teardown = [
-		app.focusManager.teardown(blur),
-	];
-	
-	return function() {
-		for (let fn of teardown) {
-			fn();
-		}
-	}
-});
 </script>
 
 <style type="text/scss">
@@ -31,6 +14,8 @@ onMount(function() {
 }
 </style>
 
-<div id="main" tabindex="0" on:focus={onFocus}>
-	right
-</div>
+<FocusablePane>
+	<div id="main">
+		
+	</div>
+</FocusablePane>

@@ -18,11 +18,9 @@ setContext("app", app);
 let {
 	tabs,
 	selectedTab,
+	showingPane,
 } = app;
 
-let showingLeftPane = true;
-let showingRightPane = false;
-let showingBottomPane = false;
 let showingFindBar = false;
 
 function keydown(e) {
@@ -49,12 +47,19 @@ function onHideFindBar() {
 	showingFindBar = false;
 }
 
+function onUpdatePanes() {
+	({
+		showingPane,
+	} = app);
+}
+
 onMount(function() {
 	let teardown = [
 		app.on("updateTabs", onUpdateTabs),
 		app.on("selectTab", onSelectTab),
 		app.on("hideFindBar", onHideFindBar),
 		app.on("showFindBar", onShowFindBar),
+		app.on("updatePanes", onUpdatePanes),
 	];
 	
 	app.uiMounted();
@@ -165,7 +170,7 @@ $border: 1px solid #AFACAA;
 		<Toolbar/>
 	</div>
 	<div id="leftContainer">
-		{#if showingLeftPane}
+		{#if showingPane.left}
 			<div id="left">
 				<LeftPane/>
 			</div>
@@ -193,14 +198,14 @@ $border: 1px solid #AFACAA;
 		{/if}
 	</div>
 	<div id="rightContainer">
-		{#if showingRightPane}
+		{#if showingPane.right}
 			<div id="right">
 				<RightPane/>
 			</div>
 		{/if}
 	</div>
 	<div id="bottomContainer">
-		{#if showingBottomPane}
+		{#if showingPane.bottom}
 			<div id="bottom">
 				<BottomPane/>
 			</div>

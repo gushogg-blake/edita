@@ -2,18 +2,6 @@
 import {getContext} from "svelte";
 
 let app = getContext("app");
-
-function open() {
-	app.open();
-}
-
-function _new() {
-	app.newFile();
-}
-
-function save() {
-	app.save();
-}
 </script>
 
 <style type="text/scss">
@@ -25,13 +13,22 @@ function save() {
 </style>
 
 <div id="main">
-	<button on:click={_new}>
+	<button on:click={() => app.newFile()}>
 		New
 	</button>
-	<button on:click={open}>
+	<button on:click={() => app.open()}>
 		Open
 	</button>
-	<button on:click={save}>
+	<button on:click={() => app.save()}>
 		Save
+	</button>
+	<button on:click={() => app.togglePane("left")}>
+		[
+	</button>
+	<button on:click={() => app.togglePane("bottom")}>
+		_
+	</button>
+	<button on:click={() => app.togglePane("right")}>
+		]
 	</button>
 </div>
