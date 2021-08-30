@@ -1,5 +1,6 @@
 let {
 	app: electronApp,
+	protocol,
 	BrowserWindow,
 	globalShortcut,
 	Menu,
@@ -35,7 +36,36 @@ class App {
 		
 		Menu.setApplicationMenu(null);
 		
+		protocol.registerSchemesAsPrivileged([
+			{
+				scheme: "app",
+				
+				privileges: {
+					standard: true,
+					secure: true,
+					supportFetchAPI: true,
+				},
+			},
+		]);
+		
 		electronApp.on("ready", () => {
+			protocol.registerFileProtocol("app", (request, callback) => {
+				let path = decodeURIComponent(new URL(request.url).pathname);
+				
+				// tree-sitter.js requests an incorrect absolute path for some reason
+				if (path.endsWith("tree-sitter.wasm")) {
+					callback({
+						path: fs(__dirname, "..", "public", "vendor", "tree-sitter", "tree-sitter.wasm").path,
+					});
+					
+					return;
+				}
+				
+				callback({
+					path: fs(__dirname, "..", "public", ...path.split("/").filter(Boolean)).path,
+				});
+			});
+			
 			this.createWindow();
 			
 			globalShortcut.register("CommandOrControl+Q", () => {
@@ -72,7 +102,7 @@ class App {
 		
 		winState.manage(browserWindow);
 		
-		browserWindow.loadURL("file://" + path.join(__dirname, "..", "public", "index.html"));
+		browserWindow.loadURL("app://-/main.html");
 		
 		if (dev) {
 			browserWindow.webContents.openDevTools();
