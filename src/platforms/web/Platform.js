@@ -1,7 +1,12 @@
 let path = require("path-browserify");
 let minimatch = require("minimatch-browser");
 let bluebird = require("bluebird");
+let get = require("lodash.get");
+let set = require("lodash.set");
+
 let Evented = require("utils/Evented");
+let defaultPrefs = require("modules/defaultPrefs");
+
 let fs = require("../common/modules/fs");
 let clipboard = require("./modules/clipboard");
 
@@ -32,6 +37,9 @@ class Platform extends Evented {
 				return "/";
 			},
 		});
+		
+		this.prefs = await this.loadPrefs() || defaultPrefs(this.systemInfo);
+		this.snippets = await this.loadSnippets();
 	}
 	
 	async open(defaultPath, currentPath) {
@@ -58,8 +66,50 @@ class Platform extends Evented {
 		return TreeSitter.Language.load("./vendor/tree-sitter/langs/" + name + ".wasm");
 	}
 	
-	async loadSnippets() {
-		return [];
+	getPref(key) {
+		return get(this.prefs, key);
+	}
+	
+	setPref(key, value) {
+		set(this.prefs, key, value);
+		
+		prefs.save(this.prefs);
+	}
+	
+	loadPrefs() {
+		return null; //
+	}
+	
+	loadSnippets() {
+		return []; //
+	}
+	
+	onPrefsUpdate() {
+		this.fire("prefsUpdated");
+	}
+	
+	onNewSnippet() {
+		
+	}
+	
+	onSnippetUpdate() {
+		
+	}
+	
+	editSnippet(snippet) {
+		
+	}
+	
+	getSnippet(name) {
+		return this.snippets.find(s => s.name === name);
+	}
+	
+	loadSession() {
+		return session.load();
+	}
+	
+	saveSession(data) {
+		return session.save(data);
 	}
 }
 
