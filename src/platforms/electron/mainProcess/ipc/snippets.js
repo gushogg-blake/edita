@@ -7,7 +7,7 @@ module.exports = function(app) {
 			return bluebird.map(fs(app.config.userDataDir, "snippets").glob("*.json"), node => node.readJson());
 		},
 		
-		async update(id, snippet) {
+		async update(e, id, snippet) {
 			
 		},
 	};
