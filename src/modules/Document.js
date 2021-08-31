@@ -119,20 +119,6 @@ class Document extends Evented {
 		};
 	}
 	
-	/*
-	apply later edits first so that selections don't need adjusting
-	*/
-	
-	sortEdits(edits) {
-		return [...edits].sort(function(a, b) {
-			if (Selection.isBefore(a.selection, b.selection)) {
-				return 1;
-			} else {
-				return -1;
-			}
-		});
-	}
-	
 	reverseEdits(edits) {
 		return [...edits].reverse().map(e => this.reverse(e));
 	}
@@ -144,8 +130,6 @@ class Document extends Evented {
 	}
 	
 	applyAndAddHistoryEntry(edits) {
-		edits = this.sortEdits(edits);
-		
 		let undo = this.reverseEdits(edits);
 		
 		this.applyEdits(edits);
@@ -308,8 +292,16 @@ class Document extends Evented {
 		
 		newSelection = Selection.subtractEarlierSelection(newSelection, fromSelection);
 		
+		let edits;
+		
+		if (Cursor.isBefore(toCursor, fromSelection.start)) {
+			edits = [remove, insert];
+		} else {
+			edits = [insert, remove];
+		}
+		
 		return {
-			edits: [remove, insert],
+			edits,
 			newSelection,
 		};
 	}
