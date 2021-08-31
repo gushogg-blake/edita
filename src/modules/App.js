@@ -41,8 +41,8 @@ class App extends Evented {
 				fileToSelect = session.selectedTabPath;
 			}
 			
-			window.addEventListener("beforeunload", function() {
-				app.saveSession();
+			window.addEventListener("beforeunload", () => {
+				this.saveSession();
 			});
 		}
 		
