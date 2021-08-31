@@ -1,18 +1,20 @@
+let astCommon = require("modules/langs/common/astMode");
+
 module.exports = {
 	up() {
-		this.setAstSelection(this.view.lang.astMode.selection.up(this.document.lines, this.view.astSelection));
+		this.setAstSelection(astCommon.selection.up(this.document.lines, this.view.astSelection));
 	},
 	
 	down() {
-		this.setAstSelection(this.view.lang.astMode.selection.down(this.document.lines, this.view.astSelection));
+		this.setAstSelection(astCommon.selection.down(this.document.lines, this.view.astSelection));
 	},
 	
 	next() {
-		this.setAstSelection(this.view.lang.astMode.selection.next(this.document.lines, this.view.astSelection));
+		this.setAstSelection(astCommon.selection.next(this.document.lines, this.view.astSelection));
 	},
 	
 	previous() {
-		this.setAstSelection(this.view.lang.astMode.selection.previous(this.document.lines, this.view.astSelection));
+		this.setAstSelection(astCommon.selection.previous(this.document.lines, this.view.astSelection));
 	},
 	
 	insert() {

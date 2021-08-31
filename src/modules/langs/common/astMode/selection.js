@@ -1,9 +1,9 @@
-let AstSelection = require("../../../utils/AstSelection");
+let AstSelection = require("modules/utils/AstSelection");
 
 let {
 	findNextLineIndexAtIndentLevel,
 	findPrevLineIndexAtIndentLevel,
-} = require("../../common/astMode/utils");
+} = require("./utils");
 
 let {s} = AstSelection;
 

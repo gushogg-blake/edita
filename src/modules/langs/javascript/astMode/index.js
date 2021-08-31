@@ -1,6 +1,5 @@
 let pickOptions = require("./pickOptions");
 let dropTargets = require("./dropTargets");
-let selection = require("./selection");
 let astManipulations = require("./astManipulations");
 let generatePickOptions = require("./generatePickOptions");
 let generateDropTargets = require("./generateDropTargets");
@@ -8,7 +7,6 @@ let generateDropTargets = require("./generateDropTargets");
 module.exports = {
 	pickOptions,
 	dropTargets,
-	selection,
 	astManipulations,
 	generatePickOptions,
 	generateDropTargets,

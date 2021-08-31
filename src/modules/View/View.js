@@ -3,6 +3,7 @@ let bindFunctions = require("utils/bindFunctions");
 let Cursor = require("modules/utils/Cursor");
 let Selection = require("modules/utils/Selection");
 let AstSelection = require("modules/utils/AstSelection");
+let astCommon = require("modules/langs/common/astMode");
 
 let calculateMarginOffset = require("./canvas/utils/calculateMarginOffset");
 let calculateMarginWidth = require("./canvas/utils/calculateMarginWidth");
@@ -450,11 +451,7 @@ class View extends Evented {
 		let {start, end} = Selection.sort(this.normalSelection);
 		let {astMode} = this.lang;
 		
-		if (astMode) {
-			this.astSelection = astMode.selection.fromLineRange(document.lines, start.lineIndex, end.lineIndex + 1);
-		} else {
-			this.astSelection = a(0, 0);
-		}
+		this.astSelection = astCommon.selection.fromLineRange(document.lines, start.lineIndex, end.lineIndex + 1);
 	}
 	
 	setMeasurements(measurements) {

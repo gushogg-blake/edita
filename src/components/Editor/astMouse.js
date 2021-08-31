@@ -1,6 +1,7 @@
 let parseJson = require("utils/parseJson");
 let {on, off} = require("utils/dom/domEvents");
 let AstSelection = require("modules/utils/AstSelection");
+let astCommon = require("modules/langs/common/astMode");
 let autoScroll = require("./utils/autoScroll");
 
 let {s} = AstSelection;
@@ -82,13 +83,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			}
 		}
 		
-		let {astMode} = document.langFromLineIndex(lineIndex);
-		
-		if (!astMode) {
-			return null;
-		}
-		
-		return astMode.selection.hiliteFromLineIndex(document.lines, lineIndex);
+		return astCommon.selection.hiliteFromLineIndex(document.lines, lineIndex);
 	}
 	
 	function getInsertionRange(e) {
