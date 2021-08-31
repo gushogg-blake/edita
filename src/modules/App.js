@@ -461,7 +461,7 @@ class App extends Evented {
 	
 	onCloseWindow(e) {
 		for (let tab of this.tabs) {
-			if (tab.editor.document.modified) {
+			if (tab.modified) {
 				e.preventDefault();
 				
 				break;
