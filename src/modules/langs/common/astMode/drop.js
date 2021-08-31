@@ -1,13 +1,13 @@
 let AstSelection = require("modules/utils/AstSelection");
-let removeSelection = require("../../common/astMode/removeSelection");
-let createSpaces = require("../../common/astMode/utils/createSpaces");
-let findIndentLevel = require("../../common/astMode/utils/findIndentLevel");
-let findSiblingIndex = require("../../common/astMode/utils/findSiblingIndex");
-let dropTargets = require("./dropTargets");
+let removeSelection = require("./removeSelection");
+let createSpaces = require("./utils/createSpaces");
+let findIndentLevel = require("./utils/findIndentLevel");
+let findSiblingIndex = require("./utils/findSiblingIndex");
 
 let {s} = AstSelection;
 
 module.exports = function(
+	astMode,
 	document,
 	fromSelection,
 	toSelection,
@@ -17,7 +17,7 @@ module.exports = function(
 	target,
 ) {
 	if (target) {
-		return dropTargets[target].handleDrop(
+		return astMode.dropTargets[target].handleDrop(
 			document,
 			fromSelection,
 			toSelection,
@@ -49,7 +49,7 @@ module.exports = function(
 		&& AstSelection.isAdjacent(fromSelection, toSelection)
 	) { // space from sibling
 		// might be better to do nothing here, as this action (space the
-		// selection from its sibling) is only available nodes that are
+		// selection from its sibling) is only available to nodes that are
 		// already spaced on the other side (because there has to be a space
 		// to drag it into)
 		
@@ -98,7 +98,20 @@ module.exports = function(
 				blocks from other lines
 				*/
 				
-				let edit = document.lineEdit(toStart - removeDiff, 0, lines);
+				let spaces = {
+					above: [],
+					below: [],
+				};
+				
+				if (astMode.insertSpaces) {
+					spaces = astMode.insertSpaces(document, fromSelection, toSelection, selectionLines);
+				}
+				
+				let edit = document.lineEdit(toStart - removeDiff, 0, [
+					...spaces.above,
+					...lines,
+					...spaces.below,
+				]);
 				
 				edits.push(edit);
 				

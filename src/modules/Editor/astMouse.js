@@ -1,4 +1,5 @@
 let AstSelection = require("modules/utils/AstSelection");
+let astCommon = require("modules/langs/common/astMode");
 
 module.exports = {
 	setSelection(selection) {
@@ -45,7 +46,8 @@ module.exports = {
 		let {
 			edits,
 			newSelection,
-		} = astMode.drop(
+		} = astCommon.drop(
+			astMode,
 			this.document,
 			fromSelection,
 			toSelection,
