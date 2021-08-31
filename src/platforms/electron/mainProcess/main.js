@@ -1,5 +1,4 @@
 let {app: electronApp} = require("electron");
-let dev = require("electron-is-dev");
 let path = require("path");
 let App = require("./App");
 let config = require("./config");
@@ -11,7 +10,7 @@ electronApp.setPath("userData", path.join(config.userDataDir, "electron"));
 	
 	await app.launch();
 	
-	if (dev) {
+	if (config.dev) {
 		require("./watch")(app);
 	}
 })();

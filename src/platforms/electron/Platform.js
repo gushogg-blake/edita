@@ -20,11 +20,13 @@ class Platform extends Evented {
 			config,
 			systemInfo,
 			isMainWindow,
+			filesToOpenOnStartup,
 		} = ipc.init;
 		
 		this.config = config;
 		this.systemInfo = systemInfo;
 		this.isMainWindow = isMainWindow;
+		this.filesToOpenOnStartup = filesToOpenOnStartup;
 		
 		this.clipboard = ipc.clipboard;
 		this.path = path;
@@ -92,6 +94,10 @@ class Platform extends Evented {
 		});
 		
 		return filePath || null;
+	}
+	
+	getFilesToOpenOnStartup() {
+		return this.filesToOpenOnStartup;
 	}
 	
 	showMessageBox(options) {

@@ -8,7 +8,6 @@ let {
 } = require("electron");
 
 let windowStateKeeper = require("electron-window-state");
-let dev = require("electron-is-dev");
 let path = require("path");
 let yargs = require("yargs/yargs");
 let {hideBin} = require("yargs/helpers");
@@ -22,6 +21,7 @@ class App {
 		this.config = config;
 		this.browserWindows = [];
 		this.mainWindow = null;
+		this.filesToOpenOnStartup = yargs(hideBin(process.argv)).argv._.map(p => path.resolve(process.cwd(), p));
 	}
 	
 	async launch() {
@@ -114,7 +114,7 @@ class App {
 		
 		browserWindow.loadURL("app://-/main.html");
 		
-		if (dev) {
+		if (config.dev) {
 			browserWindow.webContents.openDevTools();
 		}
 		

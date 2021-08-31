@@ -3,16 +3,15 @@ let os = require("os");
 module.exports = function(app) {
 	return {
 		init(e) {
-			let {config} = app;
-			
-			let isMainWindow = (
-				app.browserWindows.length === 1
-				&& app.browserWindows[0] === app.browserWindowFromEvent(e)
-			);
+			let {
+				config,
+				filesToOpenOnStartup,
+			} = app;
 			
 			return {
 				config,
-				isMainWindow,
+				isMainWindow: app.browserWindowFromEvent(e) === app.mainWindow,
+				filesToOpenOnStartup,
 				
 				systemInfo:{
 					newline: os.EOL,

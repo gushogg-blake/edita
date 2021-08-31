@@ -22,7 +22,6 @@ forceNewInstance = forceNewInstance || process.env.EDITOR_NEW_INSTANCE === "1";
 
 module.exports = {
 	dev,
-	args: args.argv,
 	userDataDir,
 	forceNewInstance,
 };

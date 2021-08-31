@@ -22,7 +22,11 @@ window.base = new Base(components);
 	});
 	
 	if (platform.isMainWindow) {
-		app.loadSession();
+		await app.loadSession();
+		
+		for (let path of platform.getFilesToOpenOnStartup()) {
+			app.openFile(path);
+		}
 		
 		window.addEventListener("beforeunload", function() {
 			app.saveSession();
