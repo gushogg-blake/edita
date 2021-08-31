@@ -4,7 +4,7 @@
 	"author": "Gus Hogg-Blake",
 	"version": "1.0.0",
 	"main": "./src/platforms/electron/mainProcess/main.js",
-	"electronVersion": "13.1.6",
+	"electronVersion": "13.1.7",
 	"dependencies": {
 		"bluebird": "^3.7.2",
 		"chokidar": "^3.5.2",
@@ -27,6 +27,7 @@
 		"@rollup/plugin-commonjs": "^19.0.0",
 		"@rollup/plugin-node-resolve": "^13.0.0",
 		"autoprefixer": "^10.2.6",
+		"electron": "^13.1.7",
 		"electron-builder": "^22.11.7",
 		"mocha": "^9.0.2",
 		"node-sass": "^6.0.1",
@@ -57,7 +58,7 @@
 		"web-dev": "run-p autobuild-web web",
 		"electron": "NODE_ENV=development electron .",
 		"web": "sirv src/platforms/web/public --dev",
-		"dist": "run-s build pure-dist-win",
+		"dist": "run-s build-electron pure-dist-win",
 		"pure-dist-win": "electron-builder --win --config electron-builder.yml",
 		"test": "./node_modules/mocha/bin/mocha --file test/platform/main.js 'test/tests/**/*.test.js'"
 	}
