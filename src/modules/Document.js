@@ -150,8 +150,6 @@ class Document extends Evented {
 	}
 	
 	applyAndMergeWithLastHistoryEntry(edits) {
-		edits = this.sortEdits(edits);
-		
 		let entry = this.lastHistoryEntry;
 		
 		this.applyEdits(edits);

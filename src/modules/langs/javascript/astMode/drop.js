@@ -98,7 +98,7 @@ module.exports = function(
 				blocks from other lines
 				*/
 				
-				let edit = document.lineEdit(toStart, 0, lines);
+				let edit = document.lineEdit(toStart - removeDiff, 0, lines);
 				
 				edits.push(edit);
 				
@@ -113,7 +113,7 @@ module.exports = function(
 				
 				let spaces = createSpaces(toEnd - toStart, insertIndentLevel, indentStr);
 				
-				let edit = document.lineEdit(toEnd, 0, [
+				let edit = document.lineEdit(toEnd - removeDiff, 0, [
 					...lines,
 					...spaces,
 				]);
