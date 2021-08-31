@@ -118,14 +118,12 @@ module.exports = async function(lang) {
 				if (startLineIndex !== endLineIndex) {
 					// opener/closer
 					
-					console.log(node.type);
-					
 					if ([
 						"block",
 					].includes(type)) {
 						let opener = node.firstChild;
 						let closer = node.lastChild;
-						console.log(node);
+						
 						lines[opener.startPosition.row].openers.push({
 							lang,
 							node: opener,
@@ -133,7 +131,7 @@ module.exports = async function(lang) {
 						
 						lines[closer.startPosition.row].closers.unshift({
 							lang,
-							ndoe: closer,
+							node: closer,
 						});
 					}
 				}
