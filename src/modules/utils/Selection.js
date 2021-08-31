@@ -84,15 +84,15 @@ function addOrSubtractEarlierSelection(selection, adjustment, sign) {
 	selection = sort(selection);
 	adjustment = sort(adjustment);
 	
+	if (startsBefore(selection, adjustment)) {
+		return selection;
+	}
+	
 	if (
 		sign === 1 && cursorIsWithinSelection(selection, adjustment.start)
 		|| sign === -1 && isOverlapping(selection, adjustment)
 	) {
 		return null;
-	}
-	
-	if (startsBefore(selection, adjustment)) {
-		return selection;
 	}
 	
 	let newStartLineIndex = selection.start.lineIndex;
