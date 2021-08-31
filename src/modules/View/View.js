@@ -81,7 +81,7 @@ class View extends Evented {
 			colWidth: 0,
 		};
 		
-		this.updateSizes(0, 0);
+		this.updateSizes(800, 600);
 		
 		this.updateWrappedLines();
 		
