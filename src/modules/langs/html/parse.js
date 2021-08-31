@@ -120,7 +120,9 @@ module.exports = async function(lang) {
 					// opener/closer
 					
 					if ([
-						
+						"element",
+						"style_element",
+						"script_element",
 					].includes(type)) {
 						let opener = node.firstChild;
 						let closer = node.lastChild;
@@ -132,7 +134,7 @@ module.exports = async function(lang) {
 						
 						lines[closer.startPosition.row].closers.unshift({
 							lang,
-							ndoe: closer,
+							node: closer,
 						});
 					}
 				}

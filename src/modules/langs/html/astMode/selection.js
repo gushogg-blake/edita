@@ -1,9 +1,50 @@
 let AstSelection = require("modules/utils/AstSelection");
 
+let {
+	findNextLineIndexAtIndentLevel,
+	findPrevLineIndexAtIndentLevel,
+} = require("../../common/astMode/utils");
+
 let {s} = AstSelection;
 
 function fromLineIndex(lines, lineIndex, forHilite) {
-	return s(lineIndex, lineIndex + 1);
+	let line = lines[lineIndex];
+	
+	if (!forHilite) {
+		while (line.trimmed.length === 0 && lineIndex > 0) {
+			lineIndex--;
+			line = lines[lineIndex];
+		}
+		
+		while (line.trimmed.length === 0 && lineIndex < lines.length - 1) {
+			lineIndex++;
+			line = lines[lineIndex];
+		}
+	}
+	
+	if (line.openers.length > 0) {
+		let footerIndex = findNextLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel);
+		
+		return s(
+			lineIndex,
+			(footerIndex !== null ? footerIndex : lineIndex) + 1,
+		);
+	} else if (line.closers.length > 0) {
+		let headerIndex = findPrevLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel);
+		
+		return s(
+			headerIndex !== null ? headerIndex : lineIndex,
+			lineIndex + 1,
+		);
+	} else if (line.trimmed.length > 0) {
+		return s(lineIndex, lineIndex + 1);
+	} else {
+		if (forHilite) {
+			return null;
+		} else {
+			return s(lineIndex);
+		}
+	}
 }
 
 function selectionFromLineIndex(lines, lineIndex) {
