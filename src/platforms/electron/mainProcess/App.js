@@ -10,6 +10,8 @@ let {
 let windowStateKeeper = require("electron-window-state");
 let dev = require("electron-is-dev");
 let path = require("path");
+let yargs = require("yargs/yargs");
+let {hideBin} = require("yargs/helpers");
 let {removeInPlace} = require("../../../utils/arrayMethods");
 let fs = require("./modules/fs");
 let ipc = require("./ipc");
@@ -19,6 +21,7 @@ class App {
 	constructor() {
 		this.config = config;
 		this.browserWindows = [];
+		this.mainWindow = null;
 	}
 	
 	async launch() {
@@ -66,7 +69,7 @@ class App {
 				});
 			});
 			
-			this.createWindow();
+			this.mainWindow = this.createWindow();
 			
 			globalShortcut.register("CommandOrControl+Q", () => {
 				electronApp.quit();
@@ -77,8 +80,14 @@ class App {
 			electronApp.quit();
 		});
 		
-		electronApp.on("second-instance", () => {
-			this.createWindow();
+		electronApp.on("second-instance", (e, argv, dir) => {
+			let files = yargs(hideBin(argv)).argv._.map(p => path.resolve(dir, p));
+			
+			if (files.length > 0) {
+				this.mainWindow.webContents.send("open", files);
+			} else {
+				this.createWindow();
+			}
 		});
 	}
 	
@@ -86,10 +95,11 @@ class App {
 		let winState = windowStateKeeper();
 		
 		let browserWindow = new BrowserWindow({
-			x: winState.x,
+			x: winState.x - 3, // DEV
 			y: winState.y,
 			width: winState.width,
 			height: winState.height,
+			useContentSize: true,
 			
 			webPreferences: {
 				nodeIntegration: true,
@@ -133,20 +143,20 @@ class App {
 		});
 		
 		this.browserWindows.push(browserWindow);
+		
+		return browserWindow;
 	}
 	
 	browserWindowFromEvent(e) {
 		return BrowserWindow.fromWebContents(e.sender);
 	}
 	
+	getFocusedBrowserWindow() {
+		return BrowserWindow.getFocusedWindow();
+	}
+	
 	callFocusedRenderer(channel, ...args) {
-		let browserWindow = BrowserWindow.getFocusedWindow();
-		
-		if (!browserWindow) {
-			return;
-		}
-		
-		browserWindow.webContents.send(channel, ...args);
+		this.getFocusedBrowserWindow()?.webContents.send(channel, ...args);
 	}
 	
 	callRenderers(channel, ...args) {
@@ -155,8 +165,12 @@ class App {
 		}
 	}
 	
-	loadJson(key) {
-		return fs(this.config.userDataDir, ...key.split("/")).withExt(".json").readJson();
+	async loadJson(key) {
+		try {
+			return await fs(this.config.userDataDir, ...key.split("/")).withExt(".json").readJson();
+		} catch (e) {
+			return null;
+		}
 	}
 	
 	saveJson(key, data) {

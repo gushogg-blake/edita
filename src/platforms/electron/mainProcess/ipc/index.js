@@ -6,6 +6,7 @@ let contextMenu = require("./contextMenu");
 let prefs = require("./prefs");
 let snippets = require("./snippets");
 let session = require("./session");
+let devTools = require("./devTools");
 
 let asyncModules = {
 	dialog,
@@ -13,6 +14,7 @@ let asyncModules = {
 	prefs,
 	snippets,
 	session,
+	devTools,
 };
 
 let syncModules = {

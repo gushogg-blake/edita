@@ -24,6 +24,7 @@ class App extends Evented {
 		
 		this.teardownCallbacks = [
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
+			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
 		];
 	}
 	
@@ -292,6 +293,12 @@ class App extends Evented {
 		}
 		
 		return null;
+	}
+	
+	onOpenFromElectronSecondInstance(files) {
+		for (let path of files) {
+			this.openFile(path);
+		}
 	}
 	
 	async loadSession() {

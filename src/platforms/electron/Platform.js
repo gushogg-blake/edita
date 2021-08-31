@@ -49,6 +49,10 @@ class Platform extends Evented {
 				ipcRenderer.send("closeWindow");
 			}
 		});
+		
+		ipcRenderer.on("open", (e, files) => {
+			this.fire("openFromElectronSecondInstance", files);
+		});
 	}
 	
 	async init() {
@@ -147,7 +151,7 @@ class Platform extends Evented {
 	}
 	
 	editSnippet(snippet) {
-		this.openWindow("blank.html", {
+		this.openWindow("editSnippet.html", {
 			width: 680,
 			height: 480,
 		});

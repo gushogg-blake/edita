@@ -44,8 +44,14 @@ let preventDefaultCombos = [
 ];
 
 window.addEventListener("keydown", function(e) {
-	if (preventDefaultCombos.includes(getKeyCombo(e).keyCombo)) {
+	let {keyCombo} = getKeyCombo(e);
+	
+	if (preventDefaultCombos.includes(keyCombo)) {
 		e.preventDefault();
+	}
+	
+	if (keyCombo === "Ctrl+Shift+J") {
+		require("electron").ipcRenderer.invoke("devTools/open");
 	}
 });
 

@@ -1,5 +1,5 @@
-productName: "ps"
-appId: "uk.hogg-blake.ps"
+productName: "editor"
+appId: "uk.hogg-blake.editor"
 
 # Package app code into a asar archive. Set to false to debug issues.
 asar: true

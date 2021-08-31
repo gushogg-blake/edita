@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Editor
+GenericName=Editor
+Comment=Editor
+Exec=/home/gus/bin/editor %F
+Icon=/home/gus/projects/editor/src/platforms/electron/resources/icon.png
+Terminal=false
+Type=Application
+MimeType=text/plain;
+Categories=Application;Development;Editor;Utility;TextEditor;
