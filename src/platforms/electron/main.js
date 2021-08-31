@@ -13,6 +13,8 @@ window.base = new Base(components);
 	
 	let app = new App();
 	
+	await app.init();
+	
 	new components.App({
 		target: document.body,
 		
@@ -20,22 +22,6 @@ window.base = new Base(components);
 			app,
 		},
 	});
-	
-	if (platform.isMainWindow) {
-		await app.loadSession();
-		
-		for (let path of platform.getFilesToOpenOnStartup()) {
-			await app.openFile(path);
-		}
-		
-		window.addEventListener("beforeunload", function() {
-			app.saveSession();
-		});
-	}
-	
-	if (app.tabs.length === 0) {
-		app.newFile();
-	}
 	
 	// DEV:
 	

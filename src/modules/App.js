@@ -29,6 +29,65 @@ class App extends Evented {
 		];
 	}
 	
+	async init() {
+		let tabsToOpen = [];
+		let fileToSelect;
+		
+		if (platform.isMainWindow) {
+			let session = await platform.loadSession();
+			
+			if (session) {
+				tabsToOpen = session.tabs;
+				fileToSelect = session.selectedTabPath;
+			}
+			
+			window.addEventListener("beforeunload", function() {
+				app.saveSession();
+			});
+		}
+		
+		tabsToOpen.push(...platform.getFilesToOpenOnStartup().map(function(path) {
+			return {path};
+		}));
+		
+		this.tabs = await bluebird.map(tabsToOpen, async ({path}) => {
+			return this.createTab(await platform.fs(path).read(), path);
+		});
+		
+		for (let details of tabsToOpen) {
+			let {
+				path,
+				mode,
+				normalSelection,
+				astSelection,
+				scrollPosition,
+			} = details;
+			
+			let tab = this.findTabByPath(path);
+			let {editor} = tab;
+			
+			if (scrollPosition && mode && (normalSelection || astSelection)) {
+				editor.view.setScrollPosition(scrollPosition);
+				
+				editor.setMode(mode);
+				
+				if (mode === "normal") {
+					editor.setNormalSelection(normalSelection);
+				} else {
+					editor.setAstSelection(astSelection);
+				}
+			}
+			
+			editor.view.ensureSelectionIsOnScreen();
+		}
+		
+		if (this.tabs.length > 0) {
+			this.selectTab(this.findTabByPath(fileToSelect));
+		} else {
+			this.newFile();
+		}
+	}
+	
 	async open() {
 		let dir = null;
 		let currentPath = this.selectedTab?.editor.document.path;
@@ -331,54 +390,6 @@ class App extends Evented {
 		}
 		
 		platform.setTitle(title);
-	}
-	
-	async loadSession() {
-		try {
-			let session = await platform.loadSession();
-			
-			if (!session) {
-				return;
-			}
-			
-			await bluebird.map(session.tabs, async (savedTab) => {
-				let {
-					path,
-					mode,
-					normalSelection,
-					astSelection,
-					scrollPosition,
-				} = savedTab;
-				
-				await this.openFile(path);
-				
-				let tab = this.findTabByPath(path);
-				
-				if (!tab) {
-					return;
-				}
-				
-				let {editor} = tab;
-				
-				editor.view.setScrollPosition(scrollPosition);
-				
-				editor.setMode(mode);
-				
-				if (mode === "normal") {
-					editor.setNormalSelection(normalSelection);
-				} else {
-					editor.setAstSelection(astSelection);
-				}
-				
-				editor.view.ensureSelectionIsOnScreen();
-			});
-			
-			if (this.tabs.length > 0) {
-				this.selectTab(this.findTabByPath(session.selectedTabPath));
-			}
-		} catch (e) {
-			console.error(e);
-		}
 	}
 	
 	async saveSession() {
