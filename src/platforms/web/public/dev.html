@@ -25,7 +25,7 @@
 					
 				});
 				
-				let app = createEditor(document.getElementById("editorContainer"));
+				let app = await createEditor(document.getElementById("editorContainer"));
 				
 				app.openFile("/test.js", await (await fetch("../../../../test/repos/test.js")).text());
 			})();

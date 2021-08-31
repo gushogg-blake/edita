@@ -19,6 +19,10 @@ class Tab extends Evented {
 		this.pendingActions = [];
 	}
 	
+	get modified() {
+		return this.editor.document.modified;
+	}
+	
 	async zoomOut() {
 		if (this.loading) {
 			this.pendingActions.push(this.zoomOut.bind(this));

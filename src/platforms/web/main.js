@@ -10,8 +10,10 @@ export default async function(options) {
 	await platform.init(options);
 	await base.init();
 	
-	return function(el) {
+	return async function(el) {
 		let app = new App();
+		
+		await app.init();
 		
 		new components.App({
 			target: el,

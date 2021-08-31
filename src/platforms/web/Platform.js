@@ -55,6 +55,10 @@ class Platform extends Evented {
 		
 	}
 	
+	getFilesToOpenOnStartup() {
+		return [];
+	}
+	
 	showMessageBox(options) {
 		
 	}

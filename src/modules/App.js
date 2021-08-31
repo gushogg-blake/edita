@@ -84,7 +84,7 @@ class App extends Evented {
 		if (this.tabs.length > 0) {
 			this.selectTab(this.findTabByPath(fileToSelect));
 		} else {
-			this.newFile();
+			this.initialNewFileTab = this.newFile();
 		}
 	}
 	
@@ -211,6 +211,10 @@ class App extends Evented {
 		
 		this.tabs = remove(this.tabs, tab);
 		
+		if (tab === this.initialNewFileTab) {
+			this.initialNewFileTab = null;
+		}
+		
 		this.fire("updateTabs");
 		
 		if (selectNext) {
@@ -292,6 +296,14 @@ class App extends Evented {
 	async openFile(path, code=null) {
 		path = platform.fs(path).path;
 		
+		if (
+			this.tabs.length === 1
+			&& this.tabs[0] === this.initialNewFileTab
+			&& !this.initialNewFileTab.modified
+		) {
+			this.closeTab(this.initialNewFileTab);
+		}
+		
 		let existingTab = this.findTabByPath(path);
 		
 		if (existingTab) {
@@ -331,6 +343,8 @@ class App extends Evented {
 		this.fire("updateTabs");
 		
 		this.selectTab(tab);
+		
+		return tab;
 	}
 	
 	createTab(code, path) {
