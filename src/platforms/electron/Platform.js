@@ -130,6 +130,10 @@ class Platform extends Evented {
 		let win = window.open(url, "", "width=" + width + ",height=" + height + ",top=" + top + ",left=" + left);
 	}
 	
+	setTitle(title) {
+		document.title = (title ? title + " - " : "") + "Editor";
+	}
+	
 	loadTreeSitterLanguage(name) {
 		return TreeSitter.Language.load(path.join(__dirname, "public", "vendor", "tree-sitter", "langs", name + ".wasm"));
 	}

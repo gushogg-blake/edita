@@ -96,7 +96,20 @@ class App extends Evented {
 		tab.editor.view.show();
 		tab.editor.view.focus();
 		
-		this.fire("selectTab")
+		this.updateTitle();
+		
+		this.fire("selectTab");
+	}
+	
+	getTabName(tab) {
+		let {editor} = tab;
+		let {path, modified} = editor.document;
+		
+		if (path) {
+			return platform.fs(path).name + (modified ? " *" : "");
+		} else {
+			return "New file" + (modified ? " *" : "");
+		}
 	}
 	
 	async closeTab(tab) {
@@ -273,6 +286,8 @@ class App extends Evented {
 		
 		for (let event of ["edit", "undo", "redo", "save"]) {
 			document.on(event, (...args) => {
+				this.updateTitle();
+				
 				this.fire("document." + event, document, ...args);
 			});
 		}
@@ -301,6 +316,20 @@ class App extends Evented {
 		for (let path of files) {
 			this.openFile(path);
 		}
+	}
+	
+	updateTitle() {
+		let title = "";
+		
+		if (this.selectedTab) {
+			title = this.getTabName(this.selectedTab);
+			
+			if (this.selectedTab.path) {
+				title += " (" + this.selectedTab.path + ")";
+			}
+		}
+		
+		platform.setTitle(title);
 	}
 	
 	async loadSession() {
@@ -356,6 +385,10 @@ class App extends Evented {
 			let {path, editor} = tab;
 			let {mode, normalSelection, astSelection, scrollPosition} = editor.view;
 			
+			if (path === null) { // TODO save new files (and edits?)
+				return null;
+			}
+			
 			return {
 				path,
 				mode,
@@ -363,7 +396,7 @@ class App extends Evented {
 				astSelection,
 				scrollPosition,
 			};
-		});
+		}).filter(Boolean);
 		
 		await platform.saveSession({
 			tabs,

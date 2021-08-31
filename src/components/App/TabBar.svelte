@@ -40,19 +40,12 @@ function tabIsSelected(tab, selectedTab) {
 	return selectedTab === tab;
 }
 
-function getTabName(tabs, tab) {
-	let {editor} = tab;
-	let {path, modified} = editor.document;
-	
-	if (path) {
-		return platform.fs(path).name + (modified ? " *" : "");
-	} else {
-		return "New file" + (modified ? " *" : "");
-	}
-}
-
 function updateTabs() {
 	tabs = app.tabs;
+}
+
+function getTabName(tabs, tab) {
+	return app.getTabName(tab);
 }
 
 function onSelectTab() {
