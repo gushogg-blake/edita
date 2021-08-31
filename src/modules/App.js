@@ -237,6 +237,8 @@ class App extends Evented {
 			// TODO prompt to change all newlines
 			// needed as fileDetails.newline.length is currently used for e.g.
 			// calculating line start offsets
+			
+			throw "File " + path + " has mixed newlines";
 		}
 		
 		let tab = this.createTab(code, path);

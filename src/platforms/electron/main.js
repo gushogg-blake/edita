@@ -25,12 +25,16 @@ window.base = new Base(components);
 		await app.loadSession();
 		
 		for (let path of platform.getFilesToOpenOnStartup()) {
-			app.openFile(path);
+			await app.openFile(path);
 		}
 		
 		window.addEventListener("beforeunload", function() {
 			app.saveSession();
 		});
+	}
+	
+	if (app.tabs.length === 0) {
+		app.newFile();
 	}
 	
 	// DEV:
