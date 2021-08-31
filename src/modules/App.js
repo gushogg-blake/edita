@@ -2,6 +2,7 @@ let bluebird = require("bluebird");
 let {remove, moveInPlace} = require("utils/arrayMethods");
 let Evented = require("utils/Evented");
 let focusManager = require("utils/focusManager");
+let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
 let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor/Editor");
@@ -325,7 +326,7 @@ class App extends Evented {
 			title = this.getTabName(this.selectedTab);
 			
 			if (this.selectedTab.path) {
-				title += " (" + this.selectedTab.path + ")";
+				title += " (" + replaceHomeDirWithTilde(platform.fs(this.selectedTab.path).parent.path) + ")";
 			}
 		}
 		

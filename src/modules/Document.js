@@ -205,6 +205,7 @@ class Document extends Evented {
 	updateFileDetails() {
 		this.fileDetails = base.getFileDetails(this.string, this.path);
 		this.mainLang = this.fileDetails.lang;
+		this.parse();
 	}
 	
 	async save() {

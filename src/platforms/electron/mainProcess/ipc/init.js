@@ -13,8 +13,9 @@ module.exports = function(app) {
 				isMainWindow: app.browserWindowFromEvent(e) === app.mainWindow,
 				filesToOpenOnStartup,
 				
-				systemInfo:{
+				systemInfo: {
 					newline: os.EOL,
+					homeDir: os.homedir(),
 				},
 			};
 		},
