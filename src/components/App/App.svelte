@@ -33,6 +33,20 @@ function keydown(e) {
 	}
 }
 
+function dragover(e) {
+	e.preventDefault();
+}
+
+function drop(e) {
+	e.preventDefault();
+	
+	let files = [...e.dataTransfer.files].map(f => f.path);
+	
+	for (let path of files) {
+		app.openFile(path);
+	}
+}
+
 function onUpdateTabs() {
 	tabs = app.tabs;
 }
@@ -167,7 +181,13 @@ $border: 1px solid #AFACAA;
 }
 </style>
 
-<div bind:this={main} id="main" class="editor">
+<div
+	bind:this={main}
+	id="main"
+	class="editor"
+	on:dragover={dragover}
+	on:drop={drop}
+>
 	<div id="toolbar">
 		<Toolbar/>
 	</div>
