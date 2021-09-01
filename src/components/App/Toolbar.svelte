@@ -13,7 +13,7 @@ let app = getContext("app");
 </style>
 
 <div id="main">
-	<button on:click={() => app.functions.newFile()}>
+	<button on:click={() => app.functions._new()}>
 		New
 	</button>
 	<button on:click={() => app.functions.open()}>

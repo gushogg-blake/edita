@@ -302,6 +302,25 @@ class App extends Evented {
 		return null;
 	}
 	
+	selectNextTab(dir) {
+		if (!this.selectedTab) {
+			return;
+		}
+		
+		let index = this.tabs.indexOf(this.selectedTab);
+		let newIndex = index + dir;
+		
+		if (newIndex === -1) {
+			newIndex = this.tabs.length - 1;
+		}
+		
+		if (newIndex === this.tabs.length) {
+			newIndex = 0;
+		}
+		
+		this.selectTab(this.tabs[newIndex]);
+	}
+	
 	onOpenFromElectronSecondInstance(files) {
 		for (let path of files) {
 			this.openFile(path);

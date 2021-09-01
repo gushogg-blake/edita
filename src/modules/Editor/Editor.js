@@ -38,6 +38,7 @@ class Editor extends Evented {
 		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
+			document.on("save", this.onDocumentSave.bind(this)),
 		];
 	}
 	
@@ -201,6 +202,10 @@ class Editor extends Evented {
 		}).filter(Boolean);
 		
 		this.view.updateMarginSize();
+	}
+	
+	onDocumentSave() {
+		this.clearBatchState();
 	}
 	
 	applyHistoryEntry(entry, state) {

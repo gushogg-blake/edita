@@ -80,6 +80,14 @@ module.exports = {
 		}
 	},
 	
+	selectNextTab() {
+		this.selectNextTab(1);
+	},
+	
+	selectPrevTab() {
+		this.selectNextTab(-1);
+	},
+	
 	closeTab() {
 		if (!this.selectedTab) {
 			return;
