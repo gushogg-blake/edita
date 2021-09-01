@@ -69,26 +69,14 @@ class App extends Evented {
 		}
 		
 		if (this.tabs.length > 0) {
-			this.selectTab(this.findTabByPath(fileToSelect));
+			this.selectTab(this.findTabByPath(fileToSelect) || this.tabs[this.tabs.length - 1]);
 		} else {
 			this.initialNewFileTab = this.newFile();
 		}
 	}
 	
-	async save(tab) {
-		let document = tab.editor.document;
-		
-		if (document.path) {
-			await document.save();
-		} else {
-			let path = await platform.saveAs();
-			
-			if (path) {
-				await document.saveAs(path);
-			}
-		}
-		
-		return document.path;
+	save(tab) {
+		return tab.editor.save();
 	}
 	
 	async renameTab(tab) {
