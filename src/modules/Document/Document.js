@@ -2,18 +2,16 @@ let Evented = require("utils/Evented");
 let _typeof = require("utils/typeof");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let Line = require("modules/Line");
-let generateRenderCommandsForLine = require("modules/generateRenderCommandsForLine");
 let Code = require("./Code");
 
 let {s} = Selection;
 let {c} = Cursor;
 
 class Document extends Evented {
-	constructor(string, path) {
+	constructor(code, path) {
 		super();
 		
-		this.string = string;
+		this.code = new Code(code);
 		this.path = path;
 		this.updateFileDetails();
 		
@@ -21,8 +19,14 @@ class Document extends Evented {
 		this.historyIndex = 0;
 		this.modified = false;
 		this.historyIndexAtSave = 0;
-		
-		this.parse();
+	}
+	
+	get string() {
+		return this.code.string;
+	}
+	
+	get lines() {
+		return this.code.lines;
 	}
 	
 	edit(selection, replaceWith) {
@@ -86,18 +90,7 @@ class Document extends Evented {
 	}
 	
 	apply(edit) {
-		let {
-			selection,
-			string,
-			replaceWith,
-		} = edit;
-		
-		let {start} = Selection.sort(selection);
-		let index = this.indexFromCursor(start);
-		
-		this.string = this.string.substr(0, index) + replaceWith + this.string.substr(index + string.length);
-		
-		this.parse();
+		this.code.edit(edit);
 		
 		this.modified = true;
 		
@@ -205,8 +198,8 @@ class Document extends Evented {
 	
 	updateFileDetails() {
 		this.fileDetails = base.getFileDetails(this.string, this.path);
-		this.mainLang = this.fileDetails.lang;
-		this.parse();
+		this.code.setNewline(this.fileDetails.newline);
+		this.code.setLang(this.fileDetails.lang);
 	}
 	
 	async save() {
@@ -223,52 +216,6 @@ class Document extends Evented {
 		this.path = path;
 		
 		return this.save();
-	}
-	
-	parse() {
-		console.time("parse");
-		
-		this.lines = [];
-		
-		let {fileDetails} = this;
-		let lineStrings = this.string.split(fileDetails.newline);
-		let lineStartIndex = 0;
-		
-		for (let lineString of lineStrings) {
-			this.lines.push(new Line(lineString, fileDetails, lineStartIndex));
-			
-			lineStartIndex += lineString.length + fileDetails.newline.length;
-		}
-		
-		let lastIndex = this.lines.length - 1;
-		let lastLine = this.lines[lastIndex];
-		
-		this.mainLangRange = {
-			lang: this.mainLang,
-			
-			range: {
-				startIndex: 0,
-				endIndex: this.string.length,
-				selection: s(c(0, 0), c(lastIndex, lastLine.string.length)),
-			},
-			
-			parentNode: null,
-			parent: null,
-			children: [],
-		};
-		
-		try {
-			this.mainLang.parse(this.string, this.lines, this.mainLangRange);
-		} catch (e) {
-			console.error("Parse error");
-			console.error(e);
-		}
-		
-		for (let line of this.lines) {
-			line.renderCommands = [...generateRenderCommandsForLine(line)];
-		}
-		
-		console.timeEnd("parse");
 	}
 	
 	replaceSelection(selection, string) {
@@ -308,26 +255,8 @@ class Document extends Evented {
 		};
 	}
 	
-	langFromCursor(cursor, langRange=this.mainLangRange) {
-		if (Cursor.equals(cursor, this.cursorAtEnd())) {
-			return this.mainLang;
-		}
-		
-		let {selection} = langRange.range;
-		
-		if (!Selection.charIsWithinSelection(selection, cursor)) {
-			return null;
-		}
-		
-		for (let childLangRange of langRange.children) {
-			let langFromChild = this.langFromCursor(cursor, childLangRange);
-			
-			if (langFromChild) {
-				return langFromChild;
-			}
-		}
-		
-		return langRange.lang;
+	langFromCursor(cursor) {
+		return this.code.langFromCursor(cursor);
 	}
 	
 	langFromLineIndex(lineIndex) {
@@ -344,29 +273,11 @@ class Document extends Evented {
 	}
 	
 	indexFromCursor(cursor) {
-		let {lineIndex, offset} = cursor;
-		let index = 0;
-		
-		for (let i = 0; i < lineIndex; i++) {
-			index += this.lines[i].string.length + this.fileDetails.newline.length;
-		}
-		
-		index += offset;
-		
-		return index;
+		return this.code.indexFromCursor(cursor);
 	}
 	
 	cursorFromIndex(index) {
-		let lineIndex = 0;
-		
-		for (let line of this.lines) {
-			if (index <= line.string.length) {
-				return c(lineIndex, index);
-			}
-			
-			lineIndex++;
-			index -= line.string.length + this.fileDetails.newline.length;
-		}
+		return this.code.cursorFromIndex(index);
 	}
 	
 	getSelectedText(selection) {
@@ -399,7 +310,7 @@ class Document extends Evented {
 	}
 	
 	cursorAtEnd() {
-		return c(this.lines.length - 1, this.lines[this.lines.length - 1].string.length);
+		return this.code.cursorAtEnd();
 	}
 	
 	getLongestLineWidth() {
