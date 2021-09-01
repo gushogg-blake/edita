@@ -5,7 +5,7 @@ let treeSitterRangeToRange = require("../common/utils/treesitter/treeSitterRange
 module.exports = async function(lang) {
 	let HTML = await platform.loadTreeSitterLanguage("html");
 	
-	return function(string, lines, langRange) {
+	return function(code, lines, langRange) {
 		// NOTE perf - parser instance is reusable but need to recreate it if parse() throws
 		let parser = new TreeSitter();
 		
@@ -13,7 +13,7 @@ module.exports = async function(lang) {
 		
 		let treeSitterRange = rangeToTreeSitterRange(langRange.range);
 		
-		let tree = parser.parse(string, null, {
+		let tree = parser.parse(code, null, {
 			includedRanges: [treeSitterRange],
 		});
 		
@@ -163,7 +163,7 @@ module.exports = async function(lang) {
 						
 						langRange.children.push(newLangRange);
 						
-						css.parse(string, lines, newLangRange);
+						css.parse(code, lines, newLangRange);
 					} else if (parent.type === "script_element") {
 						let javascript = base.langs.get("javascript");
 						
@@ -177,7 +177,7 @@ module.exports = async function(lang) {
 						
 						langRange.children.push(newLangRange);
 						
-						javascript.parse(string, lines, newLangRange);
+						javascript.parse(code, lines, newLangRange);
 					}
 				}
 			}

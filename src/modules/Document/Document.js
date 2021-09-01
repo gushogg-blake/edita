@@ -4,6 +4,7 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let Line = require("modules/Line");
 let generateRenderCommandsForLine = require("modules/generateRenderCommandsForLine");
+let Code = require("./Code");
 
 let {s} = Selection;
 let {c} = Cursor;

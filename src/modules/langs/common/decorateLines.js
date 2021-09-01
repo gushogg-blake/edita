@@ -2,7 +2,7 @@ let advanceCursor = require("./utils/treesitter/advanceCursor");
 let rangeToTreeSitterRange = require("./utils/treesitter/rangeToTreeSitterRange");
 let treeSitterRangeToRange = require("./utils/treesitter/treeSitterRangeToRange");
 
-module.exports = function(string, lines, langRange) {
+module.exports = function(code, lines, langRange) {
 		// NOTE perf - parser instance is reusable but need to recreate it if parse() throws
 		let parser = new TreeSitter();
 		
@@ -10,7 +10,7 @@ module.exports = function(string, lines, langRange) {
 		
 		let treeSitterRange = rangeToTreeSitterRange(langRange.range);
 		
-		let tree = parser.parse(string, null, {
+		let tree = parser.parse(code, null, {
 			includedRanges: [treeSitterRange],
 		});
 		
@@ -160,7 +160,7 @@ module.exports = function(string, lines, langRange) {
 						
 						langRange.children.push(newLangRange);
 						
-						css.parse(string, lines, newLangRange);
+						css.parse(code, lines, newLangRange);
 					} else if (parent.type === "script_element") {
 						let javascript = base.langs.get("javascript");
 						
@@ -174,7 +174,7 @@ module.exports = function(string, lines, langRange) {
 						
 						langRange.children.push(newLangRange);
 						
-						javascript.parse(string, lines, newLangRange);
+						javascript.parse(code, lines, newLangRange);
 					}
 				}
 			}
