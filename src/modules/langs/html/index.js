@@ -1,6 +1,6 @@
 let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
-let parse = require("./parse");
+
 
 class HTML {
 	constructor() {

@@ -9,10 +9,10 @@ let {s} = Selection;
 let {c} = Cursor;
 
 class Document extends Evented {
-	constructor(code, path) {
+	constructor(string, path) {
 		super();
 		
-		this.string = code;
+		this.string = string;
 		this.path = path;
 		this.updateFileDetails();
 		
