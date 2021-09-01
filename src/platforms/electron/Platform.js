@@ -96,6 +96,15 @@ class Platform extends Evented {
 		return filePath || null;
 	}
 	
+	filesFromDropEvent(e) {
+		return [...e.dataTransfer.files].map(function(file) {
+			return {
+				path: file.path,
+				code: null,
+			};
+		});
+	}
+	
 	getFilesToOpenOnStartup() {
 		return this.filesToOpenOnStartup;
 	}

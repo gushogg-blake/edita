@@ -55,6 +55,15 @@ class Platform extends Evented {
 		
 	}
 	
+	async filesFromDropEvent(e) {
+		return bluebird.map([...e.dataTransfer.files], async function(file) {
+			return {
+				path: path.resolve("/", file.name),
+				code: await file.text(),
+			};
+		});
+	}
+	
 	getFilesToOpenOnStartup() {
 		return [];
 	}

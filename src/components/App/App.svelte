@@ -37,13 +37,11 @@ function dragover(e) {
 	e.preventDefault();
 }
 
-function drop(e) {
+async function drop(e) {
 	e.preventDefault();
 	
-	let files = [...e.dataTransfer.files].map(f => f.path);
-	
-	for (let path of files) {
-		app.openFile(path);
+	for (let {path, code} of await platform.filesFromDropEvent(e)) {
+		app.openFile(path, code);
 	}
 }
 
