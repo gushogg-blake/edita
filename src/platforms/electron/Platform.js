@@ -58,7 +58,7 @@ class Platform extends Evented {
 	}
 	
 	async init() {
-		this.prefs = await ipc.prefs.load() || defaultPrefs(this.systemInfo);
+		this.prefs = /*await ipc.prefs.load() || */defaultPrefs(this.systemInfo);
 		this.snippets = await ipc.snippets.load();
 	}
 	

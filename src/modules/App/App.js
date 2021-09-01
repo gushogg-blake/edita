@@ -2,11 +2,13 @@ let bluebird = require("bluebird");
 let {remove, moveInPlace} = require("utils/arrayMethods");
 let Evented = require("utils/Evented");
 let focusManager = require("utils/focusManager");
+let bindFunctions = require("utils/bindFunctions");
 let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
 let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor/Editor");
 let View = require("modules/View/View");
+let functions = require("./functions");
 
 class App extends Evented {
 	constructor() {
@@ -14,6 +16,7 @@ class App extends Evented {
 		
 		this.tabs = [];
 		this.selectedTab = null;
+		this.closedTabs = [];
 		
 		this.showingPane = {
 			left: platform.getPref("showPane.left"),
@@ -22,6 +25,8 @@ class App extends Evented {
 		};
 		
 		this.focusManager = focusManager();
+		
+		this.functions = bindFunctions(this, functions);
 		
 		this.teardownCallbacks = [
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
@@ -47,7 +52,10 @@ class App extends Evented {
 		}
 		
 		tabsToOpen.push(...platform.getFilesToOpenOnStartup().map(function(path) {
-			return {path};
+			return {
+				isNew: true,
+				path,
+			};
 		}));
 		
 		this.tabs = await bluebird.map(tabsToOpen, async ({path}) => {
@@ -55,30 +63,9 @@ class App extends Evented {
 		});
 		
 		for (let details of tabsToOpen) {
-			let {
-				path,
-				mode,
-				normalSelection,
-				astSelection,
-				scrollPosition,
-			} = details;
-			
-			let tab = this.findTabByPath(path);
-			let {editor} = tab;
-			
-			if (scrollPosition && mode && (normalSelection || astSelection)) {
-				editor.view.setScrollPosition(scrollPosition);
-				
-				editor.setMode(mode);
-				
-				if (mode === "normal") {
-					editor.setNormalSelection(normalSelection);
-				} else {
-					editor.setAstSelection(astSelection);
-				}
+			if (!details.isNew) {
+				this.findTabByPath(details.path).restoreState(details);
 			}
-			
-			editor.view.ensureSelectionIsOnScreen();
 		}
 		
 		if (this.tabs.length > 0) {
@@ -88,32 +75,8 @@ class App extends Evented {
 		}
 	}
 	
-	async open() {
-		let dir = null;
-		let currentPath = this.selectedTab?.editor.document.path;
-		
-		if (currentPath) {
-			dir = platform.path.resolve(currentPath, "..");
-		}
-		
-		let files = await bluebird.map(platform.open(dir), async function(path) {
-			return {
-				path,
-				code: await platform.fs(path).read(),
-			};
-		});
-		
-		for (let {path, code} of files) {
-			this.openFile(path, code);
-		}
-	}
-	
-	async save(tab=this.selectedTab) {
-		let document = tab?.editor.document;
-		
-		if (!document) {
-			return null;
-		}
+	async save(tab) {
+		let document = tab.editor.document;
 		
 		if (document.path) {
 			await document.save();
@@ -126,10 +89,6 @@ class App extends Evented {
 		}
 		
 		return document.path;
-	}
-	
-	_new() {
-		this.newFile();
 	}
 	
 	async renameTab(tab) {
@@ -211,6 +170,8 @@ class App extends Evented {
 		
 		this.tabs = remove(this.tabs, tab);
 		
+		this.closedTabs.unshift(tab.saveState());
+		
 		if (tab === this.initialNewFileTab) {
 			this.initialNewFileTab = null;
 		}
@@ -228,53 +189,6 @@ class App extends Evented {
 		platform.setPref("showPane." + name, this.showingPane[name]);
 		
 		this.fire("updatePanes");
-	}
-	
-	undo() {
-		this.selectedTab?.editor.undo();
-	}
-	
-	redo() {
-		this.selectedTab?.editor.redo();
-	}
-	
-	find() {
-		if (!this.selectedTab) {
-			return;
-		}
-		
-		this.showFindBar();
-	}
-	
-	findInOpenFiles() {
-		if (platform.showFindDialog) {
-			platform.showFindDialog({
-				search: "openFiles",
-			});
-		} else {
-			// TODO
-		}
-	}
-	
-	findAndReplace() {
-		if (platform.showFindDialog) {
-			platform.showFindDialog({
-				replace: true,
-			});
-		} else {
-			// TODO
-		}
-	}
-	
-	findAndReplaceInOpenFiles() {
-		if (platform.showFindDialog) {
-			platform.showFindDialog({
-				search: "openFiles",
-				replace: true,
-			});
-		} else {
-			// TODO
-		}
 	}
 	
 	showFindBar() {
@@ -309,7 +223,7 @@ class App extends Evented {
 		if (existingTab) {
 			this.selectTab(existingTab);
 			
-			return;
+			return existingTab;
 		}
 		
 		if (!code) {
@@ -333,6 +247,8 @@ class App extends Evented {
 		this.fire("updateTabs");
 		
 		this.selectTab(tab);
+		
+		return tab;
 	}
 	
 	newFile() {
@@ -408,20 +324,7 @@ class App extends Evented {
 	
 	async saveSession() {
 		let tabs = this.tabs.map(function(tab) {
-			let {path, editor} = tab;
-			let {mode, normalSelection, astSelection, scrollPosition} = editor.view;
-			
-			if (path === null) { // TODO save new files (and edits?)
-				return null;
-			}
-			
-			return {
-				path,
-				mode,
-				normalSelection,
-				astSelection,
-				scrollPosition,
-			};
+			return tab.path ? tab.saveState() : null;
 		}).filter(Boolean);
 		
 		await platform.saveSession({

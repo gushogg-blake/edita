@@ -158,6 +158,49 @@ class Tab extends Evented {
 		platform.showContextMenu(e, items);
 	}
 	
+	saveState() {
+		let {path} = this;
+		
+		let {
+			mode,
+			normalSelection,
+			astSelection,
+			scrollPosition,
+		} = this.editor.view;
+		
+		return {
+			path,
+			mode,
+			normalSelection,
+			astSelection,
+			scrollPosition,
+		};
+	}
+	
+	restoreState(details) {
+		let {
+			path,
+			mode,
+			normalSelection,
+			astSelection,
+			scrollPosition,
+		} = details;
+		
+		let {editor} = this;
+		
+		editor.view.setScrollPosition(scrollPosition);
+		
+		editor.setMode(mode);
+		
+		if (mode === "normal") {
+			editor.setNormalSelection(normalSelection);
+		} else {
+			editor.setAstSelection(astSelection);
+		}
+		
+		editor.view.ensureSelectionIsOnScreen();
+	}
+	
 	teardown() {
 		this.editor.teardown();
 	}

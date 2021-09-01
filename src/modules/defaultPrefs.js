@@ -87,6 +87,8 @@ module.exports = function(systemInfo) {
 			"Ctrl+Shift+F": "findInOpenFiles",
 			"Ctrl+H": "findAndReplace",
 			"Ctrl+Shift+H": "findAndReplaceInOpenFiles",
+			"Ctrl+W": "closeTab",
+			"Ctrl+Shift+T": "reopenLastClosedTab",
 		},
 		
 		langs: {

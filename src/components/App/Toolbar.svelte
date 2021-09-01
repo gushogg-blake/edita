@@ -13,13 +13,13 @@ let app = getContext("app");
 </style>
 
 <div id="main">
-	<button on:click={() => app.newFile()}>
+	<button on:click={() => app.functions.newFile()}>
 		New
 	</button>
-	<button on:click={() => app.open()}>
+	<button on:click={() => app.functions.open()}>
 		Open
 	</button>
-	<button on:click={() => app.save()}>
+	<button on:click={() => app.functions.save()}>
 		Save
 	</button>
 	<button on:click={() => app.togglePane("left")}>

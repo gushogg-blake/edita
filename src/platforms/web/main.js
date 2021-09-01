@@ -1,5 +1,5 @@
 import Base from "modules/Base";
-import App from "modules/App";
+import App from "modules/App/App";
 import components from "components";
 import Platform from "./Platform";
 

@@ -202,6 +202,10 @@ module.exports = function(backends) {
 		}
 		
 		glob(pattern, options) {
+			if (!glob) {
+				throw "No glob backend available";
+			}
+			
 			return new Promise((resolve, reject) => {
 				glob(osPath.resolve(this.path, pattern), options, (e, files) => {
 					if (e) {
