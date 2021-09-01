@@ -17,6 +17,10 @@ class Tab extends Evented {
 		this.loading = false;
 		
 		this.pendingActions = [];
+		
+		this.teardownCallbacks = [
+			editor.document.on("save", this.onDocumentSave.bind(this)),
+		];
 	}
 	
 	get modified() {
@@ -117,6 +121,15 @@ class Tab extends Evented {
 	openFile(file) {
 	}
 	
+	onDocumentSave() {
+		let {path} = this.editor.document;
+		
+		if (path !== this.path) {
+			this.path = path;
+			this.currentPath = path;
+		}
+	}
+	
 	async updateDirListing() {
 		if (this.currentPath === this.path) {
 			this.files = [];
@@ -179,7 +192,6 @@ class Tab extends Evented {
 	
 	restoreState(details) {
 		let {
-			path,
 			mode,
 			normalSelection,
 			astSelection,
@@ -203,6 +215,10 @@ class Tab extends Evented {
 	
 	teardown() {
 		this.editor.teardown();
+		
+		for (let fn of this.teardownCallbacks) {
+			fn();
+		}
 	}
 }
 
