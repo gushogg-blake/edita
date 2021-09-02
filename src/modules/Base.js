@@ -23,7 +23,7 @@ individually, is 1) it is dynamic -- not as quick-changing as the UI, but change
 when e.g. a lang is added -- and 2) some of the init is async, so wouldn't be
 immediately available from a require()d module -- having a big init() method
 means that code that runs subsequently (which includes the entire UI, so basically
-the whole app) can get stuff from the global app object without having to
+the whole app) can get stuff from the global base object without having to
 await it.
 
 this can be shared between multiple instances of the UI, e.g. with multiple

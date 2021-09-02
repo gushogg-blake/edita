@@ -130,8 +130,8 @@ module.exports = class LangRange {
 		if (node.type === "ERROR") {
 			return [{
 				type: "parseError",
-				offset: startOffset,
-				lang,
+				offset: node.startPosition.column,
+				lang: this.lang,
 				node,
 			}];
 		}

@@ -18,7 +18,7 @@ module.exports = {
 			childCount,
 		} = node;
 		
-		let startOffset = startOffset.column;
+		let startOffset = startPosition.column;
 		
 		/*
 		if a node can contain tabs, we just set the hilite colour and then
@@ -69,7 +69,7 @@ module.exports = {
 			yield {
 				type: "colour",
 				offset: startOffset,
-				lang,
+				lang: this,
 				node,
 			};
 		}
@@ -83,7 +83,7 @@ module.exports = {
 			yield {
 				type: "node",
 				offset: startOffset,
-				lang,
+				lang: this,
 				node,
 			};
 			
@@ -95,7 +95,7 @@ module.exports = {
 				yield {
 					type: "colour",
 					offset: startOffset + 1,
-					lang,
+					lang: this,
 					node: parent.parent, // the template_string node, which is just used for selecting the colour
 				};
 			}
@@ -110,7 +110,7 @@ module.exports = {
 			"statement_block",
 			"class_body",
 			"template_string",
-		].includes(type)) {
+		].includes(node.type)) {
 			return {
 				opener: node.firstChild,
 				closer: node.lastChild,
@@ -171,11 +171,22 @@ module.exports = {
 		
 		let type = platform.fs(path).lastType;
 		
-		if ([
-			"html",
-			"htm",
+		 if ([
+			"js",
+			"cjs",
+			"es",
+			"es6",
+			"mjs",
+			"jsx",
 		].includes(type)) {
 			return "general";
+		}
+		
+		if ([
+			"json",
+			"json5",
+		].includes(type)) {
+			return "alternate";
 		}
 		
 		return null;

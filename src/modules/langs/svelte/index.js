@@ -16,7 +16,7 @@ module.exports = {
 			childCount,
 		} = node;
 		
-		let startOffset = startOffset.column;
+		let startOffset = startPosition.column;
 		
 		// TODO
 	},

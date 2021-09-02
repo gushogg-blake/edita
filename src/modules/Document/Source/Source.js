@@ -126,6 +126,10 @@ module.exports = class {
 	}
 	
 	langFromCursor(cursor, langRange=this.rootLangRange) {
+		if (this.lang.code === "plainText") {
+			return this.lang;
+		}
+		
 		if (Cursor.equals(cursor, this.cursorAtEnd())) {
 			return this.lang;
 		}
@@ -136,7 +140,7 @@ module.exports = class {
 			return null;
 		}
 		
-		for (let childLangRange of langRange.children) {
+		for (let childLangRange of langRange.langRanges) {
 			let langFromChild = this.langFromCursor(cursor, childLangRange);
 			
 			if (langFromChild) {
