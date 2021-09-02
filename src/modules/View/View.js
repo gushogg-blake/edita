@@ -197,7 +197,7 @@ class View extends Evented {
 			if (startLang === endLang) {
 				return startLang;
 			} else {
-				return this.document.mainLang;
+				return this.document.lang;
 			}
 		}
 	}

@@ -1,3 +1,5 @@
+let bluebird = require("bluebird");
+
 let getIndentationDetails = require("modules/utils/getIndentationDetails");
 let guessIndent = require("modules/utils/guessIndent");
 let checkNewlines = require("modules/utils/checkNewlines");
@@ -38,13 +40,19 @@ class Base {
 	async init() {
 		await TreeSitter.init();
 		
-		let langs = await Promise.all([
-			javascript(),
-			//svelte(),
-			html(),
-			css(),
-			plainText(),
-		]);
+		this.treeSitterLanguages = {};
+		
+		await bluebird.map(["javascript", "html", "css"], async (code) => {
+			this.treeSitterLanguages[code] = await platform.loadTreeSitterLanguage(code);
+		});
+		
+		let langs = [
+			javascript,
+			//svelte,
+			html,
+			css,
+			plainText,
+		];
 		
 		for (let lang of langs) {
 			this.langs.add(lang);
@@ -150,6 +158,10 @@ class Base {
 			newline: defaultNewline,
 			hasMixedNewlines: false,
 		};
+	}
+	
+	getTreeSitterLanguage(code) {
+		return this.treeSitterLanguages[code];
 	}
 }
 

@@ -81,7 +81,7 @@ class Platform extends Evented {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load("./vendor/tree-sitter/langs/" + name + ".wasm");
+		return TreeSitter.Language.load("./vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
 	}
 	
 	getPref(key) {

@@ -18,9 +18,13 @@ module.exports = class LangRange {
 	}
 	
 	parse() {
+		if (this.lang.code === "plainText") {
+			return;
+		}
+		
 		let parser = new TreeSitter();
 		
-		parser.setLanguage(base.getTreeSitterParser(this.lang.code));
+		parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
 		
 		this.tree = parser.parse(this.code, null, {
 			includedRanges: [this.treeSitterRange],
@@ -47,6 +51,10 @@ module.exports = class LangRange {
 	}
 	
 	edit(edit, index, code) {
+		if (this.lang.code === "plainText") {
+			return;
+		}
+		
 		let {
 			selection,
 			newSelection,
@@ -60,7 +68,7 @@ module.exports = class LangRange {
 		
 		let parser = new TreeSitter();
 		
-		parser.setLanguage(base.getTreeSitterParser(this.lang.code));
+		parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
 		
 		this.tree.edit({
 			startPosition: cursorToTreeSitterPoint(selection.start),
@@ -79,6 +87,10 @@ module.exports = class LangRange {
 	}
 	
 	decorateLines(lines) {
+		if (this.lang.code === "plainText") {
+			return;
+		}
+		
 		let {lang} = this;
 		let cursor = this.tree.walk();
 		

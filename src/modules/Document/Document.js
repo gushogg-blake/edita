@@ -1,5 +1,4 @@
 let Evented = require("utils/Evented");
-let _typeof = require("utils/typeof");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let Source = require("./Source");
@@ -19,6 +18,10 @@ class Document extends Evented {
 		this.historyIndex = 0;
 		this.modified = false;
 		this.historyIndexAtSave = 0;
+	}
+	
+	get lang() {
+		return this.fileDetails.lang;
 	}
 	
 	get string() {
@@ -200,7 +203,7 @@ class Document extends Evented {
 	updateFileDetails() {
 		this.fileDetails = base.getFileDetails(this.string, this.path);
 		
-		this.source.init(this.fileDetails.lang, this.fileDetails.newline);
+		this.source.init(this.fileDetails);
 	}
 	
 	async save() {

@@ -1,15 +1,21 @@
+let Selection = require("modules/utils/Selection");
+let Cursor = require("modules/utils/Cursor");
+
 let LangRange = require("./LangRange");
 let Line = require("./Line");
 let generateRenderCommandsForLine = require("./generateRenderCommandsForLine");
+
+let {s} = Selection;
+let {c} = Cursor;
 
 module.exports = class {
 	constructor(string) {
 		this.string = string;
 	}
 	
-	init(lang, newline) {
-		this.newline = newline;
-		this.lang = lang;
+	init(fileDetails) {
+		this.fileDetails = fileDetails;
+		this.lang = fileDetails.lang;
 		
 		this.parse();
 	}
@@ -109,9 +115,9 @@ module.exports = class {
 		}
 	}
 	
-	langFromCursor(cursor, langRange=this.mainLangRange) {
+	langFromCursor(cursor, langRange=this.rootLangRange) {
 		if (Cursor.equals(cursor, this.cursorAtEnd())) {
-			return this.mainLang;
+			return this.lang;
 		}
 		
 		let {selection} = langRange.range;
