@@ -1,6 +1,6 @@
-let {is, deep} = require("../../../../../../utils/assertions");
-let dedent = require("../../../../../../utils/dedent");
-let createJsDoc = require("../../../../../../utils/createJsDoc");
+let {is, deep} = require("test/utils/assertions");
+let dedent = require("test/utils/dedent");
+let createJsDoc = require("test/utils/createJsDoc");
 
 let tests = [
 	[

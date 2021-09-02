@@ -1,9 +1,8 @@
-let fs = require("flowfs");
-let {is, deep} = require("../../../../utils/assertions");
-let dedent = require("../../../../utils/dedent");
-let createJsDoc = require("../../../../utils/createJsDoc");
+let {is, deep} = require("test/utils/assertions");
+let dedent = require("test/utils/dedent");
+let createJsDoc = require("test/utils/createJsDoc");
 
-let wrapLine = require("../../../../../src/modules/View/utils/wrapLine/wrapLine");
+//let wrapLine = require("modules/View/utils/wrapLine/wrapLine");
 
 let indentation = {
 	string: "\t",
@@ -135,7 +134,7 @@ describe("wrapLine", function() {
 	//});
 	//
 	//it("bluebird", async function() {
-	//	let code = await fs("test/repos/bluebird/js/browser/bluebird.js").read();
+	//	let code = await platform.fs("test/repos/bluebird/js/browser/bluebird.js").read();
 	//	
 	//	let doc = createJsDoc(dedent(code));
 	//	

@@ -1,10 +1,12 @@
-let fs = require("flowfs");
+let fs = require("./modules/fs");
 
 class Platform {
 	constructor() {
 		this.systemInfo = {
 			newline: "\n",
 		};
+		
+		this.fs = fs;
 	}
 	
 	loadTreeSitterLanguage(name) {

@@ -1,14 +1,13 @@
 require("./main");
 
-let fs = require("flowfs");
-let createJsDoc = require("../utils/createJsDoc");
-let parseIndexMarks = require("../utils/parseIndexMarks");
+let createJsDoc = require("test/utils/createJsDoc");
+let parseIndexMarks = require("test/utils/parseIndexMarks");
 
 (async function() {
 	let {
 		string,
 		marks,
-	} = parseIndexMarks(await fs("test/benchmarks/fixtures/indexCursorConversion/bluebird.js").read());
+	} = parseIndexMarks(await platform.fs("test/benchmarks/fixtures/indexCursorConversion/bluebird.js").read());
 	
 	let doc = createJsDoc(string);
 	

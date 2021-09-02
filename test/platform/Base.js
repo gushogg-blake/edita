@@ -1,10 +1,10 @@
-let Evented = require("../../src/utils/Evented");
+let Evented = require("utils/Evented");
 
-let guessIndent = require("../../src/modules/utils/guessIndent");
-let checkNewlines = require("../../src/modules/utils/checkNewlines");
+let guessIndent = require("modules/utils/guessIndent");
+let checkNewlines = require("modules/utils/checkNewlines");
 
-let javascript = require("../../src/modules/langs/javascript");
-let langs = require("../../src/modules/langs");
+let javascript = require("modules/langs/javascript");
+let langs = require("modules/langs");
 
 function defaultPrefs() {
 	return {

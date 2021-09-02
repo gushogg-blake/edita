@@ -1,7 +1,7 @@
-let {is, deep} = require("../../../utils/assertions");
-let dedent = require("../../../utils/dedent");
-let parseIndexMarks = require("../../../utils/parseIndexMarks");
-let createJsDoc = require("../../../utils/createJsDoc");
+let {is, deep} = require("test/utils/assertions");
+let dedent = require("test/utils/dedent");
+let parseIndexMarks = require("test/utils/parseIndexMarks");
+let createJsDoc = require("test/utils/createJsDoc");
 
 let {
 	string: code,

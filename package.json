@@ -29,6 +29,7 @@
 		"autoprefixer": "^10.2.6",
 		"electron": "^13.1.7",
 		"electron-builder": "^22.11.7",
+		"link-module-alias": "^1.2.0",
 		"mocha": "^9.0.2",
 		"node-sass": "^6.0.1",
 		"npm-run-all": "^4.1.5",
@@ -60,6 +61,14 @@
 		"web": "sirv src/platforms/web/public --dev",
 		"dist": "run-s build-electron pure-dist-win",
 		"pure-dist-win": "electron-builder --win --config electron-builder.yml",
-		"test": "./node_modules/mocha/bin/mocha --file test/platform/main.js 'test/tests/**/*.test.js'"
+		"test": "./node_modules/mocha/bin/mocha --file test/platform/main.js 'test/tests/**/*.test.js'",
+		"postinstall": "link-module-alias"
+	},
+	"_moduleAliases": {
+		"components": "src/components",
+		"modules": "src/modules",
+		"utils": "src/utils",
+		"platforms": "src/platforms",
+		"test": "test"
 	}
 }

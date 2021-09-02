@@ -1,4 +1,4 @@
-let Document = require("../../src/modules/Document");
+let Document = require("modules/Document");
 
 module.exports = function(code) {
 	let path = "a.js";

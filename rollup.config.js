@@ -43,7 +43,6 @@ if (!platform || platform === "all" || platform === "electron") {
 		plugins: [
 			alias({
 				entries: {
-					"platform": path.resolve(root, "src/platforms/electron"),
 					"components": path.resolve(root, "src/components"),
 					"modules": path.resolve(root, "src/modules"),
 					"utils": path.resolve(root, "src/utils"),
@@ -122,7 +121,6 @@ if (!platform || platform === "all" || platform === "web") {
 		plugins: [
 			alias({
 				entries: {
-					"platform": path.resolve(root, "src/platforms/web"),
 					"components": path.resolve(root, "src/components"),
 					"modules": path.resolve(root, "src/modules"),
 					"utils": path.resolve(root, "src/utils"),

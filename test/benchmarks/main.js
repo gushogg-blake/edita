@@ -1,5 +1,5 @@
 let TreeSitter = require("tree-sitter");
-let App = require("../../src/modules/App");
+let App = require("modules/App");
 let Platform = require("../platform/Platform");
 let Base = require("../platform/Base");
 
