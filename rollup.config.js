@@ -149,7 +149,7 @@ if (!platform || platform === "all" || platform === "web") {
 			}),
 			
 			commonjs(),
-			!production && livereload("src/platforms/web/public/build"),
+			!production && livereload("src/platforms/web/public"),
 			production && terser(),
 		],
 	});
