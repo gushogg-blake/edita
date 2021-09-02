@@ -4,10 +4,10 @@ let Evented = require("utils/Evented");
 let focusManager = require("utils/focusManager");
 let bindFunctions = require("utils/bindFunctions");
 let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
-let Document = require("modules/Document/Document");
+let Document = require("modules/Document");
 let Tab = require("modules/Tab");
-let Editor = require("modules/Editor/Editor");
-let View = require("modules/View/View");
+let Editor = require("modules/Editor");
+let View = require("modules/View");
 let functions = require("./functions");
 
 class App extends Evented {
