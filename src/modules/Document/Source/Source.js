@@ -36,7 +36,9 @@ module.exports = class {
 	
 	decorateLines() {
 		this.rootLangRange.decorateLines(this.lines);
-		
+	}
+	
+	setRenderCommands() {
 		for (let line of this.lines) {
 			line.renderCommands = [...generateRenderCommandsForLine(line)];
 		}
@@ -47,18 +49,22 @@ module.exports = class {
 		
 		this.createLines();
 		
-		try {
-			this.rootLangRange = new LangRange(this.lang, this.string, {
-				startIndex: 0,
-				endIndex: this.string.length,
-				selection: s(c(0, 0), this.cursorAtEnd()),
-			});
-		} catch (e) {
-			console.error("Parse error");
-			console.error(e);
+		if (this.lang.code !== "plainText") {
+			try {
+				this.rootLangRange = new LangRange(this.lang, this.string, {
+					startIndex: 0,
+					endIndex: this.string.length,
+					selection: s(c(0, 0), this.cursorAtEnd()),
+				});
+			} catch (e) {
+				console.error("Parse error");
+				console.error(e);
+			}
+			
+			this.decorateLines();
 		}
 		
-		this.decorateLines();
+		this.setRenderCommands();
 		
 		console.timeEnd("parse");
 	}
@@ -78,9 +84,13 @@ module.exports = class {
 		
 		this.createLines();
 		
-		this.rootLangRange.edit(edit, index, this.string);
+		if (this.lang.code !== "plainText") {
+			this.rootLangRange.edit(edit, index, this.string);
+			
+			this.decorateLines();
+		}
 		
-		this.decorateLines();
+		this.setRenderCommands();
 		
 		console.timeEnd("edit");
 	}
