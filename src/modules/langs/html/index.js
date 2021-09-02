@@ -1,17 +1,100 @@
 let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
 
-
-class HTML {
-	constructor() {
-		this.code = "html";
-		this.name = "HTML";
-		this.astMode = astMode;
-		this.codeIntel = codeIntel;
+module.exports = {
+	code: "html",
+	name: "HTML",
+	astMode,
+	codeIntel,
+	
+	getRenderHint(node) {
+		let {
+			type,
+			startPosition,
+			endPosition,
+			parent,
+			childCount,
+		} = node;
+		
+		let canIncludeTabs = [
+			"comment",
+			"text",
+			"raw_text",
+			"quoted_attribute_value",
+		].includes(type);
+		
+		let colour = [
+			"comment",
+			"quoted_attribute_value",
+			"text",
+			"raw_text",
+		].includes(type);
+		
+		let renderAsText = [
+			"quoted_attribute_value",
+			"doctype",
+		].includes(parent?.type);
+		
+		if (colour) {
+			return {
+				type: "colour",
+				offset: startPosition.column,
+				lang,
+				node,
+			};
+		}
+		
+		if (
+			!canIncludeTabs
+			&& !renderAsText
+			&& childCount === 0
+			&& startPosition.row === endPosition.row
+		) {
+			return {
+				type: "node",
+				offset: startPosition.column,
+				lang,
+				node,
+			};
+		}
+		
+		return null;
 	}
 	
-	async init() {
-		this.parse = await parse(this);
+	getOpenerAndCloser(node) {
+		if ([
+			"element",
+			"style_element",
+			"script_element",
+		].includes(node.type)) {
+			return {
+				opener: node.firstChild,
+				closer: node.lastChild,
+			};
+		}
+		
+		return null;
+	}
+	
+	getInjectionLang(node) {
+		let {
+			type,
+			parent,
+		} = node;
+		
+		if (!parent || type !== "raw_text") {
+			return null;
+		}
+		
+		if (parent.type === "style_element") {
+			return "css";
+		}
+		
+		if (parent.type === "script_element") {
+			return "javascript";
+		}
+		
+		return null;
 	}
 	
 	getHiliteClass(node) {
@@ -54,12 +137,4 @@ class HTML {
 		
 		return null;
 	}
-}
-
-module.exports = async function() {
-	let html = new HTML();
-	
-	await html.init();
-	
-	return html;
 }

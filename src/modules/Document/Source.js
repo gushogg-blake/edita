@@ -28,9 +28,6 @@ module.exports = class {
 		}
 	}
 	
-	setRenderCommands() {
-	}
-	
 	decorateLines() {
 		this.rootLangRange.decorateLines(this.lines);
 		
@@ -40,7 +37,6 @@ module.exports = class {
 	}
 	
 	parse() {
-		// generate the whole tree
 		console.time("parse");
 		
 		this.createLines();
@@ -57,13 +53,12 @@ module.exports = class {
 		}
 		
 		this.decorateLines();
-		this.setRenderCommands();
 		
 		console.timeEnd("parse");
 	}
 	
 	edit(edit) {
-		// edit the tree
+		console.time("edit");
 		
 		let {
 			selection,
@@ -77,9 +72,11 @@ module.exports = class {
 		
 		this.createLines();
 		
-		this.rootLangRange.edit(edit, this.string);
+		this.rootLangRange.edit(edit, index, this.string);
 		
-		this.setRenderCommands();
+		this.decorateLines();
+		
+		console.timeEnd("edit");
 	}
 	
 	createRange() {

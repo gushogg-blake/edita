@@ -30,9 +30,10 @@ class Document extends Evented {
 	}
 	
 	edit(selection, replaceWith) {
-		let currentStr = this.getSelectedText(selection);
+		selection = Selection.sort(selection);
 		
-		let {start, end} = Selection.sort(selection);
+		let currentStr = this.getSelectedText(selection);
+		let {start, end} = selection;
 		
 		let prefix = this.lines[start.lineIndex].string.substr(0, start.offset);
 		let suffix = this.lines[end.lineIndex].string.substr(end.offset);
