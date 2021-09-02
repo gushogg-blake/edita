@@ -24,7 +24,7 @@ module.exports = class LangRange {
 		
 		this.tree = parser.parse(this.code, null, {
 			includedRanges: [this.treeSitterRange],
-		});
+		});   
 		
 		let cursor = this.tree.walk();
 		

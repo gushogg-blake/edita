@@ -35,13 +35,21 @@ module.exports = class {
 	}
 	
 	decorateLines() {
+		console.time("decorateLines");
+		
 		this.rootLangRange.decorateLines(this.lines);
+		
+		console.timeEnd("decorateLines");
 	}
 	
 	setRenderCommands() {
+		console.time("setRenderCommands");
+		
 		for (let line of this.lines) {
 			line.renderCommands = [...generateRenderCommandsForLine(line)];
 		}
+		
+		console.timeEnd("setRenderCommands");
 	}
 	
 	parse() {
@@ -93,10 +101,6 @@ module.exports = class {
 		this.setRenderCommands();
 		
 		console.timeEnd("edit");
-	}
-	
-	createRange() {
-		
 	}
 	
 	indexFromCursor(cursor) {
