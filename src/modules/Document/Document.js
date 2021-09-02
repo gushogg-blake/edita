@@ -2,7 +2,7 @@ let Evented = require("utils/Evented");
 let _typeof = require("utils/typeof");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let Code = require("./Code");
+let Source = require("./Source");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -11,7 +11,7 @@ class Document extends Evented {
 	constructor(code, path) {
 		super();
 		
-		this.code = new Code(code);
+		this.source = new Source(code);
 		this.path = path;
 		this.updateFileDetails();
 		
@@ -22,11 +22,11 @@ class Document extends Evented {
 	}
 	
 	get string() {
-		return this.code.string;
+		return this.source.string;
 	}
 	
 	get lines() {
-		return this.code.lines;
+		return this.source.lines;
 	}
 	
 	edit(selection, replaceWith) {
@@ -90,7 +90,7 @@ class Document extends Evented {
 	}
 	
 	apply(edit) {
-		this.code.edit(edit);
+		this.source.edit(edit);
 		
 		this.modified = true;
 		
@@ -198,8 +198,8 @@ class Document extends Evented {
 	
 	updateFileDetails() {
 		this.fileDetails = base.getFileDetails(this.string, this.path);
-		this.code.setNewline(this.fileDetails.newline);
-		this.code.setLang(this.fileDetails.lang);
+		
+		this.source.init(this.fileDetails.lang, this.fileDetails.newline);
 	}
 	
 	async save() {
@@ -256,7 +256,7 @@ class Document extends Evented {
 	}
 	
 	langFromCursor(cursor) {
-		return this.code.langFromCursor(cursor);
+		return this.source.langFromCursor(cursor);
 	}
 	
 	langFromLineIndex(lineIndex) {
@@ -273,11 +273,11 @@ class Document extends Evented {
 	}
 	
 	indexFromCursor(cursor) {
-		return this.code.indexFromCursor(cursor);
+		return this.source.indexFromCursor(cursor);
 	}
 	
 	cursorFromIndex(index) {
-		return this.code.cursorFromIndex(index);
+		return this.source.cursorFromIndex(index);
 	}
 	
 	getSelectedText(selection) {
@@ -310,7 +310,7 @@ class Document extends Evented {
 	}
 	
 	cursorAtEnd() {
-		return this.code.cursorAtEnd();
+		return this.source.cursorAtEnd();
 	}
 	
 	getLongestLineWidth() {

@@ -1,26 +1,17 @@
+let LangRange = require("./LangRange");
 let Line = require("./Line");
 let generateRenderCommandsForLine = require("./generateRenderCommandsForLine");
 
-class Code {
+module.exports = class {
 	constructor(string) {
 		this.string = string;
-		this.parsed = false;
 	}
 	
-	setNewline(newline) {
+	init(lang, newline) {
 		this.newline = newline;
-		
-		if (this.parsed) {
-			this.parse();
-		}
-	}
-	
-	setLang(lang) {
 		this.lang = lang;
 		
-		if (this.parsed) {
-			this.parse();
-		}
+		this.parse();
 	}
 	
 	createLines() {
@@ -38,6 +29,11 @@ class Code {
 	}
 	
 	setRenderCommands() {
+	}
+	
+	decorateLines() {
+		this.rootLangRange.decorateLines(this.lines);
+		
 		for (let line of this.lines) {
 			line.renderCommands = [...generateRenderCommandsForLine(line)];
 		}
@@ -49,36 +45,25 @@ class Code {
 		
 		this.createLines();
 		
-		this.mainLangRange = {
-			lang: this.mainLang,
-			
-			range: {
+		try {
+			this.rootLangRange = new LangRange(this.lang, this.string, {
 				startIndex: 0,
 				endIndex: this.string.length,
 				selection: s(c(0, 0), this.cursorAtEnd()),
-			},
-			
-			parentNode: null,
-			parent: null,
-			children: [],
-		};
-		
-		try {
-			this.mainLang.parse(this.string, this.lines, this.mainLangRange);
+			});
 		} catch (e) {
 			console.error("Parse error");
 			console.error(e);
 		}
 		
-		this.parsed = true;
+		this.decorateLines();
+		this.setRenderCommands();
 		
 		console.timeEnd("parse");
 	}
 	
 	edit(edit) {
 		// edit the tree
-		
-		this.createLines();
 		
 		let {
 			selection,
@@ -90,7 +75,9 @@ class Code {
 		
 		this.string = this.string.substr(0, index) + replaceWith + this.string.substr(index + string.length);
 		
-		this.parse(); //
+		this.createLines();
+		
+		this.rootLangRange.edit(edit, this.string);
 		
 		this.setRenderCommands();
 	}

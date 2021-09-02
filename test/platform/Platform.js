@@ -9,6 +9,10 @@ class Platform {
 		this.fs = fs;
 	}
 	
+	async init() {
+		
+	}
+	
 	loadTreeSitterLanguage(name) {
 		return TreeSitter.Language.load(fs(__dirname, "./public/vendor/tree-sitter/langs/" + name + ".wasm").path);
 	}
