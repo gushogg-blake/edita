@@ -97,13 +97,10 @@ module.exports = class LangRange {
 			
 			line.nodes.push(node);
 			
-			let renderHint = lang.getRenderHint(node);
-			let openerAndCloser = lang.getOpenerAndCloser(node);
+			let openerAndCloser = this.getOpenerAndCloser(node);
 			let childRange = this.langRangesByNode.get(node);
 			
-			if (renderHint) {
-				line.renderHints.push(renderHint);
-			}
+			line.renderHints.push(...this.getRenderHints(node));
 			
 			if (openerAndCloser) {
 				let {opener, closer} = openerAndCloser;
@@ -129,17 +126,17 @@ module.exports = class LangRange {
 		}
 	}
 	
-	getRenderHint(node) {
+	getRenderHints(node) {
 		if (node.type === "ERROR") {
-			return {
+			return [{
 				type: "parseError",
 				offset: startOffset,
 				lang,
 				node,
-			};
+			}];
 		}
 		
-		return this.lang.getRenderHint(node);
+		return this.lang.generateRenderHints(node);
 	}
 	
 	getOpenerAndCloser(node) {

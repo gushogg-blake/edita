@@ -7,7 +7,7 @@ module.exports = {
 	astMode,
 	codeIntel,
 	
-	getRenderHint(node) {
+	*generateRenderHints(node) {
 		let {
 			type,
 			startPosition,
@@ -15,6 +15,8 @@ module.exports = {
 			parent,
 			childCount,
 		} = node;
+		
+		let startOffset = startOffset.column;
 		
 		let canIncludeTabs = [
 			"comment",
@@ -36,9 +38,9 @@ module.exports = {
 		].includes(parent?.type);
 		
 		if (colour) {
-			return {
+			yield {
 				type: "colour",
-				offset: startPosition.column,
+				offset: startOffset,
 				lang,
 				node,
 			};
@@ -50,16 +52,14 @@ module.exports = {
 			&& childCount === 0
 			&& startPosition.row === endPosition.row
 		) {
-			return {
+			yield {
 				type: "node",
-				offset: startPosition.column,
+				offset: startOffset,
 				lang,
 				node,
 			};
 		}
-		
-		return null;
-	}
+	},
 	
 	getOpenerAndCloser(node) {
 		if ([
@@ -74,7 +74,7 @@ module.exports = {
 		}
 		
 		return null;
-	}
+	},
 	
 	getInjectionLang(node) {
 		let {
@@ -95,7 +95,7 @@ module.exports = {
 		}
 		
 		return null;
-	}
+	},
 	
 	getHiliteClass(node) {
 		let {type} = node;
@@ -119,7 +119,7 @@ module.exports = {
 		}
 		
 		return "text";
-	}
+	},
 	
 	getSupportLevel(code, path) {
 		if (!path) {
@@ -136,5 +136,5 @@ module.exports = {
 		}
 		
 		return null;
-	}
-}
+	},
+};

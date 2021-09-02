@@ -1,35 +1,53 @@
 let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
-let parse = require("./parse");
 
-module.exports = async function() {
-	return {
-		code: "svelte",
-		name: "Svelte",
-		astMode,
-		codeIntel,
-		parse: await parse(),
+module.exports = {
+	code: "svelte",
+	name: "Svelte",
+	astMode,
+	codeIntel,
+	
+	*generateRenderHints(node) {
+		let {
+			type,
+			startPosition,
+			endPosition,
+			parent,
+			childCount,
+		} = node;
 		
-		getHiliteClass(node) {
-			
-		},
+		let startOffset = startOffset.column;
 		
-		getSupportLevel(code, path) {
-			let type = platform.fs(path).lastType;
-			
-			if ([
-				"svelte",
-			].includes(type)) {
-				return "specific";
-			}
-			
-			if ([
-				"html",
-			].includes(type)) {
-				return "alternate";
-			}
-			
-			return null;
-		},
-	};
-}
+		// TODO
+	},
+	
+	getOpenerAndCloser(node) {
+		return null; // TODO
+	},
+	
+	getInjectionLang(node) {
+		return null; // TODO
+	},
+		
+	getHiliteClass(node) {
+		// TODO
+	},
+	
+	getSupportLevel(code, path) {
+		let type = platform.fs(path).lastType;
+		
+		if ([
+			"svelte",
+		].includes(type)) {
+			return "specific";
+		}
+		
+		if ([
+			"html",
+		].includes(type)) {
+			return "alternate";
+		}
+		
+		return null;
+	},
+};

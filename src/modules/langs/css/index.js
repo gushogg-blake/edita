@@ -1,18 +1,81 @@
 let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
-let parse = require("./parse");
 
-class CSS {
-	constructor() {
-		this.code = "css";
-		this.name = "CSS";
-		this.astMode = astMode;
-		this.codeIntel = codeIntel;
-	}
+module.exports = {
+	code: "css",
+	name: "CSS",
+	astMode,
+	codeIntel,
 	
-	async init() {
-		this.parse = await parse(this);
-	}
+	*generateRenderHints(node) {
+		let {
+			type,
+			startPosition,
+			endPosition,
+			parent,
+			childCount,
+		} = node;
+		
+		let startOffset = startOffset.column;
+		
+		let canIncludeTabs = [
+			"comment",
+			"string_value",
+		].includes(type);
+		
+		let colour = [
+			"comment",
+			"string_value",
+			"integer_value",
+			"float_value",
+		].includes(type);
+		
+		let renderAsText = [
+			"string_value",
+			"integer_value",
+			"float_value",
+		].includes(parent?.type);
+		
+		if (colour) {
+			yield{
+				type: "colour",
+				offset: startOffset,
+				lang,
+				node,
+			};
+		}
+		
+		if (
+			!canIncludeTabs
+			&& !renderAsText
+			&& childCount === 0
+			&& startPosition.row !== endPosition.row
+		) {
+			yield {
+				type: "node",
+				offset: startOffset,
+				lang,
+				node,
+			};
+		}
+	},
+	
+	getOpenerAndCloser(node) {
+		if ([
+			"block",
+		].includes(type)) {
+			return {
+				opener: node.firstChild,
+				closer: node.lastChild,
+			};
+		}
+		
+		return null;
+	},
+	
+	getInjectionLang(node) {
+		return null;
+	},
 	
 	getHiliteClass(node) {
 		let {type, parent} = node;
@@ -50,7 +113,7 @@ class CSS {
 		}
 		
 		return "symbol";
-	}
+	},
 	
 	getSupportLevel(code, path) {
 		if (!path) {
@@ -66,13 +129,5 @@ class CSS {
 		}
 		
 		return null;
-	}
-}
-
-module.exports = async function() {
-	let css = new CSS();
-	
-	await css.init();
-	
-	return css;
+	},
 }
