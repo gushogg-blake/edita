@@ -423,13 +423,13 @@ class View extends Evented {
 	}
 	
 	setNormalSelection(selection) {
-		this.normalSelection = selection;
+		this.normalSelection = Selection.validate(this.document.lines, selection);
 		
 		this.updateAstSelectionFromNormalSelection();
 	}
 	
 	setAstSelection(selection) {
-		this.astSelection = selection;
+		this.astSelection = AstSelection.validate(this.document.lines, selection);
 		
 		this.updateNormalSelectionFromAstSelection();
 	}

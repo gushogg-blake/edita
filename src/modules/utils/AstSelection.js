@@ -125,6 +125,10 @@ let api = {
 	
 	linesToSelectionLines,
 	selectionLinesToStrings,
+	
+	validate(lines, selection) {
+		return s(Math.min(selection.startLineIndex, lines.length), Math.min(selection.endLineIndex, lines.length));
+	},
 };
 
 module.exports = api;

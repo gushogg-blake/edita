@@ -132,6 +132,7 @@ module.exports = class LangRange {
 	}
 	
 	decorateLines(lines) {
+		console.time("decorateLines (" + this.lang.code + ")");
 		let {lang} = this;
 		let cursor = this.tree.walk();
 		
@@ -177,6 +178,7 @@ module.exports = class LangRange {
 				break;
 			}
 		}
+		console.timeEnd("decorateLines (" + this.lang.code + ")");
 	}
 	
 	getRenderHints(node) {
