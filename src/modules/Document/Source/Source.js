@@ -93,7 +93,11 @@ module.exports = class {
 		this.createLines();
 		
 		if (this.lang.code !== "plainText") {
-			this.rootLangRange.edit(edit, index, this.string);
+			this.rootLangRange.edit(edit, index, {
+				startIndex: 0,
+				endIndex: this.string.length,
+				selection: s(c(0, 0), this.cursorAtEnd()),
+			}, this.string);
 			
 			this.decorateLines();
 		}
