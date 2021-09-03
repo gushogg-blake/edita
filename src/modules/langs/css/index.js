@@ -37,7 +37,7 @@ module.exports = {
 		].includes(parent?.type);
 		
 		if (colour) {
-			yield{
+			yield {
 				type: "colour",
 				offset: startOffset,
 				lang: this,
@@ -49,7 +49,7 @@ module.exports = {
 			!canIncludeTabs
 			&& !renderAsText
 			&& childCount === 0
-			&& startPosition.row !== endPosition.row
+			&& startPosition.row === endPosition.row
 		) {
 			yield {
 				type: "node",
@@ -63,7 +63,7 @@ module.exports = {
 	getOpenerAndCloser(node) {
 		if ([
 			"block",
-		].includes(type)) {
+		].includes(node.type)) {
 			return {
 				opener: node.firstChild,
 				closer: node.lastChild,

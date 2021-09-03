@@ -12,7 +12,7 @@ module.exports = class LangRange {
 		
 		this.langRanges = [];
 		this.langRangesByCursor = {};
-		this.langRangesByNode = new WeakMap();
+		this.langRangesByNode = {};
 		
 		this.parse();
 	}
@@ -37,7 +37,7 @@ module.exports = class LangRange {
 				
 				this.langRanges.push(langRange);
 				this.langRangesByCursor[node.startPosition.row + "," + node.startPosition.column] = langRange;
-				this.langRangesByNode.set(node, langRange);
+				this.langRangesByNode[node.id] = langRange;
 			}
 			
 			if (!advanceCursor(cursor)) {
@@ -56,24 +56,30 @@ module.exports = class LangRange {
 		
 		this.code = code;
 		
+		//
+		this.langRanges = [];
+		this.langRangesByCursor = {};
+		this.langRangesByNode = {};
 		
+		this.parse();
+		//
 		
-		let parser = new TreeSitter();
-		
-		parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
-		
-		this.tree.edit({
-			startPosition: cursorToTreeSitterPoint(selection.start),
-			startIndex: index,
-			oldEndPosition: cursorToTreeSitterPoint(selection.end),
-			oldEndIndex: index + string.length,
-			newEndPosition: cursorToTreeSitterPoint(newSelection.end),
-			newEndIndex: index + replaceWith.length,
-		});
-		
-		this.tree = parser.parse(this.code, this.tree, {
-			includedRanges: [this.treeSitterRange],
-		});
+		//let parser = new TreeSitter();
+		//
+		//parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
+		//
+		//this.tree.edit({
+		//	startPosition: cursorToTreeSitterPoint(selection.start),
+		//	startIndex: index,
+		//	oldEndPosition: cursorToTreeSitterPoint(selection.end),
+		//	oldEndIndex: index + string.length,
+		//	newEndPosition: cursorToTreeSitterPoint(newSelection.end),
+		//	newEndIndex: index + replaceWith.length,
+		//});
+		//
+		//this.tree = parser.parse(this.code, this.tree, {
+		//	includedRanges: [this.treeSitterRange],
+		//});
 		
 		
 	}
@@ -85,7 +91,7 @@ module.exports = class LangRange {
 		while (true) {
 			let node = cursor.currentNode();
 			
-			if (node === this.tree.rootNode) {
+			if (node.equals(this.tree.rootNode)) {
 				if (!advanceCursor(cursor)) {
 					break;
 				}
@@ -98,7 +104,7 @@ module.exports = class LangRange {
 			line.nodes.push(node);
 			
 			let openerAndCloser = this.getOpenerAndCloser(node);
-			let childRange = this.langRangesByNode.get(node);
+			let childRange = this.langRangesByNode[node.id];
 			
 			line.renderHints.push(...this.getRenderHints(node));
 			
