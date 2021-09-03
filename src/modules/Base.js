@@ -60,18 +60,11 @@ class Base {
 		
 		for (let lang of this.langs.all) {
 			lang.injections = (lang.injections || []).map((injection) => {
-				let injectionLang = this.langs.get(injection.lang);
-				
-				if (!injectionLang) {
-					return null;
-				}
-				
 				return {
 					...injection,
-					lang: injectionLang,
 					query: this.treeSitterLanguages[lang.code].query(injection.pattern),
 				};
-			}).filter(Boolean);
+			});
 		}
 	}
 	

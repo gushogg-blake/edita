@@ -43,11 +43,15 @@ module.exports = class LangRange {
 			
 			for (let node of nodes) {
 				if (node.text.length > 0) {
-					let langRange = new LangRange(injection.lang, this.code, treeSitterRangeToRange(node));
+					let injectionLang = base.langs.get(injection.lang(node));
 					
-					this.langRanges.push(langRange);
-					this.langRangesByCursor[node.startPosition.row + "," + node.startPosition.column] = langRange;
-					this.langRangesByNode[node.id] = langRange;
+					if (injectionLang) {
+						let langRange = new LangRange(injectionLang, this.code, treeSitterRangeToRange(node));
+						
+						this.langRanges.push(langRange);
+						this.langRangesByCursor[node.startPosition.row + "," + node.startPosition.column] = langRange;
+						this.langRangesByNode[node.id] = langRange;
+					}
 				}
 			}
 		}

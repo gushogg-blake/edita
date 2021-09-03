@@ -10,11 +10,17 @@ module.exports = {
 	injections: [
 		{
 			pattern: "(script_element (raw_text) @injectionNode)",
-			lang: "javascript",
+			
+			lang(injectionNode) {
+				return "javascript";
+			},
 		},
 		{
 			pattern: "(style_element (raw_text) @injectionNode)",
-			lang: "css",
+			
+			lang(injectionNode) {
+				return "css";
+			},
 		},
 	],
 	

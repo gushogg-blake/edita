@@ -5,6 +5,8 @@ let LangRange = require("./LangRange");
 let Line = require("./Line");
 let generateRenderCommandsForLine = require("./generateRenderCommandsForLine");
 
+let findFirstNodeToRender = require("./utils/treeSitter/findFirstNodeToRender");
+
 let {s} = Selection;
 let {c} = Cursor;
 
@@ -67,7 +69,7 @@ module.exports = class {
 				console.error(e);
 			}
 			
-			this.decorateLines();
+			//this.decorateLines();
 		}
 		
 		this.setRenderCommands();
@@ -95,12 +97,21 @@ module.exports = class {
 				selection: s(c(0, 0), this.cursorAtEnd()),
 			}, this.string);
 			
-			this.decorateLines();
+			//this.decorateLines();
 		}
 		
 		this.setRenderCommands();
 		
 		console.timeEnd("edit");
+		
+		console.time("find");
+		
+		let n = findFirstNodeToRender(this.rootLangRange.tree, 400);
+		
+		console.log(n);
+		
+		console.timeEnd("find");
+		
 	}
 	
 	indexFromCursor(cursor) {
