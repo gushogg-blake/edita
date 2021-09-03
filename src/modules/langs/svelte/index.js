@@ -6,6 +6,7 @@ module.exports = {
 	name: "Svelte",
 	astMode,
 	codeIntel,
+	injections: [],
 	
 	*generateRenderHints(node) {
 		let {
@@ -25,10 +26,6 @@ module.exports = {
 		return null; // TODO
 	},
 	
-	getInjectionLang(node) {
-		return null; // TODO
-	},
-		
 	getHiliteClass(node) {
 		// TODO
 	},

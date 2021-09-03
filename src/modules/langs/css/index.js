@@ -6,6 +6,7 @@ module.exports = {
 	name: "CSS",
 	astMode,
 	codeIntel,
+	injections: [],
 	
 	*generateRenderHints(node) {
 		let {
@@ -70,10 +71,6 @@ module.exports = {
 			};
 		}
 		
-		return null;
-	},
-	
-	getInjectionLang(node) {
 		return null;
 	},
 	

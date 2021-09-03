@@ -7,6 +7,17 @@ module.exports = {
 	astMode,
 	codeIntel,
 	
+	injections: [
+		{
+			pattern: "(script_element (raw_text) @injectionNode)",
+			lang: "javascript",
+		},
+		{
+			pattern: "(style_element (raw_text) @injectionNode)",
+			lang: "css",
+		},
+	],
+	
 	*generateRenderHints(node) {
 		let {
 			type,

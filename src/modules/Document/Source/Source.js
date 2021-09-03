@@ -53,8 +53,6 @@ module.exports = class {
 	}
 	
 	parse() {
-		console.time("parse");
-		
 		this.createLines();
 		
 		if (this.lang.code !== "plainText") {
@@ -73,8 +71,6 @@ module.exports = class {
 		}
 		
 		this.setRenderCommands();
-		
-		console.timeEnd("parse");
 	}
 	
 	edit(edit) {

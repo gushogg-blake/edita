@@ -18,6 +18,8 @@ module.exports = class LangRange {
 	}
 	
 	parse() {
+		console.time("parse (" + this.lang.code + ")");
+		
 		let parser = new TreeSitter();
 		
 		parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
@@ -26,24 +28,31 @@ module.exports = class LangRange {
 			includedRanges: [this.treeSitterRange],
 		});   
 		
-		let cursor = this.tree.walk();
-		
-		while (true) {
-			let node = cursor.currentNode();
-			let injectionLang = this.getInjectionLang(node);
-			
-			if (injectionLang) {
-				let langRange = new LangRange(injectionLang, this.code, treeSitterRangeToRange(node));
+		for (let injection of this.lang.injections) {
+			let nodes = injection.query.matches(this.tree.rootNode).map(function(match) {
+				let [capture] = match.captures;
 				
-				this.langRanges.push(langRange);
-				this.langRangesByCursor[node.startPosition.row + "," + node.startPosition.column] = langRange;
-				this.langRangesByNode[node.id] = langRange;
-			}
+				for (let capture of match.captures) {
+					if (capture.name === "injectionNode") {
+						return capture.node;
+					}
+				}
+				
+				return null;
+			}).filter(Boolean);
 			
-			if (!advanceCursor(cursor)) {
-				break;
+			for (let node of nodes) {
+				if (node.text.length > 0) {
+					let langRange = new LangRange(injection.lang, this.code, treeSitterRangeToRange(node));
+					
+					this.langRanges.push(langRange);
+					this.langRangesByCursor[node.startPosition.row + "," + node.startPosition.column] = langRange;
+					this.langRangesByNode[node.id] = langRange;
+				}
 			}
 		}
+		
+		console.timeEnd("parse (" + this.lang.code + ")");
 	}
 	
 	edit(edit, index, newRange, code) {
@@ -200,19 +209,5 @@ module.exports = class LangRange {
 		}
 		
 		return this.lang.getOpenerAndCloser(node);
-	}
-	
-	getInjectionLang(node) {
-		if (node.text.length === 0) {
-			return null;
-		}
-		
-		let injectionLangCode = this.lang.getInjectionLang(node);
-			
-		if (!injectionLangCode) {
-			return null;
-		}
-		
-		return base.langs.get(injectionLangCode);
 	}
 }
