@@ -67,11 +67,14 @@ module.exports = function(layers, view) {
 						layers.code.fillText(a, x, y);
 					}
 					
+					wrapIndex++;
 					row++;
 					y += rowHeight;
 					x = leftEdge + line.indentCols * colWidth;
 					
-					wrapIndex++;
+					if (row >= firstRowIndex) {
+						layers.code.fillText(b, x, y);
+					}
 				} else {
 					if (row >= firstRowIndex) {
 						layers.code.fillText(string, x, y);
@@ -81,6 +84,13 @@ module.exports = function(layers, view) {
 				}
 				
 				offset += string.length;
+				
+				if (offset === wraps[wrapIndex]) {
+					wrapIndex++;
+					row++;
+					y += rowHeight;
+					x = leftEdge + line.indentCols * colWidth;
+				}
 			}
 		}
 		
