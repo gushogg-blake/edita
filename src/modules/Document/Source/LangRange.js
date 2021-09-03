@@ -2,9 +2,12 @@ let advanceCursor = require("./utils/treeSitter/advanceCursor");
 let rangeToTreeSitterRange = require("./utils/treeSitter/rangeToTreeSitterRange");
 let treeSitterRangeToRange = require("./utils/treeSitter/treeSitterRangeToRange");
 let cursorToTreeSitterPoint = require("./utils/treeSitter/cursorToTreeSitterPoint");
+let findFirstNodeToRender = require("./utils/treeSitter/findFirstNodeToRender");
 
 module.exports = class LangRange {
-	constructor(lang, code, range) {
+	constructor(parent, parentNode, lang, code, range) {
+		this.parent = parent;
+		this.parentNode = parentNode;
 		this.lang = lang;
 		this.code = code;
 		this.range = range;
@@ -46,7 +49,7 @@ module.exports = class LangRange {
 					let injectionLang = base.langs.get(injection.lang(node));
 					
 					if (injectionLang) {
-						let langRange = new LangRange(injectionLang, this.code, treeSitterRangeToRange(node));
+						let langRange = new LangRange(this, node, injectionLang, this.code, treeSitterRangeToRange(node));
 						
 						this.langRanges.push(langRange);
 						this.langRangesByCursor[node.startPosition.row + "," + node.startPosition.column] = langRange;
@@ -59,7 +62,7 @@ module.exports = class LangRange {
 		console.timeEnd("parse (" + this.lang.code + ")");
 	}
 	
-	edit(edit, index, newRange, code) {
+	edit(edit, index, newRange, newParentNode, code) {
 		let {
 			selection,
 			newSelection,
@@ -67,6 +70,7 @@ module.exports = class LangRange {
 			replaceWith,
 		} = edit;
 		
+		this.newParentNode = newParentNode;
 		this.code = code;
 		
 		//
@@ -79,6 +83,16 @@ module.exports = class LangRange {
 		
 		this.parse();
 		//
+		
+		
+		let oldRangesByCursor = this.langRangesByCursor;
+		
+		this.langRanges = [];
+		this.langRangesByCursor = {};
+		this.langRangesByNode = {};
+		
+		
+		
 		
 		/*
 		surgically editing child ranges can be done in two general steps:
@@ -211,5 +225,38 @@ module.exports = class LangRange {
 		}
 		
 		return this.lang.getOpenerAndCloser(node);
+	}
+	
+	findFirstNodeToRender(lineIndex) {
+		let node = findFirstNodeToRender(this.tree, lineIndex);
+		let childRange = this.langRangesByNode[node.id];
+		
+		if (childRange) {
+			return childRange.findFirstNodeToRender(lineIndex);
+		}
+		
+		return {
+			langRange: this,
+			node,
+		};
+	}
+	
+	next(node) {
+		if (node.equals(this.tree.rootNode)) {
+			if (!this.parent) {
+				return null;
+			}
+			
+			return {
+				langRange: this.parent,
+				node: this.parentNode,
+			};
+		}
+		let cursor = node.walk();
+		let next = advanceCursor(cursor);
+		
+		if (!) {
+			
+		}
 	}
 }
