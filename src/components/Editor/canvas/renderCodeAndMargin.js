@@ -1,13 +1,11 @@
 module.exports = function(layers, view) {
 	let {
 		font,
-		tabWidth,
 		marginBackground,
 		lineNumberColor,
 	} = platform.prefs;
 	
 	let {
-		wrappedLines,
 		scrollPosition,
 		measurements,
 	} = view;
@@ -31,7 +29,6 @@ module.exports = function(layers, view) {
 	
 	let {
 		lines,
-		startLineIndex,
 		firstRowIndex,
 	} = view.getLinesToRender();
 	
@@ -40,10 +37,12 @@ module.exports = function(layers, view) {
 	let x = leftEdge;
 	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
 	
-	let lineIndex = startLineIndex;
+	/*
+	wraps - array of wrap offsets and Infinity, e.g. [32, 71, Infinity]
+	*/
 	
-	for (let {line, renderCommands} of lines) {
-		let wrappedLine = wrappedLines[lineIndex];
+	for (let {line, lineIndex, wraps, renderCommands} of lines) {
+		let wrapIndex = 0;
 		let row = 0;
 		let offset = 0;
 		
@@ -59,40 +58,38 @@ module.exports = function(layers, view) {
 			}
 			
 			if (string) {
-				if (row >= firstRowIndex) {
-					layers.code.fillText(str, x, y);
+				if (offset + string.length > wraps[wrapIndex]) {
+					let split = nextWrap - offset;
+					let a = string.substr(0, split);
+					let b = string.substr(split);
+					
+					if (row >= firstRowIndex) {
+						layers.code.fillText(a, x, y);
+					}
+					
+					row++;
+					y += rowHeight;
+					x = leftEdge + line.indentCols * colWidth;
+					
+					wrapIndex++;
+				} else {
+					if (row >= firstRowIndex) {
+						layers.code.fillText(string, x, y);
+					}
+					
+					x += width * colWidth;
 				}
 				
 				offset += string.length;
 			}
-			
-			x += width * colWidth;
 		}
 		
-		rowsRendered++;
 		x = leftEdge;
 		y += rowHeight;
-		for (let i = 0; i < wrappedLine.height; i++) {
-			if (i < lineRowIndex) {
-				continue;
-			}
-			
-			if (i > 0) {
-				x += line.indentCols * colWidth;
-			}
-			
-		}	
-		
-		lineIndex++;
-	}
-			
-			
-		}
 		
 		// margin background
-		// rendered after code so that it covers it if code is scrolled horizontally
 		
-		let marginHeight = wrappedLine.height * rowHeight;
+		let marginHeight = wraps.length * rowHeight;
 		
 		layers.margin.fillStyle = marginBackground;
 		layers.margin.fillRect(0, y - marginHeight - rowHeight, marginWidth, marginHeight);
@@ -108,8 +105,5 @@ module.exports = function(layers, view) {
 			marginWidth - marginStyle.paddingRight - lineNumber.length * colWidth,
 			y - marginHeight,
 		);
-		
-		// TODO folding
-		
 	}
 }

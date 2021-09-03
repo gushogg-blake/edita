@@ -284,6 +284,10 @@ class Document extends Evented {
 		return this.source.cursorFromIndex(index);
 	}
 	
+	findFirstNodeToRender(lineIndex) {
+		return this.rootLangRange.findFirstNodeToRender(lineIndex);
+	}
+	
 	getSelectedText(selection) {
 		let {start, end} = Selection.sort(selection);
 		let lines = this.lines.slice(start.lineIndex, end.lineIndex + 1);
