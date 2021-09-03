@@ -88,6 +88,33 @@ class View extends Evented {
 		this.blur = this.blur.bind(this);
 	}
 	
+	getLinesToRender() {
+		
+		let rowsToRender = height / rowHeight;
+		let rowsRendered = 0;
+		
+		let firstVisibleLine = view.findFirstVisibleLine();
+		
+		/*
+		when switching away from a tab the view will unwrap all lines, so if the last
+		line is wrapped and we're scrolled right to the bottom, there will be no
+		visible line at first when switching back to the tab.  the next resize will
+		re-wrap the lines and rerender.
+		*/
+		
+		if (!firstVisibleLine) {
+			return;
+		}
+		
+		let {
+			lineIndex: firstLineIndex,
+			lineRowIndex,
+		} = firstVisibleLine;
+		
+		let lineIndex = firstLineIndex;
+		
+	}
+	
 	updateWrappedLines() {
 		this.wrappedLines = this.document.lines.map((line) => {
 			return wrapLine(line, this.document.fileDetails.indentation, this.measurements, this.sizes.codeWidth);

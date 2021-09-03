@@ -197,8 +197,6 @@ module.exports = class LangRange {
 	getRenderHints(node) {
 		if (node.type === "ERROR") {
 			return [{
-				type: "parseError",
-				offset: node.startPosition.column,
 				lang: this.lang,
 				node,
 			}];

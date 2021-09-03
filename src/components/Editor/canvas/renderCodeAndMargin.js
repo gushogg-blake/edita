@@ -1,45 +1,3 @@
-function findPrevColourHint(wrappedLines, firstLineIndex, lineRowIndex) {
-	let wrappedLine = wrappedLines[firstLineIndex];
-	
-	for (let i = lineRowIndex - 1; i >= 0; i--) {
-		let commands = [...wrappedLine.rows[i].renderCommands].reverse();
-		
-		for (let command of commands) {
-			let {type} = command;
-			
-			if (type === "colour") {
-				return command;
-			}
-			
-			if (type === "node") {
-				return null;
-			}
-		}
-	}
-	
-	for (let i = firstLineIndex - 1; i >= 0; i--) {
-		let wrappedLine = wrappedLines[i];
-		
-		for (let lineRow of [...wrappedLine.rows.reverse()]) {
-			let commands = [...lineRow.renderCommands].reverse();
-			
-			for (let command of commands) {
-				let {type} = command;
-				
-				if (type === "colour") {
-					return command;
-				}
-				
-				if (type === "node") {
-					return null;
-				}
-			}
-		}
-	}
-	
-	return null;
-}
-
 module.exports = function(layers, view) {
 	let {
 		font,
@@ -51,7 +9,6 @@ module.exports = function(layers, view) {
 	let {
 		wrappedLines,
 		scrollPosition,
-		document,
 		measurements,
 	} = view;
 	
@@ -61,8 +18,6 @@ module.exports = function(layers, view) {
 	} = measurements;
 	
 	let {
-		width,
-		height,
 		marginWidth,
 		marginOffset,
 		topMargin,
@@ -74,97 +29,64 @@ module.exports = function(layers, view) {
 	
 	layers.margin.font = font;
 	
-	let rowsToRender = height / rowHeight;
-	let rowsRendered = 0;
+	let {
+		lines,
+		startLineIndex,
+		firstRowIndex,
+	} = view.getLinesToRender();
 	
 	let leftEdge = marginOffset - scrollPosition.x;
 	
 	let x = leftEdge;
 	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
 	
-	let firstVisibleLine = view.findFirstVisibleLine();
+	let lineIndex = startLineIndex;
 	
-	/*
-	when switching away from a tab the view will unwrap all lines, so if the last
-	line is wrapped and we're scrolled right to the bottom, there will be no
-	visible line at first when switching back to the tab.  the next resize will
-	re-wrap the lines and rerender.
-	*/
-	
-	if (!firstVisibleLine) {
-		return;
-	}
-	
-	let {
-		lineIndex: firstLineIndex,
-		lineRowIndex,
-	} = firstVisibleLine;
-	
-	// find the previous colour hint, if any (otherwise e.g. multiline comments
-	// won't be coloured as comments if the opener is not on screen)
-	
-	let prevColourHint = findPrevColourHint(wrappedLines, firstLineIndex, lineRowIndex);
-	
-	if (prevColourHint) {
-		let {lang, node} = prevColourHint;
-		
-		layers.code.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
-	}
-	
-	let lineIndex = firstLineIndex;
-	
-	while (true) {
+	for (let {line, renderCommands} of lines) {
 		let wrappedLine = wrappedLines[lineIndex];
-		let {line} = wrappedLine;
+		let row = 0;
 		let offset = 0;
 		
-		// code
+		for (let command of renderCommands) {
+			let {string, node, lang, width} = command;
+			
+			if (!width) {
+				width = string.length;
+			}
+			
+			if (node) {
+				layers.code.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+			}
+			
+			if (string) {
+				if (row >= firstRowIndex) {
+					layers.code.fillText(str, x, y);
+				}
+				
+				offset += string.length;
+			}
+			
+			x += width * colWidth;
+		}
 		
+		rowsRendered++;
+		x = leftEdge;
+		y += rowHeight;
 		for (let i = 0; i < wrappedLine.height; i++) {
 			if (i < lineRowIndex) {
 				continue;
 			}
 			
-			let lineRow = wrappedLine.rows[i];
-			
 			if (i > 0) {
 				x += line.indentCols * colWidth;
 			}
 			
-			for (let command of lineRow.renderCommands) {
-				let {type} = command;
-				
-				if (type === "colour") {
-					let {lang, node} = command;
-					
-					layers.code.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
-				} else if (type === "string") {
-					let {string: str} = command;
-					
-					layers.code.fillText(str, x, y);
-					
-					x += str.length * colWidth;
-					offset += str.length;
-				} else if (type === "node") {
-					let {lang, node, offset: hintOffset} = command;
-					let str = node.text;
-					
-					layers.code.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
-					layers.code.fillText(str, x, y);
-					
-					x += str.length * colWidth;
-					offset += str.length;
-				} else if (type === "tab") {
-					let {width} = command;
-					
-					x += width * colWidth;
-					offset++;
-				}
-			}
+		}	
+		
+		lineIndex++;
+	}
 			
-			rowsRendered++;
-			x = leftEdge;
-			y += rowHeight;
+			
 		}
 		
 		// margin background
@@ -189,14 +111,5 @@ module.exports = function(layers, view) {
 		
 		// TODO folding
 		
-		if (rowsRendered >= rowsToRender) {
-			break;
-		}
-		
-		lineIndex++;
-		
-		if (lineIndex === wrappedLines.length) {
-			break;
-		}
 	}
 }

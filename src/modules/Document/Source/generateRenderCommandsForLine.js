@@ -3,20 +3,15 @@ generate a set of rendering commands based on the line string, tabs (which
 have to be handled specially because they're variable width -- hence
 variableWidthParts), and any hints provided by the language.
 
-Hints are e.g. "nodes", indicating that a particular range of text contains
-a discrete syntax node that can be rendered as a unit (these won't be broken by
-wrapping); or "colour" hints, indicating that following text should be rendered
-a particular colour (e.g. "comment").
+Hints have node and lang properties, which set the colour, and optionally
+string, which renders the string.
 
-Ranges of text that aren't covered by hints are rendered in whatever colour
-was last used, which will be set by the previous "node" or "colour" command.
-
-("Hint" is probably too soft a word as the combination of hints and non-hint
-ranges are the fundamental components of the line as far as rendering is
-concerned.)
+The resulting commands are either hints, plain {string}s, or tabs (which have
+explicit width to be used instead of the string length for incrementing the
+x position when rendering)
 */
 
-module.exports = function*(line) {
+module.exports = function*(line, renderHints) {
 	let stringStartOffset = 0;
 	let offset = 0;
 	let hintIndex = 0;
@@ -31,9 +26,10 @@ module.exports = function*(line) {
 				and either the next hint or the end of the string
 				*/
 				
-				let nextHint = line.renderHints[hintIndex];
+				let nextHint = renderHints[hintIndex];
+				let nextHintOffset = nextHint?.node.startPosition.column;
 				
-				if (nextHint && nextHint.offset >= stringStartOffset + string.length) {
+				if (nextHint && nextHintOffset >= stringStartOffset + string.length) {
 					// next hint is not within the current string part, so ignore
 					
 					nextHint = null;
@@ -43,18 +39,16 @@ module.exports = function*(line) {
 					let str = string.substr(offset - stringStartOffset);
 					
 					yield {
-						type: "string",
 						string: str,
 					};
 					
 					offset += str.length;
 				}
 				
-				if (nextHint && nextHint.offset > offset) {
-					let str = string.substring(offset - stringStartOffset, nextHint.offset - stringStartOffset);
+				if (nextHint && nextHintOffset > offset) {
+					let str = string.substring(offset - stringStartOffset, nextHintOffset - stringStartOffset);
 					
 					yield {
-						type: "string",
 						string: str,
 					};
 					
@@ -65,21 +59,16 @@ module.exports = function*(line) {
 				2. render the next hint
 				*/
 				
-				while (nextHint && nextHint.offset === offset) {
-					if (nextHint.type === "node") {
-						let {node} = nextHint;
-						
-						yield nextHint;
-						
-						offset = node.startPosition.column + node.text.length;
-					} else if (nextHint.type === "colour") {
-						yield nextHint;
-					} else if (nextHint.type === "parseError") {
-						yield nextHint;
+				while (nextHint && nextHintOffset === offset) {
+					yield nextHint;
+					
+					if (nextHint.string) {
+						offset += nextHint.string.length;
 					}
 					
 					hintIndex++;
-					nextHint = line.renderHints[hintIndex];
+					nextHint = renderHints[hintIndex];
+					nextHintOffset = nextHint?.node.startPosition.column;
 				}
 				
 				if (offset === stringStartOffset + string.length) {
@@ -90,8 +79,8 @@ module.exports = function*(line) {
 			stringStartOffset += string.length;
 		} else if (part.type === "tab") {
 			yield {
-				type: "tab",
 				width: part.width,
+				string: "\t",
 			};
 			
 			offset++;

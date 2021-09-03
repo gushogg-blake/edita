@@ -15,9 +15,8 @@ module.exports = {
 			endPosition,
 			parent,
 			childCount,
+			text,
 		} = node;
-		
-		let startOffset = startPosition.column;
 		
 		let canIncludeTabs = [
 			"comment",
@@ -39,8 +38,6 @@ module.exports = {
 		
 		if (colour) {
 			yield {
-				type: "colour",
-				offset: startOffset,
 				lang: this,
 				node,
 			};
@@ -53,10 +50,9 @@ module.exports = {
 			&& startPosition.row === endPosition.row
 		) {
 			yield {
-				type: "node",
-				offset: startOffset,
 				lang: this,
 				node,
+				string: text,
 			};
 		}
 	},

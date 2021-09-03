@@ -108,8 +108,6 @@ module.exports = class {
 		
 		let n = findFirstNodeToRender(this.rootLangRange.tree, 400);
 		
-		console.log(n);
-		
 		console.timeEnd("find");
 		
 	}
