@@ -158,53 +158,34 @@ module.exports = class LangRange {
 		
 	}
 	
-	decorateLines(lines) {
+	decorateLines(lines, startLineIndex, endLineIndex) {
 		console.time("decorateLines (" + this.lang.code + ")");
-		let {lang} = this;
-		let cursor = this.tree.walk();
+		
+		let node = this.findFirstNodeToRender(startLineIndex);
+		let cursor = node.walk();
 		
 		while (true) {
 			let node = cursor.currentNode();
 			
-			if (node.equals(this.tree.rootNode)) {
-				if (!advanceCursor(cursor)) {
-					break;
-				}
-				
-				continue;
+			if (node.startPosition.row >= endLineIndex) {
+				break;
 			}
 			
-			let line = lines[node.startPosition.row];
-			
-			line.nodes.push(node);
-			
-			let openerAndCloser = this.getOpenerAndCloser(node);
-			let childRange = this.langRangesByNode[node.id];
+			let line = lines[node.startPosition.row - startLineIndex];
 			
 			line.renderHints.push(...this.getRenderHints(node));
 			
-			if (openerAndCloser) {
-				let {opener, closer} = openerAndCloser;
-				
-				lines[opener.startPosition.row].openers.push({
-					lang,
-					node: opener,
-				});
-				
-				lines[closer.startPosition.row].closers.unshift({
-					lang,
-					node: closer,
-				});
-			}
+			let childRange = this.langRangesByNode[node.id];
 			
 			if (childRange) {
-				childRange.decorateLines(lines);
+				childRange.decorateLines(lines, startLineIndex, endLineIndex);
 			}
 			
 			if (!advanceCursor(cursor)) {
 				break;
 			}
 		}
+		
 		console.timeEnd("decorateLines (" + this.lang.code + ")");
 	}
 	
@@ -219,13 +200,13 @@ module.exports = class LangRange {
 		return this.lang.generateRenderHints(node);
 	}
 	
-	getOpenerAndCloser(node) {
-		if (node.type === "ERROR" || node.startPosition.row === node.endPosition.row) {
-			return null;
-		}
-		
-		return this.lang.getOpenerAndCloser(node);
-	}
+	//getOpenerAndCloser(node) {
+	//	if (node.type === "ERROR" || node.startPosition.row === node.endPosition.row) {
+	//		return null;
+	//	}
+	//	
+	//	return this.lang.getOpenerAndCloser(node);
+	//}
 	
 	findFirstNodeToRender(lineIndex) {
 		let node = findFirstNodeToRender(this.tree, lineIndex);
@@ -242,13 +223,6 @@ module.exports = class LangRange {
 	}
 	
 	next(node) {
-		if (node.equals(this.tree.rootNode)) {
-			return {
-				langRange: this.parent,
-				node: this.parentNode,
-			};
-		}
-		
 		let childRange = this.langRangesByNode[node.id];
 		
 		if (childRange) {
@@ -258,9 +232,22 @@ module.exports = class LangRange {
 			};
 		}
 		
+		let next = advanceCursor(node.walk());
+		
+		if (!next) {
+			if (this.parent) {
+				return this.parent.next(this.parentNode);
+			} else {
+				return {
+					langRange: this,
+					node: null,
+				};
+			}
+		}
+		
 		return {
 			langRange: this,
-			node: advanceCursor(node.walk()),
+			node: next,
 		};
 	}
 }

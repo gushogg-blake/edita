@@ -284,8 +284,8 @@ class Document extends Evented {
 		return this.source.cursorFromIndex(index);
 	}
 	
-	findFirstNodeToRender(lineIndex) {
-		return this.rootLangRange.findFirstNodeToRender(lineIndex);
+	getDecoratedLines(startLineIndex, endLineIndex) {
+		return this.source.getDecoratedLines(startLineIndex, endLineIndex);
 	}
 	
 	getSelectedText(selection) {

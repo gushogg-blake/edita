@@ -8,6 +8,15 @@ let generateRenderCommandsForLine = require("./generateRenderCommandsForLine");
 let {s} = Selection;
 let {c} = Cursor;
 
+/*
+
+			renderCommands: [],
+			nodes: [],
+			renderHints: [],
+			openers: [],
+			closers: [],
+*/
+
 module.exports = class {
 	constructor(string) {
 		this.string = string;
@@ -34,24 +43,6 @@ module.exports = class {
 		}
 	}
 	
-	decorateLines() {
-		console.time("decorateLines");
-		
-		this.rootLangRange.decorateLines(this.lines);
-		
-		console.timeEnd("decorateLines");
-	}
-	
-	setRenderCommands() {
-		console.time("setRenderCommands");
-		
-		for (let line of this.lines) {
-			line.renderCommands = [...generateRenderCommandsForLine(line)];
-		}
-		
-		console.timeEnd("setRenderCommands");
-	}
-	
 	parse() {
 		this.createLines();
 		
@@ -66,11 +57,7 @@ module.exports = class {
 				console.error("Parse error");
 				console.error(e);
 			}
-			
-			//this.decorateLines();
 		}
-		
-		this.setRenderCommands();
 	}
 	
 	edit(edit) {
@@ -94,17 +81,30 @@ module.exports = class {
 				endIndex: this.string.length,
 				selection: s(c(0, 0), this.cursorAtEnd()),
 			}, null, this.string);
-			
-			//this.decorateLines();
 		}
-		
-		this.setRenderCommands();
 		
 		console.timeEnd("edit");
 	}
 	
 	findFirstNodeToRender(lineIndex) {
 		return this.rootLangRange.findFirstNodeToRender(lineIndex);
+	}
+	
+	getDecoratedLines(startLineIndex, endLineIndex) {
+		let lines = this.lines.slice(startLineIndex, endLineIndex).map((line) => {
+			return {
+				line,
+				renderHints: [],
+			};
+		});
+		
+		this.rootLangRange.decorateLines(lines, startLineIndex, endLineIndex);
+		
+		for (let {line, renderHints} of lines) {
+			line.renderCommands = [...generateRenderCommandsForLine(line, renderHints)];
+		}
+		
+		return lines;
 	}
 	
 	indexFromCursor(cursor) {
