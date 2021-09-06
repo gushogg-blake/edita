@@ -399,7 +399,7 @@ function resize() {
 		view.setCanvasSize(width, height);
 		
 		if (width !== prevWidth) {
-			view.updateWraps();
+			view.updateWrappedLines();
 		}
 		
 		view.redraw();
@@ -512,7 +512,7 @@ async function prefsUpdated() {
 	
 	resize();
 	
-	view.updateWraps();
+	view.updateWrappedLines();
 	
 	view.redraw();
 }

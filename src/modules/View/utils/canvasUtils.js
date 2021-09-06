@@ -5,7 +5,7 @@ module.exports = {
 	calculateNormalSelectionRegions(selection) {
 		let regions = [];
 		
-		let {colWidth, rowHeight} = measurements;
+		let {colWidth, rowHeight} = this.measurements;
 		let {start, end} = Selection.sort(selection);
 		
 		let [startRow, startCol] = this.rowColFromCursor(start);
@@ -17,10 +17,10 @@ module.exports = {
 		let lineStartingRow = this.getLineStartingRow(start.lineIndex);
 		let lineRowIndex = startRow - lineStartingRow;
 		
-		let startScreenRow = startRow - scrollPosition.row;
+		let startScreenRow = startRow - this.scrollPosition.row;
 		
 		for (let i = start.lineIndex; i <= end.lineIndex; i++) {
-			let wrappedLine = wrappedLines[i];
+			let wrappedLine = this.wrappedLines[i];
 			let {line} = wrappedLine;
 			
 			for (let j = 0; j < wrappedLine.height; j++) {
@@ -88,35 +88,37 @@ module.exports = {
 		}
 		
 		return regions;
-	}
+	},
 	
 	countRows() {
 		let rows = 0;
 		
-		for (let wraps of this.wraps) {
-			rows += wraps.length;
+		for (let wrappedLine of this.wrappedLines) {
+			rows += wrappedLine.height;
 		}
 		
 		return rows;
-	}
+	},
 	
 	cursorFromRowCol(row, col, beforeTab=false) {
 		let lineIndex = 0;
 		let offset = 0;
 		let r = 0;
 		
-		for (let i = 0; i < this.wraps.length - 1; i++) {
-			if (r + wrappedLines[i].height > row) {
+		for (let i = 0; i < this.wrappedLines.length - 1; i++) {
+			let {height} = this.wrappedLines[i];
+			
+			if (r + height > row) {
 				break;
 			}
 			
-			r += wrappedLines[i].height;
+			r += height;
 			lineIndex++;
 		}
 		
-		lineIndex = Math.min(lineIndex, wrappedLines.length - 1);
+		lineIndex = Math.min(lineIndex, this.wrappedLines.length - 1);
 		
-		let wrappedLine = wrappedLines[lineIndex];
+		let wrappedLine = this.wrappedLines[lineIndex];
 		let lineRowIndex = row - r;
 		
 		if (lineRowIndex > wrappedLine.height - 1) { // mouse is below text
@@ -187,42 +189,40 @@ module.exports = {
 		}
 		
 		return {lineIndex, offset};
-	}
+	},
 	
 	cursorFromScreenCoords(x, y) {
 		return cursorFromRowCol(...this.cursorRowColFromScreenCoords(x, y));
-	}
+	},
 	
 	cursorRowColFromScreenCoords(x, y) {
 		let {
 			rowHeight,
 			colWidth,
-		} = measurements;
+		} = this.measurements;
 		
 		let coordsXHint = 2;
 		
-		let marginOffset = calculateMarginOffset(wrappedLines, measurements);
-		
-		let screenCol = Math.round((x - marginOffset + coordsXHint + scrollPosition.x) / colWidth);
-		let screenRow = Math.floor((y - topMargin) / rowHeight) + scrollPosition.row;
+		let screenCol = Math.round((x - this.sizes.marginOffset + coordsXHint + this.scrollPosition.x) / colWidth);
+		let screenRow = Math.floor((y - this.topMargin) / rowHeight) + this.scrollPosition.row;
 		
 		return [
 			Math.max(0, screenRow),
 			Math.max(0, screenCol),
 		];
-	}
+	},
 	
 	findFirstVisibleLine() {
 		let row = 0;
 		
-		for (let i = 0; i < wrappedLines.length; i++) {
-			let wrappedLine = wrappedLines[i];
+		for (let i = 0; i < this.wrappedLines.length; i++) {
+			let wrappedLine = this.wrappedLines[i];
 			
-			if (row + wrappedLine.height > scrollPosition.row) {
+			if (row + wrappedLine.height > this.scrollPosition.row) {
 				return {
 					wrappedLine,
 					lineIndex: i,
-					lineRowIndex: scrollPosition.row - row,
+					lineRowIndex: this.scrollPosition.row - row,
 				};
 			}
 			
@@ -230,35 +230,35 @@ module.exports = {
 		}
 		
 		return null;
-	}
+	},
 	
 	getLineRangeTotalHeight(startLineIndex, endLineIndex) {
 		let height = 0;
 		
 		for (let i = startLineIndex; i <= endLineIndex; i++) {
-			height += wrappedLines[i].height;
+			height += this.wrappedLines[i].height;
 		}
 		
 		return height;
-	}
+	},
 	
 	getLineStartingRow(lineIndex) {
 		let startingRow = 0;
 		
-		for (let i = 0; i < wrappedLines.length; i++) {
+		for (let i = 0; i < this.wrappedLines.length; i++) {
 			if (i === lineIndex) {
 				break;
 			}
 			
-			startingRow += wrappedLines[i].height;
+			startingRow += this.wrappedLines[i].height;
 		}
 		
 		return startingRow;
-	}
+	},
 	
 	innerLineIndexAndOffsetFromCursor(lineIndex, offset) {
 		let {lineIndex, offset} = cursor;
-		let wrappedLine = wrappedLines[lineIndex];
+		let wrappedLine = this.wrappedLines[lineIndex];
 		let innerLineIndex = 0;
 		let lineRow;
 		let innerLineOffset = offset;
@@ -281,17 +281,17 @@ module.exports = {
 		}
 		
 		return [innerLineIndex, innerLineOffset];
-	}
+	},
 	
 	insertLineIndexFromScreenY(y) {
 		let {
 			rowHeight,
-		} = measurements;
+		} = this.measurements;
 		
-		y -= topMargin;
+		y -= this.topMargin;
 		
 		let middle = rowHeight / 2;
-		let screenRow = Math.floor(y / rowHeight) + scrollPosition.row;
+		let screenRow = Math.floor(y / rowHeight) + this.scrollPosition.row;
 		let offset = y % rowHeight;
 		let offsetFromMiddle = offset - middle;
 		
@@ -313,19 +313,19 @@ module.exports = {
 			}
 			
 			if (rowAbove >= 0) {
-				aboveLineIndex = cursorFromRowCol(wrappedLines, rowAbove, 0).lineIndex;
+				aboveLineIndex = this.cursorFromRowCol(rowAbove, 0).lineIndex;
 			}
 			
-			if (aboveLineIndex === null || aboveLineIndex < wrappedLines.length - 1) {
-				belowLineIndex = cursorFromRowCol(wrappedLines, rowBelow, 0).lineIndex;
+			if (aboveLineIndex === null || aboveLineIndex < this.wrappedLines.length - 1) {
+				belowLineIndex = this.cursorFromRowCol(rowBelow, 0).lineIndex;
 			}
 		}
 		
 		if (aboveLineIndex === belowLineIndex) {
 			let lineIndex = aboveLineIndex;
-			let startingScreenRow = getLineStartingRow(wrappedLines, lineIndex) - scrollPosition.row;
+			let startingScreenRow = this.getLineStartingRow(lineIndex) - this.scrollPosition.row;
 			let startingY = startingScreenRow * rowHeight;
-			let height = wrappedLines[lineIndex].height * rowHeight;
+			let height = this.wrappedLines[lineIndex].height * rowHeight;
 			let middle = height / 2;
 			let offset = y - startingY;
 			
@@ -337,17 +337,17 @@ module.exports = {
 			belowLineIndex,
 			offset: offsetFromMiddle / middle,
 		};
-	}
+	},
 	
 	rowColFromCursor(cursor) {
 		let {lineIndex, offset} = cursor;
 		let row = 0;
 		
 		for (let i = 0; i < lineIndex; i++) {
-			row += wrappedLines[i].height;
+			row += this.wrappedLines[i].height;
 		}
 		
-		let wrappedLine = wrappedLines[lineIndex];
+		let wrappedLine = this.wrappedLines[lineIndex];
 		
 		let lineRowIndex = 0;
 		let lineRow;
@@ -384,7 +384,7 @@ module.exports = {
 		}
 		
 		return [row, col];
-	}
+	},
 	
 	rowColFromScreenCoords(x, y) {
 		let {
@@ -394,34 +394,29 @@ module.exports = {
 		
 		let coordsXHint = 2;
 		
-		let marginOffset = calculateMarginOffset(wrappedLines, measurements);
-		
-		let screenCol = Math.floor((x - this.sizes.marginOffset + coordsXHint + scrollPosition.x) / colWidth);
-		let screenRow = Math.floor((y - topMargin) / rowHeight) + scrollPosition.row;
+		let screenCol = Math.floor((x - this.sizes.marginOffset + coordsXHint + this.scrollPosition.x) / colWidth);
+		let screenRow = Math.floor((y - this.topMargin) / rowHeight) + this.scrollPosition.row;
 		
 		return [
 			Math.max(0, screenRow),
 			Math.max(0, screenCol),
 		];
-	}
+	},
 	
 	screenCoordsFromCursor(cursor) {
 		return this.screenCoordsFromRowCol(...this.rowColFromCursor(cursor));
-	}
+	},
 	
 	screenCoordsFromRowCol(row, col) {
-		let {
-			rowHeight,
-			colWidth,
-		} = measurements;
+		let {rowHeight, colWidth} = this.measurements;
 		
-		let x = Math.round(Math.round(this.sizes.marginOffset) + col * colWidth - scrollPosition.x);
-		let y = (row - scrollPosition.row) * rowHeight + topMargin;
+		let x = Math.round(Math.round(this.sizes.marginOffset) + col * colWidth - this.scrollPosition.x);
+		let y = (row - this.scrollPosition.row) * rowHeight + this.topMargin;
 		
 		return [x, y];
-	}
+	},
 	
 	screenRowFromLineIndex(lineIndex) {
 		return this.getLineStartingRow(lineIndex) - this.scrollPosition.row;
-	}
+	},
 };
