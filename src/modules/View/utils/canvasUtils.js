@@ -8,13 +8,13 @@ module.exports = {
 		let {colWidth, rowHeight} = measurements;
 		let {start, end} = Selection.sort(selection);
 		
-		let [startRow, startCol] = rowColFromCursor(wrappedLines, start);
-		let [endRow, endCol] = rowColFromCursor(wrappedLines, end);
+		let [startRow, startCol] = this.rowColFromCursor(start);
+		let [endRow, endCol] = this.rowColFromCursor(end);
 		
 		let row = startRow;
 		let col = startCol;
 		
-		let lineStartingRow = getLineStartingRow(wrappedLines, start.lineIndex);
+		let lineStartingRow = this.getLineStartingRow(start.lineIndex);
 		let lineRowIndex = startRow - lineStartingRow;
 		
 		let startScreenRow = startRow - scrollPosition.row;
@@ -31,13 +31,7 @@ module.exports = {
 				if (startRow === endRow) {
 					// single-line selection
 					
-					let [x, y] = screenCoordsFromRowCol(
-						wrappedLines,
-						startRow,
-						startCol,
-						scrollPosition,
-						measurements,
-					);
+					let [x, y] = this.screenCoordsFromRowCol(startRow, startCol);
 					
 					let width = endCol - startCol;
 					
@@ -50,13 +44,7 @@ module.exports = {
 					// last row of multi-line selection
 					// highlight beginning of line to end col
 					
-					let [x, y] = screenCoordsFromRowCol(
-						wrappedLines,
-						row,
-						0,
-						scrollPosition,
-						measurements,
-					);
+					let [x, y] = this.screenCoordsFromRowCol(row, 0);
 					
 					let width = endCol;
 					
@@ -69,13 +57,7 @@ module.exports = {
 					// first row of multi-line selection
 					// highlight start col to end of line, plus 1 for the newline
 					
-					let [x, y] = screenCoordsFromRowCol(
-						wrappedLines,
-						startRow,
-						startCol,
-						scrollPosition,
-						measurements,
-					);
+					let [x, y] = this.screenCoordsFromRowCol(startRow, startCol);
 					
 					let width = wrappedLine.rows[j].width - startCol + 1;
 					
@@ -90,13 +72,7 @@ module.exports = {
 					// inner row of multi-line selection
 					// highlight whole line plus 1 for the newline at the end
 					
-					let [x, y] = screenCoordsFromRowCol(
-						wrappedLines,
-						row,
-						0,
-						scrollPosition,
-						measurements,
-					);
+					let [x, y] = this.screenCoordsFromRowCol(row, 0);
 					
 					let width = wrappedLine.rows[j].width + 1;
 					
@@ -117,8 +93,8 @@ module.exports = {
 	countRows() {
 		let rows = 0;
 		
-		for (let wrappedLine of wrappedLines) {
-			rows += wrappedLine.height;
+		for (let wraps of this.wraps) {
+			rows += wraps.length;
 		}
 		
 		return rows;
@@ -129,7 +105,7 @@ module.exports = {
 		let offset = 0;
 		let r = 0;
 		
-		for (let i = 0; i < wrappedLines.length - 1; i++) {
+		for (let i = 0; i < this.wraps.length - 1; i++) {
 			if (r + wrappedLines[i].height > row) {
 				break;
 			}
