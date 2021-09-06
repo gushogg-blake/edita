@@ -56,18 +56,6 @@ let normalMouseHandler = normalMouse(document, editor, view, {
 		return showingHorizontalScrollbar;
 	},
 	
-	//setSelection(selection) {
-	//	view.setNormalSelection(selection);
-	//	
-	//	let {end} = selection;
-	//	let [lineIndex, offset] = end;
-	//	let [, endCol] = rowColFromCursor(view.wrappedLines, lineIndex, offset);
-	//	
-	//	view.selectionEndCol = endCol;
-	//	
-	//	normalKeyboardHandler.clearBatchState();
-	//},
-	
 	mouseup() {
 		mouseIsDown = false;
 		
@@ -411,7 +399,7 @@ function resize() {
 		view.setCanvasSize(width, height);
 		
 		if (width !== prevWidth) {
-			view.updateWrappedLines();
+			view.updateWraps();
 		}
 		
 		view.redraw();
@@ -524,7 +512,7 @@ async function prefsUpdated() {
 	
 	resize();
 	
-	view.updateWrappedLines();
+	view.updateWraps();
 	
 	view.redraw();
 }

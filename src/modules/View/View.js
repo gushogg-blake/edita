@@ -5,26 +5,9 @@ let Selection = require("modules/utils/Selection");
 let AstSelection = require("modules/utils/AstSelection");
 let astCommon = require("modules/langs/common/astMode");
 
-let calculateMarginOffset = require("./canvas/utils/calculateMarginOffset");
-let calculateMarginWidth = require("./canvas/utils/calculateMarginWidth");
-let calculateNormalSelectionRegions = require("./canvas/utils/calculateNormalSelectionRegions");
-let countRows = require("./canvas/utils/countRows");
-let cursorFromRowCol = require("./canvas/utils/cursorFromRowCol");
-let cursorFromScreenCoords = require("./canvas/utils/cursorFromScreenCoords");
-let cursorRowColFromScreenCoords = require("./canvas/utils/cursorRowColFromScreenCoords");
-let findFirstVisibleLine = require("./canvas/utils/findFirstVisibleLine");
-let getLineRangeTotalHeight = require("./canvas/utils/getLineRangeTotalHeight");
-let getLineStartingRow = require("./canvas/utils/getLineStartingRow");
-let innerLineIndexAndOffsetFromCursor = require("./canvas/utils/innerLineIndexAndOffsetFromCursor");
-let insertLineIndexFromScreenY = require("./canvas/utils/insertLineIndexFromScreenY");
-let rowColFromCursor = require("./canvas/utils/rowColFromCursor");
-let rowColFromScreenCoords = require("./canvas/utils/rowColFromScreenCoords");
-let screenCoordsFromCursor = require("./canvas/utils/screenCoordsFromCursor");
-let screenCoordsFromRowCol = require("./canvas/utils/screenCoordsFromRowCol");
-let screenRowFromLineIndex = require("./canvas/utils/screenRowFromLineIndex");
-
 let topMargin = require("./canvas/topMargin");
 let marginStyle = require("./canvas/marginStyle");
+let canvasUtils = require("./canvas/utils");
 
 let SelectionUtils = require("./utils/Selection");
 let AstSelectionUtils = require("./utils/AstSelection");
@@ -40,6 +23,8 @@ class View extends Evented {
 		
 		this.Selection = bindFunctions(this, SelectionUtils);
 		this.AstSelection = bindFunctions(this, AstSelectionUtils);
+		
+		Object.assign(this, canvasUtils);
 		
 		this.app = app;
 		this.document = document;
@@ -83,12 +68,16 @@ class View extends Evented {
 		
 		this.updateSizes(800, 600);
 		
-		this.updateWrappedLines();
+		this.updateWraps();
 		
 		this.blur = this.blur.bind(this);
 	}
 	
 	getLinesToRender() {
+		
+		let {height} = this.sizes;
+		
+		let {rowHeight, colWidth} = this.measurements;
 		
 		let rowsToRender = height / rowHeight;
 		let rowsRendered = 0;
@@ -115,78 +104,10 @@ class View extends Evented {
 		
 	}
 	
-	updateWrappedLines() {
+	updateWraps() {
 		this.wrappedLines = this.document.lines.map((line) => {
 			return wrapLine(line, this.document.fileDetails.indentation, this.measurements, this.sizes.codeWidth);
 		});
-	}
-	
-	calculateMarginOffset() {
-		return calculateMarginOffset(this.wrappedLines, this.measurements);
-	}
-	
-	calculateMarginWidth() {
-		return calculateMarginWidth(this.wrappedLines, this.measurements);
-	}
-	
-	calculateNormalSelectionRegions(selection) {
-		return calculateNormalSelectionRegions(this.wrappedLines, selection, this.scrollPosition, this.measurements);
-	}
-	
-	countRows() {
-		return countRows(this.wrappedLines);
-	}
-	
-	cursorFromRowCol(row, col, beforeTab=false) {
-		return cursorFromRowCol(this.wrappedLines, row, col, beforeTab);
-	}
-	
-	cursorFromScreenCoords(x, y) {
-		return cursorFromScreenCoords(this.wrappedLines, x, y, this.scrollPosition, this.measurements);
-	}
-	
-	cursorRowColFromScreenCoords(x, y) {
-		return cursorRowColFromScreenCoords(this.wrappedLines, x, y, this.scrollPosition, this.measurements);
-	}
-	
-	findFirstVisibleLine() {
-		return findFirstVisibleLine(this.wrappedLines, this.scrollPosition);
-	}
-	
-	getLineRangeTotalHeight(startLineIndex, endLineIndex) {
-		return getLineRangeTotalHeight(this.wrappedLines, startLineIndex, endLineIndex);
-	}
-	
-	getLineStartingRow(lineIndex) {
-		return getLineStartingRow(this.wrappedLines, lineIndex);
-	}
-	
-	innerLineIndexAndOffsetFromCursor(lineIndex, offset) {
-		return innerLineIndexAndOffsetFromCursor(this.wrappedLines, lineIndex, offset);
-	}
-	
-	insertLineIndexFromScreenY(y) {
-		return insertLineIndexFromScreenY(this.wrappedLines, y, this.scrollPosition, this.measurements);
-	}
-	
-	rowColFromCursor(cursor) {
-		return rowColFromCursor(this.wrappedLines, cursor);
-	}
-	
-	rowColFromScreenCoords(x, y) {
-		return rowColFromScreenCoords(this.wrappedLines, x, y, this.scrollPosition, this.measurements);
-	}
-	
-	screenCoordsFromCursor(cursor) {
-		return screenCoordsFromCursor(this.wrappedLines, cursor, this.scrollPosition, this.measurements);
-	}
-	
-	screenCoordsFromRowCol(row, col) {
-		return screenCoordsFromRowCol(this.wrappedLines, row, col, this.scrollPosition, this.measurements);
-	}
-	
-	screenRowFromLineIndex(lineIndex) {
-		return screenRowFromLineIndex(this.wrappedLines, lineIndex, this.scrollPosition);
 	}
 	
 	switchToAstMode() {
@@ -212,6 +133,10 @@ class View extends Evented {
 		
 		this.mode = mode;
 		this.fire("modeSwitch");
+	}
+	
+	get lines() {
+		return this.document.lines;
 	}
 	
 	get lang() {
@@ -402,7 +327,6 @@ class View extends Evented {
 	
 	ensureNormalCursorIsOnScreen() {
 		let {
-			wrappedLines,
 			scrollPosition,
 			measurements,
 		} = this;
@@ -532,7 +456,7 @@ class View extends Evented {
 		this.updateSizes();
 		
 		if (marginWidth !== this.sizes.marginWidth) {
-			this.updateWrappedLines();
+			this.updateWraps();
 		}
 	}
 	

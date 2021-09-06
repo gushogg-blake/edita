@@ -215,7 +215,7 @@ class Editor extends Evented {
 			snippetSession,
 		} = this.historyEntries.get(entry)[state];
 		
-		this.view.updateWrappedLines();
+		this.view.updateWraps();
 		
 		if (normalSelection !== undefined) {
 			this.setNormalSelection(normalSelection);
@@ -333,7 +333,7 @@ class Editor extends Evented {
 	}
 	
 	onSave() {
-		this.view.updateWrappedLines();
+		this.view.updateWraps();
 		this.view.redraw();
 	}
 	

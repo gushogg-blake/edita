@@ -43,12 +43,11 @@ module.exports = {
 	},
 	
 	down() {
-		let {wrappedLines} = this;
 		let {end} = sort(this.normalSelection);
 		let [endRow, endCol] = this.rowColFromCursor(end);
 		
 		if (endRow === this.countRows() - 1) {
-			return s(c(end.lineIndex, wrappedLines[end.lineIndex].line.string.length));
+			return s(c(end.lineIndex, this.lines[end.lineIndex].string.length));
 		}
 		
 		let row = endRow + 1;
@@ -58,7 +57,6 @@ module.exports = {
 	},
 	
 	left() {
-		let {wrappedLines} = this;
 		let {start} = sort(this.normalSelection);
 		let {lineIndex, offset} = start;
 		
@@ -71,25 +69,22 @@ module.exports = {
 		}
 		
 		if (offset === 0) {
-			let prevLine = wrappedLines[lineIndex - 1].line;
-			
-			return s(c(lineIndex - 1, prevLine.string.length));
+			return s(c(lineIndex - 1, this.lines[lineIndex - 1].string.length));
 		}
 		
 		return s(c(lineIndex, offset - 1));
 	},
 	
 	right() {
-		let {wrappedLines} = this;
 		let {end} = sort(this.normalSelection);
 		let {lineIndex, offset} = end;
-		let {line} = wrappedLines[lineIndex];
+		let line = this.lines[lineIndex];
 		
 		if (this.Selection.isFull()) {
 			return s(end);
 		}
 		
-		if (lineIndex === wrappedLines.length - 1 && offset === line.string.length) {
+		if (lineIndex === this.lines.length - 1 && offset === line.string.length) {
 			return this.normalSelection;
 		}
 		
@@ -113,7 +108,6 @@ module.exports = {
 	},
 	
 	pageDown() {
-		let {wrappedLines} = this;
 		let {rows} = this.sizes;
 		let {end} = sort(this.normalSelection);
 		
@@ -136,8 +130,6 @@ module.exports = {
 		let {indentCols} = line;
 		
 		if (wrappedLine.height > 1 && innerLineIndex > 0) {
-			let lineRow = wrappedLine.rows[innerLineIndex];
-		
 			if (innerLineOffset === 0) {
 				let startingRow = getLineStartingRow(lineIndex);
 				
