@@ -98,10 +98,41 @@ module.exports = class {
 			};
 		});
 		
-		this.rootLangRange.decorateLines(lines, startLineIndex, endLineIndex);
+		//console.log(lines);
 		
-		for (let {line, renderHints} of lines) {
-			line.renderCommands = [...generateRenderCommandsForLine(line, renderHints)];
+		if (this.lang.code !== "plainText") {
+			let {langRange, node} = this.findFirstNodeToRender(startLineIndex);
+			
+			//console.log(langRange, node);
+			
+			while (true) {
+				if (node.startPosition.row >= endLineIndex) {
+					break;
+				}
+				
+				//console.log(node.startPosition.row);
+				//console.log(startLineIndex);
+				
+					console.log(node);
+				if (node.startPosition.row >= startLineIndex) {
+					let line = lines[node.startPosition.row - startLineIndex];
+					
+					console.log(node);
+					
+					line.renderHints.push(...langRange.getRenderHints(node));
+				}
+				
+				({langRange, node} = langRange.next(node));
+				
+				if (!node) {
+					break;
+				}
+			}
+		}
+		
+		for (let line of lines) {
+			line.renderCommands = [...generateRenderCommandsForLine(line.line, line.renderHints)];
+			//line.renderCommands = [];
 		}
 		
 		return lines;

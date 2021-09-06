@@ -1,9 +1,8 @@
-require("./main");
-
 let createJsDoc = require("test/utils/createJsDoc");
 let parseIndexMarks = require("test/utils/parseIndexMarks");
+let main = require("./main");
 
-(async function() {
+main(async function() {
 	let {
 		string,
 		marks,
@@ -29,4 +28,4 @@ let parseIndexMarks = require("test/utils/parseIndexMarks");
 	}
 	
 	console.timeEnd("indexFromCursor");
-})();
+});

@@ -1,4 +1,5 @@
 let advanceCursor = require("./utils/treeSitter/advanceCursor");
+let next = require("./utils/treeSitter/next");
 let rangeToTreeSitterRange = require("./utils/treeSitter/rangeToTreeSitterRange");
 let treeSitterRangeToRange = require("./utils/treeSitter/treeSitterRangeToRange");
 let cursorToTreeSitterPoint = require("./utils/treeSitter/cursorToTreeSitterPoint");
@@ -158,37 +159,6 @@ module.exports = class LangRange {
 		
 	}
 	
-	decorateLines(lines, startLineIndex, endLineIndex) {
-		console.time("decorateLines (" + this.lang.code + ")");
-		
-		let node = this.findFirstNodeToRender(startLineIndex);
-		let cursor = node.walk();
-		
-		while (true) {
-			let node = cursor.currentNode();
-			
-			if (node.startPosition.row >= endLineIndex) {
-				break;
-			}
-			
-			let line = lines[node.startPosition.row - startLineIndex];
-			
-			line.renderHints.push(...this.getRenderHints(node));
-			
-			let childRange = this.langRangesByNode[node.id];
-			
-			if (childRange) {
-				childRange.decorateLines(lines, startLineIndex, endLineIndex);
-			}
-			
-			if (!advanceCursor(cursor)) {
-				break;
-			}
-		}
-		
-		console.timeEnd("decorateLines (" + this.lang.code + ")");
-	}
-	
 	getRenderHints(node) {
 		if (node.type === "ERROR") {
 			return [{
@@ -199,14 +169,6 @@ module.exports = class LangRange {
 		
 		return this.lang.generateRenderHints(node);
 	}
-	
-	//getOpenerAndCloser(node) {
-	//	if (node.type === "ERROR" || node.startPosition.row === node.endPosition.row) {
-	//		return null;
-	//	}
-	//	
-	//	return this.lang.getOpenerAndCloser(node);
-	//}
 	
 	findFirstNodeToRender(lineIndex) {
 		let node = findFirstNodeToRender(this.tree, lineIndex);
@@ -232,9 +194,9 @@ module.exports = class LangRange {
 			};
 		}
 		
-		let next = advanceCursor(node.walk());
+		node = next(node);
 		
-		if (!next) {
+		if (!node) {
 			if (this.parent) {
 				return this.parent.next(this.parentNode);
 			} else {
@@ -247,7 +209,7 @@ module.exports = class LangRange {
 		
 		return {
 			langRange: this,
-			node: next,
+			node,
 		};
 	}
 }

@@ -256,7 +256,7 @@ module.exports = {
 		return startingRow;
 	},
 	
-	innerLineIndexAndOffsetFromCursor(lineIndex, offset) {
+	innerLineIndexAndOffsetFromCursor(cursor) {
 		let {lineIndex, offset} = cursor;
 		let wrappedLine = this.wrappedLines[lineIndex];
 		let innerLineIndex = 0;

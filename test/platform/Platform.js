@@ -1,3 +1,4 @@
+let defaultPrefs = require("modules/defaultPrefs");
 let fs = require("./modules/fs");
 
 class Platform {
@@ -7,6 +8,8 @@ class Platform {
 		};
 		
 		this.fs = fs;
+		
+		this.prefs = defaultPrefs(this.systemInfo);
 	}
 	
 	async init() {
@@ -14,7 +17,7 @@ class Platform {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load(fs(__dirname, "./public/vendor/tree-sitter/langs/" + name + ".wasm").path);
+		return TreeSitter.Language.load(fs(__dirname, "../../src/platforms/electron/public/vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm").path);
 	}
 }
 

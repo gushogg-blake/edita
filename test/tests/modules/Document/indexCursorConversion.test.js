@@ -42,7 +42,7 @@ describe("Document", function() {
 		for (let [name, index] of Object.entries(marks)) {
 			it(index + " -> " + name, function() {
 				let [lineIndex, offset] = name.split(",").map(Number);
-				let expectedCursor = [lineIndex, offset];
+				let expectedCursor = {lineIndex, offset};
 				
 				deep(doc.cursorFromIndex(index), expectedCursor);
 			});
@@ -53,10 +53,12 @@ describe("Document", function() {
 		for (let [name, expectedIndex] of Object.entries(marks)) {
 			it(name + " -> " + expectedIndex, function() {
 				let [lineIndex, offset] = name.split(",").map(Number);
-				let cursor = [lineIndex, offset];
+				let cursor = {lineIndex, offset};
 				
 				is(doc.indexFromCursor(cursor), expectedIndex);
 			});
+			
+			break;
 		}
 	});
 });

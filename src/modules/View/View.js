@@ -5,13 +5,11 @@ let Selection = require("modules/utils/Selection");
 let AstSelection = require("modules/utils/AstSelection");
 let astCommon = require("modules/langs/common/astMode");
 
-let topMargin = require("./canvas/topMargin");
-let marginStyle = require("./canvas/marginStyle");
-let canvasUtils = require("./canvas/utils");
 
 let SelectionUtils = require("./utils/Selection");
 let AstSelectionUtils = require("./utils/AstSelection");
 let wrapLine = require("./utils/wrapLine");
+let canvasUtils = require("./utils/canvasUtils");
 
 let {s: a} = AstSelection;
 let {c} = Cursor;
@@ -61,6 +59,14 @@ class View extends Evented {
 		this.cursorBlinkOn = false;
 		this.cursorInterval = null;
 		
+		this.topMargin = 2;
+		
+		this.marginStyle = {
+			margin: 2,
+			paddingLeft: 3,
+			paddingRight: 5,
+		};
+		
 		this.measurements = {
 			rowHeight: 0,
 			colWidth: 0,
@@ -68,12 +74,12 @@ class View extends Evented {
 		
 		this.updateSizes(800, 600);
 		
-		this.updateWraps();
+		this.updateWrappedLines();
 		
 		this.blur = this.blur.bind(this);
 	}
 	
-	getLinesToRender() {
+	*getRowsToRender() {
 		
 		let {height} = this.sizes;
 		
@@ -82,7 +88,7 @@ class View extends Evented {
 		let rowsToRender = height / rowHeight;
 		let rowsRendered = 0;
 		
-		let firstVisibleLine = view.findFirstVisibleLine();
+		let firstVisibleLine = this.findFirstVisibleLine();
 		
 		/*
 		when switching away from a tab the view will unwrap all lines, so if the last
@@ -97,14 +103,35 @@ class View extends Evented {
 		
 		let {
 			lineIndex: firstLineIndex,
-			lineRowIndex,
+			rowIndex: firstLineRowIndex,
 		} = firstVisibleLine;
 		
-		let lineIndex = firstLineIndex;
+		let lastVisibleLineIndex = this.findLastVisibleLineIndex(firstVisibleLine);
 		
+		let decoratedLines = this.document.getDecoratedLines(firstLineIndex, lastVisibleLineIndex);
+		let lineIndex = firstLineIndex;
+		let rowIndex = 0;
+		
+		let row = {
+			wrapIndent: 0,
+			renderCommands: [],
+		};
+		
+		let renderCommands = [];
+		
+		//while (true) {
+		//	let wrappedLine = this.wrappedLines[lineIndex];
+		//	let row = wrappedLine.rows[rowIndex];
+		//	
+		//	
+		//	
+		//	if (lineIndex === firstLineIndex && rowIndex < firstLineRowIndex) {
+		//		
+		//	}
+		//}
 	}
 	
-	updateWraps() {
+	updateWrappedLines() {
 		this.wrappedLines = this.document.lines.map((line) => {
 			return wrapLine(line, this.document.fileDetails.indentation, this.measurements, this.sizes.codeWidth);
 		});
@@ -421,18 +448,19 @@ class View extends Evented {
 		}
 		
 		let {
+			lines,
+			topMargin,
+			marginStyle,
 			measurements,
 		} = this;
-		
-		let {lines} = this.document;
 		
 		let {
 			colWidth,
 			rowHeight,
 		} = measurements;
 		
-		let marginWidth = calculateMarginWidth(lines, measurements);
-		let marginOffset = calculateMarginOffset(lines, measurements);
+		let marginWidth = Math.round(marginStyle.paddingLeft + String(lines.length).length * measurements.colWidth + marginStyle.paddingRight);
+		let marginOffset = marginWidth + marginStyle.margin;
 		let codeWidth = width - marginOffset;
 		
 		this.sizes = {
@@ -456,7 +484,7 @@ class View extends Evented {
 		this.updateSizes();
 		
 		if (marginWidth !== this.sizes.marginWidth) {
-			this.updateWraps();
+			this.updateWrappedLines();
 		}
 	}
 	

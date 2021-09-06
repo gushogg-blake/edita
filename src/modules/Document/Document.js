@@ -259,10 +259,6 @@ class Document extends Evented {
 		};
 	}
 	
-	langFromCursor(cursor) {
-		return this.source.langFromCursor(cursor);
-	}
-	
 	langFromLineIndex(lineIndex) {
 		let line = this.lines[lineIndex];
 		
@@ -274,6 +270,10 @@ class Document extends Evented {
 		let line = this.lines[startLineIndex];
 		
 		return this.langFromCursor(c(startLineIndex, line.indentOffset));
+	}
+	
+	langFromCursor(cursor) {
+		return this.source.langFromCursor(cursor);
 	}
 	
 	indexFromCursor(cursor) {
@@ -317,10 +317,6 @@ class Document extends Evented {
 		return match?.[0].split("").reverse().join("") || null;
 	}
 	
-	cursorAtEnd() {
-		return this.source.cursorAtEnd();
-	}
-	
 	getLongestLineWidth() {
 		let width = 0;
 		
@@ -331,6 +327,10 @@ class Document extends Evented {
 		}
 		
 		return width;
+	}
+	
+	cursorAtEnd() {
+		return this.source.cursorAtEnd();
 	}
 	
 	toString() {

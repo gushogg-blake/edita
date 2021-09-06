@@ -27,11 +27,6 @@ module.exports = function(layers, view) {
 	context.font = font;
 	context.fillStyle = "black";
 	
-	let {
-		lines,
-		firstRowIndex,
-	} = view.getLinesToRender();
-	
 	let leftEdge = marginOffset - scrollPosition.x;
 	
 	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
