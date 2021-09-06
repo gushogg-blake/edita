@@ -87,9 +87,6 @@ module.exports = class {
 	}
 	
 	findFirstNodeToRender(lineIndex) {
-		//if (lineIndex === 0) {
-		//	debugger
-		//}
 		return this.rootLangRange.findFirstNodeToRender(lineIndex);
 	}
 	
@@ -101,26 +98,16 @@ module.exports = class {
 			};
 		});
 		
-		//console.log(lines);
-		
 		if (this.lang.code !== "plainText") {
 			let {langRange, node} = this.findFirstNodeToRender(startLineIndex);
-			
-			//console.log(langRange, node);
 			
 			while (true) {
 				if (node.startPosition.row >= endLineIndex) {
 					break;
 				}
 				
-				//console.log(node.startPosition.row);
-				//console.log(startLineIndex);
-				
-					//console.log(node);
 				if (node.startPosition.row >= startLineIndex) {
 					let line = lines[node.startPosition.row - startLineIndex];
-					
-					//console.log(node);
 					
 					line.renderHints.push(...langRange.getRenderHints(node));
 				}
@@ -135,7 +122,6 @@ module.exports = class {
 		
 		for (let line of lines) {
 			line.renderCommands = [...generateRenderCommandsForLine(line.line, line.renderHints)];
-			//line.renderCommands = [];
 		}
 		
 		return lines;

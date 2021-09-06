@@ -184,10 +184,10 @@ module.exports = class LangRange {
 		};
 	}
 	
-	next(node) {
+	next(node, out=false) {
 		let childRange = this.langRangesByNode[node.id];
 		
-		if (childRange) {
+		if (childRange && !out) {
 			return {
 				langRange: childRange,
 				node: childRange.tree.rootNode,
@@ -198,7 +198,7 @@ module.exports = class LangRange {
 		
 		if (!node) {
 			if (this.parent) {
-				return this.parent.next(this.parentNode);
+				return this.parent.next(this.parentNode, true);
 			} else {
 				return {
 					langRange: this,
