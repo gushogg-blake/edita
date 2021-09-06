@@ -121,72 +121,83 @@ class View extends Evented {
 			let overflow = null;
 			let renderCommands = [];
 			
-			for (let command of decoratedLine.renderCommands) {
-				if (overflow) {
-					renderCommands.push(overflow);
+			if (decoratedLine.renderCommands.length === 0) {
+				yield {
+					lineIndex,
+					rowIndex,
+					wrapIndent: 0,
+					renderCommands: [],
+				};
+			} else {
+				for (let command of decoratedLine.renderCommands) {
+					if (overflow) {
+						renderCommands.push(overflow);
+						
+						overflow = null;
+					}
 					
-					overflow = null;
-				}
-				
-				let {string, node, lang} = command;
-				
-				if (string) {
-					let overflowLength = offset + string.length - wrappedLine.rows[rowIndex].string.length;
+					let {string, node, lang} = command;
 					
-					if (overflowLength > 0) {
-						if (lineIndex > firstLineIndex || rowIndex > firstLineRowIndex) {
-							renderCommands.push({
-								string: string.substr(0, string.length - overflowLength),
-								node,
-								lang,
-							});
-							
-							yield {
-								lineIndex,
-								rowIndex,
-								wrapIndent: rowIndex > 0 ? line.indentCols : 0,
-								renderCommands,
-							};
-						}
+					if (string) {
+						let overflowLength = offset + string.length - wrappedLine.rows[rowIndex].string.length;
 						
-						renderCommands = [];
-						rowIndex++;
-						
-						overflow = {
-							string: string.substr(string.length - overflowLength),
-							node,
-							lang,
-						};
-					} else {
-						renderCommands.push(command);
-						
-						if (overflowLength === 0) {
-							yield {
-								lineIndex,
-								rowIndex,
-								wrapIndent: rowIndex > 0 ? line.indentCols : 0,
-								renderCommands,
-							};
+						if (overflowLength > 0) {
+							if (lineIndex > firstLineIndex || rowIndex > firstLineRowIndex) {
+								renderCommands.push({
+									string: string.substr(0, string.length - overflowLength),
+									node,
+									lang,
+								});
+								
+								yield {
+									lineIndex,
+									rowIndex,
+									wrapIndent: rowIndex > 0 ? line.indentCols : 0,
+									renderCommands,
+								};
+							}
 							
 							renderCommands = [];
 							rowIndex++;
+							
+							overflow = {
+								string: string.substr(string.length - overflowLength),
+								node,
+								lang,
+							};
+						} else {
+							renderCommands.push(command);
+							
+							if (overflowLength === 0) {
+								yield {
+									lineIndex,
+									rowIndex,
+									wrapIndent: rowIndex > 0 ? line.indentCols : 0,
+									renderCommands,
+								};
+								
+								renderCommands = [];
+								rowIndex++;
+							}
 						}
+					} else {
+						renderCommands.push(command);
 					}
-				} else {
-					renderCommands.push(command);
+				}
+				
+				if (overflow) {
+					renderCommands.push(overflow);
+				}
+				
+				if (renderCommands.length > 0) {
+					yield {
+						lineIndex,
+						rowIndex,
+						wrapIndent: rowIndex > 0 ? line.indentCols : 0,
+						renderCommands,
+					};
 				}
 			}
-			
-			if (overflow) {
-				renderCommands.push(overflow);
-			}
-			
-			yield {
-				lineIndex,
-				rowIndex,
-				wrapIndent: rowIndex > 0 ? line.indentCols : 0,
-				renderCommands,
-			};
 			
 			lineIndex++;
 		}

@@ -64,7 +64,7 @@ if (!platform || platform === "all" || platform === "electron") {
 			cssOnly({
 				output: "main.css",
 			}),
-	
+			
 			resolve({
 				browser: true,
 				dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
