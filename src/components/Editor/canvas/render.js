@@ -38,6 +38,8 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		renderAstInsertionHilite(layers, view, isPeekingAstMode);
 	}
 	
-	renderCode(layers, view);
-	renderMargin(layers, view);
+	let rows = [...view.getRowsToRender()];
+	
+	renderCode(layers, view, rows);
+	renderMargin(layers, view, rows);
 }

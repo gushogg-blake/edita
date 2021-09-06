@@ -1,4 +1,4 @@
-module.exports = function(layers, view) {
+module.exports = function(layers, view, rows) {
 	let {
 		font,
 		marginBackground,
@@ -31,7 +31,7 @@ module.exports = function(layers, view) {
 	
 	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
 	
-	for (let {lineIndex, rowIndex} of view.getRowsToRender()) {
+	for (let {lineIndex, rowIndex} of rows) {
 		if (rowIndex === 0) {
 			let lineNumber = String(lineIndex + 1);
 			let x = marginWidth - marginStyle.paddingRight - lineNumber.length * colWidth;

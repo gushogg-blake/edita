@@ -1,4 +1,4 @@
-module.exports = function(layers, view) {
+module.exports = function(layers, view, rows) {
 	let {
 		font,
 		marginBackground,
@@ -31,7 +31,7 @@ module.exports = function(layers, view) {
 	
 	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
 	
-	for (let {wrapIndent, renderCommands} of view.getRowsToRender()) {
+	for (let {wrapIndent, renderCommands} of rows) {
 		let x = leftEdge + wrapIndent * colWidth;
 		let offset = 0;
 		
