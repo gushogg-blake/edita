@@ -81,6 +81,8 @@ class View extends Evented {
 	
 	*getRowsToRender() {
 		
+		//console.time("getRowsToRender");
+		
 		let {height} = this.sizes;
 		
 		let {rowHeight, colWidth} = this.measurements;
@@ -110,25 +112,87 @@ class View extends Evented {
 		
 		let decoratedLines = this.document.getDecoratedLines(firstLineIndex, lastVisibleLineIndex);
 		let lineIndex = firstLineIndex;
-		let rowIndex = 0;
 		
-		let row = {
-			wrapIndent: 0,
-			renderCommands: [],
-		};
+		for (let decoratedLine of decoratedLines) {
+			let wrappedLine = this.wrappedLines[lineIndex];
+			let line = this.lines[lineIndex];
+			let rowIndex = 0;
+			let offset = 0;
+			let overflow = null;
+			let renderCommands = [];
+			
+			for (let command of decoratedLine.renderCommands) {
+				if (overflow) {
+					renderCommands.push(overflow);
+					
+					overflow = null;
+				}
+				
+				let {string, node, lang} = command;
+				
+				if (string) {
+					let overflowLength = offset + string.length - wrappedLine.rows[rowIndex].string.length;
+					
+					if (overflowLength > 0) {
+						if (lineIndex > firstLineIndex || rowIndex > firstLineRowIndex) {
+							renderCommands.push({
+								string: string.substr(0, string.length - overflowLength),
+								node,
+								lang,
+							});
+							
+							yield {
+								lineIndex,
+								rowIndex,
+								wrapIndent: rowIndex > 0 ? line.indentCols : 0,
+								renderCommands,
+							};
+						}
+						
+						renderCommands = [];
+						rowIndex++;
+						
+						overflow = {
+							string: string.substr(string.length - overflowLength),
+							node,
+							lang,
+						};
+					} else {
+						renderCommands.push(command);
+						
+						if (overflowLength === 0) {
+							yield {
+								lineIndex,
+								rowIndex,
+								wrapIndent: rowIndex > 0 ? line.indentCols : 0,
+								renderCommands,
+							};
+							
+							renderCommands = [];
+							rowIndex++;
+						}
+					}
+				} else {
+					renderCommands.push(command);
+				}
+			}
+			
+			if (overflow) {
+				renderCommands.push(overflow);
+			}
+			
+			yield {
+				lineIndex,
+				rowIndex,
+				wrapIndent: rowIndex > 0 ? line.indentCols : 0,
+				renderCommands,
+			};
+			
+			lineIndex++;
+		}
 		
-		let renderCommands = [];
+		//console.timeEnd("getRowsToRender");
 		
-		//while (true) {
-		//	let wrappedLine = this.wrappedLines[lineIndex];
-		//	let row = wrappedLine.rows[rowIndex];
-		//	
-		//	
-		//	
-		//	if (lineIndex === firstLineIndex && rowIndex < firstLineRowIndex) {
-		//		
-		//	}
-		//}
 	}
 	
 	updateWrappedLines() {
@@ -413,7 +477,7 @@ class View extends Evented {
 	}
 	
 	updateSelectionEndCol() {
-		let [, endCol] = rowColFromCursor(this.wrappedLines, this.normalSelection.end);
+		let [, endCol] = this.rowColFromCursor(this.normalSelection.end);
 		
 		this.selectionEndCol = endCol;
 	}

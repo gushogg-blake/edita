@@ -39,7 +39,7 @@ module.exports = function(layers, view) {
 			let {string, node, lang, width} = command;
 			
 			if (!width) {
-				width = string.length;
+				width = string?.length || 0;
 			}
 			
 			if (node) {

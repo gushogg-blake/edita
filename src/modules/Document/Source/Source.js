@@ -87,6 +87,9 @@ module.exports = class {
 	}
 	
 	findFirstNodeToRender(lineIndex) {
+		//if (lineIndex === 0) {
+		//	debugger
+		//}
 		return this.rootLangRange.findFirstNodeToRender(lineIndex);
 	}
 	
@@ -113,11 +116,11 @@ module.exports = class {
 				//console.log(node.startPosition.row);
 				//console.log(startLineIndex);
 				
-					console.log(node);
+					//console.log(node);
 				if (node.startPosition.row >= startLineIndex) {
 					let line = lines[node.startPosition.row - startLineIndex];
 					
-					console.log(node);
+					//console.log(node);
 					
 					line.renderHints.push(...langRange.getRenderHints(node));
 				}

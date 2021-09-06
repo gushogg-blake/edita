@@ -390,7 +390,7 @@ module.exports = {
 		let {
 			rowHeight,
 			colWidth,
-		} = measurements;
+		} = this.measurements;
 		
 		let coordsXHint = 2;
 		

@@ -11,8 +11,6 @@ window.base = new Base(components);
 	await platform.init();
 	await base.init();
 	
-	debugger
-	
 	let app = new App();
 	
 	await app.init();

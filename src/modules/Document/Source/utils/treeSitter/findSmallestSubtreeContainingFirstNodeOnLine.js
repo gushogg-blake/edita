@@ -14,6 +14,10 @@ function findSmallestSubtreeContainingFirstNodeOnLine(node, lineIndex) {
 		let child = children[index];
 		
 		if (child.startPosition.row === lineIndex) {
+			while (child.firstChild) {
+				child = child.firstChild;
+			}
+			
 			return child;
 		} else if (child.startPosition.row < lineIndex && child.endPosition.row >= lineIndex) {
 			node = child;
