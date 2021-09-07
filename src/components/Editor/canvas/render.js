@@ -19,7 +19,9 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		mode,
 	} = view;
 	
-	console.time("render");
+	if (platform.getPref("dev.timing.render")) {
+		console.time("render");
+	}
 	
 	for (let context of Object.values(layers)) {
 		context.clearRect(0, 0, width, height);
@@ -45,5 +47,7 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	renderCode(layers, view, rows);
 	renderMargin(layers, view, rows);
 	
-	console.timeEnd("render");
+	if (platform.getPref("dev.timing.render")) {
+		console.timeEnd("render");
+	}
 }
