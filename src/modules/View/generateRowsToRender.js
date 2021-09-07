@@ -36,7 +36,7 @@ function *generateRowsToRender() {
 		let wrappedLine = this.wrappedLines[lineIndex];
 		let line = this.lines[lineIndex];
 		let rowIndex = 0;
-		let offset = 0;
+		let offsetInRow = 0;
 		let overflow = null;
 		let renderCommands = [];
 		
@@ -52,13 +52,15 @@ function *generateRowsToRender() {
 				if (overflow) {
 					renderCommands.push(overflow);
 					
+					offsetInRow += overflow.string.length;
+					
 					overflow = null;
 				}
 				
 				let {string, node, lang} = command;
 				
 				if (string) {
-					let overflowLength = offset + string.length - wrappedLine.rows[rowIndex].string.length;
+					let overflowLength = offsetInRow + string.length - wrappedLine.rows[rowIndex].string.length;
 					
 					if (overflowLength > 0) {
 						if (lineIndex > firstLineIndex || rowIndex > firstLineRowIndex) {
@@ -78,6 +80,7 @@ function *generateRowsToRender() {
 						
 						renderCommands = [];
 						rowIndex++;
+						offsetInRow = 0;
 						
 						overflow = {
 							string: string.substr(string.length - overflowLength),
@@ -86,6 +89,8 @@ function *generateRowsToRender() {
 						};
 					} else {
 						renderCommands.push(command);
+						
+						offsetInRow += string.length;
 						
 						if (overflowLength === 0) {
 							yield {
@@ -97,6 +102,7 @@ function *generateRowsToRender() {
 							
 							renderCommands = [];
 							rowIndex++;
+							offsetInRow = 0;
 						}
 					}
 				} else {
