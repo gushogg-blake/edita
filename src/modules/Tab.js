@@ -23,6 +23,10 @@ class Tab extends Evented {
 		];
 	}
 	
+	get name() {
+		return this.app.getTabName(this);
+	}
+	
 	get modified() {
 		return this.editor.document.modified;
 	}

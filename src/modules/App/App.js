@@ -127,7 +127,7 @@ class App extends Evented {
 		
 		if (modified) {
 			let {response} = await platform.showMessageBox({
-				message: "Save changes to " + (path ? platform.fs(path).name : "new file") + "?",
+				message: "Save changes to " + tab.name + "?",
 				buttons: ["&Yes", "&No", "&Cancel"],
 			});
 			
@@ -369,14 +369,35 @@ class App extends Evented {
 		this.mainDiv = mainDiv;
 	}
 	
-	onCloseWindow(e) {
-		for (let tab of this.tabs) {
-			if (tab.modified) {
-				e.preventDefault();
-				
-				break;
-			}
+	async onCloseWindow(e) {
+		let modifiedTabs = this.tabs.filter(tab => tab.modified);
+		
+		if (modifiedTabs.length === 0) {
+			return;
 		}
+		
+		e.preventDefault();
+		
+		let tabNames = modifiedTabs.map(tab => tab.name).join(", ");
+		
+		let {response} = await platform.showMessageBox({
+			message: "Save changes to " + tabNames + "?",
+			buttons: ["&Yes", "&No", "&Cancel"],
+		});
+		
+		if (response === 0) {
+			for (let tab of modifiedTabs) {
+				let path = await this.save(tab);
+				
+				if (!path) {
+					return;
+				}
+			}
+		} else if (response === 2) {
+			return;
+		}
+		
+		platform.closeWindow();
 	}
 	
 	teardown() {

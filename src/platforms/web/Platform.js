@@ -117,6 +117,10 @@ class Platform extends Evented {
 	saveSession(session) {
 		
 	}
+	
+	closeWindow() {
+		// noop
+	}
 }
 
 module.exports = Platform;

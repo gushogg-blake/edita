@@ -47,8 +47,7 @@ class Platform extends Evented {
 			
 			if (!defaultPrevented) {
 				this.fire("windowClosing");
-				
-				ipcRenderer.send("closeWindow");
+				this.closeWindow();
 			}
 		});
 		
@@ -186,6 +185,10 @@ class Platform extends Evented {
 	
 	saveSession(session) {
 		return ipc.session.save(session);
+	}
+	
+	closeWindow() {
+		ipcRenderer.send("closeWindow");
 	}
 }
 
