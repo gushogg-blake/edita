@@ -97,8 +97,6 @@ module.exports = function(backends) {
 		}
 		
 		setPath(path) {
-			console.log(osPath);
-			console.log(path);
 			this.path = osPath.resolve(path.toString());
 			this.name = osPath.basename(this.path);
 			

@@ -6,13 +6,20 @@ let advanceCursor = require("modules/Document/Source/utils/treeSitter/advanceCur
 
 let Document = require("modules/Document");
 
-//let findFirstNodeToRender = require("modules/Document/Source/utils/treeSitter/findFirstNodeToRender");
-let findSmallestSubtreeContainingFirstNodeOnLine = require("modules/Document/Source/utils/treeSitter/findSmallestSubtreeContainingFirstNodeOnLine");
+let findFirstNodeToRender = require("modules/Document/Source/utils/treeSitter/findFirstNodeToRender");
+let find = require("modules/Document/Source/utils/treeSitter/findSmallestSubtreeContainingFirstNodeOnLine");
 
 let code = dedent(`
 	<!doctype html>
 	<html>
+		<head>
+		</head>
 		<body>
+			<style type="text/scss">
+				div {
+					color: red;
+				}
+			</style>
 			<script>
 				
 			</script>
@@ -32,12 +39,12 @@ describe("findSmallestSubtreeContainingFirstNodeOnLine", function() {
 	beforeEach(function() {
 		doc = new Document(code, "a.html");
 		tree = doc.source.rootLangRange.tree;
-		console.log(tree.rootNode);
 		rootNode = tree.rootNode;
 	});
 	
 	it("init", function() {
-		console.log(rootNode);
-		console.log(findSmallestSubtreeContainingFirstNodeOnLine(tree, 0));
+		console.log(find(tree, 9));
+		
+		console.log(findFirstNodeToRender(tree, 9));
 	});
 });

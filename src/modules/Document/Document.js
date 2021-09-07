@@ -288,6 +288,10 @@ class Document extends Evented {
 		return this.source.getDecoratedLines(startLineIndex, endLineIndex);
 	}
 	
+	getNodesOnLine(lineIndex) {
+		return this.source.getNodesOnLine(lineIndex);
+	}
+	
 	getSelectedText(selection) {
 		let {start, end} = Selection.sort(selection);
 		let lines = this.lines.slice(start.lineIndex, end.lineIndex + 1);

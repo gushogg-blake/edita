@@ -38,7 +38,7 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		renderAstInsertionHilite(layers, view, isPeekingAstMode);
 	}
 	
-	let rows = [...view.getRowsToRender()];
+	let rows = [...view.generateRowsToRender()];
 	
 	renderCode(layers, view, rows);
 	renderMargin(layers, view, rows);

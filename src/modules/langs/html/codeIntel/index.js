@@ -1,9 +1,9 @@
 module.exports = {
-	shouldIndentOnNewline(line, lines, lineIndex) {
+	shouldIndentOnNewline(document, line, lineIndex, cursor) {
 		
 	},
 	
-	indentAdjustmentAfterInsertion(line, lines, lineIndex) {
+	indentAdjustmentAfterInsertion(document, line, lineIndex) {
 		return 0;
 	},
 	

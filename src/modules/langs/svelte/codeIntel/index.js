@@ -3,7 +3,7 @@ module.exports = {
 		
 	},
 	
-	indentAdjustmentAfterInsertion(line, lines, lineIndex) {
+	indentAdjustmentAfterInsertion(document, line, lineIndex) {
 		return 0;
 	},
 };

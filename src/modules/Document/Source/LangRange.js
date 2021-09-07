@@ -86,11 +86,11 @@ module.exports = class LangRange {
 		//
 		
 		
-		let oldRangesByCursor = this.langRangesByCursor;
-		
-		this.langRanges = [];
-		this.langRangesByCursor = {};
-		this.langRangesByNode = {};
+		//let oldRangesByCursor = this.langRangesByCursor;
+		//
+		//this.langRanges = [];
+		//this.langRangesByCursor = {};
+		//this.langRangesByNode = {};
 		
 		
 		
@@ -219,11 +219,11 @@ module.exports = class LangRange {
 		while (true) {
 			yield node;
 			
-			//if (this.langRangesByNode[node.id]) {
-			//	for (let childNode of this.langRangesByNode[node.id].generateNodes_pointers()) {
-			//		yield childNode;
-			//	}
-			//}
+			if (this.langRangesByNode[node.id]) {
+				for (let childNode of this.langRangesByNode[node.id].generateNodes_pointers()) {
+					yield childNode;
+				}
+			}
 			
 			node = next(node);
 			
@@ -241,11 +241,11 @@ module.exports = class LangRange {
 			
 			yield node;
 			
-			//if (this.langRangesByNode[node.id]) {
-			//	for (let childNode of this.langRangesByNode[node.id].generateNodes_cursor()) {
-			//		yield childNode;
-			//	}
-			//}
+			if (this.langRangesByNode[node.id]) {
+				for (let childNode of this.langRangesByNode[node.id].generateNodes_cursor()) {
+					yield childNode;
+				}
+			}
 			
 			if (!advanceCursor(cursor)) {
 				break;
