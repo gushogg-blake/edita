@@ -1,6 +1,7 @@
 function *generateRowsToRender() {
-	
-	//console.time("generateRowsToRender");
+	if (platform.getPref("dev.timing.generateRowsToRender")) {
+		console.time("generateRowsToRender");
+	}
 	
 	let {height} = this.sizes;
 	
@@ -127,8 +128,9 @@ function *generateRowsToRender() {
 		lineIndex++;
 	}
 	
-	//console.timeEnd("generateRowsToRender");
-	
+	if (platform.getPref("dev.timing.generateRowsToRender")) {
+		console.timeEnd("generateRowsToRender");
+	}
 }
 
 module.exports = generateRowsToRender;
