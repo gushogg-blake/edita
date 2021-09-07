@@ -127,6 +127,10 @@ module.exports = class {
 		return lines;
 	}
 	
+	getNodesOnLine(lineIndex) {
+		return [...this.rootLangRange.generateNodesOnLine(lineIndex)];
+	}
+	
 	indexFromCursor(cursor) {
 		let {lineIndex, offset} = cursor;
 		let index = 0;

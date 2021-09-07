@@ -22,10 +22,6 @@ module.exports = function(tree, lineIndex) {
 	let subtree = findSmallestSubtreeContainingFirstNodeOnLine(tree, lineIndex);
 	
 	if (subtree.startPosition.row < lineIndex) {
-		//if (lineIndex === 0) {
-		//	debugger
-		//}
-		//debugger
 		let lastChildBeforeLine = findLastChildBeforeLine(subtree, lineIndex);
 		
 		if (lastChildBeforeLine) {

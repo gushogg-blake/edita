@@ -4,6 +4,7 @@ let rangeToTreeSitterRange = require("./utils/treeSitter/rangeToTreeSitterRange"
 let treeSitterRangeToRange = require("./utils/treeSitter/treeSitterRangeToRange");
 let cursorToTreeSitterPoint = require("./utils/treeSitter/cursorToTreeSitterPoint");
 let findFirstNodeToRender = require("./utils/treeSitter/findFirstNodeToRender");
+let generateNodesOnLine = require("./utils/treeSitter/generateNodesOnLine");
 
 module.exports = class LangRange {
 	constructor(parent, parentNode, lang, code, range) {
@@ -211,6 +212,20 @@ module.exports = class LangRange {
 			langRange: this,
 			node,
 		};
+	}
+	
+	*generateNodesOnLine(lineIndex) {
+		for (let node of generateNodesOnLine(this.tree, lineIndex)) {
+			yield node;
+			
+			let childRange = this.langRangesByNode[node.id];
+			
+			if (childRange) {
+				for (let childNode of childRange.generateNodesOnLine(lineIndex)) {
+					yield childNode;
+				}
+			}
+		}
 	}
 	
 	*generateNodes_pointers() {
