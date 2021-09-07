@@ -131,7 +131,7 @@ module.exports = {
 		
 		if (wrappedLine.height > 1 && innerLineIndex > 0) {
 			if (innerLineOffset === 0) {
-				let startingRow = getLineStartingRow(lineIndex);
+				let startingRow = this.getLineStartingRow(lineIndex);
 				
 				return s(this.cursorFromRowCol(startingRow, indentCols));
 			} else {
