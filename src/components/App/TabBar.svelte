@@ -44,8 +44,8 @@ function updateTabs() {
 	tabs = app.tabs;
 }
 
-function getTabName(tabs, tab) {
-	return app.getTabName(tab);
+function getTabLabel(tabs, tab) {
+	return app.getTabLabel(tab);
 }
 
 function onSelectTab() {
@@ -178,7 +178,7 @@ onMount(function() {
 			on:dragend={dragend}
 		>
 			<div class="name">
-				{getTabName(tabs, tab)}
+				{getTabLabel(tabs, tab)}
 			</div>
 			<Gap width={10}/>
 			<div class="controls">

@@ -109,14 +109,17 @@ class App extends Evented {
 	}
 	
 	getTabName(tab) {
-		let {editor} = tab;
-		let {path, modified} = editor.document;
+		let {path} = tab.editor.document;
 		
 		if (path) {
-			return platform.fs(path).name + (modified ? " *" : "");
+			return platform.fs(path).name;
 		} else {
-			return "New file" + (modified ? " *" : "");
+			return "New file";
 		}
+	}
+	
+	getTabLabel(tab) {
+		return this.getTabName(tab) + (tab.editor.document.modified ? " *" : "");
 	}
 	
 	async closeTab(tab) {
