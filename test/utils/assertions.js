@@ -1,4 +1,4 @@
-let assert = require("chai");
+let {assert} = require("chai");
 let normaliseString = require("./normaliseString");
 
 let assertions = {
@@ -21,7 +21,7 @@ let assertions = {
 	},
 	
 	deep(a, b) {
-		assert.deepStrictEqual(a, b);
+		assert.deepEqual(a, b);
 	},
 	
 	/*
