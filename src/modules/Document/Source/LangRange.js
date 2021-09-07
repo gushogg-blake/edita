@@ -212,4 +212,44 @@ module.exports = class LangRange {
 			node,
 		};
 	}
+	
+	*generateNodes_pointers() {
+		let node = this.tree.rootNode;
+		
+		while (true) {
+			yield node;
+			
+			//if (this.langRangesByNode[node.id]) {
+			//	for (let childNode of this.langRangesByNode[node.id].generateNodes_pointers()) {
+			//		yield childNode;
+			//	}
+			//}
+			
+			node = next(node);
+			
+			if (!node) {
+				break;
+			}
+		}
+	}
+	
+	*generateNodes_cursor() {
+		let cursor = this.tree.walk();
+		
+		while (true) {
+			let node = cursor.currentNode();
+			
+			yield node;
+			
+			//if (this.langRangesByNode[node.id]) {
+			//	for (let childNode of this.langRangesByNode[node.id].generateNodes_cursor()) {
+			//		yield childNode;
+			//	}
+			//}
+			
+			if (!advanceCursor(cursor)) {
+				break;
+			}
+		}
+	}
 }

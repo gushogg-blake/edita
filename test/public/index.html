@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Editor Tests</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="./build/mochaCss.css">
+		<script src="./vendor/tree-sitter/tree-sitter.js"></script>
+	</head>
+	<body>
+		<div id="mocha">
+			
+		</div>
+		<script src="./build/mocha.js"></script>
+		<script src="./build/main.js"></script>
+		<script class="mocha-init">
+			mocha.setup("bdd", {
+				rootHooks: {
+					async beforeAll() {
+						await main();
+					},
+				},
+			});
+		</script>
+		<script src="./build/tests.js"></script>
+		<script class="mocha-exec">
+			mocha.run();
+		</script>
+	</body>
+</html>

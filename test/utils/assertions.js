@@ -1,4 +1,4 @@
-let assert = require("assert");
+let assert = require("chai");
 let normaliseString = require("./normaliseString");
 
 let assertions = {

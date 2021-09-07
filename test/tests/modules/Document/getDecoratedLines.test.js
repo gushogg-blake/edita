@@ -1,6 +1,7 @@
 let {is, deep} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
-let createJsDoc = require("test/utils/createJsDoc");
+
+let Document = require("modules/Document");
 
 let code = dedent(`
 	module.exports = {
@@ -26,10 +27,18 @@ let code = dedent(`
 	};
 `);
 
+let tests = [
+	
+];
+
 let doc;
 
 describe("Document.getDecoratedLines", function() {
-	let doc = createJsDoc(code);
+	beforeEach(function() {
+		doc = new Document(code, "a.js");
+	});
 	
-	console.log(doc.getDecoratedLines());
+	it("init", function() {
+		//console.log(doc.getDecoratedLines());
+	});
 });

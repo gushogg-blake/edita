@@ -25,8 +25,10 @@
 	"devDependencies": {
 		"@rollup/plugin-alias": "^3.1.5",
 		"@rollup/plugin-commonjs": "^19.0.0",
+		"@rollup/plugin-multi-entry": "^4.1.0",
 		"@rollup/plugin-node-resolve": "^13.0.0",
 		"autoprefixer": "^10.2.6",
+		"chai": "^4.3.4",
 		"electron": "^13.1.7",
 		"electron-builder": "^22.11.7",
 		"link-module-alias": "^1.2.0",
@@ -38,6 +40,7 @@
 		"rollup-plugin-livereload": "^2.0.5",
 		"rollup-plugin-node-builtins": "^2.1.2",
 		"rollup-plugin-node-globals": "^1.4.0",
+		"rollup-plugin-polyfill-node": "^0.7.0",
 		"rollup-plugin-scss": "^3.0.0",
 		"rollup-plugin-svelte": "^7.1.0",
 		"rollup-plugin-terser": "^7.0.2",
@@ -48,27 +51,22 @@
 	},
 	"scripts": {
 		"start": "electron .",
+		"electron": "NODE_ENV=development electron .",
 		"build-all": "rollup -c",
 		"autobuild-all": "rollup -c -w",
+		"build-test": "PLATFORM=test rollup -c",
+		"autobuild-test": "PLATFORM=test rollup -c -w",
 		"build-electron": "PLATFORM=electron rollup -c",
 		"autobuild-electron": "PLATFORM=electron rollup -c -w",
 		"build-web": "PLATFORM=web rollup -c",
 		"autobuild-web": "PLATFORM=web rollup -c -w",
-		"dev": "run-p autobuild-all electron web",
-		"electron-dev": "run-p autobuild-electron electron",
-		"web-dev": "run-p autobuild-web web",
-		"electron": "NODE_ENV=development electron .",
-		"web": "sirv src/platforms/web/public --dev",
+		"dev": "run-p autobuild-all test electron web",
+		"electron-dev": "run-p autobuild-electron test electron",
+		"web-dev": "run-p autobuild-web test web",
+		"test-dev": "run-p autobuild-test test",
+		"web": "sirv --dev --port 5000 src/platforms/web/public",
+		"test": "sirv --dev --port 5001 test/public",
 		"dist": "run-s build-electron pure-dist-win",
-		"pure-dist-win": "electron-builder --win --config electron-builder.yml",
-		"test": "./node_modules/mocha/bin/mocha --file test/platform/main.js 'test/tests/**/*.test.js'",
-		"postinstall": "link-module-alias"
-	},
-	"_moduleAliases": {
-		"components": "src/components",
-		"modules": "src/modules",
-		"utils": "src/utils",
-		"platforms": "src/platforms",
-		"test": "test"
+		"pure-dist-win": "electron-builder --win --config electron-builder.yml"
 	}
 }

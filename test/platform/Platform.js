@@ -1,5 +1,7 @@
+let path = require("path-browserify");
+let minimatch = require("minimatch-browser");
 let defaultPrefs = require("modules/defaultPrefs");
-let fs = require("./modules/fs");
+let fs = require("platforms/common/modules/fs");
 
 class Platform {
 	constructor() {
@@ -7,17 +9,28 @@ class Platform {
 			newline: "\n",
 		};
 		
-		this.fs = fs;
+		this.fs = fs({
+			fs: {
+				
+			},
+			
+			path,
+			minimatch,
+			
+			cwd() {
+				return "/";
+			},
+		});
 		
 		this.prefs = defaultPrefs(this.systemInfo);
 	}
 	
-	async init() {
+	async init(options) {
 		
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load(fs(__dirname, "../../src/platforms/electron/public/vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm").path);
+		return TreeSitter.Language.load("./vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
 	}
 }
 

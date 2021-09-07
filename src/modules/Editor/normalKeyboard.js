@@ -347,9 +347,11 @@ module.exports = {
 				index: newIndex,
 			};
 		} else {
+			let {path} = this.document;
 			let index = this.document.indexFromCursor(cursor);
 			let wordAtCursor = this.document.wordAtCursor(cursor);
-			let words = findWordCompletions(this.document.string, wordAtCursor, index);
+			let extraWords = [path && platform.fs(path).name].filter(Boolean);
+			let words = findWordCompletions(this.document.string, wordAtCursor, index, extraWords);
 			
 			if (words.length > 0) {
 				let currentWord = words[0];
