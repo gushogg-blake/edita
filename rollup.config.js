@@ -2,6 +2,7 @@ import path from "path";
 
 import multi from "@rollup/plugin-multi-entry";
 import livereload from "rollup-plugin-livereload";
+import copy from "rollup-plugin-copy";
 
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
@@ -71,17 +72,6 @@ let platforms = [];
 
 if (!platform || platform === "all" || platform === "test") {
 	platforms.push({
-		input: "test/mochaCss.js",
-		
-		output: {
-			format: "iife",
-			file: "test/public/build/mochaCss.js",
-		},
-		
-		plugins: [
-			scss(),
-		],
-	}, {
 		input: "node_modules/mocha/mocha.js",
 		
 		output: {
@@ -92,6 +82,7 @@ if (!platform || platform === "all" || platform === "test") {
 		plugins: [
 			...commonPlugins,
 			commonjs(),
+			
 		],
 	}, {
 		input: "test/main.js",
@@ -105,6 +96,19 @@ if (!platform || platform === "all" || platform === "test") {
 		plugins: [
 			...commonPlugins,
 			commonjs(),
+			
+			copy({
+				targets: [
+					{
+						src: "node_modules/mocha/mocha.css",
+						dest: "test/public/build",
+					},
+					{
+						src: "node_modules/mocha/mocha.js",
+						dest: "test/public/build",
+					},
+				],
+			}),
 		],
 	}, {
 		input: "test/tests/**/*.test.js",

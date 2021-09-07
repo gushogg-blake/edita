@@ -1,7 +1,7 @@
-let path = require("path-browserify");
 let minimatch = require("minimatch-browser");
 let defaultPrefs = require("modules/defaultPrefs");
 let fs = require("platforms/common/modules/fs");
+let path = require("platforms/common/modules/path-browser");
 
 class Platform {
 	constructor() {

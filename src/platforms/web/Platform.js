@@ -1,4 +1,3 @@
-let path = require("path-browserify");
 let minimatch = require("minimatch-browser");
 let bluebird = require("bluebird");
 let get = require("lodash.get");
@@ -8,6 +7,7 @@ let Evented = require("utils/Evented");
 let defaultPrefs = require("modules/defaultPrefs");
 
 let fs = require("../common/modules/fs");
+let path = require("../common/modules/path-browser");
 let clipboard = require("./modules/clipboard");
 
 class Platform extends Evented {

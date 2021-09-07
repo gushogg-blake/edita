@@ -3,7 +3,7 @@
 	<head>
 		<title>Editor Tests</title>
 		<meta charset="utf-8">
-		<link rel="stylesheet" href="./build/mochaCss.css">
+		<link rel="stylesheet" href="./build/mocha.css">
 		<script src="./vendor/tree-sitter/tree-sitter.js"></script>
 	</head>
 	<body>
@@ -13,7 +13,9 @@
 		<script src="./build/mocha.js"></script>
 		<script src="./build/main.js"></script>
 		<script class="mocha-init">
-			mocha.setup("bdd", {
+			mocha.setup({
+				ui: "bdd",
+				
 				rootHooks: {
 					async beforeAll() {
 						await main();
