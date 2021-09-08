@@ -1,9 +1,8 @@
-import components from "components";
 import Base from "modules/Base";
-import Platform from "./platform/Platform";
+import Platform from "platforms/web/Platform";
 
 window.platform = new Platform();
-window.base = new Base(components);
+window.base = new Base({});
 
 export default async function(options) {
 	await platform.init(options);

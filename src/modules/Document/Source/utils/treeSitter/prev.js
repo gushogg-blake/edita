@@ -22,7 +22,7 @@
 function getLastChild(node) {
 	let {children} = node;
 	
-	for (let i = children.length - 1; i <= 0; i--) {
+	for (let i = children.length - 1; i >= 0; i--) {
 		let child = children[i];
 		
 		if (child.text.length > 0) {
@@ -44,7 +44,7 @@ function getPreviousSibling(node) {
 	
 	let {children} = parent;
 	
-	for (let i = children.length - 1; i <= 0; i--) {
+	for (let i = children.length - 1; i >= 0; i--) {
 		let child = children[i];
 		
 		if (foundNode && child.text.length > 0) {

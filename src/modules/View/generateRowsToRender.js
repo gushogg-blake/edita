@@ -1,14 +1,92 @@
+class RenderLine {
+	constructor(lineIndex, line, decoratedLine, wrappedLine) {
+		this.lineIndex = lineIndex;
+		this.line = line;
+		this.decoratedLine = decoratedLine;
+		this.wrappedLine = wrappedLine;
+		
+		
+		this.rowIndex = 0;
+		this.offsetInRow = 0;
+		this.overflow = null;
+		this.renderCommands = [];
+	}
+	
+	row() {
+		let row = {
+			lineIndex: this.lineIndex,
+			rowIndex: this.rowIndex,
+			wrapIndent: this.rowIndex > 0 ? this.line.indentCols : 0,
+			renderCommands: this.renderCommands,
+		};
+		
+		this.renderCommands = [];
+		this.rowIndex++;
+		this.offsetInRow = 0;
+		
+		return row;
+	}
+	
+	*generateRows() {
+		let {
+			lineIndex,
+			line,
+			decoratedLine,
+			wrappedLine,
+		} = this;
+		
+		if (decoratedLine.renderCommands.length === 0) {
+			yield this.row();
+			
+			return;
+		}
+		
+		for (let command of decoratedLine.renderCommands) {
+			if (this.overflow) {
+				this.renderCommands.push(this.overflow);
+				this.offsetInRow += this.overflow.string.length;
+				this.overflow = null;
+			}
+			
+			let {string, node, lang} = command;
+			
+			if (string) {
+				let overflowLength = this.offsetInRow + string.length - wrappedLine.rows[this.rowIndex].string.length;
+				
+				if (overflowLength > 0) {
+					this.renderCommands.push({
+						string: string.substr(0, string.length - overflowLength),
+						node,
+						lang,
+					});
+					
+					yield this.row();
+					
+					this.overflow = {
+						string: string.substr(string.length - overflowLength),
+						node,
+						lang,
+					};
+				} else {
+					this.renderCommands.push(command);
+					
+					this.offsetInRow += string.length;
+				}
+			} else {
+				this.renderCommands.push(command);
+			}
+		}
+		
+		if (this.renderCommands.length > 0) {
+			yield this.row();
+		}
+	}
+}
+
 function *generateRowsToRender() {
 	if (platform.getPref("dev.timing.generateRowsToRender")) {
 		console.time("generateRowsToRender");
 	}
-	
-	let {height} = this.sizes;
-	
-	let {rowHeight, colWidth} = this.measurements;
-	
-	let rowsToRender = height / rowHeight;
-	let rowsRendered = 0;
 	
 	let firstVisibleLine = this.findFirstVisibleLine();
 	
@@ -36,92 +114,11 @@ function *generateRowsToRender() {
 	for (let decoratedLine of decoratedLines) {
 		let wrappedLine = this.wrappedLines[lineIndex];
 		let line = this.lines[lineIndex];
-		let rowIndex = 0;
-		let offsetInRow = 0;
-		let overflow = null;
-		let renderCommands = [];
+		let renderLine = new RenderLine(lineIndex, line, decoratedLine, wrappedLine);
 		
-		if (decoratedLine.renderCommands.length === 0) {
-			yield {
-				lineIndex,
-				rowIndex,
-				wrapIndent: 0,
-				renderCommands: [],
-			};
-		} else {
-			for (let command of decoratedLine.renderCommands) {
-				if (overflow) {
-					renderCommands.push(overflow);
-					
-					offsetInRow += overflow.string.length;
-					
-					overflow = null;
-				}
-				
-				let {string, node, lang} = command;
-				
-				if (string) {
-					let overflowLength = offsetInRow + string.length - wrappedLine.rows[rowIndex].string.length;
-					
-					if (overflowLength > 0) {
-						if (lineIndex > firstLineIndex || rowIndex > firstLineRowIndex) {
-							renderCommands.push({
-								string: string.substr(0, string.length - overflowLength),
-								node,
-								lang,
-							});
-							
-							yield {
-								lineIndex,
-								rowIndex,
-								wrapIndent: rowIndex > 0 ? line.indentCols : 0,
-								renderCommands,
-							};
-						}
-						
-						renderCommands = [];
-						rowIndex++;
-						offsetInRow = 0;
-						
-						overflow = {
-							string: string.substr(string.length - overflowLength),
-							node,
-							lang,
-						};
-					} else {
-						renderCommands.push(command);
-						
-						offsetInRow += string.length;
-						
-						if (overflowLength === 0) {
-							yield {
-								lineIndex,
-								rowIndex,
-								wrapIndent: rowIndex > 0 ? line.indentCols : 0,
-								renderCommands,
-							};
-							
-							renderCommands = [];
-							rowIndex++;
-							offsetInRow = 0;
-						}
-					}
-				} else {
-					renderCommands.push(command);
-				}
-			}
-			
-			if (overflow) {
-				renderCommands.push(overflow);
-			}
-			
-			if (renderCommands.length > 0) {
-				yield {
-					lineIndex,
-					rowIndex,
-					wrapIndent: rowIndex > 0 ? line.indentCols : 0,
-					renderCommands,
-				};
+		for (let row of renderLine.generateRows()) {
+			if (lineIndex > firstLineIndex || row.rowIndex >= firstLineRowIndex) {
+				yield row;
 			}
 		}
 		
