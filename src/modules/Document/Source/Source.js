@@ -1,7 +1,7 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 
-let LangRange = require("./LangRange");
+let Scope = require("./Scope");
 let Line = require("./Line");
 let generateRenderCommandsForLine = require("./generateRenderCommandsForLine");
 
@@ -48,7 +48,7 @@ module.exports = class {
 		
 		if (this.lang.code !== "plainText") {
 			try {
-				this.rootLangRange = new LangRange(null, null, this.lang, this.string, {
+				this.rootScope = new Scope(null, null, this.lang, this.string, {
 					startIndex: 0,
 					endIndex: this.string.length,
 					selection: s(c(0, 0), this.cursorAtEnd()),
@@ -76,7 +76,7 @@ module.exports = class {
 		this.createLines();
 		
 		if (this.lang.code !== "plainText") {
-			this.rootLangRange.edit(edit, index, {
+			this.rootScope.edit(edit, index, {
 				startIndex: 0,
 				endIndex: this.string.length,
 				selection: s(c(0, 0), this.cursorAtEnd()),
@@ -87,7 +87,7 @@ module.exports = class {
 	}
 	
 	findFirstNodeToRender(lineIndex) {
-		return this.rootLangRange.findFirstNodeToRender(lineIndex);
+		return this.rootScope.findFirstNodeToRender(lineIndex);
 	}
 	
 	getDecoratedLines(startLineIndex, endLineIndex) {
@@ -99,7 +99,7 @@ module.exports = class {
 		});
 		
 		if (this.lang.code !== "plainText") {
-			let {langRange, node} = this.findFirstNodeToRender(startLineIndex);
+			let {scope, node} = this.findFirstNodeToRender(startLineIndex);
 			
 			while (true) {
 				if (node.startPosition.row >= endLineIndex) {
@@ -109,10 +109,10 @@ module.exports = class {
 				if (node.startPosition.row >= startLineIndex) {
 					let line = lines[node.startPosition.row - startLineIndex];
 					
-					line.renderHints.push(...langRange.getRenderHints(node));
+					line.renderHints.push(...scope.getRenderHints(node));
 				}
 				
-				({langRange, node} = langRange.next(node));
+				({scope, node} = scope.next(node));
 				
 				if (!node) {
 					break;
@@ -127,8 +127,12 @@ module.exports = class {
 		return lines;
 	}
 	
+	next(scope, range, node) {
+		
+	}
+	
 	getNodesOnLine(lineIndex) {
-		return [...this.rootLangRange.generateNodesOnLine(lineIndex)];
+		return [...this.rootScope.generateNodesOnLine(lineIndex)];
 	}
 	
 	indexFromCursor(cursor) {
@@ -157,30 +161,26 @@ module.exports = class {
 		}
 	}
 	
-	langFromCursor(cursor, langRange=this.rootLangRange) {
+	langFromCursor(cursor, scope=this.rootScope) {
 		if (this.lang.code === "plainText") {
 			return this.lang;
 		}
 		
-		if (Cursor.equals(cursor, this.cursorAtEnd())) {
-			return this.lang;
-		}
+		let selections = scope.ranges.map(range => range.selection);
 		
-		let {selection} = langRange.range;
-		
-		if (!Selection.charIsWithinSelection(selection, cursor)) {
+		if (!selections.some(selection => Selection.charIsWithinSelection(selection, cursor))) {
 			return null;
 		}
 		
-		for (let childLangRange of langRange.langRanges) {
-			let langFromChild = this.langFromCursor(cursor, childLangRange);
+		for (let childScope of scope.scopes) {
+			let langFromChild = this.langFromCursor(cursor, childScope);
 			
 			if (langFromChild) {
 				return langFromChild;
 			}
 		}
 		
-		return langRange.lang;
+		return scope.lang;
 	}
 	
 	cursorAtEnd() {

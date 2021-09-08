@@ -2,25 +2,16 @@ let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
 
 module.exports = {
-	code: "html",
-	name: "HTML",
+	code: "php",
+	name: "PHP",
 	astMode,
 	codeIntel,
 	
 	injections: [
 		{
-			pattern: "(script_element (raw_text) @injectionNode)",
-			
-			lang(injectionNode) {
-				return "javascript";
-			},
-		},
-		{
-			pattern: "(style_element (raw_text) @injectionNode)",
-			
-			lang(injectionNode) {
-				return "css";
-			},
+			pattern: "(text @injectionNode)",
+			combined: true,
+			lang: "html",
 		},
 	],
 	
@@ -121,8 +112,7 @@ module.exports = {
 		let type = platform.fs(path).lastType;
 		
 		if ([
-			"html",
-			"htm",
+			"php",
 		].includes(type)) {
 			return "general";
 		}

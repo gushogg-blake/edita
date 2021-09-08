@@ -1,23 +1,26 @@
 let advanceCursor = require("./utils/treeSitter/advanceCursor");
 let next = require("./utils/treeSitter/next");
-let rangeToTreeSitterRange = require("./utils/treeSitter/rangeToTreeSitterRange");
-let treeSitterRangeToRange = require("./utils/treeSitter/treeSitterRangeToRange");
 let cursorToTreeSitterPoint = require("./utils/treeSitter/cursorToTreeSitterPoint");
 let findFirstNodeToRender = require("./utils/treeSitter/findFirstNodeToRender");
 let generateNodesOnLine = require("./utils/treeSitter/generateNodesOnLine");
+let Range = require("./Range");
 
-module.exports = class LangRange {
-	constructor(parent, parentNode, lang, code, range) {
+module.exports = class Scope {
+	constructor(parent, lang, code, ranges) {
 		this.parent = parent;
-		this.parentNode = parentNode;
 		this.lang = lang;
 		this.code = code;
-		this.range = range;
-		this.treeSitterRange = rangeToTreeSitterRange(range);
+		this.ranges = ranges;
+		this.treeSitterRanges = ranges.map(Range.toTreeSitterRange);
 		
-		this.langRanges = [];
-		this.langRangesByCursor = {};
-		this.langRangesByNode = {};
+		this.scopes = [];
+		this.scopesByCursor = {};
+		this.scopesByNode = {};
+		this.rangesByCursor = {};
+		
+		for (let range of ranges) {
+			this.rangesByCursor[range.cursorKey] = range;
+		}
 		
 		this.parse();
 	}
@@ -30,8 +33,8 @@ module.exports = class LangRange {
 		parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
 		
 		this.tree = parser.parse(this.code, null, {
-			includedRanges: [this.treeSitterRange],
-		});   
+			includedRanges: this.treeSitterRanges,
+		});
 		
 		for (let injection of this.lang.injections) {
 			let nodes = injection.query.matches(this.tree.rootNode).map(function(match) {
@@ -46,25 +49,46 @@ module.exports = class LangRange {
 				return null;
 			}).filter(Boolean);
 			
-			for (let node of nodes) {
-				if (node.text.length > 0) {
-					let injectionLang = base.langs.get(injection.lang(node));
+			if (injection.combined) {
+				let injectionLang = base.langs.get(injection.lang);
+				
+				if (injectionLang) {
+					let ranges = nodes.map(Range.fromNode);
+					let scope = new Scope(this, node, injectionLang, this.code, ranges);
 					
-					if (injectionLang) {
-						let langRange = new LangRange(this, node, injectionLang, this.code, treeSitterRangeToRange(node));
+					this.scopes.push(scope);
+					
+					for (let range of ranges) {
+						this.scopesByCursor[range.cursorKey] = scope;
+					}
+					
+					for (let node of nodes) {
+						this.scopesByNode[node.id] = scope;
+					}
+				}
+			} else {
+				for (let node of nodes) {
+					if (node.text.length > 0) {
+						let injectionLang = base.langs.get(injection.lang(node));
 						
-						this.langRanges.push(langRange);
-						this.langRangesByCursor[node.startPosition.row + "," + node.startPosition.column] = langRange;
-						this.langRangesByNode[node.id] = langRange;
+						if (injectionLang) {
+							let range = Range.fromNode(node);
+							let scope = new Scope(this, node, injectionLang, this.code, [range]);
+							
+							this.scopes.push(scope);
+							this.scopesByCursor[range.cursorKey] = scope;
+							this.scopesByNode[node.id] = scope;
+						}
 					}
 				}
 			}
+			
 		}
 		
 		console.timeEnd("parse (" + this.lang.code + ")");
 	}
 	
-	edit(edit, index, newRange, newParentNode, code) {
+	edit(edit, index, newRanges, code) {
 		let {
 			selection,
 			newSelection,
@@ -72,26 +96,25 @@ module.exports = class LangRange {
 			replaceWith,
 		} = edit;
 		
-		this.newParentNode = newParentNode;
 		this.code = code;
 		
 		//
-		this.langRanges = [];
-		this.langRangesByCursor = {};
-		this.langRangesByNode = {};
+		this.scopes = [];
+		this.scopesByCursor = {};
+		this.scopesByNode = {};
 		
-		this.range = newRange;
-		this.treeSitterRange = rangeToTreeSitterRange(this.range);
+		this.ranges = newRanges;
+		this.treeSitterRanges = this.ranges.map(Range.toTreeSitterRange);
 		
 		this.parse();
 		//
 		
 		
-		//let oldRangesByCursor = this.langRangesByCursor;
+		//let oldRangesByCursor = this.scopesByCursor;
 		//
-		//this.langRanges = [];
-		//this.langRangesByCursor = {};
-		//this.langRangesByNode = {};
+		//this.scopes = [];
+		//this.scopesByCursor = {};
+		//this.scopesByNode = {};
 		
 		
 		
@@ -154,7 +177,7 @@ module.exports = class LangRange {
 		//});
 		//
 		//this.tree = parser.parse(this.code, this.tree, {
-		//	includedRanges: [this.treeSitterRange],
+		//	includedRanges: this.treeSitterRanges,
 		//});
 		
 		
@@ -173,43 +196,56 @@ module.exports = class LangRange {
 	
 	findFirstNodeToRender(lineIndex) {
 		let node = findFirstNodeToRender(this.tree, lineIndex);
-		let childRange = this.langRangesByNode[node.id];
+		let childScope = this.scopesByNode[node.id];
 		
-		if (childRange) {
-			return childRange.findFirstNodeToRender(lineIndex);
+		if (childScope) {
+			return childScope.findFirstNodeToRender(lineIndex);
 		}
 		
 		return {
-			langRange: this,
+			scope: this,
+			range: this.findContainingRange(node),
 			node,
 		};
 	}
 	
+	findContainingRange(node) {
+		for (let range of this.ranges) {
+			if (Selection.isWithin(Selection.fromNode(node), range.selection) {
+				return range;
+			}
+		}
+	}
+	
 	next(node, out=false) {
-		let childRange = this.langRangesByNode[node.id];
+		let childScope = this.scopesByNode[node.id];
 		
 		if (childRange && !out) {
 			return {
-				langRange: childRange,
+				scope: childRange,
 				node: childRange.tree.rootNode,
 			};
 		}
 		
 		node = next(node);
 		
+		if (this.rangesByNode[node.id]) {
+			
+		}
+		
 		if (!node) {
 			if (this.parent) {
 				return this.parent.next(this.parentNode, true);
 			} else {
 				return {
-					langRange: this,
+					scope: this,
 					node: null,
 				};
 			}
 		}
 		
 		return {
-			langRange: this,
+			scope: this,
 			node,
 		};
 	}
@@ -218,7 +254,7 @@ module.exports = class LangRange {
 		for (let node of generateNodesOnLine(this.tree, lineIndex)) {
 			yield node;
 			
-			let childRange = this.langRangesByNode[node.id];
+			let childRange = this.scopesByNode[node.id];
 			
 			if (childRange) {
 				for (let childNode of childRange.generateNodesOnLine(lineIndex)) {
@@ -234,8 +270,8 @@ module.exports = class LangRange {
 		while (true) {
 			yield node;
 			
-			if (this.langRangesByNode[node.id]) {
-				for (let childNode of this.langRangesByNode[node.id].generateNodes_pointers()) {
+			if (this.scopesByNode[node.id]) {
+				for (let childNode of this.scopesByNode[node.id].generateNodes_pointers()) {
 					yield childNode;
 				}
 			}
@@ -256,8 +292,8 @@ module.exports = class LangRange {
 			
 			yield node;
 			
-			if (this.langRangesByNode[node.id]) {
-				for (let childNode of this.langRangesByNode[node.id].generateNodes_cursor()) {
+			if (this.scopesByNode[node.id]) {
+				for (let childNode of this.scopesByNode[node.id].generateNodes_cursor()) {
 					yield childNode;
 				}
 			}
