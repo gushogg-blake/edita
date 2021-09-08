@@ -2,6 +2,7 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 
 let Scope = require("./Scope");
+let Range = require("./Range");
 let Line = require("./Line");
 let generateRenderCommandsForLine = require("./generateRenderCommandsForLine");
 
@@ -48,11 +49,7 @@ module.exports = class {
 		
 		if (this.lang.code !== "plainText") {
 			try {
-				this.rootScope = new Scope(null, null, this.lang, this.string, {
-					startIndex: 0,
-					endIndex: this.string.length,
-					selection: s(c(0, 0), this.cursorAtEnd()),
-				});
+				this.rootScope = new Scope(null, this.lang, this.string, [this.getContainingRange()]);
 			} catch (e) {
 				console.error("Parse error");
 				console.error(e);
@@ -76,11 +73,7 @@ module.exports = class {
 		this.createLines();
 		
 		if (this.lang.code !== "plainText") {
-			this.rootScope.edit(edit, index, {
-				startIndex: 0,
-				endIndex: this.string.length,
-				selection: s(c(0, 0), this.cursorAtEnd()),
-			}, null, this.string);
+			this.rootScope.edit(edit, index, [this.getContainingRange()], null, this.string);
 		}
 		
 		console.timeEnd("edit");
@@ -128,11 +121,23 @@ module.exports = class {
 	}
 	
 	next(scope, range, node) {
+		let childScope = this.scopesByNode[node.id];
 		
+		if (childScope) {
+			return {
+				scope: childScope.scope,
+				range: childScope.range,
+				node: childScope.scope.firstNodeInRange(childScope.range),
+			};
+		}
 	}
 	
 	getNodesOnLine(lineIndex) {
 		return [...this.rootScope.generateNodesOnLine(lineIndex)];
+	}
+	
+	getContainingRange() {
+		return new Range(null, 0, this.string.length, s(c(0, 0), this.cursorAtEnd()));
 	}
 	
 	indexFromCursor(cursor) {

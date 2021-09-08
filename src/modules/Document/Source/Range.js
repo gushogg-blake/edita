@@ -4,7 +4,7 @@ let Cursor = require("modules/utils/Cursor");
 let {s} = Selection;
 let {c} = Cursor;
 
-module.exports = class {
+class Range {
 	constructor(node, startIndex, endIndex, selection) {
 		this.node = node;
 		this.startIndex = startIndex;
@@ -56,3 +56,5 @@ module.exports = class {
 		);
 	}
 }
+
+module.exports = Range;

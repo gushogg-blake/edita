@@ -54,7 +54,7 @@ module.exports = class Scope {
 				
 				if (injectionLang) {
 					let ranges = nodes.map(Range.fromNode);
-					let scope = new Scope(this, node, injectionLang, this.code, ranges);
+					let scope = new Scope(this, injectionLang, this.code, ranges);
 					
 					this.scopes.push(scope);
 					
@@ -73,7 +73,7 @@ module.exports = class Scope {
 						
 						if (injectionLang) {
 							let range = Range.fromNode(node);
-							let scope = new Scope(this, node, injectionLang, this.code, [range]);
+							let scope = new Scope(this, injectionLang, this.code, [range]);
 							
 							this.scopes.push(scope);
 							this.scopesByCursor[range.cursorKey] = scope;
@@ -211,10 +211,14 @@ module.exports = class Scope {
 	
 	findContainingRange(node) {
 		for (let range of this.ranges) {
-			if (Selection.isWithin(Selection.fromNode(node), range.selection) {
+			if (Selection.isWithin(Selection.fromNode(node), range.selection)) {
 				return range;
 			}
 		}
+	}
+	
+	firstNodeInRange(range) {
+		
 	}
 	
 	next(node, out=false) {
