@@ -39,7 +39,7 @@ describe("generateNodesOnLine", function() {
 	});
 	
 	it("init", function() {
-		debugger
+		//debugger
 		console.log(doc.getNodesOnLine(6));
 	});
 });

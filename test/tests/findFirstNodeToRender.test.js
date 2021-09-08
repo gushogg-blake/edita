@@ -9,16 +9,8 @@ let Document = require("modules/Document");
 //let findFirstNodeToRender = require("modules/Document/Source/utils/treeSitter/findFirstNodeToRender");
 let findSmallestSubtreeContainingFirstNodeOnLine = require("modules/Document/Source/utils/treeSitter/findSmallestSubtreeContainingFirstNodeOnLine");
 
-let code = dedent(`
-	<!doctype html>
-	<html>
-		<body>
-			<script>
-				
-			</script>
-		</body>
-	</html>
-`);
+let codeA = `<script></script>`;
+let codeB = `<div></div>`;
 
 let tests = [
 	
@@ -28,10 +20,10 @@ let doc;
 
 describe("findFirstNodeToRender", function() {
 	beforeEach(function() {
-		doc = new Document(code, "a.html");
+		doc = new Document(codeA, "a.html");
 	});
 	
 	it("init", function() {
-		
+		console.log(doc.source.rootLangRange.tree.rootNode.firstChild);
 	});
 });
