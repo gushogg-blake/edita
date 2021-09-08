@@ -28,6 +28,8 @@
 				let app = await createEditor(document.getElementById("editorContainer"));
 				
 				app.openFile("/dev.html", await (await fetch("dev.html")).text());
+				
+				window.app = app;
 			})();
 		</script>
 	</body>
