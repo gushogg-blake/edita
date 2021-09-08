@@ -108,7 +108,7 @@ function *generateRowsToRender() {
 	
 	let lastVisibleLineIndex = this.findLastVisibleLineIndex(firstVisibleLine);
 	
-	let decoratedLines = this.document.getDecoratedLines(firstLineIndex, lastVisibleLineIndex + 1);
+	let decoratedLines = this.document.getDecoratedLines(firstLineIndex, lastVisibleLineIndex);
 	let lineIndex = firstLineIndex;
 	
 	for (let decoratedLine of decoratedLines) {

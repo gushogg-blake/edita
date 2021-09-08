@@ -46,8 +46,6 @@ describe("generateRowsToRender", function() {
 	});
 	
 	it("init", function() {
-		debugger
-		
 		console.log([...view.generateRowsToRender()]);
 	});
 });

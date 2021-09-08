@@ -229,7 +229,7 @@ module.exports = {
 			lineIndex++;
 		}
 		
-		return lineIndex;
+		return lineIndex + 1;
 	},
 	
 	getLineRangeTotalHeight(startLineIndex, endLineIndex) {
