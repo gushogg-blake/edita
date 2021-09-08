@@ -217,7 +217,7 @@ class App extends Evented {
 			return existingTab;
 		}
 		
-		if (!code) {
+		if (code === null) {
 			code = await platform.fs(path).read();
 		}
 		
