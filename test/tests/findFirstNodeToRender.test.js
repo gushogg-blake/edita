@@ -24,6 +24,6 @@ describe("findFirstNodeToRender", function() {
 	});
 	
 	it("init", function() {
-		console.log(doc.source.rootLangRange.tree.rootNode.firstChild);
+		console.log(doc.source.rootScope.tree.rootNode.firstChild);
 	});
 });

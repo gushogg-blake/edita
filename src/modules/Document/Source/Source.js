@@ -9,15 +9,6 @@ let generateRenderCommandsForLine = require("./generateRenderCommandsForLine");
 let {s} = Selection;
 let {c} = Cursor;
 
-/*
-
-			renderCommands: [],
-			nodes: [],
-			renderHints: [],
-			openers: [],
-			closers: [],
-*/
-
 module.exports = class {
 	constructor(string) {
 		this.string = string;
@@ -92,7 +83,7 @@ module.exports = class {
 		});
 		
 		if (this.lang.code !== "plainText") {
-			let {scope, node} = this.findFirstNodeToRender(startLineIndex);
+			let {scope, range, node} = this.findFirstNodeToRender(startLineIndex);
 			
 			while (true) {
 				if (node.startPosition.row >= endLineIndex) {
@@ -105,7 +96,7 @@ module.exports = class {
 					line.renderHints.push(...scope.getRenderHints(node));
 				}
 				
-				({scope, node} = scope.next(node));
+				({scope, range, node} = scope.next(node, range));
 				
 				if (!node) {
 					break;
@@ -118,18 +109,6 @@ module.exports = class {
 		}
 		
 		return lines;
-	}
-	
-	next(scope, range, node) {
-		let childScope = this.scopesByNode[node.id];
-		
-		if (childScope) {
-			return {
-				scope: childScope.scope,
-				range: childScope.range,
-				node: childScope.scope.firstNodeInRange(childScope.range),
-			};
-		}
 	}
 	
 	getNodesOnLine(lineIndex) {
@@ -171,21 +150,7 @@ module.exports = class {
 			return this.lang;
 		}
 		
-		let selections = scope.ranges.map(range => range.selection);
-		
-		if (!selections.some(selection => Selection.charIsWithinSelection(selection, cursor))) {
-			return null;
-		}
-		
-		for (let childScope of scope.scopes) {
-			let langFromChild = this.langFromCursor(cursor, childScope);
-			
-			if (langFromChild) {
-				return langFromChild;
-			}
-		}
-		
-		return scope.lang;
+		return this.rootScope.langFromCursor(cursor);
 	}
 	
 	cursorAtEnd() {

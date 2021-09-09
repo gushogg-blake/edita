@@ -9,8 +9,16 @@ function isOnOrAfter(node, cursor) {
 	);
 }
 
+function endsAfter(node, cursor) {
+	let {row, column} = node.endPosition;
+	
+	return (
+		row > cursor.lineIndex
+		|| row === cursor.lineIndex && column > cursor.offset
+	);
+}
+
 function findFirstNodeOnOrAfterCursor(node, cursor) {
-	let {lineIndex, offset} = cursor;
 	let children = node.children;
 	let startIndex = 0;
 	let endIndex = children.length;
@@ -29,9 +37,9 @@ function findFirstNodeOnOrAfterCursor(node, cursor) {
 			endIndex = index;
 			
 			if (endIndex === 0) {
-				return node;
+				break;
 			}
-		} else if (contains(child, cursor)) {
+		} else if (endsAfter(child, cursor)) {
 			node = child;
 			children = node.children;
 			startIndex = 0;
@@ -40,10 +48,12 @@ function findFirstNodeOnOrAfterCursor(node, cursor) {
 			startIndex = index + 1;
 			
 			if (startIndex === children.length) {
-				return node;
+				break;
 			}
 		}
 	}
+	
+	return first;
 }
 
 module.exports = function(tree, cursor) {

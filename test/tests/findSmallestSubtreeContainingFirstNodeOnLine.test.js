@@ -38,7 +38,7 @@ let rootNode;
 describe("findSmallestSubtreeContainingFirstNodeOnLine", function() {
 	beforeEach(function() {
 		doc = new Document(code, "a.html");
-		tree = doc.source.rootLangRange.tree;
+		tree = doc.source.rootScope.tree;
 		rootNode = tree.rootNode;
 	});
 	

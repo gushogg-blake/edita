@@ -154,6 +154,10 @@ let api = {
 		return Cursor.equals(a.start, b.start) && Cursor.equals(a.end, b.end);
 	},
 	
+	isWithin(a, b) {
+		return api.cursorIsWithinOrNextToSelection(b, a.start) && api.cursorIsWithinOrNextToSelection(b, a.end);
+	},
+	
 	charIsWithinSelection(selection, charCursor) {
 		let {start, end} = sort(selection);
 		let {lineIndex, offset} = charCursor;

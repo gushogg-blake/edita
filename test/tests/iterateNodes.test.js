@@ -49,13 +49,13 @@ function *generateNodes_cursor(node) {
 
 let doc;
 
-describe("generate nodes", function() {
+describe("iterateNodes", function() {
 	beforeEach(function() {
 		doc = new Document(code, "a.html");
 	});
 	
 	it("init", function() {
-		console.log([...generateNodes_cursor(doc.source.rootLangRange.tree.rootNode)].map(n => n.type).join(" "));
-		console.log([...generateNodes_pointers(doc.source.rootLangRange.tree.rootNode)].map(n => n.type).join(" "));
+		console.log([...generateNodes_cursor(doc.source.rootScope.tree.rootNode)].map(n => n.type).join(" "));
+		console.log([...generateNodes_pointers(doc.source.rootScope.tree.rootNode)].map(n => n.type).join(" "));
 	});
 });

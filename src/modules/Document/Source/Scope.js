@@ -1,3 +1,4 @@
+let Selection = require("modules/utils/Selection");
 let advanceCursor = require("./utils/treeSitter/advanceCursor");
 let next = require("./utils/treeSitter/next");
 let cursorToTreeSitterPoint = require("./utils/treeSitter/cursorToTreeSitterPoint");
@@ -175,7 +176,7 @@ module.exports = class Scope {
 		
 		if (!nextNode || nextRange !== range) {
 			if (this.parent) {
-				return this.parent.nextAfterRange(nextRange);
+				return this.parent.nextAfterRange(range);
 			} else {
 				return {
 					scope: this,
@@ -213,14 +214,30 @@ module.exports = class Scope {
 		};
 	}
 	
+	langFromCursor(cursor) {
+		if (!this.ranges.some(range => Selection.cursorIsWithinSelection(range.selection, cursor))) {
+			return null;
+		}
+		
+		for (let scope of this.scopes) {
+			let langFromChild = scope.langFromCursor(cursor);
+			
+			if (langFromChild) {
+				return langFromChild;
+			}
+		}
+		
+		return this.lang;
+	}
+	
 	*generateNodesOnLine(lineIndex) {
 		for (let node of generateNodesOnLine(this.tree, lineIndex)) {
 			yield node;
 			
-			let childRange = this.scopesByNode[node.id];
+			let scope = this.scopesByNode[node.id];
 			
-			if (childRange) {
-				for (let childNode of childRange.generateNodesOnLine(lineIndex)) {
+			if (scope) {
+				for (let childNode of scope.generateNodesOnLine(lineIndex)) {
 					yield childNode;
 				}
 			}
