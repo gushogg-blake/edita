@@ -4,11 +4,11 @@ import components from "components";
 import Platform from "./Platform";
 
 window.platform = new Platform();
-window.base = new Base(components);
+window.base = new Base();
 
 export default async function(options) {
 	await platform.init(options);
-	await base.init();
+	await base.init(components);
 	
 	return async function(el) {
 		let app = new App();

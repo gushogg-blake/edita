@@ -18,10 +18,9 @@ let {s} = Selection;
 let {c} = Cursor;
 
 class Editor extends Evented {
-	constructor(app, document, view) {
+	constructor(document, view) {
 		super();
 		
-		this.app = app;
 		this.document = document;
 		this.view = view;
 		

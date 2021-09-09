@@ -51,21 +51,31 @@ let commonPlugins = [
 	}),
 ];
 
-let ignoreNodeRequires = [
-	"os",
-	"fs",
-	"fs-extra",
-	"glob",
-	"path",
-	"constants",
-	"util",
-	"stream",
-	"assert",
-	"string_decoder",
-	"buffer",
-	"events",
-	"electron",
-	"electron-better-ipc",
+let electronPlugins = [
+	...commonPlugins,
+	
+	commonjs({
+		ignore: [
+			"os",
+			"fs",
+			"fs-extra",
+			"glob",
+			"path",
+			"constants",
+			"util",
+			"stream",
+			"assert",
+			"string_decoder",
+			"buffer",
+			"events",
+			"electron",
+			"electron-better-ipc",
+		],
+	}),
+	
+	globals(),
+	builtins(),
+	production && terser(),
 ];
 
 let platforms = [];
@@ -149,17 +159,17 @@ if (!platform || platform === "all" || platform === "electron") {
 			file: "src/platforms/electron/public/build/main.js",
 		},
 		
-		plugins: [
-			...commonPlugins,
-			
-			commonjs({
-				ignore: ignoreNodeRequires,
-			}),
-			
-			globals(),
-			builtins(),
-			production && terser(),
-		],
+		plugins: electronPlugins,
+	}, {
+		input: "src/platforms/electron/dialogs/snippetEditor/main.js",
+		
+		output: {
+			sourcemap: true,
+			format: "iife",
+			file: "src/platforms/electron/public/build/dialogs/snippetEditor/main.js",
+		},
+		
+		plugins: electronPlugins,
 	});
 }
 

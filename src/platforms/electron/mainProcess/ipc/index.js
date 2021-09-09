@@ -3,6 +3,7 @@ let init = require("./init");
 let clipboard = require("./clipboard");
 let dialog = require("./dialog");
 let contextMenu = require("./contextMenu");
+let openDialogWindow = require("./openDialogWindow");
 let prefs = require("./prefs");
 let snippets = require("./snippets");
 let session = require("./session");
@@ -11,6 +12,7 @@ let devTools = require("./devTools");
 let asyncModules = {
 	dialog,
 	contextMenu,
+	openDialogWindow,
 	prefs,
 	snippets,
 	session,

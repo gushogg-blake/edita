@@ -18,27 +18,19 @@ initialisation that needs to be done before any other clientside code runs --
 e.g. initialising langs.  this initialisation can be async and is done by
 the init() method.
 
-the reason for having a global singleton like this, as opposed to just having
-everything in separate modules and the code that uses them require() them
-individually, is 1) it is dynamic -- not as quick-changing as the UI, but changes
-when e.g. a lang is added -- and 2) some of the init is async, so wouldn't be
-immediately available from a require()d module -- having a big init() method
-means that code that runs subsequently (which includes the entire UI, so basically
-the whole app) can get stuff from the global base object without having to
-await it.
-
 this can be shared between multiple instances of the UI, e.g. with multiple
-instances embedded in a web page, so doesn't know anything about the state of the
-UI.
+instances embedded in a web page, so doesn't know anything about the state of
+the UI.
 */
 
 class Base {
-	constructor(components) {
+	constructor() {
 		this.langs = langs;
-		this.components = components;
 	}
 	
-	async init() {
+	async init(components) {
+		this.components = components;
+		
 		await TreeSitter.init();
 		
 		this.treeSitterLanguages = {};

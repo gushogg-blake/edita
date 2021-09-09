@@ -120,22 +120,7 @@ class Platform extends Evented {
 	}
 	
 	openWindow(url, options) {
-		let {
-			width = 800,
-			height = 600,
-			top = null,
-			left = null,
-		} = options;
-		
-		if (top === null) {
-			top = Math.round(window.screenTop + (window.outerHeight - height) / 2);
-		}
-		
-		if (left === null) {
-			left = Math.round(window.screenLeft + (window.outerWidth - width) / 2);
-		}
-		
-		let win = window.open(url, "", "width=" + width + ",height=" + height + ",top=" + top + ",left=" + left);
+		ipc.openDialogWindow(url, options);
 	}
 	
 	setTitle(title) {
@@ -169,7 +154,7 @@ class Platform extends Evented {
 	}
 	
 	editSnippet(snippet) {
-		this.openWindow("editSnippet.html", {
+		this.openWindow("/dialogs/snippetEditor.html", {
 			width: 680,
 			height: 480,
 		});

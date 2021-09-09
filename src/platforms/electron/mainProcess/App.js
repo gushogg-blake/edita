@@ -19,7 +19,9 @@ let config = require("./config");
 class App {
 	constructor() {
 		this.config = config;
-		this.browserWindows = [];
+		this.appWindows = [];
+		this.dialogWindows = [];
+		this.closeWithoutConfirming = new WeakMap();
 		this.mainWindow = null;
 		this.filesToOpenOnStartup = yargs(hideBin(process.argv)).argv._.map(p => path.resolve(process.cwd(), p));
 	}
@@ -36,6 +38,14 @@ class App {
 	
 	init() {
 		ipc(this);
+		
+		ipcMain.on("closeWindow", (e) => {
+			let browserWindow = this.browserWindowFromEvent(e);
+			
+			this.closeWithoutConfirming.set(browserWindow);
+			
+			browserWindow.close();
+		});
 		
 		Menu.setApplicationMenu(null);
 		
@@ -69,7 +79,7 @@ class App {
 				});
 			});
 			
-			this.mainWindow = this.createWindow();
+			this.mainWindow = this.createAppWindow();
 			
 			globalShortcut.register("CommandOrControl+Q", () => {
 				electronApp.quit();
@@ -86,12 +96,12 @@ class App {
 			if (files.length > 0) {
 				this.mainWindow.webContents.send("open", files);
 			} else {
-				this.createWindow();
+				this.createAppWindow();
 			}
 		});
 	}
 	
-	createWindow() {
+	createAppWindow() {
 		let winState = windowStateKeeper();
 		
 		let browserWindow = new BrowserWindow({
@@ -104,7 +114,6 @@ class App {
 			webPreferences: {
 				nodeIntegration: true,
 				contextIsolation: false,
-				nativeWindowOpen: true,
 			},
 			
 			backgroundColor: "#edecea",
@@ -121,30 +130,66 @@ class App {
 		let close = false;
 		
 		browserWindow.on("close", (e) => {
-			if (!close) {
+			if (!this.closeWithoutConfirming.has(browserWindow)) {
 				e.preventDefault();
 				
 				browserWindow.webContents.send("closeWindow");
 			}
 		});
 		
-		ipcMain.on("closeWindow", (e) => {
-			if (this.browserWindowFromEvent(e) !== browserWindow) {
-				return;
-			}
-			
-			close = true;
-			
-			browserWindow.close();
-		});
-		
 		browserWindow.on("closed", () => {
-			removeInPlace(this.browserWindows, browserWindow);
+			removeInPlace(this.appWindows, browserWindow);
 		});
 		
-		this.browserWindows.push(browserWindow);
+		this.appWindows.push(browserWindow);
 		
 		return browserWindow;
+	}
+	
+	createDialogWindow(url, options) {
+		let browserWindow = new BrowserWindow({
+			...options,
+			
+			webPreferences: {
+				nodeIntegration: true,
+				contextIsolation: false,
+			},
+			
+			backgroundColor: "#edecea",
+		});
+		
+		browserWindow.loadURL("app://-" + url);
+		
+		if (config.dev) {
+			browserWindow.webContents.openDevTools();
+		}
+		
+		browserWindow.on("closed", () => {
+			removeInPlace(this.dialogWindows, browserWindow);
+		});
+		
+		this.dialogWindows.push(browserWindow);
+		
+		return browserWindow;
+	}
+	
+	openDialogWindow(url, options, opener) {
+		options = {
+			width: 800,
+			height: 600,
+			...options,
+		};
+		
+		let openerBounds = opener.getBounds();
+		
+		let x = Math.round(openerBounds.x + (openerBounds.width - options.width) / 2);
+		let y = Math.round(openerBounds.y + (openerBounds.height - options.height) / 2);
+		
+		let browserWindow = this.createDialogWindow(url, {
+			x,
+			y,
+			...options,
+		});
 	}
 	
 	browserWindowFromEvent(e) {
@@ -160,7 +205,7 @@ class App {
 	}
 	
 	callRenderers(channel, ...args) {
-		for (let browserWindow of this.browserWindows) {
+		for (let browserWindow of [...this.appWindows, ...this.dialogWindows]) {
 			browserWindow.webContents.send(channel, ...args);
 		}
 	}

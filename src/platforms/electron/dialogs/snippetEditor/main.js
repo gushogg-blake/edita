@@ -1,13 +1,13 @@
-import App from "modules/App";
-import components from "components";
-import init from "./init";
+import init from "../../init";
+import App from "./modules/App";
+import AppComponent from "./components/App.svelte";
 
 init(async function() {
 	let app = new App();
 	
 	await app.init();
 	
-	new components.App({
+	new AppComponent({
 		target: document.body,
 		
 		props: {

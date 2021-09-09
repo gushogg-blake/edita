@@ -106,7 +106,6 @@ $border: 1px solid #AFACAA;
 		"bottom bottom bottom";
 	width: 100%;
 	height: 100%;
-	user-select: none;
 }
 
 #toolbar {

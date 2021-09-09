@@ -23,7 +23,7 @@ module.exports = function(app) {
 	let watchers = [watchMain, watchRenderer];
 	
 	watchRenderer.on("change", function() {
-		app.browserWindows.forEach(win => win.reload());
+		app.appWindows.forEach(win => win.reload());
 	});
 	
 	watchMain.on("change", debounce(function() {

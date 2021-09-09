@@ -256,8 +256,8 @@ class App extends Evented {
 	
 	createTab(code, path) {
 		let document = this.createDocument(code, path);
-		let view = new View(this, document);
-		let editor = new Editor(this, document, view);
+		let view = new View(document, this.focusManager);
+		let editor = new Editor(document, view);
 		
 		return new Tab(this, editor);
 	}
@@ -278,9 +278,9 @@ class App extends Evented {
 	
 	createEditor() {
 		let document = new Document("");
-		let view = new View(this, document);
+		let view = new View(document, this.focusManager);
 		
-		return new Editor(this, document, view);
+		return new Editor(document, view);
 	}
 	
 	findTabByPath(path) {
