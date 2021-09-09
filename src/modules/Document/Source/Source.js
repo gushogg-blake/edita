@@ -112,6 +112,10 @@ module.exports = class {
 	}
 	
 	getNodesOnLine(lineIndex) {
+		if (this.lang.code === "plainText") {
+			return [];
+		}
+		
 		return [...this.rootScope.generateNodesOnLine(lineIndex)];
 	}
 	
