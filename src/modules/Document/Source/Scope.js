@@ -126,6 +126,22 @@ module.exports = class Scope {
 		this.parse();
 		//
 		
+		//let parser = new TreeSitter();
+		//
+		//parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
+		//
+		//this.tree.edit({
+		//	startPosition: cursorToTreeSitterPoint(selection.start),
+		//	startIndex: index,
+		//	oldEndPosition: cursorToTreeSitterPoint(selection.end),
+		//	oldEndIndex: index + string.length,
+		//	newEndPosition: cursorToTreeSitterPoint(newSelection.end),
+		//	newEndIndex: index + replaceWith.length,
+		//});
+		//
+		//this.tree = parser.parse(this.code, this.tree, {
+		//	includedRanges: this.treeSitterRanges,
+		//});
 	}
 	
 	getRenderHints(node) {
@@ -215,7 +231,7 @@ module.exports = class Scope {
 	}
 	
 	langFromCursor(cursor) {
-		if (!this.ranges.some(range => Selection.cursorIsWithinSelection(range.selection, cursor))) {
+		if (!this.ranges.some(range => Selection.cursorIsWithinOrNextToSelection(range.selection, cursor))) {
 			return null;
 		}
 		

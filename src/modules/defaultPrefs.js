@@ -129,6 +129,19 @@ module.exports = function(systemInfo) {
 					text: "#000000",
 				},
 			},
+			
+			php: {
+				colors: {
+					phpTag: "maroon",
+					keyword: "#aa33aa",
+					id: "#202020",
+					comment: "#7f7f7f",
+					symbol: "#bb22bb",
+					bracket: "#202020",
+					number: "#cc2222",
+					string: "#2233bb",
+				},
+			},
 		},
 		
 		fileAssociations: {

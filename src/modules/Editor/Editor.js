@@ -411,6 +411,7 @@ class Editor extends Evented {
 		}
 		
 		console.log(this.document.lines[selection.start.lineIndex]);
+		console.log(this.document.getNodesOnLine(selection.start.lineIndex));
 	}
 	
 	setAstSelection(selection) {

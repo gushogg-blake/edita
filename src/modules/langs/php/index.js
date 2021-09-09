@@ -9,7 +9,7 @@ module.exports = {
 	
 	injections: [
 		{
-			pattern: "(text @injectionNode)",
+			pattern: "(text) @injectionNode",
 			combined: true,
 			lang: "html",
 		},
@@ -27,21 +27,16 @@ module.exports = {
 		
 		let canIncludeTabs = [
 			"comment",
-			"text",
-			"raw_text",
-			"quoted_attribute_value",
+			"string",
 		].includes(type);
 		
 		let colour = [
 			"comment",
-			"quoted_attribute_value",
-			"text",
-			"raw_text",
+			"string",
 		].includes(type);
 		
 		let renderAsText = [
-			"quoted_attribute_value",
-			"doctype",
+			
 		].includes(parent?.type);
 		
 		if (colour) {
@@ -67,9 +62,7 @@ module.exports = {
 	
 	getOpenerAndCloser(node) {
 		if ([
-			"element",
-			"style_element",
-			"script_element",
+			
 		].includes(node.type)) {
 			return {
 				opener: node.firstChild,
@@ -84,24 +77,29 @@ module.exports = {
 		let {type} = node;
 		
 		if ([
-			"<",
-			">",
-			"/>",
-			"</",
-			"tag_name",
+			"$",
+			"name",
 		].includes(type)) {
-			return "tag";
+			return "id";
 		}
 		
-		if (type === "attribute_name") {
-			return "attribute";
+		if (type === "comment") {
+			return "comment";
 		}
 		
-		if (type === "quoted_attribute_value") {
+		if (type === "string") {
 			return "string";
 		}
 		
-		return "text";
+		if (type === "integer" || type === "float") {
+			return "number";
+		}
+		
+		if (["php_tag", "?>"].includes(type)) {
+			return "phpTag";
+		}
+		
+		return "symbol";
 	},
 	
 	getSupportLevel(code, path) {

@@ -7,6 +7,7 @@ let checkNewlines = require("modules/utils/checkNewlines");
 let javascript = require("modules/langs/javascript");
 let html = require("modules/langs/html");
 let css = require("modules/langs/css");
+let php = require("modules/langs/php");
 //let svelte = require("modules/langs/svelte");
 let plainText = require("modules/langs/plainText");
 let langs = require("modules/langs");
@@ -42,7 +43,7 @@ class Base {
 		
 		this.treeSitterLanguages = {};
 		
-		await bluebird.map(["javascript", "html", "css"], async (code) => {
+		await bluebird.map(["javascript", "html", "css", "php"], async (code) => {
 			this.treeSitterLanguages[code] = await platform.loadTreeSitterLanguage(code);
 		});
 		
@@ -51,6 +52,7 @@ class Base {
 			//svelte,
 			html,
 			css,
+			php,
 			plainText,
 		];
 		
