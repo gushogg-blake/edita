@@ -64,7 +64,7 @@ module.exports = class {
 		this.createLines();
 		
 		if (this.lang.code !== "plainText") {
-			this.rootScope.edit(edit, index, [this.getContainingRange()], null, this.string);
+			this.rootScope.edit(edit, index, [this.getContainingRange()], this.string);
 		}
 		
 		console.timeEnd("edit");
