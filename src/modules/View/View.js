@@ -99,10 +99,11 @@ class View extends Evented {
 	switchToNormalMode() {
 		this.mode = "normal";
 		this.astSelectionHilite = null;
+		
 		this.startCursorBlink();
+		this.redraw();
 		
 		this.fire("modeSwitch");
-		this.fire("redraw");
 	}
 	
 	setMode(mode) {
@@ -441,6 +442,10 @@ class View extends Evented {
 	}
 	
 	startCursorBlink() {
+		if (!this.visible) {
+			return;
+		}
+		
 		if (this.cursorInterval) {
 			clearInterval(this.cursorInterval);
 		}
@@ -478,11 +483,15 @@ class View extends Evented {
 	show() {
 		this.visible = true;
 		
+		this.startCursorBlink();
+		
 		this.fire("show");
 	}
 	
 	hide() {
 		this.visible = false;
+		
+		this.clearCursorBlink();
 		
 		this.fire("hide");
 	}

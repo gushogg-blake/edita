@@ -5,7 +5,6 @@ class RenderLine {
 		this.decoratedLine = decoratedLine;
 		this.wrappedLine = wrappedLine;
 		
-		
 		this.rowIndex = 0;
 		this.offsetInRow = 0;
 		this.overflow = null;

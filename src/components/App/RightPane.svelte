@@ -44,6 +44,9 @@ onMount(function() {
 	height: 100%;
 }
 
+.list {
+}
+
 .header {
 	padding: .2em;
 }
