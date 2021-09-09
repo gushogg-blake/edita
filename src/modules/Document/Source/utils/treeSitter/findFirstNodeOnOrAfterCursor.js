@@ -1,8 +1,12 @@
 let middle = require("utils/middle");
-let prev = require("./prev");
 
 function isOnOrAfter(node, cursor) {
+	let {row, column} = node.startPosition;
 	
+	return (
+		row > cursor.lineIndex
+		|| row === cursor.lineIndex && column >= cursor.offset
+	);
 }
 
 function findFirstNodeOnOrAfterCursor(node, cursor) {
@@ -10,44 +14,38 @@ function findFirstNodeOnOrAfterCursor(node, cursor) {
 	let children = node.children;
 	let startIndex = 0;
 	let endIndex = children.length;
+	let first = null;
 	
 	while (true) {
 		if (endIndex - startIndex === 0) {
-			return node;
+			break;
 		}
 		
 		let index = middle(startIndex, endIndex);
 		let child = children[index];
 		
-		if (child.startPosition.row === lineIndex) {
-			let prevChild;
+		if (isOnOrAfter(child, cursor)) {
+			first = child;
+			endIndex = index;
 			
-			while ((prevChild = prev(child))?.startPosition.row === lineIndex) {
-				child = prevChild;
+			if (endIndex === 0) {
+				return node;
 			}
-			
-			return child;
-		} else if (child.startPosition.row < lineIndex && child.endPosition.row >= lineIndex) {
+		} else if (contains(child, cursor)) {
 			node = child;
 			children = node.children;
 			startIndex = 0;
 			endIndex = children.length;
-		} else if (child.startPosition.row < lineIndex) {
+		} else {
 			startIndex = index + 1;
 			
 			if (startIndex === children.length) {
-				return node;
-			}
-		} else {
-			endIndex = index;
-			
-			if (endIndex === 0) {
 				return node;
 			}
 		}
 	}
 }
 
-module.exports = function(tree, lineIndex) {
-	return findSmallestSubtreeContainingFirstNodeOnLine(tree.rootNode, lineIndex);
+module.exports = function(tree, cursor) {
+	return findFirstNodeOnOrAfterCursor(tree.rootNode, cursor);
 }
