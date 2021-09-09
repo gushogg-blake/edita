@@ -4,10 +4,23 @@
 	
 	<script>
 		let a = 123;
+		
+		let s = `
+			asdpoajsd
+			asdpoajsd
+			asd
+			${
+				123
+			}
+			asda
+			sda
+			sd
+			asd
+		`;
 	</script>
 	
 	<?php
-		$a = 123; // asd
+		$a = ""; // asd
 	?>
 	
 	<div id="main">

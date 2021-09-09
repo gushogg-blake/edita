@@ -11,6 +11,10 @@ explicit width to be used instead of the string length for incrementing the
 x position when rendering)
 */
 
+function getOffset(hint) {
+	return ("offset" in hint) ? hint.offset : hint.node.startPosition.column;
+}
+
 module.exports = function*(line, renderHints) {
 	let stringStartOffset = 0;
 	let offset = 0;
@@ -27,7 +31,7 @@ module.exports = function*(line, renderHints) {
 				*/
 				
 				let nextHint = renderHints[hintIndex];
-				let nextHintOffset = nextHint?.node.startPosition.column;
+				let nextHintOffset = nextHint && getOffset(nextHint);
 				
 				if (nextHint && nextHintOffset >= stringStartOffset + string.length) {
 					// next hint is not within the current string part, so ignore
@@ -59,7 +63,7 @@ module.exports = function*(line, renderHints) {
 				2. render the next hint
 				*/
 				
-				while (nextHint && nextHintOffset === offset) {
+				while (nextHint && getOffset(nextHint) === offset) {
 					yield nextHint;
 					
 					if (nextHint.string) {
@@ -68,7 +72,6 @@ module.exports = function*(line, renderHints) {
 					
 					hintIndex++;
 					nextHint = renderHints[hintIndex];
-					nextHintOffset = nextHint?.node.startPosition.column;
 				}
 				
 				if (offset === stringStartOffset + string.length) {

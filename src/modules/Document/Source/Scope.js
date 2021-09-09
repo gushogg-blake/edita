@@ -246,16 +246,62 @@ module.exports = class Scope {
 		return this.lang;
 	}
 	
-	*generateNodesOnLine(lineIndex) {
-		for (let node of generateNodesOnLine(this.tree, lineIndex)) {
+	/*
+	generate nodes on line
+	
+	child scopes that are encountered within our nodes are called immediately
+	so that the nodes are in order, then all child scopes are called in case
+	there are child scopes with nodes on the line and their parents are not
+	on the line (so they wouldn't be processed in the first step)
+	
+	e.g.
+	
+	<script>let a = 123;</script>
+	
+	the outermost (html) scope would yield the script tag, the start tag
+	& children, then the raw_text.  this would have a javascript child scope
+	associated with it, so we call down to it immediately and yield its nodes
+	starting at offset 8.  Then we come back out to the main scope and carry
+	on with the end tag & children.  Then we iterate over the child scopes
+	again, so call the javascript scope again but this time with startOffset
+	= 29, so it doesn't yield anything.
+	
+	An example where the child scopes are not found by our nodes:
+	
+	<script>
+		let a = `
+			${123}
+		`;
+	</script>
+	
+	generating for the ${123} line: the outer scope has no nodes on that line
+	(the raw_text for the script starts above).  startOffset is left at 0,
+	and we iterate over all scopes, calling the javascript scope with
+	startOffset = 0.
+	*/
+	
+	*generateNodesOnLine(lineIndex, startOffset=0) {
+		for (let node of generateNodesOnLine(this.tree, lineIndex, startOffset)) {
 			yield node;
+			
+			startOffset = node.endPosition.column;
 			
 			let scope = this.scopesByNode[node.id];
 			
 			if (scope) {
-				for (let childNode of scope.generateNodesOnLine(lineIndex)) {
+				for (let childNode of scope.generateNodesOnLine(lineIndex, startOffset)) {
 					yield childNode;
+					
+					startOffset = childNode.endPosition.column;
 				}
+			}
+		}
+		
+		for (let scope of this.scopes) {
+			for (let childNode of scope.generateNodesOnLine(lineIndex, startOffset)) {
+				yield childNode;
+				
+				startOffset = childNode.endPosition.column;
 			}
 		}
 	}

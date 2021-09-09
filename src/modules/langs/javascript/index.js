@@ -36,13 +36,6 @@ module.exports = {
 		we set the colour when we see that.  then there's a syntax node for
 		the opening /, then a regex_pattern for the actual pattern -- this
 		is the bit that can contain tabs.
-		
-		renderAsText is for the children of regexes and strings (e.g. opening
-		and closing delims).  not having nodes for these allows the render
-		logic to break as soon as it encounters a node when looking for the
-		previous colour hint (otherwise the closing quote would cause subsequent
-		text to be coloured as a string) (see renderCodeAndMargin); and also
-		means we don't need to specify colours for these chars.
 		*/
 		
 		let canIncludeTabs = [
@@ -88,10 +81,11 @@ module.exports = {
 			reset colour to string after template string interpolation
 			*/
 			
-			if (node.type === "}" && parent?.type === "template_substitution") {
+			if (type === "}" && parent?.type === "template_substitution") {
 				yield {
 					lang: this,
 					node: parent.parent, // the template_string node, which is just used for selecting the colour
+					offset: endPosition.column,
 				};
 			}
 		}

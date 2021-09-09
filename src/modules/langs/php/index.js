@@ -87,7 +87,7 @@ module.exports = {
 			return "comment";
 		}
 		
-		if (type === "string") {
+		if (["string", "\""].includes(type)) {
 			return "string";
 		}
 		
