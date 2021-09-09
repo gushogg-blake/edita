@@ -54,11 +54,13 @@ class RenderLine {
 				let overflowLength = this.offsetInRow + string.length - wrappedLine.rows[this.rowIndex].string.length;
 				
 				if (overflowLength > 0) {
-					this.renderCommands.push({
-						string: string.substr(0, string.length - overflowLength),
-						node,
-						lang,
-					});
+					if (overflowLength < string.length) {
+						this.renderCommands.push({
+							string: string.substr(0, string.length - overflowLength),
+							node,
+							lang,
+						});
+					}
 					
 					yield this.row();
 					
@@ -75,6 +77,10 @@ class RenderLine {
 			} else {
 				this.renderCommands.push(command);
 			}
+		}
+		
+		if (this.overflow) {
+			this.renderCommands.push(this.overflow);
 		}
 		
 		if (this.renderCommands.length > 0) {
