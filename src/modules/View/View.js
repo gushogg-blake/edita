@@ -295,9 +295,7 @@ class View extends Evented {
 		if (this.mode === "ast") {
 			this.ensureAstSelectionIsOnScreen();
 		} else {
-			if (!Selection.equals(this.normalSelection, this.Selection.all())) {
-				this.ensureNormalCursorIsOnScreen();
-			}
+			this.ensureNormalCursorIsOnScreen();
 		}
 	}
 	
