@@ -4,6 +4,15 @@ let Cursor = require("modules/utils/Cursor");
 let {s} = Selection;
 let {c} = Cursor;
 
+function selectionFromNode(node) {
+	let {
+		startPosition,
+		endPosition,
+	} = node;
+	
+	return s(c(startPosition.row, startPosition.column), c(endPosition.row, endPosition.column));
+}
+
 class Range {
 	constructor(node, startIndex, endIndex, selection) {
 		this.node = node;
@@ -11,6 +20,10 @@ class Range {
 		this.endIndex = endIndex;
 		this.selection = selection;
 		this.cursorKey = selection.start.lineIndex + "," + selection.start.offset;
+	}
+	
+	containsNode(node) {
+		return Selection.isWithin(selectionFromNode(node), this.selection);
 	}
 	
 	toTreeSitterRange() {
@@ -44,15 +57,13 @@ class Range {
 		let {
 			startIndex,
 			endIndex,
-			startPosition,
-			endPosition,
 		} = node;
 		
 		return new Range(
 			node,
 			startIndex,
 			endIndex,
-			s(c(startPosition.row, startPosition.column), c(endPosition.row, endPosition.column)),
+			selectionFromNode(node),
 		);
 	}
 }
