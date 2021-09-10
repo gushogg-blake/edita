@@ -12,12 +12,15 @@ let path = require("path");
 let yargs = require("yargs/yargs");
 let {hideBin} = require("yargs/helpers");
 let {removeInPlace} = require("../../../utils/arrayMethods");
+let Evented = require("../../../utils/Evented");
 let fs = require("./modules/fs");
 let ipc = require("./ipc");
 let config = require("./config");
 
-class App {
+class App extends Evented {
 	constructor() {
+		super();
+		
 		this.config = config;
 		this.appWindows = [];
 		this.dialogWindows = [];
@@ -166,6 +169,10 @@ class App {
 		
 		browserWindow.on("closed", () => {
 			removeInPlace(this.dialogWindows, browserWindow);
+			
+			this.fire("dialogWindowClosed", {
+				browserWindow,
+			});
 		});
 		
 		this.dialogWindows.push(browserWindow);
@@ -189,6 +196,13 @@ class App {
 			x,
 			y,
 			...options,
+		});
+		
+		this.fire("dialogWindowOpened", {
+			browserWindow,
+			url,
+			options,
+			opener,
 		});
 	}
 	
