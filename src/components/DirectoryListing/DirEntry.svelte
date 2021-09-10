@@ -30,6 +30,7 @@ $: filteredEntries = [...dirs, ...files].filter(function(entry) {
 async function update() {
 	entries = await bluebird.map(node.ls(), async function(node) {
 		return {
+			path: node.path,
 			node,
 			isDir: await node.isDir(),
 		};
@@ -39,11 +40,30 @@ async function update() {
 }
 
 function toggle() {
+	if (!isDir) {
+		return;
+	}
+	
 	expanded = !expanded;
 	
 	if (!loaded) {
 		update();
 	}
+}
+
+function dblclick() {
+	if (isDir) {
+		toggle();
+	} else {
+		fire("open", entry);
+	}
+}
+
+function contextmenu(e) {
+	fire("contextmenu", {
+		e,
+		entry,
+	})
 }
 
 function select() {
@@ -58,9 +78,13 @@ function onPrefsUpdated() {
 	showHiddenFiles = platform.getPref("showHiddenFiles");
 }
 
-let entryStyle = inlineStyle({
+let entryStyle = {
 	paddingLeft: "calc(1.2em * " + level + ")",
-});
+};
+
+let buttonStyle = {
+	visibility: isDir ? "visible" : "hidden",
+};
 
 onMount(function() {
 	let teardown = [
@@ -135,19 +159,19 @@ onMount(function() {
 			id="entry"
 			class:selected={entry === selectedEntry}
 			on:click={select}
-			on:dblclick={toggle}
-			style={entryStyle}
+			on:dblclick={dblclick}
+			on:contextmenu={contextmenu}
+			style={inlineStyle(entryStyle)}
 		>
-			{#if isDir}
-				<div id="actions">
-					<div
-						class="button"
-						on:click={toggle}
-					>
-						{expanded ? "-" : "+"}
-					</div>
+			<div id="actions">
+				<div
+					class="button"
+					style={inlineStyle(buttonStyle)}
+					on:click={toggle}
+				>
+					{expanded ? "-" : "+"}
 				</div>
-			{/if}
+			</div>
 			<div
 				id="icon"
 				class:dirIcon={isDir}
@@ -164,6 +188,8 @@ onMount(function() {
 				<svelte:self
 					{entry}
 					on:select
+					on:open
+					on:contextmenu
 					{selectedEntry}
 					level={level + 1}
 				/>
