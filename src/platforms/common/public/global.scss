@@ -1,6 +1,7 @@
 .editor {
 	--appBackgroundColor: #edecea;
 	--scrollbarWidth: 12px;
+	--scrollbarBorderColor: white;
 	
 	font-family: "Noto Sans";
 	font-size: 12.5px;
@@ -23,9 +24,13 @@
 			width: 8px;
 			height: 8px;
 			border-radius: 8px;
-			border: 2px solid white;
+			border: 2px solid var(--scrollbarBorderColor);
 			background-clip: content-box;
 			background: #B2B2B2;
+		}
+		
+		&::-webkit-scrollbar-corner {
+			background: transparent;
 		}
 	}
 	

@@ -24,6 +24,8 @@ $: mainStyle = {
 #scroll {
 	@include abs-sticky;
 	
+	--scrollbarBorderColor: var(--appBackgroundColor);
+	
 	overflow: auto;
 }
 </style>
