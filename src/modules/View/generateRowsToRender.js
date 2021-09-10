@@ -26,13 +26,41 @@ class RenderLine {
 		return row;
 	}
 	
+	*processStringCommand(command) {
+		let {wrappedLine} = this;
+		let {string, node, lang} = command;
+		
+		let overflowLength = this.offsetInRow + string.length - wrappedLine.rows[this.rowIndex].string.length;
+		
+		if (overflowLength > 0) {
+			if (overflowLength < string.length) {
+				this.renderCommands.push({
+					string: string.substr(0, string.length - overflowLength),
+					node,
+					lang,
+				});
+			}
+			
+			yield this.row();
+			
+			this.overflow = {
+				string: string.substr(string.length - overflowLength),
+				node,
+				lang,
+			};
+			
+			yield* this.processStringCommand(this.overflow);
+		} else {
+			this.renderCommands.push(command);
+			
+			this.offsetInRow += string.length;
+			
+			this.overflow = null;
+		}
+	}
+	
 	*generateRows() {
-		let {
-			lineIndex,
-			line,
-			decoratedLine,
-			wrappedLine,
-		} = this;
+		let {decoratedLine, wrappedLine} = this;
 		
 		if (decoratedLine.renderCommands.length === 0) {
 			yield this.row();
@@ -42,37 +70,13 @@ class RenderLine {
 		
 		for (let command of decoratedLine.renderCommands) {
 			if (this.overflow) {
-				this.renderCommands.push(this.overflow);
-				this.offsetInRow += this.overflow.string.length;
-				this.overflow = null;
+				yield* this.processStringCommand(this.overflow);
 			}
 			
 			let {string, node, lang} = command;
 			
 			if (string) {
-				let overflowLength = this.offsetInRow + string.length - wrappedLine.rows[this.rowIndex].string.length;
-				
-				if (overflowLength > 0) {
-					if (overflowLength < string.length) {
-						this.renderCommands.push({
-							string: string.substr(0, string.length - overflowLength),
-							node,
-							lang,
-						});
-					}
-					
-					yield this.row();
-					
-					this.overflow = {
-						string: string.substr(string.length - overflowLength),
-						node,
-						lang,
-					};
-				} else {
-					this.renderCommands.push(command);
-					
-					this.offsetInRow += string.length;
-				}
+				yield* this.processStringCommand(command);
 			} else {
 				this.renderCommands.push(command);
 			}

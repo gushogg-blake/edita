@@ -134,13 +134,13 @@ class LineWrapper {
 						let [endWord] = toEnd.match(endWordRe);
 						
 						toEnd = toEnd.substr(0, toEnd.length - endWord.length);
-						overflow = endWord + overflow;
-					}
-					
-					if (!toEnd) {
-						toEnd = overflow;
-						overflow = "";
-						string = "";
+						
+						if (toEnd) {
+							overflow = endWord + overflow;
+						} else {
+							toEnd = endWord;
+							overflow = string.substr(toEnd.length);
+						}
 					}
 					
 					if (toEnd) {
