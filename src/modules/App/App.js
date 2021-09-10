@@ -8,13 +8,14 @@ let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
+let FileTree = require("./FileTree");
 let functions = require("./functions");
 
 class App extends Evented {
 	constructor() {
 		super();
 		
-		this.dir = platform.systemInfo.homeDir; // TODO save
+		this.fileTree = new FileTree(this);
 		this.tabs = [];
 		this.selectedTab = null;
 		this.closedTabs = [];

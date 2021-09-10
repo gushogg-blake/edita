@@ -2,7 +2,7 @@ let {Menu} = require("electron");
 
 module.exports = function(app) {
 	return {
-		show(id, items) {
+		show(e, id, items) {
 			let menu = Menu.buildFromTemplate(items.map(function(item) {
 				if (!item.id) {
 					return item;
@@ -12,14 +12,14 @@ module.exports = function(app) {
 					...item,
 					
 					click() {
-						app.callFocusedRenderer("contextMenu/click", [id, item.id]);
+						app.callFocusedRenderer("contextMenu/click", id, item.id);
 					},
 				};
 			}));
 			
 			menu.popup({
 				callback() {
-					app.callFocusedRenderer("contextMenu/close", [id]);
+					app.callFocusedRenderer("contextMenu/close", id);
 				},
 			});
 		},

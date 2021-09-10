@@ -2,11 +2,9 @@
 import {onMount, getContext} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import FocusablePane from "./FocusablePane.svelte";
-import DirectoryListing from "../DirectoryListing/DirectoryListing.svelte";
+import FileTree from "../FileTree/FileTree.svelte";
 
 let app = getContext("app");
-
-let dir = app.dir;
 
 $: mainStyle = {
 	width: 150,
@@ -46,7 +44,7 @@ $: mainStyle = {
 		</div>
 		<div id="list">
 			<div id="scroll">
-				<DirectoryListing {dir}/>
+				<FileTree/>
 			</div>
 		</div>
 	</div>

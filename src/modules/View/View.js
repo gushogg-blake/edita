@@ -501,11 +501,15 @@ class View extends Evented {
 			this.focusManager.focus(this.blur);
 		}
 		
+		this.startCursorBlink();
+		
 		this.redraw();
 	}
 	
 	blur() {
 		this.focused = false;
+		
+		this.clearCursorBlink();
 	}
 	
 	requestFocus() {

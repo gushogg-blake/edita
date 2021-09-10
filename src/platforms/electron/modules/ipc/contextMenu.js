@@ -16,6 +16,13 @@ module.exports = function(items) {
 	
 	clickHandlers[id] = {};
 	
+	items = items.map(function(item) {
+		return {
+			id: lid(),
+			...item,
+		};
+	});
+	
 	for (let item of items.filter(item => item.onClick)) {
 		clickHandlers[id][item.id] = item.onClick;
 	}

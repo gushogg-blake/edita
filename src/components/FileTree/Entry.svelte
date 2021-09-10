@@ -1,7 +1,6 @@
 <script>
 import {getContext, onMount, createEventDispatcher} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
-import bluebird from "bluebird";
 
 export let entry;
 export let isRoot = false;
@@ -11,6 +10,8 @@ export let level = -1;
 let fire = createEventDispatcher();
 
 let app = getContext("app");
+
+let {fileTree} = app;
 
 let {node, isDir} = entry;
 let {name} = node;
@@ -28,13 +29,7 @@ $: filteredEntries = [...dirs, ...files].filter(function(entry) {
 });
 
 async function update() {
-	entries = await bluebird.map(node.ls(), async function(node) {
-		return {
-			path: node.path,
-			node,
-			isDir: await node.isDir(),
-		};
-	});
+	entries = await fileTree.ls(entry);
 	
 	loaded = true;
 }
@@ -76,6 +71,8 @@ if (expanded) {
 
 function onPrefsUpdated() {
 	showHiddenFiles = platform.getPref("showHiddenFiles");
+	
+	update();
 }
 
 let entryStyle = {
@@ -111,6 +108,7 @@ onMount(function() {
 	align-items: center;
 	gap: 2px;
 	padding: 2px 0;
+	padding-right: 5px;
 }
 
 .selected {
@@ -158,7 +156,7 @@ onMount(function() {
 		<div
 			id="entry"
 			class:selected={entry === selectedEntry}
-			on:click={select}
+			on:mousedown={select}
 			on:dblclick={dblclick}
 			on:contextmenu={contextmenu}
 			style={inlineStyle(entryStyle)}
@@ -184,7 +182,7 @@ onMount(function() {
 	{/if}
 	{#if expanded}
 		<div id="entries">
-			{#each filteredEntries as entry}
+			{#each filteredEntries as entry (entry.path)}
 				<svelte:self
 					{entry}
 					on:select

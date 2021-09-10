@@ -3,10 +3,11 @@ module.exports = function(layers, view, windowHasFocus) {
 		normalSelection,
 		insertCursor,
 		measurements,
+		focused,
 		cursorBlinkOn,
 	} = view;
 	
-	if (!cursorBlinkOn || !windowHasFocus || insertCursor) {
+	if (!cursorBlinkOn || !focused || !windowHasFocus || insertCursor) {
 		return;
 	}
 	
