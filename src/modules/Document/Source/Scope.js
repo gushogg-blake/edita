@@ -32,74 +32,78 @@ module.exports = class Scope {
 	parse() {
 		console.time("parse (" + this.lang.code + ")");
 		
-		let parser = new TreeSitter();
-		
-		parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
-		
-		this.tree = parser.parse(this.code, null, {
-			includedRanges: this.treeSitterRanges,
-		});
-		
-		for (let injection of this.lang.injections) {
-			let nodes = injection.query.matches(this.tree.rootNode).map(function(match) {
-				let [capture] = match.captures;
-				
-				for (let capture of match.captures) {
-					if (capture.name === "injectionNode" && capture.node.text.length > 0) {
-						return capture.node;
-					}
-				}
-				
-				return null;
-			}).filter(Boolean);
+		try {
+			let parser = new TreeSitter();
 			
-			if (injection.combined) {
-				let injectionLang = base.langs.get(injection.lang);
+			parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
+			
+			this.tree = parser.parse(this.code, null, {
+				includedRanges: this.treeSitterRanges,
+			});
+			
+			for (let injection of this.lang.injections) {
+				let nodes = injection.query.matches(this.tree.rootNode).map(function(match) {
+					let [capture] = match.captures;
+					
+					for (let capture of match.captures) {
+						if (capture.name === "injectionNode" && capture.node.text.length > 0) {
+							return capture.node;
+						}
+					}
+					
+					return null;
+				}).filter(Boolean);
 				
-				if (injectionLang) {
-					let ranges = nodes.map(Range.fromNode);
-					let scope = new Scope(this, injectionLang, this.code, ranges);
-					
-					this.scopes.push(scope);
-					
-					for (let range of ranges) {
-						this.scopesByCursor[range.cursorKey] = scope;
-					}
-					
-					for (let node of nodes) {
-						this.scopesByNode[node.id] = scope;
-					}
-					
-					for (let i = 0; i < nodes.length; i++) {
-						let node = nodes[i];
-						let range = ranges[i];
-						
-						this.scopeAndRangeByNode[node.id] = {
-							scope,
-							range,
-						};
-					}
-				}
-			} else {
-				for (let node of nodes) {
-					let injectionLang = base.langs.get(injection.lang(node));
+				if (injection.combined) {
+					let injectionLang = base.langs.get(injection.lang);
 					
 					if (injectionLang) {
-						let range = Range.fromNode(node);
-						let scope = new Scope(this, injectionLang, this.code, [range]);
+						let ranges = nodes.map(Range.fromNode);
+						let scope = new Scope(this, injectionLang, this.code, ranges);
 						
 						this.scopes.push(scope);
-						this.scopesByCursor[range.cursorKey] = scope;
-						this.scopesByNode[node.id] = scope;
 						
-						this.scopeAndRangeByNode[node.id] = {
-							scope,
-							range,
-						};
+						for (let range of ranges) {
+							this.scopesByCursor[range.cursorKey] = scope;
+						}
+						
+						for (let node of nodes) {
+							this.scopesByNode[node.id] = scope;
+						}
+						
+						for (let i = 0; i < nodes.length; i++) {
+							let node = nodes[i];
+							let range = ranges[i];
+							
+							this.scopeAndRangeByNode[node.id] = {
+								scope,
+								range,
+							};
+						}
+					}
+				} else {
+					for (let node of nodes) {
+						let injectionLang = base.langs.get(injection.lang(node));
+						
+						if (injectionLang) {
+							let range = Range.fromNode(node);
+							let scope = new Scope(this, injectionLang, this.code, [range]);
+							
+							this.scopes.push(scope);
+							this.scopesByCursor[range.cursorKey] = scope;
+							this.scopesByNode[node.id] = scope;
+							
+							this.scopeAndRangeByNode[node.id] = {
+								scope,
+								range,
+							};
+						}
 					}
 				}
 			}
-			
+		} catch (e) {
+			console.error("Parse error");
+			console.error(e);
 		}
 		
 		console.timeEnd("parse (" + this.lang.code + ")");
@@ -126,22 +130,27 @@ module.exports = class Scope {
 		this.parse();
 		//
 		
-		//let parser = new TreeSitter();
-		//
-		//parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
-		//
-		//this.tree.edit({
-		//	startPosition: cursorToTreeSitterPoint(selection.start),
-		//	startIndex: index,
-		//	oldEndPosition: cursorToTreeSitterPoint(selection.end),
-		//	oldEndIndex: index + string.length,
-		//	newEndPosition: cursorToTreeSitterPoint(newSelection.end),
-		//	newEndIndex: index + replaceWith.length,
-		//});
-		//
-		//this.tree = parser.parse(this.code, this.tree, {
-		//	includedRanges: this.treeSitterRanges,
-		//});
+		//try {
+		//	let parser = new TreeSitter();
+		//	
+		//	parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
+		//	
+		//	this.tree.edit({
+		//		startPosition: cursorToTreeSitterPoint(selection.start),
+		//		startIndex: index,
+		//		oldEndPosition: cursorToTreeSitterPoint(selection.end),
+		//		oldEndIndex: index + string.length,
+		//		newEndPosition: cursorToTreeSitterPoint(newSelection.end),
+		//		newEndIndex: index + replaceWith.length,
+		//	});
+		//	
+		//	this.tree = parser.parse(this.code, this.tree, {
+		//		includedRanges: this.treeSitterRanges,
+		//	});
+		//} catch (e) {
+		//	console.error("Parse error");
+		//	console.error(e);
+		//}
 	}
 	
 	getRenderHints(node) {

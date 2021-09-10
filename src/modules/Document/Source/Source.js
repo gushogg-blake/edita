@@ -39,12 +39,7 @@ module.exports = class {
 		this.createLines();
 		
 		if (this.lang.code !== "plainText") {
-			try {
-				this.rootScope = new Scope(null, this.lang, this.string, [this.getContainingRange()]);
-			} catch (e) {
-				console.error("Parse error");
-				console.error(e);
-			}
+			this.rootScope = new Scope(null, this.lang, this.string, [this.getContainingRange()]);
 		}
 	}
 	
