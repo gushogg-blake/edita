@@ -19,64 +19,67 @@ let production = !process.env.ROLLUP_WATCH;
 let root = __dirname;
 let platform = process.env.PLATFORM;
 
-let commonPlugins = [
-	alias({
-		entries: {
-			"components": path.resolve(root, "src/components"),
-			"modules": path.resolve(root, "src/modules"),
-			"utils": path.resolve(root, "src/utils"),
-			"platforms": path.resolve(root, "src/platforms"),
-		},
-	}),
-	
-	svelte({
-		preprocess: preprocess({
-			scss: {
-				includePaths: ["src/css"],
+let commonPlugins = function() {
+	return [
+		alias({
+			entries: {
+				"components": path.resolve(root, "src/components"),
+				"modules": path.resolve(root, "src/modules"),
+				"utils": path.resolve(root, "src/utils"),
+				"platforms": path.resolve(root, "src/platforms"),
 			},
 		}),
 		
-		compilerOptions: {
-			dev: !production,
-		},
-	}),
-	
-	cssOnly({
-		output: "main.css",
-	}),
-	
-	resolve({
-		browser: true,
-		dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
-	}),
-];
+		svelte({
+			preprocess: preprocess({
+				scss: {
+					includePaths: ["src/css"],
+				},
+			}),
+			
+			compilerOptions: {
+				dev: !production,
+			},
+		}),
+		
+		cssOnly({
+			output: "main.css",
+		}),
+		
+		resolve({
+			browser: true,
+			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
+		}),
+	];
+}
 
-let electronPlugins = [
-	...commonPlugins,
-	
-	commonjs({
-		ignore: [
-			"os",
-			"fs",
-			"fs-extra",
-			"glob",
-			"path",
-			"constants",
-			"util",
-			"stream",
-			"assert",
-			"string_decoder",
-			"buffer",
-			"events",
-			"electron",
-			"electron-better-ipc",
-		],
-	}),
-	
-	globals(),
-	builtins(),
-	production && terser(),
-];
+let electronPlugins = function() {
+	return [
+		...commonPlugins(),
+		
+		commonjs({
+			ignore: [
+				"os",
+				"fs",
+				"fs-extra",
+				"glob",
+				"path",
+				"constants",
+				"util",
+				"stream",
+				"assert",
+				"string_decoder",
+				"buffer",
+				"events",
+				"electron",
+				"electron-better-ipc",
+			],
+		}),
+		
+		globals(),
+		builtins(),
+	];
+}
 
 let platforms = [];
 
@@ -90,9 +93,8 @@ if (!platform || platform === "all" || platform === "test") {
 		},
 		
 		plugins: [
-			...commonPlugins,
+			...commonPlugins(),
 			commonjs(),
-			
 		],
 	}, {
 		input: "test/main.js",
@@ -104,7 +106,7 @@ if (!platform || platform === "all" || platform === "test") {
 		},
 		
 		plugins: [
-			...commonPlugins,
+			...commonPlugins(),
 			commonjs(),
 			
 			copy({
@@ -131,7 +133,7 @@ if (!platform || platform === "all" || platform === "test") {
 		
 		plugins: [
 			multi(),
-			...commonPlugins,
+			...commonPlugins(),
 			commonjs(),
 			livereload("test/public"),
 		],
@@ -159,7 +161,7 @@ if (!platform || platform === "all" || platform === "electron") {
 			file: "src/platforms/electron/public/build/main.js",
 		},
 		
-		plugins: electronPlugins,
+		plugins: electronPlugins(),
 	}, {
 		input: "src/platforms/electron/dialogs/snippetEditor/main.js",
 		
@@ -169,7 +171,7 @@ if (!platform || platform === "all" || platform === "electron") {
 			file: "src/platforms/electron/public/build/dialogs/snippetEditor/main.js",
 		},
 		
-		plugins: electronPlugins,
+		plugins: electronPlugins(),
 	});
 }
 
@@ -196,7 +198,7 @@ if (!platform || platform === "all" || platform === "web") {
 		},
 		
 		plugins: [
-			...commonPlugins,
+			...commonPlugins(),
 			commonjs(),
 			!production && livereload("src/platforms/web/public"),
 			production && terser(),
