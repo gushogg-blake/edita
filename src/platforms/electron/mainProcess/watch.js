@@ -2,6 +2,7 @@ let {app: electronApp} = require("electron");
 let {spawn} = require("child_process");
 let path = require("path");
 let chokidar = require("chokidar");
+let {removeInPlace} = require("../../../utils/arrayMethods");
 let fs = require("./modules/fs");
 
 function debounce(fn, delay) {
@@ -33,7 +34,7 @@ module.exports = function(app) {
 	});
 	
 	app.on("dialogWindowClosed", function({browserWindow}) {
-		for (let [name, list] of Object.values(dialogsByName)) {
+		for (let [name, list] of Object.entries(dialogsByName)) {
 			removeInPlace(list, browserWindow);
 			
 			if (list.length === 0) {
