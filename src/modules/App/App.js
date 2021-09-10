@@ -14,6 +14,7 @@ class App extends Evented {
 	constructor() {
 		super();
 		
+		this.dir = platform.systemInfo.homeDir; // TODO save
 		this.tabs = [];
 		this.selectedTab = null;
 		this.closedTabs = [];

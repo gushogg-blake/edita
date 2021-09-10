@@ -16,7 +16,7 @@ class Platform extends Evented {
 		
 		this.systemInfo = {
 			newline: "\n",
-			homeDir: null,
+			homeDir: "/",
 		};
 		
 		this.isMainWindow = true;

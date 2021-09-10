@@ -1,5 +1,6 @@
 .editor {
 	--appBackgroundColor: #edecea;
+	--scrollbarWidth: 12px;
 	
 	font-family: "Noto Sans";
 	font-size: 12.5px;
@@ -8,6 +9,24 @@
 	&, div {
 		box-sizing: border-box;
 		outline: none;
+		
+		&::-webkit-scrollbar {
+			width: var(--scrollbarWidth);
+			height: var(--scrollbarWidth);
+		}
+		
+		&::-webkit-scrollbar-track {
+			/*border-radius: 10px;*/
+		}
+		
+		&::-webkit-scrollbar-thumb {
+			width: 8px;
+			height: 8px;
+			border-radius: 8px;
+			border: 2px solid white;
+			background-clip: content-box;
+			background: #B2B2B2;
+		}
 	}
 	
 	button {

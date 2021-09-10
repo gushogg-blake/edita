@@ -113,24 +113,6 @@ function _update(_totalSize, _pageSize, position) {
 		overflow-x: scroll;
 		overflow-y: hidden;
 	}
-	
-	&::-webkit-scrollbar {
-		width: 12px;
-		height: 12px;
-	}
-	
-	&::-webkit-scrollbar-track {
-		/*border-radius: 10px;*/
-	}
-	
-	&::-webkit-scrollbar-thumb {
-		width: 8px;
-		height: 8px;
-		border-radius: 8px;
-		border: 2px solid white;
-		background-clip: content-box;
-		background: #B2B2B2;
-	}
 }
 
 #expander {

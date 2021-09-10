@@ -106,6 +106,7 @@ $border: 1px solid #AFACAA;
 		"bottom bottom bottom";
 	width: 100%;
 	height: 100%;
+	background: var(--appBackgroundColor);
 }
 
 #toolbar {
