@@ -69,10 +69,6 @@ class RenderLine {
 		}
 		
 		for (let command of decoratedLine.renderCommands) {
-			if (this.overflow) {
-				yield* this.processStringCommand(this.overflow);
-			}
-			
 			let {string, node, lang} = command;
 			
 			if (string) {
@@ -80,10 +76,6 @@ class RenderLine {
 			} else {
 				this.renderCommands.push(command);
 			}
-		}
-		
-		if (this.overflow) {
-			this.renderCommands.push(this.overflow);
 		}
 		
 		if (this.renderCommands.length > 0) {
