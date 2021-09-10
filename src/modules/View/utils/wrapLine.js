@@ -137,6 +137,12 @@ class LineWrapper {
 						overflow = endWord + overflow;
 					}
 					
+					if (!toEnd) {
+						toEnd = overflow;
+						overflow = "";
+						string = "";
+					}
+					
 					if (toEnd) {
 						this.addStringToCurrentRow(toEnd);
 					}
