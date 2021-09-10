@@ -3,10 +3,16 @@ import DirEntry from "./DirEntry.svelte";
 
 export let dir;
 
-let entry = {
-	path: dir,
+let selectedEntry = null;
+
+let rootEntry = {
+	node: platform.fs(dir),
 	isDir: true,
 };
+
+function select({detail: entry}) {
+	selectedEntry = entry;
+}
 </script>
 
 <style type="text/scss">
@@ -14,5 +20,10 @@ let entry = {
 </style>
 
 <div id="main">
-	<DirEntry {entry} isRoot/>
+	<DirEntry
+		entry={rootEntry}
+		isRoot
+		on:select={select}
+		{selectedEntry}
+	/>
 </div>

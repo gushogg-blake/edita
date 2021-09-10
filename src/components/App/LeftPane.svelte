@@ -17,8 +17,17 @@ $: mainStyle = {
 @import "mixins/abs-sticky";
 
 #main {
-	position: relative;
+	display: grid;
+	grid-template-rows: auto 1fr;
 	height: 100%;
+}
+
+#top {
+	padding: 3px;
+}
+
+#list {
+	position: relative;
 }
 
 #scroll {
@@ -32,8 +41,13 @@ $: mainStyle = {
 
 <FocusablePane>
 	<div id="main" style={inlineStyle(mainStyle)}>
-		<div id="scroll">
-			<DirectoryListing {dir}/>
+		<div id="top">
+			top
+		</div>
+		<div id="list">
+			<div id="scroll">
+				<DirectoryListing {dir}/>
+			</div>
 		</div>
 	</div>
 </FocusablePane>
