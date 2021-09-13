@@ -54,7 +54,7 @@ class App extends Evented {
 			defaultPath: oldPath,
 		});
 		
-		if (path) {
+		if (path && path !== oldPath) {
 			await tab.editor.document.saveAs(path);
 			await platform.fs(oldPath).delete();
 		}
