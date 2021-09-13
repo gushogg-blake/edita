@@ -6,9 +6,14 @@ let Editor = require("modules/Editor");
 let View = require("modules/View");
 
 class App extends Evented {
-	constructor() {
+	constructor(options) {
 		super();
 		
+		let {
+			snippetId,
+		} = options;
+
+		this.snippetId = snippetId;
 		this.focusManager = focusManager();
 	}
 	

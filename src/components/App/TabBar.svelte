@@ -33,7 +33,27 @@ function auxclickTab(e, tab) {
 }
 
 function showContextMenu(e, tab) {
-	tab.showContextMenuForTabButton(e);
+	let {path} = tab.editor.document;
+	
+	let items = [
+		path && {
+			label: "&Rename...",
+			
+			onClick() {
+				app.renameTab(tab);
+			},
+		},
+		
+		path && {
+			label: "&Delete...",
+			
+			onClick() {
+				app.deleteTab(tab);
+			},
+		},
+	];
+	
+	platform.showContextMenu(e, items);
 }
 
 function tabIsSelected(tab, selectedTab) {

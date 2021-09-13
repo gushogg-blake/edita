@@ -37,44 +37,10 @@ class App extends Evented {
 	}
 	
 	async init() {
-		let tabsToOpen = [];
-		let fileToSelect;
-		
-		if (platform.isMainWindow) {
-			let session = await platform.loadJson("session");
-			
-			if (session) {
-				tabsToOpen = session.tabs;
-				fileToSelect = session.selectedTabPath;
-			}
-			
-			window.addEventListener("beforeunload", () => {
-				this.saveSession();
-			});
-		}
-		
-		tabsToOpen.push(...platform.getFilesToOpenOnStartup().map(function(path) {
-			return {
-				isNew: true,
-				path,
-			};
-		}));
-		
-		this.tabs = await bluebird.map(tabsToOpen, async ({path}) => {
-			return this.createTab(await platform.fs(path).read(), path);
-		});
-		
-		for (let details of tabsToOpen) {
-			if (!details.isNew) {
-				this.findTabByPath(details.path).restoreState(details);
-			}
-		}
-		
-		if (this.tabs.length > 0) {
-			this.selectTab(this.findTabByPath(fileToSelect) || this.tabs[this.tabs.length - 1]);
-		} else {
-			this.initialNewFileTab = this.newFile();
-		}
+		await Promise.all([
+			this.loadSession(),
+			this.fileTree.init(),
+		]);
 	}
 	
 	save(tab) {
@@ -332,6 +298,47 @@ class App extends Evented {
 		}
 		
 		platform.setTitle(title);
+	}
+	
+	async loadSession() {
+		let tabsToOpen = [];
+		let fileToSelect;
+		
+		if (platform.isMainWindow) {
+			let session = await platform.loadJson("session");
+			
+			if (session) {
+				tabsToOpen = session.tabs;
+				fileToSelect = session.selectedTabPath;
+			}
+			
+			window.addEventListener("beforeunload", () => {
+				this.saveSession();
+			});
+		}
+		
+		tabsToOpen.push(...platform.getFilesToOpenOnStartup().map(function(path) {
+			return {
+				isNew: true,
+				path,
+			};
+		}));
+		
+		this.tabs = await bluebird.map(tabsToOpen, async ({path}) => {
+			return this.createTab(await platform.fs(path).read(), path);
+		});
+		
+		for (let details of tabsToOpen) {
+			if (!details.isNew) {
+				this.findTabByPath(details.path).restoreState(details);
+			}
+		}
+		
+		if (this.tabs.length > 0) {
+			this.selectTab(this.findTabByPath(fileToSelect) || this.tabs[this.tabs.length - 1]);
+		} else {
+			this.initialNewFileTab = this.newFile();
+		}
 	}
 	
 	async saveSession() {

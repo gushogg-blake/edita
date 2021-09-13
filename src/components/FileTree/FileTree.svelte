@@ -35,7 +35,7 @@ function contextmenu({detail: {e, entry}}) {
 			label: "Find...",
 			
 			onClick() {
-				app.findInFiles(path);
+				app.findInFiles([path]);
 			},
 		},
 		
@@ -43,7 +43,7 @@ function contextmenu({detail: {e, entry}}) {
 			label: "Replace...",
 			
 			onClick() {
-				app.findAndReplaceInFiles(path);
+				app.findAndReplaceInFiles([path]);
 			},
 		},
 	].filter(Boolean));

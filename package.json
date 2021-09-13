@@ -20,6 +20,7 @@
 		"minimatch": "^3.0.4",
 		"minimatch-browser": "^1.0.0",
 		"path-browserify": "^1.0.1",
+		"query-string": "^7.0.1",
 		"yargs": "^17.0.1"
 	},
 	"devDependencies": {

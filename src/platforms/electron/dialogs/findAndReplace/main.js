@@ -1,10 +1,10 @@
+//import query from "../../modules/query";
 import init from "../../init";
-import query from "../../modules/query";
 import App from "./modules/App";
 import AppComponent from "./components/App.svelte";
 
 init(async function() {
-	let app = new App(query());
+	let app = new App({});
 	
 	await app.init();
 	

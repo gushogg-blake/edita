@@ -7,20 +7,21 @@ module.exports = class extends Evented {
 		
 		this.app = app;
 		this.dir = platform.systemInfo.homeDir;
-		
-		this.init();
 	}
 	
 	async init() {
 		let dir = await platform.loadJson("fileTree.rootDir");
 		
 		if (dir) {
-			this.setRootDir(dir);
+			this.dir = dir;
 		}
+		
+		this.rootEntry = await this.getRootEntry();
 	}
 	
-	setRootDir(dir) {
+	async setRootDir(dir) {
 		this.dir = dir;
+		this.rootEntry = await this.getRootEntry();
 		
 		platform.saveJson("fileTree.rootDir", dir);
 		

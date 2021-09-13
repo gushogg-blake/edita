@@ -15,10 +15,14 @@ function debounce(fn, delay) {
 	}
 }
 
-module.exports = function(app) {
+module.exports = async function(app) {
 	let watchRenderer = chokidar.watch(path.resolve(__dirname, "../public"), {
 		ignoreInitial: true,
-		ignored: path.resolve(__dirname, "../public/build/dialogs"),
+		
+		ignored: [
+			path.resolve(__dirname, "../public/dialogs"),
+			path.resolve(__dirname, "../public/build/dialogs"),
+		],
 	});
 	
 	let dialogsByName = {};
@@ -43,9 +47,7 @@ module.exports = function(app) {
 		}
 	});
 	
-	let watchDialogs = [
-		"snippetEditor",
-	].map(function(name) {
+	let watchDialogs = (await fs(__dirname, "../dialogs").ls()).map(function({name}) {
 		let watcher = chokidar.watch([
 			path.resolve(__dirname, "../public/dialogs/" + name + ".html"),
 			path.resolve(__dirname, "../public/build/dialogs/" + name),

@@ -96,16 +96,30 @@ class Platform extends Evented {
 		return filePath || null;
 	}
 	
-	findInFiles(path) {
-		
+	findInFiles(paths) {
+		this.openWindow("/dialogs/findAndReplace.html", {
+			replace: false,
+			scope: "files",
+			paths,
+		}, {
+			width: 680,
+			height: 480,
+		});
 	}
 	
-	findAndReplaceInFiles(path) {
-		
+	findAndReplaceInFiles(paths) {
+		this.openWindow("/dialogs/findAndReplace.html", {
+			replace: true,
+			scope: "files",
+			paths,
+		}, {
+			width: 680,
+			height: 480,
+		});
 	}
 	
 	editSnippet(snippet) {
-		this.openWindow("/dialogs/snippetEditor.html", {
+		this.openWindow("/dialogs/snippetEditor.html", null, {
 			width: 680,
 			height: 480,
 		});
@@ -141,8 +155,8 @@ class Platform extends Evented {
 		ipc.contextMenu(items, {x, y: y + height});
 	}
 	
-	openWindow(url, options) {
-		ipc.openDialogWindow(url, options);
+	openWindow(url, query, options) {
+		ipc.openDialogWindow(url + "?q=" + encodeURIComponent(JSON.stringify(query)), options);
 	}
 	
 	setTitle(title) {

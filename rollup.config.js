@@ -72,7 +72,7 @@ let electronPlugins = function() {
 				"buffer",
 				"events",
 				"electron",
-				"electron-better-ipc",
+				"query-string",
 			],
 		}),
 		
@@ -169,6 +169,16 @@ if (!platform || platform === "all" || platform === "electron") {
 			sourcemap: true,
 			format: "iife",
 			file: "src/platforms/electron/public/build/dialogs/snippetEditor/main.js",
+		},
+		
+		plugins: electronPlugins(),
+	}, {
+		input: "src/platforms/electron/dialogs/findAndReplace/main.js",
+		
+		output: {
+			sourcemap: true,
+			format: "iife",
+			file: "src/platforms/electron/public/build/dialogs/findAndReplace/main.js",
 		},
 		
 		plugins: electronPlugins(),

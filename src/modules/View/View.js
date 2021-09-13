@@ -510,6 +510,8 @@ class View extends Evented {
 		this.focused = false;
 		
 		this.clearCursorBlink();
+		
+		this.redraw();
 	}
 	
 	requestFocus() {

@@ -9,12 +9,10 @@ let app = getContext("app");
 let {fileTree} = app;
 
 let dirSelector;
-let rootEntry;
+let {rootEntry} = fileTree;
 
-setRootDir();
-
-async function setRootDir() {
-	rootEntry = await fileTree.getRootEntry();
+function onUpdateRootDir() {
+	({rootEntry} = fileTree);
 }
 
 function openDirMenu() {
@@ -39,7 +37,7 @@ $: mainStyle = {
 
 onMount(async function() {
 	let teardown = [
-		fileTree.on("updateRootDir", setRootDir),
+		fileTree.on("updateRootDir", onUpdateRootDir),
 	];
 	
 	return function() {
