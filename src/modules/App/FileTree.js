@@ -29,21 +29,7 @@ module.exports = class extends Evented {
 		].filter(Boolean));
 	}
 	
-	async createEntry(path) {
-		let node = platform.fs(path);
-		
-		return {
-			path,
-			node,
-			isDir: await node.isDir(),
-		};
-	}
-	
-	ls(entry) {
-		return bluebird.map(entry.node.ls(), node => this.createEntry(node.path))
-	}
-	
 	getRootEntry() {
-		return this.createEntry(this.dir);
+		return base.DirEntries.createEntry(this.dir);
 	}
 }

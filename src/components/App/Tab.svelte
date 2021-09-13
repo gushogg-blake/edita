@@ -9,11 +9,8 @@ let {platform} = window;
 let {
 	path,
 	currentPath,
-	files: nodes,
+	entries,
 } = tab;
-
-$: dirs = nodes.filter(n => n.isDir);
-$: files = nodes.filter(n => n.isFile);
 
 function wheel(e) {
 	if (!e.ctrlKey) {
@@ -31,26 +28,26 @@ function wheel(e) {
 	}
 }
 
-function switchToFile(file) {
-	tab.switchToFile(file);
+function switchToFile(entry) {
+	tab.switchToFile(entry);
 }
 
-function openFile(file) {
-	tab.openFile(file);
+function openFile(entry) {
+	tab.openFile(entry);
 }
 
-function openContextMenuForFile(file) {
+function openContextMenuForFile(entry) {
 	
 }
 
 function onZoomChange() {
 	({currentPath} = tab);
 	
-	nodes = [];
+	entries = [];
 }
 
 function onUpdateDirListing() {
-	({files: nodes} = tab);
+	({entries} = tab);
 }
 
 onMount(function() {
@@ -110,7 +107,7 @@ onMount(function() {
 	padding: 1em;
 }
 
-.file {
+.entry {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -120,6 +117,12 @@ onMount(function() {
 	
 	&:hover {
 		text-decoration: underline;
+	}
+	
+	.name {
+		text-align: center;
+		word-break: break-all;
+		max-width: 120px;
 	}
 }
 
@@ -153,18 +156,16 @@ onMount(function() {
 			</div>
 		{/if}
 		<div id="list">
-			{#each [...dirs, ...files] as file}
+			{#each entries as entry}
 				<div
-					class="file"
-					on:click={(e) => switchToFile(file)}
-					on:auxclick={(e) => openFile(file)}
-					on:contextmenu={(e) => openContextMenuForFile(file)}
+					class="entry"
+					on:click={(e) => switchToFile(entry)}
+					on:auxclick={(e) => openFile(entry)}
+					on:contextmenu={(e) => openContextMenuForFile(entry)}
 				>
-					<div class="icon {file.isDir ? "dirIcon" : "fileIcon"}">
-						
-					</div>
+					<div class="icon {entry.isDir ? "dirIcon" : "fileIcon"}"></div>
 					<div class="name">
-						{file.name}
+						{entry.node.name}
 					</div>
 				</div>
 			{/each}

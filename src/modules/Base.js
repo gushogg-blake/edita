@@ -4,6 +4,8 @@ let getIndentationDetails = require("modules/utils/getIndentationDetails");
 let guessIndent = require("modules/utils/guessIndent");
 let checkNewlines = require("modules/utils/checkNewlines");
 
+let DirEntries = require("modules/DirEntries");
+
 let javascript = require("modules/langs/javascript");
 let html = require("modules/langs/html");
 let css = require("modules/langs/css");
@@ -26,6 +28,8 @@ the UI.
 class Base {
 	constructor() {
 		this.langs = langs;
+		
+		this.DirEntries = DirEntries;
 	}
 	
 	async init(components) {

@@ -29,7 +29,7 @@ $: filteredEntries = [...dirs, ...files].filter(function(entry) {
 });
 
 async function update() {
-	entries = await fileTree.ls(entry);
+	entries = await base.DirEntries.ls(entry.path);
 	
 	loaded = true;
 }

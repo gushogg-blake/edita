@@ -1,4 +1,3 @@
-let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 
 function fs(...args) {
@@ -13,7 +12,7 @@ class Tab extends Evented {
 		this.editor = editor;
 		this.path = this.editor.document.path;
 		this.currentPath = this.path;
-		this.files = [];
+		this.entries = [];
 		this.loading = false;
 		
 		this.pendingActions = [];
@@ -108,13 +107,13 @@ class Tab extends Evented {
 		}
 	}
 	
-	switchToFile(file) {
-		if (file.isDir) {
-			this.currentPath = file.path;
+	switchToFile(entry) {
+		if (fientryle.isDir) {
+			this.currentPath = entry.path;
 			
 			this.updateDirListing();
 		} else {
-			this.app.openFile(file.path);
+			this.app.openFile(entry.path);
 		
 			this.currentPath = this.path;
 		}
@@ -122,7 +121,7 @@ class Tab extends Evented {
 		this.fire("zoomChange");
 	}
 	
-	openFile(file) {
+	openFile(entry) {
 	}
 	
 	onDocumentSave() {
@@ -136,23 +135,9 @@ class Tab extends Evented {
 	
 	async updateDirListing() {
 		if (this.currentPath === this.path) {
-			this.files = [];
+			this.entries = [];
 		} else {
-			this.files = await bluebird.map(platform.fs(this.currentPath).ls(), async function(node) {
-				let isDir = await node.isDir();
-				
-				let {
-					path,
-					name,
-				} = node;
-				
-				return {
-					isDir,
-					isFile: !isDir,
-					path,
-					name,
-				};
-			});
+			this.entries = await base.DirEntries.ls(this.currentPath);
 		}
 		
 		this.fire("updateDirListing");
