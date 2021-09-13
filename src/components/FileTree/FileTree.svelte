@@ -6,10 +6,8 @@ let app = getContext("app");
 
 let {fileTree} = app;
 
-let rootEntry;
+let {rootEntry} = fileTree;
 let selectedEntry = null;
-
-setRootDir();
 
 function select({detail: entry}) {
 	selectedEntry = entry;
@@ -49,17 +47,17 @@ function contextmenu({detail: {e, entry}}) {
 	].filter(Boolean));
 }
 
-async function setRootDir() {
+async function onUpdateRootDir() {
 	rootEntry = null;
 	
 	await tick();
 	
-	rootEntry = await fileTree.getRootEntry();
+	({rootEntry} = fileTree);
 }
 
 onMount(async function() {
 	let teardown = [
-		fileTree.on("updateRootDir", setRootDir),
+		fileTree.on("updateRootDir", onUpdateRootDir),
 	];
 	
 	return function() {
