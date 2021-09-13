@@ -49,7 +49,10 @@ class App extends Evented {
 	
 	async renameTab(tab) {
 		let oldPath = tab.editor.document.path;
-		let path = await platform.saveAs();
+		
+		let path = await platform.saveAs({
+			defaultPath: oldPath,
+		});
 		
 		if (path) {
 			await tab.editor.document.saveAs(path);

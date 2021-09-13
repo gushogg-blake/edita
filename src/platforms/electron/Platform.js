@@ -88,10 +88,8 @@ class Platform extends Evented {
 		await fs(path).write(code);
 	}
 	
-	async saveAs() {
-		let {filePath} = await ipc.dialog.showSave({
-			
-		});
+	async saveAs(options) {
+		let {filePath} = await ipc.dialog.showSave(options);
 		
 		return filePath || null;
 	}
