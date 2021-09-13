@@ -20,7 +20,33 @@ function open({detail: entry}) {
 }
 
 function contextmenu({detail: {e, entry}}) {
-	fileTree.showContextMenuForEntry(e, entry);
+	let {path, isDir} = entry;
+	
+	platform.showContextMenu(e, [
+		isDir && {
+			label: "Make this folder root",
+			
+			onClick() {
+				fileTree.setRootDir(path);
+			},
+		},
+		
+		{
+			label: "Find...",
+			
+			onClick() {
+				app.findInFiles(path);
+			},
+		},
+		
+		{
+			label: "Replace...",
+			
+			onClick() {
+				app.findAndReplaceInFiles(path);
+			},
+		},
+	].filter(Boolean));
 }
 
 async function setRootDir() {

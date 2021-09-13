@@ -6,27 +6,25 @@ module.exports = class extends Evented {
 		super();
 		
 		this.app = app;
-		this.dir = platform.systemInfo.homeDir; // TODO save
+		this.dir = platform.systemInfo.homeDir;
+		
+		this.init();
+	}
+	
+	async init() {
+		let dir = await platform.loadJson("fileTree.rootDir");
+		
+		if (dir) {
+			this.setRootDir(dir);
+		}
 	}
 	
 	setRootDir(dir) {
 		this.dir = dir;
 		
-		this.fire("updateRootDir");
-	}
-	
-	showContextMenuForEntry(e, entry) {
-		let {path, isDir} = entry;
+		platform.saveJson("fileTree.rootDir", dir);
 		
-		platform.showContextMenu(e, [
-			isDir && {
-				label: "Make this folder root",
-				
-				onClick: () => {
-					this.setRootDir(path);
-				},
-			},
-		].filter(Boolean));
+		this.fire("updateRootDir");
 	}
 	
 	getRootEntry() {

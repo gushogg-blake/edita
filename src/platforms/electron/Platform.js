@@ -96,6 +96,21 @@ class Platform extends Evented {
 		return filePath || null;
 	}
 	
+	findInFiles(path) {
+		
+	}
+	
+	findAndReplaceInFiles(path) {
+		
+	}
+	
+	editSnippet(snippet) {
+		this.openWindow("/dialogs/snippetEditor.html", {
+			width: 680,
+			height: 480,
+		});
+	}
+	
 	filesFromDropEvent(e) {
 		return [...e.dataTransfer.files].map(function(file) {
 			return {
@@ -160,23 +175,16 @@ class Platform extends Evented {
 		
 	}
 	
-	editSnippet(snippet) {
-		this.openWindow("/dialogs/snippetEditor.html", {
-			width: 680,
-			height: 480,
-		});
-	}
-	
 	getSnippet(name) {
 		return this.snippets.find(s => s.name === name);
 	}
 	
-	loadSession() {
-		return ipc.session.load();
+	loadJson(key) {
+		return ipc.jsonStore.load(key);
 	}
 	
-	saveSession(session) {
-		return ipc.session.save(session);
+	saveJson(key, data) {
+		return ipc.jsonStore.save(key, data);
 	}
 	
 	closeWindow() {

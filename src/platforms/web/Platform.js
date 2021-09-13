@@ -9,6 +9,7 @@ let defaultPrefs = require("modules/defaultPrefs");
 let fs = require("../common/modules/fs");
 let path = require("../common/modules/path-browser");
 let clipboard = require("./modules/clipboard");
+let localStorage = require("./modules/localStorage");
 
 class Platform extends Evented {
 	constructor() {
@@ -26,6 +27,11 @@ class Platform extends Evented {
 	}
 	
 	async init(options) {
+		options = {
+			localStoragePrefix: "editor.",
+			...options,
+		};
+		
 		this.fs = fs({
 			fs: {
 				
@@ -39,7 +45,7 @@ class Platform extends Evented {
 			},
 		});
 		
-		this.prefs = await this.loadPrefs() || defaultPrefs(this.systemInfo);
+		this.prefs = this.loadJson("prefs") || defaultPrefs(this.systemInfo);
 		this.snippets = await this.loadSnippets();
 	}
 	
@@ -53,6 +59,18 @@ class Platform extends Evented {
 	
 	async saveAs() {
 		
+	}
+	
+	findInFiles(path, inAppFallback) {
+		inAppFallback(path);
+	}
+	
+	findAndReplaceInFiles(path, inAppFallback) {
+		inAppFallback(path);
+	}
+	
+	editSnippet(snippet, inAppFallback) {
+		inAppFallback(snippet);
 	}
 	
 	async filesFromDropEvent(e) {
@@ -91,31 +109,25 @@ class Platform extends Evented {
 	setPref(key, value) {
 		set(this.prefs, key, value);
 		
+		this.saveJson("prefs", this.prefs);
+		
 		this.fire("prefsUpdated");
-	}
-	
-	loadPrefs() {
-		return null; //
 	}
 	
 	loadSnippets() {
 		return []; //
 	}
 	
-	editSnippet(snippet) {
-		
-	}
-	
 	getSnippet(name) {
 		return this.snippets.find(s => s.name === name);
 	}
 	
-	loadSession() {
-		return null; //
+	loadJson(key) {
+		return localStorage.get(this.options.localStoragePrefix + key);
 	}
 	
-	saveSession(session) {
-		
+	saveJson(key, data) {
+		localStorage.set(this.options.localStoragePrefix + key, data);
 	}
 	
 	closeWindow() {

@@ -41,7 +41,7 @@ class App extends Evented {
 		let fileToSelect;
 		
 		if (platform.isMainWindow) {
-			let session = await platform.loadSession();
+			let session = await platform.loadJson("session");
 			
 			if (session) {
 				tabsToOpen = session.tabs;
@@ -339,9 +339,21 @@ class App extends Evented {
 			return tab.path ? tab.saveState() : null;
 		}).filter(Boolean);
 		
-		await platform.saveSession({
+		await platform.saveJson("session", {
 			tabs,
 			selectedTabPath: this.selectedTab?.path,
+		});
+	}
+	
+	findInFiles(path) {
+		platform.findInFiles(path, () => {
+			this.findInFilesInApp(path);
+		});
+	}
+	
+	findAndReplaceInFiles(path) {
+		platform.findAndReplaceInFiles(path, () => {
+			this.findAndReplaceInFiles(path);
 		});
 	}
 	
