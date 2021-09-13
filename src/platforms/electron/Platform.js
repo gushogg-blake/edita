@@ -7,6 +7,7 @@ let get = require("lodash.get");
 let set = require("lodash.set");
 
 let Evented = require("utils/Evented");
+let screenOffsets = require("utils/dom/screenOffsets");
 let defaultPrefs = require("modules/defaultPrefs");
 
 let fs = require("./modules/fs");
@@ -117,6 +118,12 @@ class Platform extends Evented {
 	
 	showContextMenu(e, items) {
 		ipc.contextMenu(items);
+	}
+	
+	showContextMenuForElement(element, items) {
+		let {x, y, height} = screenOffsets(element);
+		
+		ipc.contextMenu(items, {x, y: y + height});
 	}
 	
 	openWindow(url, options) {

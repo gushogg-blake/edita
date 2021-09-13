@@ -19,11 +19,24 @@ module.exports = function(backends) {
 		}
 		
 		get isRoot() {
-			return this.path === this.parent.path;
+			return this.path === osPath.resolve(this.path, "..");
 		}
 		
 		get parent() {
 			return new Node(osPath.resolve(this.path, ".."));
+		}
+		
+		get parents() {
+			let parents = [];
+			let node = this;
+			
+			while (!node.isRoot) {
+				parents.push(node.parent);
+				
+				node = node.parent;
+			}
+			
+			return parents;
 		}
 		
 		child(...paths) {
@@ -98,7 +111,7 @@ module.exports = function(backends) {
 		
 		setPath(path) {
 			this.path = osPath.resolve(path.toString());
-			this.name = osPath.basename(this.path);
+			this.name = this.isRoot ? this.path : osPath.basename(this.path);
 			
 			if (this.name[0] === ".") {
 				let name = this.name.substr(1);

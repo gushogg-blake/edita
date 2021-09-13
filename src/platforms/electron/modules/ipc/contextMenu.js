@@ -11,14 +11,14 @@ ipcRenderer.on("contextMenu/close", function(e, id) {
 	delete clickHandlers[id];
 });
 
-module.exports = function(items) {
+module.exports = function(items, coords=null) {
 	let id = lid();
 	
 	clickHandlers[id] = {};
 	
 	items = items.map(function(item) {
 		return {
-			id: lid(),
+			id: item.onClick ? lid() : null,
 			...item,
 		};
 	});
@@ -32,5 +32,5 @@ module.exports = function(items) {
 			...item,
 			onClick: undefined,
 		};
-	}));
+	}), coords);
 }

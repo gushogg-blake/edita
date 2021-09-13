@@ -6,9 +6,48 @@ import FileTree from "../FileTree/FileTree.svelte";
 
 let app = getContext("app");
 
+let {fileTree} = app;
+
+let dirSelector;
+let rootEntry;
+
+setRootDir();
+
+async function setRootDir() {
+	rootEntry = await fileTree.getRootEntry();
+}
+
+function openDirMenu() {
+	if (!rootEntry) {
+		return;
+	}
+	
+	platform.showContextMenuForElement(dirSelector, rootEntry.node.parents.map(function(node) {
+		return {
+			label: node.name,
+			
+			onClick() {
+				fileTree.setRootDir(node.path);
+			},
+		};
+	}));
+}
+
 $: mainStyle = {
 	width: 150,
 };
+
+onMount(async function() {
+	let teardown = [
+		fileTree.on("updateRootDir", setRootDir),
+	];
+	
+	return function() {
+		for (let fn of teardown) {
+			fn();
+		}
+	}
+});
 </script>
 
 <style type="text/scss">
@@ -22,6 +61,11 @@ $: mainStyle = {
 
 #top {
 	padding: 3px;
+}
+
+#dirSelector {
+	font-weight: bold;
+	padding: 5px;
 }
 
 #list {
@@ -40,7 +84,11 @@ $: mainStyle = {
 <FocusablePane>
 	<div id="main" style={inlineStyle(mainStyle)}>
 		<div id="top">
-			top
+			{#if rootEntry}
+				<div bind:this={dirSelector} id="dirSelector" on:mousedown={openDirMenu}>
+					{rootEntry.node.name}
+				</div>
+			{/if}
 		</div>
 		<div id="list">
 			<div id="scroll">
