@@ -19,7 +19,7 @@ let production = !process.env.ROLLUP_WATCH;
 let root = __dirname;
 let platform = process.env.PLATFORM;
 
-function commonPlugins() {
+function commonPlugins(platform) {
 	return [
 		alias({
 			entries: {
@@ -27,6 +27,7 @@ function commonPlugins() {
 				"modules": path.resolve(root, "src/modules"),
 				"utils": path.resolve(root, "src/utils"),
 				"platforms": path.resolve(root, "src/platforms"),
+				"platform": path.resolve(root, "src/platforms/" + platform),
 			},
 		}),
 		
@@ -55,7 +56,7 @@ function commonPlugins() {
 
 function electronPlugins() {
 	return [
-		...commonPlugins(),
+		...commonPlugins("electron"),
 		
 		commonjs({
 			ignore: [
@@ -117,7 +118,7 @@ if (!platform || platform === "all" || platform === "test") {
 		},
 		
 		plugins: [
-			...commonPlugins(),
+			...commonPlugins("test"),
 			commonjs(),
 			
 			copy({
@@ -144,7 +145,7 @@ if (!platform || platform === "all" || platform === "test") {
 		
 		plugins: [
 			multi(),
-			...commonPlugins(),
+			...commonPlugins("test"),
 			commonjs(),
 		],
 	});
@@ -196,7 +197,7 @@ if (!platform || platform === "all" || platform === "web") {
 		},
 		
 		plugins: [
-			...commonPlugins(),
+			...commonPlugins("web"),
 			commonjs(),
 			!production && livereload("src/platforms/web/public"),
 			production && terser(),

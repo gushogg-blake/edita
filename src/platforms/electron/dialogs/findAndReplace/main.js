@@ -1,5 +1,5 @@
-import getDialogOptions from "../../modules/getDialogOptions";
-import init from "../../init";
+import getDialogOptions from "platform/modules/getDialogOptions";
+import init from "platform/init";
 import App from "./modules/App";
 import AppComponent from "./components/App.svelte";
 

@@ -55,10 +55,14 @@ let functions = {
 	
 	replace() {
 	},
+	
+	close() {
+		window.close();
+	},
 };
 
 let keymap = {
-	"Alt+A": "processAll",
+	"Escape": "close",
 };
 
 function keydown(e) {
