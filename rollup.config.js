@@ -3,23 +3,23 @@ import path from "path";
 import multi from "@rollup/plugin-multi-entry";
 import livereload from "rollup-plugin-livereload";
 import copy from "rollup-plugin-copy";
-
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import alias from "@rollup/plugin-alias";
 import svelte from "rollup-plugin-svelte";
+import scss from "rollup-plugin-scss";
 import cssOnly from "rollup-plugin-css-only";
 import {terser} from "rollup-plugin-terser";
+import _delete from "rollup-plugin-delete";
 import preprocess from "svelte-preprocess";
 import builtins from "rollup-plugin-node-builtins";
 import globals from "rollup-plugin-node-globals";
-import scss from "rollup-plugin-scss";
 
 let production = !process.env.ROLLUP_WATCH;
 let root = __dirname;
 let platform = process.env.PLATFORM;
 
-let commonPlugins = function() {
+function commonPlugins() {
 	return [
 		alias({
 			entries: {
@@ -53,7 +53,7 @@ let commonPlugins = function() {
 	];
 }
 
-let electronPlugins = function() {
+function electronPlugins() {
 	return [
 		...commonPlugins(),
 		
@@ -81,22 +81,33 @@ let electronPlugins = function() {
 	];
 }
 
-let platforms = [];
-
-if (!platform || platform === "all" || platform === "test") {
-	platforms.push({
-		input: "node_modules/mocha/mocha.js",
+function globalCssBuild(platform) {
+	return {
+		input: "src/platforms/common/public/globalCss.js",
 		
 		output: {
 			format: "iife",
-			file: "test/public/build/mocha.js",
+			file: "src/platforms/" + platform + "/public/build/global.js",
 		},
 		
 		plugins: [
-			...commonPlugins(),
-			commonjs(),
+			scss(),
+			
+			_delete({
+				targets: [
+					"src/platforms/" + platform + "/public/build/global.js",
+				],
+				
+				hook: "buildEnd",
+			}),
 		],
-	}, {
+	};
+}
+
+let builds = [];
+
+if (!platform || platform === "all" || platform === "test") {
+	builds.push({
 		input: "test/main.js",
 		
 		output: {
@@ -135,24 +146,12 @@ if (!platform || platform === "all" || platform === "test") {
 			multi(),
 			...commonPlugins(),
 			commonjs(),
-			livereload("test/public"),
 		],
 	});
 }
 
 if (!platform || platform === "all" || platform === "electron") {
-	platforms.push({
-		input: "src/platforms/common/public/globalCss.js",
-		
-		output: {
-			format: "iife",
-			file: "src/platforms/electron/public/build/globalCss.js",
-		},
-		
-		plugins: [
-			scss(),
-		],
-	}, {
+	builds.push(globalCssBuild("electron"), {
 		input: "src/platforms/electron/main.js",
 		
 		output: {
@@ -186,18 +185,7 @@ if (!platform || platform === "all" || platform === "electron") {
 }
 
 if (!platform || platform === "all" || platform === "web") {
-	platforms.push({
-		input: "src/platforms/common/public/globalCss.js",
-		
-		output: {
-			format: "iife",
-			file: "src/platforms/web/public/build/globalCss.js",
-		},
-		
-		plugins: [
-			scss(),
-		],
-	}, {
+	builds.push(globalCssBuild("web"), {
 		input: "src/platforms/web/main.js",
 		
 		output: {
@@ -216,4 +204,4 @@ if (!platform || platform === "all" || platform === "web") {
 	});
 }
 
-export default platforms;
+export default builds;

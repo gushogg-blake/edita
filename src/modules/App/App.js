@@ -363,7 +363,7 @@ class App extends Evented {
 	
 	findAndReplaceInFiles(path) {
 		platform.findAndReplaceInFiles(path, () => {
-			this.findAndReplaceInFiles(path);
+			this.findAndReplaceInFilesInApp(path);
 		});
 	}
 	

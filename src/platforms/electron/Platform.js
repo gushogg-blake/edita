@@ -95,9 +95,9 @@ class Platform extends Evented {
 	}
 	
 	findInFiles(paths) {
-		this.openWindow("/dialogs/findAndReplace.html", {
+		this.openDialogWindow("/dialogs/findAndReplace.html", {
 			replace: false,
-			scope: "files",
+			searchIn: "files",
 			paths,
 		}, {
 			width: 680,
@@ -106,9 +106,9 @@ class Platform extends Evented {
 	}
 	
 	findAndReplaceInFiles(paths) {
-		this.openWindow("/dialogs/findAndReplace.html", {
+		this.openDialogWindow("/dialogs/findAndReplace.html", {
 			replace: true,
-			scope: "files",
+			searchIn: "files",
 			paths,
 		}, {
 			width: 680,
@@ -117,7 +117,7 @@ class Platform extends Evented {
 	}
 	
 	editSnippet(snippet) {
-		this.openWindow("/dialogs/snippetEditor.html", null, {
+		this.openDialogWindow("/dialogs/snippetEditor.html", null, {
 			width: 680,
 			height: 480,
 		});
@@ -153,8 +153,8 @@ class Platform extends Evented {
 		ipc.contextMenu(items, {x, y: y + height});
 	}
 	
-	openWindow(url, query, options) {
-		ipc.openDialogWindow(url + "?q=" + encodeURIComponent(JSON.stringify(query)), options);
+	openDialogWindow(url, dialogOptions, windowOptions) {
+		ipc.openDialogWindow(url + "?options=" + encodeURIComponent(JSON.stringify(dialogOptions)), windowOptions);
 	}
 	
 	setTitle(title) {

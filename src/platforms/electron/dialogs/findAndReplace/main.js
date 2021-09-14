@@ -1,10 +1,10 @@
-//import query from "../../modules/query";
+import getDialogOptions from "../../modules/getDialogOptions";
 import init from "../../init";
 import App from "./modules/App";
 import AppComponent from "./components/App.svelte";
 
 init(async function() {
-	let app = new App({});
+	let app = new App(getDialogOptions());
 	
 	await app.init();
 	

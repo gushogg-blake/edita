@@ -51,6 +51,7 @@ module.exports = async function(app) {
 		let watcher = chokidar.watch([
 			path.resolve(__dirname, "../public/dialogs/" + name + ".html"),
 			path.resolve(__dirname, "../public/build/dialogs/" + name),
+			path.resolve(__dirname, "../public/build/global.css"),
 		]);
 		
 		watcher.on("change", function() {
