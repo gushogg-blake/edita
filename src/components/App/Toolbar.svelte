@@ -10,6 +10,18 @@ let app = getContext("app");
 	background: #f2f2f0;
 	//background: white;
 }
+
+button {
+	color: #333333;
+	border: 0;
+	border-radius: 3px;
+	padding: .3em .7em;
+	outline: none;
+	
+	&:active {
+		box-shadow: inset 1px 1px 3px #00000025;
+	}
+}
 </style>
 
 <div id="main">

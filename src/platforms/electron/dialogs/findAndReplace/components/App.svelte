@@ -3,6 +3,7 @@ import {onMount, setContext} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import clickButtonFromAccel from "utils/dom/clickButtonFromAccel";
 import Accel from "components/utils/Accel.svelte";
+import Checkbox from "components/utils/Checkbox.svelte";
 
 export let app;
 
@@ -23,13 +24,16 @@ let {
 	excludeGlob,
 } = app.options;
 
+let smartCase = caseMode === "smart";
+let matchCase = caseMode === "caseSensitive";
+
 $: app.setOptions({
 	replace,
 	searchIn,
 	find,
 	replaceWith,
 	regex,
-	caseMode,
+	caseMode: smartCase ? "smart" : matchCase ? "caseSensitive" : "caseInsensitive",
 	word,
 	multiline,
 	paths,
@@ -114,6 +118,11 @@ input {
 	width: 100%;
 }
 
+.checkboxes {
+	display: flex;
+	gap: 1em;
+}
+
 .actions {
 	display: grid;
 	grid-template-columns: auto;
@@ -135,6 +144,16 @@ input {
 		</label>
 		<div class="input">
 			<input bind:value={replaceWith} id="replaceWith" accesskey="l">
+		</div>
+		<div class="input checkboxes">
+			<Checkbox bind:checked={regex} label="Rege&x"/>
+			<Checkbox bind:checked={smartCase} label="&Smart case"/>
+			{#if !smartCase}
+				<Checkbox bind:checked={matchCase} label="Match &case"/>
+			{/if}
+			<Checkbox bind:checked={word} label="&Word"/>
+			<Checkbox bind:checked={multiline} label="Mul&tiline"/>
+			<Checkbox bind:checked={replace} label="&Replace"/>
 		</div>
 	</div>
 	<div class="actions">
