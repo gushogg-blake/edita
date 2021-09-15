@@ -57,7 +57,7 @@ module.exports = function(
 		let dir = fromStart < toStart ? -1 : 1;
 		let index = fromStart < toStart ? fromStart - 1 : fromEnd;
 		let addSpacesAt = fromStart < toStart ? fromStart : fromEnd;
-		let siblingIndex = findSiblingIndex(document.lines, index, indentLevel, dir);
+		let siblingIndex = findSiblingIndex(document, index, indentLevel, dir);
 		
 		if (siblingIndex !== null) {
 			let existingSpaces = Math.abs(index - siblingIndex);
@@ -88,7 +88,7 @@ module.exports = function(
 		}
 		
 		if (toSelection) {
-			let insertIndentLevel = findIndentLevel(document.lines, toStart);
+			let insertIndentLevel = findIndentLevel(document, toStart);
 			let lines = AstSelection.selectionLinesToStrings(selectionLines, indentStr, insertIndentLevel);
 			
 			if (toStart === toEnd) {

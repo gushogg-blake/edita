@@ -32,6 +32,8 @@ class Platform extends Evented {
 			...options,
 		};
 		
+		this.options = options;
+		
 		this.fs = fs({
 			fs: {
 				

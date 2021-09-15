@@ -1,4 +1,5 @@
-module.exports = function(lines, lineIndex) {
+module.exports = function(document, lineIndex) {
+	let {lines} = document;
 	let prev = 0;
 	let next = 0;
 	let prevLineIndex = lineIndex - 1;

@@ -1,4 +1,5 @@
-module.exports = function(lines, lineIndex, dir) {
+module.exports = function(document, lineIndex, dir) {
+	let {lines} = document;
 	let space = 0;
 	let line;
 	

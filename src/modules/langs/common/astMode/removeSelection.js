@@ -6,12 +6,12 @@ module.exports = function(document, selection) {
 	let indentStr = document.fileDetails.indentation.string;
 	let {startLineIndex, endLineIndex} = selection;
 	let selectionHeaderLine = document.lines[startLineIndex];
-	let prevSiblingIndex = findSiblingIndex(document.lines, startLineIndex - 1, selectionHeaderLine.indentLevel, -1);
-	let nextSiblingIndex = findSiblingIndex(document.lines, endLineIndex, selectionHeaderLine.indentLevel, 1);
+	let prevSiblingIndex = findSiblingIndex(document, startLineIndex - 1, selectionHeaderLine.indentLevel, -1);
+	let nextSiblingIndex = findSiblingIndex(document, endLineIndex, selectionHeaderLine.indentLevel, 1);
 	let isFirstChild = prevSiblingIndex === null;
 	let isLastChild = nextSiblingIndex === null;
-	let spaceAbove = countSpace(document.lines, startLineIndex - 1, -1);
-	let spaceBelow = countSpace(document.lines, endLineIndex, 1);
+	let spaceAbove = countSpace(document, startLineIndex - 1, -1);
+	let spaceBelow = countSpace(document, endLineIndex, 1);
 	let maxSpace = Math.max(spaceAbove, spaceBelow);
 	let removeStart = startLineIndex - spaceAbove;
 	let removeEnd = endLineIndex + spaceBelow;

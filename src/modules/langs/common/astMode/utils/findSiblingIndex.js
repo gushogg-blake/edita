@@ -1,4 +1,5 @@
-module.exports = function(lines, lineIndex, indentLevel, dir) {
+module.exports = function(document, lineIndex, indentLevel, dir) {
+	let {lines} = document;
 	let line;
 	
 	while (line = lines[lineIndex]) {

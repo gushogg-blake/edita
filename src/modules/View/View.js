@@ -380,7 +380,7 @@ class View extends Evented {
 		let {start, end} = Selection.sort(this.normalSelection);
 		let {astMode} = this.lang;
 		
-		this.astSelection = astCommon.selection.fromLineRange(document.lines, start.lineIndex, end.lineIndex + 1);
+		this.astSelection = astCommon.selection.fromLineRange(document, start.lineIndex, end.lineIndex + 1);
 	}
 	
 	setMeasurements(measurements) {

@@ -9,7 +9,9 @@ let api = {
 	findIndentLevel,
 	findSiblingIndex,
 	
-	findNextLineIndexAtIndentLevel(lines, lineIndex, indentLevel) {
+	findNextLineIndexAtIndentLevel(document, lineIndex, indentLevel) {
+		let {lines} = document;
+		
 		for (let i = lineIndex + 1; i < lines.length; i++) {
 			if (lines[i].indentLevel === indentLevel) {
 				return i;
@@ -19,7 +21,9 @@ let api = {
 		return null;
 	},
 	
-	findPrevLineIndexAtIndentLevel(lines, lineIndex, indentLevel) {
+	findPrevLineIndexAtIndentLevel(document, lineIndex, indentLevel) {
+		let {lines} = document;
+		
 		for (let i = lineIndex - 1; i >= 0; i--) {
 			if (lines[i].indentLevel === indentLevel) {
 				return i;

@@ -32,7 +32,6 @@
 		"chai": "^4.3.4",
 		"electron": "^13.1.7",
 		"electron-builder": "^22.11.7",
-		"link-module-alias": "^1.2.0",
 		"mocha": "^9.1.1",
 		"node-sass": "^6.0.1",
 		"npm-run-all": "^4.1.5",
@@ -49,8 +48,7 @@
 		"rollup-plugin-terser": "^7.0.2",
 		"sirv-cli": "^1.0.12",
 		"svelte": "^3.38.3",
-		"svelte-preprocess": "^4.7.3",
-		"web-tree-sitter": "^0.19.4"
+		"svelte-preprocess": "^4.7.3"
 	},
 	"scripts": {
 		"start": "electron .",

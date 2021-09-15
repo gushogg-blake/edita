@@ -1,4 +1,6 @@
 let AstSelection = require("modules/utils/AstSelection");
+let getOpenersOnLine = require("../utils/getOpenersOnLine");
+let getClosersOnLine = require("../utils/getClosersOnLine");
 
 let {
 	findNextLineIndexAtIndentLevel,
@@ -19,7 +21,8 @@ cutting selections where the header or footer is a header-footer (e.g. } else {)
 - to be handled intelligently by the lang
 */
 
-function fromLineIndex(lines, lineIndex, forHilite) {
+function fromLineIndex(document, lineIndex, forHilite) {
+	let {lines} = document;
 	let line = lines[lineIndex];
 	
 	if (!forHilite) {
@@ -34,39 +37,40 @@ function fromLineIndex(lines, lineIndex, forHilite) {
 		}
 	}
 	
-	// TODO
-	//if (line.openers.length > 0) {
-	//	let footerIndex = findNextLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel);
-	//	
-	//	return s(
-	//		lineIndex,
-	//		(footerIndex !== null ? footerIndex : lineIndex) + 1,
-	//	);
-	//} else if (line.closers.length > 0) {
-	//	let headerIndex = findPrevLineIndexAtIndentLevel(lines, lineIndex, line.indentLevel);
-	//	
-	//	return s(
-	//		headerIndex !== null ? headerIndex : lineIndex,
-	//		lineIndex + 1,
-	//	);
-	//} else if (line.trimmed.length > 0) {
-	//	return s(lineIndex, lineIndex + 1);
-	//} else {
-	//	if (forHilite) {
-	//		return null;
-	//	} else {
-	//		return s(lineIndex);
-	//	}
-	//}
-	return s(lineIndex);
+	let openers = getOpenersOnLine(document, lineIndex);
+	let closers = getClosersOnLine(document, lineIndex);
+	
+	if (openers.length > 0) {
+		let footerIndex = findNextLineIndexAtIndentLevel(document, lineIndex, line.indentLevel);
+		
+		return s(
+			lineIndex,
+			(footerIndex !== null ? footerIndex : lineIndex) + 1,
+		);
+	} else if (closers.length > 0) {
+		let headerIndex = findPrevLineIndexAtIndentLevel(document, lineIndex, line.indentLevel);
+		
+		return s(
+			headerIndex !== null ? headerIndex : lineIndex,
+			lineIndex + 1,
+		);
+	} else if (line.trimmed.length > 0) {
+		return s(lineIndex, lineIndex + 1);
+	} else {
+		if (forHilite) {
+			return null;
+		} else {
+			return s(lineIndex);
+		}
+	}
 }
 
-function selectionFromLineIndex(lines, lineIndex) {
-	return fromLineIndex(lines, lineIndex, false);
+function selectionFromLineIndex(document, lineIndex) {
+	return fromLineIndex(document, lineIndex, false);
 }
 
-function hiliteFromLineIndex(lines, lineIndex) {
-	return fromLineIndex(lines, lineIndex, true);
+function hiliteFromLineIndex(document, lineIndex) {
+	return fromLineIndex(document, lineIndex, true);
 }
 
 /*
@@ -80,9 +84,11 @@ break before a selection would extend the top (e.g. at a footer)
 - ranges that include the footer of a block will stop inside the block
 */
 
-function fromLineRange(lines, startLineIndex, endLineIndex) {
+function fromLineRange(document, startLineIndex, endLineIndex) {
+	let {lines} = document;
+	
 	if (startLineIndex === endLineIndex - 1) {
-		return selectionFromLineIndex(lines, startLineIndex);
+		return selectionFromLineIndex(document, startLineIndex);
 	}
 	
 	let startLine = lines[startLineIndex];
@@ -102,7 +108,7 @@ function fromLineRange(lines, startLineIndex, endLineIndex) {
 	let endIndex = startIndex;
 	
 	for (let i = startLineIndex; i <= endLineIndex - 1; i++) {
-		let selection = selectionFromLineIndex(lines, i);
+		let selection = selectionFromLineIndex(document, i);
 		
 		if (selection.startLineIndex < startIndex) {
 			break;
@@ -119,28 +125,29 @@ let api = {
 	hiliteFromLineIndex,
 	fromLineRange,
 	
-	up(lines, selection) {
-		let [startLineIndex] = selection;
+	up(document, selection) {
+		let {lines} = document;
+		let {startLineIndex} = selection;
 		let line = lines[startLineIndex];
-		let headerLineIndex = findPrevLineIndexAtIndentLevel(lines, startLineIndex, line.indentLevel - 1);
+		let headerLineIndex = findPrevLineIndexAtIndentLevel(document, startLineIndex, line.indentLevel - 1);
 		
 		if (headerLineIndex === null) {
 			return selection;
 		}
 		
-		return selectionFromLineIndex(lines, headerLineIndex);
+		return selectionFromLineIndex(document, headerLineIndex);
 	},
 	
-	down(lines, selection) {
+	down(document, selection) {
 		// if empty block, create a new blank line
 		return selection;
 	},
 	
-	next(lines, selection) {
+	next(document, selection) {
 		return selection;
 	},
 	
-	previous(lines, selection) {
+	previous(document, selection) {
 		return selection;
 	},
 }

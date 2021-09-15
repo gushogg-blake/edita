@@ -83,7 +83,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			}
 		}
 		
-		return astCommon.selection.hiliteFromLineIndex(document.lines, lineIndex);
+		return astCommon.selection.hiliteFromLineIndex(document, lineIndex);
 	}
 	
 	function getInsertionRange(e) {
