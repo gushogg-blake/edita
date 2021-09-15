@@ -39,6 +39,27 @@ $: options = {
 	excludeGlob,
 };
 
+let functions = {
+	async findAll() {
+		console.log(await findAndReplace.findAll(options));
+	},
+	
+	replaceAll(options) {
+		return platform.callParentWindow("findAndReplace", "replaceAll", options);
+	},
+	
+	findNext(options) {
+		return platform.callParentWindow("findAndReplace", "findNext", options);
+	},
+	
+	findPrevious(options) {
+		return platform.callParentWindow("findAndReplace", "findPrevious", options);
+	},
+	
+	replace(options) {
+		return platform.callParentWindow("findAndReplace", "replace", options);
+	},
+};
 </script>
 
 <style type="text/scss">

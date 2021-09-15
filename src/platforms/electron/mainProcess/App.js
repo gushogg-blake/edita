@@ -216,18 +216,16 @@ class App extends Evented {
 	}
 	
 	callFocusedRenderer(channel, ...args) {
-		let browserWindow = this.getFocusedBrowserWindow();
-		
-		if (!browserWindow) {
-			return;
-		}
-		
-		ipcMain.callRenderer(browserWindow, channel, ...args);
+		return ipcMain.callRenderer(this.getFocusedBrowserWindow(), channel, ...args);
 	}
 	
-	callRenderers(channel, ...args) {
+	callRenderer(browserWindow, channel, ...args) {
+		return ipcMain.callRenderer(browserWindow, channel, ...args);
+	}
+	
+	sendToRenderers(channel, ...args) {
 		for (let browserWindow of [...this.appWindows, ...this.dialogWindows]) {
-			ipcMain.callRenderer(browserWindow, channel, ...args);
+			ipcMain.sendToRenderer(browserWindow, channel, ...args);
 		}
 	}
 	

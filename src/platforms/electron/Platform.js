@@ -37,7 +37,7 @@ class Platform extends Evented {
 		ipc.snippets.on("new", this.onNewSnippet.bind(this));
 		ipc.snippets.on("update", this.onSnippetUpdate.bind(this));
 		
-		ipcRenderer.on"closeWindow", () => {
+		ipcRenderer.on("closeWindow", () => {
 			let defaultPrevented = false;
 			
 			this.fire("closeWindow", {
