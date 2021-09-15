@@ -1,15 +1,17 @@
 let dropTargets = require("./dropTargets");
 
-function isIfFooter(lines, lineIndex) {
-	return lines[lineIndex].closers.length === 1; //
+function isIfFooter(document, lineIndex) {
+	let nodes = document.getNodesOnLine(lineIndex);
+	
+	return nodes.some(function(node) {
+		return node.type === "}" && node.parent?.parent?.type === "if_statement";
+	});
 }
 
-module.exports = function(lines, lineIndex) {
+module.exports = function(document, lineIndex) {
 	let targets = [];
 	
-	let line = lines[lineIndex];
-	
-	if (isIfFooter(lines, lineIndex)) {
+	if (isIfFooter(document, lineIndex)) {
 		targets.push(
 			dropTargets.addSelectionToNewElse,
 			dropTargets.addSelectionToNewElseIf,

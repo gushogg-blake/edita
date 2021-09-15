@@ -96,6 +96,7 @@ module.exports = {
 			"object",
 			"array",
 			"parenthesized_expression", // includes if condition brackets
+			"arguments",
 			"statement_block",
 			"class_body",
 			"template_string",

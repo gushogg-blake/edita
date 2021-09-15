@@ -141,14 +141,13 @@ class View extends Evented {
 		
 		let {startLineIndex} = astSelection;
 		let lineIndex = startLineIndex;
-		let {lines} = this.document;
 		let {astMode} = this.document.langFromAstSelection(astSelection);
 		
 		this.pickOptions = [{
 			lineIndex,
 			
 			options: astMode.generatePickOptions(
-				lines,
+				this.document,
 				astSelection,
 			).map(function(option) {
 				return {
@@ -205,7 +204,7 @@ class View extends Evented {
 			let {line} = wrappedLine;
 			
 			byLineIndex.set(lineIndex, astMode.generateDropTargets(
-				document.lines,
+				document,
 				lineIndex,
 			).map(function(target) {
 				return {

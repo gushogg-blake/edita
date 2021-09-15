@@ -49,7 +49,7 @@ class Editor extends Evented {
 		}
 		
 		return astMode.getAvailableAstManipulations(
-			this.document.lines,
+			this.document,
 			this.view.astSelection,
 		);
 	}

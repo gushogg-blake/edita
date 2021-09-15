@@ -11,9 +11,9 @@ module.exports = {
 	generatePickOptions,
 	generateDropTargets,
 	
-	getAvailableAstManipulations(lines, selection) {
+	getAvailableAstManipulations(document, selection) {
 		return Object.values(astManipulations).filter(function(manipulation) {
-			return manipulation.isAvailable(lines, selection);
+			return manipulation.isAvailable(document, selection);
 		});
 	},
 };

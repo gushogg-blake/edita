@@ -1,6 +1,5 @@
 let ipcRenderer = require("platform/modules/ipcRenderer");
 let Evented = require("utils/Evented");
-let handleMessages = require("./utils/handleMessages");
 
 class JsonStore extends Evented {
 	constructor(key) {
@@ -8,14 +7,12 @@ class JsonStore extends Evented {
 		
 		this.key = key;
 		
-		handleMessages("jsonStore", {
-			update: (e, key, data) => {
-				if (key !== this.key) {
-					return;
-				}
-				
-				this.fire("update", data);
-			},
+		ipcRenderer.on("jsonStore.update", (e, key, data) => {
+			if (key !== this.key) {
+				return;
+			}
+			
+			this.fire("update", data);
 		});
 	}
 	

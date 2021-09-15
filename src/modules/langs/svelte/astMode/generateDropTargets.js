@@ -1,6 +1,6 @@
 let dropTargets = require("./dropTargets");
 
-module.exports = function(lines, lineIndex) {
+module.exports = function(document, lineIndex) {
 	let targets = [];
 	
 	return targets;

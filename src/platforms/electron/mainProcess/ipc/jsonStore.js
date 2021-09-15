@@ -7,7 +7,7 @@ module.exports = function(app) {
 		async save(e, key, data) {
 			await app.saveJson(key, data);
 			
-			app.sendToRenderers("jsonStore", "update", key, data);
+			app.sendToRenderers("jsonStore.update", key, data);
 		},
 	};
 }

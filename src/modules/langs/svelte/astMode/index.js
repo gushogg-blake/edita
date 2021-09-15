@@ -11,7 +11,7 @@ module.exports = {
 	generateDropTargets,
 	drop,
 	
-	getAvailableAstManipulations() {
+	getAvailableAstManipulations(document, selection) {
 		return [];
 	},
 };
