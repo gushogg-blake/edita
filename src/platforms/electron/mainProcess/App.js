@@ -4,7 +4,6 @@ let {
 	BrowserWindow,
 	globalShortcut,
 	Menu,
-	ipcMain,
 } = require("electron");
 
 let windowStateKeeper = require("electron-window-state");
@@ -14,6 +13,7 @@ let {hideBin} = require("yargs/helpers");
 let {removeInPlace} = require("../../../utils/arrayMethods");
 let Evented = require("../../../utils/Evented");
 let fs = require("./modules/fs");
+let ipcMain = require("./modules/ipcMain");
 let ipc = require("./ipc");
 let config = require("./config");
 
@@ -195,6 +195,7 @@ class App extends Evented {
 		let browserWindow = this.createDialogWindow(url, {
 			x,
 			y,
+			parent: opener,
 			...options,
 		});
 		
@@ -215,12 +216,18 @@ class App extends Evented {
 	}
 	
 	callFocusedRenderer(channel, ...args) {
-		this.getFocusedBrowserWindow()?.webContents.send(channel, ...args);
+		let browserWindow = this.getFocusedBrowserWindow();
+		
+		if (!browserWindow) {
+			return;
+		}
+		
+		ipcMain.callRenderer(browserWindow, ...args);
 	}
 	
 	callRenderers(channel, ...args) {
 		for (let browserWindow of [...this.appWindows, ...this.dialogWindows]) {
-			browserWindow.webContents.send(channel, ...args);
+			ipcMain.callRenderer(browserWindow, ...args);
 		}
 	}
 	

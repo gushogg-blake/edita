@@ -1,14 +1,17 @@
 let {ipcRenderer} = require("electron");
 let lid = require("utils/lid");
+let handleMessages = require("./utils/handleMessages");
 
 let clickHandlers = {};
 
-ipcRenderer.on("contextMenu/click", function(e, id, itemId) {
-	clickHandlers[id][itemId]();
-});
-
-ipcRenderer.on("contextMenu/close", function(e, id) {
-	delete clickHandlers[id];
+handleMessages("contextMenu", {
+	click(e, id, itemId) {
+		clickHandlers[id][itemId]();
+	},
+	
+	close(e, id,) {
+		delete clickHandlers[id];
+	},
 });
 
 module.exports = function(items, coords=null) {
@@ -27,7 +30,7 @@ module.exports = function(items, coords=null) {
 		clickHandlers[id][item.id] = item.onClick;
 	}
 	
-	ipcRenderer.invoke("contextMenu/show", id, items.map(function(item) {
+	ipcRenderer.invoke("contextMenu", "show", id, items.map(function(item) {
 		return {
 			...item,
 			onClick: undefined,

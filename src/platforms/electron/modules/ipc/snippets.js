@@ -3,7 +3,7 @@ let Evented = require("utils/Evented");
 
 class Snippets extends Evented {
 	load() {
-		return ipcRenderer.invoke("snippets/load");
+		return ipcRenderer.invoke("snippets", "load");
 	}
 }
 

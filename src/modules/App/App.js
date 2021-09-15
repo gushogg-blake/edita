@@ -9,6 +9,7 @@ let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
 let FileTree = require("./FileTree");
+let FindAndReplace = require("./FindAndReplace");
 let functions = require("./functions");
 
 class App extends Evented {
@@ -16,6 +17,7 @@ class App extends Evented {
 		super();
 		
 		this.fileTree = new FileTree(this);
+		this.findAndReplace = new FindAndReplace(this);
 		this.tabs = [];
 		this.selectedTab = null;
 		this.closedTabs = [];
@@ -34,6 +36,8 @@ class App extends Evented {
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
 		];
+		
+		platform.handleIpcMessages("findAndReplace", this.findAndReplace);
 	}
 	
 	async init() {

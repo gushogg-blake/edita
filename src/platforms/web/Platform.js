@@ -94,6 +94,10 @@ class Platform extends Evented {
 		
 	}
 	
+	handleIpcMessages(channel, handler) {
+		// noop
+	}
+	
 	setTitle(title) {
 		// noop
 	}

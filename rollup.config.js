@@ -28,6 +28,7 @@ function commonPlugins(platform) {
 				"utils": path.resolve(root, "src/utils"),
 				"platforms": path.resolve(root, "src/platforms"),
 				"platform": path.resolve(root, "src/platforms/" + platform),
+				"electron-ipc": path.resolve(root, "vendor/electron-better-ipc"),
 			},
 		}),
 		

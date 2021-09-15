@@ -7,18 +7,18 @@ methods as async as they may be async on some platforms
 
 module.exports = {
 	read() {
-		return ipcRenderer.sendSync("clipboard/read");
+		return ipcRenderer.sendSync("clipboard", "read");
 	},
 	
 	write(str) {
-		return ipcRenderer.sendSync("clipboard/write", str);
+		return ipcRenderer.sendSync("clipboard", "write", str);
 	},
 	
 	readSelection() {
-		return ipcRenderer.sendSync("clipboard/readSelection");
+		return ipcRenderer.sendSync("clipboard", "readSelection");
 	},
 	
 	writeSelection(str) {
-		return ipcRenderer.sendSync("clipboard/writeSelection", str);
+		return ipcRenderer.sendSync("clipboard", "writeSelection", str);
 	},
 };

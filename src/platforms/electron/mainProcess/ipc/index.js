@@ -1,9 +1,10 @@
-let {ipcMain} = require("electron");
+let ipcMain = require("../modules/ipcMain");
 let init = require("./init");
 let clipboard = require("./clipboard");
 let dialog = require("./dialog");
 let contextMenu = require("./contextMenu");
 let openDialogWindow = require("./openDialogWindow");
+let callParentWindow = require("./callParentWindow");
 let jsonStore = require("./jsonStore");
 let snippets = require("./snippets");
 let devTools = require("./devTools");
@@ -12,6 +13,7 @@ let asyncModules = {
 	dialog,
 	contextMenu,
 	openDialogWindow,
+	callParentWindow,
 	jsonStore,
 	snippets,
 	devTools,
@@ -26,20 +28,16 @@ module.exports = function(app) {
 	for (let [key, module] of Object.entries(asyncModules)) {
 		let fns = module(app);
 		
-		for (let name in fns) {
-			ipcMain.handle(key + "/" + name, function(e, ...args) {
-				return fns[name](e, ...args);
-			});
-		}
+		ipcMain.handle(key, function(e, method, ...args) {
+			return fns[method](e, ...args);
+		});
 	}
 	
 	for (let [key, module] of Object.entries(syncModules)) {
 		let fns = module(app);
 		
-		for (let name in fns) {
-			ipcMain.on(key + "/" + name, async function(e, ...args) {
-				e.returnValue = await fns[name](e, ...args);
-			});
-		}
+		ipcMain.on(key, async function(e, method, ...args) {
+			e.returnValue = await fns[method](e, ...args);
+		});
 	}
 }

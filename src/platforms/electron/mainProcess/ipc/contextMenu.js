@@ -12,7 +12,7 @@ module.exports = function(app) {
 					...item,
 					
 					click() {
-						app.callFocusedRenderer("contextMenu/click", id, item.id);
+						app.callFocusedRenderer("contextMenu", "click", id, item.id);
 					},
 				};
 			}));
@@ -27,7 +27,7 @@ module.exports = function(app) {
 				...options,
 				
 				callback() {
-					app.callFocusedRenderer("contextMenu/close", id);
+					app.callFocusedRenderer("contextMenu", "close", id);
 				},
 			});
 		},

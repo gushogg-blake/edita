@@ -1,4 +1,3 @@
-let {ipcRenderer} = require("electron");
 let os = require("os");
 let path = require("path");
 let glob = require("glob");
@@ -10,8 +9,9 @@ let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");
 let defaultPrefs = require("modules/defaultPrefs");
 
-let fs = require("./modules/fs");
-let ipc = require("./modules/ipc");
+let fs = require("platform/modules/fs");
+let ipcRenderer = require("platform/modules/ipcRenderer");
+let ipc = require("platform/modules/ipc");
 
 class Platform extends Evented {
 	constructor() {
@@ -37,7 +37,7 @@ class Platform extends Evented {
 		ipc.snippets.on("new", this.onNewSnippet.bind(this));
 		ipc.snippets.on("update", this.onSnippetUpdate.bind(this));
 		
-		ipcRenderer.on("closeWindow", () => {
+		ipcRenderer.handle("closeWindow", () => {
 			let defaultPrevented = false;
 			
 			this.fire("closeWindow", {
@@ -52,7 +52,7 @@ class Platform extends Evented {
 			}
 		});
 		
-		ipcRenderer.on("open", (e, files) => {
+		ipcRenderer.handle("open", (e, files) => {
 			this.fire("openFromElectronSecondInstance", files);
 		});
 	}
@@ -155,6 +155,16 @@ class Platform extends Evented {
 	
 	openDialogWindow(url, dialogOptions, windowOptions) {
 		ipc.openDialogWindow(url + "?options=" + encodeURIComponent(JSON.stringify(dialogOptions)), windowOptions);
+	}
+	
+	callParentWindow(channel, method, ...args) {
+		return ipcRenderer.invoke("callParentWindow", "call", channel, method, ...args);
+	}
+	
+	handleIpcMessages(channel, handler) {
+		ipcRenderer.handle(channel, function(e, method, ...args) {
+			return handler[method](...args);
+		});
 	}
 	
 	setTitle(title) {
