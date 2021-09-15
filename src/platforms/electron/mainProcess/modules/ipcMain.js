@@ -1,17 +1,11 @@
 let {ipcMain} = require("electron");
 let lid = require("../../../../utils/lid");
 
-module.exports = {
-	on(...args) {
-		return ipcMain.on(...args);
-	},
-	
-	off(...args) {
-		return ipcMain.off(...args);
-	},
-	
-	handle(...args) {
-		return ipcMain.handle(...args);
+let ipc = Object.create(ipcMain);
+
+Object.assign(ipc, {
+	sendToRenderer(browserWindow, ...args) {
+		browserWindow.webContents.send(...args);
 	},
 	
 	callRenderer(browserWindow, channel, ...args) {
@@ -19,7 +13,7 @@ module.exports = {
 			let responseChannel = lid();
 			
 			function teardown() {
-				ipcMain.off(responseChannel, handler);
+				ipc.off(responseChannel, handler);
 			}
 			
 			function handler(e, result) {
@@ -28,7 +22,7 @@ module.exports = {
 				resolve(result);
 			}
 			
-			ipcMain.on(responseChannel, handler);
+			ipc.on(responseChannel, handler);
 			
 			browserWindow.webContents.send(channel, {
 				responseChannel,
@@ -36,4 +30,6 @@ module.exports = {
 			});
 		});
 	},
-};
+});
+
+module.exports = ipc;

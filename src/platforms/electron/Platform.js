@@ -37,7 +37,7 @@ class Platform extends Evented {
 		ipc.snippets.on("new", this.onNewSnippet.bind(this));
 		ipc.snippets.on("update", this.onSnippetUpdate.bind(this));
 		
-		ipcRenderer.handle("closeWindow", () => {
+		ipcRenderer.on"closeWindow", () => {
 			let defaultPrevented = false;
 			
 			this.fire("closeWindow", {
@@ -52,7 +52,7 @@ class Platform extends Evented {
 			}
 		});
 		
-		ipcRenderer.handle("open", (e, files) => {
+		ipcRenderer.on("open", (e, files) => {
 			this.fire("openFromElectronSecondInstance", files);
 		});
 	}

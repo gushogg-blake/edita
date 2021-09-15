@@ -1,13 +1,10 @@
 <script>
-import {onMount, setContext} from "svelte";
-import getKeyCombo from "utils/getKeyCombo";
-import clickButtonFromAccel from "utils/dom/clickButtonFromAccel";
+import {onMount} from "svelte";
 import Accel from "components/utils/Accel.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 
-export let app;
-
-setContext("app", app);
+export let options;
+export let findAndReplace;
 
 let {
 	replace,
@@ -22,12 +19,12 @@ let {
 	searchInSubDirs,
 	includeGlob,
 	excludeGlob,
-} = app.options;
+} = options;
 
 let smartCase = caseMode === "smart";
 let matchCase = caseMode === "caseSensitive";
 
-$: app.setOptions({
+$: options = {
 	replace,
 	searchIn,
 	find,
@@ -40,51 +37,9 @@ $: app.setOptions({
 	searchInSubDirs,
 	includeGlob,
 	excludeGlob,
-});
-
-let functions = {
-	findAll() {
-		app.findAll();
-	},
-	
-	replaceAll() {
-		app.replaceAll();
-	},
-	
-	findNext() {
-	},
-	
-	findPrevious() {
-	},
-	
-	replace() {
-	},
-	
-	close() {
-		window.close();
-	},
 };
-
-let keymap = {
-	"Escape": "close",
-};
-
-function keydown(e) {
-	if (clickButtonFromAccel(e)) {
-		return;
-	}
-	
-	let {keyCombo} = getKeyCombo(e);
-	let fnName = keymap[keyCombo];
-	
-	if (fnName) {
-		functions[fnName]();
-	}
-}
 
 </script>
-
-<svelte:window on:keydown={keydown}/>
 
 <style type="text/scss">
 #main {

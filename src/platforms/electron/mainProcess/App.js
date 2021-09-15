@@ -97,7 +97,7 @@ class App extends Evented {
 			let files = yargs(hideBin(argv)).argv._.map(p => path.resolve(dir, p));
 			
 			if (files.length > 0) {
-				this.mainWindow.webContents.send("open", files);
+				ipcMain.sendToRenderer(this.mainWindow, "open", files);
 			} else {
 				this.createAppWindow();
 			}
@@ -136,7 +136,7 @@ class App extends Evented {
 			if (!this.closeWithoutConfirming.has(browserWindow)) {
 				e.preventDefault();
 				
-				browserWindow.webContents.send("closeWindow");
+				ipcMain.sendToRenderer(browserWindow, "closeWindow");
 			}
 		});
 		
@@ -222,12 +222,12 @@ class App extends Evented {
 			return;
 		}
 		
-		ipcMain.callRenderer(browserWindow, ...args);
+		ipcMain.callRenderer(browserWindow, channel, ...args);
 	}
 	
 	callRenderers(channel, ...args) {
 		for (let browserWindow of [...this.appWindows, ...this.dialogWindows]) {
-			ipcMain.callRenderer(browserWindow, ...args);
+			ipcMain.callRenderer(browserWindow, channel, ...args);
 		}
 	}
 	

@@ -20,30 +20,32 @@ class App extends Evented {
 			excludeGlob: "",
 			...options,
 		};
+		
+		this.findAndReplace = {
+			findAll(options) {
+				return platform.callParentWindow("findAndReplace", "findAll", options);
+			},
+			
+			replaceAll(options) {
+				return platform.callParentWindow("findAndReplace", "replaceAll", options);
+			},
+			
+			findNext(options) {
+				return platform.callParentWindow("findAndReplace", "findNext", options);
+			},
+			
+			findPrevious(options) {
+				return platform.callParentWindow("findAndReplace", "findPrevious", options);
+			},
+			
+			replace(options) {
+				return platform.callParentWindow("findAndReplace", "replace", options);
+			},
+		};
 	}
 	
 	async init() {
 		
-	}
-	
-	setOptions(options) {
-		this.options = options;
-	}
-	
-	findAll() {
-		
-	}
-	
-	replaceAll() {
-	}
-	
-	findNext() {
-	}
-	
-	findPrevious() {
-	}
-	
-	replace() {
 	}
 }
 
