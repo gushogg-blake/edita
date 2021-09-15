@@ -100,8 +100,8 @@ class Platform extends Evented {
 			searchIn: "files",
 			paths,
 		}, {
-			width: 680,
-			height: 480,
+			width: 640,
+			height: 300,
 		});
 	}
 	
@@ -111,8 +111,8 @@ class Platform extends Evented {
 			searchIn: "files",
 			paths,
 		}, {
-			width: 680,
-			height: 480,
+			width: 640,
+			height: 300,
 		});
 	}
 	

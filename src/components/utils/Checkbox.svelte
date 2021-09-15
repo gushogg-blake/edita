@@ -8,6 +8,7 @@ export let label;
 
 <style type="text/scss">
 label {
+	white-space: nowrap;
 	display: inline-flex;
 	align-items: center;
 	gap: .3em;

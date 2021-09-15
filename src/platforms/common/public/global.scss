@@ -11,10 +11,13 @@
 		box-sizing: border-box;
 	}
 	
+	input, select {
+		padding: 5px;
+	}
+	
 	input {
 		border: 1px solid #ADABA6;
 		border-radius: 3px;
-		padding: 5px;
 	}
 	
 	div {
