@@ -1,6 +1,4 @@
 let AstSelection = require("modules/utils/AstSelection");
-let getOpenersOnLine = require("../utils/getOpenersOnLine");
-let getClosersOnLine = require("../utils/getClosersOnLine");
 
 let {
 	findNextLineIndexAtIndentLevel,
@@ -37,8 +35,8 @@ function fromLineIndex(document, lineIndex, forHilite) {
 		}
 	}
 	
-	let openers = getOpenersOnLine(document, lineIndex);
-	let closers = getClosersOnLine(document, lineIndex);
+	let openers = document.getOpenersOnLine(lineIndex);
+	let closers = document.getClosersOnLine(lineIndex);
 	
 	if (openers.length > 0) {
 		let footerIndex = findNextLineIndexAtIndentLevel(document, lineIndex, line.indentLevel);

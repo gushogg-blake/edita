@@ -1,5 +1,4 @@
 let Selection = require("modules/utils/Selection");
-let advanceCursor = require("./utils/treeSitter/advanceCursor");
 let next = require("./utils/treeSitter/next");
 let cursorToTreeSitterPoint = require("./utils/treeSitter/cursorToTreeSitterPoint");
 let findFirstNodeToRender = require("./utils/treeSitter/findFirstNodeToRender");
@@ -16,15 +15,8 @@ module.exports = class Scope {
 		this.treeSitterRanges = ranges.map(Range.toTreeSitterRange);
 		
 		this.scopes = [];
-		this.scopesByCursor = {};
 		this.scopesByNode = {};
-		this.rangesByCursor = {};
-		
 		this.scopeAndRangeByNode = {};
-		
-		for (let range of ranges) {
-			this.rangesByCursor[range.cursorKey] = range;
-		}
 		
 		this.parse();
 	}
@@ -63,10 +55,6 @@ module.exports = class Scope {
 						
 						this.scopes.push(scope);
 						
-						for (let range of ranges) {
-							this.scopesByCursor[range.cursorKey] = scope;
-						}
-						
 						for (let node of nodes) {
 							this.scopesByNode[node.id] = scope;
 						}
@@ -90,7 +78,6 @@ module.exports = class Scope {
 							let scope = new Scope(this, injectionLang, this.code, [range]);
 							
 							this.scopes.push(scope);
-							this.scopesByCursor[range.cursorKey] = scope;
 							this.scopesByNode[node.id] = scope;
 							
 							this.scopeAndRangeByNode[node.id] = {
@@ -121,8 +108,8 @@ module.exports = class Scope {
 		
 		//
 		this.scopes = [];
-		this.scopesByCursor = {};
 		this.scopesByNode = {};
+		this.scopeAndRangeByNode = {};
 		
 		this.ranges = newRanges;
 		this.treeSitterRanges = this.ranges.map(Range.toTreeSitterRange);
@@ -289,29 +276,40 @@ module.exports = class Scope {
 	startOffset = 0.
 	*/
 	
-	*generateNodesOnLine(lineIndex, startOffset=0) {
+	*_generateNodesOnLine(withLang, lineIndex, startOffset=0) {
 		for (let node of generateNodesOnLine(this.tree, lineIndex, startOffset)) {
-			yield node;
+			yield withLang ? {
+				node,
+				lang: this.lang,
+			} : node;
 			
 			startOffset = node.endPosition.column;
 			
 			let scope = this.scopesByNode[node.id];
 			
 			if (scope) {
-				for (let childNode of scope.generateNodesOnLine(lineIndex, startOffset)) {
+				for (let childNode of scope._generateNodesOnLine(withLang, lineIndex, startOffset)) {
 					yield childNode;
 					
-					startOffset = childNode.endPosition.column;
+					startOffset = withLang ? childNode.node.endPosition.column : childNode.endPosition.column;
 				}
 			}
 		}
 		
 		for (let scope of this.scopes) {
-			for (let childNode of scope.generateNodesOnLine(lineIndex, startOffset)) {
+			for (let childNode of scope._generateNodesOnLine(withLang, lineIndex, startOffset)) {
 				yield childNode;
 				
-				startOffset = childNode.endPosition.column;
+				startOffset = withLang ? childNode.node.endPosition.column : childNode.endPosition.column;
 			}
 		}
+	}
+	
+	generateNodesOnLine(lineIndex, startOffset=0) {
+		return this._generateNodesOnLine(false, lineIndex, startOffset);
+	}
+	
+	generateNodesOnLineWithLang(lineIndex, startOffset=0) {
+		return this._generateNodesOnLine(true, lineIndex, startOffset);
 	}
 }

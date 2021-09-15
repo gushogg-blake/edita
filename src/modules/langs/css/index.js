@@ -57,17 +57,30 @@ module.exports = {
 		}
 	},
 	
-	getOpenerAndCloser(node) {
-		if ([
+	isBlock(node) {
+		return node.startPosition.row !== node.endPosition.row && [
 			"block",
-		].includes(node.type)) {
-			return {
-				opener: node.firstChild,
-				closer: node.lastChild,
-			};
-		}
+		].includes(node.type);
+	},
+	
+	isOpener(node) {
+		let {parent} = node;
 		
-		return null;
+		return (
+			parent
+			&& this.isBlock(parent)
+			&& node.id === parent.firstChild.id
+		);
+	},
+	
+	isCloser(node) {
+		let {parent} = node;
+		
+		return (
+			parent
+			&& this.isBlock(parent)
+			&& node.id === parent.lastChild.id
+		);
 	},
 	
 	getHiliteClass(node) {

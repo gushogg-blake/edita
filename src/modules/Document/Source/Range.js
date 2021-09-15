@@ -19,7 +19,6 @@ class Range {
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
 		this.selection = selection;
-		this.cursorKey = selection.start.lineIndex + "," + selection.start.offset;
 	}
 	
 	containsNode(node) {

@@ -114,6 +114,30 @@ module.exports = class {
 		return [...this.rootScope.generateNodesOnLine(lineIndex)];
 	}
 	
+	getOpenersOnLine(lineIndex) {
+		if (this.lang.code === "plainText") {
+			return [];
+		}
+		
+		let nodesWithLang = [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
+		
+		return nodesWithLang.filter(function({lang, node}) {
+			return lang.isOpener(node);
+		});
+	}
+	
+	getClosersOnLine(lineIndex) {
+		if (this.lang.code === "plainText") {
+			return [];
+		}
+		
+		let nodesWithLang = [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
+		
+		return nodesWithLang.filter(function({lang, node}) {
+			return lang.isCloser(node);
+		});
+	}
+	
 	getContainingRange() {
 		return new Range(null, 0, this.string.length, s(c(0, 0), this.cursorAtEnd()));
 	}

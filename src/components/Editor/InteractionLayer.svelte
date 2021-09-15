@@ -86,6 +86,7 @@ let syntheticDragHandler = drag({
 	start(e) {
 		syntheticDrag = {
 			data: {},
+			files: [],
 			
 			get types() {
 				return Object.keys(this.data);

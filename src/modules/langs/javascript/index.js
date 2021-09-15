@@ -91,6 +91,37 @@ module.exports = {
 		}
 	},
 	
+	isBlock(node) {
+		return node.startPosition.row !== node.endPosition.row && [
+			"object",
+			"array",
+			"parenthesized_expression", // includes if condition brackets
+			"statement_block",
+			"class_body",
+			"template_string",
+		].includes(node.type);
+	},
+	
+	isOpener(node) {
+		let {parent} = node;
+		
+		return (
+			parent
+			&& this.isBlock(parent)
+			&& node.id === parent.firstChild.id
+		);
+	},
+	
+	isCloser(node) {
+		let {parent} = node;
+		
+		return (
+			parent
+			&& this.isBlock(parent)
+			&& node.id === parent.lastChild.id
+		);
+	},
+	
 	getOpenerAndCloser(node) {
 		if ([
 			"object",

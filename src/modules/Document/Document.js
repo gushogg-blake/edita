@@ -292,6 +292,14 @@ class Document extends Evented {
 		return this.source.getNodesOnLine(lineIndex);
 	}
 	
+	getOpenersOnLine(lineIndex) {
+		return this.source.getOpenersOnLine(lineIndex);
+	}
+	
+	getClosersOnLine(lineIndex) {
+		return this.source.getClosersOnLine(lineIndex);
+	}
+	
 	getSelectedText(selection) {
 		let {start, end} = Selection.sort(selection);
 		let lines = this.lines.slice(start.lineIndex, end.lineIndex + 1);

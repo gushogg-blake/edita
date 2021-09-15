@@ -74,19 +74,26 @@ module.exports = {
 		}
 	},
 	
-	getOpenerAndCloser(node) {
-		if ([
+	isElementBlock(node) {
+		return node.startPosition.row !== node.endPosition.row && [
 			"element",
 			"style_element",
 			"script_element",
-		].includes(node.type)) {
-			return {
-				opener: node.firstChild,
-				closer: node.lastChild,
-			};
-		}
-		
-		return null;
+		].includes(node.type);
+	},
+	
+	isOpener(node) {
+		return (
+			node.type === ">"
+			&& this.isElementBlock(node.parent.parent)
+		);
+	},
+	
+	isCloser(node) {
+		return (
+			node.type === "end_tag"
+			&& this.isElementBlock(node.parent)
+		);
 	},
 	
 	getHiliteClass(node) {
