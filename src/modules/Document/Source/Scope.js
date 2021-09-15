@@ -314,44 +314,4 @@ module.exports = class Scope {
 			}
 		}
 	}
-	
-	*generateNodes_pointers() {
-		let node = this.tree.rootNode;
-		
-		while (true) {
-			yield node;
-			
-			if (this.scopesByNode[node.id]) {
-				for (let childNode of this.scopesByNode[node.id].generateNodes_pointers()) {
-					yield childNode;
-				}
-			}
-			
-			node = next(node);
-			
-			if (!node) {
-				break;
-			}
-		}
-	}
-	
-	*generateNodes_cursor() {
-		let cursor = this.tree.walk();
-		
-		while (true) {
-			let node = cursor.currentNode();
-			
-			yield node;
-			
-			if (this.scopesByNode[node.id]) {
-				for (let childNode of this.scopesByNode[node.id].generateNodes_cursor()) {
-					yield childNode;
-				}
-			}
-			
-			if (!advanceCursor(cursor)) {
-				break;
-			}
-		}
-	}
 }
