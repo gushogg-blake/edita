@@ -184,6 +184,8 @@ module.exports = function(document, editor, view, editorComponent) {
 				
 				onClick() {
 					editor.doAstManipulation(code);
+					
+					view.redraw();
 				},
 			};
 		});
@@ -362,6 +364,8 @@ module.exports = function(document, editor, view, editorComponent) {
 			option,
 			target,
 		);
+		
+		view.redraw();
 	}
 	
 	function dragend() {

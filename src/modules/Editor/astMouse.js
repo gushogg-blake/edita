@@ -45,6 +45,7 @@ module.exports = {
 		
 		let {
 			edits,
+			snippetEdit,
 			newSelection,
 		} = astCommon.drop(
 			astMode,
@@ -62,6 +63,10 @@ module.exports = {
 				edits,
 				astSelection: newSelection,
 			});
+		}
+		
+		if (snippetEdit) {
+			
 		}
 	},
 	

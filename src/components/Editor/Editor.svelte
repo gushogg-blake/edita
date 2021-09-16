@@ -356,14 +356,16 @@ function switchToAstMode() {
 		return;
 	}
 	
-	view.switchToAstMode();
+	editor.switchToAstMode();
+	
 	view.redraw();
 	
 	astMouseHandler.updateHilites(lastMouseEvent);
 }
 
 function switchToNormalMode() {
-	view.switchToNormalMode();
+	editor.switchToNormalMode();
+	
 	view.redraw();
 }
 

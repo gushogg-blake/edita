@@ -66,5 +66,64 @@ module.exports = {
 	addSelectionToNewElseIf: {
 		type: "addSelectionToNewElseIf",
 		label: "+ else if",
+		
+		handleDrop(
+			document,
+			fromSelection,
+			toSelection,
+			lines,
+			move,
+			option,
+		) {	
+			let indentStr = document.fileDetails.indentation.string;
+			let {startLineIndex: toStart, endLineIndex: toEnd} = toSelection;
+			let removeDiff = 0;
+			let remove;
+			let insert;
+			
+			if (move && fromSelection) {
+				let {startLineIndex: fromStart, endLineIndex: fromEnd} = fromSelection;
+				
+				let {
+					removeLinesCount,
+					spaces,
+					edit,
+				} = removeSelection(document, fromSelection);
+				
+				edits.push(edit);
+				
+				if (fromEnd < toEnd) {
+					removeDiff = removeLinesCount - spaces.length;
+				}
+			}
+			
+			let footerLineIndex = toEnd - 1;
+			let footerLine = document.lines[footerLineIndex];
+			
+			let insertIndex = footerLineIndex;
+			let removeLines = 1;
+			
+			let insertLines = indentLines([
+				"} else if ([[%tabstop:]]) {",
+				...indentLines(lines.map(function([indentLevel, line]) {
+					return indentStr.repeat(indentLevel) + line;
+				}), indentStr),
+				"}[[%tabstop:]]",
+			], indentStr, footerLine.indentLevel);
+			
+			let newStartLineIndex = footerLineIndex + 1 - removeDiff;
+			
+			return {
+				edits,
+				
+				snippetEdit: {
+					insertIndex,
+					removeLines,
+					insertLines,
+				},
+				
+				newSelection: s(newStartLineIndex, newStartLineIndex + lines.length),
+			};
+		},
 	},
 };

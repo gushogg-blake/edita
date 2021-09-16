@@ -11,6 +11,10 @@ input:
 	- lines (array of strings) with [[%type:value]] placeholders
 	- baseLineIndex - line index of the first line
 	- baseOffset - start offset on first line
+	
+	baseLineIndex and baseOffset adjust the selections returned with
+	the placeholders so that they reflect the proper position with the
+	document if the passed lines are not the whole document
 
 output:
 

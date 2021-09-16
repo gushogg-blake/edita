@@ -238,6 +238,11 @@ module.exports = {
 	tab() {
 		if (this.snippetSession) {
 			this.nextTabstop();
+		} else if (this.astSelectionAfterSnippet) {
+			this.setAstSelection(this.astSelectionAfterSnippet);
+			this.switchToAstMode();
+			
+			this.astSelectionAfterSnippet = null;
 		} else if (this.view.Selection.isMultiline()) {
 			this.indentSelection();
 		} else {

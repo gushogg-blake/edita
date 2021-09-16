@@ -6,12 +6,13 @@ module.exports = {
 		code: "convertVariableAssignmentsToObject",
 		name: "Convert to object",
 		
-		isAvailable(lines, selection) {
+		isAvailable(document, selection) {
+			let {lines} = document;
 			let {startLineIndex, endLineIndex} = selection;
 			
 			for (let i = startLineIndex; i < endLineIndex; i++) {
 				let line = lines[i];
-				let {nodes} = line;
+				let nodes = document.getNodesOnLine(i);
 				
 				if (line.trimmed.length === 0) {
 					continue;
@@ -44,7 +45,7 @@ module.exports = {
 			
 			for (let i = start; i < end; i++) {
 				let line = lines[i];
-				let {nodes} = line;
+				let nodes = document.getNodesOnLine(i);
 				
 				if (line.trimmed.length === 0) {
 					statements.push({
@@ -117,7 +118,7 @@ module.exports = {
 				}
 			});
 			
-			let footer = [0, "};[[%tabstop:]]"];
+			let footer = [0, "};"];
 			
 			return AstSelection.selectionLinesToStrings([
 				header,

@@ -487,9 +487,7 @@ onMount(function() {
 }
 </style>
 
-<div
-	id="main"
->
+<div id="main">
 	<div
 		id="margin"
 		style={inlineStyle(marginStyle)}

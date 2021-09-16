@@ -35,7 +35,7 @@ module.exports = function(view, editorComponent) {
 			if (view.mode === "ast") {
 				editorComponent.switchToNormalMode();
 			} else {
-				editorComponent.switchToAstMode(true);
+				editorComponent.switchToAstMode();
 			}
 		},
 		
@@ -46,7 +46,7 @@ module.exports = function(view, editorComponent) {
 				if (downTime >= platform.prefs.minHoldTime || keyPressedWhilePeeking) {
 					editorComponent.switchToNormalMode();
 				} else {
-					editorComponent.switchToAstMode(false);
+					editorComponent.switchToAstMode();
 				}
 			}
 			

@@ -35,6 +35,9 @@ class Editor extends Evented {
 		
 		this.historyEntries = new WeakMap();
 		
+		this.batchState = null;
+		this.astSelectionAfterSnippet = null;
+		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
 			document.on("save", this.onDocumentSave.bind(this)),
@@ -79,15 +82,29 @@ class Editor extends Evented {
 		
 		let edit = document.lineEdit(startLineIndex, endLineIndex - startLineIndex, replacedLines);
 		let newSelection = a(startLineIndex, startLineIndex + replacedLines.length);
+		let snippetSession = null;
+		let normalSelection;
 		
-		let snippetSession = placeholders.length > 0 ? {
-			index: 0,
-			placeholders,
-		} : null;
+		if (placeholders.length > 0) {
+			this.astSelectionAfterSnippet = newSelection; // TODO
+			
+			newSelection = undefined;
+			normalSelection = placeholders[0].selection;
+			
+			this.switchToNormalMode();
+			
+			if (placeholders.length > 1) {
+				snippetSession = {
+					index: 0,
+					placeholders,
+				};
+			}
+		}
 		
 		this.applyAndAddHistoryEntry({
 			edits: [edit],
 			astSelection: newSelection,
+			normalSelection,
 			snippetSession,
 		});
 	}
@@ -118,12 +135,14 @@ class Editor extends Evented {
 		let snippetSession = null;
 		
 		if (placeholders.length > 0) {
-			snippetSession = {
-				index: 0,
-				placeholders,
-			};
-			
 			newSelection = placeholders[0].selection;
+			
+			if (placeholders.length > 1) {
+				snippetSession = {
+					index: 0,
+					placeholders,
+				};
+			}
 		}
 		
 		this.applyAndAddHistoryEntry({
@@ -173,6 +192,8 @@ class Editor extends Evented {
 				
 				if (Selection.isBefore(oldSelection, selection)) {
 					selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
+				} else if (Selection.equals(selection, oldSelection)) {
+					selection = newSelection;
 				} else if (i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
 					selection = Selection.expand(selection, newSelection);
 				} else if (Selection.isOverlapping(selection, oldSelection)) {
@@ -390,6 +411,7 @@ class Editor extends Evented {
 		}
 		
 		this.clearBatchState();
+		this.astSelectionAfterSnippet = null;
 	}
 	
 	setSelectionFromNormalMouse(selection) {
@@ -398,6 +420,7 @@ class Editor extends Evented {
 		
 		this.clearSnippetSession();
 		this.clearBatchState();
+		this.astSelectionAfterSnippet = null;
 	}
 	
 	setNormalSelection(selection) {
@@ -443,6 +466,14 @@ class Editor extends Evented {
 	
 	dedentSelection() {
 		this.adjustIndent(-1);
+	}
+	
+	switchToAstMode() {
+		this.view.switchToAstMode();
+	}
+	
+	switchToNormalMode() {
+		this.view.switchToNormalMode();
 	}
 	
 	setMode(mode) {
