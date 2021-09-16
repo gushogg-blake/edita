@@ -26,7 +26,7 @@ module.exports = {
 				let typeAttribute = attributes.find(a => a.text.match(/^type=/));
 				
 				if (typeAttribute) {
-					let match = typeAttribute.text.match(/^type=["']text\/(\w+)/);
+					let match = typeAttribute.text.match(/^type=["']text\/(scss|sass)/);
 					
 					if (match) {
 						lang = match[1];
