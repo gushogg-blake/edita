@@ -9,6 +9,10 @@ module.exports = function(document, lineIndex) {
 		if (lines[prevLineIndex].trimmed.length > 0) {
 			prev = lines[prevLineIndex].indentLevel;
 			
+			if (document.getHeadersOnLine(prevLineIndex).length > 0) {
+				prev++;
+			}
+			
 			break;
 		}
 		
