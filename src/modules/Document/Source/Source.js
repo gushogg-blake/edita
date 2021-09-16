@@ -58,7 +58,7 @@ module.exports = class {
 		
 		this.createLines();
 		
-		if (this.lang.code !== "plainText") {
+		if (this.rootScope) {
 			this.rootScope.edit(edit, index, [this.getContainingRange()], this.string);
 		}
 		
@@ -66,6 +66,10 @@ module.exports = class {
 	}
 	
 	findFirstNodeToRender(lineIndex) {
+		if (!this.rootScope) {
+			return null;
+		}
+		
 		return this.rootScope.findFirstNodeToRender(lineIndex);
 	}
 	
@@ -77,7 +81,7 @@ module.exports = class {
 			};
 		});
 		
-		if (this.lang.code !== "plainText") {
+		if (this.rootScope) {
 			let {scope, range, node} = this.findFirstNodeToRender(startLineIndex);
 			
 			while (true) {
@@ -107,7 +111,7 @@ module.exports = class {
 	}
 	
 	getNodesOnLine(lineIndex) {
-		if (this.lang.code === "plainText") {
+		if (!this.rootScope) {
 			return [];
 		}
 		
@@ -115,7 +119,7 @@ module.exports = class {
 	}
 	
 	getHeadersOnLine(lineIndex) {
-		if (this.lang.code === "plainText") {
+		if (!this.rootScope) {
 			return [];
 		}
 		
@@ -130,7 +134,7 @@ module.exports = class {
 	}
 	
 	getFootersOnLine(lineIndex) {
-		if (this.lang.code === "plainText") {
+		if (!this.rootScope) {
 			return [];
 		}
 		
@@ -175,7 +179,7 @@ module.exports = class {
 	}
 	
 	langFromCursor(cursor, scope=this.rootScope) {
-		if (this.lang.code === "plainText") {
+		if (!this.rootScope) {
 			return this.lang;
 		}
 		

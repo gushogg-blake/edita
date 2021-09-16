@@ -14,6 +14,8 @@ module.exports = class Scope {
 		this.ranges = ranges;
 		this.treeSitterRanges = ranges.map(Range.toTreeSitterRange);
 		
+		this.tree = null;
+		
 		this.scopes = [];
 		this.scopesByNode = {};
 		this.scopeAndRangeByNode = {};
@@ -154,6 +156,10 @@ module.exports = class Scope {
 	}
 	
 	findFirstNodeToRender(lineIndex) {
+		if (!this.tree) {
+			return null;
+		}
+		
 		let node = findFirstNodeToRender(this.tree, lineIndex);
 		let childScope = this.scopesByNode[node.id];
 		
@@ -181,6 +187,10 @@ module.exports = class Scope {
 		
 		if (childScopeAndRange) {
 			let {scope, range} = childScopeAndRange;
+			
+			if (!scope.tree) {
+				return this.nextAfterRange(range);
+			}
 			
 			return scope.firstInRange(range);
 		}
@@ -279,6 +289,10 @@ module.exports = class Scope {
 	*/
 	
 	*_generateNodesOnLine(withLang, lineIndex, startOffset=0) {
+		if (!this.tree) {
+			return;
+		}
+		
 		for (let node of generateNodesOnLine(this.tree, lineIndex, startOffset)) {
 			yield withLang ? {
 				node,
