@@ -22,28 +22,6 @@ module.exports = {
 		// TODO
 	},
 	
-	//isBlock(node) {
-	//	return node.startPosition.row !== node.endPosition.row && [
-	//		
-	//	].includes(node.type);
-	//},
-	//
-	//isOpener(node) {
-	//	return (
-	//		node.parent
-	//		&& this.isBlock(node.parent)
-	//		&& node.id === parent.firstChild.id
-	//	);
-	//},
-	//
-	//isCloser(node) {
-	//	return (
-	//		node.parent
-	//		&& this.isBlock(node.parent)
-	//		&& node.id === parent.lastChild.id
-	//	);
-	//},
-	
 	getHiliteClass(node) {
 		// TODO
 	},

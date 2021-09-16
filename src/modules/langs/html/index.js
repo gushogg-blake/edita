@@ -82,18 +82,30 @@ module.exports = {
 		].includes(node.type);
 	},
 	
-	isOpener(node) {
-		return (
-			node.type === ">"
-			&& this.isElementBlock(node.parent.parent)
-		);
+	getFooter(node) {
+		let {parent} = node;
+		
+		if (
+			node.type === "start_tag"
+			&& this.isElementBlock(parent)
+		) {
+			return parent.lastChild;
+		}
+		
+		return null;
 	},
 	
-	isCloser(node) {
-		return (
+	getHeader(node) {
+		let {parent} = node;
+		
+		if (
 			node.type === "end_tag"
-			&& this.isElementBlock(node.parent)
-		);
+			&& this.isElementBlock(parent)
+		) {
+			return parent.firstChild;
+		}
+		
+		return null;
 	},
 	
 	getHiliteClass(node) {

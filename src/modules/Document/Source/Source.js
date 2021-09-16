@@ -114,28 +114,34 @@ module.exports = class {
 		return [...this.rootScope.generateNodesOnLine(lineIndex)];
 	}
 	
-	getOpenersOnLine(lineIndex) {
+	getHeadersOnLine(lineIndex) {
 		if (this.lang.code === "plainText") {
 			return [];
 		}
 		
 		let nodesWithLang = [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
 		
-		return nodesWithLang.filter(function({lang, node}) {
-			return lang.isOpener(node);
-		});
+		return nodesWithLang.map(function({lang, node}) {
+			return {
+				header: node,
+				footer: lang.getFooter(node),
+			};
+		}).filter(r => r.footer);
 	}
 	
-	getClosersOnLine(lineIndex) {
+	getFootersOnLine(lineIndex) {
 		if (this.lang.code === "plainText") {
 			return [];
 		}
 		
 		let nodesWithLang = [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
 		
-		return nodesWithLang.filter(function({lang, node}) {
-			return lang.isCloser(node);
-		});
+		return nodesWithLang.map(function({lang, node}) {
+			return {
+				header: lang.getHeader(node),
+				footer: node,
+			};
+		}).filter(r => r.header);
 	}
 	
 	getContainingRange() {

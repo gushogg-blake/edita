@@ -39,7 +39,7 @@ function findFirstNodeOnOrAfterCursor(node, cursor) {
 			if (endIndex === 0) {
 				break;
 			}
-		} else if (endsAfter(child, cursor)) {
+		} else if (endsAfter(child, cursor) && child.children.length > 0) {
 			node = child;
 			children = node.children;
 			startIndex = 0;

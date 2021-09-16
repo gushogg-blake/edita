@@ -103,24 +103,32 @@ module.exports = {
 		].includes(node.type);
 	},
 	
-	isOpener(node) {
+	getFooter(node) {
 		let {parent} = node;
 		
-		return (
+		if (
 			parent
 			&& this.isBlock(parent)
 			&& node.id === parent.firstChild.id
-		);
+		) {
+			return parent.lastChild;
+		}
+		
+		return null;
 	},
 	
-	isCloser(node) {
+	getHeader(node) {
 		let {parent} = node;
 		
-		return (
+		if (
 			parent
 			&& this.isBlock(parent)
 			&& node.id === parent.lastChild.id
-		);
+		) {
+			return parent.firstChild;
+		}
+		
+		return null;
 	},
 	
 	getOpenerAndCloser(node) {

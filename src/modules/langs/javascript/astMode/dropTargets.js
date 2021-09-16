@@ -75,6 +75,7 @@ module.exports = {
 			move,
 			option,
 		) {	
+			let edits = [];
 			let indentStr = document.fileDetails.indentation.string;
 			let {startLineIndex: toStart, endLineIndex: toEnd} = toSelection;
 			let removeDiff = 0;
@@ -108,7 +109,7 @@ module.exports = {
 				...indentLines(lines.map(function([indentLevel, line]) {
 					return indentStr.repeat(indentLevel) + line;
 				}), indentStr),
-				"}[[%tabstop:]]",
+				"}",
 			], indentStr, footerLine.indentLevel);
 			
 			let newStartLineIndex = footerLineIndex + 1 - removeDiff;

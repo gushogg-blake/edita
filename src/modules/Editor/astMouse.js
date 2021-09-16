@@ -1,4 +1,5 @@
 let AstSelection = require("modules/utils/AstSelection");
+let parsePlaceholdersInLines = require("modules/utils/parsePlaceholdersInLines");
 let astCommon = require("modules/langs/common/astMode");
 
 module.exports = {
@@ -41,7 +42,8 @@ module.exports = {
 		this.view.clearDropTargets();
 		this.astMouse.setInsertionHilite(null);
 		
-		let {astMode} = this.document.langFromAstSelection(fromSelection || toSelection);
+		let {document} = this;
+		let {astMode} = document.langFromAstSelection(fromSelection || toSelection);
 		
 		let {
 			edits,
@@ -49,7 +51,7 @@ module.exports = {
 			newSelection,
 		} = astCommon.drop(
 			astMode,
-			this.document,
+			document,
 			fromSelection,
 			toSelection,
 			lines,
@@ -58,15 +60,45 @@ module.exports = {
 			target,
 		);
 		
+		let normalSelection;
+		let snippetSession = null;
+		
+		if (snippetEdit) {
+			let {
+				insertIndex,
+				removeLines,
+				insertLines,
+			} = snippetEdit;
+			
+			let {
+				lines: replacedLines,
+				placeholders,
+			} = parsePlaceholdersInLines(insertLines, insertIndex);
+			
+			edits = [...edits, document.lineEdit(insertIndex, removeLines, replacedLines)];
+			
+			this.astSelectionAfterSnippet = newSelection;
+			
+			newSelection = undefined;
+			normalSelection = placeholders[0].selection;
+			
+			this.switchToNormalMode();
+			
+			if (placeholders.length > 1) {
+				snippetSession = {
+					index: 0,
+					placeholders,
+				};
+			}
+		}
+		
 		if (edits.length > 0) {
 			this.applyAndAddHistoryEntry({
 				edits,
 				astSelection: newSelection,
+				normalSelection,
+				snippetSession,
 			});
-		}
-		
-		if (snippetEdit) {
-			
 		}
 	},
 	

@@ -1,7 +1,6 @@
 let AstSelection = require("modules/utils/AstSelection");
 
 let {
-	findNextLineIndexAtIndentLevel,
 	findPrevLineIndexAtIndentLevel,
 } = require("./utils");
 
@@ -35,23 +34,17 @@ function fromLineIndex(document, lineIndex, forHilite) {
 		}
 	}
 	
-	let openers = document.getOpenersOnLine(lineIndex);
-	let closers = document.getClosersOnLine(lineIndex);
+	let headers = document.getHeadersOnLine(lineIndex);
+	let footers = document.getFootersOnLine(lineIndex);
 	
-	if (openers.length > 0) {
-		let footerIndex = findNextLineIndexAtIndentLevel(document, lineIndex, line.indentLevel);
+	if (headers.length > 0) {
+		let footerIndex = headers[0].footer.endPosition.row;
 		
-		return s(
-			lineIndex,
-			(footerIndex !== null ? footerIndex : lineIndex) + 1,
-		);
-	} else if (closers.length > 0) {
-		let headerIndex = findPrevLineIndexAtIndentLevel(document, lineIndex, line.indentLevel);
+		return s(lineIndex, footerIndex + 1);
+	} else if (footers.length > 0) {
+		let headerIndex = footers[0].header.startPosition.row;
 		
-		return s(
-			headerIndex !== null ? headerIndex : lineIndex,
-			lineIndex + 1,
-		);
+		return s(headerIndex, lineIndex + 1);
 	} else if (line.trimmed.length > 0) {
 		return s(lineIndex, lineIndex + 1);
 	} else {

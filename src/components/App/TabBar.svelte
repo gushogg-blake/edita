@@ -7,6 +7,8 @@ let fire = createEventDispatcher();
 
 let app = getContext("app");
 
+let mimeType = "application/vnd.editor.tab";
+
 let main;
 
 let {
@@ -95,9 +97,14 @@ function tabIndexFromMouseEvent(e) {
 
 function dragstart(e) {
 	e.dataTransfer.effectAllowed = "all";
+	e.dataTransfer.setData(mimeType, ""); //
 }
 
 function dragover(e) {
+	if (!e.dataTransfer.types.includes(mimeType)) {
+		return;
+	}
+	
 	e.preventDefault();
 	
 	dropIndex = tabIndexFromMouseEvent(e);

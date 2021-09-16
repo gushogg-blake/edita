@@ -86,7 +86,7 @@ class Editor extends Evented {
 		let normalSelection;
 		
 		if (placeholders.length > 0) {
-			this.astSelectionAfterSnippet = newSelection; // TODO
+			this.astSelectionAfterSnippet = newSelection;
 			
 			newSelection = undefined;
 			normalSelection = placeholders[0].selection;

@@ -16,6 +16,7 @@ module.exports = function(
 	option,
 	target,
 ) {
+	//debugger
 	if (target) {
 		return astMode.dropTargets[target].handleDrop(
 			document,

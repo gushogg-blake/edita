@@ -292,12 +292,12 @@ class Document extends Evented {
 		return this.source.getNodesOnLine(lineIndex);
 	}
 	
-	getOpenersOnLine(lineIndex) {
-		return this.source.getOpenersOnLine(lineIndex);
+	getHeadersOnLine(lineIndex) {
+		return this.source.getHeadersOnLine(lineIndex);
 	}
 	
-	getClosersOnLine(lineIndex) {
-		return this.source.getClosersOnLine(lineIndex);
+	getFootersOnLine(lineIndex) {
+		return this.source.getFootersOnLine(lineIndex);
 	}
 	
 	getSelectedText(selection) {
