@@ -9,6 +9,7 @@ let DirEntries = require("modules/DirEntries");
 let javascript = require("modules/langs/javascript");
 let html = require("modules/langs/html");
 let css = require("modules/langs/css");
+let scss = require("modules/langs/scss");
 let php = require("modules/langs/php");
 //let svelte = require("modules/langs/svelte");
 let plainText = require("modules/langs/plainText");
@@ -48,6 +49,7 @@ class Base {
 			//svelte,
 			html,
 			css,
+			scss,
 			php,
 			plainText,
 		];
