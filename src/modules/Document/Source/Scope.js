@@ -34,22 +34,23 @@ module.exports = class Scope {
 			});
 			
 			for (let injection of this.lang.injections) {
-				let nodes = injection.query.matches(this.tree.rootNode).map(function(match) {
-					let [capture] = match.captures;
+				let matches = injection.query.matches(this.tree.rootNode).map(function(match) {
+					let captures = {};
 					
 					for (let capture of match.captures) {
-						if (capture.name === "injectionNode" && capture.node.text.length > 0) {
-							return capture.node;
-						}
+						captures[capture.name] = capture.node;
 					}
 					
-					return null;
-				}).filter(Boolean);
+					return captures;
+				}).filter(function(match) {
+					return match.injectionNode && match.injectionNode.text.length > 0;
+				});
 				
 				if (injection.combined) {
 					let injectionLang = base.langs.get(injection.lang);
 					
 					if (injectionLang) {
+						let nodes = matches.map(match => match.injectionNode);
 						let ranges = nodes.map(Range.fromNode);
 						let scope = new Scope(this, injectionLang, this.code, ranges);
 						
@@ -70,10 +71,11 @@ module.exports = class Scope {
 						}
 					}
 				} else {
-					for (let node of nodes) {
-						let injectionLang = base.langs.get(injection.lang(node));
+					for (let match of matches) {
+						let injectionLang = base.langs.get(injection.lang(match));
 						
 						if (injectionLang) {
+							let node = match.injectionNode;
 							let range = Range.fromNode(node);
 							let scope = new Scope(this, injectionLang, this.code, [range]);
 							

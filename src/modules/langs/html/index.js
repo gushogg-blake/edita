@@ -11,15 +11,29 @@ module.exports = {
 		{
 			pattern: "(script_element (raw_text) @injectionNode)",
 			
-			lang(injectionNode) {
+			lang(captures) {
 				return "javascript";
 			},
 		},
 		{
 			pattern: "(style_element (raw_text) @injectionNode)",
 			
-			lang(injectionNode) {
-				return "css";
+			lang(captures) {
+				let lang = "css";
+				
+				let startTag = captures.injectionNode.parent.firstChild;
+				let [, ...attributes] = startTag.namedChildren;
+				let typeAttribute = attributes.find(a => a.text.match(/^type=/));
+				
+				if (typeAttribute) {
+					let match = typeAttribute.text.match(/^type=["']text\/(\w+)/);
+					
+					if (match) {
+						lang = match[1];
+					}
+				}
+				
+				return lang;
 			},
 		},
 	],
