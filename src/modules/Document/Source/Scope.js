@@ -163,7 +163,7 @@ module.exports = class Scope {
 		let node = findFirstNodeToRender(this.tree, lineIndex);
 		let childScope = this.scopesByNode[node.id];
 		
-		if (childScope) {
+		if (childScope && childScope.tree) {
 			return childScope.findFirstNodeToRender(lineIndex);
 		}
 		
