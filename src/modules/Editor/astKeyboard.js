@@ -69,4 +69,8 @@ module.exports = {
 	toggleSpaceBelow() {
 		console.log("toggle space below");
 	},
+	
+	wrap() {
+		this.astMode.wrap();
+	},
 };

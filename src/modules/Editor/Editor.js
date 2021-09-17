@@ -10,6 +10,7 @@ let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let find = require("./find");
 let normalMouse = require("./normalMouse");
 let normalKeyboard = require("./normalKeyboard");
+let astMode = require("./astMode");
 let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
 
@@ -26,6 +27,7 @@ class Editor extends Evented {
 		
 		this.normalMouse = bindFunctions(this, normalMouse);
 		this.normalKeyboard = bindFunctions(this, normalKeyboard);
+		this.astMode = bindFunctions(this, astMode);
 		this.astMouse = bindFunctions(this, astMouse);
 		this.astKeyboard = bindFunctions(this, astKeyboard);
 		
@@ -415,7 +417,7 @@ class Editor extends Evented {
 	}
 	
 	setSelectionFromNormalMouse(selection) {
-		this.view.setNormalSelection(selection);
+		this.setNormalSelection(selection);
 		this.view.updateSelectionEndCol();
 		
 		this.clearSnippetSession();

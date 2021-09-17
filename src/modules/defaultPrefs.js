@@ -75,6 +75,7 @@ module.exports = function(systemInfo) {
 			"a": "selectSelection",
 			"Space": "toggleSpaceBelow",
 			"Shift+Space": "toggleSpaceAbove",
+			"w": "wrap",
 		},
 		
 		globalKeymap: {

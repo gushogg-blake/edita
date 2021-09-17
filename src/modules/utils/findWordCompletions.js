@@ -7,7 +7,8 @@ module.exports = function(code, word, index, extraWords=[]) {
 	let after = code.substr(index);
 	
 	let beforeInstances = regexMatches(before, re).reverse();
+	let extraInstances = regexMatches(extraWords.join(","), re);
 	let afterInstances = regexMatches(after, re);
 	
-	return unique([...beforeInstances, ...extraWords, ...afterInstances]);
+	return unique([...beforeInstances, ...extraInstances, ...afterInstances]);
 }

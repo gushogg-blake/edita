@@ -1,10 +1,12 @@
 let Evented = require("utils/Evented");
+let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let Source = require("./Source");
 
 let {s} = Selection;
 let {c} = Cursor;
+let {s: a} = AstSelection;
 
 class Document extends Evented {
 	constructor(code, path) {
@@ -91,6 +93,12 @@ class Document extends Evented {
 		}
 		
 		return this.edit(s(start, end), insertString);
+	}
+	
+	astEdit(astSelection, insertLines) {
+		let {startLineIndex, endLineIndex} = astSelection;
+		
+		return this.lineEdit(startLineIndex, endLineIndex - startLineIndex, insertLines);
 	}
 	
 	apply(edit) {
@@ -298,6 +306,14 @@ class Document extends Evented {
 	
 	getFootersOnLine(lineIndex) {
 		return this.source.getFootersOnLine(lineIndex);
+	}
+	
+	getAstSelection(astSelection) {
+		return AstSelection.getSelectedLines(this.lines, astSelection);
+	}
+	
+	getNormalisedAstSelection(astSelection) {
+		return AstSelection.linesToSelectionLines(AstSelection.getSelectedLines(this.lines, astSelection));
 	}
 	
 	getSelectedText(selection) {

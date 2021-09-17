@@ -352,33 +352,36 @@ module.exports = {
 				index: newIndex,
 			};
 		} else {
-			let {path} = this.document;
-			let index = this.document.indexFromCursor(cursor);
 			let wordAtCursor = this.document.wordAtCursor(cursor);
-			let extraWords = [path && platform.fs(path).name].filter(Boolean);
-			let words = findWordCompletions(this.document.string, wordAtCursor, index, extraWords);
 			
-			if (words.length > 0) {
-				let currentWord = words[0];
-				let selection = s(c(lineIndex, offset - wordAtCursor.length), cursor);
+			if (wordAtCursor) {
+				let {path} = this.document;
+				let index = this.document.indexFromCursor(cursor);
+				let extraWords = [path && platform.fs(path).basename].filter(Boolean);
+				let words = findWordCompletions(this.document.string, wordAtCursor, index, extraWords);
 				
-				let {
-					edit,
-					newSelection,
-				} = this.document.replaceSelection(selection, currentWord);
-				
-				this.applyAndAddHistoryEntry({
-					edits: [edit],
-					normalSelection: newSelection,
-				});
-				
-				this.completeWordSession = {
-					originalWord: wordAtCursor,
-					currentWord,
-					selection: s(selection.start, c(lineIndex, selection.start.offset + currentWord.length)),
-					words,
-					index: 0,
-				};
+				if (words.length > 0) {
+					let currentWord = words[0];
+					let selection = s(c(lineIndex, offset - wordAtCursor.length), cursor);
+					
+					let {
+						edit,
+						newSelection,
+					} = this.document.replaceSelection(selection, currentWord);
+					
+					this.applyAndAddHistoryEntry({
+						edits: [edit],
+						normalSelection: newSelection,
+					});
+					
+					this.completeWordSession = {
+						originalWord: wordAtCursor,
+						currentWord,
+						selection: s(selection.start, c(lineIndex, selection.start.offset + currentWord.length)),
+						words,
+						index: 0,
+					};
+				}
 			}
 		}
 		
