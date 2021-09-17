@@ -62,9 +62,8 @@ class Document extends Evented {
 	
 	lineEdit(lineIndex, removeLinesCount, insertLines) {
 		let {newline} = this.fileDetails;
-		let endLineIndex = lineIndex + removeLinesCount;
-		let removeLines = this.lines.slice(lineIndex, endLineIndex);
 		
+		let endLineIndex = lineIndex + removeLinesCount;
 		let insertString = insertLines.join(newline);
 		let start;
 		let end;
@@ -77,7 +76,9 @@ class Document extends Evented {
 		if (lineIndex === this.lines.length) {
 			start = c(lineIndex - 1, this.lines[this.lines.length - 1].string.length);
 			
-			insertString = newline + insertString;
+			if (insertLines.length > 0) {
+				insertString = newline + insertString;
+			}
 		} else {
 			start = c(lineIndex, 0);
 		}
@@ -87,7 +88,7 @@ class Document extends Evented {
 		} else {
 			end = c(endLineIndex, 0);
 			
-			if (insertString) {
+			if (insertLines.length > 0) {
 				insertString += newline;
 			}
 		}
