@@ -34,7 +34,7 @@ class AstMode extends Evented {
 		
 		this.multiStepCommand = command;
 		
-		command.on("complete canceled", () => {
+		command.onNext("complete canceled", () => {
 			this.multiStepCommand = null;
 		});
 		
