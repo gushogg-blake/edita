@@ -9,7 +9,6 @@ import render from "./canvas/render";
 
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
-import modeSwitchKey from "./modeSwitchKey";
 import contextMenu from "./contextMenu";
 
 import Scrollbar from "./Scrollbar.svelte";
@@ -21,6 +20,8 @@ let {
 	document,
 	view,
 } = editor;
+
+let {modeSwitchKey} = editor;
 
 let app = getContext("app"); //
 
@@ -42,9 +43,7 @@ let showingHorizontalScrollbar = !platform.prefs.wrap;
 
 let windowHasFocus;
 
-let switchToAstModeOnMouseUp = false;
 let isDragging = false;
-let mouseIsDown = false;
 let lastMouseEvent;
 
 let normalMouseHandler = normalMouse(document, editor, view, {
@@ -56,17 +55,7 @@ let normalMouseHandler = normalMouse(document, editor, view, {
 		return showingHorizontalScrollbar;
 	},
 	
-	mouseup() {
-		mouseIsDown = false;
-		
-		if (switchToAstModeOnMouseUp) {
-			switchToAstMode();
-			
-			view.redraw();
-			
-			switchToAstModeOnMouseUp = false;
-		}
-	},
+	mouseup,
 });
 
 let astMouseHandler = astMouse(document, editor, view, {
@@ -78,37 +67,11 @@ let astMouseHandler = astMouse(document, editor, view, {
 		return showingHorizontalScrollbar;
 	},
 	
-	get isPeekingAstMode() {
-		return modeSwitchKeyHandler.isPeeking;
-	},
-	
 	showMenu(e, items) {
 		contextMenu(e, items);
 	},
 	
-	mouseup() {
-		mouseIsDown = false;
-	},
-});
-
-let modeSwitchKeyHandler = modeSwitchKey(view, {
-	switchToAstMode() {
-		if (mouseIsDown) {
-			switchToAstModeOnMouseUp = true;
-			
-			return;
-		}
-		
-		switchToAstMode();
-		
-		view.redraw();
-	},
-	
-	switchToNormalMode() {
-		switchToNormalMode();
-		
-		view.redraw();
-	},
+	mouseup,
 });
 
 function mousedown({detail}) {
@@ -118,9 +81,7 @@ function mousedown({detail}) {
 		enableDrag,
 	} = detail;
 	
-	if (e.button === 0) {
-		mouseIsDown = true;
-	}
+	editor.mousedown();
 	
 	if (view.mode === "normal") {
 		normalMouseHandler.mousedown(e, function() {
@@ -134,8 +95,8 @@ function mousedown({detail}) {
 			// cancels the repeat)
 			
 			enableDrag(
-				modeSwitchKeyHandler.isPeeking
-				&& !modeSwitchKeyHandler.keyPressedWhilePeeking
+				modeSwitchKey.isPeeking
+				&& !modeSwitchKey.keyPressedWhilePeeking
 				&& platform.prefs.modeSwitchKey === "Escape"
 			);
 		});
@@ -180,8 +141,8 @@ function mouseleave({detail: e}) {
 	}
 }
 
-function mouseup({detail: e}) {
-	mouseIsDown = false;
+function mouseup() {
+	editor.mouseup();
 }
 
 function click({detail: e}) {
@@ -314,7 +275,7 @@ async function keydown(e) {
 	if (e.key === platform.prefs.modeSwitchKey) {
 		e.preventDefault();
 		
-		modeSwitchKeyHandler.keydown(e);
+		modeSwitchKey.keydown(e);
 		
 		return;
 	}
@@ -345,28 +306,10 @@ function keyup(e) {
 	if (e.key === platform.prefs.modeSwitchKey) {
 		e.preventDefault();
 		
-		modeSwitchKeyHandler.keyup(e);
+		modeSwitchKey.keyup(e);
 		
 		return;
 	}
-}
-
-function switchToAstMode() {
-	if (mouseIsDown) {
-		return;
-	}
-	
-	editor.switchToAstMode();
-	
-	view.redraw();
-	
-	astMouseHandler.updateHilites(lastMouseEvent);
-}
-
-function switchToNormalMode() {
-	editor.switchToNormalMode();
-	
-	view.redraw();
 }
 
 let prevWidth;
@@ -417,7 +360,7 @@ function updateCanvas() {
 	render(
 		contexts,
 		view,
-		modeSwitchKeyHandler.isPeeking,
+		modeSwitchKey.isPeeking,
 		windowHasFocus,
 	);
 }

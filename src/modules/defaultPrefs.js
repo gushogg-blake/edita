@@ -11,7 +11,7 @@ module.exports = function(systemInfo) {
 		marginBackground: "#f0f0f0",
 		selectionBackground: "#d0d0d0",
 		hiliteBackground: "#fdee20",
-		astSelectionBackground: "#c5e4ff",
+		astSelectionBackground: "#dfdfdf",
 		astSelectionHiliteBackground: "#F2F2F2",
 		astInsertionHiliteBackground: "#606060",
 		
@@ -45,6 +45,7 @@ module.exports = function(systemInfo) {
 			"Shift+Home": "expandOrContractSelectionHome",
 			"Ctrl+Shift+ArrowLeft": "expandOrContractSelectionWordLeft",
 			"Ctrl+Shift+ArrowRight": "expandOrContractSelectionWordRight",
+			
 			"Backspace": "backspace",
 			"Delete": "delete",
 			"Enter": "enter",
@@ -54,11 +55,15 @@ module.exports = function(systemInfo) {
 			"Shift+Enter": "enter",
 			"Ctrl+Enter": "enterNoAutoIndent",
 			"Shift+Tab": "shiftTab",
+			
 			"Ctrl+X": "cut",
 			"Ctrl+C": "copy",
 			"Ctrl+V": "paste",
 			"Ctrl+A": "selectAll",
+			
 			"Ctrl+Space": "completeWord",
+			
+			"Alt+I": "insertAstClipboard",
 		},
 		
 		astKeymap: {
@@ -151,5 +156,11 @@ module.exports = function(systemInfo) {
 		},
 		
 		cursorBlinkPeriod: 700,
+		
+		showPane: {
+			left: true,
+			right: true,
+			bottom: true,
+		},
 	};
 }

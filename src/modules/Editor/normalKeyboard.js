@@ -432,6 +432,10 @@ module.exports = {
 		this.clearBatchState();
 	},
 	
+	insertAstClipboard() {
+		this.astMode.pasteFromNormalMode();
+	},
+	
 	insert(key) {
 		let newBatchState = this.view.Selection.isFull() ? null : "typing";
 		

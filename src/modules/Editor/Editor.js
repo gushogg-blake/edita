@@ -13,6 +13,7 @@ let normalKeyboard = require("./normalKeyboard");
 let astMode = require("./astMode");
 let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
+let modeSwitchKey = require("./modeSwitchKey");
 
 let {s: a} = AstSelection;
 let {s} = Selection;
@@ -30,6 +31,10 @@ class Editor extends Evented {
 		this.astMode = bindFunctions(this, astMode);
 		this.astMouse = bindFunctions(this, astMouse);
 		this.astKeyboard = bindFunctions(this, astKeyboard);
+		
+		this.modeSwitchKey = modeSwitchKey(this);
+		
+		this.mouseIsDown = false;
 		
 		this.find = find(this);
 		
@@ -492,6 +497,18 @@ class Editor extends Evented {
 	
 	getSelectedText() {
 		return this.document.getSelectedText(this.view.normalSelection);
+	}
+	
+	mousedown() {
+		this.modeSwitchKey.mousedown();
+	}
+	
+	mouseup() {
+		this.modeSwitchKey.mouseup();
+	}
+	
+	get mode() {
+		return this.view.mode;
 	}
 	
 	get normalSelection() {

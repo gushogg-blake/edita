@@ -6,7 +6,12 @@ module.exports = function(layers, view, isPeeking) {
 		astSelectionHilite: hilite,
 		astSelection: selection,
 		document,
-		measurements,
+		sizes: {
+			width,
+		},
+		measurements: {
+			rowHeight,
+		},
 	} = view;
 	
 	if (!hilite) {
@@ -21,7 +26,6 @@ module.exports = function(layers, view, isPeeking) {
 	
 	context.fillStyle = platform.prefs.astSelectionHiliteBackground;
 	
-	let {colWidth, rowHeight} = measurements;
 	let {startLineIndex, endLineIndex} = hilite;
 	let startLine = wrappedLines[startLineIndex].line;
 	let startRow = view.getLineStartingRow(startLineIndex);
@@ -32,9 +36,11 @@ module.exports = function(layers, view, isPeeking) {
 		startLine.indentLevel * document.fileDetails.indentation.colsPerIndent,
 	);
 	
+	x = Math.max(0, x);
+	
 	if (height === 0) {
-		context.fillRect(x, y, context.canvas.width, 2);
+		context.fillRect(0, y, width, 2);
 	} else {
-		context.fillRect(x, y, context.canvas.width, height);
+		context.fillRect(0, y, width, height);
 	}
 }

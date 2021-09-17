@@ -185,6 +185,12 @@ class Platform extends Evented {
 		ipc.prefs.save(this.prefs);
 	}
 	
+	resetPrefs() {
+		this.prefs = defaultPrefs(this.systemInfo);
+		
+		ipc.prefs.save(this.prefs);
+	}
+	
 	onPrefsUpdate() {
 		this.fire("prefsUpdated");
 	}

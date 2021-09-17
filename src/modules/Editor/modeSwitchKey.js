@@ -1,4 +1,9 @@
-module.exports = function(view, editorComponent) {
+module.exports = function(editor) {
+	let {view} = editor;
+	
+	let mouseIsDown = false;
+	let switchToAstModeOnMouseUp = false;
+	
 	let keyIsDown = false;
 	let keyDownAt;
 	
@@ -12,6 +17,24 @@ module.exports = function(view, editorComponent) {
 	*/
 	
 	let keyPressedWhilePeeking = false;
+	
+	function switchToAstMode() {
+		if (mouseIsDown) {
+			switchToAstModeOnMouseUp = true;
+			
+			return;
+		}
+		
+		editor.switchToAstMode();
+		
+		editor.view.redraw();
+	}
+	
+	function switchToNormalMode() {
+		editor.switchToNormalMode();
+		
+		editor.view.redraw();
+	}
 	
 	function keydown(e) {
 		if (e.key === platform.prefs.modeSwitchKey) {
@@ -32,21 +55,21 @@ module.exports = function(view, editorComponent) {
 			keyIsDown = true;
 			keyDownAt = Date.now();
 			
-			if (view.mode === "ast") {
-				editorComponent.switchToNormalMode();
+			if (editor.mode === "ast") {
+				switchToNormalMode();
 			} else {
-				editorComponent.switchToAstMode();
+				switchToAstMode();
 			}
 		},
 		
 		keyup(e) {
 			let downTime = Date.now() - keyDownAt;
 			
-			if (view.mode === "ast") {
+			if (editor.mode === "ast") {
 				if (downTime >= platform.prefs.minHoldTime || keyPressedWhilePeeking) {
-					editorComponent.switchToNormalMode();
+					switchToNormalMode();
 				} else {
-					editorComponent.switchToAstMode();
+					switchToAstMode();
 				}
 			}
 			
@@ -54,6 +77,22 @@ module.exports = function(view, editorComponent) {
 			keyPressedWhilePeeking = false;
 			
 			window.removeEventListener("keydown", keydown);
+		},
+		
+		mousedown() {
+			mouseIsDown = true;
+		},
+		
+		mouseup() {
+			mouseIsDown = false;
+			
+			if (switchToAstModeOnMouseUp) {
+				switchToAstMode();
+				
+				view.redraw();
+				
+				switchToAstModeOnMouseUp = false;
+			}
 		},
 		
 		get isPeeking() {

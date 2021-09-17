@@ -28,6 +28,10 @@ module.exports = {
 		return isMultiline(this.normalSelection);
 	},
 	
+	sorted() {
+		return sort(this.normalSelection);
+	},
+	
 	up() {
 		let {start} = sort(this.normalSelection);
 		let [startRow, startCol] = this.rowColFromCursor(start);

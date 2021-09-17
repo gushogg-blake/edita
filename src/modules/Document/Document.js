@@ -308,12 +308,12 @@ class Document extends Evented {
 		return this.source.getFootersOnLine(lineIndex);
 	}
 	
-	getAstSelection(astSelection) {
+	getSelectedLines(astSelection) {
 		return AstSelection.getSelectedLines(this.lines, astSelection);
 	}
 	
-	getNormalisedAstSelection(astSelection) {
-		return AstSelection.linesToSelectionLines(AstSelection.getSelectedLines(this.lines, astSelection));
+	getAstSelection(astSelection) {
+		return AstSelection.linesToSelectionLines(this.getSelectedLines(astSelection));
 	}
 	
 	getSelectedText(selection) {
