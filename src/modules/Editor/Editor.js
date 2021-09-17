@@ -8,9 +8,9 @@ let parsePlaceholdersInLines = require("modules/utils/parsePlaceholdersInLines")
 let stringToLineTuples = require("modules/utils/stringToLineTuples");
 let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let find = require("./find");
+let AstMode = require("./AstMode");
 let normalMouse = require("./normalMouse");
 let normalKeyboard = require("./normalKeyboard");
-let astMode = require("./astMode");
 let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
 let modeSwitchKey = require("./modeSwitchKey");
@@ -26,9 +26,10 @@ class Editor extends Evented {
 		this.document = document;
 		this.view = view;
 		
+		this.astMode = new AstMode(this);
+		
 		this.normalMouse = bindFunctions(this, normalMouse);
 		this.normalKeyboard = bindFunctions(this, normalKeyboard);
-		this.astMode = bindFunctions(this, astMode);
 		this.astMouse = bindFunctions(this, astMouse);
 		this.astKeyboard = bindFunctions(this, astKeyboard);
 		
@@ -43,7 +44,6 @@ class Editor extends Evented {
 		this.historyEntries = new WeakMap();
 		
 		this.batchState = null;
-		this.astSelectionAfterSnippet = null;
 		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
@@ -75,45 +75,7 @@ class Editor extends Evented {
 	*/
 	
 	doAstManipulation(code) {
-		let {document} = this;
-		let {lines} = document;
-		let {startLineIndex, endLineIndex} = this.view.astSelection;
-		let {astMode} = this.view.lang;
-		
-		let transformedLines = astMode.astManipulations[code].apply(document, this.view.astSelection);
-		
-		let {
-			lines: replacedLines,
-			placeholders,
-		} = parsePlaceholdersInLines(transformedLines, startLineIndex);
-		
-		let edit = document.lineEdit(startLineIndex, endLineIndex - startLineIndex, replacedLines);
-		let newSelection = a(startLineIndex, startLineIndex + replacedLines.length);
-		let snippetSession = null;
-		let normalSelection;
-		
-		if (placeholders.length > 0) {
-			this.astSelectionAfterSnippet = newSelection;
-			
-			newSelection = undefined;
-			normalSelection = placeholders[0].selection;
-			
-			this.switchToNormalMode();
-			
-			if (placeholders.length > 1) {
-				snippetSession = {
-					index: 0,
-					placeholders,
-				};
-			}
-		}
-		
-		this.applyAndAddHistoryEntry({
-			edits: [edit],
-			astSelection: newSelection,
-			normalSelection,
-			snippetSession,
-		});
+		this.astMode.doLangManipulation(code);
 	}
 	
 	insertSnippet(snippet, replaceWord=null) {
@@ -418,7 +380,7 @@ class Editor extends Evented {
 		}
 		
 		this.clearBatchState();
-		this.astSelectionAfterSnippet = null;
+		this.astMode.clearMultiStepCommand();
 	}
 	
 	setSelectionFromNormalMouse(selection) {
@@ -427,7 +389,7 @@ class Editor extends Evented {
 		
 		this.clearSnippetSession();
 		this.clearBatchState();
-		this.astSelectionAfterSnippet = null;
+		this.astMode.clearMultiStepCommand();
 	}
 	
 	setNormalSelection(selection) {
@@ -509,6 +471,10 @@ class Editor extends Evented {
 	
 	get mode() {
 		return this.view.mode;
+	}
+	
+	get astSelection() {
+		return this.view.astSelection;
 	}
 	
 	get normalSelection() {

@@ -71,6 +71,6 @@ module.exports = {
 	},
 	
 	wrap() {
-		this.astMode.wrap();
+		this.astMode.commands.wrap();
 	},
 };

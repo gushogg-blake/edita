@@ -27,6 +27,14 @@ module.exports = class {
 		}
 	}
 	
+	onNext(events, handler) {
+		let remove = this.on(events, function(...args) {
+			handler(...args);
+			
+			remove();
+		});
+	}
+	
 	fire(event, ...args) {
 		if (!this._handlers[event]) {
 			return;

@@ -57,7 +57,7 @@ module.exports = function(document, editor, view, editorComponent) {
 		return [x, y];
 	}
 	
-	function getHilite(e, withinSelection=true) {
+	function getHilite(e, withinSelection=false) {
 		let {
 			astSelection,
 			normalSelection,

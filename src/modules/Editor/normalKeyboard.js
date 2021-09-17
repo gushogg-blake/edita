@@ -236,55 +236,51 @@ module.exports = {
 	},
 	
 	tab() {
+		let snippet = null;
+		
+		if (!this.view.Selection.isFull()) {
+			let wordAtCursor = this.document.wordAtCursor(this.view.normalSelection.start);
+			
+			if (wordAtCursor) {
+				snippet = platform.getSnippet(wordAtCursor);
+			}
+		}
+		
 		if (this.snippetSession) {
 			this.nextTabstop();
-		} else if (this.astSelectionAfterSnippet) {
-			this.setAstSelection(this.astSelectionAfterSnippet);
-			this.switchToAstMode();
-			
-			this.astSelectionAfterSnippet = null;
+		} else if (this.astMode.multiStepCommandWaitingForReturnToAstMode) {
+			this.astMode.multiStepCommandReturnToAstMode();
+		} else if (snippet) {
+			this.insertSnippet(snippet, snippet.name);
 		} else if (this.view.Selection.isMultiline()) {
 			this.indentSelection();
 		} else {
-			let snippet = null;
+			// insert tab
 			
-			if (!this.view.Selection.isFull()) {
-				let {start: cursor} = this.view.normalSelection;
-				let wordAtCursor = this.document.wordAtCursor(cursor);
-				
-				snippet = platform.getSnippet(wordAtCursor);
-			}
+			let {indentation} = this.document.fileDetails;
+			let {normalSelection} = this.view;
 			
-			if (snippet) {
-				this.insertSnippet(snippet, snippet.name);
+			let str;
+			
+			if (indentation.type === "tab") {
+				str = "\t";
 			} else {
-				// insert tab
+				let {start} = Selection.sort(normalSelection);
+				let {colsPerIndent} = indentation;
+				let insertCols = colsPerIndent - start.offset % colsPerIndent;
 				
-				let {indentation} = this.document.fileDetails;
-				let {normalSelection} = this.view;
-				
-				let str;
-				
-				if (indentation.type === "tab") {
-					str = "\t";
-				} else {
-					let {start} = Selection.sort(normalSelection);
-					let {colsPerIndent} = indentation;
-					let insertCols = colsPerIndent - start.offset % colsPerIndent;
-					
-					str = " ".repeat(insertCols);
-				}
-				
-				let {
-					edit,
-					newSelection,
-				} = this.document.replaceSelection(this.view.normalSelection, str);
-				
-				this.applyAndAddHistoryEntry({
-					edits: [edit],
-					normalSelection: newSelection,
-				});
+				str = " ".repeat(insertCols);
 			}
+			
+			let {
+				edit,
+				newSelection,
+			} = this.document.replaceSelection(this.view.normalSelection, str);
+			
+			this.applyAndAddHistoryEntry({
+				edits: [edit],
+				normalSelection: newSelection,
+			});
 		}
 		
 		this.clearBatchState();
