@@ -1,11 +1,14 @@
 let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
+let Selection = require("modules/utils/Selection");
+let Cursor = require("modules/utils/Cursor");
 let AstSelection = require("modules/utils/AstSelection");
 let indentLines = require("modules/utils/indentLines");
 let findIndentLevel = require("modules/langs/common/astMode/utils/findIndentLevel");
 let multiStepCommands = require("./multiStepCommands");
 
 let {s} = AstSelection;
+let {c} = Cursor;
 
 let commands = {
 	wrap() {
@@ -54,10 +57,6 @@ class AstMode extends Evented {
 	multiStepCommandReturnToAstMode() {
 		this.multiStepCommand.returnFromNormalMode();
 	}
-
-	getClipboard() {
-		return this.clipboard;
-	}
 	
 	setClipboard() {
 		this.clipboard = this.editor.document.getAstSelection(this.editor.astSelection);
@@ -82,6 +81,10 @@ class AstMode extends Evented {
 	}
 	
 	pasteFromNormalMode() {
+		if (!this.clipboard) {
+			return null;
+		}
+		
 		let {editor} = this;
 		let {document} = editor;
 		
@@ -90,19 +93,28 @@ class AstMode extends Evented {
 		
 		let astSelection = s(start.lineIndex, end.lineIndex + 1);
 		
-		let insertLines = AstSelection.selectionLinesToStrings(this.getClipboard(), document.fileDetails.indentation.string, indentLevel);
+		let insertLines = AstSelection.selectionLinesToStrings(this.clipboard, document.fileDetails.indentation.string, indentLevel);
 		
 		let edit = document.astEdit(astSelection, insertLines);
 		
+		let {lineIndex, offset} = edit.newSelection.end;
+		let cursor = c(lineIndex - 1, insertLines[insertLines.length - 1].length);
+		let newSelection = Selection.s(cursor);
+		
 		editor.applyAndAddHistoryEntry({
 			edits: [edit],
+			normalSelection: newSelection,
 		});
 		
-		this.fire("pasteFromNormalMode", {
+		let paste = {
 			astSelection,
 			insertLines,
 			edit,
-		});
+		};
+		
+		this.fire("pasteFromNormalMode", paste);
+		
+		return paste;
 	}
 }
 
