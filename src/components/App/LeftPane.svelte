@@ -1,8 +1,8 @@
 <script>
 import {onMount, getContext} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
+import FileTree from "components/FileTree/FileTree.svelte";
 import FocusablePane from "./FocusablePane.svelte";
-import FileTree from "../FileTree/FileTree.svelte";
 
 let app = getContext("app");
 

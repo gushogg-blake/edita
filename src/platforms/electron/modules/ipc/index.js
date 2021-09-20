@@ -3,7 +3,7 @@ let dialog = require("./dialog");
 let clipboard = require("./clipboard");
 let contextMenu = require("./contextMenu");
 let openDialogWindow = require("./openDialogWindow");
-let snippets = require("./snippets");
+let Snippets = require("./Snippets");
 let jsonStore = require("./jsonStore");
 let JsonStore = require("./JsonStore");
 
@@ -15,5 +15,5 @@ module.exports = {
 	openDialogWindow,
 	jsonStore,
 	prefs: new JsonStore("prefs"),
-	snippets,
+	snippets: new Snippets(),
 };

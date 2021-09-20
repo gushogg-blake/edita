@@ -10,6 +10,7 @@ let fs = require("../common/modules/fs");
 let path = require("../common/modules/path-browser");
 let clipboard = require("./modules/clipboard");
 let localStorage = require("./modules/localStorage");
+let Snippets = require("./modules/Snippets");
 
 class Platform extends Evented {
 	constructor() {
@@ -48,7 +49,7 @@ class Platform extends Evented {
 		});
 		
 		this.prefs = this.loadJson("prefs") || defaultPrefs(this.systemInfo);
-		this.snippets = await this.loadSnippets();
+		this.snippets = new Snippets(options.localStoragePrefix);
 	}
 	
 	async open(defaultPath, currentPath) {
@@ -63,18 +64,6 @@ class Platform extends Evented {
 		
 	}
 	
-	findInFiles(path, inAppFallback) {
-		inAppFallback(path);
-	}
-	
-	findAndReplaceInFiles(path, inAppFallback) {
-		inAppFallback(path);
-	}
-	
-	editSnippet(snippet, inAppFallback) {
-		inAppFallback(snippet);
-	}
-	
 	async filesFromDropEvent(e) {
 		return bluebird.map([...e.dataTransfer.files], async function(file) {
 			return {
@@ -86,6 +75,10 @@ class Platform extends Evented {
 	
 	getFilesToOpenOnStartup() {
 		return [];
+	}
+	
+	openDialogWindow(app, dialog, dialogOptions, windowOptions) {
+		app.openDialogWindow(dialog, dialogOptions, windowOptions);
 	}
 	
 	showMessageBox(options) {
@@ -118,14 +111,6 @@ class Platform extends Evented {
 		this.saveJson("prefs", this.prefs);
 		
 		this.fire("prefsUpdated");
-	}
-	
-	loadSnippets() {
-		return []; //
-	}
-	
-	getSnippet(name) {
-		return this.snippets.find(s => s.name === name);
 	}
 	
 	loadJson(key) {

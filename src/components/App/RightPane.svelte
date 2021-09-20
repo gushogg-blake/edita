@@ -1,6 +1,6 @@
 <script>
 import {onMount, getContext} from "svelte";
-import Gap from "../utils/Gap.svelte";
+import Gap from "components/utils/Gap.svelte";
 import FocusablePane from "./FocusablePane.svelte";
 
 let app = getContext("app");
@@ -10,7 +10,7 @@ let snippetsByLang;
 function updateSnippetGroups() {
 	snippetsByLang = {};
 	
-	for (let snippet of platform.snippets) {
+	for (let snippet of platform.snippets.all()) {
 		let langs = snippet.langs.join(", ");
 		let groups = snippet.langGroups.join(", ");
 		let key = langs + (langs && groups ? ", " : "") + groups;

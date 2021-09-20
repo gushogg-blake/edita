@@ -4,12 +4,14 @@ let Evented = require("utils/Evented");
 let focusManager = require("utils/focusManager");
 let bindFunctions = require("utils/bindFunctions");
 let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
+let inlineStyle = require("utils/dom/inlineStyle");
 let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
 let FileTree = require("./FileTree");
 let FindAndReplace = require("./FindAndReplace");
+let createDialogComponent = require("./createDialogComponent");
 let functions = require("./functions");
 
 class App extends Evented {
@@ -30,6 +32,7 @@ class App extends Evented {
 		
 		this.focusManager = focusManager();
 		
+		this.createDialogComponent = bindFunctions(this, createDialogComponent);
 		this.functions = bindFunctions(this, functions);
 		
 		this.teardownCallbacks = [
@@ -359,41 +362,55 @@ class App extends Evented {
 		});
 	}
 	
-	findInFiles(path) {
-		platform.findInFiles(path, () => {
-			this.findInFilesInApp(path);
+	findInFiles(paths) {
+		platform.openDialogWindow(this, "findAndReplace", {
+			replace: false,
+			searchIn: "files",
+			paths,
+		}, {
+			width: 640,
+			height: 300,
 		});
 	}
 	
-	findAndReplaceInFiles(path) {
-		platform.findAndReplaceInFiles(path, () => {
-			this.findAndReplaceInFilesInApp(path);
+	findAndReplaceInFiles(paths) {
+		platform.openDialogWindow(this, "findAndReplace", {
+			replace: true,
+			searchIn: "files",
+			paths,
+		}, {
+			width: 640,
+			height: 300,
 		});
 	}
 	
 	editSnippet(snippet) {
-		platform.editSnippet(snippet, () => {
-			this.editSnippetInApp(snippet);
+		platform.openDialogWindow(this, "snippetEditor", {
+			snippetId: snippet.id,
+		}, {
+			width: 680,
+			height: 480,
 		});
 	}
 	
-	editSnippetInApp(snippet) {
-		this.openModal((el, closeWindow) => {
-			let snippetEditor = new base.components.SnippetEditor({
-				target: el,
-				
-				props: {
-					app: this,
-					snippet,
-				},
-			});
-			
-			snippetEditor.$on("save", () => {
-				console.log("save");
-				
-				closeWindow();
-			});
+	openDialogWindow(dialog, dialogOptions, windowOptions) {
+		let container = document.createElement("div");
+		
+		container.style = inlineStyle({
+			position: "absolute",
+			top: 0,
+			left: 0,
 		});
+		
+		document.body.appendChild(container);
+		
+		this.createDialogComponent[dialog](el, dialogOptions, () => {
+			document.body.removeChild(container);
+		});
+		
+		function resize() {
+			
+		}
 	}
 	
 	uiMounted(mainDiv) {

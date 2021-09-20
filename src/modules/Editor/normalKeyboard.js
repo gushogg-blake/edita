@@ -242,7 +242,7 @@ module.exports = {
 			let wordAtCursor = this.document.wordAtCursor(this.view.normalSelection.start);
 			
 			if (wordAtCursor) {
-				snippet = platform.getSnippet(wordAtCursor);
+				snippet = platform.snippets.findByLangAndName(this.document.lang, wordAtCursor);
 			}
 		}
 		

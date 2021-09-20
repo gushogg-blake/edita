@@ -30,12 +30,11 @@ class Platform extends Evented {
 		this.filesToOpenOnStartup = filesToOpenOnStartup;
 		
 		this.clipboard = ipc.clipboard;
+		this.snippets = ipc.snippets;
 		this.path = path;
 		this.fs = fs;
 		
 		ipc.prefs.on("update", this.onPrefsUpdate.bind(this));
-		ipc.snippets.on("new", this.onNewSnippet.bind(this));
-		ipc.snippets.on("update", this.onSnippetUpdate.bind(this));
 		
 		ipcRenderer.on("closeWindow", () => {
 			let defaultPrevented = false;
@@ -59,7 +58,8 @@ class Platform extends Evented {
 	
 	async init() {
 		this.prefs = await ipc.prefs.load() || defaultPrefs(this.systemInfo);
-		this.snippets = await ipc.snippets.load();
+		
+		await this.snippets.init();
 	}
 	
 	async open(dir=null) {
@@ -94,35 +94,6 @@ class Platform extends Evented {
 		return filePath || null;
 	}
 	
-	findInFiles(paths) {
-		this.openDialogWindow("/dialogs/findAndReplace.html", {
-			replace: false,
-			searchIn: "files",
-			paths,
-		}, {
-			width: 640,
-			height: 300,
-		});
-	}
-	
-	findAndReplaceInFiles(paths) {
-		this.openDialogWindow("/dialogs/findAndReplace.html", {
-			replace: true,
-			searchIn: "files",
-			paths,
-		}, {
-			width: 640,
-			height: 300,
-		});
-	}
-	
-	editSnippet(snippet) {
-		this.openDialogWindow("/dialogs/snippetEditor.html", null, {
-			width: 680,
-			height: 480,
-		});
-	}
-	
 	filesFromDropEvent(e) {
 		return [...e.dataTransfer.files].map(function(file) {
 			return {
@@ -153,8 +124,8 @@ class Platform extends Evented {
 		ipc.contextMenu(items, {x, y: y + height});
 	}
 	
-	openDialogWindow(url, dialogOptions, windowOptions) {
-		ipc.openDialogWindow(url + "?options=" + encodeURIComponent(JSON.stringify(dialogOptions)), windowOptions);
+	openDialogWindow(app, dialog, dialogOptions, windowOptions) {
+		ipc.openDialogWindow("/dialogs/" + dialog + ".html?options=" + encodeURIComponent(JSON.stringify(dialogOptions)), windowOptions);
 	}
 	
 	callParentWindow(channel, method, ...args) {
@@ -193,18 +164,6 @@ class Platform extends Evented {
 	
 	onPrefsUpdate() {
 		this.fire("prefsUpdated");
-	}
-	
-	onNewSnippet() {
-		
-	}
-	
-	onSnippetUpdate() {
-		
-	}
-	
-	getSnippet(name) {
-		return this.snippets.find(s => s.name === name);
 	}
 	
 	loadJson(key) {
