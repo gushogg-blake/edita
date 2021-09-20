@@ -128,8 +128,8 @@ class Platform extends Evented {
 		ipc.openDialogWindow("/dialogs/" + dialog + ".html?options=" + encodeURIComponent(JSON.stringify(dialogOptions)), windowOptions);
 	}
 	
-	callParentWindow(channel, method, ...args) {
-		return ipcRenderer.invoke("callParentWindow", "call", channel, method, ...args);
+	callOpener(channel, method, ...args) {
+		return ipcRenderer.invoke("callOpener", "call", channel, method, ...args);
 	}
 	
 	handleIpcMessages(channel, handler) {

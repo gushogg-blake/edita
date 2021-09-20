@@ -22,10 +22,14 @@ class App extends Evented {
 		super();
 		
 		this.config = config;
+		
 		this.appWindows = [];
 		this.dialogWindows = [];
-		this.closeWithoutConfirming = new WeakMap();
 		this.mainWindow = null;
+		
+		this.closeWithoutConfirming = new WeakMap();
+		this.dialogOpeners = new WeakMap();
+		
 		this.filesToOpenOnStartup = yargs(hideBin(process.argv)).argv._.map(p => path.resolve(process.cwd(), p));
 	}
 	
@@ -184,6 +188,7 @@ class App extends Evented {
 		options = {
 			width: 800,
 			height: 600,
+			useOpenerAsParent: false,
 			...options,
 		};
 		
@@ -195,9 +200,11 @@ class App extends Evented {
 		let browserWindow = this.createDialogWindow(url, {
 			x,
 			y,
-			parent: opener,
+			parent: options.useOpenerAsParent ? opener : undefined,
 			...options,
 		});
+		
+		this.dialogOpeners.set(browserWindow, opener);
 		
 		this.fire("dialogWindowOpened", {
 			browserWindow,

@@ -4,7 +4,7 @@ let clipboard = require("./clipboard");
 let dialog = require("./dialog");
 let contextMenu = require("./contextMenu");
 let openDialogWindow = require("./openDialogWindow");
-let callParentWindow = require("./callParentWindow");
+let callOpener = require("./callOpener");
 let jsonStore = require("./jsonStore");
 let snippets = require("./snippets");
 let devTools = require("./devTools");
@@ -13,7 +13,7 @@ let asyncModules = {
 	dialog,
 	contextMenu,
 	openDialogWindow,
-	callParentWindow,
+	callOpener,
 	jsonStore,
 	snippets,
 	devTools,

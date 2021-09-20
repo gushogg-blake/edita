@@ -23,23 +23,23 @@ class App extends Evented {
 		
 		this.findAndReplace = {
 			findAll(options) {
-				return platform.callParentWindow("findAndReplace", "findAll", options);
+				return platform.callOpener("findAndReplace", "findAll", options);
 			},
 			
 			replaceAll(options) {
-				return platform.callParentWindow("findAndReplace", "replaceAll", options);
+				return platform.callOpener("findAndReplace", "replaceAll", options);
 			},
 			
 			findNext(options) {
-				return platform.callParentWindow("findAndReplace", "findNext", options);
+				return platform.callOpener("findAndReplace", "findNext", options);
 			},
 			
 			findPrevious(options) {
-				return platform.callParentWindow("findAndReplace", "findPrevious", options);
+				return platform.callOpener("findAndReplace", "findPrevious", options);
 			},
 			
 			replace(options) {
-				return platform.callParentWindow("findAndReplace", "replace", options);
+				return platform.callOpener("findAndReplace", "replace", options);
 			},
 		};
 	}

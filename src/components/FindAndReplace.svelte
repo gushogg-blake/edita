@@ -43,27 +43,25 @@ $: options = {
 	excludePatterns,
 };
 
-//let confirm = false;
-
 let functions = {
 	async findAll() {
 		console.log(await findAndReplace.findAll(options));
 	},
 	
-	replaceAll(options) {
-		return platform.callParentWindow("findAndReplace", "replaceAll", options);
+	replaceAll() {
+		
 	},
 	
-	findNext(options) {
-		return platform.callParentWindow("findAndReplace", "findNext", options);
+	findNext() {
+		
 	},
 	
-	findPrevious(options) {
-		return platform.callParentWindow("findAndReplace", "findPrevious", options);
+	findPrevious() {
+		
 	},
 	
-	replace(options) {
-		return platform.callParentWindow("findAndReplace", "replace", options);
+	replace() {
+		
 	},
 };
 
