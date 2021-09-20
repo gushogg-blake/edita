@@ -34,11 +34,19 @@ function keydown(e) {
 let firstResize = true;
 
 async function onResize({detail: mainHeight}) {
+	let {body} = document;
+	
 	if (firstResize) {
 		await sleep(50);
 	}
 	
-	window.resizeBy(0, -(document.body.offsetHeight - mainHeight));
+	window.resizeBy(0, -(body.offsetHeight - mainHeight));
+	
+	while (body.scrollHeight > body.offsetHeight) {
+		window.resizeBy(0, 1);
+		
+		await sleep(1);
+	}
 	
 	firstResize = false;
 }
@@ -49,7 +57,7 @@ async function onResize({detail: mainHeight}) {
 <style type="text/scss">
 #main {
 	width: 100%;
-	height: 100%;
+	/*height: 100%;*/
 }
 </style>
 
