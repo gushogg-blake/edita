@@ -1,13 +1,17 @@
 <script>
 import {createEventDispatcher, onMount} from "svelte";
-import Editor from "./Editor/Editor.svelte";
+import Editor from "components/Editor/Editor.svelte";
 
-export let app;
 export let snippet;
 
-let fire = createEventDispatcher();
+let {
+	name,
+	langGroups,
+	langs,
+	text,
+} = snippet;
 
-let editor = app.createEditor();
+let fire = createEventDispatcher();
 
 onMount(function() {
 	let teardown = [
@@ -34,9 +38,9 @@ onMount(function() {
 
 <div id="main">
 	<div id="name">
-		{snippet.name}
+		{name}
 	</div>
 	<div id="editor">
-		<Editor {editor}/>
+		<Editor bind:value={text}/>
 	</div>
 </div>

@@ -61,6 +61,9 @@ module.exports = function(systemInfo) {
 			"Ctrl+V": "paste",
 			"Ctrl+A": "selectAll",
 			
+			"Ctrl+Z": "undo",
+			"Ctrl+Y": "redo",
+			
 			"Ctrl+Space": "completeWord",
 			
 			"Alt+I": "insertAstClipboard",
@@ -87,8 +90,6 @@ module.exports = function(systemInfo) {
 			"Ctrl+O": "open",
 			"Ctrl+S": "save",
 			"Ctrl+N": "_new",
-			"Ctrl+Z": "undo",
-			"Ctrl+Y": "redo",
 			"Ctrl+F": "find",
 			"Ctrl+Shift+F": "findInOpenFiles",
 			"Ctrl+H": "findAndReplace",

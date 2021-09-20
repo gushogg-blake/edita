@@ -1,11 +1,9 @@
 <script>
-import {onMount, setContext} from "svelte";
+import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
-import Editor from "components/Editor/Editor.svelte";
+import SnippetEditor from "components/SnippetEditor.svelte";
 
 export let app;
-
-setContext("app", app);
 
 let functions = {
 	
@@ -18,7 +16,6 @@ function keydown(e) {
 		functions[keyCombo]();
 	}
 }
-
 </script>
 
 <svelte:window on:keydown={keydown}/>
@@ -31,5 +28,5 @@ function keydown(e) {
 </style>
 
 <div id="main">
-	<Editor editor={app.editor}/>
+	<SnippetEditor snippet={app.snippet}/>
 </div>

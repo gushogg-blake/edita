@@ -18,15 +18,7 @@ class App extends Evented {
 	}
 	
 	async init() {
-		let snippet = await platform.snippets.findById(this.snippetId);
-		
-		this.snippet = snippet;
-		
-		let document = new Document(snippet.text, null);
-		let view = new View(document);
-		let editor = new Editor(document, view);
-		
-		this.editor = editor;
+		this.snippet = await platform.snippets.findById(this.snippetId);
 	}
 }
 

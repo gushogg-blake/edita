@@ -215,6 +215,10 @@ class Document extends Evented {
 		this.source.init(this.fileDetails);
 	}
 	
+	setLang(lang) {
+		
+	}
+	
 	async save() {
 		await platform.save(this.path, this.toString());
 		

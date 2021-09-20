@@ -4,6 +4,10 @@ let getIndentationDetails = require("modules/utils/getIndentationDetails");
 let guessIndent = require("modules/utils/guessIndent");
 let checkNewlines = require("modules/utils/checkNewlines");
 
+let Document = require("modules/Document");
+let Editor = require("modules/Editor");
+let View = require("modules/View");
+
 let DirEntries = require("modules/DirEntries");
 
 let javascript = require("modules/langs/javascript");
@@ -171,6 +175,13 @@ class Base {
 	
 	getTreeSitterLanguage(code) {
 		return this.treeSitterLanguages[code];
+	}
+	
+	createEditor(string="") {
+		let document = new Document(string);
+		let view = new View(document);
+		
+		return new Editor(document, view);
 	}
 }
 

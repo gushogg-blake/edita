@@ -1,9 +1,13 @@
 <script>
-import {tick, onMount, getContext} from "svelte";
+import {tick, onMount} from "svelte";
 
 import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
 import getKeyCombo from "utils/getKeyCombo";
+
+//import Document from "modules/Document";
+//import View from "modules/View";
+//import Editor from "modules/Editor";
 
 import render from "./canvas/render";
 
@@ -14,16 +18,44 @@ import contextMenu from "./contextMenu";
 import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer.svelte";
 
-export let editor;
+/*
+there are two general modes this component can run in - as a frontend to
+an existing Editor that's managed by the app (ie. a tab for editing/creating
+a file) ("app") or as essentially a fancy textarea ("textarea") (in which
+case it creates its own Editor).
+
+the point of this is to allow it to be used as a textarea with just
+bind:value as opposed to having to create a Document, a View, and an Editor.
+
+the other main difference between the two modes is focus behaviour - in app
+mode, we don't want the view to lose focus when clicking around the rest of
+the app (on either in active areas or the editor's own tab at least), but in
+textarea mode we want the standard behaviour (blurring whenever we click
+somewhere else).
+
+lang is for setting the language in textarea mode, where there isn't a file
+to guess the language from.
+*/
+
+export let editor = null;
+export let value = "";
+export let lang = null;
+
+let editorMode = editor ? "app" : "textarea";
+
+if (editorMode === "textarea") {
+	editor = base.createEditor(value);
+	
+	//if (lang) {
+	//	editor.document.setLang(lang);
+	//}
+}
 
 let {
 	document,
 	view,
+	modeSwitchKey,
 } = editor;
-
-let {modeSwitchKey} = editor;
-
-let app = getContext("app"); //
 
 let revisionCounter = 0;
 let mounted = false;
@@ -485,9 +517,19 @@ function onFocus() {
 	view.focus();
 }
 
+function onBlur() {
+	if (editorMode === "textarea") {
+		view.blur();
+	}
+}
+
 function onEdit() {
 	if (view.mode === "ast") {
 		astMouseHandler.updateHilites(lastMouseEvent);
+	}
+	
+	if (editorMode === "textarea") {
+		value = document.string;
 	}
 }
 
@@ -499,6 +541,12 @@ onMount(function() {
 	windowHasFocus = windowFocus.isFocused();
 	
 	updateMeasurements();
+	
+	console.log(editorMode);
+	
+	if (editorMode === "textarea") {
+		view.show();
+	}
 	
 	view.startCursorBlink();
 	
@@ -622,6 +670,7 @@ canvas {
 	class:showingHorizontalScrollbar
 	tabindex="0"
 	on:focus={onFocus}
+	on:blur={onBlur}
 >
 	<div
 		id="canvas"

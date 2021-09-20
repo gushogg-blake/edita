@@ -33,14 +33,6 @@ module.exports = {
 		this.newFile();
 	},
 	
-	undo() {
-		this.selectedTab?.editor.undo();
-	},
-	
-	redo() {
-		this.selectedTab?.editor.redo();
-	},
-	
 	find() {
 		if (!this.selectedTab) {
 			return;
