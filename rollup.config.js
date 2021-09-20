@@ -82,6 +82,10 @@ function electronPlugins() {
 	];
 }
 
+function onwarn() {
+	
+}
+
 function globalCssBuild(platform) {
 	return {
 		input: "src/css/globalCss.js",
@@ -134,6 +138,8 @@ if (!platform || platform === "all" || platform === "test") {
 				],
 			}),
 		],
+		
+		onwarn,
 	}, {
 		input: "test/tests/**/*.test.js",
 		
@@ -148,6 +154,8 @@ if (!platform || platform === "all" || platform === "test") {
 			...commonPlugins("test"),
 			commonjs(),
 		],
+		
+		onwarn,
 	});
 }
 
@@ -162,6 +170,8 @@ if (!platform || platform === "all" || platform === "electron") {
 		},
 		
 		plugins: electronPlugins(),
+		
+		onwarn,
 	}, {
 		input: "src/platforms/electron/dialogs/snippetEditor/main.js",
 		
@@ -172,6 +182,8 @@ if (!platform || platform === "all" || platform === "electron") {
 		},
 		
 		plugins: electronPlugins(),
+		
+		onwarn,
 	}, {
 		input: "src/platforms/electron/dialogs/findAndReplace/main.js",
 		
@@ -182,6 +194,8 @@ if (!platform || platform === "all" || platform === "electron") {
 		},
 		
 		plugins: electronPlugins(),
+		
+		onwarn,
 	});
 }
 
@@ -202,6 +216,8 @@ if (!platform || platform === "all" || platform === "web") {
 			!production && livereload("src/platforms/web/public"),
 			production && terser(),
 		],
+		
+		onwarn,
 	});
 }
 
