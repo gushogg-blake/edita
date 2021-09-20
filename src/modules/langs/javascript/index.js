@@ -4,6 +4,7 @@ let codeIntel = require("./codeIntel");
 let wordRe = /\w/;
 
 module.exports = {
+	group: "javascript",
 	code: "javascript",
 	name: "JavaScript",
 	astMode,

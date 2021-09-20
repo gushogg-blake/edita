@@ -236,13 +236,15 @@ module.exports = {
 	},
 	
 	tab() {
+		let {view} = this;
+		let {start} = view.normalSelection;
 		let snippet = null;
 		
 		if (!this.view.Selection.isFull()) {
-			let wordAtCursor = this.document.wordAtCursor(this.view.normalSelection.start);
+			let wordAtCursor = this.document.wordAtCursor(start);
 			
 			if (wordAtCursor) {
-				snippet = platform.snippets.findByLangAndName(this.document.lang, wordAtCursor);
+				snippet = platform.snippets.findByLangAndName(this.document.langFromCursor(start), wordAtCursor);
 			}
 		}
 		

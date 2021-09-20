@@ -2,6 +2,7 @@ let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
 
 module.exports = {
+	group: "css",
 	code: "scss",
 	name: "SCSS",
 	astMode,
