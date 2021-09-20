@@ -6,8 +6,8 @@ import windowFocus from "utils/dom/windowFocus";
 import getKeyCombo from "utils/getKeyCombo";
 
 //import Document from "modules/Document";
-//import View from "modules/View";
 //import Editor from "modules/Editor";
+//import View from "modules/View";
 
 import render from "./canvas/render";
 
@@ -46,9 +46,9 @@ let editorMode = editor ? "app" : "textarea";
 if (editorMode === "textarea") {
 	editor = base.createEditor(value);
 	
-	//if (lang) {
-	//	editor.document.setLang(lang);
-	//}
+	if (lang) {
+		editor.document.setLang(base.langs.get(lang));
+	}
 }
 
 let {
@@ -541,8 +541,6 @@ onMount(function() {
 	windowHasFocus = windowFocus.isFocused();
 	
 	updateMeasurements();
-	
-	console.log(editorMode);
 	
 	if (editorMode === "textarea") {
 		view.show();

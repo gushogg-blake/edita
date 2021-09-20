@@ -12,6 +12,8 @@ class Document extends Evented {
 	constructor(code, path) {
 		super();
 		
+		this.forceLang = null;
+		
 		this.source = new Source(code);
 		this.path = path;
 		this.updateFileDetails();
@@ -212,11 +214,17 @@ class Document extends Evented {
 	updateFileDetails() {
 		this.fileDetails = base.getFileDetails(this.string, this.path);
 		
+		if (this.forceLang) {
+			this.fileDetails.lang = this.forceLang;
+		}
+		
 		this.source.init(this.fileDetails);
 	}
 	
 	setLang(lang) {
+		this.forceLang = lang;
 		
+		this.updateFileDetails();
 	}
 	
 	async save() {
