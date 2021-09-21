@@ -177,7 +177,7 @@ class Base {
 		return this.treeSitterLanguages[code];
 	}
 	
-	createEditor(string="") {
+	createEditorForTextArea(string="") {
 		let document = new Document(string);
 		let view = new View(document);
 		

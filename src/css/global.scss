@@ -2,6 +2,7 @@
 	--appBackgroundColor: #edecea;
 	--scrollbarWidth: 12px;
 	--scrollbarBorderColor: white;
+	--inputBorder: 1px solid #adaba6;
 	
 	font-family: "Noto Sans";
 	font-size: 12.5px;
@@ -17,7 +18,7 @@
 	}
 	
 	input {
-		border: 1px solid #ADABA6;
+		border: var(--inputBorder);
 		border-radius: 3px;
 	}
 	

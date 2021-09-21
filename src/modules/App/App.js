@@ -393,7 +393,7 @@ class App extends Evented {
 		});
 	}
 	
-	openDialogWindow(dialog, dialogOptions, windowOptions) {
+	async openDialogWindow(dialog, dialogOptions, windowOptions) {
 		let container = document.createElement("div");
 		
 		container.style = inlineStyle({
@@ -404,7 +404,7 @@ class App extends Evented {
 		
 		document.body.appendChild(container);
 		
-		this.createDialogComponent[dialog](el, dialogOptions, () => {
+		await this.createDialogComponent[dialog](el, dialogOptions, () => {
 			document.body.removeChild(container);
 		});
 		

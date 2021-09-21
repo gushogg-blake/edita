@@ -461,6 +461,20 @@ class Editor extends Evented {
 		return this.document.getSelectedText(this.view.normalSelection);
 	}
 	
+	setValue(value) {
+		let {
+			edit,
+			newSelection,
+		} = this.document.replaceSelection(this.view.Selection.all(), value);
+		
+		this.applyAndAddHistoryEntry({
+			edits: [edit],
+			normalSelection: s(newSelection.end),
+		});
+		
+		this.view.redraw();
+	}
+	
 	mousedown() {
 		this.modeSwitchKey.mousedown();
 	}

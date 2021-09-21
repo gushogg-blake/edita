@@ -1,7 +1,7 @@
 import getDialogOptions from "platform/modules/getDialogOptions";
 import init from "platform/init";
-import App from "./modules/App";
-import AppComponent from "./components/App.svelte";
+import App from "./App";
+import AppComponent from "./App.svelte";
 
 init(async function() {
 	let app = new App(getDialogOptions());

@@ -16,6 +16,11 @@ label {
 </style>
 
 <label>
-	<input type="checkbox" bind:checked accesskey={getAccessKey(label)}>
+	<input
+		bind:checked
+		type="checkbox"
+		on:change
+		accesskey={getAccessKey(label)}
+	>
 	<Accel {label}/>
 </label>

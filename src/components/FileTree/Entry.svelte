@@ -76,7 +76,7 @@ function onPrefsUpdated() {
 }
 
 let entryStyle = {
-	paddingLeft: "calc(1.2em * " + level + ")",
+	paddingLeft: "calc(3px + 1.2em * " + level + ")",
 };
 
 let buttonStyle = {

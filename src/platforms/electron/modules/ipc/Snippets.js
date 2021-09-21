@@ -37,20 +37,23 @@ class Snippets extends Evented {
 	}
 	
 	onSnippetUpdated(e, id, snippet) {
-		this.remove(this.findById(id));
-		this.snippets.push(snippet);
+		this.snippets[this.findIndexById(id)] = snippet;
 		
 		this.fire("update", id, snippet);
 	}
 	
 	onSnippetDeleted(e, id) {
-		this.remove(id);
+		this.remove(this.findById(id));
 		
 		this.fire("delete", id);
 	}
 	
 	findById(id) {
 		return this.snippets.find(s => s.id === id);
+	}
+	
+	findIndexById(id) {
+		return this.snippets.findIndex(s => s.id === id);
 	}
 	
 	remove(snippet) {
@@ -61,12 +64,12 @@ class Snippets extends Evented {
 		await ipcRenderer.invoke("snippets", "create", snippet);
 	}
 	
-	async save(snippet) {
-		await ipcRenderer.invoke("snippets", "update", snippet.id, snippet);
+	async update(id, snippet) {
+		await ipcRenderer.invoke("snippets", "update", id, snippet);
 	}
 	
-	async delete(snippet) {
-		await ipcRenderer.invoke("snippets", "delete", snippet.id);
+	async delete(id) {
+		await ipcRenderer.invoke("snippets", "delete", id);
 	}
 }
 

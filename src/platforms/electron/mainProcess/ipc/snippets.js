@@ -15,7 +15,7 @@ module.exports = function(app) {
 	}
 	
 	async function getNode(id) {
-		return (await snippetsDir.glob("*.json")).find(node => node.name.endsWith("-" + id));
+		return (await snippetsDir.glob("*.json")).find(node => node.basename.endsWith("-" + id));
 	}
 
 	return {
@@ -39,7 +39,9 @@ module.exports = function(app) {
 		},
 		
 		async update(e, id, snippet) {
-			let node = await getNode(snippet.id);
+			snippet = {id, ...snippet};
+			
+			let node = await getNode(id);
 			
 			if (!node) {
 				return;
@@ -51,7 +53,7 @@ module.exports = function(app) {
 		},
 		
 		async delete(e, id) {
-			let node = await getNode(snippet.id);
+			let node = await getNode(id);
 			
 			if (!node) {
 				return;

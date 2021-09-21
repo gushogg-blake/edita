@@ -5,10 +5,6 @@ import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
 import getKeyCombo from "utils/getKeyCombo";
 
-//import Document from "modules/Document";
-//import Editor from "modules/Editor";
-//import View from "modules/View";
-
 import render from "./canvas/render";
 
 import normalMouse from "./normalMouse";
@@ -38,13 +34,17 @@ to guess the language from.
 */
 
 export let editor = null;
-export let value = "";
+export let value = ""; // readonly - call setValue to set
 export let lang = null;
+
+export function setValue(value) {
+	editor.setValue(value);
+}
 
 let editorMode = editor ? "app" : "textarea";
 
 if (editorMode === "textarea") {
-	editor = base.createEditor(value);
+	editor = base.createEditorForTextArea(value);
 	
 	if (lang) {
 		editor.document.setLang(base.langs.get(lang));
@@ -65,7 +65,6 @@ let measurementsDiv;
 let canvases = {};
 let contexts = {};
 let rowHeightPadding = 2;
-let rowBaselineHint = -1;
 
 let resizeInterval;
 
@@ -304,6 +303,12 @@ async function keydown(e) {
 		return;
 	}
 	
+	if (editorMode === "textarea" && e.key === "Escape") {
+		main.blur();
+		
+		return;
+	}
+	
 	if (e.key === platform.prefs.modeSwitchKey) {
 		e.preventDefault();
 		
@@ -523,7 +528,7 @@ function onBlur() {
 	}
 }
 
-function onEdit() {
+async function onEdit() {
 	if (view.mode === "ast") {
 		astMouseHandler.updateHilites(lastMouseEvent);
 	}
@@ -594,10 +599,7 @@ onMount(function() {
 });
 </script>
 
-<svelte:window
-	on:keydown={keydown}
-	on:keyup={keyup}
-/>
+<svelte:window on:keydown={keydown} on:keyup={keyup}/>
 
 <style type="text/scss">
 @import "mixins/abs-sticky";
@@ -618,6 +620,10 @@ $scrollBarBorder: $scrollBarBorderWidth solid #bababa;
 	
 	&.showingHorizontalScrollbar {
 		grid-template-rows: 1fr calc(var(--scrollbarWidth) + #{$scrollBarBorderWidth});
+	}
+	
+	&.textarea {
+		border: var(--inputBorder);
 	}
 }
 
@@ -666,6 +672,7 @@ canvas {
 	id="main"
 	on:wheel={wheel}
 	class:showingHorizontalScrollbar
+	class:textarea={editorMode === "textarea"}
 	tabindex="0"
 	on:focus={onFocus}
 	on:blur={onBlur}
