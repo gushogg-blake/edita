@@ -26,6 +26,19 @@ function updateSnippetGroups() {
 
 updateSnippetGroups();
 
+function newSnippet() {
+	app.newSnippet();
+}
+
+function newSnippetInList(list) {
+	let {langGroups, langs} = list[0];
+	
+	app.newSnippet({
+		langGroups,
+		langs,
+	});
+}
+
 $: mainStyle = {
 	width: 150,
 };
@@ -62,19 +75,19 @@ onMount(function() {
 	display: flex;
 	align-items: center;
 	gap: 2px;
-}
-
-.header {
 	padding: 2px 5px 2px 3px;
 }
 
 .snippet {
-	padding: 2px 5px 2px 1.2em;
 	cursor: pointer;
 	
 	&:hover {
 		text-decoration: underline;
 	}
+}
+
+.list .entry.snippet {
+	padding: 2px 5px 2px 1.2em;
 }
 
 .icon {
@@ -110,7 +123,7 @@ onMount(function() {
 				{#each snippets as snippet}
 					<div
 						class="entry snippet"
-						on:click={() => app.editSnippet(snippet)}
+						on:click={() => app.editSnippet(snippet.id)}
 					>
 						<div class="icon fileIcon"></div>
 						<div class="name">
@@ -118,7 +131,25 @@ onMount(function() {
 						</div>
 					</div>
 				{/each}
+				<div
+					class="entry snippet"
+					on:click={() => newSnippetInList(snippets)}
+				>
+					<div class="icon fileIcon"></div>
+					<div class="name">
+						New
+					</div>
+				</div>
 			</div>
 		{/each}
+		<div
+			class="entry snippet"
+			on:click={() => newSnippet()}
+		>
+			<div class="icon fileIcon"></div>
+			<div class="name">
+				New
+			</div>
+		</div>
 	</div>
 </FocusablePane>

@@ -384,9 +384,19 @@ class App extends Evented {
 		});
 	}
 	
-	editSnippet(snippet) {
+	newSnippet(details={}) {
 		platform.openDialogWindow(this, "snippetEditor", {
-			snippetId: snippet.id,
+			id: null,
+			details,
+		}, {
+			width: 680,
+			height: 480,
+		});
+	}
+	
+	editSnippet(id) {
+		platform.openDialogWindow(this, "snippetEditor", {
+			id,
 		}, {
 			width: 680,
 			height: 480,

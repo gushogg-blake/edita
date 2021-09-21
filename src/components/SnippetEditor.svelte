@@ -115,7 +115,7 @@ input#name {
 			<label for="name">
 				Abbreviation
 			</label>
-			<input bind:value={name} id="name">
+			<input bind:value={name} id="name" autofocus>
 		</div>
 		<div class="field">
 			<label for="langGroups">
@@ -141,7 +141,7 @@ input#name {
 		/>
 	</div>
 	<div id="actions">
-		<button on:click={cancel}>Cancel</button>
-		<button on:click={saveAndExit}>OK</button>
+		<button type="button" on:click={cancel}>Cancel</button>
+		<button type="submit">OK</button>
 	</div>
 </form>

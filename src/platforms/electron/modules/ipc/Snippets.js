@@ -31,6 +31,7 @@ class Snippets extends Evented {
 	}
 	
 	onNewSnippet(e, snippet) {
+		console.trace(snippet);
 		this.snippets.push(snippet);
 		
 		this.fire("new", snippet);

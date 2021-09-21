@@ -8,9 +8,9 @@ class App extends Evented {
 	}
 	
 	async init() {
-		let {snippetId} = this.options;
+		let {id, details} = this.options;
 		
-		this.isNew = !snippetId;
+		this.isNew = !id;
 		
 		if (this.isNew) {
 			this.snippet = {
@@ -19,21 +19,23 @@ class App extends Evented {
 				langs: [],
 				text: "",
 				isDynamic: false,
+				...details,
 			};
 			
 			document.title = "New snippet";
 		} else {
-			this.snippet = await platform.snippets.findById(snippetId);
+			this.snippet = await platform.snippets.findById(id);
 			
 			document.title = this.snippet.name;
 		}
 	}
 	
 	async save(snippet) {
+		console.trace("save");
 		if (this.isNew) {
 			await platform.snippets.create(snippet);
 		} else {
-			await platform.snippets.update(this.options.snippetId, snippet);
+			await platform.snippets.update(this.options.id, snippet);
 		}
 	}
 }
