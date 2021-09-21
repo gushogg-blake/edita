@@ -3,10 +3,24 @@ class FindAndReplace {
 		this.app = app;
 	}
 	
-	findAll(...args) {
-		console.log("findAll", ...args);
+	async findAll(options) {
 		
-		return 123;
+	}
+	
+	async replaceAll(options) {
+		
+	}
+	
+	async findNext(options, currentOccurrence) {
+		
+	}
+	
+	async findPrevious(options, currentOccurrence) {
+		
+	}
+	
+	async replace(options, currentOccurrence) {
+		
 	}
 }
 

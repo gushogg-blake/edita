@@ -42,7 +42,7 @@ function newSnippetInList(list) {
 function showContextMenuForSnippet(e, snippet) {
 	platform.showContextMenu(e, [
 		{
-			label: "Delete",
+			label: "&Delete",
 			
 			onClick() {
 				platform.snippets.delete(snippet.id);
