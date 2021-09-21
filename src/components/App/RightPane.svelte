@@ -39,6 +39,18 @@ function newSnippetInList(list) {
 	});
 }
 
+function showContextMenuForSnippet(e, snippet) {
+	platform.showContextMenu(e, [
+		{
+			label: "Delete",
+			
+			onClick() {
+				platform.snippets.delete(snippet.id);
+			},
+		},
+	]);
+}
+
 $: mainStyle = {
 	width: 150,
 };
@@ -124,6 +136,7 @@ onMount(function() {
 					<div
 						class="entry snippet"
 						on:click={() => app.editSnippet(snippet.id)}
+						on:contextmenu={(e) => showContextMenuForSnippet(e, snippet)}
 					>
 						<div class="icon fileIcon"></div>
 						<div class="name">
