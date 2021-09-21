@@ -35,6 +35,12 @@ function saveAndExit() {
 	});
 }
 
+function submit(e) {
+	e.preventDefault();
+	
+	saveAndExit();
+}
+
 function onToggleDynamic() {
 	if (isDynamic) {
 		wrap();
@@ -103,7 +109,7 @@ input#name {
 }
 </style>
 
-<div id="main">
+<form id="main" on:submit={submit}>
 	<div id="details">
 		<div class="field">
 			<label for="name">
@@ -138,4 +144,4 @@ input#name {
 		<button on:click={cancel}>Cancel</button>
 		<button on:click={saveAndExit}>OK</button>
 	</div>
-</div>
+</form>
