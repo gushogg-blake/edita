@@ -42,11 +42,15 @@ class FindAndReplace {
 	async findAllInCurrentDocument(options) {
 		let {document} = this.app.selectedTab.editor;
 		
-		console.log(options);
+		let results = document.findAll(getFindAndReplaceOptions(options));
 		
-		//let occurrences = [...this.createGenerator(options, document.string)];
-		
-		console.log(document.findAll(getFindAndReplaceOptions(options)));
+		if (results.length > 0) {
+			
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	async findAllInSelectedText(options) {
@@ -77,39 +81,39 @@ class FindAndReplace {
 		
 	}
 	
-	async findNextInCurrentDocument(options, currentOccurrence) {
+	async findNextInCurrentDocument(options, currentResult) {
 		
 	}
 	
-	async findNextInSelectedText(options, currentOccurrence) {
+	async findNextInSelectedText(options, currentResult) {
 		
 	}
 	
-	async findNextInOpenFiles(options, currentOccurrence) {
+	async findNextInOpenFiles(options, currentResult) {
 		
 	}
 	
-	async findPreviousInCurrentDocument(options, currentOccurrence) {
+	async findPreviousInCurrentDocument(options, currentResult) {
 		
 	}
 	
-	async findPreviousInSelectedText(options, currentOccurrence) {
+	async findPreviousInSelectedText(options, currentResult) {
 		
 	}
 	
-	async findPreviousInOpenFiles(options, currentOccurrence) {
+	async findPreviousInOpenFiles(options, currentResult) {
 		
 	}
 	
-	async replaceInCurrentDocument(options, currentOccurrence) {
+	async replaceInCurrentDocument(options, currentResult) {
 		
 	}
 	
-	async replaceInSelectedText(options, currentOccurrence) {
+	async replaceInSelectedText(options, currentResult) {
 		
 	}
 	
-	async replaceInOpenFiles(options, currentOccurrence) {
+	async replaceInOpenFiles(options, currentResult) {
 		
 	}
 	
@@ -141,39 +145,39 @@ class FindAndReplace {
 		}
 	}
 	
-	findNext(options, currentOccurrence) {
+	findNext(options, currentResult) {
 		let {searchIn} = options;
 		
 		if (searchIn === "currentDocument") {
-			return this.findNextInCurrentDocument(options, currentOccurrence);
+			return this.findNextInCurrentDocument(options, currentResult);
 		} else if (searchIn === "selectedText") {
-			return this.findNextInSelectedText(options, currentOccurrence);
+			return this.findNextInSelectedText(options, currentResult);
 		} else if (searchIn === "openFiles") {
-			return this.findNextInOpenFiles(options, currentOccurrence);
+			return this.findNextInOpenFiles(options, currentResult);
 		}
 	}
 	
-	findPrevious(options, currentOccurrence) {
+	findPrevious(options, currentResult) {
 		let {searchIn} = options;
 		
 		if (searchIn === "currentDocument") {
-			return this.findPreviousInCurrentDocument(options, currentOccurrence);
+			return this.findPreviousInCurrentDocument(options, currentResult);
 		} else if (searchIn === "selectedText") {
-			return this.findPreviousInSelectedText(options, currentOccurrence);
+			return this.findPreviousInSelectedText(options, currentResult);
 		} else if (searchIn === "openFiles") {
-			return this.findPreviousInOpenFiles(options, currentOccurrence);
+			return this.findPreviousInOpenFiles(options, currentResult);
 		}
 	}
 	
-	replace(options, currentOccurrence) {
+	replace(options, currentResult) {
 		let {searchIn} = options;
 		
 		if (searchIn === "currentDocument") {
-			return this.replaceInCurrentDocument(options, currentOccurrence);
+			return this.replaceInCurrentDocument(options, currentResult);
 		} else if (searchIn === "selectedText") {
-			return this.replaceInSelectedText(options, currentOccurrence);
+			return this.replaceInSelectedText(options, currentResult);
 		} else if (searchIn === "openFiles") {
-			return this.replaceInOpenFiles(options, currentOccurrence);
+			return this.replaceInOpenFiles(options, currentResult);
 		}
 	}
 }
