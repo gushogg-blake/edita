@@ -111,54 +111,6 @@ function globalCssBuild(platform) {
 
 let builds = [];
 
-if (!platform || platform === "all" || platform === "test") {
-	builds.push({
-		input: "test/main.js",
-		
-		output: {
-			format: "iife",
-			file: "test/public/build/main.js",
-			name: "main",
-		},
-		
-		plugins: [
-			...commonPlugins("test"),
-			commonjs(),
-			
-			copy({
-				targets: [
-					{
-						src: "node_modules/mocha/mocha.css",
-						dest: "test/public/build",
-					},
-					{
-						src: "node_modules/mocha/mocha.js",
-						dest: "test/public/build",
-					},
-				],
-			}),
-		],
-		
-		onwarn,
-	}, {
-		input: "test/tests/**/*.test.js",
-		
-		output: {
-			sourcemap: true,
-			format: "iife",
-			file: "test/public/build/tests.js",
-		},
-		
-		plugins: [
-			multi(),
-			...commonPlugins("test"),
-			commonjs(),
-		],
-		
-		onwarn,
-	});
-}
-
 if (!platform || platform === "all" || platform === "electron") {
 	builds.push(globalCssBuild("electron"), {
 		input: "src/platforms/electron/main.js",
@@ -215,6 +167,54 @@ if (!platform || platform === "all" || platform === "web") {
 			commonjs(),
 			!production && livereload("src/platforms/web/public"),
 			production && terser(),
+		],
+		
+		onwarn,
+	});
+}
+
+if (!platform || platform === "all" || platform === "test") {
+	builds.push({
+		input: "test/main.js",
+		
+		output: {
+			format: "iife",
+			file: "test/public/build/main.js",
+			name: "main",
+		},
+		
+		plugins: [
+			...commonPlugins("test"),
+			commonjs(),
+			
+			copy({
+				targets: [
+					{
+						src: "node_modules/mocha/mocha.css",
+						dest: "test/public/build",
+					},
+					{
+						src: "node_modules/mocha/mocha.js",
+						dest: "test/public/build",
+					},
+				],
+			}),
+		],
+		
+		onwarn,
+	}, {
+		input: "test/tests/**/*.test.js",
+		
+		output: {
+			sourcemap: true,
+			format: "iife",
+			file: "test/public/build/tests.js",
+		},
+		
+		plugins: [
+			multi(),
+			...commonPlugins("test"),
+			commonjs(),
 		],
 		
 		onwarn,
