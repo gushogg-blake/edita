@@ -130,7 +130,27 @@ class LineWrapper {
 					let toEnd = string.substr(0, this.currentlyAvailableCols);
 					let overflow = string.substr(toEnd.length);
 					
-					if (toEnd[toEnd.length - 1].match(wordRe) && overflow && overflow[0].match(wordRe)) {
+					if (overflow && overflow[0] === " ") {
+						// don't start a new row with a space
+						
+						let [, str, endSpaces] = toEnd.match(/([^ ]*)( *)$/);
+						let endWord = "";
+						
+						if (str) {
+							if (str.match(/\w$/)) {
+								endWord = str.match(/\w+$/)[0];
+							} else {
+								endWord = str[str.length - 1];
+							}
+							
+							if (endWord.length < toEnd.length) {
+								toEnd = string.substr(0, toEnd.length - endWord.length);
+								overflow = string.substr(toEnd.length);
+							}
+						}
+					} else if (toEnd[toEnd.length - 1].match(wordRe) && overflow && overflow[0].match(wordRe)) {
+						// don't break a line mid-word
+						
 						let [endWord] = toEnd.match(endWordRe);
 						
 						toEnd = toEnd.substr(0, toEnd.length - endWord.length);
