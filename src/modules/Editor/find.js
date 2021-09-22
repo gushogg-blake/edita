@@ -48,7 +48,7 @@ module.exports = function(editor) {
 			);
 		},
 		
-		search(search, type, caseMode) {
+		find(search, type, caseMode) {
 			if (!session) {
 				session = this.createSession();
 			}

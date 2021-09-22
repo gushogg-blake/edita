@@ -9,12 +9,17 @@ let {c} = Cursor;
 let {s: a} = AstSelection;
 
 class Document extends Evented {
-	constructor(code, path) {
+	constructor(code, path, options={}) {
 		super();
+		
+		this.options = {
+			noParse: false,
+			...options,
+		};
 		
 		this.forceLang = null;
 		
-		this.source = new Source(code);
+		this.source = new Source(code, this.options.noParse);
 		this.path = path;
 		this.updateFileDetails();
 		

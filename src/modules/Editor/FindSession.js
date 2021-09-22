@@ -1,4 +1,4 @@
-let find = require("modules/find");
+let findAndReplace = require("modules/findAndReplace");
 
 /*
 there are a few layers to the find/replace system
@@ -68,7 +68,7 @@ class FindSession {
 			return null;
 		}
 		
-		let previousIndex = find.previousIndex(this.currentResult, this.all);
+		let previousIndex = findAndReplace.previousIndex(this.currentResult, this.all);
 		
 		if (previousIndex === null) {
 			return {
@@ -98,7 +98,14 @@ class FindSession {
 			caseMode,
 		} = this;
 		
-		let generator = find.find(code, search, type, caseMode, startIndex, enumerate);
+		let generator = findAndReplace.find({
+			code,
+			search,
+			type,
+			caseMode,
+			startIndex,
+			enumerate,
+		});
 		
 		for (let result of generator) {
 			yield this._createResult(result);

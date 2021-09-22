@@ -92,7 +92,7 @@ function onInput(e) {
 	search = input.value;
 	
 	if (search) {
-		editor.find.search(search, type, caseMode);
+		editor.find.find(search, type, caseMode);
 	} else {
 		editor.find.reset();
 	}
@@ -112,7 +112,7 @@ onMount(function() {
 	if (search) {
 		 input.select();
 		 
-		 editor.find.search(search, type, caseMode);
+		 editor.find.find(search, type, caseMode);
 	}
 	
 	let teardown = [

@@ -41,37 +41,6 @@ module.exports = {
 		this.showFindBar();
 	},
 	
-	findInOpenFiles() {
-		if (platform.showFindDialog) {
-			platform.showFindDialog({
-				search: "openFiles",
-			});
-		} else {
-			// TODO
-		}
-	},
-	
-	findAndReplace() {
-		if (platform.showFindDialog) {
-			platform.showFindDialog({
-				replace: true,
-			});
-		} else {
-			// TODO
-		}
-	},
-	
-	findAndReplaceInOpenFiles() {
-		if (platform.showFindDialog) {
-			platform.showFindDialog({
-				search: "openFiles",
-				replace: true,
-			});
-		} else {
-			// TODO
-		}
-	},
-	
 	selectNextTab() {
 		this.selectNextTab(1);
 	},

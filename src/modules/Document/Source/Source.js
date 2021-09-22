@@ -10,8 +10,9 @@ let {s} = Selection;
 let {c} = Cursor;
 
 module.exports = class {
-	constructor(string) {
+	constructor(string, noParse) {
 		this.string = string;
+		this.noParse = noParse;
 	}
 	
 	init(fileDetails) {
@@ -38,7 +39,7 @@ module.exports = class {
 	parse() {
 		this.createLines();
 		
-		if (this.lang.code !== "plainText") {
+		if (!this.noParse && this.lang.code !== "plainText") {
 			this.rootScope = new Scope(null, this.lang, this.string, [this.getContainingRange()]);
 		}
 	}

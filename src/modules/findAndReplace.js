@@ -15,8 +15,23 @@ function generatePlaceholder(string) {
 	return placeholder;
 }
 
-let api = {
-	*find(code, search, type, caseMode, startIndex, enumerate=false) {
+function containsWordBoundary(str) {
+	return !!str.match(/(\w\W|\W\w)/);
+}
+
+let findAndReplace = {
+	*find(options) {
+		let {
+			code,
+			search,
+			type,
+			caseMode,
+			word = false,
+			startIndex = 0,
+			endIndex = null,
+			enumerate = false,
+		} = options;
+		
 		let caseSensitive = (
 			caseMode === "caseSensitive"
 			|| caseMode === "smart" && search.match(/[A-Z]/)
@@ -26,7 +41,13 @@ let api = {
 		let flags = ["g", !caseSensitive ? "i" : ""].join("");
 		
 		if (type === "plain") {
-			re = new RegExp(escapeRe(search), flags);
+			let pattern = escapeRe(search);
+			
+			if (word) {
+				pattern = "\\b" + pattern + "\\b";
+			}
+			
+			re = new RegExp(pattern, flags);
 		} else if (type === "wildcard") {
 			let pattern = search;
 			let wildcardPlaceholder = generatePlaceholder(search);
@@ -34,6 +55,10 @@ let api = {
 			pattern = pattern.replace(/\*/g, wildcardPlaceholder);
 			pattern = escapeRe(pattern);
 			pattern = pattern.replace(wildcardPlaceholder, ".*");
+			
+			if (word) {
+				pattern = "\\b" + pattern + "\\b";
+			}
 			
 			re = new RegExp(pattern, flags);
 		} else if (type === "regex") {
@@ -46,7 +71,7 @@ let api = {
 			let {lastIndex} = re;
 			let match = re.exec(code);
 			
-			if (!match) {
+			if (!match || endIndex !== null && match.index >= endIndex) {
 				if (enumerate) {
 					break;
 				}
@@ -62,6 +87,22 @@ let api = {
 			
 			let [string, ...groups] = match;
 			let {index} = match;
+			
+			if (
+				word
+				&& type === "regex"
+				&& (
+					(
+						index > 0
+						&& !containsWordBoundary(code.substr(index - 1, 2))
+					) || (
+						index + string.length < code.length
+						&& !containsWordBoundary(code.substr(index + string.length - 1, 2))
+					)
+				)
+			) {
+				continue;
+			}
 			
 			yield {
 				index,
@@ -105,4 +146,4 @@ let api = {
 	},
 };
 
-module.exports = api;
+module.exports = findAndReplace;
