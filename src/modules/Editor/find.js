@@ -19,33 +19,7 @@ module.exports = function(editor) {
 				cursor = c(view.astSelection.startLineIndex, 0);
 			}
 			
-			return new FindSession(
-				document.string,
-				document.indexFromCursor(cursor),
-				
-				({index, match, groups, replace}) => {
-					let cursor = document.cursorFromIndex(index);
-					let selection = s(cursor, document.cursorFromIndex(index + match.length));
-					
-					return {
-						index,
-						cursor,
-						selection,
-						match,
-						groups,
-						
-						replace(str) {
-							let edit = editor.replaceSelection(selection, str);
-							
-							this.apply(edit); //
-							
-							replace(replaceWith);
-							
-							return edit;
-						},
-					};
-				},
-			);
+			return new FindSession(document, cursor);
 		},
 		
 		find(search, type, caseMode) {

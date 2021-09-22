@@ -1,9 +1,10 @@
 let findAndReplace = require("modules/findAndReplace");
+let Document = require("modules/Document");
 
 /*
 caseMode: "caseSensitive"
 excludePatterns: ""
-find: ""
+search: ""
 includePatterns: ""
 multiline: false
 paths: ["/home/gus/projects/editor/src"]
@@ -22,26 +23,31 @@ class FindAndReplace {
 	
 	createGenerator(options, code) {
 		let {
-			find,
+			search,
 			regex,
 			caseMode,
-			replace,
-			replaceWith,
 			word,
-			multiline,
+			//multiline,
 		} = options;
 		
 		
+		
+		return findAndReplace.find({
+			code,
+			search,
+			type: regex ? "regex" : "plain",
+			caseMode,
+			word,
+			enumerate: true,
+		});
 	}
 	
 	async findAllInCurrentDocument(options) {
-		let {
-			
-		}
+		let {document} = this.app.selectedTab.editor;
 		
-		let occurences = findAndReplace.find({
-			
-		});
+		let occurrences = [...this.createGenerator(options, document.string)];
+		
+		console.log(occurrences);
 	}
 	
 	async findAllInSelectedText(options) {

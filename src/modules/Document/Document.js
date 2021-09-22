@@ -2,6 +2,7 @@ let Evented = require("utils/Evented");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
+let findAndReplace = require("modules/findAndReplace");
 let Source = require("./Source");
 
 let {s} = Selection;
@@ -282,6 +283,65 @@ class Document extends Evented {
 		return {
 			edits,
 			newSelection,
+		};
+	}
+	
+	*find(options) {
+		let {
+			search,
+			type,
+			caseMode,
+			word = false,
+			startCursor = c(0, 0),
+			endCursor = null,
+		} = options;
+		
+		let results = findAndReplace.find({
+			code: this.string,
+			search,
+			type,
+			caseMode,
+			word,
+			startIndex: this.indexFromCursor(startCursor),
+			endIndex: endCursor && this.indexFromCursor(endCursor),
+		});
+		
+		for (let result of results) {
+			yield this.createFindResult(options, result);
+		}
+	}
+	
+	findAll(options) {
+		return [...this.find(options)];
+	}
+	
+	replaceAll(options) {
+		return [...this.find(options)].map(result => result.replace());
+	}
+	
+	createFindResult(options, result) {
+		let {index, match, groups, replace} = result;
+		let cursor = this.cursorFromIndex(index);
+		let selection = s(cursor, this.cursorFromIndex(index + match.length));
+		
+		return {
+			index,
+			cursor,
+			selection,
+			match,
+			groups,
+			
+			replace: () => {
+				let str = options.replaceWith;
+				
+				replace(str);
+				
+				let {edit} = this.replaceSelection(selection, str);
+				
+				this.apply(edit);
+				
+				return edit;
+			},
 		};
 	}
 	

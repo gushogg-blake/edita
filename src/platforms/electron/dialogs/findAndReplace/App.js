@@ -8,7 +8,7 @@ class App extends Evented {
 		this.options = {
 			replace: false,
 			searchIn: "currentDocument",
-			find: "",
+			search: "",
 			replaceWith: "",
 			regex: false,
 			caseMode: "caseSensitive",

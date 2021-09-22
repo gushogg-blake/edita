@@ -13,7 +13,7 @@ let main;
 let {
 	replace,
 	searchIn,
-	find,
+	search,
 	replaceWith,
 	regex,
 	caseMode,
@@ -31,7 +31,7 @@ let matchCase = caseMode === "caseSensitive";
 $: options = {
 	replace,
 	searchIn,
-	find,
+	search,
 	replaceWith,
 	regex,
 	caseMode: smartCase ? "smart" : matchCase ? "caseSensitive" : "caseInsensitive",
@@ -139,7 +139,7 @@ button {
 			<Accel label="Fi%nd"/>
 		</label>
 		<div class="input">
-			<input bind:value={find} id="find" accesskey="n" autofocus>
+			<input bind:value={search} id="find" accesskey="n" autofocus>
 		</div>
 		<label for="replaceWith">
 			<Accel label="Rep%lace with"/>
