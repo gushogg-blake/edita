@@ -287,25 +287,9 @@ class Document extends Evented {
 	}
 	
 	*find(options) {
-		let {
-			search,
-			type,
-			caseMode,
-			word = false,
-			startCursor = c(0, 0),
-			endCursor = null,
-			enumerate = false,
-		} = options;
-		
 		let results = findAndReplace.find({
 			code: this.string,
-			search,
-			type,
-			caseMode,
-			word,
-			startIndex: this.indexFromCursor(startCursor),
-			endIndex: endCursor && this.indexFromCursor(endCursor),
-			enumerate,
+			...options,
 		});
 		
 		for (let result of results) {

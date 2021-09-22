@@ -31,6 +31,18 @@ function openDirMenu() {
 	}));
 }
 
+function wheel(e) {
+	if (!e.ctrlKey) {
+		return;
+	}
+	
+	e.preventDefault();
+	
+	if (e.deltaY > 0) {
+		fileTree.up();
+	}
+}
+
 $: mainStyle = {
 	width: 150,
 };
@@ -88,7 +100,7 @@ onMount(async function() {
 				</div>
 			{/if}
 		</div>
-		<div id="list">
+		<div id="list" on:wheel={wheel}>
 			<div id="scroll">
 				<FileTree/>
 			</div>

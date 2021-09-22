@@ -48,7 +48,7 @@ function toggle() {
 
 function dblclick() {
 	if (isDir) {
-		toggle();
+		fire("makeRoot", entry);
 	} else {
 		fire("open", entry);
 	}
@@ -188,6 +188,7 @@ onMount(function() {
 					on:select
 					on:open
 					on:contextmenu
+					on:makeRoot
 					{selectedEntry}
 					level={level + 1}
 				/>

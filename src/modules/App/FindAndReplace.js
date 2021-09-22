@@ -16,38 +16,37 @@ searchInSubDirs: true
 word: false
 */
 
+function getFindAndReplaceOptions(options) {
+	let {
+		search,
+		regex,
+		caseMode,
+		word,
+		//multiline,
+	} = options;
+	
+	return {
+		search,
+		type: regex ? "regex" : "plain",
+		caseMode,
+		word,
+		enumerate: true,
+	};
+}
+
 class FindAndReplace {
 	constructor(app) {
 		this.app = app;
 	}
 	
-	createGenerator(options, code) {
-		let {
-			search,
-			regex,
-			caseMode,
-			word,
-			//multiline,
-		} = options;
-		
-		
-		
-		return findAndReplace.find({
-			code,
-			search,
-			type: regex ? "regex" : "plain",
-			caseMode,
-			word,
-			enumerate: true,
-		});
-	}
-	
 	async findAllInCurrentDocument(options) {
 		let {document} = this.app.selectedTab.editor;
 		
-		let occurrences = [...this.createGenerator(options, document.string)];
+		console.log(options);
 		
-		console.log(occurrences);
+		//let occurrences = [...this.createGenerator(options, document.string)];
+		
+		console.log(document.findAll(getFindAndReplaceOptions(options)));
 	}
 	
 	async findAllInSelectedText(options) {

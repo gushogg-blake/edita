@@ -21,14 +21,6 @@ function contextmenu({detail: {e, entry}}) {
 	let {path, isDir} = entry;
 	
 	platform.showContextMenu(e, [
-		isDir && {
-			label: "Make this folder root",
-			
-			onClick() {
-				fileTree.setRootDir(path);
-			},
-		},
-		
 		{
 			label: "Find...",
 			
@@ -44,6 +36,14 @@ function contextmenu({detail: {e, entry}}) {
 				app.findAndReplaceInFiles([path]);
 			},
 		},
+		
+		isDir && {
+			label: "Make this folder root",
+			
+			onClick() {
+				fileTree.setRootDir(path);
+			},
+		},
 	].filter(Boolean));
 }
 
@@ -53,6 +53,11 @@ async function onUpdateRootDir() {
 	await tick();
 	
 	({rootEntry} = fileTree);
+}
+
+function onMakeRoot({detail: entry}) {
+	console.log(entry);
+	fileTree.setRootDir(entry.path);
 }
 
 onMount(async function() {
@@ -80,6 +85,7 @@ onMount(async function() {
 			on:select={select}
 			on:open={open}
 			on:contextmenu={contextmenu}
+			on:makeRoot={onMakeRoot}
 			{selectedEntry}
 		/>
 	{/if}

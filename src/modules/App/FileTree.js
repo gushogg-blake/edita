@@ -28,6 +28,10 @@ module.exports = class extends Evented {
 		this.fire("updateRootDir");
 	}
 	
+	async up() {
+		await this.setRootDir(this.rootEntry.node.parent.path);
+	}
+	
 	getRootEntry() {
 		return base.DirEntries.createEntry(this.dir);
 	}
