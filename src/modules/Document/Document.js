@@ -294,6 +294,7 @@ class Document extends Evented {
 			word = false,
 			startCursor = c(0, 0),
 			endCursor = null,
+			enumerate = false,
 		} = options;
 		
 		let results = findAndReplace.find({
@@ -304,10 +305,11 @@ class Document extends Evented {
 			word,
 			startIndex: this.indexFromCursor(startCursor),
 			endIndex: endCursor && this.indexFromCursor(endCursor),
+			enumerate,
 		});
 		
 		for (let result of results) {
-			yield this.createFindResult(options, result);
+			yield this.createFindResult(result);
 		}
 	}
 	
@@ -316,10 +318,20 @@ class Document extends Evented {
 	}
 	
 	replaceAll(options) {
-		return [...this.find(options)].map(result => result.replace());
+		let document = new Document(this.string, null, {
+			noParse: true,
+		});
+		
+		let edits = [];
+		
+		for (let result of document.find(options)) {
+			edits.push(result.replace(options.replaceWith));
+		}
+		
+		return edits;
 	}
 	
-	createFindResult(options, result) {
+	createFindResult(result) {
 		let {index, match, groups, replace} = result;
 		let cursor = this.cursorFromIndex(index);
 		let selection = s(cursor, this.cursorFromIndex(index + match.length));
@@ -331,9 +343,7 @@ class Document extends Evented {
 			match,
 			groups,
 			
-			replace: () => {
-				let str = options.replaceWith;
-				
+			replace: (str) => {
 				replace(str);
 				
 				let {edit} = this.replaceSelection(selection, str);

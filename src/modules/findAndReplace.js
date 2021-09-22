@@ -108,6 +108,13 @@ let findAndReplace = {
 				index,
 				match: string,
 				groups,
+				
+				replace(str) {
+					code = code.substr(0, index) + str + code.substr(re.lastIndex);
+					re.lastIndex = index + str.length;
+					
+					return code;
+				},
 			};
 		}
 	},
