@@ -74,23 +74,13 @@ onMount(function() {
 });
 </script>
 
-<style type="text/scss">
-#main {
-	display: grid;
-	grid-template-rows: 1fr;
-	grid-template-columns: 1fr;
-}
-</style>
-
-<div id="main">
-	<TabBar
-		{tabs}
-		{selectedTab}
-		{getDetails}
-		{getContextMenuItems}
-		reorderable
-		on:select={select}
-		on:close={close}
-		on:reorder={reorder}
-	/>
-</div>
+<TabBar
+	{tabs}
+	{selectedTab}
+	{getDetails}
+	{getContextMenuItems}
+	reorderable
+	on:select={select}
+	on:close={close}
+	on:reorder={reorder}
+/>

@@ -45,7 +45,7 @@ class FindAndReplace {
 		let results = document.findAll(getFindAndReplaceOptions(options));
 		
 		if (results.length > 0) {
-			
+			this.app.showFindResults(results);
 			
 			return true;
 		} else {

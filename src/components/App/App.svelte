@@ -2,13 +2,14 @@
 import {onMount, setContext} from "svelte";
 
 import getKeyCombo from "utils/getKeyCombo";
+import inlineStyle from "utils/dom/inlineStyle";
 
 import Toolbar from "./Toolbar.svelte";
 import EditorTabBar from "./EditorTabBar.svelte";
 import Tab from "./Tab.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
-import BottomPane from "./BottomPane.svelte";
+import BottomPane from "./BottomPane/BottomPane.svelte";
 import FindBar from "./FindBar.svelte";
 
 export let app;
@@ -67,6 +68,20 @@ function onUpdatePanes() {
 	} = app);
 }
 
+let paneStyle = {};
+
+$: paneStyle.left = {
+	width: 150,
+};
+
+$: paneStyle.right = {
+	width: 150,
+};
+
+$: paneStyle.bottom = {
+	height: 200,
+};
+
 onMount(function() {
 	let teardown = [
 		app.on("updateTabs", onUpdateTabs),
@@ -92,8 +107,6 @@ onMount(function() {
 @import "mixins/flex-col";
 @import "classes/hide";
 
-$border: 1px solid #AFACAA;
-
 #main {
 	display: grid;
 	grid-template-rows: auto auto 1fr auto auto;
@@ -112,7 +125,7 @@ $border: 1px solid #AFACAA;
 #toolbar {
 	grid-area: toolbar;
 	min-width: 0;
-	border-bottom: $border;
+	border-bottom: var(--appBorder);
 }
 
 #leftContainer {
@@ -121,9 +134,8 @@ $border: 1px solid #AFACAA;
 }
 
 #left {
-	width: 100%;
 	height: 100%;
-	border-right: $border;
+	border-right: var(--appBorder);
 }
 
 #tabBarContainer {
@@ -132,7 +144,7 @@ $border: 1px solid #AFACAA;
 }
 
 #tabBar {
-	border-bottom: $border;
+	border-bottom: var(--appBorder);
 }
 
 #editor {
@@ -155,7 +167,7 @@ $border: 1px solid #AFACAA;
 }
 
 #findBar {
-	border-top: $border;
+	border-top: var(--appBorder);
 }
 
 #rightContainer {
@@ -164,9 +176,8 @@ $border: 1px solid #AFACAA;
 }
 
 #right {
-	width: 100%;
 	height: 100%;
-	border-left: $border;
+	border-left: var(--appBorder);
 }
 
 #bottomContainer {
@@ -175,7 +186,8 @@ $border: 1px solid #AFACAA;
 }
 
 #bottom {
-	border-top: $border;
+	border-top: var(--appBorder);
+	height: 100%;
 }
 </style>
 
@@ -189,7 +201,7 @@ $border: 1px solid #AFACAA;
 	<div id="toolbar">
 		<Toolbar/>
 	</div>
-	<div id="leftContainer">
+	<div id="leftContainer" style={inlineStyle(paneStyle.left)}>
 		{#if showingPane.left}
 			<div id="left">
 				<LeftPane/>
@@ -217,14 +229,14 @@ $border: 1px solid #AFACAA;
 			</div>
 		{/if}
 	</div>
-	<div id="rightContainer">
+	<div id="rightContainer" style={inlineStyle(paneStyle.right)}>
 		{#if showingPane.right}
 			<div id="right">
 				<RightPane/>
 			</div>
 		{/if}
 	</div>
-	<div id="bottomContainer">
+	<div id="bottomContainer" style={inlineStyle(paneStyle.bottom)}>
 		{#if showingPane.bottom}
 			<div id="bottom">
 				<BottomPane/>

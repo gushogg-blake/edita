@@ -1,6 +1,5 @@
 <script>
 import {onMount, getContext} from "svelte";
-import inlineStyle from "utils/dom/inlineStyle";
 import FileTree from "components/FileTree/FileTree.svelte";
 import FocusablePane from "./FocusablePane.svelte";
 
@@ -42,10 +41,6 @@ function wheel(e) {
 		fileTree.up();
 	}
 }
-
-$: mainStyle = {
-	width: 150,
-};
 
 onMount(async function() {
 	let teardown = [
@@ -92,7 +87,7 @@ onMount(async function() {
 </style>
 
 <FocusablePane>
-	<div id="main" style={inlineStyle(mainStyle)}>
+	<div id="main">
 		<div id="top">
 			{#if rootEntry}
 				<div bind:this={dirSelector} id="dirSelector" on:mousedown={openDirMenu}>

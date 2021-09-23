@@ -1,6 +1,5 @@
 <script>
 import {onMount, getContext} from "svelte";
-import inlineStyle from "utils/dom/inlineStyle";
 import Gap from "components/utils/Gap.svelte";
 import FocusablePane from "./FocusablePane.svelte";
 
@@ -50,10 +49,6 @@ function showContextMenuForSnippet(e, snippet) {
 		},
 	]);
 }
-
-$: mainStyle = {
-	width: 150,
-};
 
 onMount(function() {
 	let teardown = [
@@ -119,7 +114,7 @@ onMount(function() {
 </style>
 
 <FocusablePane>
-	<div id="main" style={inlineStyle(mainStyle)}>
+	<div id="main">
 		<div id="title">
 			Snippets
 		</div>

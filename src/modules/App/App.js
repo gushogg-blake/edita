@@ -10,6 +10,7 @@ let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
 let FileTree = require("./FileTree");
+let BottomPane = require("./BottomPane");
 let FindAndReplace = require("./FindAndReplace");
 let createDialogComponent = require("./createDialogComponent");
 let functions = require("./functions");
@@ -19,7 +20,10 @@ class App extends Evented {
 		super();
 		
 		this.fileTree = new FileTree(this);
+		this.bottomPane = new BottomPane(this);
+		
 		this.findAndReplace = new FindAndReplace(this);
+		
 		this.tabs = [];
 		this.selectedTab = null;
 		this.closedTabs = [];
