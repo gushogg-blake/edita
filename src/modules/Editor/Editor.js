@@ -133,6 +133,16 @@ class Editor extends Evented {
 		let placeholder = placeholders[index];
 		let {selection} = placeholder;
 		
+		if (!selection) {
+			if (index < placeholders.length - 1) {
+				this.nextTabstop();
+			} else {
+				this.clearSnippetSession();
+			}
+			
+			return;
+		}
+		
 		this.setNormalSelection(selection);
 		this.view.redraw();
 		
@@ -173,10 +183,10 @@ class Editor extends Evented {
 				}
 			}
 			
-			return selection ? {
+			return {
 				...placeholder,
 				selection,
-			} : null;
+			};
 		}).filter(Boolean);
 		
 		return {
