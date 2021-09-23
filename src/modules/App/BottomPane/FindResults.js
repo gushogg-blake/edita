@@ -1,5 +1,7 @@
 let Evented = require("utils/Evented");
 
+let maxResultsToRemember = 12;
+
 class FindResults extends Evented {
 	constructor(app) {
 		super();
@@ -12,6 +14,11 @@ class FindResults extends Evented {
 	
 	add(results) {
 		this.results.push(results);
+		
+		if (this.results.length > maxResultsToRemember) {
+			this.results.shift();
+		}
+		
 		this.index = this.results.length - 1;
 		
 		this.fire("resultsAdded");
