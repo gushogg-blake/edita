@@ -4,7 +4,7 @@ import {onMount, setContext} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 
 import Toolbar from "./Toolbar.svelte";
-import TabBar from "./TabBar.svelte";
+import EditorTabBar from "./EditorTabBar.svelte";
 import Tab from "./Tab.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
@@ -199,7 +199,7 @@ $border: 1px solid #AFACAA;
 	<div id="tabBarContainer">
 		{#if tabs.length > 0}
 			<div id="tabBar">
-				<TabBar/>
+				<EditorTabBar/>
 			</div>
 		{/if}
 	</div>

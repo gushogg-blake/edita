@@ -1,0 +1,96 @@
+<script>
+import {onMount, getContext} from "svelte";
+import TabBar from "components/TabBar.svelte";
+
+let app = getContext("app");
+
+let {
+	tabs,
+	selectedTab,
+} = app;
+
+function getDetails(tabs, tab) {
+	return {
+		label: app.getTabLabel(tab),
+		closeable: true,
+	};
+}
+
+function select({detail: tab}) {
+	app.selectTab(tab);
+}
+
+function close({detail: tab}) {
+	app.closeTab(tab);
+}
+
+function reorder({detail: {tab, index}}) {
+	app.reorderTab(tab, index);
+}
+
+function getContextMenuItems(tab) {
+	let {path} = tab.editor.document;
+	
+	return [
+		path && {
+			label: "&Rename...",
+			
+			onClick() {
+				app.renameTab(tab);
+			},
+		},
+		
+		path && {
+			label: "&Delete...",
+			
+			onClick() {
+				app.deleteTab(tab);
+			},
+		},
+	];
+}
+
+function updateTabs() {
+	tabs = app.tabs;
+}
+
+function onSelectTab() {
+	selectedTab = app.selectedTab;
+}
+
+onMount(function() {
+	let teardown = [
+		app.on("updateTabs", updateTabs),
+		app.on("selectTab", onSelectTab),
+		app.on("document.save", updateTabs),
+		app.on("document.edit", updateTabs),
+	];
+	
+	return function() {
+		for (let fn of teardown) {
+			fn();
+		}
+	}
+});
+</script>
+
+<style type="text/scss">
+#main {
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr;
+}
+</style>
+
+<div id="main">
+	<TabBar
+		{tabs}
+		{selectedTab}
+		{getDetails}
+		{getContextMenuItems}
+		reorderable
+		on:select={select}
+		on:close={close}
+		on:reorder={reorder}
+	/>
+</div>

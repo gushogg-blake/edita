@@ -1,31 +1,29 @@
 <script>
-import {onMount, createEventDispatcher, getContext} from "svelte";
+import {createEventDispatcher} from "svelte";
 import screenOffsets from "utils/dom/screenOffsets";
 import Gap from "components/utils/Gap.svelte";
 
+export let tabs;
+export let selectedTab;
+export let getDetails;
+export let getContextMenuItems = null;
+export let reorderable = false;
+export let mimeType = "application/vnd.editor.tab";
+
 let fire = createEventDispatcher();
 
-let app = getContext("app");
-
-let mimeType = "application/vnd.editor.tab";
-
 let main;
-
-let {
-	tabs,
-	selectedTab,
-} = app;
 
 function mousedownTab(e, tab) {
 	if (e.button !== 0) {
 		return;
 	}
 	
-	app.selectTab(tab);
+	fire("select", tab);
 }
 
 function closeTab(tab) {
-	app.closeTab(tab);
+	fire("close", tab);
 }
 
 function auxclickTab(e, tab) {
@@ -35,43 +33,15 @@ function auxclickTab(e, tab) {
 }
 
 function showContextMenu(e, tab) {
-	let {path} = tab.editor.document;
+	if (!getContextMenuItems) {
+		return;
+	}
 	
-	let items = [
-		path && {
-			label: "&Rename...",
-			
-			onClick() {
-				app.renameTab(tab);
-			},
-		},
-		
-		path && {
-			label: "&Delete...",
-			
-			onClick() {
-				app.deleteTab(tab);
-			},
-		},
-	];
-	
-	platform.showContextMenu(e, items);
+	platform.showContextMenu(e, getContextMenuItems(tab));
 }
 
 function tabIsSelected(tab, selectedTab) {
 	return selectedTab === tab;
-}
-
-function updateTabs() {
-	tabs = app.tabs;
-}
-
-function getTabLabel(tabs, tab) {
-	return app.getTabLabel(tab);
-}
-
-function onSelectTab() {
-	selectedTab = app.selectedTab;
 }
 
 function wheel(e) {
@@ -79,6 +49,7 @@ function wheel(e) {
 }
 
 let dropIndex = null;
+let dragging = false;
 
 function tabIndexFromMouseEvent(e) {
 	let tabButtons = [...main.querySelectorAll(".tabButton")];
@@ -98,10 +69,12 @@ function tabIndexFromMouseEvent(e) {
 function dragstart(e) {
 	e.dataTransfer.effectAllowed = "all";
 	e.dataTransfer.setData(mimeType, ""); //
+	
+	dragging = true;
 }
 
 function dragover(e) {
-	if (!e.dataTransfer.types.includes(mimeType)) {
+	if (dragging && !reorderable || !e.dataTransfer.types.includes(mimeType)) {
 		return;
 	}
 	
@@ -113,27 +86,16 @@ function dragover(e) {
 function drop(e) {
 	e.preventDefault();
 	
-	app.reorderTab(selectedTab, tabIndexFromMouseEvent(e));
+	fire("reorder", {
+		tab: selectedTab,
+		index: tabIndexFromMouseEvent(e),
+	});
 }
 
 function dragend(e) {
 	dropIndex = null;
+	dragging = false;
 }
-
-onMount(function() {
-	let teardown = [
-		app.on("updateTabs", updateTabs),
-		app.on("selectTab", onSelectTab),
-		app.on("document.save", updateTabs),
-		app.on("document.edit", updateTabs),
-	];
-	
-	return function() {
-		for (let fn of teardown) {
-			fn();
-		}
-	}
-});
 </script>
 
 <style type="text/scss">
@@ -217,12 +179,14 @@ button {
 			on:dragend={dragend}
 		>
 			<div class="name">
-				{getTabLabel(tabs, tab)}
+				{getDetails(tabs, tab).label}
 			</div>
-			<Gap width={10}/>
-			<div class="controls">
-				<button on:click={() => closeTab(tab)}>x</button>
-			</div>
+			{#if getDetails(tabs, tab).closeable}
+				<Gap width={10}/>
+				<div class="controls">
+					<button on:click={() => closeTab(tab)}>x</button>
+				</div>
+			{/if}
 		</div>
 	{/each}
 	{#if dropIndex === tabs.length}
