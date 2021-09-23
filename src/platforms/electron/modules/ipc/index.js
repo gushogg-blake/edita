@@ -19,8 +19,4 @@ module.exports = {
 	openDialogWindow(url, options) {
 		return ipcRenderer.invoke("openDialogWindow", "open", url, options);
 	},
-	
-	setWindowSize(width, height) {
-		return ipcRenderer.invoke("windowSize", "set", width, height);
-	},
 };
