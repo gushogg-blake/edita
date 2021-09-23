@@ -42,15 +42,22 @@ onMount(function() {
 </script>
 
 <style type="text/scss">
+@import "mixins/abs-sticky";
+
+#main {
+	display: grid;
+	grid-template-rows: 1fr;
+	height: 100%;
+}
 
 #results {
-	/*grid-template-columns: 1fr auto auto;*/
-	/*row-gap: 3px;*/
-	/*padding: 3px;*/
+	position: relative;
+}
+
+#scroll {
+	@include abs-sticky;
 	
-	/*> div {*/
-	/*	padding: 3px;*/
-	/*}*/
+	overflow-y: auto;
 }
 
 .result {
@@ -69,18 +76,18 @@ onMount(function() {
 </style>
 
 <div id="main">
+	<!--<div>-->
+	<!--	File-->
+	<!--</div>-->
+	<!--<div>-->
+	<!--	Line-->
+	<!--</div>-->
+	<!--<div>-->
+	<!--	Match-->
+	<!--</div>-->
 	<div id="results">
-		<!--<div>-->
-		<!--	File-->
-		<!--</div>-->
-		<!--<div>-->
-		<!--	Line-->
-		<!--</div>-->
-		<!--<div>-->
-		<!--	Match-->
-		<!--</div>-->
-		{#if results}
-			{#each results as result}
+		<div id="scroll">
+			{#each results || [] as result}
 				<div
 					class="result"
 					style={inlineStyle(columnWidths)}
@@ -97,6 +104,6 @@ onMount(function() {
 					</div>
 				</div>
 			{/each}
-		{/if}
+		</div>
 	</div>
 </div>
