@@ -28,11 +28,7 @@ class App extends Evented {
 		this.selectedTab = null;
 		this.closedTabs = [];
 		
-		this.showingPane = {
-			left: platform.getPref("showPane.left"),
-			bottom: platform.getPref("showPane.bottom"),
-			right: platform.getPref("showPane.right"),
-		};
+		this.panes = platform.getPref("panes");
 		
 		this.focusManager = focusManager();
 		
@@ -157,11 +153,21 @@ class App extends Evented {
 	}
 	
 	togglePane(name) {
-		this.showingPane[name] = !this.showingPane[name];
+		this.panes[name].show = !this.panes[name].show;
 		
-		platform.setPref("showPane." + name, this.showingPane[name]);
+		platform.setPref("panes." + name + ".show", this.panes[name].show);
 		
 		this.fire("updatePanes");
+	}
+	
+	resizePane(name, size) {
+		this.panes[name].size = size;
+		
+		this.fire("updatePanes");
+	}
+	
+	savePaneSize(name) {
+		platform.setPref("panes." + name + ".size", this.panes[name].size);
 	}
 	
 	showFindBar() {

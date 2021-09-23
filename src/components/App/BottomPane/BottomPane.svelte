@@ -2,6 +2,7 @@
 import {onMount, getContext} from "svelte";
 import TabBar from "components/TabBar.svelte";
 import FocusablePane from "../FocusablePane.svelte";
+import FindResults from "./FindResults.svelte";
 
 let app = getContext("app");
 
@@ -24,11 +25,11 @@ function select({detail: tab}) {
 }
 
 function updateTabs() {
-	tabs = app.tabs;
+	tabs = bottomPane.tabs;
 }
 
 function onSelectTab() {
-	selectedTab = app.selectedTab;
+	selectedTab = bottomPane.selectedTab;
 }
 
 onMount(function() {
@@ -46,6 +47,8 @@ onMount(function() {
 </script>
 
 <style type="text/scss">
+@import "classes/hide";
+
 #main {
 	display: grid;
 	grid-template-rows: auto 1fr;
@@ -56,6 +59,11 @@ onMount(function() {
 #content {
 	border-top: var(--appBorder);
 	background: white;
+}
+
+.content {
+	width: 100%;
+	height: 100%;
 }
 </style>
 
@@ -70,7 +78,9 @@ onMount(function() {
 			/>
 		</div>
 		<div id="content">
-			asd
+			<div class="content" class:hide={selectedTab.id !== "findResults"}>
+				<FindResults/>
+			</div>
 		</div>
 	</div>
 </FocusablePane>

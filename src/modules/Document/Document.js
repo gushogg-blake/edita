@@ -321,6 +321,7 @@ class Document extends Evented {
 		let selection = s(cursor, this.cursorFromIndex(index + match.length));
 		
 		return {
+			document: this,
 			index,
 			cursor,
 			selection,

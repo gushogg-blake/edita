@@ -21,7 +21,7 @@ setContext("app", app);
 let {
 	tabs,
 	selectedTab,
-	showingPane,
+	panes,
 } = app;
 
 let showingFindBar = false;
@@ -64,22 +64,22 @@ function onHideFindBar() {
 
 function onUpdatePanes() {
 	({
-		showingPane,
+		panes,
 	} = app);
 }
 
 let paneStyle = {};
 
 $: paneStyle.left = {
-	width: 150,
+	width: panes.left.show ? panes.left.size : 0,
 };
 
 $: paneStyle.right = {
-	width: 150,
+	width: panes.right.show ? panes.right.size : 0,
 };
 
 $: paneStyle.bottom = {
-	height: 200,
+	height: panes.bottom.show ? panes.bottom.size : 0,
 };
 
 onMount(function() {
@@ -202,11 +202,9 @@ onMount(function() {
 		<Toolbar/>
 	</div>
 	<div id="leftContainer" style={inlineStyle(paneStyle.left)}>
-		{#if showingPane.left}
-			<div id="left">
-				<LeftPane/>
-			</div>
-		{/if}
+		<div id="left">
+			<LeftPane/>
+		</div>
 	</div>
 	<div id="tabBarContainer">
 		{#if tabs.length > 0}
@@ -230,17 +228,13 @@ onMount(function() {
 		{/if}
 	</div>
 	<div id="rightContainer" style={inlineStyle(paneStyle.right)}>
-		{#if showingPane.right}
-			<div id="right">
-				<RightPane/>
-			</div>
-		{/if}
+		<div id="right">
+			<RightPane/>
+		</div>
 	</div>
 	<div id="bottomContainer" style={inlineStyle(paneStyle.bottom)}>
-		{#if showingPane.bottom}
-			<div id="bottom">
-				<BottomPane/>
-			</div>
-		{/if}
+		<div id="bottom">
+			<BottomPane/>
+		</div>
 	</div>
 </div>
