@@ -8,7 +8,7 @@ class BottomPane extends Evented {
 		
 		this.app = app;
 		
-		this.findResults = new FindResults();
+		this.findResults = new FindResults(app);
 		
 		this.tabs = [
 			{

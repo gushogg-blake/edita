@@ -10,8 +10,6 @@ export let getContextMenuItems = null;
 export let reorderable = false;
 export let mimeType = "application/vnd.editor.tab";
 
-$: console.log(selectedTab);
-
 let fire = createEventDispatcher();
 
 let main;

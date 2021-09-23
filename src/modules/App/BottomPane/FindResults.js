@@ -1,8 +1,10 @@
 let Evented = require("utils/Evented");
 
 class FindResults extends Evented {
-	constructor() {
+	constructor(app) {
 		super();
+		
+		this.app = app;
 		
 		this.results = [];
 		this.index = null;
@@ -33,6 +35,16 @@ class FindResults extends Evented {
 		this.index--;
 		
 		this.fire("nav");
+	}
+	
+	async goToResult(result) {
+		let {document, selection} = result;
+		
+		await app.openFile(document.path);
+		
+		let {api: editorApi} = app.selectedTab.editor;
+		
+		editorApi.setNormalSelectionAndCenter(selection);
 	}
 	
 	get currentResults() {

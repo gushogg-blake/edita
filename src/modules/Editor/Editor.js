@@ -14,6 +14,7 @@ let normalKeyboard = require("./normalKeyboard");
 let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
 let modeSwitchKey = require("./modeSwitchKey");
+let api = require("./api");
 
 let {s: a} = AstSelection;
 let {s} = Selection;
@@ -44,6 +45,8 @@ class Editor extends Evented {
 		this.historyEntries = new WeakMap();
 		
 		this.batchState = null;
+		
+		this.api = bindFunctions(this, api);
 		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),

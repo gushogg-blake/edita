@@ -261,7 +261,7 @@ class View extends Evented {
 	}
 	
 	setVerticalScroll(row) {
-		this.scrollPosition.row = row;
+		this.scrollPosition.row = Math.max(0, row);
 		this.fire("scroll");
 	}
 	

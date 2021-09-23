@@ -20,7 +20,7 @@ function update() {
 }
 
 function clickResult(result) {
-	console.log(result);
+	findResults.goToResult(result);
 }
 
 $: columnWidths = {

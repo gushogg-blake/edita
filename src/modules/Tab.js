@@ -181,8 +181,6 @@ class Tab extends Evented {
 		} else {
 			editor.setAstSelection(astSelection);
 		}
-		
-		editor.view.ensureSelectionIsOnScreen();
 	}
 	
 	teardown() {
