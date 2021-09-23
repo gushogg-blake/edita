@@ -1,4 +1,4 @@
-let {ipcRenderer} = require("electron");
+let ipcRenderer = require("platform/modules/ipcRenderer");
 let lid = require("utils/lid");
 let handleMessages = require("./utils/handleMessages");
 

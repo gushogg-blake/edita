@@ -1,4 +1,4 @@
-let {ipcRenderer} = require("electron");
+let ipcRenderer = require("platform/modules/ipcRenderer");
 
 module.exports = {
 	showSave(options) {
