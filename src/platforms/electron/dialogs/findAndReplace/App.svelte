@@ -1,6 +1,5 @@
 <script>
 import getKeyCombo from "utils/getKeyCombo";
-import resizeWindowToContentHeight from "utils/dom/resizeWindowToContentHeight";
 import clickButtonFromAccel from "utils/dom/clickButtonFromAccel";
 import FindAndReplace from "components/FindAndReplace.svelte";
 
@@ -30,8 +29,6 @@ function keydown(e) {
 		functions[fnName]();
 	}
 }
-
-let resize = resizeWindowToContentHeight();
 </script>
 
 <svelte:window on:keydown={keydown}/>
@@ -44,6 +41,6 @@ let resize = resizeWindowToContentHeight();
 	<FindAndReplace
 		{options}
 		{findAndReplace}
-		on:resize={({detail: contentHeight}) => resize(contentHeight)}
+		on:resize={({detail: contentHeight}) => window.resizeTo(window.innerWidth, contentHeight)}
 	/>
 </div>
