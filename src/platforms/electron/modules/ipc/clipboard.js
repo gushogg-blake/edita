@@ -2,7 +2,7 @@ let {ipcRenderer} = require("electron");
 
 /*
 note - these methods are sync, but code should treat platform.clipboard
-methods as async as they may be async on some platforms
+methods as async as they are async on web
 */
 
 module.exports = {

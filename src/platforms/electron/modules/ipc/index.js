@@ -1,19 +1,26 @@
-let init = require("./init");
+let ipcRenderer = require("platform/modules/ipcRenderer");
 let dialog = require("./dialog");
 let clipboard = require("./clipboard");
 let contextMenu = require("./contextMenu");
-let openDialogWindow = require("./openDialogWindow");
 let Snippets = require("./Snippets");
 let jsonStore = require("./jsonStore");
 let JsonStore = require("./JsonStore");
 
 module.exports = {
-	init,
+	init: ipcRenderer.sendSync("init", "init"),
+	
 	dialog,
 	clipboard,
 	contextMenu,
-	openDialogWindow,
 	jsonStore,
 	prefs: new JsonStore("prefs"),
 	snippets: new Snippets(),
+	
+	openDialogWindow(url, options) {
+		return ipcRenderer.invoke("openDialogWindow", "open", url, options);
+	},
+	
+	setWindowSize(width, height) {
+		return ipcRenderer.invoke("windowSize", "set", width, height);
+	},
 };
