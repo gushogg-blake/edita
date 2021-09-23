@@ -41,6 +41,27 @@ module.exports = {
 		this.showFindBar();
 	},
 	
+	findInOpenFiles() {
+		this.showFindDialog({
+			replace: false,
+			searchIn: "openFiles",
+		});
+	},
+	
+	replace() {
+		this.showFindDialog({
+			replace: true,
+			searchIn: "currentDocument",
+		});
+	},
+	
+	replaceInOpenFiles() {
+		this.showFindDialog({
+			replace: true,
+			searchIn: "openFiles",
+		});
+	},
+	
 	selectNextTab() {
 		this.selectNextTab(1);
 	},

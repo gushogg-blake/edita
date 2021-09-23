@@ -373,22 +373,23 @@ class App extends Evented {
 	}
 	
 	findInFiles(paths) {
-		platform.openDialogWindow(this, "findAndReplace", {
+		this.showFindDialog({
 			replace: false,
 			searchIn: "files",
 			paths,
-		}, {
-			width: 640,
-			height: 300,
 		});
 	}
 	
-	findAndReplaceInFiles(paths) {
-		platform.openDialogWindow(this, "findAndReplace", {
+	replaceInFiles(paths) {
+		this.showFindDialog({
 			replace: true,
 			searchIn: "files",
 			paths,
-		}, {
+		});
+	}
+	
+	showFindDialog(options) {
+		platform.openDialogWindow(this, "findAndReplace", options, {
 			width: 640,
 			height: 300,
 		});
