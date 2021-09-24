@@ -29,7 +29,7 @@ module.exports = {
 				}
 				
 				if (startRow === endRow) {
-					// single-line selection
+					// single-row selection
 					
 					let [x, y] = this.screenCoordsFromRowCol(startRow, startCol);
 					
@@ -41,7 +41,7 @@ module.exports = {
 				}
 				
 				if (row === endRow) {
-					// last row of multi-line selection
+					// last row of multi-row selection
 					// highlight beginning of line to end col
 					
 					let [x, y] = this.screenCoordsFromRowCol(row, 0);
@@ -54,12 +54,12 @@ module.exports = {
 				}
 				
 				if (row === startRow) {
-					// first row of multi-line selection
+					// first row of multi-row selection
 					// highlight start col to end of line, plus 1 for the newline
 					
 					let [x, y] = this.screenCoordsFromRowCol(startRow, startCol);
 					
-					let width = wrappedLine.rows[j].width - startCol + 1;
+					let width = wrappedLine.rows[j].width - startCol + (i < end.lineIndex && j === wrappedLine.rows.length - 1 ? 1 : 0);
 					
 					if (j > 0) {
 						width += line.indentCols;
@@ -74,7 +74,7 @@ module.exports = {
 					
 					let [x, y] = this.screenCoordsFromRowCol(row, 0);
 					
-					let width = wrappedLine.rows[j].width + 1;
+					let width = wrappedLine.rows[j].width + (i < end.lineIndex && j === wrappedLine.rows.length - 1 ? 1 : 0);
 					
 					if (j > 0) {
 						width += line.indentCols;
