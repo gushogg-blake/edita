@@ -351,13 +351,13 @@ class View extends Evented {
 	}
 	
 	setNormalSelection(selection) {
-		this.normalSelection = Selection.validate(this.document.lines, selection);
+		this.normalSelection = this.Selection.validate(selection);
 		
 		this.updateAstSelectionFromNormalSelection();
 	}
 	
-	setAstSelection(selection) {
-		this.astSelection = AstSelection.validate(this.document.lines, selection);
+	setAstSelection(astSelection) {
+		this.astSelection = this.AstSelection.validate(astSelection);
 		this.astSelectionHilite = null;
 		
 		this.updateNormalSelectionFromAstSelection();
@@ -381,6 +381,10 @@ class View extends Evented {
 		let {astMode} = this.lang;
 		
 		this.astSelection = astCommon.selection.fromLineRange(document, start.lineIndex, end.lineIndex + 1);
+	}
+	
+	getNormalSelectionForFind() {
+		return this.mode === "ast" ? this.Selection.fromAstSelection(this.normalSelection) : this.normalSelection;
 	}
 	
 	setMeasurements(measurements) {

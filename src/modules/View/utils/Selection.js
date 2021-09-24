@@ -409,4 +409,36 @@ module.exports = {
 	all() {
 		return s(c(0, 0), this.document.cursorAtEnd());
 	},
+	
+	validate(selection) {
+		let {lines} = this.document;
+		let {start, end} = selection;
+		let {lineIndex: startLineIndex, offset: startOffset} = start;
+		let {lineIndex: endLineIndex, offset: endOffset} = end;
+		
+		startLineIndex = Math.min(startLineIndex, lines.length - 1);
+		startOffset = Math.min(startOffset, lines[startLineIndex].string.length);
+		endLineIndex = Math.min(endLineIndex, lines.length - 1);
+		endOffset = Math.min(endOffset, lines[endLineIndex].string.length);
+		
+		return {
+			start: {
+				lineIndex: startLineIndex,
+				offset: startOffset,
+			},
+			
+			end: {
+				lineIndex: endLineIndex,
+				offset: endOffset,
+			},
+		};
+	},
+	
+	fromAstSelection(astSelection) {
+		let {lines} = this.document;
+		
+		let endLineIndex = Math.max(astSelection.startLineIndex, astSelection.endLineIndex - 1);
+		
+		return s(c(astSelection.startLineIndex, 0), c(endLineIndex, lines[endLineIndex].string.length));
+	},
 };

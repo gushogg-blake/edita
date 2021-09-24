@@ -65,8 +65,10 @@ onMount(function() {
 	/*display: flex;*/
 	cursor: pointer;
 	
-	&:hover .path {
-		text-decoration: underline;
+	&:hover {
+		.path, .lineNumber {
+			text-decoration: underline;
+		}
 	}
 	
 	> div {
@@ -96,7 +98,7 @@ onMount(function() {
 					<div class="path">
 						{result.document.path}
 					</div>
-					<div>
+					<div class="lineNumber">
 						{result.selection.start.lineIndex + 1}
 					</div>
 					<div>

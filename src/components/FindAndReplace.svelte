@@ -9,6 +9,7 @@ export let findAndReplace;
 let fire = createEventDispatcher();
 
 let main;
+let message = null;
 
 let {
 	replace,
@@ -45,40 +46,76 @@ $: options = {
 
 let functions = {
 	async findAll() {
-		console.log(await findAndReplace.findAll(options));
+		await setMessage(null);
+		
+		let result = await findAndReplace.findAll(options);
+		
+		if (!result) {
+			await setMessage("No occurrences found");
+		}
+		
+		fire("done", result);
 	},
 	
-	replaceAll() {
+	async replaceAll() {
+		await setMessage(null);
+		
+		let result = await findAndReplace.replaceAll(options);
+		
+		if (!result) {
+			await setMessage("No occurrences found");
+		}
+		
+		fire("done", result);
+	},
+	
+	async findNext() {
+		await setMessage(null);
+		
+		let result = await findAndReplace.findNext(options);
+		
+		if (!result) {
+			await setMessage("No occurrences found");
+			
+			return;
+		}
+		
+		if (result.loopedFile) {
+			
+		}
+	},
+	
+	async findPrevious() {
 		
 	},
 	
-	findNext() {
-		
-	},
-	
-	findPrevious() {
-		
-	},
-	
-	replace() {
+	async replace() {
 		
 	},
 };
 
-async function onSetOptions() {
-	await tick();
-	
-	resize();
+function setMessage(str) {
+	return resize(function() {
+		message = str;
+	});
 }
 
-$: onSetOptions(options);
-
-function resize() {
+async function updateSize() {
+	await tick();
+	
 	fire("resize", main.offsetHeight);
 }
 
+$: updateSize(options);
+
+async function resize(fn) {
+	fn();
+	
+	await updateSize();
+}
+
 onMount(function() {
-	resize();
+	updateSize();
 });
 </script>
 
@@ -115,6 +152,15 @@ onMount(function() {
 .checkboxes {
 	display: flex;
 	gap: 1em;
+}
+
+#message {
+	grid-column: 2 / 3;
+	border: 1px solid #3d7dcc;
+	border-radius: 3px;
+	padding: 3px 5px;
+	background: #cce3ff;
+	/*background: #b6d5fb;*/
 }
 
 .spacer {
@@ -157,7 +203,13 @@ button {
 			<!--<Checkbox bind:checked={multiline} label="Mul%tiline"/>-->
 			<Checkbox bind:checked={replace} label="%Replace"/>
 		</div>
-		<div class="spacer"></div>
+		{#if message}
+			<div id="message">
+				{message}
+			</div>
+		{:else}
+			<div class="spacer"></div>
+		{/if}
 		<label for="searchIn">
 			<Accel label="Search %in"/>
 		</label>

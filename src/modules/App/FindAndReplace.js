@@ -37,9 +37,14 @@ function getFindAndReplaceOptions(options) {
 class FindAndReplace {
 	constructor(app) {
 		this.app = app;
+		this.session = null;
 	}
 	
-	async findAllInCurrentDocument(options) {
+	useExistingSession(options) {
+		return this.session && JSON.stringify(this.session.options) === JSON.stringify(options);
+	}
+	
+	findAllInCurrentDocument(options) {
 		let {document} = this.app.selectedTab.editor;
 		
 		let results = document.findAll(getFindAndReplaceOptions(options));
@@ -53,11 +58,28 @@ class FindAndReplace {
 		}
 	}
 	
-	async findAllInSelectedText(options) {
+	findAllInSelectedText(options) {
+		let {editor} = this.app.selectedTab;
+		let {document, view} = editor;
 		
+		let {start, end} = view.getNormalSelectionForFind();
+		
+		let results = document.findAll({
+			...getFindAndReplaceOptions(options),
+			startIndex: document.indexFromCursor(start),
+			endIndex: document.indexFromCursor(end),
+		});
+		
+		if (results.length > 0) {
+			this.app.bottomPane.showFindResults(results);
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
-	async findAllInOpenFiles(options) {
+	findAllInOpenFiles(options) {
 		
 	}
 	
@@ -65,15 +87,15 @@ class FindAndReplace {
 		
 	}
 	
-	async replaceAllInCurrentDocument(options) {
+	replaceAllInCurrentDocument(options) {
 		
 	}
 	
-	async replaceAllInSelectedText(options) {
+	replaceAllInSelectedText(options) {
 		
 	}
 	
-	async replaceAllInOpenFiles(options) {
+	replaceAllInOpenFiles(options) {
 		
 	}
 	
@@ -81,44 +103,36 @@ class FindAndReplace {
 		
 	}
 	
-	async findNextInCurrentDocument(options, currentResult) {
+	findNextInCurrentDocument(options) {
 		
 	}
 	
-	async findNextInSelectedText(options, currentResult) {
+	findNextInSelectedText(options) {
 		
 	}
 	
-	async findNextInOpenFiles(options, currentResult) {
+	findNextInOpenFiles(options) {
 		
 	}
 	
-	async findPreviousInCurrentDocument(options, currentResult) {
+	findPreviousInCurrentDocument(options) {
 		
 	}
 	
-	async findPreviousInSelectedText(options, currentResult) {
+	findPreviousInSelectedText(options) {
 		
 	}
 	
-	async findPreviousInOpenFiles(options, currentResult) {
-		
-	}
-	
-	async replaceInCurrentDocument(options, currentResult) {
-		
-	}
-	
-	async replaceInSelectedText(options, currentResult) {
-		
-	}
-	
-	async replaceInOpenFiles(options, currentResult) {
+	findPreviousInOpenFiles(options) {
 		
 	}
 	
 	findAll(options) {
 		let {searchIn} = options;
+		
+		if (searchIn !== "files" && !this.app.selectedTab) {
+			return false;
+		}
 		
 		if (searchIn === "currentDocument") {
 			return this.findAllInCurrentDocument(options);
@@ -134,6 +148,10 @@ class FindAndReplace {
 	replaceAll(options) {
 		let {searchIn} = options;
 		
+		if (searchIn !== "files" && !this.app.selectedTab) {
+			return false;
+		}
+		
 		if (searchIn === "currentDocument") {
 			return this.replaceAllInCurrentDocument(options);
 		} else if (searchIn === "selectedText") {
@@ -145,40 +163,52 @@ class FindAndReplace {
 		}
 	}
 	
-	findNext(options, currentResult) {
+	findNext(options) {
+		if (!this.app.selectedTab) {
+			return false;
+		}
+		
 		let {searchIn} = options;
 		
 		if (searchIn === "currentDocument") {
-			return this.findNextInCurrentDocument(options, currentResult);
+			return this.findNextInCurrentDocument(options);
 		} else if (searchIn === "selectedText") {
-			return this.findNextInSelectedText(options, currentResult);
+			return this.findNextInSelectedText(options);
 		} else if (searchIn === "openFiles") {
-			return this.findNextInOpenFiles(options, currentResult);
+			return this.findNextInOpenFiles(options);
 		}
 	}
 	
-	findPrevious(options, currentResult) {
+	findPrevious(options) {
+		if (!this.app.selectedTab) {
+			return false;
+		}
+		
 		let {searchIn} = options;
 		
 		if (searchIn === "currentDocument") {
-			return this.findPreviousInCurrentDocument(options, currentResult);
+			return this.findPreviousInCurrentDocument(options);
 		} else if (searchIn === "selectedText") {
-			return this.findPreviousInSelectedText(options, currentResult);
+			return this.findPreviousInSelectedText(options);
 		} else if (searchIn === "openFiles") {
-			return this.findPreviousInOpenFiles(options, currentResult);
+			return this.findPreviousInOpenFiles(options);
 		}
 	}
 	
-	replace(options, currentResult) {
-		let {searchIn} = options;
-		
-		if (searchIn === "currentDocument") {
-			return this.replaceInCurrentDocument(options, currentResult);
-		} else if (searchIn === "selectedText") {
-			return this.replaceInSelectedText(options, currentResult);
-		} else if (searchIn === "openFiles") {
-			return this.replaceInOpenFiles(options, currentResult);
+	replace(options) {
+		if (!this.app.selectedTab) {
+			return false;
 		}
+		
+		if (!this.session) {
+			this.findNext(options);
+		}
+		
+		if (!this.session) {
+			return false;
+		}
+		
+		
 	}
 }
 
