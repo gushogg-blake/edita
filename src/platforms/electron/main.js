@@ -1,5 +1,5 @@
 import App from "modules/App";
-import components from "components";
+import AppComponent from "components/App/App.svelte";
 import init from "./init";
 
 init(async function() {
@@ -7,7 +7,7 @@ init(async function() {
 	
 	await app.init();
 	
-	new components.App({
+	new AppComponent({
 		target: document.body,
 		
 		props: {

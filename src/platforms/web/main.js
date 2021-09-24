@@ -1,6 +1,7 @@
 import Base from "modules/Base";
 import App from "modules/App";
 import components from "components";
+import AppComponent from "components/App/App.svelte";
 import Platform from "./Platform";
 
 window.platform = new Platform();
@@ -15,7 +16,7 @@ export default async function(options) {
 		
 		await app.init();
 		
-		new components.App({
+		new AppComponent({
 			target: el,
 			
 			props: {
