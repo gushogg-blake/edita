@@ -127,6 +127,36 @@ module.exports = class {
 		yield* this.rootScope.generateNodesOnLine(lineIndex);
 	}
 	
+	*walkNodesFromLine(lineIndex) {
+		let {
+			scope,
+			range,
+			node,
+		} = this.rootScope.findFirstNodeOnLine(lineIndex);
+		
+		while (node) {
+			yield {
+				scope,
+				range,
+				node,
+			};
+			
+			({
+				scope,
+				range,
+				node,
+			} = scope.next(node, range));
+		}
+	}
+	
+	//*generateNodesOnLineWithLang(lineIndex) {
+	//	if (!this.rootScope) {
+	//		return;
+	//	}
+	//	
+	//	yield* this.rootScope.generateNodesOnLineWithLang(lineIndex);
+	//}
+	
 	getHeadersOnLine(lineIndex) {
 		if (!this.rootScope) {
 			return [];

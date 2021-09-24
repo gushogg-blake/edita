@@ -2,6 +2,7 @@ let Selection = require("modules/utils/Selection");
 let next = require("modules/utils/treeSitter/next");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
 let findFirstNodeToRender = require("modules/utils/treeSitter/findFirstNodeToRender");
+let findFirstNodeOnLine = require("modules/utils/treeSitter/findFirstNodeOnLine");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let Range = require("./Range");
@@ -163,6 +164,36 @@ module.exports = class Scope {
 		}
 		
 		let node = findFirstNodeToRender(this.tree.rootNode, lineIndex);
+		let childScope = this.scopesByNode[node.id];
+		
+		if (childScope && childScope.tree) {
+			return childScope.findFirstNodeToRender(lineIndex);
+		}
+		
+		return {
+			scope: this,
+			range: this.findContainingRange(node),
+			node,
+		};
+	}
+	
+	findFirstNodeOnLine(lineIndex) {
+		let _null = {
+			scope: this,
+			range: null,
+			node: null,
+		};
+		
+		if (!this.tree) {
+			return _null;
+		}
+		
+		let node = findFirstNodeOnLine(this.tree.rootNode, lineIndex);
+		
+		if (!node) {
+			return _null;
+		}
+		
 		let childScope = this.scopesByNode[node.id];
 		
 		if (childScope && childScope.tree) {

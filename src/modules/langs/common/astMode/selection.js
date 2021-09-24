@@ -141,8 +141,6 @@ let api = {
 	*/
 	
 	down(document, selection) {
-		// TODO if empty block, create a new blank line
-		
 		let {startLineIndex, endLineIndex} = selection;
 		let nodes = document.getNodesOnLine(startLineIndex);
 		
@@ -152,6 +150,26 @@ let api = {
 		//	return;
 		//}
 		
+		for (let {scope, node} of document.walkNodesFromLine(startLineIndex)) {
+			if (node.startPosition.row > startLineIndex) {
+				break;
+			}
+			
+			let {lang} = scope;
+			let footer = lang.getFooter(node);
+			
+			if (footer) {
+				let header = node;
+				
+				if (footer.startPosition.row >= header.endPosition.row + 1) {
+					
+				} else {
+					// TODO empty block - create a new blank line
+				}
+				
+				
+			}
+		}
 		let [node] = document.generateNodesOnLine(startLineIndex);
 		
 		console.log(node);

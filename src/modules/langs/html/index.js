@@ -90,11 +90,15 @@ module.exports = {
 	},
 	
 	isElementBlock(node) {
-		return node.startPosition.row !== node.endPosition.row && [
-			"element",
-			"style_element",
-			"script_element",
-		].includes(node.type);
+		return (
+			[
+				"element",
+				"style_element",
+				"script_element",
+			].includes(node.type)
+			
+			&& node.firstChild.endPosition.row !== node.lastChild.startPosition.row
+		);
 	},
 	
 	getFooter(node) {

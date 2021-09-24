@@ -1,13 +1,13 @@
 let {is, deep} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 
-let next = require("modules/Document/Source/utils/treeSitter/next");
-let advanceCursor = require("modules/Document/Source/utils/treeSitter/advanceCursor");
+let next = require("modules/utils/treeSitter/next");
+let advanceCursor = require("modules/utils/treeSitter/advanceCursor");
 
 let Document = require("modules/Document");
 
-let findFirstNodeToRender = require("modules/Document/Source/utils/treeSitter/findFirstNodeToRender");
-let find = require("modules/Document/Source/utils/treeSitter/findSmallestSubtreeContainingFirstNodeOnLine");
+let findFirstNodeToRender = require("modules/utils/treeSitter/findFirstNodeToRender");
+let find = require("modules/utils/treeSitter/findSubtreeContainingFirstNodeOnLine");
 
 let code = dedent(`
 	<!doctype html>
@@ -35,7 +35,7 @@ let doc;
 let tree;
 let rootNode;
 
-describe("findSmallestSubtreeContainingFirstNodeOnLine", function() {
+describe("findSubtreeContainingFirstNodeOnLine", function() {
 	beforeEach(function() {
 		doc = new Document(code, "a.html");
 		tree = doc.source.rootScope.tree;
