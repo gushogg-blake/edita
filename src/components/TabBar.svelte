@@ -174,7 +174,7 @@ button {
 			on:mousedown={(e) => mousedownTab(e, tab)}
 			on:auxclick={(e) => auxclickTab(e, tab)}
 			on:contextmenu={(e) => showContextMenu(e, tab)}
-			draggable="true"
+			draggable={reorderable}
 			on:dragstart={dragstart}
 			on:dragend={dragend}
 		>
