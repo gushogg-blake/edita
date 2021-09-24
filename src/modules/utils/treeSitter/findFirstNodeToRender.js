@@ -1,4 +1,4 @@
-let findSmallestSubtreeContainingFirstNodeOnLine = require("./findSmallestSubtreeContainingFirstNodeOnLine");
+let findSubtreeContainingFirstNodeOnLine = require("./findSubtreeContainingFirstNodeOnLine");
 let findLastChildBeforeLine = require("./findLastChildBeforeLine");
 
 /*
@@ -18,8 +18,8 @@ but tree traversal time won't be too badly affected by this as it's just
 a single node.
 */
 
-module.exports = function(tree, lineIndex) {
-	let subtree = findSmallestSubtreeContainingFirstNodeOnLine(tree, lineIndex);
+module.exports = function(node, lineIndex) {
+	let subtree = findSubtreeContainingFirstNodeOnLine(node, lineIndex);
 	
 	if (subtree.startPosition.row < lineIndex) {
 		let lastChildBeforeLine = findLastChildBeforeLine(subtree, lineIndex);

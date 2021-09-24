@@ -93,7 +93,7 @@ module.exports = class {
 				if (node.startPosition.row >= startLineIndex) {
 					let line = lines[node.startPosition.row - startLineIndex];
 					
-					line.renderHints.push(...scope.getRenderHints(node));
+					line.renderHints.push(...scope.generateRenderHints(node));
 				}
 				
 				({scope, range, node} = scope.next(node, range));
@@ -117,6 +117,14 @@ module.exports = class {
 		}
 		
 		return [...this.rootScope.generateNodesOnLine(lineIndex)];
+	}
+	
+	*generateNodesOnLine(lineIndex) {
+		if (!this.rootScope) {
+			return;
+		}
+		
+		yield* this.rootScope.generateNodesOnLine(lineIndex);
 	}
 	
 	getHeadersOnLine(lineIndex) {

@@ -18,7 +18,11 @@ function endsAfter(node, cursor) {
 	);
 }
 
-function findFirstNodeOnOrAfterCursor(node, cursor) {
+module.exports = function(node, cursor) {
+	if (isOnOrAfter(node, cursor)) {
+		return node;
+	}
+	
 	let children = node.children;
 	let startIndex = 0;
 	let endIndex = children.length;
@@ -54,8 +58,4 @@ function findFirstNodeOnOrAfterCursor(node, cursor) {
 	}
 	
 	return first;
-}
-
-module.exports = function(tree, cursor) {
-	return findFirstNodeOnOrAfterCursor(tree.rootNode, cursor);
 }

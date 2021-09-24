@@ -382,6 +382,10 @@ class Document extends Evented {
 		return this.source.getNodesOnLine(lineIndex);
 	}
 	
+	generateNodesOnLine(lineIndex) {
+		return this.source.generateNodesOnLine(lineIndex);
+	}
+	
 	getHeadersOnLine(lineIndex) {
 		return this.source.getHeadersOnLine(lineIndex);
 	}

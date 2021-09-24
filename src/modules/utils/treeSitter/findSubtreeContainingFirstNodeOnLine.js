@@ -1,7 +1,13 @@
 let middle = require("utils/middle");
 let prev = require("./prev");
 
-function findSmallestSubtreeContainingFirstNodeOnLine(node, lineIndex) {
+/*
+finds either the largest node that starts on the line, or if no nodes start
+on the line, the smallest node that contains the line (starts before and
+ends on or after)
+*/
+
+module.exports = function(node, lineIndex) {
 	let children = node.children;
 	let startIndex = 0;
 	let endIndex = children.length;
@@ -41,8 +47,4 @@ function findSmallestSubtreeContainingFirstNodeOnLine(node, lineIndex) {
 			}
 		}
 	}
-}
-
-module.exports = function(tree, lineIndex) {
-	return findSmallestSubtreeContainingFirstNodeOnLine(tree.rootNode, lineIndex);
 }

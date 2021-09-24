@@ -1,9 +1,9 @@
 let Selection = require("modules/utils/Selection");
-let next = require("./utils/treeSitter/next");
-let cursorToTreeSitterPoint = require("./utils/treeSitter/cursorToTreeSitterPoint");
-let findFirstNodeToRender = require("./utils/treeSitter/findFirstNodeToRender");
-let findFirstNodeOnOrAfterCursor = require("./utils/treeSitter/findFirstNodeOnOrAfterCursor");
-let generateNodesOnLine = require("./utils/treeSitter/generateNodesOnLine");
+let next = require("modules/utils/treeSitter/next");
+let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
+let findFirstNodeToRender = require("modules/utils/treeSitter/findFirstNodeToRender");
+let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
+let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let Range = require("./Range");
 
 module.exports = class Scope {
@@ -144,15 +144,17 @@ module.exports = class Scope {
 		//}
 	}
 	
-	getRenderHints(node) {
+	*generateRenderHints(node) {
 		if (node.type === "ERROR") {
-			return [{
+			yield {
 				lang: this.lang,
 				node,
-			}];
+			};
+			
+			return;
 		}
 		
-		return this.lang.generateRenderHints(node);
+		yield* this.lang.generateRenderHints(node);
 	}
 	
 	findFirstNodeToRender(lineIndex) {
@@ -160,7 +162,7 @@ module.exports = class Scope {
 			return null;
 		}
 		
-		let node = findFirstNodeToRender(this.tree, lineIndex);
+		let node = findFirstNodeToRender(this.tree.rootNode, lineIndex);
 		let childScope = this.scopesByNode[node.id];
 		
 		if (childScope && childScope.tree) {
@@ -293,7 +295,7 @@ module.exports = class Scope {
 			return;
 		}
 		
-		for (let node of generateNodesOnLine(this.tree, lineIndex, startOffset)) {
+		for (let node of generateNodesOnLine(this.tree.rootNode, lineIndex, startOffset)) {
 			yield withLang ? {
 				node,
 				lang: this.lang,

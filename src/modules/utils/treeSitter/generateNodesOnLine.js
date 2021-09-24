@@ -4,8 +4,8 @@ let next = require("./next");
 
 let {c} = Cursor;
 
-module.exports = function*(tree, lineIndex, startOffset) {
-	let node = findFirstNodeOnOrAfterCursor(tree, c(lineIndex, startOffset));
+module.exports = function*(searchNode, lineIndex, startOffset) {
+	let node = findFirstNodeOnOrAfterCursor(searchNode, c(lineIndex, startOffset));
 	
 	while (node && node.startPosition.row === lineIndex) {
 		yield node;

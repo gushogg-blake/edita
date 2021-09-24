@@ -1,6 +1,7 @@
 let AstSelection = require("modules/utils/AstSelection");
 
 let {
+	//findNextLineIndexAtIndentLevel,
 	findPrevLineIndexAtIndentLevel,
 } = require("./utils");
 
@@ -129,8 +130,32 @@ let api = {
 		return selectionFromLineIndex(document, headerLineIndex);
 	},
 	
+	/*
+	let generateNodesOnLine = require("./generateNodesOnLine");
+
+	module.exports = function(node) {
+		//let child = findSubtreeContainingFirstNodeOnLine(node, node.startP
+		
+		let generator = generateNodesOnLine(
+
+	*/
+	
 	down(document, selection) {
-		// if empty block, create a new blank line
+		// TODO if empty block, create a new blank line
+		
+		let {startLineIndex, endLineIndex} = selection;
+		let nodes = document.getNodesOnLine(startLineIndex);
+		
+		//if (nodes.length === 0) {
+		//	// TODO indentation based
+		//	
+		//	return;
+		//}
+		
+		let [node] = document.generateNodesOnLine(startLineIndex);
+		
+		console.log(node);
+		
 		return selection;
 	},
 	
