@@ -9,7 +9,7 @@ import EditorTabBar from "./EditorTabBar.svelte";
 import Tab from "./Tab.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
-import BottomPane from "./BottomPane/BottomPane.svelte";
+import BottomPane from "./BottomPane.svelte";
 import FindBar from "./FindBar.svelte";
 
 export let app;

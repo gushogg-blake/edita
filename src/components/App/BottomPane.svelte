@@ -1,8 +1,8 @@
 <script>
 import {onMount, getContext} from "svelte";
 import TabBar from "components/TabBar.svelte";
-import FocusablePane from "../FocusablePane.svelte";
-import FindResults from "./FindResults.svelte";
+import FindResults from "components/FindResults.svelte";
+import FocusablePane from "./FocusablePane.svelte";
 
 let app = getContext("app");
 
