@@ -306,13 +306,22 @@ class Document extends Evented {
 			noParse: true,
 		});
 		
+		let results = [];
 		let edits = [];
 		
 		for (let result of document.find(options)) {
 			edits.push(result.replace(options.replaceWith));
+			
+			results.push({
+				...result,
+				document: this,
+			});
 		}
 		
-		return edits;
+		return {
+			edits,
+			results,
+		};
 	}
 	
 	createFindResult(result) {

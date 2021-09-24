@@ -17,6 +17,16 @@ module.exports = {
 		this.view.redraw();
 	},
 	
+	findAll(options) {
+		let results = this.document.findAll(options);
+		
+		view.normalHilites = results.map(result => result.selection);
+		
+		view.redraw();
+		
+		return results;
+	},
+	
 	findAllInSelectedText(options) {
 		let {document, view} = this;
 		let {start, end} = view.getNormalSelectionForFind();
@@ -34,8 +44,31 @@ module.exports = {
 		return results;
 	},
 	
-	findAll(options) {
-		let results = this.document.findAll(options);
+	replaceAll(options) {
+		let {document, view} = this;
+		
+		let {edits, results} = document.replaceAll(options);
+		
+		this.applyAndAddHistoryEntry({
+			edits,
+		});
+		
+		view.normalHilites = edits.map(edit => edit.newSelection);
+		
+		view.redraw();
+		
+		return results;
+	},
+	
+	replaceAllInSelectedText(options) {
+		let {document, view} = this;
+		let {start, end} = view.getNormalSelectionForFind();
+		
+		let results = document.findAll({
+			...options,
+			startIndex: document.indexFromCursor(start),
+			endIndex: document.indexFromCursor(end),
+		});
 		
 		view.normalHilites = results.map(result => result.selection);
 		

@@ -27,11 +27,10 @@ function sort(selection) {
 }
 
 function isBefore(a, b) {
-	return Cursor.isBefore(sort(a).end, sort(b).start);
-}
-
-function startsBefore(a, b) {
-	return Cursor.isBefore(sort(a).start, sort(b).start);
+	let {end} = sort(a);
+	let {start} = sort(b);
+	
+	return Cursor.isBefore(end, start) || Cursor.equals(end, start);
 }
 
 function cursorIsWithinSelection(selection, cursor) {
@@ -84,7 +83,7 @@ function addOrSubtractEarlierSelection(selection, adjustment, sign) {
 	selection = sort(selection);
 	adjustment = sort(adjustment);
 	
-	if (startsBefore(selection, adjustment)) {
+	if (Cursor.isBefore(selection.start, adjustment.start)) {
 		return selection;
 	}
 	
@@ -190,6 +189,14 @@ let api = {
 		return s(Cursor.endOfLineContent(wrappedLines, lineIndex));
 	},
 	
+	add(selection, addSelection) {
+		return addOrSubtractSelection(selection, addSelection, 1);
+	},
+	
+	subtract(selection, subtractSelection) {
+		return addOrSubtractSelection(selection, subtractSelection, -1);
+	},
+	
 	addEarlierSelection(selection, addSelection) {
 		return addOrSubtractEarlierSelection(selection, addSelection, 1);
 	},
@@ -212,8 +219,22 @@ let api = {
 	adjust a selection to account for an edit within the selection
 	*/
 	
+	adjustForEditWithinSelection(selection, oldSelection, newSelection) {
+		// TODO
+	},
+	
 	edit(selection, oldSelection, newSelection) {
-		
+		if (isBefore(oldSelection, selection)) {
+			return api.adjustForEarlierEdit(selection, oldSelection, newSelection);
+		} else if (api.equals(selection, oldSelection)) {
+			return newSelection;
+		} else if (api.isWithin(oldSelection, selection)) {
+			return api.adjustForEditWithinSelection(selection, oldSelection, newSelection);
+		} else if (isOverlapping(selection, oldSelection)) {
+			return null;
+		} else {
+			return selection;
+		}
 	},
 	
 	/*

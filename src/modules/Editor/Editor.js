@@ -178,8 +178,10 @@ class Editor extends Evented {
 					selection = newSelection;
 				} else if (i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
 					selection = Selection.expand(selection, newSelection);
+				} else if (Selection.isWithin(oldSelection, selection)) {
+					selection = Selection.adjustForEditWithinSelection(selection, oldSelection, newSelection);
 				} else if (Selection.isOverlapping(selection, oldSelection)) {
-					selection = Selection.edit(selection, oldSelection, newSelection);
+					selection = null;
 				}
 			}
 			
@@ -187,7 +189,7 @@ class Editor extends Evented {
 				...placeholder,
 				selection,
 			};
-		}).filter(Boolean);
+		});
 		
 		return {
 			index,
@@ -200,7 +202,7 @@ class Editor extends Evented {
 		let {normalHilites} = this.view;
 		
 		this.view.normalHilites = normalHilites.map(function(hilite) {
-			return Selection.adjustForEarlierEdit(hilite, oldSelection, newSelection);
+			return Selection.edit(hilite, oldSelection, newSelection);
 		}).filter(Boolean);
 		
 		this.view.updateMarginSize();

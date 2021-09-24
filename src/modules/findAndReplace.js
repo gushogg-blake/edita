@@ -109,6 +109,14 @@ let findAndReplace = {
 				match: string,
 				groups,
 				
+				/*
+				NOTE replace must be called while iterating through the
+				generator, as it updates the string and regex index for the
+				next iteration -- calling replace() on a result within a
+				pre-generated array will invalidate subsequent results in
+				the array.
+				*/
+				
 				replace(str) {
 					code = code.substr(0, index) + str + code.substr(re.lastIndex);
 					re.lastIndex = index + str.length;

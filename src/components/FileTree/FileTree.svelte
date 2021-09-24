@@ -33,7 +33,7 @@ function contextmenu({detail: {e, entry}}) {
 			label: "Replace...",
 			
 			onClick() {
-				app.findAndReplaceInFiles([path]);
+				app.replaceInFiles([path]);
 			},
 		},
 		
@@ -56,7 +56,6 @@ async function onUpdateRootDir() {
 }
 
 function onMakeRoot({detail: entry}) {
-	console.log(entry);
 	fileTree.setRootDir(entry.path);
 }
 

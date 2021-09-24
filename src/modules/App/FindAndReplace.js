@@ -19,6 +19,7 @@ word: false
 function getFindAndReplaceOptions(options) {
 	let {
 		search,
+		replaceWith,
 		regex,
 		caseMode,
 		word,
@@ -27,6 +28,7 @@ function getFindAndReplaceOptions(options) {
 	
 	return {
 		search,
+		replaceWith,
 		type: regex ? "regex" : "plain",
 		caseMode,
 		word,
@@ -45,9 +47,7 @@ class FindAndReplace {
 	}
 	
 	findAllInCurrentDocument(options) {
-		let {document} = this.app.selectedTab.editor;
-		
-		let results = document.findAll(getFindAndReplaceOptions(options));
+		let results = this.app.selectedTab.editor.api.findAll(getFindAndReplaceOptions(options));
 		
 		if (results.length > 0) {
 			this.app.bottomPane.showFindResults(results);
@@ -59,16 +59,7 @@ class FindAndReplace {
 	}
 	
 	findAllInSelectedText(options) {
-		let {editor} = this.app.selectedTab;
-		let {document, view} = editor;
-		
-		let {start, end} = view.getNormalSelectionForFind();
-		
-		let results = document.findAll({
-			...getFindAndReplaceOptions(options),
-			startIndex: document.indexFromCursor(start),
-			endIndex: document.indexFromCursor(end),
-		});
+		let results = this.app.selectedTab.editor.api.findAllInSelectedText(getFindAndReplaceOptions(options));
 		
 		if (results.length > 0) {
 			this.app.bottomPane.showFindResults(results);
@@ -80,7 +71,19 @@ class FindAndReplace {
 	}
 	
 	findAllInOpenFiles(options) {
+		let results = [];
 		
+		for (let tab of this.app.tabs) {
+			results = [...results, tab.editor.api.findAll(getFindAndReplaceOptions(options))];
+		}
+		
+		if (results.length > 0) {
+			this.app.bottomPane.showFindResults(results);
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	async findAllInFiles(options) {
@@ -88,7 +91,15 @@ class FindAndReplace {
 	}
 	
 	replaceAllInCurrentDocument(options) {
+		let results = this.app.selectedTab.editor.api.replaceAll(getFindAndReplaceOptions(options));
 		
+		if (results.length > 0) {
+			this.app.bottomPane.showFindResults(results);
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	replaceAllInSelectedText(options) {
