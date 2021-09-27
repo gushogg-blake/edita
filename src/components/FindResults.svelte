@@ -102,7 +102,7 @@ onMount(function() {
 						{result.selection.start.lineIndex + 1}
 					</div>
 					<div>
-						{result.document.lines[result.selection.start.lineIndex].trimmed}
+						{result.replacedLine ? result.replacedLine.trimmed : result.document.lines[result.selection.start.lineIndex].trimmed}
 					</div>
 				</div>
 			{/each}

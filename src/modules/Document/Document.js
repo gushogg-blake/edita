@@ -315,6 +315,7 @@ class Document extends Evented {
 			results.push({
 				...result,
 				document: this,
+				replacedLine: this.lines[result.selection.start.lineIndex],
 			});
 		}
 		
