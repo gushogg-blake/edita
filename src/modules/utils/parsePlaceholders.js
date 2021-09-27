@@ -13,7 +13,9 @@ module.exports = function(str) {
 	let placeholders = [];
 	let offset = 0;
 	
-	let string = str.replace(/\[\[%(\w+):([^\]]*)\]\]/g, function(match, type, value, index) {
+	let string = str.replace(/\[\[%(tabstop)(\d*)(?::([^\]]*))?\]\]/g, function(match, type, id, value, index) {
+		value = value || "";
+		
 		let replacement = "";
 		
 		if (type === "tabstop") {
@@ -21,6 +23,7 @@ module.exports = function(str) {
 			
 			placeholders.push({
 				type,
+				id,
 				value,
 				initialText: replacement,
 				offset: index - offset,
