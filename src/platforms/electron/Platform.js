@@ -125,7 +125,7 @@ class Platform extends Evented {
 	}
 	
 	openDialogWindow(app, dialog, dialogOptions, windowOptions) {
-		ipc.openDialogWindow("/dialogs/" + dialog + ".html?options=" + encodeURIComponent(JSON.stringify(dialogOptions)), windowOptions);
+		ipc.openDialogWindow(dialog, dialogOptions, windowOptions);
 	}
 	
 	callOpener(channel, method, ...args) {

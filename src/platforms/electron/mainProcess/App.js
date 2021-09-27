@@ -29,6 +29,7 @@ class App extends Evented {
 		
 		this.closeWithoutConfirming = new WeakMap();
 		this.dialogOpeners = new WeakMap();
+		this.dialogWindowsByName = {};
 		
 		this.filesToOpenOnStartup = yargs(hideBin(process.argv)).argv._.map(p => path.resolve(process.cwd(), p));
 	}
@@ -153,7 +154,7 @@ class App extends Evented {
 		return browserWindow;
 	}
 	
-	createDialogWindow(url, options) {
+	createDialogWindow(name, url, options, opener) {
 		let browserWindow = new BrowserWindow({
 			...options,
 			
@@ -165,51 +166,63 @@ class App extends Evented {
 			backgroundColor: "#edecea",
 		});
 		
-		browserWindow.loadURL("app://-" + url);
-		
-		if (config.dev) {
-			browserWindow.webContents.openDevTools();
-		}
+		browserWindow.loadURL(url);
 		
 		browserWindow.on("closed", () => {
 			removeInPlace(this.dialogWindows, browserWindow);
 			
+			delete this.dialogWindowsByName[name];
+						
 			this.fire("dialogWindowClosed", {
 				browserWindow,
 			});
 		});
 		
 		this.dialogWindows.push(browserWindow);
+		this.dialogWindowsByName[name] = browserWindow;
+		this.dialogOpeners.set(browserWindow, opener);
 		
 		return browserWindow;
 	}
 	
-	openDialogWindow(url, options, opener) {
-		options = {
+	openDialogWindow(name, dialogOptions, windowOptions, opener) {
+		let url = "app://-/dialogs/" + name + ".html?options=" + encodeURIComponent(JSON.stringify(dialogOptions));
+		let existingWindow = this.dialogWindowsByName[name];
+		
+		if (existingWindow) {
+			existingWindow.loadURL(url);
+			existingWindow.show();
+			
+			return;
+		}
+		
+		windowOptions = {
 			width: 800,
 			height: 600,
 			useOpenerAsParent: false,
-			...options,
+			...windowOptions,
 		};
 		
 		let openerBounds = opener.getBounds();
 		
-		let x = Math.round(openerBounds.x + (openerBounds.width - options.width) / 2);
-		let y = Math.round(openerBounds.y + (openerBounds.height - options.height) / 2);
+		let x = Math.round(openerBounds.x + (openerBounds.width - windowOptions.width) / 2);
+		let y = Math.round(openerBounds.y + (openerBounds.height - windowOptions.height) / 2);
 		
-		let browserWindow = this.createDialogWindow(url, {
+		let browserWindow = this.createDialogWindow(name, url, {
 			x,
 			y,
-			parent: options.useOpenerAsParent ? opener : undefined,
-			...options,
-		});
+			parent: windowOptions.useOpenerAsParent ? opener : undefined,
+			...windowOptions,
+		}, opener);
 		
-		this.dialogOpeners.set(browserWindow, opener);
+		if (config.dev) {
+			//browserWindow.webContents.openDevTools();
+		}
 		
 		this.fire("dialogWindowOpened", {
 			browserWindow,
 			url,
-			options,
+			windowOptions,
 			opener,
 		});
 	}

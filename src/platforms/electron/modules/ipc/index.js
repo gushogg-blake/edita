@@ -16,7 +16,7 @@ module.exports = {
 	prefs: new JsonStore("prefs"),
 	snippets: new Snippets(),
 	
-	openDialogWindow(url, options) {
-		return ipcRenderer.invoke("openDialogWindow", "open", url, options);
+	openDialogWindow(name, dialogOptions, windowOptions) {
+		return ipcRenderer.invoke("openDialogWindow", "open", name, dialogOptions, windowOptions);
 	},
 };
