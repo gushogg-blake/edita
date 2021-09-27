@@ -1,5 +1,6 @@
 <script>
 import {createEventDispatcher, tick} from "svelte";
+import {on, off} from "utils/dom/domEvents";
 import inlineStyle from "utils/dom/inlineStyle";
 import sleep from "utils/sleep";
 
@@ -17,8 +18,9 @@ let fire = createEventDispatcher();
 
 let main;
 let expander;
-let settingScrollPosition;
-let resetTimer;
+//let settingScrollPosition;
+//let resetTimer;
+let mouseIsDown = false;
 
 let cssSizeKey = {
 	horizontal: "width",
@@ -54,17 +56,26 @@ function setScrollPosition(position) {
 	
 	main[scrollPositionKey[orientation]] = position * max;
 	
-	if (resetTimer) {
-		clearTimeout(resetTimer);
-	}
-	
-	resetTimer = setTimeout(function() {
-		settingScrollPosition = false;
-	}, 150);
+	//if (resetTimer) {
+	//	clearTimeout(resetTimer);
+	//}
+	//
+	//resetTimer = setTimeout(function() {
+	//	settingScrollPosition = false;
+	//}, 150);
 }
 
 function scroll() {
-	if (settingScrollPosition) {
+	//if (settingScrollPosition) {
+	//	return;
+	//}
+	
+	/*
+	only respond to user-initiated scrolls (scroll also fires when the div
+	changes size)
+	*/
+	
+	if (!mouseIsDown) {
 		return;
 	}
 	
@@ -78,6 +89,18 @@ function scroll() {
 	}
 	
 	fire("scroll", position / max);
+}
+
+function mousedown(e) {
+	mouseIsDown = true;
+	
+	on(window, "mouseup", mouseup);
+}
+
+function mouseup() {
+	mouseIsDown = false;
+	
+	off(window, "mouseup", mouseup);
 }
 
 function _update(_totalSize, _pageSize, position) {
@@ -131,6 +154,7 @@ function _update(_totalSize, _pageSize, position) {
 	bind:this={main}
 	class={orientation}
 	on:scroll={scroll}
+	on:mousedown={mousedown}
 >
 	<div
 		id="expander"
