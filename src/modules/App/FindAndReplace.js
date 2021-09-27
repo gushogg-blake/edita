@@ -107,11 +107,31 @@ class FindAndReplace {
 	}
 	
 	replaceAllInSelectedText(options) {
+		let results = this.app.selectedTab.editor.api.replaceAllInSelectedText(getFindAndReplaceOptions(options));
 		
+		if (results.length > 0) {
+			this.app.bottomPane.showFindResults(results);
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	replaceAllInOpenFiles(options) {
+		let results = [];
 		
+		for (let tab of this.app.tabs) {
+			results = [...results, ...tab.editor.api.replaceAll(getFindAndReplaceOptions(options))];
+		}
+		
+		if (results.length > 0) {
+			this.app.bottomPane.showFindResults(results);
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	async replaceAllInFiles(options) {
