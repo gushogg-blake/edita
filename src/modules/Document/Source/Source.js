@@ -127,18 +127,21 @@ module.exports = class {
 		yield* this.rootScope.generateNodesOnLine(lineIndex);
 	}
 	
-	*walkNodesFromLine(lineIndex) {
+	*generateNodesOnLineWithLang(lineIndex) {
+		if (!this.rootScope) {
+			return;
+		}
+		
 		let {
 			scope,
 			range,
 			node,
 		} = this.rootScope.findFirstNodeOnLine(lineIndex);
 		
-		while (node) {
+		while (node && node.startPosition.row === lineIndex) {
 			yield {
-				scope,
-				range,
 				node,
+				lang: scope.lang,
 			};
 			
 			({
@@ -148,14 +151,6 @@ module.exports = class {
 			} = scope.next(node, range));
 		}
 	}
-	
-	//*generateNodesOnLineWithLang(lineIndex) {
-	//	if (!this.rootScope) {
-	//		return;
-	//	}
-	//	
-	//	yield* this.rootScope.generateNodesOnLineWithLang(lineIndex);
-	//}
 	
 	getHeadersOnLine(lineIndex) {
 		if (!this.rootScope) {

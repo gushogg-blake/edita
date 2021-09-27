@@ -141,38 +141,31 @@ let api = {
 	*/
 	
 	down(document, selection) {
-		let {startLineIndex, endLineIndex} = selection;
-		let nodes = document.getNodesOnLine(startLineIndex);
+		let {startLineIndex} = selection;
 		
-		//if (nodes.length === 0) {
-		//	// TODO indentation based
-		//	
-		//	return;
-		//}
-		
-		for (let {scope, node} of document.walkNodesFromLine(startLineIndex)) {
-			if (node.startPosition.row > startLineIndex) {
-				break;
-			}
-			
-			let {lang} = scope;
+		for (let {lang, node} of document.generateNodesOnLineWithLang(startLineIndex)) {
 			let footer = lang.getFooter(node);
 			
 			if (footer) {
 				let header = node;
 				
-				if (footer.startPosition.row >= header.endPosition.row + 1) {
+				if (footer.startPosition.row > header.endPosition.row + 1) {
+					for (let i = header.endPosition.row + 1; i < footer.startPosition.row ; i++) {
+						if (document.lines[i].trimmed.length > 0) {
+							return fromLineIndex(document, i, false);
+						}
+					}
 					
-				} else {
-					// TODO empty block - create a new blank line
+					return fromLineRange(document, header.endPosition.row + 1, footer.startPosition.row);
 				}
 				
+				// TODO empty block - create a new blank line
 				
+				return selection;
 			}
 		}
-		let [node] = document.generateNodesOnLine(startLineIndex);
 		
-		console.log(node);
+		// TODO fall back to indentation based
 		
 		return selection;
 	},

@@ -194,12 +194,6 @@ module.exports = class Scope {
 			return _null;
 		}
 		
-		let childScope = this.scopesByNode[node.id];
-		
-		if (childScope && childScope.tree) {
-			return childScope.findFirstNodeToRender(lineIndex);
-		}
-		
 		return {
 			scope: this,
 			range: this.findContainingRange(node),
