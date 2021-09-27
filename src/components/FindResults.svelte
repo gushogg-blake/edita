@@ -89,23 +89,25 @@ onMount(function() {
 	<!--</div>-->
 	<div id="results">
 		<div id="scroll">
-			{#each results || [] as result}
-				<div
-					class="result"
-					style={inlineStyle(columnWidths)}
-					on:click={() => clickResult(result)}
-				>
-					<div class="path">
-						{result.document.path}
+			{#if results}
+				{#each results as result}
+					<div
+						class="result"
+						style={inlineStyle(columnWidths)}
+						on:click={() => clickResult(result)}
+					>
+						<div class="path">
+							{result.document.path}
+						</div>
+						<div class="lineNumber">
+							{result.selection.start.lineIndex + 1}
+						</div>
+						<div>
+							{result.replacedLine ? result.replacedLine.trimmed : result.document.lines[result.selection.start.lineIndex].trimmed}
+						</div>
 					</div>
-					<div class="lineNumber">
-						{result.selection.start.lineIndex + 1}
-					</div>
-					<div>
-						{result.replacedLine ? result.replacedLine.trimmed : result.document.lines[result.selection.start.lineIndex].trimmed}
-					</div>
-				</div>
-			{/each}
+				{/each}
+			{/if}
 		</div>
 	</div>
 </div>

@@ -20,9 +20,9 @@ module.exports = {
 	findAll(options) {
 		let results = this.document.findAll(options);
 		
-		view.normalHilites = results.map(result => result.selection);
+		this.view.normalHilites = results.map(result => result.selection);
 		
-		view.redraw();
+		this.view.redraw();
 		
 		return results;
 	},

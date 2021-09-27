@@ -78,7 +78,7 @@ class FindAndReplace {
 		let results = [];
 		
 		for (let tab of this.app.tabs) {
-			results = [...results, tab.editor.api.findAll(getFindAndReplaceOptions(options))];
+			results = [...results, ...tab.editor.api.findAll(getFindAndReplaceOptions(options))];
 		}
 		
 		if (results.length > 0) {
