@@ -25,7 +25,7 @@ bind:value as opposed to having to create a Document, a View, and an Editor.
 
 the other main difference between the two modes is focus behaviour - in app
 mode, we don't want the view to lose focus when clicking around the rest of
-the app (on either in active areas or the editor's own tab at least), but in
+the app (on either inactive areas or the editor's own tab at least), but in
 textarea mode we want the standard behaviour (blurring whenever we click
 somewhere else).
 
