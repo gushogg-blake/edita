@@ -147,6 +147,12 @@ class App extends Evented {
 		
 		browserWindow.on("closed", () => {
 			removeInPlace(this.appWindows, browserWindow);
+			
+			for (let dialogWindow of this.dialogWindows) {
+				if (this.dialogOpeners.get(dialogWindow) === browserWindow) {
+					dialogWindow.close();
+				}
+			}
 		});
 		
 		this.appWindows.push(browserWindow);
