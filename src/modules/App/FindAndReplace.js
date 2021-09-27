@@ -42,6 +42,10 @@ class FindAndReplace {
 		this.session = null;
 	}
 	
+	init() {
+		this.session = null;
+	}
+	
 	useExistingSession(options) {
 		return this.session && JSON.stringify(this.session.options) === JSON.stringify(options);
 	}

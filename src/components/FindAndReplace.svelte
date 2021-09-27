@@ -94,6 +94,12 @@ let functions = {
 	},
 };
 
+function submit(e) {
+	e.preventDefault();
+	
+	
+}
+
 function setMessage(str) {
 	return resize(function() {
 		message = str;
@@ -115,6 +121,8 @@ async function resize(fn) {
 }
 
 onMount(function() {
+	findAndReplace.init();
+	
 	updateSize();
 });
 </script>
@@ -179,7 +187,7 @@ button {
 }
 </style>
 
-<div bind:this={main} id="main">
+<form bind:this={main} id="main" on:submit={submit}>
 	<div class="inputs">
 		<label for="find">
 			<Accel label="Fi%nd"/>
@@ -281,4 +289,4 @@ button {
 			{/if}
 		{/if}
 	</div>
-</div>
+</form>

@@ -33,14 +33,8 @@ function keydown(e) {
 
 <svelte:window on:keydown={keydown}/>
 
-<style type="text/scss">
-
-</style>
-
-<div id="main">
-	<FindAndReplace
-		{options}
-		{findAndReplace}
-		on:resize={({detail: contentHeight}) => window.resizeTo(window.innerWidth, contentHeight)}
-	/>
-</div>
+<FindAndReplace
+	{options}
+	{findAndReplace}
+	on:resize={({detail: contentHeight}) => window.resizeTo(window.innerWidth, contentHeight)}
+/>

@@ -1,4 +1,3 @@
-let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 
 class App extends Evented {
@@ -22,6 +21,10 @@ class App extends Evented {
 		};
 		
 		this.findAndReplace = {
+			init() {
+				return platform.callOpener("findAndReplace", "init");
+			},
+			
 			findAll(options) {
 				return platform.callOpener("findAndReplace", "findAll", options);
 			},

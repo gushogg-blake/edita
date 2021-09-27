@@ -130,16 +130,6 @@ let api = {
 		return selectionFromLineIndex(document, headerLineIndex);
 	},
 	
-	/*
-	let generateNodesOnLine = require("./generateNodesOnLine");
-
-	module.exports = function(node) {
-		//let child = findSubtreeContainingFirstNodeOnLine(node, node.startP
-		
-		let generator = generateNodesOnLine(
-
-	*/
-	
 	down(document, selection) {
 		let {startLineIndex} = selection;
 		
@@ -158,8 +148,6 @@ let api = {
 					
 					return fromLineRange(document, header.endPosition.row + 1, footer.startPosition.row);
 				}
-				
-				// TODO empty block - create a new blank line
 				
 				return selection;
 			}
