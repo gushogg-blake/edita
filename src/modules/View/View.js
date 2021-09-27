@@ -80,6 +80,9 @@ class View extends Evented {
 	}
 	
 	findInitialColourHint() {
+		// NOTE perf - findFirstVisibleLine and findFirstNodeToRender are also
+		// called in getDecoratedLines
+		
 		let firstVisibleLine = this.findFirstVisibleLine();
 		
 		if (!firstVisibleLine) {
