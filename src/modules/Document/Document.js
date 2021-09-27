@@ -379,6 +379,10 @@ class Document extends Evented {
 		return this.source.getDecoratedLines(startLineIndex, endLineIndex);
 	}
 	
+	findFirstNodeToRender(lineIndex) {
+		return this.source.findFirstNodeToRender(lineIndex);
+	}
+	
 	getNodesOnLine(lineIndex) {
 		return this.source.getNodesOnLine(lineIndex);
 	}

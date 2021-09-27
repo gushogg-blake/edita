@@ -79,6 +79,25 @@ class View extends Evented {
 		this.blur = this.blur.bind(this);
 	}
 	
+	findInitialColourHint() {
+		let firstVisibleLine = this.findFirstVisibleLine();
+		
+		if (!firstVisibleLine) {
+			return null;
+		}
+		
+		let {scope, node} = this.document.findFirstNodeToRender(firstVisibleLine.lineIndex);
+		
+		if (!node) {
+			return null;
+		}
+		
+		return {
+			lang: scope.lang,
+			node,
+		};
+	}
+	
 	generateRowsToRender() {
 		return generateRowsToRender.call(this);
 	}

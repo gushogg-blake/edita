@@ -27,6 +27,14 @@ module.exports = function(layers, view, rows) {
 	context.font = font;
 	context.fillStyle = "black";
 	
+	let initialColourHint = view.findInitialColourHint();
+	
+	if (initialColourHint) {
+		let {lang, node} = initialColourHint;
+		
+		context.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+	}
+	
 	let leftEdge = marginOffset - scrollPosition.x;
 	
 	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
