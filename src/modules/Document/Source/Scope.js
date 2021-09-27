@@ -160,7 +160,7 @@ module.exports = class Scope {
 	
 	findFirstNodeToRender(lineIndex) {
 		if (!this.tree) {
-			return null;
+			return {};
 		}
 		
 		let node = findFirstNodeToRender(this.tree.rootNode, lineIndex);
@@ -178,20 +178,14 @@ module.exports = class Scope {
 	}
 	
 	findFirstNodeOnLine(lineIndex) {
-		let _null = {
-			scope: this,
-			range: null,
-			node: null,
-		};
-		
 		if (!this.tree) {
-			return _null;
+			return {};
 		}
 		
 		let node = findFirstNodeOnLine(this.tree.rootNode, lineIndex);
 		
 		if (!node) {
-			return _null;
+			return {};
 		}
 		
 		return {
@@ -245,7 +239,7 @@ module.exports = class Scope {
 	}
 	
 	firstInRange(range) {
-		let node = findFirstNodeOnOrAfterCursor(this.tree, range.selection.start);
+		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, range.selection.start);
 		
 		return {
 			scope: this,
@@ -255,7 +249,7 @@ module.exports = class Scope {
 	}
 	
 	nextAfterRange(prevRange) {
-		let node = findFirstNodeOnOrAfterCursor(this.tree, prevRange.selection.end);
+		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, prevRange.selection.end);
 		let range = node && this.findContainingRange(node);
 		
 		return {

@@ -68,7 +68,7 @@ module.exports = class {
 	
 	findFirstNodeToRender(lineIndex) {
 		if (!this.rootScope) {
-			return null;
+			return {};
 		}
 		
 		return this.rootScope.findFirstNodeToRender(lineIndex);
@@ -85,11 +85,7 @@ module.exports = class {
 		if (this.rootScope) {
 			let {scope, range, node} = this.findFirstNodeToRender(startLineIndex);
 			
-			while (true) {
-				if (node.startPosition.row >= endLineIndex) {
-					break;
-				}
-				
+			while (node && node.startPosition.row < endLineIndex) {
 				if (node.startPosition.row >= startLineIndex) {
 					let line = lines[node.startPosition.row - startLineIndex];
 					
@@ -97,10 +93,6 @@ module.exports = class {
 				}
 				
 				({scope, range, node} = scope.next(node, range));
-				
-				if (!node) {
-					break;
-				}
 			}
 		}
 		

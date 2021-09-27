@@ -158,10 +158,21 @@ module.exports = function(systemInfo) {
 		
 		cursorBlinkPeriod: 700,
 		
-		showPane: {
-			left: true,
-			right: true,
-			bottom: true,
+		panes: {
+			left: {
+				show: true,
+				size: 150,
+			},
+			
+			right: {
+				show: true,
+				size: 150,
+			},
+			
+			bottom: {
+				show: true,
+				size: 240,
+			},
 		},
 	};
 }

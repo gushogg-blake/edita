@@ -10,6 +10,7 @@ let fire = createEventDispatcher();
 
 let main;
 let message = null;
+let currentResult = null;
 
 let {
 	replace,
