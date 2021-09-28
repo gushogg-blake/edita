@@ -28,6 +28,7 @@ function commonPlugins(platform) {
 				"utils": path.resolve(root, "src/utils"),
 				"platforms": path.resolve(root, "src/platforms"),
 				"platform": path.resolve(root, "src/platforms/" + platform),
+				"vendor": path.resolve(root, "vendor"),
 			},
 		}),
 		

@@ -32,6 +32,7 @@ class Platform extends Evented {
 		this.clipboard = ipc.clipboard;
 		this.snippets = ipc.snippets;
 		this.path = path;
+		this.glob = glob;
 		this.fs = fs;
 		
 		ipc.prefs.on("update", this.onPrefsUpdate.bind(this));

@@ -3,11 +3,12 @@ let bluebird = require("bluebird");
 let get = require("lodash.get");
 let set = require("lodash.set");
 
+let path = require("vendor/path-browser");
+
 let Evented = require("utils/Evented");
 let defaultPrefs = require("modules/defaultPrefs");
 
 let fs = require("../common/modules/fs");
-let path = require("../common/modules/path-browser");
 let clipboard = require("./modules/clipboard");
 let localStorage = require("./modules/localStorage");
 let Snippets = require("./modules/Snippets");
@@ -25,6 +26,7 @@ class Platform extends Evented {
 		
 		this.clipboard = clipboard;
 		this.path = path;
+		this.glob = null;
 	}
 	
 	async init(options) {
