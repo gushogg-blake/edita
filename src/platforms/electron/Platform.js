@@ -1,6 +1,5 @@
 let os = require("os");
 let path = require("path");
-let glob = require("glob");
 let bluebird = require("bluebird");
 let get = require("lodash.get");
 let set = require("lodash.set");
@@ -10,6 +9,7 @@ let screenOffsets = require("utils/dom/screenOffsets");
 let defaultPrefs = require("modules/defaultPrefs");
 
 let fs = require("platform/modules/fs");
+let walk = require("platform/modules/walk");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 let ipc = require("platform/modules/ipc");
 
@@ -32,7 +32,7 @@ class Platform extends Evented {
 		this.clipboard = ipc.clipboard;
 		this.snippets = ipc.snippets;
 		this.path = path;
-		this.glob = glob;
+		this.walk = walk;
 		this.fs = fs;
 		
 		ipc.prefs.on("update", this.onPrefsUpdate.bind(this));

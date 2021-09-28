@@ -30,6 +30,9 @@ let {
 let smartCase = caseMode === "smart";
 let matchCase = caseMode === "caseSensitive";
 
+includePatterns = includePatterns.join(":");
+excludePatterns = excludePatterns.join(":");
+
 $: options = {
 	replace,
 	searchIn,
@@ -41,9 +44,12 @@ $: options = {
 	multiline,
 	paths,
 	searchInSubDirs,
-	includePatterns,
-	excludePatterns,
+	includePatterns: includePatterns ? includePatterns.split(":") : [],
+	excludePatterns: excludePatterns ? excludePatterns.split(":") : [],
 };
+
+$: console.log(options.includePatterns);
+$: console.log(options.excludePatterns);
 
 let functions = {
 	async findAll() {

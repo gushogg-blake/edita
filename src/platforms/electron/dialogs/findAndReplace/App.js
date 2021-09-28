@@ -15,8 +15,8 @@ class App extends Evented {
 			multiline: false,
 			paths: "",
 			searchInSubDirs: true,
-			includePatterns: "",
-			excludePatterns: "",
+			includePatterns: [],
+			excludePatterns: [],
 			...options,
 		};
 		

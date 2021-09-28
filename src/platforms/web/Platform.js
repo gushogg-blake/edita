@@ -26,7 +26,7 @@ class Platform extends Evented {
 		
 		this.clipboard = clipboard;
 		this.path = path;
-		this.glob = null;
+		this.walk = null;
 	}
 	
 	async init(options) {

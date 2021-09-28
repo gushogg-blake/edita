@@ -36,6 +36,29 @@ function getFindAndReplaceOptions(options) {
 	};
 }
 
+async function getPaths(options) {
+	let {
+		paths,
+		includePatterns,
+		excludePatterns,
+		searchInSubDirs,
+	} = options;
+	
+	let walkOptions = {
+		includePatterns,
+		excludePatterns,
+		searchInSubDirs,
+	};
+	
+	let allPaths = [];
+	
+	for (let path of paths) {
+		allPaths = [...allPaths, await platform.walk.all(path, walkOptions)];
+	}
+	
+	return allPaths;
+}
+
 class FindAndReplace {
 	constructor(app) {
 		this.app = app;
@@ -91,7 +114,7 @@ class FindAndReplace {
 	}
 	
 	async findAllInFiles(options) {
-		
+		console.log(await getPaths(options));
 	}
 	
 	replaceAllInCurrentDocument(options) {
