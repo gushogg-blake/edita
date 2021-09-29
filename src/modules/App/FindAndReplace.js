@@ -195,8 +195,18 @@ class FindAndReplace {
 		
 		let allResults = [];
 		
+		let n = 0;
+		
 		await bluebird.map(documents, async function(document) {
+			n++;
+			
+			if (n > 9) {
+				throw "stop";
+			}
+			
 			let {edits, results} = document.replaceAll(getFindAndReplaceOptions(options));
+			
+			console.log(document);
 			
 			document.applyEdits(edits);
 			
