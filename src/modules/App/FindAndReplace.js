@@ -85,6 +85,8 @@ class FindAndReplace {
 	constructor(app) {
 		this.app = app;
 		this.session = null;
+		
+		this.loadOptions(); // cache saved options
 	}
 	
 	init() {
@@ -207,8 +209,6 @@ class FindAndReplace {
 		await bluebird.map(documents, async function(document) {
 			let {edits, results} = document.replaceAll(findAndReplaceOptions);
 			
-			console.log(document);
-			
 			document.applyEdits(edits);
 			
 			await document.save();
@@ -330,7 +330,15 @@ class FindAndReplace {
 			return false;
 		}
 		
-		
+		console.log(this.session);
+	}
+	
+	loadOptions() {
+		return platform.loadJson("findAndReplaceOptions", {});
+	}
+	
+	saveOptions(options) {
+		return platform.saveJson("findAndReplaceOptions", options);
 	}
 }
 

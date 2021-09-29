@@ -15,6 +15,8 @@ let {
 let main;
 let message = null;
 let currentResult = null;
+let mounted = false;
+let isMounted = () => mounted;
 
 let {
 	replace,
@@ -52,6 +54,26 @@ $: options = {
 	includePatterns: includePatterns ? includePatterns.split(multiPathSeparator) : [],
 	excludePatterns: excludePatterns ? excludePatterns.split(multiPathSeparator) : [],
 };
+
+$: if (isMounted()) {
+	let {
+		regex,
+		caseMode,
+		word,
+		searchInSubDirs,
+		includePatterns,
+		excludePatterns,
+	} = options;
+	
+	findAndReplace.saveOptions({
+		regex,
+		caseMode,
+		word,
+		searchInSubDirs,
+		includePatterns,
+		excludePatterns,
+	});
+}
 
 let functions = {
 	async findAll() {
@@ -133,6 +155,8 @@ onMount(function() {
 	findAndReplace.init();
 	
 	updateSize();
+	
+	mounted = true;
 });
 </script>
 

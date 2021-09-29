@@ -13,7 +13,7 @@ class App extends Evented {
 			caseMode: "caseSensitive",
 			word: false,
 			multiline: false,
-			paths: "",
+			paths: [],
 			searchInSubDirs: true,
 			includePatterns: [],
 			excludePatterns: [],
@@ -43,6 +43,10 @@ class App extends Evented {
 			
 			replace(options) {
 				return platform.callOpener("findAndReplace", "replace", options);
+			},
+			
+			saveOptions(options) {
+				return platform.callOpener("findAndReplace", "saveOptions", options);
 			},
 		};
 	}

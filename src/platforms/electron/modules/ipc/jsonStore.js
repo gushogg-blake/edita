@@ -1,11 +1,23 @@
 let ipcRenderer = require("platform/modules/ipcRenderer");
 
+let cache = {};
+
 module.exports = {
-	load(key) {
-		return ipcRenderer.invoke("jsonStore", "load", key);
+	async load(key, _default=null) {
+		if (cache[key]) {
+			return cache[key];
+		}
+		
+		let data = (await ipcRenderer.invoke("jsonStore", "load", key)) || _default;
+		
+		cache[key] = data;
+		
+		return data;
 	},
 	
-	save(key, data) {
-		return ipcRenderer.invoke("jsonStore", "save", key, data);
+	async save(key, data) {
+		await ipcRenderer.invoke("jsonStore", "save", key, data);
+		
+		cache[key] = data;
 	},
 };

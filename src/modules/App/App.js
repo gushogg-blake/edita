@@ -388,8 +388,11 @@ class App extends Evented {
 		});
 	}
 	
-	showFindDialog(options) {
-		platform.openDialogWindow(this, "findAndReplace", options, {
+	async showFindDialog(options) {
+		platform.openDialogWindow(this, "findAndReplace", {
+			...await this.findAndReplace.loadOptions(),
+			...options,
+		}, {
 			width: 640,
 			height: 300,
 		});
