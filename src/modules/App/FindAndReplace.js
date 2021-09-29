@@ -137,7 +137,7 @@ class FindAndReplace {
 		let allResults = [];
 		
 		for (let document of documents) {
-			allResults = [...allResults, ...document.findAll(options)];
+			allResults = [...allResults, ...document.findAll(getFindAndReplaceOptions(options))];
 		}
 		
 		if (allResults.length > 0) {
@@ -196,7 +196,7 @@ class FindAndReplace {
 		let allResults = [];
 		
 		await bluebird.map(documents, async function(document) {
-			let {edits, results} = document.replaceAll(options);
+			let {edits, results} = document.replaceAll(getFindAndReplaceOptions(options));
 			
 			document.applyEdits(edits);
 			
