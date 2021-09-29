@@ -198,29 +198,20 @@ class FindAndReplace {
 	}
 	
 	async replaceAllInFiles(options) {
-		debugger
 		let paths = await getPaths(options);
 		let documents = await getDocuments(paths);
 		let findAndReplaceOptions = getFindAndReplaceOptions(options);
 		
 		let allResults = [];
 		
-		let n = 0;
-		
 		await bluebird.map(documents, async function(document) {
-			n++;
-			
-			if (n > 9) {
-				throw "stop";
-			}
-			
 			let {edits, results} = document.replaceAll(findAndReplaceOptions);
 			
 			console.log(document);
 			
 			document.applyEdits(edits);
 			
-			//await document.save();
+			await document.save();
 			
 			allResults = [...allResults, ...results];
 		});
