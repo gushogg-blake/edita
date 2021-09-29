@@ -1,24 +1,27 @@
 let {promises: fs} = require("fs");
 let osPath = require("path");
 let minimatch = require("minimatch");
+let asyncGenerateArray = require("utils/asyncGenerateArray");
 
-function include(options, result) {
+function include(options, name, isDir) {
 	let {
 		includePatterns,
 		excludePatterns,
 	} = options;
 	
 	for (let pattern of excludePatterns) {
-		if (minimatch(result.name, pattern)) {
-			console.log(result.name, pattern);
-			console.log(minimatch(result.name, pattern));
+		if (minimatch(name, pattern)) {
 			return false;
 		}
 	}
 	
+	if (isDir) {
+		return true;
+	}
+	
 	if (includePatterns.length > 0) {
 		for (let pattern of includePatterns) {
-			if (minimatch(result.name, pattern)) {
+			if (minimatch(name, pattern)) {
 				return true;
 			}
 		}
@@ -34,19 +37,14 @@ async function *walk(dir, options, root=dir) {
 		let {name} = entry;
 		let path = osPath.join(dir, name);
 		let isDir = entry.isDirectory();
+		let isFile = entry.isFile();
 		
-		let result = {
-			name,
-			path,
-			isDir,
-		};
-		
-		if (!include(options, entry)) {
+		if (!isFile && !isDir || !include(options, name, isDir)) {
 			continue;
 		}
 		
-		if (!isDir || options.includeDirs) {
-			yield result;
+		if (isFile) {
+			yield path;
 		}
 		
 		if (isDir && options.searchInSubDirs) {
@@ -55,14 +53,8 @@ async function *walk(dir, options, root=dir) {
 	}
 }
 
-async function all(dir, options) {
-	let results = [];
-	
-	for await (let path of walk(dir, options)) {
-		results.push(path);
-	}
-	
-	return results;
+function all(dir, options) {
+	return asyncGenerateArray(walk(dir, options));
 }
 
 module.exports = {

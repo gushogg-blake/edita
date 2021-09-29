@@ -1,3 +1,4 @@
+let bluebird = require("bluebird");
 let findAndReplace = require("modules/findAndReplace");
 let Document = require("modules/Document");
 
@@ -53,10 +54,26 @@ async function getPaths(options) {
 	let allPaths = [];
 	
 	for (let path of paths) {
-		allPaths = [...allPaths, await platform.walk.all(path, walkOptions)];
+		allPaths = [...allPaths, ...await platform.walk.all(path, walkOptions)];
 	}
 	
 	return allPaths;
+}
+
+async function getDocuments(paths) {
+	return bluebird.map(paths, async function(path) {
+		try {
+			let code = await platform.fs(path).read();
+			
+			return new Document(code, path, {
+				noParse: true,
+			});
+		} catch (e) {
+			console.error(e);
+			
+			return null;
+		}
+	}).filter(Boolean);
 }
 
 class FindAndReplace {
@@ -114,7 +131,10 @@ class FindAndReplace {
 	}
 	
 	async findAllInFiles(options) {
-		console.log(await getPaths(options));
+		let paths = await getPaths(options);
+		let documents = await getDocuments(paths);
+		
+		console.log(documents);
 	}
 	
 	replaceAllInCurrentDocument(options) {

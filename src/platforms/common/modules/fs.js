@@ -7,6 +7,7 @@ module.exports = function(backends) {
 		minimatch,
 		glob,
 		cwd,
+		fileIsBinary,
 	} = backends;
 	
 	class Node {
@@ -259,6 +260,10 @@ module.exports = function(backends) {
 		}
 		
 		async read() {
+			if (fileIsBinary && await fileIsBinary(this.path)) {
+				throw "File is binary: " + this.path;
+			}
+			
 			return (await fs.readFile(this.path)).toString();
 		}
 		

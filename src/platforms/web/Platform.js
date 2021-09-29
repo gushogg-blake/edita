@@ -115,6 +115,14 @@ class Platform extends Evented {
 		this.fire("prefsUpdated");
 	}
 	
+	resetPrefs() {
+		this.prefs = defaultPrefs(this.systemInfo);
+		
+		this.saveJson("prefs", this.prefs);
+		
+		this.fire("prefsUpdated");
+	}
+	
 	loadJson(key) {
 		return localStorage.get(this.options.localStoragePrefix + key);
 	}
