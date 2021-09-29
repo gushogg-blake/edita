@@ -128,6 +128,10 @@ onMount(function() {
 	border-bottom: var(--appBorder);
 }
 
+.pane {
+	overflow: hidden;
+}
+
 #leftContainer {
 	grid-area: left;
 	min-width: 0;
@@ -201,7 +205,11 @@ onMount(function() {
 	<div id="toolbar">
 		<Toolbar/>
 	</div>
-	<div id="leftContainer" style={inlineStyle(paneStyle.left)}>
+	<div
+		id="leftContainer"
+		class="pane"
+		style={inlineStyle(paneStyle.left)}
+	>
 		<div id="left">
 			<LeftPane/>
 		</div>
@@ -227,12 +235,20 @@ onMount(function() {
 			</div>
 		{/if}
 	</div>
-	<div id="rightContainer" style={inlineStyle(paneStyle.right)}>
+	<div
+		id="rightContainer"
+		class="pane"
+		style={inlineStyle(paneStyle.right)}
+	>
 		<div id="right">
 			<RightPane/>
 		</div>
 	</div>
-	<div id="bottomContainer" style={inlineStyle(paneStyle.bottom)}>
+	<div
+		id="bottomContainer"
+		class="pane"
+		style={inlineStyle(paneStyle.bottom)}
+	>
 		<div id="bottom">
 			<BottomPane/>
 		</div>
