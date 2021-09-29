@@ -134,7 +134,19 @@ class FindAndReplace {
 		let paths = await getPaths(options);
 		let documents = await getDocuments(paths);
 		
-		console.log(documents);
+		let allResults = [];
+		
+		for (let document of documents) {
+			allResults = [...allResults, ...document.findAll(options)];
+		}
+		
+		if (allResults.length > 0) {
+			this.app.bottomPane.showFindResults(allResults);
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	replaceAllInCurrentDocument(options) {
@@ -178,7 +190,28 @@ class FindAndReplace {
 	}
 	
 	async replaceAllInFiles(options) {
+		let paths = await getPaths(options);
+		let documents = await getDocuments(paths);
 		
+		let allResults = [];
+		
+		await bluebird.map(documents, async function(document) {
+			let {edits, results} = document.replaceAll(options);
+			
+			document.applyEdits(edits);
+			
+			await document.save();
+			
+			allResults = [...allResults, ...results];
+		});
+		
+		if (allResults.length > 0) {
+			this.app.bottomPane.showFindResults(allResults);
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	findNextInCurrentDocument(options) {
