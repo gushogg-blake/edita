@@ -1,6 +1,7 @@
 let bluebird = require("bluebird");
 let findAndReplace = require("modules/findAndReplace");
 let Document = require("modules/Document");
+let {FileIsBinary} = require("modules/errors");
 
 /*
 caseMode: "caseSensitive"
@@ -69,7 +70,11 @@ async function getDocuments(paths) {
 				noParse: true,
 			});
 		} catch (e) {
-			console.error(e);
+			if (e instanceof FileIsBinary) {
+				console.info("Skipping binary file " + path);
+			} else {
+				console.error(e);
+			}
 			
 			return null;
 		}
@@ -133,11 +138,14 @@ class FindAndReplace {
 	async findAllInFiles(options) {
 		let paths = await getPaths(options);
 		let documents = await getDocuments(paths);
+		let findAndReplaceOptions = getFindAndReplaceOptions(options);
 		
 		let allResults = [];
 		
+		debugger
+		
 		for (let document of documents) {
-			allResults = [...allResults, ...document.findAll(getFindAndReplaceOptions(options))];
+			allResults = [...allResults, ...document.findAll(findAndReplaceOptions)];
 		}
 		
 		if (allResults.length > 0) {
@@ -190,8 +198,10 @@ class FindAndReplace {
 	}
 	
 	async replaceAllInFiles(options) {
+		debugger
 		let paths = await getPaths(options);
 		let documents = await getDocuments(paths);
+		let findAndReplaceOptions = getFindAndReplaceOptions(options);
 		
 		let allResults = [];
 		
@@ -204,13 +214,13 @@ class FindAndReplace {
 				throw "stop";
 			}
 			
-			let {edits, results} = document.replaceAll(getFindAndReplaceOptions(options));
+			let {edits, results} = document.replaceAll(findAndReplaceOptions);
 			
 			console.log(document);
 			
 			document.applyEdits(edits);
 			
-			await document.save();
+			//await document.save();
 			
 			allResults = [...allResults, ...results];
 		});

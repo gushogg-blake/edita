@@ -16,6 +16,7 @@ module.exports = function(app) {
 				systemInfo: {
 					newline: os.EOL,
 					homeDir: os.homedir(),
+					multiPathSeparator: process.platform === "win32" ? ";" : ":",
 				},
 			};
 		},

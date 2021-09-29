@@ -8,6 +8,10 @@ export let findAndReplace;
 
 let fire = createEventDispatcher();
 
+let {
+	multiPathSeparator,
+} = platform.systemInfo;
+
 let main;
 let message = null;
 let currentResult = null;
@@ -30,8 +34,9 @@ let {
 let smartCase = caseMode === "smart";
 let matchCase = caseMode === "caseSensitive";
 
-includePatterns = includePatterns.join(":");
-excludePatterns = excludePatterns.join(":");
+paths = paths.join(multiPathSeparator);
+includePatterns = includePatterns.join(multiPathSeparator);
+excludePatterns = excludePatterns.join(multiPathSeparator);
 
 $: options = {
 	replace,
@@ -42,14 +47,11 @@ $: options = {
 	caseMode: smartCase ? "smart" : matchCase ? "caseSensitive" : "caseInsensitive",
 	word,
 	multiline,
-	paths,
+	paths: paths ? paths.split(multiPathSeparator) : [],
 	searchInSubDirs,
-	includePatterns: includePatterns ? includePatterns.split(":") : [],
-	excludePatterns: excludePatterns ? excludePatterns.split(":") : [],
+	includePatterns: includePatterns ? includePatterns.split(multiPathSeparator) : [],
+	excludePatterns: excludePatterns ? excludePatterns.split(multiPathSeparator) : [],
 };
-
-$: console.log(options.includePatterns);
-$: console.log(options.excludePatterns);
 
 let functions = {
 	async findAll() {

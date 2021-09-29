@@ -1,4 +1,5 @@
 let bluebird = require("bluebird");
+let {FileIsBinary} = require("modules/errors");
 
 module.exports = function(backends) {
 	let {
@@ -261,7 +262,7 @@ module.exports = function(backends) {
 		
 		async read() {
 			if (fileIsBinary && await fileIsBinary(this.path)) {
-				throw "File is binary: " + this.path;
+				throw new FileIsBinary("File is binary: " + this.path);
 			}
 			
 			return (await fs.readFile(this.path)).toString();
