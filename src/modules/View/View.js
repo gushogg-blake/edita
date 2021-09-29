@@ -406,7 +406,7 @@ class View extends Evented {
 	}
 	
 	getNormalSelectionForFind() {
-		return this.mode === "ast" ? this.Selection.fromAstSelection(this.normalSelection) : this.normalSelection;
+		return this.mode === "ast" ? this.Selection.fromAstSelection(this.normalSelection) : this.Selection.sort();
 	}
 	
 	setMeasurements(measurements) {

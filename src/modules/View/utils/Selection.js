@@ -28,7 +28,7 @@ module.exports = {
 		return isMultiline(this.normalSelection);
 	},
 	
-	sorted() {
+	sort() {
 		return sort(this.normalSelection);
 	},
 	

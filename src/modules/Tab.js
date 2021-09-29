@@ -108,7 +108,7 @@ class Tab extends Evented {
 	}
 	
 	switchToFile(entry) {
-		if (fientryle.isDir) {
+		if (entry.isDir) {
 			this.currentPath = entry.path;
 			
 			this.updateDirListing();

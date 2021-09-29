@@ -88,7 +88,7 @@ class AstMode extends Evented {
 		let {editor} = this;
 		let {document} = editor;
 		
-		let {start, end} = editor.view.Selection.sorted();
+		let {start, end} = editor.view.Selection.sort();
 		let {indentLevel} = document.lines[start.lineIndex];
 		
 		let astSelection = s(start.lineIndex, end.lineIndex + 1);

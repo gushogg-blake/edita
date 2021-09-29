@@ -23,12 +23,12 @@ function commonPlugins(platform) {
 	return [
 		alias({
 			entries: {
-				"components": path.resolve(root, "src/components"),
-				"modules": path.resolve(root, "src/modules"),
-				"utils": path.resolve(root, "src/utils"),
-				"platforms": path.resolve(root, "src/platforms"),
-				"platform": path.resolve(root, "src/platforms/" + platform),
-				"vendor": path.resolve(root, "vendor"),
+				"components": path.join(root, "src/components"),
+				"modules": path.join(root, "src/modules"),
+				"utils": path.join(root, "src/utils"),
+				"platforms": path.join(root, "src/platforms"),
+				"platform": path.join(root, "src/platforms/" + platform),
+				"vendor": path.join(root, "vendor"),
 			},
 		}),
 		

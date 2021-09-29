@@ -64,13 +64,17 @@ module.exports = {
 		let {document, view} = this;
 		let {start, end} = view.getNormalSelectionForFind();
 		
-		let results = document.findAll({
+		let {edits, results} = document.replaceAll({
 			...options,
 			startIndex: document.indexFromCursor(start),
 			endIndex: document.indexFromCursor(end),
 		});
 		
-		view.normalHilites = results.map(result => result.selection);
+		this.applyAndAddHistoryEntry({
+			edits,
+		});
+		
+		view.normalHilites = edits.map(edit => edit.newSelection);
 		
 		view.redraw();
 		
