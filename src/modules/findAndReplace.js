@@ -1,19 +1,5 @@
 let escapeRe = require("utils/escapeRe");
-
-/*
-generate a placeholder that doesn't appear in the given string
-*/
-
-function generatePlaceholder(string) {
-	let placeholder;
-	let n = 0;
-	
-	do {
-		placeholder = "PLACEHOLDER_" + (++n);
-	} while (string.indexOf(placeholder) !== -1);
-	
-	return placeholder;
-}
+let createPlaceholderString = require("utils/createPlaceholderString");
 
 function containsWordBoundary(str) {
 	return !!str.match(/(\w\W|\W\w)/);
@@ -50,7 +36,7 @@ let findAndReplace = {
 			re = new RegExp(pattern, flags);
 		} else if (type === "wildcard") {
 			let pattern = search;
-			let wildcardPlaceholder = generatePlaceholder(search);
+			let wildcardPlaceholder = createPlaceholderString(search);
 			
 			pattern = pattern.replace(/\*/g, wildcardPlaceholder);
 			pattern = escapeRe(pattern);

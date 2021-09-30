@@ -1,7 +1,9 @@
-let parseJavaScript = require("modules/utils/parseJavaScript");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let Document = require("modules/Document");
+let parseJavaScript = require("./parseJavaScript");
+let Tabstop = require("./Tabstop");
+let Expression = require("./Expression");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -26,17 +28,11 @@ function getPlaceholders(string) {
 					let [, name] = nameWithDefault;
 					let start = i;
 					let expressionStart = start + "@{".length + name.length + ":".length;
-					let expressionEnd = parseJavaScript(string, expressionStart);
+					let {index: expressionEnd, dollarVariables} = parseJavaScript(string, expressionStart);
 					let expression = string.substring(expressionStart, expressionEnd);
 					let end = Math.min(string.length, expressionEnd + "}".length);
 					
-					placeholders.push({
-						type: "tabstop",
-						start,
-						end,
-						name,
-						defaultExpression: expression,
-					});
+					placeholders.push(new Tabstop(start, end, name, expression, dollarVariables));
 					
 					i = end;
 				} else {
@@ -44,16 +40,11 @@ function getPlaceholders(string) {
 					
 					let start = i;
 					let expressionStart = start + "@{".length;
-					let expressionEnd = parseJavaScript(string, expressionStart);
+					let {index: expressionEnd, dollarVariables} = parseJavaScript(string, expressionStart);
 					let expression = string.substring(expressionStart, expressionEnd);
 					let end = Math.min(string.length, expressionEnd + "}".length);
 					
-					placeholders.push({
-						type: "expression",
-						start,
-						end,
-						expression,
-					});
+					placeholders.push(new Expression(start, end, expression, dollarVariables));
 					
 					i = end;
 				}
@@ -64,13 +55,7 @@ function getPlaceholders(string) {
 				let start = i;
 				let end = start + "@".length + name.length;
 				
-				placeholders.push({
-					type: "tabstop",
-					start,
-					end,
-					name,
-					defaultExpression: null,
-				});
+				placeholders.push(new Tabstop(start, end, name, null));
 				
 				i = end;
 			} else {
@@ -121,10 +106,6 @@ module.exports = function(string, baseLineIndex=0, baseOffset=0) {
 		
 		placeholder.selection = s(cursor);
 	}
-	
-	console.log(replacedString);
-	
-	console.log(placeholders);
 	
 	return {
 		replacedString,

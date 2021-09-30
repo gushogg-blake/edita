@@ -1,5 +1,6 @@
 /*
 parse JS to find out where it ends in a @{...} placeholder expression
+and mark the positions of $ variables for replacement
 */
 
 let re = {
@@ -32,6 +33,8 @@ function parse(string, startIndex) {
 	
 	let i = startIndex;
 	let ch;
+	
+	let dollarVariables = [];
 	
 	while (i < string.length) {
 		ch = string[i];
@@ -146,6 +149,10 @@ function parse(string, startIndex) {
 				
 				let [word] = re.word.exec(string);
 				
+				if (word[0] === "$") {
+					dollarVariables.push(i);
+				}
+				
 				i += word.length;
 				slashIsDivision = true;
 			} else if (re.startNumber.exec(ch)) {
@@ -225,7 +232,10 @@ function parse(string, startIndex) {
 		}
 	}
 	
-	return i;
+	return {
+		index: i,
+		dollarVariables,
+	};
 }
 
 module.exports = parse;

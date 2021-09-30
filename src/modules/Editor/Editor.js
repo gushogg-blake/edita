@@ -4,9 +4,6 @@ let {removeInPlace} = require("utils/arrayMethods");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let parsePlaceholders = require("modules/utils/parsePlaceholders");
-let stringToLineTuples = require("modules/utils/stringToLineTuples");
-let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let find = require("./find");
 let AstMode = require("./AstMode");
 let normalMouse = require("./normalMouse");
@@ -14,6 +11,7 @@ let normalKeyboard = require("./normalKeyboard");
 let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
 let modeSwitchKey = require("./modeSwitchKey");
+let SnippetSession = require("./SnippetSession");
 let api = require("./api");
 
 let {s: a} = AstSelection;
@@ -82,73 +80,30 @@ class Editor extends Evented {
 	}
 	
 	insertSnippet(snippet, replaceWord=null) {
-		let {start} = this.view.normalSelection;
-		let {lineIndex, offset} = start;
-		let {indentLevel} = this.document.lines[lineIndex];
-		let indentStr = this.document.fileDetails.indentation.string;
-		let lineTuples = stringToLineTuples(snippet.text);
-		let lineStrings = lineTuplesToStrings(lineTuples, indentStr, indentLevel, true);
-		let indentedSnippet = lineStrings.join(this.document.fileDetails.newline);
-		
-		let selection = (
-			replaceWord
-			? s(c(lineIndex, offset - replaceWord.length), start)
-			: this.view.normalSelection
-		);
-		
 		let {
-			replacedString,
-			placeholders,
-		} = parsePlaceholders(indentedSnippet, selection.start.lineIndex, selection.start.offset);
+			session,
+			edit,
+			endCursor,
+		} = SnippetSession.insert(this.document, this.view.normalSelection, snippet, replaceWord);
 		
-		let {end: cursor} = this.document.getSelectionContainingString(selection.start, replacedString);
-		let edit = this.document.edit(selection, replacedString);
-		let newSelection = s(cursor);
-		let snippetSession = null;
-		
-		if (placeholders.length > 0) {
-			newSelection = placeholders[0].selection;
-			
-			if (placeholders.length > 1) {
-				snippetSession = {
-					index: 0,
-					placeholders,
-				};
-			}
-		}
+		let newSelection = session ? session.placeholders[0].selection : s(endCursor);
 		
 		this.applyAndAddHistoryEntry({
 			edits: [edit],
 			normalSelection: newSelection,
-			snippetSession,
+			snippetSession: session,
 		});
 	}
 	
 	nextTabstop() {
-		let {snippetSession} = this;
+		let {session, placeholder} = SnippetSession.nextTabstop(this.snippetSession);
 		
-		snippetSession.index++;
-		
-		let {index, placeholders} = snippetSession;
-		let placeholder = placeholders[index];
-		let {selection} = placeholder;
-		
-		if (!selection) {
-			if (index < placeholders.length - 1) {
-				this.nextTabstop();
-			} else {
-				this.clearSnippetSession();
-			}
-			
-			return;
+		if (placeholder) {
+			this.setNormalSelection(placeholder.selection);
+			this.view.redraw();
 		}
 		
-		this.setNormalSelection(selection);
-		this.view.redraw();
-		
-		if (index === placeholders.length - 1) {
-			this.clearSnippetSession();
-		}
+		this.snippetSession = session;
 	}
 	
 	prevTabstop() {
@@ -160,41 +115,7 @@ class Editor extends Evented {
 	}
 	
 	adjustSnippetSession(edits) {
-		let {index, placeholders} = this.snippetSession;
-		
-		placeholders = placeholders.map(function(placeholder, i) {
-			let {selection} = placeholder;
-			
-			for (let edit of edits) {
-				let {
-					selection: oldSelection,
-					string,
-					newSelection,
-				} = edit;
-				
-				if (Selection.isBefore(oldSelection, selection)) {
-					selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
-				} else if (Selection.equals(selection, oldSelection)) {
-					selection = newSelection;
-				} else if (i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
-					selection = Selection.expand(selection, newSelection);
-				} else if (Selection.isWithin(oldSelection, selection)) {
-					selection = Selection.adjustForEditWithinSelection(selection, oldSelection, newSelection);
-				} else if (Selection.isOverlapping(selection, oldSelection)) {
-					selection = null;
-				}
-			}
-			
-			return {
-				...placeholder,
-				selection,
-			};
-		});
-		
-		return {
-			index,
-			placeholders,
-		};
+		return SnippetSession.edit(this.snippetSession, edits);
 	}
 	
 	onDocumentEdit(edit) {
