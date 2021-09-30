@@ -86,7 +86,7 @@ let api = {
 		};
 	},
 	
-	createForLines(lines, baseLineIndex) {
+	createPositionsForLines(lines, baseLineIndex) {
 		return createPositionsForLines(lines, baseLineIndex);
 	},
 	

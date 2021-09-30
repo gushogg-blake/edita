@@ -20,7 +20,7 @@ class LangManipulation extends Command {
 		let {
 			replacedLines,
 			positions,
-		} = this.createSnippetSessionForLines(transformedLines, startLineIndex);
+		} = editor.createSnippetPositionsForLines(transformedLines, startLineIndex);
 		
 		let edit = document.lineEdit(startLineIndex, endLineIndex - startLineIndex, replacedLines);
 		let newSelection = s(startLineIndex, startLineIndex + replacedLines.length);

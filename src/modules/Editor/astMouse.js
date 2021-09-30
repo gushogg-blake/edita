@@ -72,7 +72,7 @@ module.exports = {
 			let {
 				replacedLines,
 				positions,
-			} = this.createSnippetSessionForLines(insertLines, insertIndex);
+			} = this.createSnippetPositionsForLines(insertLines, insertIndex);
 			
 			edits = [...edits, document.lineEdit(insertIndex, removeLines, replacedLines)];
 			

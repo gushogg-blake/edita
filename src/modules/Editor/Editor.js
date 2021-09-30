@@ -95,8 +95,8 @@ class Editor extends Evented {
 		});
 	}
 	
-	createSnippetSessionForLines(lines, baseLineIndex) {
-		return SnippetSession.createForLines(lines, baseLineIndex);
+	createSnippetPositionsForLines(lines, baseLineIndex) {
+		return SnippetSession.createPositionsForLines(lines, baseLineIndex);
 	}
 	
 	nextTabstop() {
