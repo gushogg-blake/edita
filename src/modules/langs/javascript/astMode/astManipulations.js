@@ -85,7 +85,7 @@ module.exports = {
 				i = endLineIndex;
 			}
 			
-			let header = [0, "let [[%tabstop:name]] = {"];
+			let header = [0, "let @name = {"];
 			
 			let transformedLines = statements.map(function(statement) {
 				let {type, line} = statement;
@@ -118,7 +118,7 @@ module.exports = {
 				}
 			});
 			
-			let footer = [0, "};"];
+			let footer = [0, "};@$"];
 			
 			return AstSelection.selectionLinesToStrings([
 				header,

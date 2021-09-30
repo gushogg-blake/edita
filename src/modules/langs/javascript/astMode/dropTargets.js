@@ -105,9 +105,9 @@ module.exports = {
 			let removeLines = 1;
 			
 			let insertLines = indentLines([
-				"} else if ([[%tabstop:]]) {",
-				...indentLines(lines.map(function([indentLevel, line]) {
-					return indentStr.repeat(indentLevel) + line;
+				"} else if (@condition) {",
+				...indentLines(lines.map(function([indentLevel, line], i) {
+					return indentStr.repeat(indentLevel) + line + (i === lines.length - 1 ? "@$" : "");
 				}), indentStr),
 				"}",
 			], indentStr, footerLine.indentLevel);
