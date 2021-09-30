@@ -1,11 +1,31 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let parsePlaceholders = require("modules/utils/parsePlaceholders");
 let stringToLineTuples = require("modules/utils/stringToLineTuples");
 let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
+let createPositions = require("modules/snippets/createPositions");
 
 let {s} = Selection;
 let {c} = Cursor;
+
+function getDefaultValue(placeholder) {
+	if (placeholder.type === "tabstop") {
+		return placeholder.getDefaultValue();
+	} 
+}
+
+function getContextFromPositions(positions) {
+	let context = {};
+	
+	for (let position of positions) {
+		let {placeholder} = position;
+		
+		if (placeholder.type === "tabstop") {
+			context[placeholder.name] = position.value;
+		}
+	}
+	
+	return context;
+}
 
 let api = {
 	insert(document, selection, snippet, replaceWord)  {
@@ -15,7 +35,7 @@ let api = {
 		let indentStr = document.fileDetails.indentation.string;
 		let lineTuples = stringToLineTuples(snippet.text);
 		let lineStrings = lineTuplesToStrings(lineTuples, indentStr, indentLevel, true);
-		let indentedSnippet = lineStrings.join(document.fileDetails.newline);
+		let indentedSnippetText = lineStrings.join(document.fileDetails.newline);
 		
 		let editSelection = (
 			replaceWord
@@ -25,8 +45,14 @@ let api = {
 		
 		let {
 			replacedString,
-			placeholders,
-		} = parsePlaceholders(indentedSnippet, editSelection.start.lineIndex, editSelection.start.offset);
+			positions,
+		} = createPositions(indentedSnippetText, editSelection.start.lineIndex, editSelection.start.offset);
+		
+		// TODO default values and initial computations
+		
+		/*
+		
+		*/
 		
 		let {end: endCursor} = document.getSelectionContainingString(editSelection.start, replacedString);
 		let edit = document.edit(editSelection, replacedString);

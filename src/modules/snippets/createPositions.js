@@ -2,6 +2,7 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let Document = require("modules/Document");
 let parseJavaScript = require("./parseJavaScript");
+let createExpressionFunction = require("./createExpressionFunction");
 let Tabstop = require("./Tabstop");
 let Expression = require("./Expression");
 
@@ -30,9 +31,10 @@ function getPlaceholders(string) {
 					let expressionStart = start + "@{".length + name.length + ":".length;
 					let {index: expressionEnd, dollarVariables} = parseJavaScript(string, expressionStart);
 					let expression = string.substring(expressionStart, expressionEnd);
+					let fn = createExpressionFunction(expression, dollarVariables);
 					let end = Math.min(string.length, expressionEnd + "}".length);
 					
-					placeholders.push(new Tabstop(start, end, name, expression, dollarVariables));
+					placeholders.push(new Tabstop(start, end, name, fn));
 					
 					i = end;
 				} else {
@@ -42,9 +44,10 @@ function getPlaceholders(string) {
 					let expressionStart = start + "@{".length;
 					let {index: expressionEnd, dollarVariables} = parseJavaScript(string, expressionStart);
 					let expression = string.substring(expressionStart, expressionEnd);
+					let fn = createExpressionFunction(expression, dollarVariables);
 					let end = Math.min(string.length, expressionEnd + "}".length);
 					
-					placeholders.push(new Expression(start, end, expression, dollarVariables));
+					placeholders.push(new Expression(start, end, fn));
 					
 					i = end;
 				}
@@ -71,11 +74,8 @@ function getPlaceholders(string) {
 	return placeholders;
 }
 
-module.exports = function(string, baseLineIndex=0, baseOffset=0) {
-	let placeholders = getPlaceholders(string);
-	
+function getReplacedString(string, placeholders) {
 	let replacedString = "";
-	
 	let prevPlaceholderEnd = 0;
 	
 	for (let placeholder of placeholders) {
@@ -86,29 +86,36 @@ module.exports = function(string, baseLineIndex=0, baseOffset=0) {
 	
 	replacedString += string.substr(prevPlaceholderEnd);
 	
+	return replacedString;
+}
+
+module.exports = function(string, baseLineIndex=0, baseOffset=0) {
+	let placeholders = getPlaceholders(string);
+	let replacedString = getReplacedString(string, placeholders);
+	
 	let offset = 0;
-	
-	for (let placeholder of placeholders) {
-		placeholder.indexInReplacedString = placeholder.start - offset;
-		
-		offset += placeholder.end - placeholder.start;
-	}
-	
 	let document = new Document(replacedString);
 	
-	for (let placeholder of placeholders) {
-		let {lineIndex, offset} = document.cursorFromIndex(placeholder.indexInReplacedString);
+	let positions = placeholders.map(function(placeholder) {
+		let indexInReplacedString = placeholder.start - offset;
+		let {lineIndex, offset} = document.cursorFromIndex(indexInReplacedString);
 		
 		let cursor = c(
 			baseLineIndex + lineIndex,
 			lineIndex === 0 ? baseOffset + offset : offset,
 		);
 		
-		placeholder.selection = s(cursor);
-	}
+		return {
+			placeholder,
+			selection: s(cursor),
+			value: "",
+		};
+		
+		offset += placeholder.end - placeholder.start;
+	});
 	
 	return {
 		replacedString,
-		placeholders,
+		positions,
 	};
 }
