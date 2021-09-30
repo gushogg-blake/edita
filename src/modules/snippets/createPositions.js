@@ -98,11 +98,14 @@ module.exports = function(string, baseLineIndex=0, baseOffset=0) {
 	let placeholders = getPlaceholders(string);
 	let replacedString = getReplacedString(string, placeholders);
 	
-	let offset = 0;
+	let indexOffset = 0;
 	let document = new Document(replacedString);
 	
 	let positions = placeholders.map(function(placeholder) {
-		let indexInReplacedString = placeholder.start - offset;
+		let indexInReplacedString = placeholder.start - indexOffset;
+		
+		indexOffset += placeholder.end - placeholder.start;
+		
 		let {lineIndex, offset} = document.cursorFromIndex(indexInReplacedString);
 		
 		let cursor = c(
@@ -115,8 +118,6 @@ module.exports = function(string, baseLineIndex=0, baseOffset=0) {
 			selection: s(cursor),
 			value: "",
 		};
-		
-		offset += placeholder.end - placeholder.start;
 	});
 	
 	return {

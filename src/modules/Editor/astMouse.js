@@ -1,5 +1,4 @@
 let AstSelection = require("modules/utils/AstSelection");
-let createPositionsForLines = require("modules/utils/createPositionsForLines");
 let astCommon = require("modules/langs/common/astMode");
 
 module.exports = {

@@ -113,7 +113,7 @@ let api = {
 	edit(snippetSession, edits) {
 		let {index, positions} = snippetSession;
 		
-		positions = positions.map(function(position) {
+		positions = positions.map(function(position, i) {
 			let {selection} = position;
 			
 			for (let edit of edits) {
