@@ -38,9 +38,9 @@ module.exports = function(lines, baseLineIndex=0, baseOffset=0) {
 		} = parsePlaceholders(line);
 		
 		placeholders.push(...linePlaceholders.map(function(placeholder) {
-			let {offset, initialText} = placeholder;
+			let {start} = placeholder;
 			let lineIndex = baseLineIndex + i;
-			let selection = s(c(lineIndex, startOffset + offset), c(lineIndex, startOffset + offset + initialText.length));
+			let selection = s(c(lineIndex, startOffset + start));
 			
 			return {
 				...placeholder,

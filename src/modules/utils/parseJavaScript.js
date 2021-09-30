@@ -63,7 +63,7 @@ function parse(string, startIndex) {
 						}
 					} else {
 						if (openBraces === 0) {
-							return i;
+							break;
 						} else {
 							openBraces--;
 						}

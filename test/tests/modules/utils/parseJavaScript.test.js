@@ -125,6 +125,33 @@ let tests = [
 		2,
 		30,
 	],
+	
+	[
+		"ends with backslash in main program",
+		`
+			@{asd\\}
+		`,
+		2,
+		6,
+	],
+	
+	[
+		"unclosed string (invalid)",
+		`
+			@{"asd}
+		`,
+		2,
+		8,
+	],
+	
+	[
+		"ends with backslash in string (invalid)",
+		`
+			@{"asd\\}
+		`,
+		2,
+		9,
+	],
 ];
 
 describe("parseJavaScript", function() {
