@@ -4,7 +4,7 @@ let {removeInPlace} = require("utils/arrayMethods");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let parsePlaceholdersInLines = require("modules/utils/parsePlaceholdersInLines");
+let parsePlaceholders = require("modules/utils/parsePlaceholders");
 let stringToLineTuples = require("modules/utils/stringToLineTuples");
 let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let find = require("./find");
@@ -88,6 +88,7 @@ class Editor extends Evented {
 		let indentStr = this.document.fileDetails.indentation.string;
 		let lineTuples = stringToLineTuples(snippet.text);
 		let lineStrings = lineTuplesToStrings(lineTuples, indentStr, indentLevel, true);
+		let indentedSnippet = lineStrings.join(this.document.fileDetails.newline);
 		
 		let selection = (
 			replaceWord
@@ -96,13 +97,12 @@ class Editor extends Evented {
 		);
 		
 		let {
-			lines: replacedLines,
+			string: replacedString,
 			placeholders,
-		} = parsePlaceholdersInLines(lineStrings, lineIndex, selection.start.offset);
+		} = parsePlaceholders(indentedSnippet);
 		
-		let str = replacedLines.join(this.document.fileDetails.newline);
-		let {end: cursor} = this.document.getSelectionContainingString(selection.start, str);
-		let edit = this.document.edit(selection, str);
+		let {end: cursor} = this.document.getSelectionContainingString(selection.start, replacedString);
+		let edit = this.document.edit(selection, replacedString);
 		let newSelection = s(cursor);
 		let snippetSession = null;
 		

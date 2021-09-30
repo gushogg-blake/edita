@@ -1,4 +1,5 @@
 let parseJavaScript = require("modules/utils/parseJavaScript");
+let Document = require("modules/Document");
 
 function getPlaceholders(string) {
 	let placeholders = [];
@@ -25,7 +26,7 @@ function getPlaceholders(string) {
 					let end = Math.min(string.length, expressionEnd + "}".length);
 					
 					placeholders.push({
-						type: "placeholder",
+						type: "tabstop",
 						start,
 						end,
 						name,
@@ -59,7 +60,7 @@ function getPlaceholders(string) {
 				let end = start + "@".length + name.length;
 				
 				placeholders.push({
-					type: "placeholder",
+					type: "tabstop",
 					start,
 					end,
 					name,
@@ -83,10 +84,38 @@ function getPlaceholders(string) {
 module.exports = function(string) {
 	let placeholders = getPlaceholders(string);
 	
+	let replacedString = "";
+	
+	let prevPlaceholderEnd = 0;
+	
+	for (let placeholder of placeholders) {
+		replacedString += string.substring(prevPlaceholderEnd, placeholder.start);
+		
+		prevPlaceholderEnd = placeholder.end;
+	}
+	
+	replacedString += string.substr(prevPlaceholderEnd);
+	
+	let offset = 0;
+	
+	for (let placeholder of placeholders) {
+		placeholder.indexInReplacedString = placeholder.start - offset;
+		
+		offset += placeholder.end - placeholder.start;
+	}
+	
+	let document = new Document(replacedString);
+	
+	for (let placeholder of placeholders) {
+		placeholder.cursor = document.cursorFromIndex(placeholder.indexInReplacedString);
+	}
+	
+	console.log(replacedString);
+	
 	console.log(placeholders);
 	
 	return {
-		string,
+		string: replacedString,
 		placeholders: [], //
 	};
 }
