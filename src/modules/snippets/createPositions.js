@@ -66,6 +66,8 @@ function getPlaceholders(string) {
 				let end = i + 2;
 				
 				placeholders.push(new AtLiteral(start, end));
+				
+				i = end;
 			} else {
 				i += 2;
 				
