@@ -97,9 +97,9 @@ class Editor extends Evented {
 		);
 		
 		let {
-			string: replacedString,
+			replacedString,
 			placeholders,
-		} = parsePlaceholders(indentedSnippet);
+		} = parsePlaceholders(indentedSnippet, selection.start.lineIndex, selection.start.offset);
 		
 		let {end: cursor} = this.document.getSelectionContainingString(selection.start, replacedString);
 		let edit = this.document.edit(selection, replacedString);

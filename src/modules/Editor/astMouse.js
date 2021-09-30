@@ -71,7 +71,7 @@ module.exports = {
 			} = snippetEdit;
 			
 			let {
-				lines: replacedLines,
+				replacedLines,
 				placeholders,
 			} = parsePlaceholdersInLines(insertLines, insertIndex);
 			

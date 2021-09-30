@@ -1,5 +1,10 @@
 let parseJavaScript = require("modules/utils/parseJavaScript");
+let Selection = require("modules/utils/Selection");
+let Cursor = require("modules/utils/Cursor");
 let Document = require("modules/Document");
+
+let {s} = Selection;
+let {c} = Cursor;
 
 function getPlaceholders(string) {
 	let placeholders = [];
@@ -81,7 +86,7 @@ function getPlaceholders(string) {
 	return placeholders;
 }
 
-module.exports = function(string) {
+module.exports = function(string, baseLineIndex=0, baseOffset=0) {
 	let placeholders = getPlaceholders(string);
 	
 	let replacedString = "";
@@ -107,7 +112,14 @@ module.exports = function(string) {
 	let document = new Document(replacedString);
 	
 	for (let placeholder of placeholders) {
-		placeholder.cursor = document.cursorFromIndex(placeholder.indexInReplacedString);
+		let {lineIndex, offset} = document.cursorFromIndex(placeholder.indexInReplacedString);
+		
+		let cursor = c(
+			baseLineIndex + lineIndex,
+			lineIndex === 0 ? baseOffset + offset : offset,
+		);
+		
+		placeholder.selection = s(cursor);
 	}
 	
 	console.log(replacedString);
@@ -115,7 +127,7 @@ module.exports = function(string) {
 	console.log(placeholders);
 	
 	return {
-		string: replacedString,
-		placeholders: [], //
+		replacedString,
+		placeholders,
 	};
 }

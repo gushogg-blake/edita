@@ -19,7 +19,7 @@ class LangManipulation extends Command {
 		let transformedLines = view.lang.astMode.astManipulations[this.code].apply(document, astSelection);
 		
 		let {
-			lines: replacedLines,
+			replacedLines,
 			placeholders,
 		} = parsePlaceholdersInLines(transformedLines, startLineIndex);
 		
