@@ -86,7 +86,7 @@ class Editor extends Evented {
 			endCursor,
 		} = SnippetSession.insert(this.document, this.view.normalSelection, snippet, replaceWord);
 		
-		let newSelection = session ? session.placeholders[0].selection : s(endCursor);
+		let newSelection = session ? session.positions[0].selection : s(endCursor);
 		
 		this.applyAndAddHistoryEntry({
 			edits: [edit],
@@ -95,11 +95,15 @@ class Editor extends Evented {
 		});
 	}
 	
+	createSnippetSessionForLines(lines, baseLineIndex) {
+		return SnippetSession.createForLines(lines, baseLineIndex);
+	}
+	
 	nextTabstop() {
-		let {session, placeholder} = SnippetSession.nextTabstop(this.snippetSession);
+		let {session, position} = SnippetSession.nextTabstop(this.snippetSession);
 		
-		if (placeholder) {
-			this.setNormalSelection(placeholder.selection);
+		if (position) {
+			this.setNormalSelection(position.selection);
 			this.view.redraw();
 		}
 		
@@ -116,6 +120,18 @@ class Editor extends Evented {
 	
 	adjustSnippetSession(edits) {
 		return SnippetSession.edit(this.snippetSession, edits);
+	}
+	
+	snippetSessionHasMoreTabstops() {
+		let {index, positions} = this.snippetSession;
+		
+		for (let i = index + 1; i < positions.length; i++) {
+			if (positions[i].placeholder.type === "tabstop") {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	onDocumentEdit(edit) {

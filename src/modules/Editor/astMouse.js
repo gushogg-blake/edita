@@ -1,5 +1,5 @@
 let AstSelection = require("modules/utils/AstSelection");
-let parsePlaceholdersInLines = require("modules/utils/parsePlaceholdersInLines");
+let createPositionsForLines = require("modules/utils/createPositionsForLines");
 let astCommon = require("modules/langs/common/astMode");
 
 module.exports = {
@@ -72,24 +72,22 @@ module.exports = {
 			
 			let {
 				replacedLines,
-				placeholders,
-			} = parsePlaceholdersInLines(insertLines, insertIndex);
+				positions,
+			} = this.createSnippetSessionForLines(insertLines, insertIndex);
 			
 			edits = [...edits, document.lineEdit(insertIndex, removeLines, replacedLines)];
 			
 			this.astSelectionAfterSnippet = newSelection;
 			
 			newSelection = undefined;
-			normalSelection = placeholders[0].selection;
+			normalSelection = positions[0].selection;
 			
 			this.switchToNormalMode();
 			
-			if (placeholders.length > 1) {
-				snippetSession = {
-					index: 0,
-					placeholders,
-				};
-			}
+			snippetSession = {
+				index: 0,
+				positions,
+			};
 		}
 		
 		if (edits.length > 0) {

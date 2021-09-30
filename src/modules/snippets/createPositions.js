@@ -61,6 +61,11 @@ function getPlaceholders(string) {
 				placeholders.push(new Tabstop(start, end, name, null));
 				
 				i = end;
+			} else if (next === "@") {
+				let start = i;
+				let end = i + 2;
+				
+				placeholders.push(new AtLiteral(start, end));
 			} else {
 				i += 2;
 				

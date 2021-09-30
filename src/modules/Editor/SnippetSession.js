@@ -3,14 +3,31 @@ let Cursor = require("modules/utils/Cursor");
 let stringToLineTuples = require("modules/utils/stringToLineTuples");
 let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let createPositions = require("modules/snippets/createPositions");
+let createPositionsForLines = require("modules/snippets/createPositionsForLines");
 
 let {s} = Selection;
 let {c} = Cursor;
 
-function getDefaultValue(placeholder) {
-	if (placeholder.type === "tabstop") {
-		return placeholder.getDefaultValue();
-	} 
+/*
+placeholder - a long-lived object (while the session is active) describing
+the placeholder.  not updated to reflect edits
+
+position - object describing a placeholder and its current selection and
+value within the whole document.  discarded and re-created with updated
+selections to reflect edits.  new positions still point to the same underlying
+placeholders
+*/
+
+function getDefaultValue(placeholder, context) {
+	let {type} = placeholder;
+	
+	if (type === "tabstop") {
+		return placeholder.getDefaultValue(context);
+	} else if (type === "expression") {
+		return placeholder.getValue(context);
+	} else if (type === "atLiteral") {
+		return "@";
+	}
 }
 
 function getContextFromPositions(positions) {
@@ -48,7 +65,7 @@ let api = {
 			positions,
 		} = createPositions(indentedSnippetText, editSelection.start.lineIndex, editSelection.start.offset);
 		
-		// TODO default values and initial computations
+		// TODO default values (inc at literals) and initial computations
 		
 		/*
 		
@@ -57,10 +74,10 @@ let api = {
 		let {end: endCursor} = document.getSelectionContainingString(editSelection.start, replacedString);
 		let edit = document.edit(editSelection, replacedString);
 		
-		let session = placeholders.length > 1 ? {
+		let session = {
 			index: 0,
-			placeholders,
-		} : null;
+			positions,
+		};
 		
 		return {
 			session,
@@ -69,18 +86,23 @@ let api = {
 		};
 	},
 	
+	createForLines(lines, baseLineIndex) {
+		return createPositionsForLines(lines, baseLineIndex);
+	},
+	
 	nextTabstop(session) {
-		let {index, placeholders} = session;
+		let {index, positions} = session;
 		
-		while (index < placeholders.length - 1) {
+		while (index < positions.length - 1) {
 			index++;
 			
-			let placeholder = session.placeholders[index];
+			let position = positions[index];
+			let {placeholder, selection} = position;
 			
-			if (placeholder.type === "tabstop" && placeholder.selection) {
+			if (placeholder.type === "tabstop" && selection) {
 				return {
-					placeholder,
-					session: index < placeholders.length - 1 ? {index, placeholders} : null,
+					position,
+					session: index < positions.length - 1 ? {index, positions} : null,
 				};
 			}
 		}
@@ -89,10 +111,10 @@ let api = {
 	},
 	
 	edit(snippetSession, edits) {
-		let {index, placeholders} = snippetSession;
+		let {index, positions} = snippetSession;
 		
-		placeholders = placeholders.map(function(placeholder, i) {
-			let {selection} = placeholder;
+		positions = positions.map(function(position) {
+			let {selection} = position;
 			
 			for (let edit of edits) {
 				let {
@@ -115,14 +137,14 @@ let api = {
 			}
 			
 			return {
-				...placeholder,
+				...position,
 				selection,
 			};
 		});
 		
 		return {
 			index,
-			placeholders,
+			positions,
 		};
 	},
 };

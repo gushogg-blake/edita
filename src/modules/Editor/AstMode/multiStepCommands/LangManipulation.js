@@ -1,5 +1,4 @@
 let AstSelection = require("modules/utils/AstSelection");
-let parsePlaceholdersInLines = require("modules/utils/parsePlaceholdersInLines");
 let Command = require("./Command");
 
 let {s} = AstSelection;
@@ -20,30 +19,30 @@ class LangManipulation extends Command {
 		
 		let {
 			replacedLines,
-			placeholders,
-		} = parsePlaceholdersInLines(transformedLines, startLineIndex);
+			positions,
+		} = this.createSnippetSessionForLines(transformedLines, startLineIndex);
 		
 		let edit = document.lineEdit(startLineIndex, endLineIndex - startLineIndex, replacedLines);
 		let newSelection = s(startLineIndex, startLineIndex + replacedLines.length);
+		
 		let snippetSession = null;
+		
 		let normalSelection;
 		
-		if (placeholders.length > 0) {
+		if (positions.length > 0) {
 			if (!this.peekingAstMode) {
 				this.selectionOnReturnToAstMode = newSelection;
 			}
 			
 			newSelection = undefined;
-			normalSelection = placeholders[0].selection;
+			normalSelection = positions[0].selection;
 			
 			editor.switchToNormalMode();
 			
-			if (placeholders.length > 1) {
-				snippetSession = {
-					index: 0,
-					placeholders,
-				};
-			}
+			snippetSession = {
+				index: 0,
+				positions,
+			};
 		}
 		
 		editor.applyAndAddHistoryEntry({

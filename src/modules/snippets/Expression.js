@@ -12,3 +12,5 @@ class Expression {
 		return this.fn(functions, context);
 	}
 }
+
+module.exports = Expression;

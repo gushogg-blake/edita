@@ -11,3 +11,5 @@ class Tabstop {
 		return this.defaultFn ? this.defaultFn(functions, context) : "";
 	}
 }
+
+module.exports = Tabstop;

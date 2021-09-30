@@ -256,15 +256,7 @@ module.exports = {
 			}
 		}
 		
-		/*
-		tabbing to the last placeholder clears the snippet session, but it
-		can be brought back by undo/redo, so we need to check whether we're
-		at the end here as well
-		*/
-		
-		let {snippetSession} = this;
-		
-		if (snippetSession && snippetSession.index === snippetSession.placeholders.length - 1) {
+		if (this.snippetSession && !this.snippetSessionHasMoreTabstops()) {
 			this.clearSnippetSession();
 		}
 		
