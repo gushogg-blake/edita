@@ -96,7 +96,7 @@ class Editor extends Evented {
 	}
 	
 	createSnippetPositionsForLines(lines, baseLineIndex) {
-		return SnippetSession.createPositionsForLines(lines, baseLineIndex);
+		return SnippetSession.createPositionsForLines(lines, baseLineIndex, this.document.fileDetails.newline);
 	}
 	
 	nextTabstop() {

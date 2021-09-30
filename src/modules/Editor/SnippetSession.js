@@ -3,7 +3,6 @@ let Cursor = require("modules/utils/Cursor");
 let stringToLineTuples = require("modules/utils/stringToLineTuples");
 let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let createPositions = require("modules/snippets/createPositions");
-let createPositionsForLines = require("modules/snippets/createPositionsForLines");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -86,8 +85,18 @@ let api = {
 		};
 	},
 	
-	createPositionsForLines(lines, baseLineIndex) {
-		return createPositionsForLines(lines, baseLineIndex);
+	createPositionsForLines(lines, baseLineIndex, newline) {
+		let str = lines.join(newline);
+		
+		let {
+			replacedString,
+			positions,
+		} = createPositions(str, baseLineIndex);
+		
+		return {
+			replacedLines: replacedString.split(newline),
+			positions,
+		};
 	},
 	
 	nextTabstop(session) {

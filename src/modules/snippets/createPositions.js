@@ -15,6 +15,8 @@ function getPlaceholders(string) {
 	let i = 0;
 	let ch;
 	
+	let encounteredTabstops = {};
+	
 	while (i < string.length) {
 		let ch = string[i];
 		let next = string[i + 1];
@@ -58,7 +60,17 @@ function getPlaceholders(string) {
 				let start = i;
 				let end = start + "@".length + name.length;
 				
-				placeholders.push(new Tabstop(start, end, name, null));
+				if (encounteredTabstops[name]) {
+					// convert subsequent @name tabstops to expressions
+					
+					let fn = createExpressionFunction("$" + name, [0]);
+					
+					placeholders.push(new Expression(start, end, fn));
+				} else {
+					placeholders.push(new Tabstop(start, end, name, null));
+					
+					encounteredTabstops[name] = true;
+				}
 				
 				i = end;
 			} else if (next === "@") {
