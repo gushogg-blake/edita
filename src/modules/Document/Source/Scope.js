@@ -1,4 +1,5 @@
 let Selection = require("modules/utils/Selection");
+let Cursor = require("modules/utils/Cursor");
 let next = require("modules/utils/treeSitter/next");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
 let findFirstNodeToRender = require("modules/utils/treeSitter/findFirstNodeToRender");
@@ -6,6 +7,8 @@ let findFirstNodeOnLine = require("modules/utils/treeSitter/findFirstNodeOnLine"
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let Range = require("./Range");
+
+let {s} = Selection;
 
 module.exports = class Scope {
 	constructor(parent, lang, code, ranges) {
@@ -109,40 +112,124 @@ module.exports = class Scope {
 			replaceWith,
 		} = edit;
 		
-		this.code = code;
+		//console.log("Scope.edit: " + this.lang.code);
+		//console.log(edit, index, newRanges, code);
 		
-		//
+		this.code = code;
+		this.ranges = newRanges;
+		this.treeSitterRanges = this.ranges.map(Range.toTreeSitterRange);
+		
+		let existingScopes = this.scopes;
+		
 		this.scopes = [];
 		this.scopesByNode = {};
 		this.scopeAndRangeByNode = {};
 		
-		this.ranges = newRanges;
-		this.treeSitterRanges = this.ranges.map(Range.toTreeSitterRange);
-		
-		this.parse();
-		//
-		
-		//try {
-		//	let parser = new TreeSitter();
-		//	
-		//	parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
-		//	
-		//	this.tree.edit({
-		//		startPosition: cursorToTreeSitterPoint(selection.start),
-		//		startIndex: index,
-		//		oldEndPosition: cursorToTreeSitterPoint(selection.end),
-		//		oldEndIndex: index + string.length,
-		//		newEndPosition: cursorToTreeSitterPoint(newSelection.end),
-		//		newEndIndex: index + replaceWith.length,
-		//	});
-		//	
-		//	this.tree = parser.parse(this.code, this.tree, {
-		//		includedRanges: this.treeSitterRanges,
-		//	});
-		//} catch (e) {
-		//	console.error("Parse error");
-		//	console.error(e);
-		//}
+		try {
+			let parser = new TreeSitter();
+			
+			parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
+			
+			this.tree.edit({
+				startPosition: cursorToTreeSitterPoint(selection.start),
+				startIndex: index,
+				oldEndPosition: cursorToTreeSitterPoint(selection.end),
+				oldEndIndex: index + string.length,
+				newEndPosition: cursorToTreeSitterPoint(newSelection.end),
+				newEndIndex: index + replaceWith.length,
+			});
+			
+			this.tree = parser.parse(this.code, this.tree, {
+				includedRanges: this.treeSitterRanges,
+			});
+			
+			for (let injection of this.lang.injections) {
+				let matches = injection.query.matches(this.tree.rootNode).map(function(match) {
+					let captures = {};
+					
+					for (let capture of match.captures) {
+						captures[capture.name] = capture.node;
+					}
+					
+					return captures;
+				}).filter(function(match) {
+					return match.injectionNode && match.injectionNode.text.length > 0;
+				});
+				
+				if (injection.combined) {
+					let injectionLang = base.langs.get(injection.lang);
+					
+					if (injectionLang) {
+						let nodes = matches.map(match => match.injectionNode);
+						let ranges = nodes.map(Range.fromNode);
+						
+						let existingScope = existingScopes.find(function(scope) {
+							return scope.lang === injectionLang && Cursor.equals(Selection.edit(s(scope.ranges[0].selection.start), selection, newSelection).start, ranges[0].selection.start);
+						});
+						
+						let scope;
+						
+						if (existingScope) {
+							existingScope.edit(edit, index, ranges, code);
+							
+							scope = existingScope;
+						} else {
+							scope = new Scope(this, injectionLang, this.code, ranges);
+						}
+						
+						this.scopes.push(scope);
+						
+						for (let node of nodes) {
+							this.scopesByNode[node.id] = scope;
+						}
+						
+						for (let i = 0; i < nodes.length; i++) {
+							let node = nodes[i];
+							let range = ranges[i];
+							
+							this.scopeAndRangeByNode[node.id] = {
+								scope,
+								range,
+							};
+						}
+					}
+				} else {
+					for (let match of matches) {
+						let injectionLang = base.langs.get(injection.lang(match));
+						
+						if (injectionLang) {
+							let node = match.injectionNode;
+							let range = Range.fromNode(node);
+							
+							let existingScope = existingScopes.find(function(scope) {
+								return scope.lang === injectionLang && Cursor.equals(Selection.edit(s(scope.ranges[0].selection.start), selection, newSelection).start, range.selection.start);
+							});
+							
+							let scope;
+							
+							if (existingScope) {
+								existingScope.edit(edit, index, [range], code);
+								
+								scope = existingScope;
+							} else {
+								scope = new Scope(this, injectionLang, this.code, [range]);
+							}
+							
+							this.scopes.push(scope);
+							this.scopesByNode[node.id] = scope;
+							
+							this.scopeAndRangeByNode[node.id] = {
+								scope,
+								range,
+							};
+						}
+					}
+				}
+			}
+		} catch (e) {
+			console.error("Parse error");
+			console.error(e);
+		}
 	}
 	
 	*generateRenderHints(node) {
