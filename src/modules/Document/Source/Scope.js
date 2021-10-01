@@ -217,9 +217,18 @@ module.exports = class Scope {
 		}
 		
 		let nextNode = next(node);
-		let nextRange = nextNode && this.findContainingRange(nextNode);
 		
-		if (!nextNode || nextRange !== range) {
+		while (nextNode && !range.containsNode(nextNode)) {
+			if (!range.containsNodeStart(nextNode)) {
+				nextNode = null;
+				
+				break;
+			}
+			
+			nextNode = next(nextNode);
+		}
+		
+		if (!nextNode) {
 			if (this.parent) {
 				return this.parent.nextAfterRange(range);
 			} else {

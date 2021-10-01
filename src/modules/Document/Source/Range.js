@@ -25,6 +25,10 @@ class Range {
 		return Selection.isWithin(selectionFromNode(node), this.selection);
 	}
 	
+	containsNodeStart(node) {
+		return Selection.charIsWithinSelection(this.selection, selectionFromNode(node).start);
+	}
+	
 	toTreeSitterRange() {
 		let {
 			startIndex,
