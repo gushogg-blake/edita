@@ -5,6 +5,7 @@ let parseJavaScript = require("./parseJavaScript");
 let createExpressionFunction = require("./createExpressionFunction");
 let Tabstop = require("./Tabstop");
 let Expression = require("./Expression");
+let AtLiteral = require("./AtLiteral");
 
 let {s} = Selection;
 let {c} = Cursor;
