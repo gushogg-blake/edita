@@ -130,6 +130,42 @@ function addOrSubtractEarlierSelection(selection, adjustment, sign) {
 	return s(c(newStartLineIndex, newStartOffset), c(newEndLineIndex, newEndOffset));
 }
 
+function addOrSubtractSelection(selection, adjustment, sign) {
+	let {start, end} = selection;
+	
+	let selectionIsMultiline = isMultiline(selection);
+	let adjustmentHeightDiff = adjustment.end.lineIndex - adjustment.start.lineIndex;
+	
+	if (adjustment.start.lineIndex === start.lineIndex && adjustment.end.lineIndex === end.lineIndex) {
+		if (selectionIsMultiline) {
+			return s(
+				start,
+				c(end.lineIndex + adjustmentHeightDiff * sign, end.offset + adjustment.end.offset * sign),
+			);
+		} else {
+			return s(
+				start,
+				c(end.lineIndex, end.offset + (adjustment.end.offset - adjustment.start.offset) * sign),
+			);
+		}
+	} else if (adjustment.start.lineIndex === start.lineIndex) {
+		return s(
+			start,
+			c(end.lineIndex + adjustmentHeightDiff * sign, end.offset),
+		);
+	} else if (adjustment.end.lineIndex === end.lineIndex) {
+		return s(
+			start,
+			c(end.lineIndex + adjustmentHeightDiff * sign, end.offset + adjustment.end.offset * sign),
+		);
+	} else {
+		return s(
+			start,
+			c(end.lineIndex + adjustmentHeightDiff * sign, end.offset),
+		);
+	}
+}
+
 function s(start, end=null) {
 	return {
 		start,
@@ -220,7 +256,7 @@ let api = {
 	*/
 	
 	adjustForEditWithinSelection(selection, oldSelection, newSelection) {
-		// TODO
+		return api.add(api.subtract(selection, oldSelection), newSelection);
 	},
 	
 	edit(selection, oldSelection, newSelection) {
