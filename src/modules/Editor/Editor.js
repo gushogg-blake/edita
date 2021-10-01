@@ -313,8 +313,6 @@ class Editor extends Evented {
 			this.view.ensureSelectionIsOnScreen();
 		}
 		
-		this.updateSnippetExpressions();
-		
 		this.view.startCursorBlink();
 		
 		console.time("redraw");

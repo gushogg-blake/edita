@@ -128,6 +128,7 @@ module.exports = {
 			normalSelection: newSelection,
 		});
 		
+		this.updateSnippetExpressions();
 		this.clearBatchState();
 	},
 	
@@ -182,6 +183,7 @@ module.exports = {
 			this.applyAndAddHistoryEntry(apply);
 		}
 		
+		this.updateSnippetExpressions();
 		this.setBatchState(newBatchState);
 	},
 	
@@ -238,6 +240,7 @@ module.exports = {
 			this.applyAndAddHistoryEntry(apply);
 		}
 		
+		this.updateSnippetExpressions();
 		this.setBatchState(newBatchState);
 	},
 	
@@ -301,6 +304,8 @@ module.exports = {
 				edits: [edit],
 				normalSelection: newSelection,
 			});
+			
+			this.updateSnippetExpressions();
 		}
 		
 		this.clearBatchState();
@@ -311,6 +316,8 @@ module.exports = {
 			this.prevTabstop();
 		} else if (this.view.Selection.isMultiline()) {
 			this.dedentSelection();
+			
+			this.updateSnippetExpressions();
 		}
 		
 		this.clearBatchState();
@@ -361,6 +368,8 @@ module.exports = {
 				normalSelection: newSelection,
 			});
 			
+			this.updateSnippetExpressions();
+			
 			this.completeWordSession = {
 				...this.completeWordSession,
 				currentWord: nextWord,
@@ -389,6 +398,8 @@ module.exports = {
 						edits: [edit],
 						normalSelection: newSelection,
 					});
+					
+					this.updateSnippetExpressions();
 					
 					this.completeWordSession = {
 						originalWord: wordAtCursor,
@@ -422,6 +433,7 @@ module.exports = {
 			normalSelection: newSelection,
 		});
 		
+		this.updateSnippetExpressions();
 		this.clearBatchState();
 	},
 	
@@ -445,11 +457,14 @@ module.exports = {
 			normalSelection: newSelection,
 		});
 		
+		this.updateSnippetExpressions();
 		this.clearBatchState();
 	},
 	
 	insertAstClipboard() {
 		this.astMode.pasteFromNormalMode();
+		
+		this.updateSnippetExpressions();
 	},
 	
 	insert(key) {
@@ -506,6 +521,7 @@ module.exports = {
 		
 		this.view.updateSelectionEndCol();
 		
+		this.updateSnippetExpressions();
 		this.setBatchState(newBatchState);
 	},
 };
