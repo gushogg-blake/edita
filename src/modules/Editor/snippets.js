@@ -54,7 +54,8 @@ function sessionFromPositions(positions) {
 }
 
 let api = {
-	insert(editor, document, selection, snippet, replaceWord)  {
+	insert(editor, snippet, replaceWord)  {
+		let {document, normalSelection: selection} = editor;
 		let {start} = selection;
 		let {lineIndex, offset} = start;
 		let {indentLevel} = document.lines[lineIndex];

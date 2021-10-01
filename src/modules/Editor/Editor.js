@@ -11,7 +11,7 @@ let normalKeyboard = require("./normalKeyboard");
 let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
 let modeSwitchKey = require("./modeSwitchKey");
-let SnippetSession = require("./SnippetSession");
+let snippets = require("./snippets");
 let api = require("./api");
 
 let {s: a} = AstSelection;
@@ -80,15 +80,15 @@ class Editor extends Evented {
 	}
 	
 	insertSnippet(snippet, replaceWord=null) {
-		SnippetSession.insert(this, this.document, this.view.normalSelection, snippet, replaceWord);
+		snippets.insert(this, snippet, replaceWord);
 	}
 	
 	createSnippetPositionsForLines(lines, baseLineIndex) {
-		return SnippetSession.createPositionsForLines(lines, baseLineIndex, this.document.fileDetails.newline);
+		return snippets.createPositionsForLines(lines, baseLineIndex, this.document.fileDetails.newline);
 	}
 	
 	nextTabstop() {
-		let {session, position} = SnippetSession.nextTabstop(this.snippetSession);
+		let {session, position} = snippets.nextTabstop(this.snippetSession);
 		
 		if (position) {
 			this.setNormalSelection(position.selection);
@@ -107,7 +107,7 @@ class Editor extends Evented {
 	}
 	
 	adjustSnippetSession(edits) {
-		return this.snippetSession && SnippetSession.edit(this.snippetSession, edits);
+		return this.snippetSession && snippets.edit(this.snippetSession, edits);
 	}
 	
 	updateSnippetExpressions() {
@@ -120,7 +120,7 @@ class Editor extends Evented {
 		let {
 			positions,
 			edits,
-		} = SnippetSession.computeExpressions(this.document, snippetSession.positions);
+		} = snippets.computeExpressions(this.document, snippetSession.positions);
 		
 		if (edits.length > 0) {
 			this.applyAndMergeWithLastHistoryEntry({
