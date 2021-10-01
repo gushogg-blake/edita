@@ -7,9 +7,11 @@ module.exports = function(code, dollarVariables) {
 		}
 	});
 	
-	return new Function("functions", "context", `
-		with (functions) {
-			return ${code};
+	return new Function("util", "context", `
+		with (util) {
+			with (context) {
+				return ${code};
+			}
 		}
 	`);
 }

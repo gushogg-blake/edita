@@ -150,7 +150,7 @@ function parse(string, startIndex) {
 				let [word] = re.word.exec(string);
 				
 				if (word[0] === "$") {
-					dollarVariables.push(i);
+					dollarVariables.push(i - startIndex);
 				}
 				
 				i += word.length;
