@@ -80,19 +80,7 @@ class Editor extends Evented {
 	}
 	
 	insertSnippet(snippet, replaceWord=null) {
-		let {
-			session,
-			edit,
-			endCursor,
-		} = SnippetSession.insert(this.document, this.view.normalSelection, snippet, replaceWord);
-		
-		let newSelection = session ? session.positions[0].selection : s(endCursor);
-		
-		this.applyAndAddHistoryEntry({
-			edits: [edit],
-			normalSelection: newSelection,
-			snippetSession: session,
-		});
+		SnippetSession.insert(this, this.document, this.view.normalSelection, snippet, replaceWord);
 	}
 	
 	createSnippetPositionsForLines(lines, baseLineIndex) {
@@ -119,7 +107,7 @@ class Editor extends Evented {
 	}
 	
 	adjustSnippetSession(edits) {
-		return SnippetSession.edit(this.snippetSession, edits);
+		return this.snippetSession && SnippetSession.edit(this.snippetSession, edits);
 	}
 	
 	snippetSessionHasMoreTabstops() {
@@ -201,13 +189,20 @@ class Editor extends Evented {
 	
 	applyAndMergeWithLastHistoryEntry(edit) {
 		let entry = this.document.applyAndMergeWithLastHistoryEntry(edit.edits);
-		let {after} = this.historyEntries.get(entry);
+		let states = this.historyEntries.get(entry);
 		
-		after.normalSelection = edit.normalSelection;
+		let {
+			normalSelection,
+			astSelection,
+			snippetSession,
+		} = edit;
 		
-		if (this.snippetSession) {
-			after.snippetSession = this.adjustSnippetSession(edit.edits);
-		}
+		states.after = {
+			...states.after,
+			normalSelection,
+			astSelection,
+			snippetSession,
+		};
 		
 		this.applyHistoryEntry(entry, "after");
 	}

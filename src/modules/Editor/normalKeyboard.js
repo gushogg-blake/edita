@@ -168,9 +168,12 @@ module.exports = {
 			newSelection = s(end);
 		}
 		
+		let edits = [edit];
+		
 		let apply = {
-			edits: [edit],
+			edits,
 			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
 		};
 		
 		if (this.batchState === "backspace" && newBatchState === "backspace") {
@@ -221,9 +224,12 @@ module.exports = {
 			newSelection = s(start);
 		}
 		
+		let edits = [edit];
+		
 		let apply = {
-			edits: [edit],
+			edits,
 			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
 		};
 		
 		if (this.batchState === "delete" && newBatchState === "delete") {
@@ -459,9 +465,12 @@ module.exports = {
 			newSelection,
 		} = document.insert(selection, key);
 		
+		let edits = [edit];
+		
 		let apply = {
-			edits: [edit],
+			edits,
 			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
 		};
 		
 		if (this.batchState === "typing") {

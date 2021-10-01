@@ -11,10 +11,9 @@ let {c} = Cursor;
 placeholder - a long-lived object (while the session is active) describing
 the placeholder.  not updated to reflect edits
 
-position - object describing a placeholder and its current selection and
-value within the whole document.  discarded and re-created with updated
-selections to reflect edits.  new positions still point to the same underlying
-placeholders
+position - object describing a placeholder and its current selection within
+the document.  discarded and re-created with updated selections to reflect
+edits.  new positions still point to the same underlying placeholders
 */
 
 function getDefaultValue(placeholder, context) {
@@ -29,22 +28,33 @@ function getDefaultValue(placeholder, context) {
 	}
 }
 
-function getContextFromPositions(positions) {
+function getContextFromPositions(document, positions) {
 	let context = {};
 	
 	for (let position of positions) {
 		let {placeholder} = position;
 		
 		if (placeholder.type === "tabstop") {
-			context[placeholder.name] = position.value;
+			context[placeholder.name] = getCurrentValue(document, position);
 		}
 	}
 	
 	return context;
 }
 
+function getCurrentValue(document, position) {
+	return document.getSelectedText(position.selection);
+}
+
+function sessionFromPositions(positions) {
+	return positions.length > 0 ? {
+		index: 0,
+		positions,
+	} : null;
+}
+
 let api = {
-	insert(document, selection, snippet, replaceWord)  {
+	insert(editor, document, selection, snippet, replaceWord)  {
 		let {start} = selection;
 		let {lineIndex, offset} = start;
 		let {indentLevel} = document.lines[lineIndex];
@@ -64,24 +74,115 @@ let api = {
 			positions,
 		} = createPositions(indentedSnippetText, editSelection.start.lineIndex, editSelection.start.offset);
 		
-		// TODO default values (inc at literals) and initial computations
-		
-		/*
-		
-		*/
-		
 		let {end: endCursor} = document.getSelectionContainingString(editSelection.start, replacedString);
-		let edit = document.edit(editSelection, replacedString);
 		
-		let session = {
-			index: 0,
-			positions,
-		};
+		let insertEdit = document.edit(editSelection, replacedString);
+		
+		editor.applyAndAddHistoryEntry({
+			edits: [insertEdit],
+			normalSelection: positions.length > 0 ? positions[0].selection : s(endCursor),
+			snippetSession: sessionFromPositions(positions),
+		});
+		
+		if (positions.length > 0) {
+			let defaultValueEdits;
+			
+			({
+				positions,
+				edits: defaultValueEdits,
+			} = api.setDefaultValues(document, positions));
+			
+			if (defaultValueEdits.length > 0) {
+				editor.applyAndMergeWithLastHistoryEntry({
+					edits: defaultValueEdits,
+					normalSelection: positions[0].selection,
+					snippetSession: sessionFromPositions(positions),
+				});
+			}
+			
+			let computeExpressionEdits;
+			
+			({
+				positions,
+				edits: computeExpressionEdits,
+			} = api.computeExpressions(document, positions));
+			
+			if (computeExpressionEdits.length > 0) {
+				editor.applyAndMergeWithLastHistoryEntry({
+					edits: computeExpressionEdits,
+					normalSelection: positions[0].selection,
+					snippetSession: sessionFromPositions(positions),
+				});
+			}
+		}
+	},
+	
+	setDefaultValues(document, positions) {
+		positions = positions.map(position => ({...position}));
+		
+		let edits = [];
+		
+		let context = getContextFromPositions(document, positions);
+		
+		for (let i = 0; i < positions.length; i++) {
+			let position = positions[i];
+			let value = getDefaultValue(position.placeholder, context);
+			
+			if (value !== "") { // we know the current text is "" as all positions start off empty
+				let edit = document.edit(position.selection, value);
+				
+				position.selection = edit.newSelection;
+				
+				edits.push(edit);
+				
+				for (let j = i + 1; j < positions.length; j++) {
+					let laterPosition = positions[j];
+					
+					laterPosition.selection = Selection.adjustForEarlierEdit(laterPosition.selection, edit.selection, edit.newSelection);
+				}
+			}
+		}
 		
 		return {
-			session,
-			edit,
-			endCursor,
+			positions,
+			edits,
+		};
+	},
+	
+	computeExpressions(document, positions) {
+		positions = positions.map(position => ({...position}));
+		
+		let edits = [];
+		
+		let context = getContextFromPositions(document, positions);
+		
+		for (let i = 0; i < positions.length; i++) {
+			let position = positions[i];
+			
+			if (position.type !== "expression") {
+				continue;
+			}
+			
+			let value = position.placeholder.fn(context);
+			
+			if (value !== getCurrentValue(document, position)) {
+				let edit = document.edit(position.selection, value);
+				
+				position.selection = edit.newSelection;
+				
+				edits.push(edit);
+				
+				for (let j = i + 1; j < positions.length; j++) {
+					let laterPosition = positions[j];
+					
+					laterPosition.selection = Selection.adjustForEarlierEdit(laterPosition.selection, edit.selection, edit.newSelection);
+				}
+			}
+		}
+		
+		return {
+			positions,
+			edits,
 		};
 	},
 	

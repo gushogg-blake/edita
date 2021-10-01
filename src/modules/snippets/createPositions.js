@@ -130,7 +130,6 @@ module.exports = function(string, baseLineIndex=0, baseOffset=0) {
 		return {
 			placeholder,
 			selection: s(cursor),
-			value: "",
 		};
 	});
 	

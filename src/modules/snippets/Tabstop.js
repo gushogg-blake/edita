@@ -1,3 +1,5 @@
+let functions = require("./functions");
+
 class Tabstop {
 	constructor(start, end, name, defaultFn) {
 		this.type = "tabstop";
