@@ -110,6 +110,27 @@ class Editor extends Evented {
 		return this.snippetSession && SnippetSession.edit(this.snippetSession, edits);
 	}
 	
+	updateSnippetExpressions() {
+		let {snippetSession} = this;
+		
+		if (!snippetSession) {
+			return;
+		}
+		
+		let {
+			positions,
+			edits,
+		} = SnippetSession.computeExpressions(this.document, snippetSession.positions);
+		
+		if (edits.length > 0) {
+			this.applyAndMergeWithLastHistoryEntry({
+				edits,
+				normalSelection: this.view.normalSelection,
+				snippetSession: {...this.snippetSession, positions},
+			});
+		}
+	}
+	
 	snippetSessionHasMoreTabstops() {
 		let {index, positions} = this.snippetSession;
 		
@@ -164,12 +185,6 @@ class Editor extends Evented {
 	applyAndAddHistoryEntry(edit) {
 		let entry = this.document.applyAndAddHistoryEntry(edit.edits);
 		
-		let newSnippetSession = null;
-		
-		if (this.snippetSession) {
-			newSnippetSession = this.adjustSnippetSession(edit.edits);
-		}
-		
 		this.historyEntries.set(entry, {
 			before: {
 				normalSelection: this.view.mode === "normal" ? this.view.normalSelection : undefined,
@@ -180,7 +195,7 @@ class Editor extends Evented {
 			after: {
 				normalSelection: edit.normalSelection,
 				astSelection: edit.astSelection,
-				snippetSession: edit.snippetSession || newSnippetSession || null,
+				snippetSession: edit.snippetSession,
 			},
 		});
 		
@@ -297,6 +312,8 @@ class Editor extends Evented {
 		].includes(fnName)) {
 			this.view.ensureSelectionIsOnScreen();
 		}
+		
+		this.updateSnippetExpressions();
 		
 		this.view.startCursorBlink();
 		

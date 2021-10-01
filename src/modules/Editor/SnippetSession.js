@@ -158,12 +158,13 @@ let api = {
 		
 		for (let i = 0; i < positions.length; i++) {
 			let position = positions[i];
+			let {placeholder} = position;
 			
-			if (position.type !== "expression") {
+			if (placeholder.type !== "expression") {
 				continue;
 			}
 			
-			let value = position.placeholder.fn(context);
+			let value = placeholder.getValue(context);
 			
 			if (value !== getCurrentValue(document, position)) {
 				let edit = document.edit(position.selection, value);
@@ -233,12 +234,12 @@ let api = {
 					newSelection,
 				} = edit;
 				
-				if (Selection.isBefore(oldSelection, selection)) {
-					selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
+				if (i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
+					selection = Selection.expand(selection, newSelection);
 				} else if (Selection.equals(selection, oldSelection)) {
 					selection = newSelection;
-				} else if (i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
-					selection = Selection.expand(selection, newSelection);
+				} else if (Selection.isBefore(oldSelection, selection)) {
+					selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
 				} else if (Selection.isWithin(oldSelection, selection)) {
 					selection = Selection.adjustForEditWithinSelection(selection, oldSelection, newSelection);
 				} else if (Selection.isOverlapping(selection, oldSelection)) {
