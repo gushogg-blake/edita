@@ -1,5 +1,5 @@
 <script>
-import {createEventDispatcher} from "svelte";
+import {onMount, createEventDispatcher, tick} from "svelte";
 import screenOffsets from "utils/dom/screenOffsets";
 import Gap from "components/utils/Gap.svelte";
 
@@ -13,6 +13,8 @@ export let mimeType = "application/vnd.editor.tab";
 let fire = createEventDispatcher();
 
 let main;
+let mounted = false;
+let isMounted = () => mounted;
 
 function mousedownTab(e, tab) {
 	if (e.button !== 0) {
@@ -96,6 +98,32 @@ function dragend(e) {
 	dropIndex = null;
 	dragging = false;
 }
+
+let tabButtons = new Map();
+
+function registerTabButton(node, tab) {
+	tabButtons.set(tab, node);
+	
+	return function() {
+		tabButtons.delete(tab);
+	}
+}
+
+async function scrollSelectedTabIntoView() {
+	await tick();
+	
+	tabButtons.get(selectedTab)?.scrollIntoView();
+}
+
+$: if (isMounted() && [tabs, selectedTab]) {
+	scrollSelectedTabIntoView();
+}
+
+onMount(function() {
+	mounted = true;
+	
+	scrollSelectedTabIntoView();
+});
 </script>
 
 <style type="text/scss">
@@ -162,7 +190,7 @@ button {
 	on:dragover={dragover}
 	on:drop={drop}
 >
-	{#each tabs as tab, i}
+	{#each tabs as tab, i (tab)}
 		{#if dropIndex === i}
 			<div id="dropMarker">
 				<div></div>
@@ -177,6 +205,7 @@ button {
 			draggable={reorderable}
 			on:dragstart={dragstart}
 			on:dragend={dragend}
+			use:registerTabButton={tab}
 		>
 			<div class="name">
 				{getDetails(tabs, tab).label}
