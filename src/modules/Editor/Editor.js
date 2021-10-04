@@ -10,6 +10,7 @@ let normalMouse = require("./normalMouse");
 let normalKeyboard = require("./normalKeyboard");
 let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
+let commonKeyboard = require("./commonKeyboard");
 let modeSwitchKey = require("./modeSwitchKey");
 let snippets = require("./snippets");
 let api = require("./api");
@@ -31,6 +32,7 @@ class Editor extends Evented {
 		this.normalKeyboard = bindFunctions(this, normalKeyboard);
 		this.astMouse = bindFunctions(this, astMouse);
 		this.astKeyboard = bindFunctions(this, astKeyboard);
+		this.commonKeyboard = bindFunctions(this, commonKeyboard);
 		
 		this.modeSwitchKey = modeSwitchKey(this);
 		
@@ -296,6 +298,10 @@ class Editor extends Evented {
 		return platform.prefs.astKeymap[keyCombo];
 	}
 	
+	willHandleCommonKeydown(keyCombo) {
+		return platform.prefs.commonKeymap[keyCombo];
+	}
+	
 	async normalKeydown(key, keyCombo, isModified) {
 		let fnName = platform.prefs.normalKeymap[keyCombo];
 		
@@ -321,7 +327,6 @@ class Editor extends Evented {
 	}
 	
 	async astKeydown(keyCombo) {
-		let handled = false;
 		let fnName = platform.prefs.astKeymap[keyCombo];
 		
 		if (!fnName) {
@@ -329,6 +334,19 @@ class Editor extends Evented {
 		}
 		
 		await this.astKeyboard[fnName]();
+		
+		this.view.ensureSelectionIsOnScreen();
+		this.view.redraw();
+	}
+	
+	async commonKeydown(keyCombo) {
+		let fnName = platform.prefs.commonKeymap[keyCombo];
+		
+		if (!fnName) {
+			return;
+		}
+		
+		await this.commonKeyboard[fnName]();
 		
 		this.view.ensureSelectionIsOnScreen();
 		this.view.redraw();

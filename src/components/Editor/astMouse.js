@@ -356,6 +356,10 @@ module.exports = function(document, editor, view, editorComponent) {
 			toSelection = null;
 		}
 		
+		if (fromUs && toUs && AstSelection.equals(fromSelection, toSelection)) {
+			return;
+		}
+		
 		editor.astMouse.drop(
 			fromSelection,
 			toSelection,

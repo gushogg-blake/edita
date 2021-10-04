@@ -473,6 +473,10 @@ module.exports = {
 		this.updateSnippetExpressions();
 	},
 	
+	cursorAfterSnippet() {
+		// place cursor after last snippet
+	},
+	
 	insert(key) {
 		let newBatchState = this.view.Selection.isFull() ? null : "typing";
 		

@@ -17,7 +17,18 @@ module.exports = {
 		this.setAstSelection(astCommon.selection.previous(this.document, this.view.astSelection));
 	},
 	
-	insert() {
+	insertAtEnd() {
+		
+	},
+	
+	insertAtBeginning() {
+	},
+	
+	insertBefore() {
+		
+	},
+	
+	insertAfter() {
 		
 	},
 	
@@ -72,5 +83,9 @@ module.exports = {
 	
 	wrap() {
 		this.astMode.commands.wrap();
+	},
+	
+	unwrap() {
+		
 	},
 };

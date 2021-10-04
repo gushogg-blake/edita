@@ -320,18 +320,18 @@ async function keydown(e) {
 	let {keyCombo, isModified} = getKeyCombo(e);
 	let {key} = e;
 	
-	if (view.mode === "normal") {
-		if (editor.willHandleNormalKeydown(key, keyCombo, isModified)) {
-			e.preventDefault();
-			
-			editor.normalKeydown(key, keyCombo, isModified);
-		}
-	} else if (view.mode === "ast") {
-		if (editor.willHandleAstKeydown(keyCombo)) {
-			e.preventDefault();
-			
-			editor.astKeydown(keyCombo);
-		}
+	if (view.mode === "normal" && editor.willHandleNormalKeydown(key, keyCombo, isModified)) {
+		e.preventDefault();
+		
+		editor.normalKeydown(key, keyCombo, isModified);
+	} else if (view.mode === "ast" && editor.willHandleAstKeydown(keyCombo)) {
+		e.preventDefault();
+		
+		editor.astKeydown(keyCombo);
+	} else if (editor.willHandleCommonKeydown(keyCombo)) {
+		e.preventDefault();
+		
+		editor.commonKeydown(keyCombo);
 	}
 }
 

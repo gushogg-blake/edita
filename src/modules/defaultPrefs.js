@@ -67,6 +67,7 @@ module.exports = function(systemInfo) {
 			"Ctrl+Space": "completeWord",
 			
 			"Alt+I": "insertAstClipboard",
+			"Alt+O": "cursorAfterSnippet",
 		},
 		
 		astKeymap: {
@@ -76,14 +77,23 @@ module.exports = function(systemInfo) {
 			"d": "down",
 			"j": "next",
 			"k": "previous",
-			"i": "insert",
-			"h": "collapseDown",
-			"l": "collapseUp",
+			"w": "wrap",
+			"u": "unwrap",
+			"i": "insertAtEnd",
+			"f": "insertAtBeginning",
+			"h": "insertBefore",
+			"l": "insertAfter",
+			//"h": "collapseDown",
+			//"l": "collapseUp",
 			//"e": "expandDown",
 			"a": "selectSelection",
 			"Space": "toggleSpaceBelow",
 			"Shift+Space": "toggleSpaceAbove",
-			"w": "wrap",
+		},
+		
+		commonKeymap: {
+			"Ctrl+2": "uncomment",
+			"Ctrl+3": "comment",
 		},
 		
 		globalKeymap: {
