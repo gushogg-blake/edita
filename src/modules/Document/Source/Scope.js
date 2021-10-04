@@ -39,63 +39,7 @@ module.exports = class Scope {
 				includedRanges: this.treeSitterRanges,
 			});
 			
-			for (let injection of this.lang.injections) {
-				let matches = injection.query.matches(this.tree.rootNode).map(function(match) {
-					let captures = {};
-					
-					for (let capture of match.captures) {
-						captures[capture.name] = capture.node;
-					}
-					
-					return captures;
-				}).filter(function(match) {
-					return match.injectionNode && match.injectionNode.text.length > 0;
-				});
-				
-				if (injection.combined) {
-					let injectionLang = base.langs.get(injection.lang);
-					
-					if (injectionLang) {
-						let nodes = matches.map(match => match.injectionNode);
-						let ranges = nodes.map(Range.fromNode);
-						let scope = new Scope(this, injectionLang, this.code, ranges);
-						
-						this.scopes.push(scope);
-						
-						for (let node of nodes) {
-							this.scopesByNode[node.id] = scope;
-						}
-						
-						for (let i = 0; i < nodes.length; i++) {
-							let node = nodes[i];
-							let range = ranges[i];
-							
-							this.scopeAndRangeByNode[node.id] = {
-								scope,
-								range,
-							};
-						}
-					}
-				} else {
-					for (let match of matches) {
-						let injectionLang = base.langs.get(injection.lang(match));
-						
-						if (injectionLang) {
-							let node = match.injectionNode;
-							let range = Range.fromNode(node);
-							let scope = new Scope(this, injectionLang, this.code, [range]);
-							
-							this.scopes.push(scope);
-							this.scopesByNode[node.id] = scope;
-							
-							this.scopeAndRangeByNode[node.id] = {
-								scope,
-								range,
-							};
-						}
-					}
-				}
-			}
+			this.processInjections();
 		} catch (e) {
 			console.error("Parse error");
 			console.error(e);
@@ -111,9 +55,6 @@ module.exports = class Scope {
 			string,
 			replaceWith,
 		} = edit;
-		
-		//console.log("Scope.edit: " + this.lang.code);
-		//console.log(edit, index, newRanges, code);
 		
 		this.code = code;
 		this.ranges = newRanges;
@@ -143,92 +84,121 @@ module.exports = class Scope {
 				includedRanges: this.treeSitterRanges,
 			});
 			
-			for (let injection of this.lang.injections) {
-				let matches = injection.query.matches(this.tree.rootNode).map(function(match) {
-					let captures = {};
-					
-					for (let capture of match.captures) {
-						captures[capture.name] = capture.node;
-					}
-					
-					return captures;
-				}).filter(function(match) {
-					return match.injectionNode && match.injectionNode.text.length > 0;
-				});
+			this.processInjections(function(injectionLang, firstRange) {
+				let {start} = firstRange.selection;
 				
-				if (injection.combined) {
-					let injectionLang = base.langs.get(injection.lang);
+				return existingScopes.find(function(scope) {
+					if (scope.lang !== injectionLang) {
+						return false;
+					}
 					
-					if (injectionLang) {
-						let nodes = matches.map(match => match.injectionNode);
-						let ranges = nodes.map(Range.fromNode);
-						
-						let existingScope = existingScopes.find(function(scope) {
-							return scope.lang === injectionLang && Cursor.equals(Selection.edit(s(scope.ranges[0].selection.start), selection, newSelection).start, ranges[0].selection.start);
-						});
-						
-						let scope;
-						
-						if (existingScope) {
-							existingScope.edit(edit, index, ranges, code);
-							
-							scope = existingScope;
-						} else {
-							scope = new Scope(this, injectionLang, this.code, ranges);
-						}
-						
-						this.scopes.push(scope);
-						
-						for (let node of nodes) {
-							this.scopesByNode[node.id] = scope;
-						}
-						
-						for (let i = 0; i < nodes.length; i++) {
-							let node = nodes[i];
-							let range = ranges[i];
-							
-							this.scopeAndRangeByNode[node.id] = {
-								scope,
-								range,
-							};
-						}
+					let existingStart = scope.ranges[0].selection.start;
+					let existingSelectionEdited = Selection.edit(s(existingStart), selection, newSelection);
+					
+					if (!existingSelectionEdited) {
+						return false;
 					}
-				} else {
-					for (let match of matches) {
-						let injectionLang = base.langs.get(injection.lang(match));
-						
-						if (injectionLang) {
-							let node = match.injectionNode;
-							let range = Range.fromNode(node);
-							
-							let existingScope = existingScopes.find(function(scope) {
-								return scope.lang === injectionLang && Cursor.equals(Selection.edit(s(scope.ranges[0].selection.start), selection, newSelection).start, range.selection.start);
-							});
-							
-							let scope;
-							
-							if (existingScope) {
-								existingScope.edit(edit, index, [range], code);
-								
-								scope = existingScope;
-							} else {
-								scope = new Scope(this, injectionLang, this.code, [range]);
-							}
-							
-							this.scopes.push(scope);
-							this.scopesByNode[node.id] = scope;
-							
-							this.scopeAndRangeByNode[node.id] = {
-								scope,
-								range,
-							};
-						}
-					}
-				}
-			}
+					
+					return Cursor.equals(start, existingSelectionEdited.start);
+				});
+			}, (existingScope, ranges) => {
+				existingScope.edit(edit, index, ranges, code);
+			});
 		} catch (e) {
 			console.error("Parse error");
 			console.error(e);
+		}
+	}
+	
+	processInjections(findExistingScope=null, editExistingScope=null) {
+		for (let injection of this.lang.injections) {
+			let matches = injection.query.matches(this.tree.rootNode).map(function(match) {
+				let captures = {};
+				
+				for (let capture of match.captures) {
+					captures[capture.name] = capture.node;
+				}
+				
+				return captures;
+			}).filter(function(match) {
+				return match.injectionNode && match.injectionNode.text.length > 0;
+			});
+			
+			if (injection.combined) {
+				let injectionLang = base.langs.get(injection.lang);
+				
+				if (!injectionLang) {
+					continue;
+				}
+				
+				let nodes = matches.map(match => match.injectionNode);
+				let ranges = nodes.map(Range.fromNode);
+				
+				let existingScope;
+				let scope;
+				
+				if (findExistingScope) {
+					existingScope = findExistingScope(injectionLang, ranges[0]);
+				}
+				
+				if (existingScope) {
+					editExistingScope(existingScope, ranges);
+					
+					scope = existingScope;
+				} else {
+					scope = new Scope(this, injectionLang, this.code, ranges);
+				}
+				
+				this.scopes.push(scope);
+				
+				for (let node of nodes) {
+					this.scopesByNode[node.id] = scope;
+				}
+				
+				for (let i = 0; i < nodes.length; i++) {
+					let node = nodes[i];
+					let range = ranges[i];
+					
+					this.scopeAndRangeByNode[node.id] = {
+						scope,
+						range,
+					};
+				}
+			} else {
+				for (let match of matches) {
+					let injectionLang = base.langs.get(injection.lang(match));
+					
+					if (!injectionLang) {
+						continue;
+					}
+					
+					let node = match.injectionNode;
+					let range = Range.fromNode(node);
+					
+					let existingScope;
+					let scope;
+					
+					if (findExistingScope) {
+						existingScope = findExistingScope(injectionLang, range);
+					}
+					
+					if (existingScope) {
+						editExistingScope(existingScope, [range]);
+						
+						scope = existingScope;
+					} else {
+						scope = new Scope(this, injectionLang, this.code, [range]);
+					}
+					
+					this.scopes.push(scope);
+					this.scopesByNode[node.id] = scope;
+					
+					this.scopeAndRangeByNode[node.id] = {
+						scope,
+						range,
+					};
+				}
+			}
 		}
 	}
 	
