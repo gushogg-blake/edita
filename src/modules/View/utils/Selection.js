@@ -218,6 +218,7 @@ module.exports = {
 	expandOrContractDown() {
 		let {wrappedLines} = this;
 		let {start, end} = this.normalSelection;
+		let {lineIndex} = end;
 		let [endRow, endCol] = this.rowColFromCursor(end);
 		
 		if (endRow === this.countRows() - 1) {
