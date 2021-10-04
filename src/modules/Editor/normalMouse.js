@@ -10,7 +10,7 @@ module.exports = {
 	},
 	
 	finishDrawingSelection() {
-		this.view.setNormalSelection(this.view.normalSelection);
+		this.setSelectionFromNormalMouse(this.view.normalSelection);
 	},
 	
 	setSelectionAndStartCursorBlink(selection) {
