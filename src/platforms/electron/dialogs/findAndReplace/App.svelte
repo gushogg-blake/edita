@@ -29,6 +29,12 @@ function keydown(e) {
 		functions[fnName]();
 	}
 }
+
+function done({detail: result}) {
+	if (result) {
+		window.close();
+	}
+}
 </script>
 
 <svelte:window on:keydown={keydown}/>
@@ -37,4 +43,5 @@ function keydown(e) {
 	{options}
 	{findAndReplace}
 	on:resize={({detail: contentHeight}) => window.resizeTo(window.innerWidth, contentHeight)}
+	on:done={done}
 />

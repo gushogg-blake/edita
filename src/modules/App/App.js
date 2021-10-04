@@ -152,10 +152,22 @@ class App extends Evented {
 		}
 	}
 	
+	showPane(name) {
+		this.setPaneVisibility(name, true);
+	}
+	
+	hidePane(name) {
+		this.setPaneVisibility(name, false);
+	}
+	
 	togglePane(name) {
-		this.panes[name].show = !this.panes[name].show;
+		this.setPaneVisibility(name, !this.panes[name].show);
+	}
+	
+	setPaneVisibility(name, visible) {
+		this.panes[name].show = visible;
 		
-		platform.setPref("panes." + name + ".show", this.panes[name].show);
+		platform.setPref("panes." + name + ".show", visible);
 		
 		this.fire("updatePanes");
 	}

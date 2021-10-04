@@ -129,8 +129,6 @@ class FindAndReplace {
 		
 		let allResults = [];
 		
-		debugger
-		
 		for (let document of documents) {
 			allResults = [...allResults, ...document.findAll(findAndReplaceOptions)];
 		}

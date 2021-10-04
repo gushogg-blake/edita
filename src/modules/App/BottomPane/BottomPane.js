@@ -23,7 +23,6 @@ class BottomPane extends Evented {
 	}
 	
 	selectTab(tab) {
-		console.log(tab);
 		this.selectedTab = tab;
 		
 		this.fire("selectTab");
@@ -33,6 +32,8 @@ class BottomPane extends Evented {
 		this.findResults.add(results);
 		
 		this.selectTab(this.tabsById.findResults);
+		
+		this.app.showPane("bottom");
 	}
 }
 
