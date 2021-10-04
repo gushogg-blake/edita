@@ -62,10 +62,6 @@ module.exports = class Scope {
 		
 		let existingScopes = this.scopes;
 		
-		this.scopes = [];
-		this.scopesByNode = {};
-		this.scopeAndRangeByNode = {};
-		
 		try {
 			let parser = new TreeSitter();
 			
@@ -111,6 +107,10 @@ module.exports = class Scope {
 	}
 	
 	processInjections(findExistingScope=null, editExistingScope=null) {
+		this.scopes = [];
+		this.scopesByNode = {};
+		this.scopeAndRangeByNode = {};
+		
 		for (let injection of this.lang.injections) {
 			let matches = injection.query.matches(this.tree.rootNode).map(function(match) {
 				let captures = {};
