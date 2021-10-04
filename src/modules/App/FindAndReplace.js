@@ -3,21 +3,6 @@ let findAndReplace = require("modules/findAndReplace");
 let Document = require("modules/Document");
 let {FileIsBinary} = require("modules/errors");
 
-/*
-caseMode: "caseSensitive"
-excludePatterns: ""
-search: ""
-includePatterns: ""
-multiline: false
-paths: ["/home/gus/projects/editor/src"]
-regex: false
-replace: false
-replaceWith: ""
-searchIn: "currentDocument"
-searchInSubDirs: true
-word: false
-*/
-
 function getFindAndReplaceOptions(options) {
 	let {
 		search,
