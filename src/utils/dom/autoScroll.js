@@ -55,7 +55,7 @@ module.exports = function(offsets, handler) {
 		mouseup();
 	}
 	
-	ticker = setInterval(tick, 300);
+	ticker = setInterval(tick, 150);
 	
 	on(window, "mousemove", mousemove);
 	on(window, "dragover", dragover);
