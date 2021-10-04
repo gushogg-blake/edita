@@ -9,6 +9,7 @@ let {fileTree} = app;
 
 let dirSelector;
 let {rootEntry} = fileTree;
+let background;
 
 function onUpdateRootDir() {
 	({rootEntry} = fileTree);
@@ -40,6 +41,14 @@ function wheel(e) {
 	if (e.deltaY > 0) {
 		fileTree.up();
 	}
+}
+
+function dblclickBackground(e) {
+	if (e.target !== background) {
+		return;
+	}
+	
+	fileTree.setRootDir(rootEntry.node.parent.path);
 }
 
 onMount(async function() {
@@ -96,7 +105,11 @@ onMount(async function() {
 			{/if}
 		</div>
 		<div id="list" on:wheel={wheel}>
-			<div id="scroll">
+			<div
+				bind:this={background}
+				id="scroll"
+				on:dblclick={dblclickBackground}
+			>
 				<FileTree/>
 			</div>
 		</div>
