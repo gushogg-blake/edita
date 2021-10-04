@@ -60,6 +60,10 @@ module.exports = class Scope {
 		this.ranges = newRanges;
 		this.treeSitterRanges = this.ranges.map(Range.toTreeSitterRange);
 		
+		if (!this.tree) {
+			return this.parse();
+		}
+		
 		let existingScopes = this.scopes;
 		
 		try {
