@@ -5,8 +5,12 @@ let {s} = Selection;
 let {c} = Cursor;
 
 module.exports = {
-	setSelection(selection) {
-		this.setSelectionFromNormalMouse(selection);
+	drawSelection(selection) {
+		this.view.normalSelection = selection;
+	},
+	
+	finishDrawingSelection() {
+		this.view.setNormalSelection(this.view.normalSelection);
 	},
 	
 	setSelectionAndStartCursorBlink(selection) {

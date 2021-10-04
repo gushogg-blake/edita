@@ -109,7 +109,7 @@ module.exports = function(document, editor, view, editorComponent) {
 	function drawSelection(e) {
 		let cursor = getCursor(e);
 		
-		editor.normalMouse.setSelection({
+		editor.normalMouse.drawSelection({
 			start: view.normalSelection.start,
 			end: cursor,
 		});
@@ -126,6 +126,7 @@ module.exports = function(document, editor, view, editorComponent) {
 	function mouseup() {
 		if (view.Selection.isFull()) {
 			editor.normalMouse.setSelectionClipboard();
+			editor.normalMouse.finishDrawingSelection();
 		}
 		
 		editorComponent.mouseup();
