@@ -363,9 +363,12 @@ module.exports = {
 				newSelection,
 			} = this.document.replaceSelection(selection, nextWord);
 			
+			let edits = [edit];
+			
 			this.applyAndAddHistoryEntry({
-				edits: [edit],
+				edits,
 				normalSelection: newSelection,
+				snippetSession: this.adjustSnippetSession(edits),
 			});
 			
 			this.updateSnippetExpressions();
@@ -394,9 +397,12 @@ module.exports = {
 						newSelection,
 					} = this.document.replaceSelection(selection, currentWord);
 					
+					let edits = [edit];
+					
 					this.applyAndAddHistoryEntry({
-						edits: [edit],
+						edits,
 						normalSelection: newSelection,
+						snippetSession: this.adjustSnippetSession(edits),
 					});
 					
 					this.updateSnippetExpressions();
