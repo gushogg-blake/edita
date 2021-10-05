@@ -4,6 +4,10 @@ class AtLiteral {
 		this.start = start
 		this.end = end;
 	}
+	
+	getDefaultValue(context) {
+		return "@";
+	}
 }
 
 module.exports = AtLiteral;

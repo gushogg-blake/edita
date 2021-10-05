@@ -16,18 +16,6 @@ the document.  discarded and re-created with updated selections to reflect
 edits.  new positions still point to the same underlying placeholders
 */
 
-function getDefaultValue(placeholder, context) {
-	let {type} = placeholder;
-	
-	if (type === "tabstop") {
-		return placeholder.getDefaultValue(context);
-	} else if (type === "expression") {
-		return placeholder.getValue(context);
-	} else if (type === "atLiteral") {
-		return "@";
-	}
-}
-
 function getContextFromPositions(document, positions) {
 	let context = {};
 	
@@ -46,11 +34,19 @@ function getCurrentValue(document, position) {
 	return document.getSelectedText(position.selection);
 }
 
-function sessionFromPositions(positions) {
-	return positions.length > 0 ? {
-		index: 0,
+function isTabstop(position) {
+	return position.placeholder.type === "tabstop";
+}
+
+function sessionFromPositions(positions, tabstops, firstTabstopIndex) {
+	return tabstops.length > 0 ? {
+		index: firstTabstopIndex,
 		positions,
 	} : null;
+}
+
+function initNormalSelectionFromPositions(positions, tabstops) {
+	return tabstops.length > 0 ? tabstops[0].selection : positions[positions.length - 1].selection;
 }
 
 let api = {
@@ -73,6 +69,8 @@ let api = {
 		let {
 			replacedString,
 			positions,
+			tabstops,
+			firstTabstopIndex,
 		} = createPositions(indentedSnippetText, editSelection.start.lineIndex, editSelection.start.offset);
 		
 		let {end: endCursor} = document.getSelectionContainingString(editSelection.start, replacedString);
@@ -81,23 +79,25 @@ let api = {
 		
 		editor.applyAndAddHistoryEntry({
 			edits: [insertEdit],
-			normalSelection: positions.length > 0 ? positions[0].selection : s(endCursor),
-			snippetSession: sessionFromPositions(positions),
+			normalSelection: initNormalSelectionFromPositions(positions, tabstops),
+			snippetSession: sessionFromPositions(positions, tabstops, firstTabstopIndex),
 		});
 		
-		if (positions.length > 0) {
+		if (positions.length > 1) { // there's always an end marker
 			let defaultValueEdits;
 			
 			({
 				positions,
+				tabstops,
+				firstTabstopIndex,
 				edits: defaultValueEdits,
 			} = api.setDefaultValues(document, positions));
 			
 			if (defaultValueEdits.length > 0) {
 				editor.applyAndMergeWithLastHistoryEntry({
 					edits: defaultValueEdits,
-					normalSelection: positions[0].selection,
-					snippetSession: sessionFromPositions(positions),
+					normalSelection: initNormalSelectionFromPositions(positions, tabstops),
+					snippetSession: sessionFromPositions(positions, tabstops, firstTabstopIndex),
 				});
 			}
 			
@@ -105,14 +105,16 @@ let api = {
 			
 			({
 				positions,
+				tabstops,
+				firstTabstopIndex,
 				edits: computeExpressionEdits,
 			} = api.computeExpressions(document, positions));
 			
 			if (computeExpressionEdits.length > 0) {
 				editor.applyAndMergeWithLastHistoryEntry({
 					edits: computeExpressionEdits,
-					normalSelection: positions[0].selection,
-					snippetSession: sessionFromPositions(positions),
+					normalSelection: initNormalSelectionFromPositions(positions, tabstops),
+					snippetSession: sessionFromPositions(positions, tabstops, firstTabstopIndex),
 				});
 			}
 		}
@@ -127,7 +129,7 @@ let api = {
 		
 		for (let i = 0; i < positions.length; i++) {
 			let position = positions[i];
-			let value = getDefaultValue(position.placeholder, context);
+			let value = position.placeholder.getDefaultValue(context);
 			
 			if (value !== "") { // we know the current text is "" as all positions start off empty
 				let edit = document.edit(position.selection, value);
@@ -146,6 +148,8 @@ let api = {
 		
 		return {
 			positions,
+			tabstops: positions.filter(isTabstop),
+			firstTabstopIndex: positions.findIndex(isTabstop),
 			edits,
 		};
 	},
@@ -184,6 +188,8 @@ let api = {
 		
 		return {
 			positions,
+			tabstops: positions.filter(isTabstop),
+			firstTabstopIndex: positions.findIndex(isTabstop),
 			edits,
 		};
 	},
@@ -214,7 +220,7 @@ let api = {
 			if (placeholder.type === "tabstop" && selection) {
 				return {
 					position,
-					session: index < positions.length - 1 ? {index, positions} : null,
+					session: {index, positions},
 				};
 			}
 		}

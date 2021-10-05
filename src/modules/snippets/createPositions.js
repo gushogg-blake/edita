@@ -116,7 +116,12 @@ module.exports = function(string, baseLineIndex=0, baseOffset=0) {
 	let indexOffset = 0;
 	let document = new Document(replacedString);
 	
-	let positions = placeholders.map(function(placeholder) {
+	let positions = [];
+	let tabstops = [];
+	let firstTabstopIndex = null;
+	
+	for (let i = 0; i < placeholders.length; i++) {
+		let placeholder = placeholders[i];
 		let indexInReplacedString = placeholder.start - indexOffset;
 		
 		indexOffset += placeholder.end - placeholder.start;
@@ -128,14 +133,26 @@ module.exports = function(string, baseLineIndex=0, baseOffset=0) {
 			lineIndex === 0 ? baseOffset + offset : offset,
 		);
 		
-		return {
+		let position = {
 			placeholder,
 			selection: s(cursor),
 		};
-	});
+		
+		positions.push(position);
+		
+		if (placeholder.type === "tabstop") {
+			tabstops.push(position);
+			
+			if (firstTabstopIndex === null) {
+				firstTabstopIndex = i;
+			}
+		}
+	}
 	
 	return {
 		replacedString,
 		positions,
+		tabstops,
+		firstTabstopIndex,
 	};
 }

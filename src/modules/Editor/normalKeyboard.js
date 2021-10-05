@@ -269,12 +269,12 @@ module.exports = {
 			this.clearSnippetSession();
 		}
 		
-		if (this.snippetSession) {
+		if (snippet) {
+			this.insertSnippet(snippet, snippet.name);
+		} else if (this.snippetSession) {
 			this.nextTabstop();
 		} else if (this.astMode.multiStepCommandWaitingForReturnToAstMode) {
 			this.astMode.multiStepCommandReturnToAstMode();
-		} else if (snippet) {
-			this.insertSnippet(snippet, snippet.name);
 		} else if (this.view.Selection.isMultiline()) {
 			this.indentSelection();
 		} else {

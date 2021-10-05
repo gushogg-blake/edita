@@ -11,6 +11,10 @@ class Expression {
 	getValue(context) {
 		return this.fn(functions, context);
 	}
+	
+	getDefaultValue(context) {
+		return this.getValue(context);
+	}
 }
 
 module.exports = Expression;
