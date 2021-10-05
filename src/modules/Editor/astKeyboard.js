@@ -86,6 +86,6 @@ module.exports = {
 	},
 	
 	unwrap() {
-		
+		this.astMode.commands.unwrap();
 	},
 };

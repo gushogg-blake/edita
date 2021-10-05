@@ -15,7 +15,7 @@ module.exports = function(systemInfo) {
 		astSelectionHiliteBackground: "#F2F2F2",
 		astInsertionHiliteBackground: "#606060",
 		
-		wrap: true,
+		wrap: false,
 		
 		modeSwitchKey: "Escape",
 		minHoldTime: 200,
@@ -68,6 +68,9 @@ module.exports = function(systemInfo) {
 			
 			"Alt+I": "insertAstClipboard",
 			"Alt+O": "cursorAfterSnippet",
+			
+			"Alt+W": "wrap",
+			"Alt+U": "unwrap",
 		},
 		
 		astKeymap: {
@@ -180,7 +183,7 @@ module.exports = function(systemInfo) {
 			},
 			
 			bottom: {
-				show: true,
+				show: false,
 				size: 240,
 			},
 		},

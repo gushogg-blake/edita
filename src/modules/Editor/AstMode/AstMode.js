@@ -14,6 +14,10 @@ let commands = {
 	wrap() {
 		this.startMultiStepCommand(new multiStepCommands.Wrap(this));
 	},
+	
+	unwrap() {
+		
+	},
 };
 
 class AstMode extends Evented {

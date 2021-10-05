@@ -472,22 +472,6 @@ module.exports = {
 		this.clearBatchState();
 	},
 	
-	insertAstClipboard() {
-		this.astMode.pasteFromNormalMode();
-		
-		this.updateSnippetExpressions();
-	},
-	
-	cursorAfterSnippet() {
-		if (!this.snippetSession) {
-			return;
-		}
-		
-		let {positions} = this.snippetSession;
-		
-		this.setSelectionFromNormalKeyboard(positions[positions.length - 1].selection);
-	},
-	
 	insert(key) {
 		let newBatchState = this.view.Selection.isFull() ? null : "typing";
 		
@@ -544,5 +528,30 @@ module.exports = {
 		
 		this.updateSnippetExpressions();
 		this.setBatchState(newBatchState);
+	},
+	
+	insertAstClipboard() {
+		this.astMode.pasteFromNormalMode();
+		
+		this.updateSnippetExpressions();
+	},
+	
+	cursorAfterSnippet() {
+		if (!this.snippetSession) {
+			return;
+		}
+		
+		let {positions} = this.snippetSession;
+		
+		this.setSelectionFromNormalKeyboard(positions[positions.length - 1].selection);
+		this.clearSnippetSession();
+	},
+	
+	wrap() {
+		this.astMode.commands.wrap();
+	},
+	
+	unwrap() {
+		this.astMode.commands.unwrap();
 	},
 };
