@@ -97,13 +97,16 @@ class AstMode extends Evented {
 		
 		let edit = document.astEdit(astSelection, insertLines);
 		
+		let edits = [edit];
+		
 		let {lineIndex, offset} = edit.newSelection.end;
 		let cursor = c(lineIndex - 1, insertLines[insertLines.length - 1].length);
 		let newSelection = Selection.s(cursor);
 		
 		editor.applyAndAddHistoryEntry({
-			edits: [edit],
+			edits,
 			normalSelection: newSelection,
+			snippetSession: editor.adjustSnippetSession(edits),
 		});
 		
 		let paste = {

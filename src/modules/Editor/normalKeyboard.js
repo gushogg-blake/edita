@@ -123,9 +123,12 @@ module.exports = {
 			newSelection,
 		} = document.replaceSelection(selection, newline + indent);
 		
+		let edits = [edit];
+		
 		this.applyAndAddHistoryEntry({
-			edits: [edit],
+			edits,
 			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
 		});
 		
 		this.updateSnippetExpressions();
@@ -304,8 +307,6 @@ module.exports = {
 				edits: [edit],
 				normalSelection: newSelection,
 			});
-			
-			this.updateSnippetExpressions();
 		}
 		
 		this.clearBatchState();
@@ -316,8 +317,6 @@ module.exports = {
 			this.prevTabstop();
 		} else if (this.view.Selection.isMultiline()) {
 			this.dedentSelection();
-			
-			this.updateSnippetExpressions();
 		}
 		
 		this.clearBatchState();
@@ -434,9 +433,12 @@ module.exports = {
 			newSelection,
 		} = this.document.replaceSelection(this.view.normalSelection, "");
 		
+		let edits = [edit];
+		
 		this.applyAndAddHistoryEntry({
-			edits: [edit],
+			edits,
 			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
 		});
 		
 		this.updateSnippetExpressions();
@@ -458,9 +460,12 @@ module.exports = {
 			newSelection,
 		} = this.document.replaceSelection(this.view.normalSelection, await platform.clipboard.read());
 		
+		let edits = [edit];
+		
 		this.applyAndAddHistoryEntry({
-			edits: [edit],
+			edits,
 			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
 		});
 		
 		this.updateSnippetExpressions();
@@ -474,7 +479,13 @@ module.exports = {
 	},
 	
 	cursorAfterSnippet() {
-		// place cursor after last snippet
+		if (!this.snippetSession) {
+			return;
+		}
+		
+		let {positions} = this.snippetSession;
+		
+		this.setSelectionFromNormalKeyboard(positions[positions.length - 1].selection);
 	},
 	
 	insert(key) {

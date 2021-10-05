@@ -20,10 +20,8 @@ function getContextFromPositions(document, positions) {
 	let context = {};
 	
 	for (let position of positions) {
-		let {placeholder} = position;
-		
-		if (placeholder.type === "tabstop") {
-			context[placeholder.name] = getCurrentValue(document, position);
+		if (isActiveTabstop(position)) {
+			context[position.placeholder.name] = getCurrentValue(document, position);
 		}
 	}
 	
@@ -34,8 +32,10 @@ function getCurrentValue(document, position) {
 	return document.getSelectedText(position.selection);
 }
 
-function isTabstop(position) {
-	return position.placeholder.type === "tabstop";
+function isActiveTabstop(position) {
+	let {placeholder, selection} = position;
+	
+	return placeholder.type === "tabstop" && selection;
 }
 
 function sessionFromPositions(positions, tabstops, firstTabstopIndex) {
@@ -148,8 +148,8 @@ let api = {
 		
 		return {
 			positions,
-			tabstops: positions.filter(isTabstop),
-			firstTabstopIndex: positions.findIndex(isTabstop),
+			tabstops: positions.filter(isActiveTabstop),
+			firstTabstopIndex: positions.findIndex(isActiveTabstop),
 			edits,
 		};
 	},
@@ -188,8 +188,8 @@ let api = {
 		
 		return {
 			positions,
-			tabstops: positions.filter(isTabstop),
-			firstTabstopIndex: positions.findIndex(isTabstop),
+			tabstops: positions.filter(isActiveTabstop),
+			firstTabstopIndex: positions.findIndex(isActiveTabstop),
 			edits,
 		};
 	},
@@ -233,6 +233,10 @@ let api = {
 		
 		positions = positions.map(function(position, i) {
 			let {selection} = position;
+			
+			if (!selection) {
+				return position;
+			}
 			
 			for (let edit of edits) {
 				let {

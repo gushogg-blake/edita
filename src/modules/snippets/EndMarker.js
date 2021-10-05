@@ -1,7 +1,8 @@
 class EndMarker {
-	constructor(index) {
+	constructor(length) {
 		this.type = "endMarker";
-		this.index = index;
+		this.start = length;
+		this.end = length;
 	}
 	
 	getDefaultValue(context) {

@@ -6,6 +6,7 @@ let createExpressionFunction = require("./createExpressionFunction");
 let Tabstop = require("./Tabstop");
 let Expression = require("./Expression");
 let AtLiteral = require("./AtLiteral");
+let EndMarker = require("./EndMarker");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -90,6 +91,8 @@ function getPlaceholders(string) {
 			i++;
 		}
 	}
+	
+	placeholders.push(new EndMarker(string.length));
 	
 	return placeholders;
 }
