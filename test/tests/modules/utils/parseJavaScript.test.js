@@ -1,7 +1,7 @@
 let {is, deep} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 
-let parseJavaScript = require("modules/utils/parseJavaScript");
+let parseJavaScript = require("modules/snippets/parseJavaScript");
 
 console.log(parseJavaScript);
 

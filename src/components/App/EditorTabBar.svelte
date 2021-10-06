@@ -1,5 +1,5 @@
 <script>
-import {onMount, getContext} from "svelte";
+import {onMount, getContext, tick} from "svelte";
 import TabBar from "components/TabBar.svelte";
 
 let app = getContext("app");
@@ -54,7 +54,7 @@ function updateTabs() {
 	tabs = app.tabs;
 }
 
-function onSelectTab() {
+async function onSelectTab() {
 	selectedTab = app.selectedTab;
 }
 

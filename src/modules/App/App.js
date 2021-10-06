@@ -79,7 +79,7 @@ class App extends Evented {
 		this.selectedTab = tab;
 		
 		tab.editor.view.show();
-		tab.editor.view.focus();
+		tab.editor.view.requestFocus();
 		
 		this.updateTitle();
 		

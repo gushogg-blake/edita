@@ -523,7 +523,7 @@ function onFocus() {
 }
 
 function onBlur() {
-	if (editorMode === "textarea") {
+	if (editorMode === "textarea" || platform.useSystemFocus) {
 		view.blur();
 	}
 }

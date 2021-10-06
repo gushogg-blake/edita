@@ -15,7 +15,8 @@ import preprocess from "svelte-preprocess";
 import builtins from "rollup-plugin-node-builtins";
 import globals from "rollup-plugin-node-globals";
 
-let production = !process.env.ROLLUP_WATCH;
+let prod = !process.env.ROLLUP_WATCH;
+let dev = !prod;
 let root = __dirname;
 let platform = process.env.PLATFORM;
 
@@ -40,7 +41,7 @@ function commonPlugins(platform) {
 			}),
 			
 			compilerOptions: {
-				dev: !production,
+				dev,
 			},
 		}),
 		
@@ -117,7 +118,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		input: "src/platforms/electron/main.js",
 		
 		output: {
-			sourcemap: true,
+			sourcemap: dev,
 			format: "iife",
 			file: "src/platforms/electron/public/build/main.js",
 		},
@@ -129,7 +130,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		input: "src/platforms/electron/dialogs/snippetEditor/main.js",
 		
 		output: {
-			sourcemap: true,
+			sourcemap: dev,
 			format: "iife",
 			file: "src/platforms/electron/public/build/dialogs/snippetEditor/main.js",
 		},
@@ -141,7 +142,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		input: "src/platforms/electron/dialogs/findAndReplace/main.js",
 		
 		output: {
-			sourcemap: true,
+			sourcemap: dev,
 			format: "iife",
 			file: "src/platforms/electron/public/build/dialogs/findAndReplace/main.js",
 		},
@@ -157,17 +158,17 @@ if (!platform || platform === "all" || platform === "web") {
 		input: "src/platforms/web/main.js",
 		
 		output: {
-			sourcemap: true,
+			sourcemap: dev,
 			format: "iife",
 			name: "editor",
-			file: "src/platforms/web/public/build/main.js",
+			file: "src/platforms/web/public/build/" + (dev ? "main.js" : "editor.min.js"),
 		},
 		
 		plugins: [
 			...commonPlugins("web"),
 			commonjs(),
-			!production && livereload("src/platforms/web/public"),
-			production && terser(),
+			dev && livereload("src/platforms/web/public"),
+			prod && terser(),
 		],
 		
 		onwarn,

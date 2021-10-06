@@ -36,6 +36,7 @@ class Platform extends Evented {
 		options = {
 			init: null,
 			localStoragePrefix: "editor.",
+			useSystemFocus: true,
 			...options,
 		};
 		
@@ -94,6 +95,16 @@ class Platform extends Evented {
 	
 	showContextMenu(e, items) {
 		
+	}
+	
+	showContextMenuForElement(element, items) {
+		let {x, y, height} = screenOffsets(element);
+		
+		ipc.contextMenu(items, {x, y: y + height});
+	}
+	
+	get useSystemFocus() {
+		return this.options.useSystemFocus;
 	}
 	
 	handleIpcMessages(channel, handler) {
