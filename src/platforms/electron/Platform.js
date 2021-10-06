@@ -36,6 +36,8 @@ class Platform extends Evented {
 		this.walk = walk;
 		this.fs = fs;
 		
+		this.useFileUploader = false;
+		
 		ipc.prefs.on("update", this.onPrefsUpdate.bind(this));
 		
 		ipcRenderer.on("closeWindow", () => {

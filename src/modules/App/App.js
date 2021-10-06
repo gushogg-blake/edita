@@ -242,6 +242,21 @@ class App extends Evented {
 		return tab;
 	}
 	
+	async openFilesFromUpload(files) {
+		await bluebird.map(files, async ({name, code}) => {
+			let path = "/" + name;
+			let node = platform.fs(path);
+			
+			if (await node.exists()) {
+				await node.rename(node.basename + "-" + Date.now() + node.extension);
+			}
+			
+			await node.write(code);
+			
+			await this.openFile(path, code);
+		});
+	}
+	
 	newFile() {
 		let tab = this.createTab("", null);
 		

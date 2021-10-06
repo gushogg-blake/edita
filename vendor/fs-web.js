@@ -224,4 +224,8 @@ module.exports = {
 	readdir,
 	mkdir,
 	rmdir,
+	stat,
+	rename,
+	copy,
+	exists,
 };

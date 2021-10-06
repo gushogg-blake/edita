@@ -1,7 +1,12 @@
 <script>
 import {getContext} from "svelte";
+import FileInput from "components/utils/FileInput.svelte";
 
 let app = getContext("app");
+
+function upload({detail: files}) {
+	app.openFilesFromUpload(files);
+}
 </script>
 
 <style type="text/scss">
@@ -28,9 +33,13 @@ button {
 	<button on:click={() => app.functions._new()}>
 		New
 	</button>
-	<button on:click={() => app.functions.open()}>
-		Open
-	</button>
+	{#if platform.useFileUploader}
+		<FileInput on:upload={upload}/>
+	{:else}
+		<button on:click={() => app.functions.open()}>
+			Open
+		</button>
+	{/if}
 	<button on:click={() => app.functions.save()}>
 		Save
 	</button>

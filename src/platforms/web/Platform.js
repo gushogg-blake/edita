@@ -10,6 +10,7 @@ let fsWeb = require("vendor/fs-web");
 let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");
 let parentNodes = require("utils/dom/parentNodes");
+let {on} = require("utils/dom/domEvents");
 let defaultPrefs = require("modules/defaultPrefs");
 let contextMenu = require("modules/contextMenu");
 
@@ -28,11 +29,12 @@ class Platform extends Evented {
 			multiPathSeparator: ":",
 		};
 		
-		this.isMainWindow = true;
-		
 		this.clipboard = clipboard;
+		this.isMainWindow = true;
 		this.path = path;
 		this.walk = null;
+		
+		this.useFileUploader = true;
 	}
 	
 	async init(options) {
@@ -62,7 +64,7 @@ class Platform extends Evented {
 			await options.init();
 		}
 		
-		document.body.addEventListener("contextmenu", function(e) {
+		on(document.body, "contextmenu", function(e) {
 			for (let node of parentNodes(e.target)) {
 				if (node.classList.contains("editor")) {
 					e.preventDefault();
