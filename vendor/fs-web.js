@@ -14,17 +14,6 @@ function ab2str(buf) {
 	return String.fromCharCode.apply(null, new Uint16Array(buf));
 }
 
-function str2ab(str) {
-	let buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-	let bufView = new Uint16Array(buf);
-	
-	for (let i = 0, strLen = str.length; i < strLen; i++) {
-		bufView[i] = str.charCodeAt(i);
-	}
-	
-	return buf;
-}
-
 let DB_NAME = window.location.host + "_filesystem";
 let OS_NAME = "files";
 let DIR_IDX = "dir";
@@ -53,18 +42,18 @@ function initOS(type, callback) {
 	});
 }
 
-let readFrom = function(fileName) {
+function readEntry(fullPath) {
 	return new Promise(function(resolve, reject) {
 		initOS("readonly", function(os) {
-			let req = os.get(fileName);
+			let req = os.get(fullPath);
 			
 			req.onerror = reject;
 			
 			req.onsuccess = function(e) {
 				let res = e.target.result;
 				
-				if (res && res.data) {
-					resolve(res.data);
+				if (res) {
+					resolve(res);
 				} else {
 					reject("File not found");
 				}
@@ -74,7 +63,9 @@ let readFrom = function(fileName) {
 }
 
 function readFile(fileName) {
-	return readFrom(fileName).then(function(data) {
+	return readEntry(fileName).then(function(entry) {
+		let {data} = entry;
+		
 		if (data instanceof ArrayBuffer) {
 			data = ab2str(data);
 		}
@@ -190,10 +181,46 @@ function rmdir(fullPath) {
 	});
 }
 
+async function stat(fullPath) {
+	let entry = await readEntry(fullPath);
+	
+	return {
+		isFile() {
+			return entry.type === "file";
+		},
+		
+		isDirectory() {
+			return entry.type === "directory";
+		},
+	};
+}
+
+async function rename(oldPath, newPath) {
+	let data = await readFile(oldPath);
+	
+	await removeFile(oldPath);
+	await writeFile(newPath, data);
+}
+
+async function copy(src, dest) {
+	await writeFile(dest, await readFile(src));
+}
+
+async function exists(fullPath) {
+	try {
+		await readEntry(fullPath);
+		
+		return true;
+	} catch (e) {
+		return false;
+	}
+}
+
 module.exports = {
 	readFile,
 	writeFile,
-	removeFile,
+	remove: removeFile,
+	unlink: removeFile,
 	readdir,
 	mkdir,
 	rmdir,

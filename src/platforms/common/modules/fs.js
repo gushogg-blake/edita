@@ -144,10 +144,6 @@ module.exports = function(backends) {
 			return fs.stat(this.path);
 		}
 		
-		lstat() {
-			return fs.lstat(this.path);
-		}
-		
 		async _delete(ignoreEnoent=false) {
 			try {
 				if (await this.isDir()) {
