@@ -30,6 +30,8 @@ function keydown(e) {
 	let {keyCombo} = getKeyCombo(e);
 	
 	if (platform.prefs.globalKeymap[keyCombo]) {
+		e.preventDefault();
+		
 		app.functions[platform.prefs.globalKeymap[keyCombo]]();
 	}
 }

@@ -1,4 +1,3 @@
-//let fsWeb = require("fs-web/dist/fs");
 let minimatch = require("minimatch-browser");
 let bluebird = require("bluebird");
 let get = require("lodash.get");
@@ -75,16 +74,14 @@ class Platform extends Evented {
 		});
 	}
 	
-	async open(defaultPath, currentPath) {
-		
-	}
-	
 	async save(path, code) {
-		
+		await this.fs(path).write(code);
 	}
 	
-	async saveAs() {
+	saveAs() {
+		let name = prompt("Filename:") || null;
 		
+		return name ? "/" + name : null;
 	}
 	
 	async filesFromDropEvent(e) {
