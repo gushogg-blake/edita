@@ -10,6 +10,8 @@ let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");
 let parentNodes = require("utils/dom/parentNodes");
 let {on} = require("utils/dom/domEvents");
+let loadScript = require("utils/dom/loadScript");
+let loadCss = require("utils/dom/loadCss");
 let defaultPrefs = require("modules/defaultPrefs");
 let contextMenu = require("modules/contextMenu");
 
@@ -38,6 +40,7 @@ class Platform extends Evented {
 	
 	async init(options) {
 		options = {
+			resourcePrefix: "",
 			init: null,
 			localStoragePrefix: "editor.",
 			useSystemFocus: true,
@@ -45,6 +48,12 @@ class Platform extends Evented {
 		};
 		
 		this.options = options;
+		
+		await Promise.all([
+			loadCss(options.resourcePrefix + "/global.css"),
+			loadCss(options.resourcePrefix + "/main.css"),
+			loadScript(options.resourcePrefix + "/vendor/tree-sitter/tree-sitter.js"),
+		]);
 		
 		this.fs = fs({
 			fs: fsWeb,
@@ -132,7 +141,7 @@ class Platform extends Evented {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load("./vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
+		return TreeSitter.Language.load(this.options.resourcePrefix + "/vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
 	}
 	
 	getPref(key) {

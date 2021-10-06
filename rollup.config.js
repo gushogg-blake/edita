@@ -88,23 +88,20 @@ function onwarn() {
 	
 }
 
-function globalCssBuild(platform) {
+function globalCssBuild(path) {
 	return {
 		input: "src/css/globalCss.js",
 		
 		output: {
 			format: "iife",
-			file: "src/platforms/" + platform + "/public/build/global.js",
+			file: path,
 		},
 		
 		plugins: [
 			scss(),
 			
 			_delete({
-				targets: [
-					"src/platforms/" + platform + "/public/build/global.js",
-				],
-				
+				targets: [path],
 				hook: "buildEnd",
 			}),
 		],
@@ -114,7 +111,7 @@ function globalCssBuild(platform) {
 let builds = [];
 
 if (!platform || platform === "all" || platform === "electron") {
-	builds.push(globalCssBuild("electron"), {
+	builds.push(globalCssBuild("src/platforms/electron/public/build/global.js"), {
 		input: "src/platforms/electron/main.js",
 		
 		output: {
@@ -154,14 +151,14 @@ if (!platform || platform === "all" || platform === "electron") {
 }
 
 if (!platform || platform === "all" || platform === "web") {
-	builds.push(globalCssBuild("web"), {
+	builds.push(globalCssBuild("src/platforms/web/public/editor/global.js"), {
 		input: "src/platforms/web/main.js",
 		
 		output: {
 			sourcemap: dev,
 			format: "iife",
 			name: "editor",
-			file: "src/platforms/web/public/build/" + (dev ? "main.js" : "editor.min.js"),
+			file: "src/platforms/web/public/editor/" + (dev ? "main.js" : "main.min.js"),
 		},
 		
 		plugins: [

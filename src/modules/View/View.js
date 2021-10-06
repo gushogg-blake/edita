@@ -261,12 +261,16 @@ class View extends Evented {
 	}
 	
 	scrollBy(x, rows) {
+		let scrolled = false;
+		
 		if (x !== 0) {
 			let newX = Math.round(this.scrollPosition.x + x);
 			
 			newX = Math.max(0, newX);
 			
 			this.scrollPosition.x = newX;
+			
+			scrolled = true;
 		}
 		
 		if (rows !== 0) {
@@ -275,11 +279,15 @@ class View extends Evented {
 			newRow = Math.max(0, newRow);
 			newRow = Math.min(newRow, this.countRows() - 1);
 			
+			scrolled = newRow !== this.scrollPosition.row;
+			
 			this.scrollPosition.row = newRow;
 		}
 		
 		this.fire("scroll");
 		this.redraw();
+		
+		return scrolled;
 	}
 	
 	setVerticalScroll(row) {

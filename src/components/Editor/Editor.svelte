@@ -282,14 +282,18 @@ function wheel(e) {
 		return;
 	}
 	
-	e.stopPropagation();
-	
 	let dir = e.deltaY > 0 ? 1 : -1;
+	let scrolled;
 	
 	if (e.shiftKey) {
-		view.scrollBy(view.measurements.colWidth * 3 * dir, 0);
+		scrolled = view.scrollBy(view.measurements.colWidth * 3 * dir, 0);
 	} else {
-		view.scrollBy(0, 3 * dir);
+		scrolled = view.scrollBy(0, 3 * dir);
+	}
+	
+	if (scrolled) {
+		e.preventDefault();
+		e.stopPropagation();
 	}
 }
 
