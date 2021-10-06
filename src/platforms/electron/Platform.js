@@ -7,6 +7,7 @@ let set = require("lodash.set");
 let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");
 let defaultPrefs = require("modules/defaultPrefs");
+let {default: contextMenu} = require("components/contextMenu");
 
 let fs = require("platform/modules/fs");
 let walk = require("platform/modules/walk");
@@ -115,14 +116,26 @@ class Platform extends Evented {
 		});
 	}
 	
-	showContextMenu(e, items) {
-		ipc.contextMenu(items);
+	showContextMenu(e, items, noCancel=false) {
+		if (noCancel) {
+			contextMenu(items, {
+				x: e.clientX,
+				y: e.clientY,
+			}, true);
+		} else {
+			ipc.contextMenu(items);
+		}
 	}
 	
-	showContextMenuForElement(element, items) {
+	showContextMenuForElement(element, items, noCancel=false) {
 		let {x, y, height} = screenOffsets(element);
+		let coords = {x, y: y + height};
 		
-		ipc.contextMenu(items, {x, y: y + height});
+		if (noCancel) {
+			contextMenu(items, coords, true);
+		} else {
+			ipc.contextMenu(items, coords);
+		}
 	}
 	
 	openDialogWindow(app, dialog, dialogOptions, windowOptions) {

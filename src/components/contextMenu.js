@@ -3,9 +3,8 @@ import {on, off} from "utils/dom/domEvents";
 import screenOffsets from "utils/dom/screenOffsets";
 import ContextMenu from "./ContextMenu.svelte";
 
-export default function(e, items) {
-	let x = e.clientX + 3;
-	let y = e.clientY;
+export default function(items, coords, noCancel=false) {
+	let {x, y} = coords;
 	
 	let overlay = document.createElement("div");
 	let container = document.createElement("div");
@@ -45,6 +44,15 @@ export default function(e, items) {
 		
 		off(overlay, "mousedown", close);
 		off(window, "blur", close);
+		off(window, "keydown", keydown);
+	}
+	
+	function keydown(e) {
+		if (e.key === "Escape" && !noCancel) {
+			e.preventDefault();
+			
+			close();
+		}
 	}
 	
 	contextMenu.$on("click", function({detail: item}) {
@@ -71,4 +79,5 @@ export default function(e, items) {
 	
 	on(window, "blur", close);
 	on(overlay, "mousedown", close);
+	on(window, "keydown", keydown);
 }

@@ -190,7 +190,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			};
 		});
 		
-		editorComponent.showMenu(e, items);
+		platform.showContextMenu(e, items, true);
 	}
 	
 	function drawSelection(e) {

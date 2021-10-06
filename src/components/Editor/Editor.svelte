@@ -9,7 +9,6 @@ import render from "./canvas/render";
 
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
-import contextMenu from "./contextMenu";
 
 import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer.svelte";
@@ -96,10 +95,6 @@ let astMouseHandler = astMouse(document, editor, view, {
 	
 	get showingHorizontalScrollbar() {
 		return showingHorizontalScrollbar;
-	},
-	
-	showMenu(e, items) {
-		contextMenu(e, items);
 	},
 	
 	mouseup,

@@ -9,6 +9,7 @@ let fsWeb = require("vendor/fs-web");
 
 let Evented = require("utils/Evented");
 let defaultPrefs = require("modules/defaultPrefs");
+let {default: contextMenu} = require("components/contextMenu");
 
 let fs = require("../common/modules/fs");
 let clipboard = require("./modules/clipboard");
@@ -93,14 +94,18 @@ class Platform extends Evented {
 		
 	}
 	
-	showContextMenu(e, items) {
-		
+	showContextMenu(e, items, noCancel=false) {
+		contextMenu(items, {
+			x: e.clientX,
+			y: e.clientY,
+		}, noCancel);
 	}
 	
-	showContextMenuForElement(element, items) {
+	showContextMenuForElement(element, items, noCancel=false) {
 		let {x, y, height} = screenOffsets(element);
+		let coords = {x, y: y + height};
 		
-		ipc.contextMenu(items, {x, y: y + height});
+		contextMenu(items, coords, noCancel);
 	}
 	
 	get useSystemFocus() {
