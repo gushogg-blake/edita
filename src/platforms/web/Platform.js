@@ -63,20 +63,7 @@ class Platform extends Evented {
 		}
 		
 		document.body.addEventListener("contextmenu", function(e) {
-			//3let node = e.target.parentElement;
-			
-			//while (node) {
-			//	console.log(node);
-			//	if (node.classList.contains("editor")) {
-			//		e.preventDefault();
-			//		
-			//		break;
-			//	}
-			//	
-			//	node = node.parentElement;
-			//}
 			for (let node of parentNodes(e.target)) {
-				console.log(node);
 				if (node.classList.contains("editor")) {
 					e.preventDefault();
 					
