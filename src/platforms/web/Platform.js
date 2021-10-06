@@ -1,9 +1,11 @@
+//let fsWeb = require("fs-web/dist/fs");
 let minimatch = require("minimatch-browser");
 let bluebird = require("bluebird");
 let get = require("lodash.get");
 let set = require("lodash.set");
 
 let path = require("vendor/path-browser");
+let fsWeb = require("vendor/fs-web");
 
 let Evented = require("utils/Evented");
 let defaultPrefs = require("modules/defaultPrefs");
@@ -32,6 +34,7 @@ class Platform extends Evented {
 	
 	async init(options) {
 		options = {
+			init: null,
 			localStoragePrefix: "editor.",
 			...options,
 		};
@@ -39,10 +42,7 @@ class Platform extends Evented {
 		this.options = options;
 		
 		this.fs = fs({
-			fs: {
-				
-			},
-			
+			fs: fsWeb,
 			path,
 			minimatch,
 			
@@ -53,6 +53,10 @@ class Platform extends Evented {
 		
 		this.prefs = this.loadJson("prefs") || defaultPrefs(this.systemInfo);
 		this.snippets = new Snippets(options.localStoragePrefix);
+		
+		if (options.init) {
+			await options.init();
+		}
 	}
 	
 	async open(defaultPath, currentPath) {

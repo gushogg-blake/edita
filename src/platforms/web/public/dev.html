@@ -22,12 +22,14 @@
 		<script>
 			(async function() {
 				let createEditor = await editor({
-					
+					async init() {
+						await platform.fs("/dev.html").write(await (await fetch("dev.html")).text());
+					},
 				});
 				
 				let app = await createEditor(document.getElementById("editorContainer"));
 				
-				app.openFile("/dev.html", await (await fetch("dev.html")).text());
+				app.openFile("/dev.html");
 				
 				window.app = app;
 			})();
