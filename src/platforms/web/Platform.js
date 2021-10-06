@@ -8,8 +8,10 @@ let path = require("vendor/path-browser");
 let fsWeb = require("vendor/fs-web");
 
 let Evented = require("utils/Evented");
+let screenOffsets = require("utils/dom/screenOffsets");
+let parentNodes = require("utils/dom/parentNodes");
 let defaultPrefs = require("modules/defaultPrefs");
-let {default: contextMenu} = require("components/contextMenu");
+let contextMenu = require("modules/contextMenu");
 
 let fs = require("../common/modules/fs");
 let clipboard = require("./modules/clipboard");
@@ -59,6 +61,29 @@ class Platform extends Evented {
 		if (options.init) {
 			await options.init();
 		}
+		
+		document.body.addEventListener("contextmenu", function(e) {
+			//3let node = e.target.parentElement;
+			
+			//while (node) {
+			//	console.log(node);
+			//	if (node.classList.contains("editor")) {
+			//		e.preventDefault();
+			//		
+			//		break;
+			//	}
+			//	
+			//	node = node.parentElement;
+			//}
+			for (let node of parentNodes(e.target)) {
+				console.log(node);
+				if (node.classList.contains("editor")) {
+					e.preventDefault();
+					
+					break;
+				}
+			}
+		});
 	}
 	
 	async open(defaultPath, currentPath) {

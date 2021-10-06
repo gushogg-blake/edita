@@ -27,7 +27,7 @@ function mouseup(item) {
 }
 </style>
 
-<div id="main" class="editor">
+<div id="main">
 	{#each items as item}
 		<div class="item" on:mouseup={() => mouseup(item)}>
 			{item.label}

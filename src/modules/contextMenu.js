@@ -1,13 +1,18 @@
-import inlineStyle from "utils/dom/inlineStyle";
-import {on, off} from "utils/dom/domEvents";
-import screenOffsets from "utils/dom/screenOffsets";
-import ContextMenu from "./ContextMenu.svelte";
+let inlineStyle = require("utils/dom/inlineStyle");
+let {on, off} = require("utils/dom/domEvents");
+let screenOffsets = require("utils/dom/screenOffsets");
 
-export default function(items, coords, noCancel=false) {
+module.exports = function(items, coords, noCancel=false) {
+	if (items.length === 0) {
+		return;
+	}
+	
 	let {x, y} = coords;
 	
 	let overlay = document.createElement("div");
 	let container = document.createElement("div");
+	
+	overlay.className = "editor";
 	
 	document.body.appendChild(overlay);
 	overlay.appendChild(container);
@@ -29,7 +34,7 @@ export default function(items, coords, noCancel=false) {
 		userSelect: "none",
 	});
 	
-	let contextMenu = new ContextMenu({
+	let contextMenu = new base.components.ContextMenu({
 		target: container,
 		
 		props: {

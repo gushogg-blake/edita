@@ -7,7 +7,7 @@ let set = require("lodash.set");
 let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");
 let defaultPrefs = require("modules/defaultPrefs");
-let {default: contextMenu} = require("components/contextMenu");
+let contextMenu = require("modules/contextMenu");
 
 let fs = require("platform/modules/fs");
 let walk = require("platform/modules/walk");

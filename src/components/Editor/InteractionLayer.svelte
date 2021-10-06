@@ -196,6 +196,12 @@ function mouseleave(e) {
 	fire("mouseleave", e);
 }
 
+function contextmenu(e) {
+	e.preventDefault();
+	
+	return false;
+}
+
 function dragstart(e) {
 	dragStartedHere = true;
 	
@@ -540,6 +546,7 @@ onMount(function() {
 			on:mouseleave={mouseleave}
 			on:mousemove={mousemove}
 			on:dblclick
+			on:contextmenu={contextmenu}
 			draggable={draggable && !useSyntheticDrag}
 			on:dragstart={dragstart}
 			on:dragover={dragover}
