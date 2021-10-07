@@ -67,7 +67,6 @@ class Platform extends Evented {
 			},
 	
 			watch(path, handler) {
-				console.log("??");
 				return fs.watch(path, handler);
 			},
 		});
