@@ -75,8 +75,8 @@ function onPrefsUpdated() {
 	update();
 }
 
-function onFsChange(...args) {
-	console.log(args);
+function onFsChange() {
+	update();
 }
 
 let entryStyle = {
@@ -88,7 +88,6 @@ let buttonStyle = {
 };
 
 onMount(function() {
-	console.log(entry, isDir);
 	let teardown = [
 		isDir && platform.on("prefsUpdated", onPrefsUpdated),
 		isDir && platform.fs(entry.path).watch(onFsChange),
