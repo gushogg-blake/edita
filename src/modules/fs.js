@@ -7,6 +7,7 @@ module.exports = function(backends) {
 		path: osPath,
 		minimatch,
 		glob,
+		watch,
 		cwd,
 		fileIsBinary,
 	} = backends;
@@ -228,6 +229,10 @@ module.exports = function(backends) {
 			});
 		}
 		
+		watch(handler) {
+			return watch(this.path, handler);
+		}
+		
 		async contains(filename) {
 			return (await this.readdir()).indexOf(filename) !== -1;
 		}
@@ -236,6 +241,8 @@ module.exports = function(backends) {
 			try {
 				return (await fs.stat(this.path)).isDirectory();
 			} catch (e) {
+				console.error(e);
+				
 				return false;
 			}
 		}
@@ -244,6 +251,8 @@ module.exports = function(backends) {
 			try {
 				return (await fs.stat(this.path)).isFile();
 			} catch (e) {
+				console.error(e);
+				
 				return false;
 			}
 		}

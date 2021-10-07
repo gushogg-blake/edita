@@ -29,6 +29,7 @@ class View extends Evented {
 		
 		this.focused = false;
 		this.visible = false;
+		this.mounted = false;
 		
 		this.mode = "normal";
 		
@@ -549,7 +550,19 @@ class View extends Evented {
 	}
 	
 	requestFocus() {
-		this.fire("requestFocus");
+		if (this.mounted) {
+			this.fire("requestFocus");
+		} else {
+			this.requestFocusOnMount = true;
+		}
+	}
+	
+	uiMounted() {
+		this.mounted = true;
+		
+		if (this.requestFocusOnMount) {
+			this.requestFocus();
+		}
 	}
 	
 	teardown() {

@@ -14,8 +14,8 @@ let loadScript = require("utils/dom/loadScript");
 let loadCss = require("utils/dom/loadCss");
 let defaultPrefs = require("modules/defaultPrefs");
 let contextMenu = require("modules/contextMenu");
+let createFs = require("modules/fs");
 
-let fs = require("../common/modules/fs");
 let clipboard = require("./modules/clipboard");
 let localStorage = require("./modules/localStorage");
 let Snippets = require("./modules/Snippets");
@@ -55,13 +55,20 @@ class Platform extends Evented {
 			loadScript(options.resourcePrefix + "/vendor/tree-sitter/tree-sitter.js"),
 		]);
 		
-		this.fs = fs({
-			fs: fsWeb,
+		let fs = fsWeb("editorFiles");
+		
+		this.fs = createFs({
+			fs,
 			path,
 			minimatch,
 			
 			cwd() {
 				return "/";
+			},
+	
+			watch(path, handler) {
+				console.log("??");
+				return fs.watch(path, handler);
 			},
 		});
 		

@@ -76,6 +76,7 @@ function electronPlugins() {
 				"events",
 				"electron",
 				"query-string",
+				"chokidar",
 			],
 		}),
 		
