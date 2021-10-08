@@ -330,16 +330,6 @@ async function keydown(e) {
 	}
 }
 
-function keyup(e) {
-	if (e.key === platform.prefs.modeSwitchKey) {
-		e.preventDefault();
-		
-		modeSwitchKey.keyup(e);
-		
-		return;
-	}
-}
-
 let prevWidth;
 let prevHeight;
 
@@ -674,7 +664,6 @@ canvas {
 	on:focus={onFocus}
 	on:blur={onBlur}
 	on:keydown={keydown}
-	on:keyup={keyup}
 >
 	<div
 		id="canvas"

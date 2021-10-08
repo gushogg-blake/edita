@@ -44,6 +44,24 @@ module.exports = function(editor) {
 		keyPressedWhilePeeking = true;
 	}
 	
+	function keyup(e) {
+		let downTime = Date.now() - keyDownAt;
+		
+		if (editor.mode === "ast") {
+			if (downTime >= platform.prefs.minHoldTime || keyPressedWhilePeeking) {
+				switchToNormalMode();
+			} else {
+				switchToAstMode();
+			}
+		}
+		
+		keyIsDown = false;
+		keyPressedWhilePeeking = false;
+		
+		window.removeEventListener("keydown", keydown);
+		window.removeEventListener("keyup", keyup);
+	}
+	
 	return {
 		keydown(e) {
 			if (keyIsDown) {
@@ -51,6 +69,7 @@ module.exports = function(editor) {
 			}
 			
 			window.addEventListener("keydown", keydown);
+			window.addEventListener("keyup", keyup);
 			
 			keyIsDown = true;
 			keyDownAt = Date.now();
@@ -60,23 +79,6 @@ module.exports = function(editor) {
 			} else {
 				switchToAstMode();
 			}
-		},
-		
-		keyup(e) {
-			let downTime = Date.now() - keyDownAt;
-			
-			if (editor.mode === "ast") {
-				if (downTime >= platform.prefs.minHoldTime || keyPressedWhilePeeking) {
-					switchToNormalMode();
-				} else {
-					switchToAstMode();
-				}
-			}
-			
-			keyIsDown = false;
-			keyPressedWhilePeeking = false;
-			
-			window.removeEventListener("keydown", keydown);
 		},
 		
 		mousedown() {
