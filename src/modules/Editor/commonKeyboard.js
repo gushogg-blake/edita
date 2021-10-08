@@ -6,4 +6,12 @@ module.exports = {
 	uncomment() {
 		
 	},
+	
+	undo() {
+		this.undo();
+	},
+	
+	redo() {
+		this.redo();
+	},
 };

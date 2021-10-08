@@ -247,14 +247,6 @@ module.exports = {
 		this.setBatchState(newBatchState);
 	},
 	
-	undo() {
-		this.undo();
-	},
-	
-	redo() {
-		this.redo();
-	},
-	
 	tab() {
 		let {view} = this;
 		let {start} = view.normalSelection;

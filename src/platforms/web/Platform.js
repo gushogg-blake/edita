@@ -43,6 +43,7 @@ class Platform extends Evented {
 			resourcePrefix: "",
 			init: null,
 			localStoragePrefix: "editor.",
+			fsKey: "editorFiles",
 			useSystemFocus: true,
 			...options,
 		};
@@ -55,7 +56,7 @@ class Platform extends Evented {
 			loadScript(options.resourcePrefix + "/vendor/tree-sitter/tree-sitter.js"),
 		]);
 		
-		let fs = fsWeb("editorFiles");
+		let fs = fsWeb(options.fsKey);
 		
 		this.fs = createFs({
 			fs,
@@ -94,7 +95,7 @@ class Platform extends Evented {
 	}
 	
 	saveAs() {
-		let name = prompt("Filename:") || null;
+		let name = (prompt("Filename:") || "").replaceAll("/", "");
 		
 		return name ? "/" + name : null;
 	}

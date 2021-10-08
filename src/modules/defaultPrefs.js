@@ -61,9 +61,6 @@ module.exports = function(systemInfo) {
 			"Ctrl+V": "paste",
 			"Ctrl+A": "selectAll",
 			
-			"Ctrl+Z": "undo",
-			"Ctrl+Y": "redo",
-			
 			"Ctrl+Space": "completeWord",
 			
 			"Alt+I": "insertAstClipboard",
@@ -76,20 +73,26 @@ module.exports = function(systemInfo) {
 		astKeymap: {
 			"PageUp": "pageUp",
 			"PageDown": "pageDown",
+			
 			"s": "up",
 			"d": "down",
 			"j": "next",
 			"k": "previous",
+			
 			"w": "wrap",
 			"u": "unwrap",
+			
 			"i": "insertAtEnd",
 			"f": "insertAtBeginning",
 			"h": "insertBefore",
 			"l": "insertAfter",
+			
 			//"h": "collapseDown",
 			//"l": "collapseUp",
 			//"e": "expandDown",
+			
 			"a": "selectSelection",
+			
 			"Space": "toggleSpaceBelow",
 			"Shift+Space": "toggleSpaceAbove",
 		},
@@ -97,6 +100,9 @@ module.exports = function(systemInfo) {
 		commonKeymap: {
 			"Ctrl+2": "uncomment",
 			"Ctrl+3": "comment",
+			
+			"Ctrl+Z": "undo",
+			"Ctrl+Y": "redo",
 		},
 		
 		globalKeymap: {
