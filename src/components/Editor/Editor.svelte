@@ -72,6 +72,7 @@ let horizontalScrollbar;
 let showingHorizontalScrollbar = !platform.prefs.wrap;
 
 let windowHasFocus;
+let focusStackActive = false;
 
 let isDragging = false;
 let lastMouseEvent;
@@ -298,7 +299,7 @@ function wheel(e) {
 }
 
 async function keydown(e) {
-	if (!view.focused) {
+	if (!view.focused || focusStackActive) {
 		return;
 	}
 	
@@ -335,7 +336,7 @@ async function keydown(e) {
 }
 
 function keyup(e) {
-	if (!view.focused) {
+	if (!view.focused || focusStackActive) {
 		return;
 	}
 	
@@ -397,7 +398,7 @@ function updateCanvas() {
 		contexts,
 		view,
 		modeSwitchKey.isPeeking,
-		windowHasFocus,
+		windowHasFocus && !focusStackActive,
 	);
 }
 
@@ -579,6 +580,16 @@ onMount(function() {
 			windowHasFocus = isFocused;
 			
 			if (windowHasFocus) {
+				view.startCursorBlink();
+			}
+			
+			updateCanvas();
+		}),
+		
+		platform.on("focusStackChanged", function(stack) {
+			focusStackActive = stack.length > 0;
+			
+			if (!focusStackActive) {
 				view.startCursorBlink();
 			}
 			

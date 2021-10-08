@@ -3,7 +3,7 @@
 	<head>
 		<title>Editor</title>
 		<meta charset="utf-8">
-		<script src="./editor/main.js"></script>
+		<script src="./build/main.js"></script>
 	</head>
 	<body>
 		<style>
@@ -17,7 +17,7 @@
 		<script>
 			(async function() {
 				let createEditor = await editor({
-					resourcePrefix: "./editor",
+					resourcePrefix: "./build",
 				});
 				
 				let app = await createEditor(document.getElementById("editorContainer"));

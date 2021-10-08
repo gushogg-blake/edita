@@ -152,14 +152,14 @@ if (!platform || platform === "all" || platform === "electron") {
 }
 
 if (!platform || platform === "all" || platform === "web") {
-	builds.push(globalCssBuild("src/platforms/web/public/editor/global.js"), {
+	builds.push(globalCssBuild("src/platforms/web/public/build/global.js"), {
 		input: "src/platforms/web/main.js",
 		
 		output: {
 			sourcemap: dev,
 			format: "iife",
 			name: "editor",
-			file: "src/platforms/web/public/editor/" + (dev ? "main.js" : "main.min.js"),
+			file: "src/platforms/web/public/build/" + (dev ? "main.js" : "main.min.js"),
 		},
 		
 		plugins: [

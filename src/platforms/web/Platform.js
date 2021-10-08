@@ -6,7 +6,6 @@ let set = require("lodash.set");
 let path = require("vendor/path-browser");
 let fsWeb = require("vendor/fs-web");
 
-let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");
 let parentNodes = require("utils/dom/parentNodes");
 let {on} = require("utils/dom/domEvents");
@@ -16,11 +15,13 @@ let defaultPrefs = require("modules/defaultPrefs");
 let contextMenu = require("modules/contextMenu");
 let createFs = require("modules/fs");
 
+let Common = require("platforms/common/Platform");
+
 let clipboard = require("./modules/clipboard");
 let localStorage = require("./modules/localStorage");
 let Snippets = require("./modules/Snippets");
 
-class Platform extends Evented {
+class Platform extends Common {
 	constructor() {
 		super();
 		
@@ -95,7 +96,7 @@ class Platform extends Evented {
 	}
 	
 	saveAs() {
-		let name = (prompt("Filename:") || "").replaceAll("/", "");
+		let name = (prompt("Filename:") || "").replaceAll("/", "").trim();
 		
 		return name ? "/" + name : null;
 	}

@@ -5,7 +5,7 @@ export let items;
 
 let fire = createEventDispatcher();
 
-function mouseup(item) {
+function click(item) {
 	fire("click", item);
 }
 </script>
@@ -29,8 +29,8 @@ function mouseup(item) {
 
 <div id="main">
 	{#each items as item}
-		<div class="item" on:mouseup={() => mouseup(item)}>
-			{item.label}
+		<div class="item" on:mouseup={() => click(item)}>
+			{@html item.label.replace(/%(\w)/, "<u>$1</u>")}
 		</div>
 	{/each}
 </div>

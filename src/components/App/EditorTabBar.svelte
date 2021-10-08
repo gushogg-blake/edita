@@ -33,7 +33,7 @@ function getContextMenuItems(tab) {
 	
 	return [
 		path && {
-			label: "&Rename...",
+			label: "%Rename...",
 			
 			onClick() {
 				app.renameTab(tab);
@@ -41,13 +41,13 @@ function getContextMenuItems(tab) {
 		},
 		
 		path && {
-			label: "&Delete...",
+			label: "%Delete...",
 			
 			onClick() {
 				app.deleteTab(tab);
 			},
 		},
-	];
+	].filter(Boolean);
 }
 
 function updateTabs() {

@@ -7,6 +7,8 @@ module.exports = function(items, coords, noCancel=false) {
 		return;
 	}
 	
+	let focusStackItem = {};
+	
 	let {x, y} = coords;
 	
 	let overlay = document.createElement("div");
@@ -42,30 +44,47 @@ module.exports = function(items, coords, noCancel=false) {
 		},
 	});
 	
+	platform.addToFocusStack(focusStackItem);
+	
 	function close() {
 		contextMenu.$destroy();
 		
 		overlay.parentNode.removeChild(overlay);
+		
+		platform.removeFromFocusStack(focusStackItem);
 		
 		off(overlay, "mousedown", close);
 		off(window, "blur", close);
 		off(window, "keydown", keydown);
 	}
 	
-	function keydown(e) {
-		if (e.key === "Escape" && !noCancel) {
-			e.preventDefault();
-			
-			close();
-		}
-	}
-	
 	contextMenu.$on("click", function({detail: item}) {
+		if (platform.focusStackItem !== focusStackItem) {
+			return;
+		}
+		
 		item.onClick();
 		
 		close();
 	});
 	
+	function keydown(e) {
+		e.preventDefault();
+		
+		if (e.key === "Escape" && !noCancel) {
+			close();
+			
+			return;
+		}
+		
+		for (let item of items) {
+			if (item.label.toLowerCase().indexOf("%" + e.key.toLowerCase()) !== -1) {
+				item.onClick();
+				
+				return;
+			}
+		}
+	}
 	let {right, bottom} = screenOffsets(container);
 	
 	if (right < 0) {
@@ -82,7 +101,7 @@ module.exports = function(items, coords, noCancel=false) {
 		e.stopPropagation();
 	});
 	
-	on(window, "blur", close);
 	on(overlay, "mousedown", close);
+	on(window, "blur", close);
 	on(window, "keydown", keydown);
 }

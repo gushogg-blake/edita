@@ -109,7 +109,7 @@ class App extends Evented {
 		if (modified) {
 			let {response} = await platform.showMessageBox({
 				message: "Save changes to " + tab.name + "?",
-				buttons: ["&Yes", "&No", "&Cancel"],
+				buttons: ["%Yes", "%No", "%Cancel"],
 			});
 			
 			if (response === 0) {
@@ -150,6 +150,10 @@ class App extends Evented {
 		if (selectNext) {
 			this.selectTab(selectNext);
 		}
+	}
+	
+	async deleteTab(tab) {
+		console.log(tab);
 	}
 	
 	showPane(name) {
@@ -481,7 +485,7 @@ class App extends Evented {
 		
 		let {response} = await platform.showMessageBox({
 			message: "Save changes to " + tabNames + "?",
-			buttons: ["&Yes", "&No", "&Cancel"],
+			buttons: ["%Yes", "%No", "%Cancel"],
 		});
 		
 		if (response === 0) {

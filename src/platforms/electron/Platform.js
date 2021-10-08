@@ -4,17 +4,18 @@ let bluebird = require("bluebird");
 let get = require("lodash.get");
 let set = require("lodash.set");
 
-let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");
 let defaultPrefs = require("modules/defaultPrefs");
 let contextMenu = require("modules/contextMenu");
+
+let Common = require("platforms/common/Platform");
 
 let fs = require("platform/modules/fs");
 let walk = require("platform/modules/walk");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 let ipc = require("platform/modules/ipc");
 
-class Platform extends Evented {
+class Platform extends Common {
 	constructor() {
 		super();
 		
@@ -115,10 +116,18 @@ class Platform extends Evented {
 		return ipc.dialog.showMessageBox({
 			normalizeAccessKeys: true,
 			...options,
+			buttons: options.buttons.map(button => button.replaceAll("%", "&")),
 		});
 	}
 	
 	showContextMenu(e, items, noCancel=false) {
+		items = items.map(function(item) {
+			return {
+				...item,
+				label: item.label.replaceAll("%", "&"),
+			};
+		});
+		
 		if (noCancel) {
 			contextMenu(items, {
 				x: e.clientX,
