@@ -379,7 +379,7 @@ function rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition) 
 	
 	return {
 		top: view.sizes.topMargin + rowYHint + screenRow * rowHeight,
-		left: screenCol * colWidth,
+		left: screenCol * colWidth - scrollPosition.x,
 		height: rowHeight,
 	};
 }
