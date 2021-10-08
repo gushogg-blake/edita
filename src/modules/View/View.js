@@ -16,7 +16,7 @@ let {c} = Cursor;
 let {s} = Selection;
 
 class View extends Evented {
-	constructor(document, focusManager) {
+	constructor(document) {
 		super();
 		
 		this.Selection = bindFunctions(this, SelectionUtils);
@@ -25,7 +25,6 @@ class View extends Evented {
 		Object.assign(this, canvasUtils);
 		
 		this.document = document;
-		this.focusManager = focusManager;
 		
 		this.focused = false;
 		this.visible = false;
@@ -532,10 +531,6 @@ class View extends Evented {
 	focus() {
 		this.focused = true;
 		
-		if (this.focusManager) {
-			this.focusManager.focus(this.blur);
-		}
-		
 		this.startCursorBlink();
 		
 		this.redraw();
@@ -557,10 +552,6 @@ class View extends Evented {
 		}
 	}
 	
-	ignoreBlur(delay) {
-		this.fire("ignoreBlur", delay);
-	}
-	
 	uiMounted() {
 		this.mounted = true;
 		
@@ -570,10 +561,6 @@ class View extends Evented {
 	}
 	
 	teardown() {
-		if (this.focusManager) {
-			this.focusManager.teardown(this.blur);
-		}
-		
 		this.clearCursorBlink();
 	}
 }

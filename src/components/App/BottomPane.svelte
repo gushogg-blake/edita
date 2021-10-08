@@ -2,7 +2,6 @@
 import {onMount, getContext} from "svelte";
 import TabBar from "components/TabBar.svelte";
 import FindResults from "components/FindResults.svelte";
-import FocusablePane from "./FocusablePane.svelte";
 
 let app = getContext("app");
 
@@ -67,20 +66,18 @@ onMount(function() {
 }
 </style>
 
-<FocusablePane>
-	<div id="main">
-		<div id="tabBar">
-			<TabBar
-				{tabs}
-				{selectedTab}
-				{getDetails}
-				on:select={select}
-			/>
-		</div>
-		<div id="content">
-			<div class="content" class:hide={selectedTab.id !== "findResults"}>
-				<FindResults/>
-			</div>
+<div id="main">
+	<div id="tabBar">
+		<TabBar
+			{tabs}
+			{selectedTab}
+			{getDetails}
+			on:select={select}
+		/>
+	</div>
+	<div id="content">
+		<div class="content" class:hide={selectedTab.id !== "findResults"}>
+			<FindResults/>
 		</div>
 	</div>
-</FocusablePane>
+</div>

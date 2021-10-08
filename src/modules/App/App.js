@@ -79,13 +79,19 @@ class App extends Evented {
 		
 		this.selectedTab = tab;
 		
-		console.log("select");
 		tab.editor.view.show();
-		tab.editor.view.requestFocus();
 		
 		this.updateTitle();
 		
 		this.fire("selectTab");
+		
+		this.focusSelectedTabAsync();
+	}
+	
+	focusSelectedTabAsync() {
+		setTimeout(() => {
+			this.selectedTab?.editor.view.requestFocus();
+		}, 0);
 	}
 	
 	getTabName(tab) {
@@ -508,7 +514,7 @@ class App extends Evented {
 		}
 		
 		function keydown(e) {
-			if (e.key === "Escape" && !noCancel) {
+			if (e.key === "Escape") {
 				e.preventDefault();
 				
 				close();
@@ -518,6 +524,10 @@ class App extends Evented {
 		}
 		
 		on(container, "mousedown", function(e) {
+			e.stopPropagation();
+		});
+		
+		on(container, "keydown", function(e) {
 			e.stopPropagation();
 		});
 		

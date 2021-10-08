@@ -1,7 +1,6 @@
 <script>
 import {onMount, getContext} from "svelte";
 import FileTree from "components/FileTree/FileTree.svelte";
-import FocusablePane from "./FocusablePane.svelte";
 
 let app = getContext("app");
 
@@ -95,23 +94,21 @@ onMount(async function() {
 }
 </style>
 
-<FocusablePane>
-	<div id="main">
-		<div id="top">
-			{#if rootEntry}
-				<div bind:this={dirSelector} id="dirSelector" on:mousedown={openDirMenu}>
-					{rootEntry.node.name}
-				</div>
-			{/if}
-		</div>
-		<div id="list" on:wheel={wheel}>
-			<div
-				bind:this={background}
-				id="scroll"
-				on:dblclick={dblclickBackground}
-			>
-				<FileTree/>
+<div id="main">
+	<div id="top">
+		{#if rootEntry}
+			<div bind:this={dirSelector} id="dirSelector" on:mousedown={openDirMenu}>
+				{rootEntry.node.name}
 			</div>
+		{/if}
+	</div>
+	<div id="list" on:wheel={wheel}>
+		<div
+			bind:this={background}
+			id="scroll"
+			on:dblclick={dblclickBackground}
+		>
+			<FileTree/>
 		</div>
 	</div>
-</FocusablePane>
+</div>

@@ -29,7 +29,7 @@ button {
 }
 </style>
 
-<div id="main">
+<div id="main" on:mousedown={() => app.focusSelectedTabAsync()}>
 	<button on:click={() => app.functions._new()}>
 		New
 	</button>

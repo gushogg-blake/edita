@@ -16,7 +16,7 @@ let main;
 let mounted = false;
 let isMounted = () => mounted;
 
-function mousedownTab(e, tab) {
+async function mousedownTab(e, tab) {
 	if (e.button !== 0) {
 		return;
 	}

@@ -99,7 +99,7 @@ function onInput(e) {
 }
 
 function onFocus() {
-	app.focusManager.focus(blur);
+	
 }
 
 onMount(function() {
@@ -117,10 +117,6 @@ onMount(function() {
 	
 	let teardown = [
 		on(window, "keydown", windowKeydown),
-		
-		function() {
-			app.focusManager.teardown(blur);
-		},
 	];
 	
 	return function() {

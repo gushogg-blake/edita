@@ -1,7 +1,6 @@
 <script>
 import {onMount, getContext} from "svelte";
 import Gap from "components/utils/Gap.svelte";
-import FocusablePane from "./FocusablePane.svelte";
 
 let app = getContext("app");
 
@@ -113,51 +112,49 @@ onMount(function() {
 }
 </style>
 
-<FocusablePane>
-	<div id="main">
-		<div id="title">
-			Snippets
-		</div>
-		<Gap height={6}/>
-		{#each Object.entries(snippetsByLang) as [key, snippets]}
-			<div class="entry header">
-				<div class="icon dirIcon"></div>
-				<div class="name">
-					{key}
-				</div>
+<div id="main">
+	<div id="title">
+		Snippets
+	</div>
+	<Gap height={6}/>
+	{#each Object.entries(snippetsByLang) as [key, snippets]}
+		<div class="entry header">
+			<div class="icon dirIcon"></div>
+			<div class="name">
+				{key}
 			</div>
-			<div class="list">
-				{#each snippets as snippet}
-					<div
-						class="entry snippet"
-						on:click={() => app.editSnippet(snippet.id)}
-						on:contextmenu={(e) => showContextMenuForSnippet(e, snippet)}
-					>
-						<div class="icon fileIcon"></div>
-						<div class="name">
-							{snippet.name}
-						</div>
-					</div>
-				{/each}
+		</div>
+		<div class="list">
+			{#each snippets as snippet}
 				<div
 					class="entry snippet"
-					on:click={() => newSnippetInList(snippets)}
+					on:click={() => app.editSnippet(snippet.id)}
+					on:contextmenu={(e) => showContextMenuForSnippet(e, snippet)}
 				>
 					<div class="icon fileIcon"></div>
 					<div class="name">
-						New
+						{snippet.name}
 					</div>
 				</div>
-			</div>
-		{/each}
-		<div
-			class="entry snippet"
-			on:click={() => newSnippet()}
-		>
-			<div class="icon fileIcon"></div>
-			<div class="name">
-				New
+			{/each}
+			<div
+				class="entry snippet"
+				on:click={() => newSnippetInList(snippets)}
+			>
+				<div class="icon fileIcon"></div>
+				<div class="name">
+					New
+				</div>
 			</div>
 		</div>
+	{/each}
+	<div
+		class="entry snippet"
+		on:click={() => newSnippet()}
+	>
+		<div class="icon fileIcon"></div>
+		<div class="name">
+			New
+		</div>
 	</div>
-</FocusablePane>
+</div>

@@ -3,7 +3,6 @@ import {tick, onMount} from "svelte";
 
 import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
-import sleep from "utils/sleep";
 import getKeyCombo from "utils/getKeyCombo";
 
 import render from "./canvas/render";
@@ -77,7 +76,6 @@ let focusStackActive = false;
 
 let isDragging = false;
 let lastMouseEvent;
-let ignoreBlur = false;
 
 let normalMouseHandler = normalMouse(document, editor, view, {
 	get canvasDiv() {
@@ -525,10 +523,6 @@ function onFocus() {
 }
 
 function onBlur() {
-	if (ignoreBlur) {
-		return;
-	}
-	
 	if (editorMode === "textarea" || platform.useSystemFocus) {
 		view.blur();
 	}
@@ -582,14 +576,6 @@ onMount(function() {
 			});
 		}),
 		
-		view.on("ignoreBlur", async function(delay) {
-			ignoreBlur = true;
-			
-			await sleep(delay);
-			
-			ignoreBlur = false;
-		}),
-		
 		editor.on("edit", onEdit),
 		
 		windowFocus.listen(function(isFocused) {
@@ -626,8 +612,6 @@ onMount(function() {
 	}
 });
 </script>
-
-<svelte:window on:keydown={keydown} on:keyup={keyup}/>
 
 <style type="text/scss">
 @import "mixins/abs-sticky";
@@ -704,6 +688,8 @@ canvas {
 	tabindex="0"
 	on:focus={onFocus}
 	on:blur={onBlur}
+	on:keydown={keydown}
+	on:keyup={keyup}
 >
 	<div
 		id="canvas"
