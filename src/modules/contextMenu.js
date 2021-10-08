@@ -2,10 +2,6 @@ let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
 let screenOffsets = require("utils/dom/screenOffsets");
 
-setInterval(function() {
-	console.log(document.activeElement);
-}, 250);
-
 module.exports = function(items, coords, noCancel=false) {
 	if (items.length === 0) {
 		return;
