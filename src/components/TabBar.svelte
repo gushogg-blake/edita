@@ -114,7 +114,9 @@ function registerTabButton(node, tab) {
 async function scrollSelectedTabIntoView() {
 	await tick();
 	
-	tabButtons.get(selectedTab)?.scrollIntoView();
+	tabButtons.get(selectedTab)?.scrollIntoView({
+		block: "nearest",
+	});
 }
 
 $: if (isMounted() && [tabs, selectedTab]) {

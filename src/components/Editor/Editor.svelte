@@ -571,7 +571,9 @@ onMount(function() {
 		view.on("updateScrollbars", updateScrollbars),
 		
 		view.on("requestFocus", function() {
-			main.focus();
+			main.focus({
+				preventScroll: true,
+			});
 		}),
 		
 		editor.on("edit", onEdit),
