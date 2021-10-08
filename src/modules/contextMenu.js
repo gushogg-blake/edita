@@ -1,4 +1,3 @@
-let lid = require("utils/lid");
 let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
 let screenOffsets = require("utils/dom/screenOffsets");
@@ -8,17 +7,17 @@ module.exports = function(items, coords, noCancel=false) {
 		return;
 	}
 	
-	let focusStackItem = lid();
-	
 	let {x, y} = coords;
 	
 	let overlay = document.createElement("div");
 	let container = document.createElement("div");
 	
-	overlay.className = "editor";
-	
 	document.body.appendChild(overlay);
 	overlay.appendChild(container);
+	
+	overlay.className = "editor";
+	
+	container.tabIndex = "1";
 	
 	overlay.style = inlineStyle({
 		position: "fixed",
@@ -33,7 +32,6 @@ module.exports = function(items, coords, noCancel=false) {
 		position: "absolute",
 		top: y,
 		left: x,
-		opacity: 0,
 		userSelect: "none",
 	});
 	
@@ -45,13 +43,11 @@ module.exports = function(items, coords, noCancel=false) {
 		},
 	});
 	
-	platform.addToFocusStack(focusStackItem);
+	let {activeElement: previousActiveElement} = document;
+	
+	container.focus();
 	
 	function click(item) {
-		if (platform.focusStackItem !== focusStackItem) {
-			return;
-		}
-		
 		item.onClick();
 		
 		close();
@@ -62,11 +58,11 @@ module.exports = function(items, coords, noCancel=false) {
 		
 		overlay.parentNode.removeChild(overlay);
 		
-		platform.removeFromFocusStack(focusStackItem);
+		previousActiveElement.focus();
 		
 		off(overlay, "mousedown", close);
 		off(window, "blur", close);
-		off(window, "keydown", keydown);
+		off(container, "keydown", keydown);
 	}
 	
 	contextMenu.$on("click", function({detail: item}) {
@@ -101,13 +97,11 @@ module.exports = function(items, coords, noCancel=false) {
 		container.style.top = (y - -bottom) + "px";
 	}
 	
-	container.style.opacity = "1";
-	
 	on(container, "mousedown", function(e) {
 		e.stopPropagation();
 	});
 	
 	on(overlay, "mousedown", close);
 	on(window, "blur", close);
-	on(window, "keydown", keydown);
+	on(container, "keydown", keydown);
 }

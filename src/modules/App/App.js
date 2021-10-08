@@ -1,7 +1,6 @@
 let bluebird = require("bluebird");
 let {remove, moveInPlace} = require("utils/arrayMethods");
 let Evented = require("utils/Evented");
-let focusManager = require("utils/focusManager");
 let bindFunctions = require("utils/bindFunctions");
 let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
 let inlineStyle = require("utils/dom/inlineStyle");
@@ -30,8 +29,6 @@ class App extends Evented {
 		this.closedTabs = [];
 		
 		this.panes = platform.getPref("panes");
-		
-		this.focusManager = focusManager();
 		
 		this.createDialogComponent = bindFunctions(this, createDialogComponent);
 		this.functions = bindFunctions(this, functions);
@@ -289,7 +286,7 @@ class App extends Evented {
 	
 	createTab(code, path) {
 		let document = this.createDocument(code, path);
-		let view = new View(document, this.focusManager);
+		let view = new View(document);
 		let editor = new Editor(document, view);
 		
 		return new Tab(this, editor);
@@ -311,7 +308,7 @@ class App extends Evented {
 	
 	createEditor() {
 		let document = new Document("");
-		let view = new View(document, this.focusManager);
+		let view = new View(document);
 		
 		return new Editor(document, view);
 	}
