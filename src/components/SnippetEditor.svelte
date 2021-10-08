@@ -109,7 +109,7 @@ input#name {
 }
 </style>
 
-<form id="main" on:submit={submit}>
+<form id="main" on:submit={submit} autocomplete="off">
 	<div id="details">
 		<div class="field">
 			<label for="name">

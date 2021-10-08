@@ -3,6 +3,7 @@ import {tick, onMount} from "svelte";
 
 import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
+import sleep from "utils/sleep";
 import getKeyCombo from "utils/getKeyCombo";
 
 import render from "./canvas/render";
@@ -76,6 +77,7 @@ let focusStackActive = false;
 
 let isDragging = false;
 let lastMouseEvent;
+let ignoreBlur = false;
 
 let normalMouseHandler = normalMouse(document, editor, view, {
 	get canvasDiv() {
@@ -523,6 +525,10 @@ function onFocus() {
 }
 
 function onBlur() {
+	if (ignoreBlur) {
+		return;
+	}
+	
 	if (editorMode === "textarea" || platform.useSystemFocus) {
 		view.blur();
 	}
@@ -574,6 +580,14 @@ onMount(function() {
 			main.focus({
 				preventScroll: true,
 			});
+		}),
+		
+		view.on("ignoreBlur", async function(delay) {
+			ignoreBlur = true;
+			
+			await sleep(delay);
+			
+			ignoreBlur = false;
 		}),
 		
 		editor.on("edit", onEdit),

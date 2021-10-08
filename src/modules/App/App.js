@@ -5,6 +5,7 @@ let focusManager = require("utils/focusManager");
 let bindFunctions = require("utils/bindFunctions");
 let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
 let inlineStyle = require("utils/dom/inlineStyle");
+let {on, off} = require("utils/dom/domEvents");
 let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
@@ -78,6 +79,7 @@ class App extends Evented {
 		
 		this.selectedTab = tab;
 		
+		console.log("select");
 		tab.editor.view.show();
 		tab.editor.view.requestFocus();
 		
@@ -461,19 +463,68 @@ class App extends Evented {
 	}
 	
 	async openDialogWindow(dialog, dialogOptions, windowOptions) {
+		let overlay = document.createElement("div");
 		let container = document.createElement("div");
 		
-		container.style = inlineStyle({
-			position: "absolute",
+		overlay.className = "editor";
+		
+		document.body.appendChild(overlay);
+		overlay.appendChild(container);
+		
+		overlay.style = inlineStyle({
+			position: "fixed",
+			zIndex: 100,
+			display: "flex",
+			justifyContent: "center",
+			alignItems: "center",
 			top: 0,
+			right: 0,
+			bottom: 0,
 			left: 0,
+			//background: "#00000020",
 		});
 		
-		document.body.appendChild(container);
+		let {
+			width,
+			height,
+		} = windowOptions;
 		
-		await this.createDialogComponent[dialog](el, dialogOptions, () => {
-			document.body.removeChild(container);
+		container.style = inlineStyle({
+			width,
+			height,
+			border: "1px solid gray",
+			background: "white",
 		});
+		
+		platform.addToFocusStack(container);
+		
+		function close() {
+			overlay.parentNode.removeChild(overlay);
+			
+			platform.removeFromFocusStack(container);
+			
+			off(overlay, "mousedown", close);
+			off(window, "keydown", keydown);
+		}
+		
+		function keydown(e) {
+			if (e.key === "Escape" && !noCancel) {
+				e.preventDefault();
+				
+				close();
+				
+				return;
+			}
+		}
+		
+		on(container, "mousedown", function(e) {
+			e.stopPropagation();
+		});
+		
+		on(overlay, "mousedown", close);
+		on(window, "keydown", keydown);
+		
+		await this.createDialogComponent[dialog](container, dialogOptions, close);
 		
 		function resize() {
 			

@@ -17,8 +17,6 @@ let mounted = false;
 let isMounted = () => mounted;
 
 function mousedownTab(e, tab) {
-	e.preventDefault(); // prevent tab click blurring focused element
-	
 	if (e.button !== 0) {
 		return;
 	}

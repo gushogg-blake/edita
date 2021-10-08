@@ -220,7 +220,7 @@ button {
 }
 </style>
 
-<form bind:this={main} id="main" on:submit={submit}>
+<form bind:this={main} id="main" on:submit={submit} autocomplete="off">
 	<div class="inputs">
 		<label for="find">
 			<Accel label="Fi%nd"/>

@@ -17,6 +17,8 @@ function getDetails(tabs, tab) {
 }
 
 function select({detail: tab}) {
+	tab.editor.view.ignoreBlur(50);
+	
 	app.selectTab(tab);
 }
 

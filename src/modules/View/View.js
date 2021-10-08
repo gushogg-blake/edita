@@ -557,6 +557,10 @@ class View extends Evented {
 		}
 	}
 	
+	ignoreBlur(delay) {
+		this.fire("ignoreBlur", delay);
+	}
+	
 	uiMounted() {
 		this.mounted = true;
 		
