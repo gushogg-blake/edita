@@ -1,3 +1,4 @@
+let lid = require("utils/lid");
 let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
 let screenOffsets = require("utils/dom/screenOffsets");
@@ -7,7 +8,7 @@ module.exports = function(items, coords, noCancel=false) {
 		return;
 	}
 	
-	let focusStackItem = {};
+	let focusStackItem = lid();
 	
 	let {x, y} = coords;
 	
@@ -46,6 +47,16 @@ module.exports = function(items, coords, noCancel=false) {
 	
 	platform.addToFocusStack(focusStackItem);
 	
+	function click(item) {
+		if (platform.focusStackItem !== focusStackItem) {
+			return;
+		}
+		
+		item.onClick();
+		
+		close();
+	}
+	
 	function close() {
 		contextMenu.$destroy();
 		
@@ -59,13 +70,7 @@ module.exports = function(items, coords, noCancel=false) {
 	}
 	
 	contextMenu.$on("click", function({detail: item}) {
-		if (platform.focusStackItem !== focusStackItem) {
-			return;
-		}
-		
-		item.onClick();
-		
-		close();
+		click(item);
 	});
 	
 	function keydown(e) {
@@ -79,12 +84,13 @@ module.exports = function(items, coords, noCancel=false) {
 		
 		for (let item of items) {
 			if (item.label.toLowerCase().indexOf("%" + e.key.toLowerCase()) !== -1) {
-				item.onClick();
+				click(item);
 				
 				return;
 			}
 		}
 	}
+	
 	let {right, bottom} = screenOffsets(container);
 	
 	if (right < 0) {

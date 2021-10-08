@@ -44,6 +44,18 @@ function contextmenu({detail: {e, entry}}) {
 				fileTree.setRootDir(path);
 			},
 		},
+		
+		{
+			label: "Delete...",
+			
+			onClick() {
+				if (!confirm("Delete " + path + "?")) {
+					return;
+				}
+				
+				platform.fs(path).rmrf();
+			},
+		},
 	].filter(Boolean));
 }
 

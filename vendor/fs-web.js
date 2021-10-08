@@ -256,7 +256,6 @@ module.exports = function(dbName) {
 	}
 	
 	function watch(path, handler) {
-		console.log("watch", path, handler);
 		if (!watchers[path]) {
 			watchers[path] = [];
 		}

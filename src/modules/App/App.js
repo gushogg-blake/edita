@@ -45,7 +45,7 @@ class App extends Evented {
 	
 	async init() {
 		await Promise.all([
-			this.loadSession(),
+			this.loadSessionAndFilesToOpenOnStartup(),
 			this.fileTree.init(),
 		]);
 	}
@@ -153,7 +153,13 @@ class App extends Evented {
 	}
 	
 	async deleteTab(tab) {
-		console.log(tab);
+		if (!confirm("Delete " + tab.path + "?")) {
+			return;
+		}
+		
+		await platform.fs(tab.path).delete();
+		
+		this.closeTab(tab);
 	}
 	
 	showPane(name) {
@@ -351,7 +357,7 @@ class App extends Evented {
 		platform.setTitle(title);
 	}
 	
-	async loadSession() {
+	async loadSessionAndFilesToOpenOnStartup() {
 		let tabsToOpen = [];
 		let fileToSelect;
 		
@@ -376,12 +382,18 @@ class App extends Evented {
 		}));
 		
 		this.tabs = await bluebird.map(tabsToOpen, async ({path}) => {
-			return this.createTab(await platform.fs(path).read(), path);
-		});
+			try {
+				return this.createTab(await platform.fs(path).read(), path);
+			} catch (e) {
+				console.error(e);
+				
+				return null;
+			}
+		}).filter(Boolean);
 		
 		for (let details of tabsToOpen) {
 			if (!details.isNew) {
-				this.findTabByPath(details.path).restoreState(details);
+				this.findTabByPath(details.path)?.restoreState(details);
 			}
 		}
 		
