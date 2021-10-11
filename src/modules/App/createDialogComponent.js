@@ -6,8 +6,8 @@ could be made generic and moved to Base maybe
 
 module.exports = {
 	async snippetEditor(el, dialogOptions, onClose) {
-		let {snippetId} = dialogOptions;
-		let isNew = !snippetId;
+		let {id} = dialogOptions;
+		let isNew = !id;
 		let snippet;
 		
 		if (isNew) {
@@ -19,7 +19,7 @@ module.exports = {
 				isDynamic: false,
 			};
 		} else {
-			snippet = await platform.snippets.findById(snippetId);
+			snippet = await platform.snippets.findById(id);
 		}
 		
 		let snippetEditor = new base.components.SnippetEditor({
@@ -34,7 +34,7 @@ module.exports = {
 			if (isNew) {
 				await platform.snippets.create(snippet);
 			} else {
-				await platform.snippets.update(snippetId, snippet);
+				await platform.snippets.update(id, snippet);
 			}
 			
 			onClose();
