@@ -44,7 +44,7 @@ class Platform extends Common {
 			resourcePrefix: "",
 			init: null,
 			localStoragePrefix: "editor.",
-			fsKey: "editorFiles",
+			fsPrefix: "editorFs",
 			useSystemFocus: true,
 			...options,
 		};
@@ -57,24 +57,13 @@ class Platform extends Common {
 			loadScript(options.resourcePrefix + "/vendor/tree-sitter/tree-sitter.js"),
 		]);
 		
-		let fs = fsWeb(options.fsKey);
-		
-		this.fs = createFs({
-			fs,
-			path,
-			minimatch,
-			
-			cwd() {
-				return "/";
-			},
-	
-			watch(path, handler) {
-				return fs.watch(path, handler);
-			},
-		});
+		this.fs = this.createFs("files");
 		
 		this.prefs = this.loadJson("prefs") || defaultPrefs(this.systemInfo);
-		this.snippets = new Snippets(options.localStoragePrefix);
+		
+		this.snippets = new Snippets(this.createFs("snippets"));
+		
+		await this.snippets.init();
 		
 		if (options.init) {
 			await options.init();
@@ -88,6 +77,24 @@ class Platform extends Common {
 					break;
 				}
 			}
+		});
+	}
+	
+	createFs(key) {
+		let fs = fsWeb(this.options.fsKey + "-" + key);
+		
+		return createFs({
+			fs,
+			path,
+			minimatch,
+			
+			cwd() {
+				return "/";
+			},
+	
+			watch(path, handler) {
+				return fs.watch(path, handler);
+			},
 		});
 	}
 	

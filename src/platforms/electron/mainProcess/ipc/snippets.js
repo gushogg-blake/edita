@@ -17,7 +17,7 @@ module.exports = function(app) {
 	async function getNode(id) {
 		return (await snippetsDir.glob("*.json")).find(node => node.basename.endsWith("-" + id));
 	}
-
+	
 	return {
 		async load() {
 			return bluebird.map(snippetsDir.glob("*.json"), node => node.readJson());
