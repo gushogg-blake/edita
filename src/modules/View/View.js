@@ -372,18 +372,20 @@ class View extends Evented {
 			scrollPosition.row = Math.min(scrollPosition.row + bottomRowDiff, maxRow);
 		}
 		
-		let colBuffer = colWidth * 8;
-		
-		let [x] = this.screenCoordsFromRowCol(row, col);
-		
-		x -= this.sizes.marginOffset;
-		
-		if (x < 1) {
-			scrollPosition.x = Math.max(0, x - colBuffer);
-		}
-		
-		if (x > this.sizes.codeWidth - colBuffer) {
-			scrollPosition.x += x - this.sizes.codeWidth + colBuffer;
+		if (!platform.getPref("wrap")) {
+			let colBuffer = colWidth * 8;
+			
+			let [x] = this.screenCoordsFromRowCol(row, col);
+			
+			x -= this.sizes.marginOffset;
+			
+			if (x < 1) {
+				scrollPosition.x = Math.max(0, x - colBuffer);
+			}
+			
+			if (x > this.sizes.codeWidth - colBuffer) {
+				scrollPosition.x += x - this.sizes.codeWidth + colBuffer;
+			}
 		}
 		
 		this.fire("scroll");
