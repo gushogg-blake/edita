@@ -107,7 +107,7 @@ onMount(function() {
 
 <style type="text/scss">
 @import "mixins/flex-col";
-@import "classes/hide";
+@import "mixins/abs-sticky";
 
 #main {
 	display: grid;
@@ -154,6 +154,7 @@ onMount(function() {
 }
 
 #editor {
+	position: relative;
 	display: grid;
 	grid-template-rows: 1fr auto;
 	grid-template-columns: 1fr;
@@ -162,9 +163,17 @@ onMount(function() {
 }
 
 .tab {
+	@include abs-sticky;
+	
+	z-index: 0;
 	display: grid;
 	grid-template-rows: 1fr;
 	grid-template-columns: 1fr;
+	background: white;
+	
+	&.selected {
+		z-index: 1;
+	}
 }
 
 #findBarContainer {
@@ -225,7 +234,7 @@ onMount(function() {
 	</div>
 	<div id="editor">
 		{#each tabs as tab (tab)}
-			<div class="tab" class:hide={tab !== selectedTab}>
+			<div class="tab" class:selected={tab === selectedTab}>
 				<Tab {tab}/>
 			</div>
 		{/each}
