@@ -275,7 +275,7 @@ class View extends Evented {
 			let newX = Math.round(this.scrollPosition.x + x);
 			
 			newX = Math.max(0, newX);
-			newX = Math.min(scrollMax, newX);
+			newX = Math.min(newX, scrollMax);
 			
 			this.scrollPosition.x = newX;
 			
