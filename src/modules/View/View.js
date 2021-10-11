@@ -264,9 +264,18 @@ class View extends Evented {
 		let scrolled = false;
 		
 		if (x !== 0) {
+			let {
+				measurements: {colWidth},
+				sizes: {codeWidth},
+			} = this;
+			
+			let longestLineWidth = this.document.getLongestLineWidth();
+			let scrollWidth = longestLineWidth * colWidth + codeWidth;
+			let scrollMax = scrollWidth - codeWidth;
 			let newX = Math.round(this.scrollPosition.x + x);
 			
 			newX = Math.max(0, newX);
+			newX = Math.min(scrollMax, newX);
 			
 			this.scrollPosition.x = newX;
 			
