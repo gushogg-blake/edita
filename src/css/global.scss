@@ -1,7 +1,11 @@
 .editor {
 	--appBackgroundColor: #edecea;
-	--scrollbarWidth: 12px;
-	--scrollbarBorderColor: white;
+	--scrollbarThumbWidth: 8px;
+	--scrollbarPadding: 2px;
+	--scrollbarWidth: calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2);
+	--scrollbarBackgroundColor: white;
+	--scrollbarBorder: 1px solid #bababa;
+	--scrollbarThumbBackground: #B2B2B2;
 	--inputBorder: 1px solid #adaba6;
 	--appBorder: 1px solid #afacaa;
 	
@@ -32,12 +36,12 @@
 		}
 		
 		&::-webkit-scrollbar-thumb {
-			width: 8px;
-			height: 8px;
+			width: var(--scrollbarThumbWidth);
+			height: var(--scrollbarThumbWidth);
 			border-radius: 8px;
-			border: 2px solid var(--scrollbarBorderColor);
+			border: var(--scrollbarPadding) solid var(--scrollbarBackgroundColor);
 			background-clip: content-box;
-			background: #B2B2B2;
+			background: var(--scrollbarThumbBackground);
 		}
 		
 		&::-webkit-scrollbar-corner {

@@ -592,21 +592,18 @@ onMount(function() {
 @import "mixins/abs-sticky";
 @import "classes/hide";
 
-$scrollBarBorderWidth: 1px;
-$scrollBarBorder: $scrollBarBorderWidth solid #bababa;
-
 #main {
 	color: black;
 	display: grid;
 	grid-template-rows: 1fr 0;
-	grid-template-columns: 1fr calc(var(--scrollbarWidth) + #{$scrollBarBorderWidth});
+	grid-template-columns: 1fr auto;
 	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar spacer";
 	width: 100%;
 	height: 100%;
 	background: white;
 	
 	&.showingHorizontalScrollbar {
-		grid-template-rows: 1fr calc(var(--scrollbarWidth) + #{$scrollBarBorderWidth});
+		grid-template-rows: 1fr auto;
 	}
 	
 	&.textarea {
@@ -633,13 +630,13 @@ canvas {
 #verticalScrollbar {
 	position: relative;
 	grid-area: verticalScrollbar;
-	border-left: $scrollBarBorder;
+	border-left: var(--scrollbarBorder);
 }
 
 #horizontalScrollbar {
 	position: relative;
 	grid-area: horizontalScrollbar;
-	border-top: $scrollBarBorder;
+	border-top: var(--scrollbarBorder);
 }
 
 #scrollbarSpacer {

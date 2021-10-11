@@ -89,4 +89,8 @@ module.exports = {
 		
 		tab.restoreState(details);
 	},
+	
+	toggleWrap() {
+		platform.setPref("wrap", !platform.getPref("wrap"));
+	},
 };

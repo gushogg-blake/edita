@@ -117,6 +117,7 @@ module.exports = function(systemInfo) {
 			"Ctrl+Shift+T": "reopenLastClosedTab",
 			"Ctrl+PageUp": "selectPrevTab",
 			"Ctrl+PageDown": "selectNextTab",
+			"Ctrl+9": "toggleWrap",
 		},
 		
 		langs: {

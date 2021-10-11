@@ -1,14 +1,10 @@
 <script>
-import {createEventDispatcher, tick} from "svelte";
+import {onMount, createEventDispatcher, tick} from "svelte";
 import {on, off} from "utils/dom/domEvents";
 import inlineStyle from "utils/dom/inlineStyle";
 import sleep from "utils/sleep";
 
 export let orientation;
-
-let totalSize = 1;
-let pageSize = 1;
-let maxExpanderPages = 20; // thumb can get too small with many pages otherwise
 
 export function update(totalSize, pageSize, position) {
 	_update(totalSize, pageSize, position);
@@ -16,25 +12,23 @@ export function update(totalSize, pageSize, position) {
 
 let fire = createEventDispatcher();
 
-let main;
-let expander;
-//let settingScrollPosition;
-//let resetTimer;
-let mouseIsDown = false;
+let minThumbSize = 50;
+
+let thumbContainer;
+let totalSize = 1;
+let pageSize = 1;
+let position = 0;
+let containerSize = 0;
+let thumbSize = 0;
+let thumbRange = 0;
+let thumbOffset = 0;
+let startThumbOffset;
+
+let startEvent;
 
 let cssSizeKey = {
 	horizontal: "width",
 	vertical: "height",
-};
-
-let scrollSizeKey = {
-	horizontal: "scrollWidth",
-	vertical: "scrollHeight",
-};
-
-let scrollPositionKey = {
-	horizontal: "scrollLeft",
-	vertical: "scrollTop",
 };
 
 let offsetSizeKey = {
@@ -42,122 +36,128 @@ let offsetSizeKey = {
 	vertical: "offsetHeight",
 };
 
-function setScrollPosition(position) {
-	/*
-	NOTE scrollbars are updated on window focus so need to disable
-	this in that case (for scrolling the window when not already
-	focused) - and it doesn't seem to be needed anyway
-	*/
-	//settingScrollPosition = true;
-	
-	let divSize = main[offsetSizeKey[orientation]];
-	let scrollSize = main[scrollSizeKey[orientation]];
-	let max = scrollSize - divSize;
-	
-	main[scrollPositionKey[orientation]] = position * max;
-	
-	//if (resetTimer) {
-	//	clearTimeout(resetTimer);
-	//}
-	//
-	//resetTimer = setTimeout(function() {
-	//	settingScrollPosition = false;
-	//}, 150);
+let cssPositionKey = {
+	horizontal: "left",
+	vertical: "top",
+};
+
+let eventKey = {
+	horizontal: "clientX",
+	vertical: "clientY",
+};
+
+function updateContainerSize() {
+	containerSize = thumbContainer[offsetSizeKey[orientation]];
 }
 
-function scroll() {
-	//if (settingScrollPosition) {
-	//	return;
-	//}
-	
-	/*
-	only respond to user-initiated scrolls (scroll also fires when the div
-	changes size)
-	*/
-	
-	if (!mouseIsDown) {
-		return;
-	}
-	
-	let divSize = main[offsetSizeKey[orientation]];
-	let position = main[scrollPositionKey[orientation]];
-	let scrollSize = main[scrollSizeKey[orientation]];
-	let max = scrollSize - divSize;
-	
-	if (divSize === 0 || scrollSize === 0) {
-		return;
-	}
-	
-	fire("scroll", position / max);
+function updateThumbSize() {
+	thumbSize = Math.max(minThumbSize, Math.round(containerSize * pageSize / totalSize));
+}
+
+function updateThumbRange() {
+	thumbRange = containerSize - thumbSize;
+}
+
+function updateThumbOffset() {
+	thumbOffset = Math.floor(position * thumbRange);
 }
 
 function mousedown(e) {
-	mouseIsDown = true;
+	startEvent = e;
+	startThumbOffset = thumbOffset;
 	
 	on(window, "mouseup", mouseup);
+	on(window, "mousemove", mousemove);
+}
+
+function mousemove(e) {
+	let diff = e[eventKey[orientation]] - startEvent[eventKey[orientation]];
+	let newThumbOffset = startThumbOffset + diff;
+	
+	newThumbOffset = Math.max(0, newThumbOffset);
+	newThumbOffset = Math.min(newThumbOffset, thumbRange);
+	
+	thumbOffset = newThumbOffset;
+	
+	fire("scroll", thumbOffset / thumbRange);
 }
 
 function mouseup() {
-	mouseIsDown = false;
-	
 	off(window, "mouseup", mouseup);
+	off(window, "mousemove", mousemove);
 }
 
-function _update(_totalSize, _pageSize, position) {
+function _update(_totalSize, _pageSize, _position) {
 	totalSize = _totalSize;
 	pageSize = _pageSize;
+	position = _position;
 	
-	let pages = Math.min(totalSize / pageSize, maxExpanderPages);
-	
-	expander.style[cssSizeKey[orientation]] = pages * 100 + "%";
-	
-	setScrollPosition(position);
+	updateContainerSize();
+	updateThumbSize();
+	updateThumbRange();
+	updateThumbOffset();
 }
+
+$: thumbStyle = {
+	[cssSizeKey[orientation]]: thumbSize,
+	[cssPositionKey[orientation]]: thumbOffset,
+};
+
+onMount(function() {
+	updateThumbSize();
+	updateThumbRange();
+});
 </script>
 
 <style type="text/scss">
 #main {
-	position: absolute;
+	padding: var(--scrollbarPadding);
 	
 	&.vertical {
-		top: 0;
-		right: 0;
-		bottom: 0;
-		width: 50px;
-		overflow-y: scroll;
-		overflow-x: hidden;
+		height: 100%;
 	}
 	
 	&.horizontal {
-		right: 0;
-		bottom: 0;
-		left: 0;
-		height: 50px;
-		overflow-x: scroll;
-		overflow-y: hidden;
+		width: 100%;
 	}
 }
 
-#expander {
+#thumbContainer {
+	position: relative;
+	
+	.vertical & {
+		width: var(--scrollbarThumbWidth);
+		height: 100%;
+	}
+	
+	.horizontal & {
+		width: 100%;
+		height: var(--scrollbarThumbWidth);
+	}
+}
+
+#thumb {
+	position: absolute;
+	border-radius: 8px;
+	background: var(--scrollbarThumbBackground);
+	
 	.vertical & {
 		width: 100%;
 	}
 	
 	.horizontal & {
-		height: 50px;
+		height: 100%;
 	}
 }
+
 </style>
 
-<div
-	id="main"
-	bind:this={main}
-	class={orientation}
-	on:scroll={scroll}
-	on:mousedown={mousedown}
->
-	<div
-		id="expander"
-		bind:this={expander}
-	></div>
+<div id="main" class={orientation}>
+	<div bind:this={thumbContainer} id="thumbContainer">
+		<div
+			id="thumb"
+			style={inlineStyle(thumbStyle)}
+			on:mousedown={mousedown}
+		></div>
+	</div>
 </div>
