@@ -6,6 +6,7 @@ let {c} = Cursor;
 
 module.exports = {
 	toggleComment(comment) {
+		let {document} = this;
 		let {start, end} = this.view.Selection.sort();
 		
 		let [startLineIndex, endLineIndex] = (
@@ -15,9 +16,12 @@ module.exports = {
 		);
 		
 		let selection = s(c(startLineIndex, 0), c(endLineIndex - 1, Infinity));
-		let replaceWith = this.document.langFromCursor(c(startLineIndex, this.document.lines[startLineIndex].indentOffset))[comment ? "commentLines" : "uncommentLines"](this.document, startLineIndex, endLineIndex);
+		let langCursor = c(startLineIndex, document.lines[startLineIndex].indentOffset);
+		let method = comment ? "commentLines" : "uncommentLines";
+		let lang = document.langFromCursor(langCursor);
+		let replaceWith = lang[method](document, startLineIndex, endLineIndex);
 		
-		let edits = [this.document.edit(selection, replaceWith)];
+		let edits = [document.edit(selection, replaceWith)];
 		
 		this.applyAndAddHistoryEntry({
 			edits,
