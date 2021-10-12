@@ -101,6 +101,7 @@ function _update(_totalSize, _pageSize, _position) {
 $: thumbStyle = {
 	[cssSizeKey[orientation]]: thumbSize,
 	[cssPositionKey[orientation]]: thumbOffset,
+	visibility: thumbSize === containerSize ? "hidden" : "visible",
 };
 
 onMount(function() {
