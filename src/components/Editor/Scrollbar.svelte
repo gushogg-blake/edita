@@ -114,6 +114,7 @@ onMount(function() {
 
 #thumbContainer {
 	position: relative;
+	overflow: hidden;
 	
 	.vertical & {
 		width: var(--scrollbarThumbWidth);
