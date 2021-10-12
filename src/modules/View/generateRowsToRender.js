@@ -96,6 +96,8 @@ function *generateRowsToRender() {
 	line is wrapped and we're scrolled right to the bottom, there will be no
 	visible line at first when switching back to the tab.  the next resize will
 	re-wrap the lines and rerender.
+	
+	NOTE not sure if this is true anymore
 	*/
 	
 	if (!firstVisibleLine) {

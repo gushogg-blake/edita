@@ -373,7 +373,7 @@ class View extends Evented {
 		}
 		
 		if (!platform.getPref("wrap")) {
-			let colBuffer = colWidth * 8;
+			let colBuffer = colWidth * 4;
 			
 			let [x] = this.screenCoordsFromRowCol(row, col);
 			
