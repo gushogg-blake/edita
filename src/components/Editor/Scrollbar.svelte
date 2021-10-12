@@ -53,16 +53,18 @@ function mousedown(e) {
 }
 
 function mousemove(e) {
-	let diff = e[eventKey] - startEvent[eventKey];
-	let newThumbOffset = startThumbOffset + diff;
-	
-	newThumbOffset = Math.max(0, newThumbOffset);
-	newThumbOffset = Math.min(newThumbOffset, thumbRange);
-	
-	thumbOffset = newThumbOffset;
-	position = thumbOffset / thumbRange;
-	
-	fire("scroll", position);
+	requestAnimationFrame(function() {
+		let diff = e[eventKey] - startEvent[eventKey];
+		let newThumbOffset = startThumbOffset + diff;
+		
+		newThumbOffset = Math.max(0, newThumbOffset);
+		newThumbOffset = Math.min(newThumbOffset, thumbRange);
+		
+		thumbOffset = newThumbOffset;
+		position = thumbOffset / thumbRange;
+		
+		fire("scroll", position);
+	});
 }
 
 function mouseup() {
@@ -122,14 +124,13 @@ onMount(function() {
 	background: var(--scrollbarThumbBackground);
 	
 	.vertical & {
-		width: 100%;
+		width: var(--scrollbarWidth);
 	}
 	
 	.horizontal & {
-		height: 100%;
+		height: var(--scrollbarWidth);
 	}
 }
-
 </style>
 
 <div id="main" class={orientation}>
