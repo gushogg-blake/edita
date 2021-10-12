@@ -28,7 +28,7 @@ module.exports = class Scope {
 	}
 	
 	parse() {
-		console.time("parse (" + this.lang.code + ")");
+		//console.time("parse (" + this.lang.code + ")");
 		
 		try {
 			let parser = new TreeSitter();
@@ -45,7 +45,7 @@ module.exports = class Scope {
 			console.error(e);
 		}
 		
-		console.timeEnd("parse (" + this.lang.code + ")");
+		//console.timeEnd("parse (" + this.lang.code + ")");
 	}
 	
 	edit(edit, index, newRanges, code) {

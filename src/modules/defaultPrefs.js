@@ -24,6 +24,8 @@ module.exports = function(systemInfo) {
 			stopAtProjectRoot: true,
 		},
 		
+		copyLineIfSelectionNotFull: false,
+		
 		normalKeymap: {
 			"ArrowUp": "up",
 			"ArrowDown": "down",

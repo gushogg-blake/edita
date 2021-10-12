@@ -304,18 +304,19 @@ class Editor extends Evented {
 	
 	async normalKeydown(key, keyCombo, isModified) {
 		let fnName = platform.prefs.normalKeymap[keyCombo];
+		let flags;
 		
 		if (fnName) {
-			await this.normalKeyboard[fnName]();
+			flags = await this.normalKeyboard[fnName]();
 		} else if (!isModified && key.length === 1) {
-			this.normalKeyboard.insert(key);
+			flags = this.normalKeyboard.insert(key);
 		} else {
 			return;
 		}
 		
-		if (![
-			"copy",
-		].includes(fnName)) {
+		flags = flags || [];
+		
+		if (!flags.includes("noScrollCursorIntoView")) {
 			this.view.ensureSelectionIsOnScreen();
 		}
 		
@@ -346,9 +347,12 @@ class Editor extends Evented {
 			return;
 		}
 		
-		await this.commonKeyboard[fnName]();
+		let flags = await this.commonKeyboard[fnName]() || [];
 		
-		this.view.ensureSelectionIsOnScreen();
+		if (!flags.includes("noScrollCursorIntoView")) {
+			this.view.ensureSelectionIsOnScreen();
+		}
+		
 		this.view.redraw();
 	}
 	
@@ -381,8 +385,8 @@ class Editor extends Evented {
 			this.completeWordSession = null;
 		}
 		
-		console.log(this.document.lines[selection.start.lineIndex]);
-		console.log(this.document.getNodesOnLine(selection.start.lineIndex));
+		//console.log(this.document.lines[selection.start.lineIndex]);
+		//console.log(this.document.getNodesOnLine(selection.start.lineIndex));
 	}
 	
 	setAstSelection(selection) {
@@ -390,7 +394,8 @@ class Editor extends Evented {
 	}
 	
 	adjustIndent(adjustment) {
-		let {start, end} = Selection.sort(this.normalSelection);
+		let selection = Selection.sort(this.normalSelection);
+		let {start, end} = selection;
 		let edits = [];
 		
 		for (let lineIndex = start.lineIndex; lineIndex <= end.lineIndex; lineIndex++) {
@@ -401,7 +406,11 @@ class Editor extends Evented {
 			edits.push(this.document.edit(indentationSelection, this.document.fileDetails.indentation.string.repeat(indentLevel)));
 		}
 		
-		let newSelection = s(c(start.lineIndex, 0), c(end.lineIndex, this.document.lines[end.lineIndex].string.length + adjustment));
+		let newSelection = (
+			Selection.isFull(selection)
+			? s(c(start.lineIndex, 0), c(end.lineIndex, Infinity))
+			: s(c(start.lineIndex, Math.max(0, start.offset + adjustment)))
+		);
 		
 		this.applyAndAddHistoryEntry({
 			edits,

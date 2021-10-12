@@ -302,16 +302,20 @@ module.exports = {
 		}
 		
 		this.clearBatchState();
+		
+		return ["noScrollCursorIntoView"];
 	},
 	
 	shiftTab() {
 		if (this.snippetSession) {
 			this.prevTabstop();
-		} else if (this.view.Selection.isMultiline()) {
+		} else {
 			this.dedentSelection();
 		}
 		
 		this.clearBatchState();
+		
+		return ["noScrollCursorIntoView"];
 	},
 	
 	completeWord() {
@@ -438,12 +442,13 @@ module.exports = {
 	},
 	
 	async copy() {
-		// TODO line if not full selection?
-		if (!this.view.Selection.isFull()) {
-			return;
+		if (this.view.Selection.isFull()) {
+			await platform.clipboard.write(this.getSelectedText());
+		} else if (platform.getPref("copyLineIfSelectionNotFull")) {
+			await platform.clipboard.write(this.document.lines[this.normalSelection.start.lineIndex].string);
 		}
 		
-		await platform.clipboard.write(this.getSelectedText());
+		return ["noScrollCursorIntoView"];
 	},
 	
 	async paste() {

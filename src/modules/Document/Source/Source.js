@@ -45,7 +45,7 @@ module.exports = class {
 	}
 	
 	edit(edit) {
-		console.time("edit");
+		//console.time("edit");
 		
 		let {
 			selection,
@@ -63,7 +63,7 @@ module.exports = class {
 			this.rootScope.edit(edit, index, [this.getContainingRange()], this.string);
 		}
 		
-		console.timeEnd("edit");
+		//console.timeEnd("edit");
 	}
 	
 	findFirstNodeToRender(lineIndex) {
