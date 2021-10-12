@@ -26,28 +26,17 @@ let startThumbOffset;
 
 let startEvent;
 
-let cssSizeKey = {
-	horizontal: "width",
-	vertical: "height",
-};
+function key(horizontal, vertical) {
+	return {horizontal, vertical}[orientation];
+}
 
-let offsetSizeKey = {
-	horizontal: "offsetWidth",
-	vertical: "offsetHeight",
-};
-
-let cssPositionKey = {
-	horizontal: "left",
-	vertical: "top",
-};
-
-let eventKey = {
-	horizontal: "clientX",
-	vertical: "clientY",
-};
+let cssSizeKey = key("width", "height");
+let offsetSizeKey = key("offsetWidth", "offsetHeight");
+let cssPositionKey = key("left", "top");
+let eventKey = key("clientX", "clientY");
 
 function updateContainerSize() {
-	containerSize = thumbContainer[offsetSizeKey[orientation]];
+	containerSize = thumbContainer[offsetSizeKey];
 }
 
 function updateThumbSize() {
@@ -71,7 +60,7 @@ function mousedown(e) {
 }
 
 function mousemove(e) {
-	let diff = e[eventKey[orientation]] - startEvent[eventKey[orientation]];
+	let diff = e[eventKey] - startEvent[eventKey];
 	let newThumbOffset = startThumbOffset + diff;
 	
 	newThumbOffset = Math.max(0, newThumbOffset);
@@ -99,8 +88,8 @@ function _update(_totalSize, _pageSize, _position) {
 }
 
 $: thumbStyle = {
-	[cssSizeKey[orientation]]: thumbSize,
-	[cssPositionKey[orientation]]: thumbOffset,
+	[cssSizeKey]: thumbSize,
+	[cssPositionKey]: thumbOffset,
 	visibility: thumbSize === containerSize ? "hidden" : "visible",
 };
 
