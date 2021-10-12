@@ -546,4 +546,8 @@ module.exports = {
 	unwrap() {
 		this.astMode.commands.unwrap();
 	},
+	
+	clearHilites() {
+		this.find.clearHilites();
+	},
 };

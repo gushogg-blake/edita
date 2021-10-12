@@ -5,6 +5,7 @@
 	--scrollbarWidth: calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2);
 	--scrollbarBackgroundColor: white;
 	--scrollbarBorder: 1px solid #bababa;
+	--scrollbarThumbBorder: var(--scrollbarPadding) solid var(--scrollbarBackgroundColor);
 	--scrollbarThumbBackground: #B2B2B2;
 	--inputBorder: 1px solid #adaba6;
 	--appBorder: 1px solid #afacaa;

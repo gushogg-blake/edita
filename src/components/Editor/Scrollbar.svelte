@@ -14,16 +14,18 @@ let fire = createEventDispatcher();
 
 let minThumbSize = 50;
 
-let thumbContainer;
 let totalSize = 1;
 let pageSize = 1;
 let position = 0;
+
+let thumbContainer;
+
 let containerSize = 0;
 let thumbSize = 0;
 let thumbRange = 0;
 let thumbOffset = 0;
-let startThumbOffset;
 
+let startThumbOffset;
 let startEvent;
 
 function key(horizontal, vertical) {
@@ -35,19 +37,10 @@ let offsetSizeKey = key("offsetWidth", "offsetHeight");
 let cssPositionKey = key("left", "top");
 let eventKey = key("clientX", "clientY");
 
-function updateContainerSize() {
+function updateSizes() {
 	containerSize = thumbContainer[offsetSizeKey];
-}
-
-function updateThumbSize() {
 	thumbSize = Math.max(minThumbSize, Math.round(containerSize * pageSize / totalSize));
-}
-
-function updateThumbRange() {
 	thumbRange = containerSize - thumbSize;
-}
-
-function updateThumbOffset() {
 	thumbOffset = Math.floor(position * thumbRange);
 }
 
@@ -67,8 +60,9 @@ function mousemove(e) {
 	newThumbOffset = Math.min(newThumbOffset, thumbRange);
 	
 	thumbOffset = newThumbOffset;
+	position = thumbOffset / thumbRange;
 	
-	fire("scroll", thumbOffset / thumbRange);
+	fire("scroll", position);
 }
 
 function mouseup() {
@@ -81,10 +75,7 @@ function _update(_totalSize, _pageSize, _position) {
 	pageSize = _pageSize;
 	position = _position;
 	
-	updateContainerSize();
-	updateThumbSize();
-	updateThumbRange();
-	updateThumbOffset();
+	updateSizes();
 }
 
 $: thumbStyle = {
@@ -94,15 +85,12 @@ $: thumbStyle = {
 };
 
 onMount(function() {
-	updateThumbSize();
-	updateThumbRange();
+	updateSizes();
 });
 </script>
 
 <style type="text/scss">
 #main {
-	padding: var(--scrollbarPadding);
-	
 	&.vertical {
 		height: 100%;
 	}
@@ -117,18 +105,19 @@ onMount(function() {
 	overflow: hidden;
 	
 	.vertical & {
-		width: var(--scrollbarThumbWidth);
+		width: var(--scrollbarWidth);
 		height: 100%;
 	}
 	
 	.horizontal & {
 		width: 100%;
-		height: var(--scrollbarThumbWidth);
+		height: var(--scrollbarWidth);
 	}
 }
 
 #thumb {
 	position: absolute;
+	border: var(--scrollbarThumbBorder);
 	border-radius: 8px;
 	background: var(--scrollbarThumbBackground);
 	

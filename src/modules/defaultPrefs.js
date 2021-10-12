@@ -68,6 +68,8 @@ module.exports = function(systemInfo) {
 			
 			"Alt+W": "wrap",
 			"Alt+U": "unwrap",
+			
+			"Ctrl+K": "clearHilites",
 		},
 		
 		astKeymap: {
