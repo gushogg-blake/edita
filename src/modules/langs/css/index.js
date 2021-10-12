@@ -130,6 +130,24 @@ module.exports = {
 		return "symbol";
 	},
 	
+	commentLines(document, startLineIndex, endLineIndex) {
+		let lines = document.lines.slice(startLineIndex, endLineIndex);
+		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
+		let minIndent = document.fileDetails.indentation.string.repeat(minIndentLevel);
+		
+		return lines.map(function(line) {
+			return line.string.replace(new RegExp("^" + minIndent), minIndent + "/*") + "*/";
+		}).join(document.fileDetails.newline);
+	},
+	
+	uncommentLines(document, startLineIndex, endLineIndex) {
+		let lines = document.lines.slice(startLineIndex, endLineIndex);
+		
+		return lines.map(function(line) {
+			return line.string.replace(/^(\s*)\/\*/, "$1").replace(/\*\/$/, "");
+		}).join(document.fileDetails.newline);
+	},
+	
 	getSupportLevel(code, path) {
 		if (!path) {
 			return null; //
