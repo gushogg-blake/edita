@@ -144,6 +144,7 @@ module.exports = function(systemInfo) {
 					attribute: "#871f78",
 					string: "#2233bb",
 					text: "#000000",
+					comment: "#7f7f7f",
 				},
 			},
 			

@@ -148,6 +148,10 @@ module.exports = {
 			return "string";
 		}
 		
+		if (type === "comment") {
+			return "comment";
+		}
+		
 		return "text";
 	},
 	
