@@ -433,4 +433,8 @@ module.exports = {
 	screenRowFromLineIndex(lineIndex) {
 		return this.getLineStartingRow(lineIndex) - Math.ceil(this.scrollPosition.y * this.measurements.rowHeight);
 	},
+	
+	screenYFromLineIndex(lineIndex) {
+		return this.getLineStartingRow(lineIndex) * this.measurements.rowHeight - this.scrollPosition.y;
+	},
 };
