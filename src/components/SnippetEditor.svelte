@@ -51,7 +51,6 @@ let keymap = {
 };
 
 function keydown(e) {
-	console.log(e);
 	let {keyCombo} = getKeyCombo(e);
 	let fnName = keymap[keyCombo];
 	
