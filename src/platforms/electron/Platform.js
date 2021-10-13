@@ -5,6 +5,7 @@ let get = require("lodash.get");
 let set = require("lodash.set");
 
 let screenOffsets = require("utils/dom/screenOffsets");
+let promiseWithMethods = require("utils/promiseWithMethods");
 let defaultPrefs = require("modules/defaultPrefs");
 let contextMenu = require("modules/contextMenu");
 
@@ -58,6 +59,12 @@ class Platform extends Common {
 		
 		ipcRenderer.on("open", (e, files) => {
 			this.fire("openFromElectronSecondInstance", files);
+		});
+		
+		ipcRenderer.handle("messageBoxResponse", (e, response) => {
+			if (this.messageBoxPromise) {
+				this.messageBoxPromise.resolve(response);
+			}
 		});
 	}
 	
@@ -121,11 +128,18 @@ class Platform extends Common {
 	}
 	
 	showMessageBox(options) {
-		return ipc.dialog.showMessageBox({
-			normalizeAccessKeys: true,
-			...options,
-			buttons: options.buttons.map(button => button.replaceAll("%", "&")),
+		let promise = promiseWithMethods();
+		
+		ipc.openDialogWindow("messageBox", options, {
+			useOpenerAsParent: true,
+			modal: true,
+			width: 500,
+			height: 200,
 		});
+		
+		this.messageBoxPromise = promise;
+		
+		return promise;
 	}
 	
 	showContextMenu(e, items, noCancel=false) {

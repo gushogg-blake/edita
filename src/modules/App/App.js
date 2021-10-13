@@ -128,7 +128,7 @@ class App extends Evented {
 		} = tab.editor.document;
 		
 		if (modified) {
-			let {response} = await platform.showMessageBox({
+			let response = await platform.showMessageBox({
 				message: "Save changes to " + tab.name + "?",
 				buttons: ["%Yes", "%No", "%Cancel"],
 			});
@@ -139,7 +139,7 @@ class App extends Evented {
 				if (!path) {
 					return;
 				}
-			} else if (response === 2) {
+			} else if (response !== 1) {
 				return;
 			}
 		}
@@ -569,7 +569,7 @@ class App extends Evented {
 		
 		let tabNames = modifiedTabs.map(tab => tab.name).join(", ");
 		
-		let {response} = await platform.showMessageBox({
+		let response = await platform.showMessageBox({
 			message: "Save changes to " + tabNames + "?",
 			buttons: ["%Yes", "%No", "%Cancel"],
 		});
@@ -582,7 +582,7 @@ class App extends Evented {
 					return;
 				}
 			}
-		} else if (response === 2) {
+		} else if (response !== 2) {
 			return;
 		}
 		

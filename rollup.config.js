@@ -125,6 +125,18 @@ if (!platform || platform === "all" || platform === "electron") {
 		
 		onwarn,
 	}, {
+		input: "src/platforms/electron/dialogs/messageBox/main.js",
+		
+		output: {
+			sourcemap: dev,
+			format: "iife",
+			file: "src/platforms/electron/public/build/dialogs/messageBox/main.js",
+		},
+		
+		plugins: electronPlugins(),
+		
+		onwarn,
+	}, {
 		input: "src/platforms/electron/dialogs/snippetEditor/main.js",
 		
 		output: {

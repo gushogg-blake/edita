@@ -9,9 +9,5 @@ module.exports = function(app) {
 		showSave(e, options) {
 			return dialog.showSaveDialog(app.browserWindowFromEvent(e), options);
 		},
-		
-		showMessageBox(e, options) {
-			return dialog.showMessageBox(app.browserWindowFromEvent(e), options);
-		},
 	};
 }

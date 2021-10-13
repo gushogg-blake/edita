@@ -10,10 +10,12 @@ module.exports = {
 		this.setNormalSelection(selection);
 		
 		let {rows} = this.view.sizes;
+		let {rowHeight} = this.view.measurements;
 		let [selectionRow] = this.view.rowColFromCursor(selection.start);
 		let scrollToRow = selectionRow - Math.ceil(rows / 2);
+		let scrollTop = scrollToRow * rowHeight;
 		
-		this.view.setVerticalScroll(scrollToRow);
+		this.view.setVerticalScroll(scrollTop);
 		this.view.redraw();
 	},
 	
