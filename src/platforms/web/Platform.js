@@ -57,6 +57,7 @@ class Platform extends Common {
 		]);
 		
 		this.fs = this.createFs("files");
+		this.backupFs = this.createFs("backups");
 		
 		this.prefs = this.loadJson("prefs") || defaultPrefs(this.systemInfo);
 		
@@ -122,9 +123,7 @@ class Platform extends Common {
 	backup(path, code) {
 		let name = (path || "(new file)").replaceAll("/", "_");
 		
-		this.fs("/backups", name).write(code, {
-			mkdirp: true,
-		});
+		this.backupFs(name).write(code);
 	}
 	
 	async filesFromDropEvent(e) {
