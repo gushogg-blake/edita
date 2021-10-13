@@ -80,10 +80,10 @@ class Platform extends Common {
 	}
 	
 	createFs(key) {
-		let backend = fsWeb(this.options.fsPrefix + "-" + key);
+		let fs = fsWeb(this.options.fsPrefix + "-" + key);
 		
-		let fs = createFs({
-			fs: backend,
+		return createFs({
+			fs,
 			path,
 			minimatch,
 			
@@ -93,8 +93,8 @@ class Platform extends Common {
 				for (let i = 1; i <= dirs.length; i++) {
 					let path = "/" + dirs.slice(0, i).join("/");
 					
-					if (!await fs(path).exists()) {
-						await backend.mkdir(path);
+					if (!await fs.exists(path)) {
+						await fs.mkdir(path);
 					}
 				}
 			},
@@ -104,11 +104,9 @@ class Platform extends Common {
 			},
 	
 			watch(path, handler) {
-				return backend.watch(path, handler);
+				return fs.watch(path, handler);
 			},
 		});
-		
-		return fs;
 	}
 	
 	async save(path, code) {
