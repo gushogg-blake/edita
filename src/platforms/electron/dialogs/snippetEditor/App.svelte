@@ -1,5 +1,6 @@
 <script>
 import {onMount} from "svelte";
+import getKeyCombo from "utils/getKeyCombo";
 import clickButtonFromAccel from "utils/dom/clickButtonFromAccel";
 import SnippetEditor from "components/SnippetEditor.svelte";
 
@@ -15,9 +16,26 @@ function cancel() {
 	window.close();
 }
 
+let functions = {
+	close() {
+		window.close();
+	},
+};
+
+let keymap = {
+	"Escape": "close",
+};
+
 function keydown(e) {
 	if (clickButtonFromAccel(e)) {
 		return;
+	}
+	
+	let {keyCombo} = getKeyCombo(e);
+	let fnName = keymap[keyCombo];
+	
+	if (fnName) {
+		functions[fnName]();
 	}
 }
 </script>
