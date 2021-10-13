@@ -99,6 +99,14 @@ class Platform extends Common {
 		return filePath || null;
 	}
 	
+	backup(path, code) {
+		let name = (path || "(new file)").replaceAll("/", "_") + "-" + new Date();
+		
+		this.fs(this.config.userDataDir, "backups", name).write(code, {
+			mkdirp: true,
+		});
+	}
+	
 	filesFromDropEvent(e) {
 		return [...e.dataTransfer.files].map(function(file) {
 			return {

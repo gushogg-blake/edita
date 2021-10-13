@@ -1,4 +1,5 @@
 let Evented = require("utils/Evented");
+let throttle = require("utils/throttle");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
@@ -28,6 +29,10 @@ class Document extends Evented {
 		this.historyIndex = 0;
 		this.modified = false;
 		this.historyIndexAtSave = 0;
+		
+		this.throttledBackup = throttle(() => {
+			platform.backup(this.path, this.string);
+		}, 15000);
 	}
 	
 	get lang() {
@@ -114,6 +119,8 @@ class Document extends Evented {
 		this.source.edit(edit);
 		
 		this.modified = true;
+		
+		this.throttledBackup();
 		
 		this.fire("edit", edit);
 	}

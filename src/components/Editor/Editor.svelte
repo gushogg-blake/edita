@@ -591,12 +591,14 @@ onMount(function() {
 
 #main {
 	color: black;
+	position: relative;
 	display: grid;
 	grid-template-rows: 1fr 0;
 	grid-template-columns: 1fr auto;
 	grid-template-areas: "canvas verticalScrollbar" "horizontalScrollbar spacer";
 	width: 100%;
 	height: 100%;
+	overflow: hidden;
 	background: white;
 	
 	&.showingHorizontalScrollbar {
@@ -718,6 +720,5 @@ canvas {
 	{#if showingHorizontalScrollbar}
 		<div id="scrollbarSpacer"></div>
 	{/if}
+	<div id="measurements" bind:this={measurementsDiv}></div>
 </div>
-
-<div id="measurements" bind:this={measurementsDiv}></div>

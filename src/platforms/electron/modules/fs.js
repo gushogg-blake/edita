@@ -2,6 +2,7 @@ let path = require("path");
 let fsExtra = require("fs-extra");
 let minimatch = require("minimatch");
 let glob = require("glob");
+let mkdirp = require("mkdirp");
 let chokidar = require("chokidar");
 let fileIsBinary = require("vendor/fileIsBinary");
 let fs = require("modules/fs");
@@ -11,6 +12,7 @@ module.exports = fs({
 	path,
 	minimatch,
 	glob,
+	mkdirp,
 	fileIsBinary,
 	
 	cwd() {

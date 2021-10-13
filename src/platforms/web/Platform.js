@@ -107,6 +107,12 @@ class Platform extends Common {
 		return name ? "/" + name : null;
 	}
 	
+	backup(path, code) {
+		let name = (path || "(new file)").replaceAll("/", "_");
+		
+		this.fs("/backups", name).write(code);
+	}
+	
 	async filesFromDropEvent(e) {
 		return bluebird.map([...e.dataTransfer.files], async function(file) {
 			return {

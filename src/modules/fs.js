@@ -7,6 +7,7 @@ module.exports = function(backends) {
 		path: osPath,
 		minimatch,
 		glob,
+		mkdirp,
 		watch,
 		cwd,
 		fileIsBinary,
@@ -261,8 +262,8 @@ module.exports = function(backends) {
 			return JSON.parse(await this.read());
 		}
 		
-		writeJson(json) {
-			return this.write(JSON.stringify(json, null, 4));
+		writeJson(json, options={}) {
+			return this.write(JSON.stringify(json, null, 4), options);
 		}
 		
 		async read() {
@@ -273,7 +274,16 @@ module.exports = function(backends) {
 			return (await fs.readFile(this.path)).toString();
 		}
 		
-		async write(data) {
+		async write(data, options={}) {
+			options = {
+				mkdirp: false,
+				...options,
+			};
+			
+			if (options.mkdirp) {
+				await this.parent.mkdirp();
+			}
+			
 			return fs.writeFile(this.path, data);
 		}
 		
