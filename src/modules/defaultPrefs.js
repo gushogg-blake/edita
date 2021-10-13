@@ -113,14 +113,19 @@ module.exports = function(systemInfo) {
 			"Ctrl+O": "open",
 			"Ctrl+S": "save",
 			"Ctrl+N": "_new",
+			
 			"Ctrl+F": "find",
 			"Ctrl+Shift+F": "findInOpenFiles",
 			"Ctrl+H": "replace",
 			"Ctrl+Shift+H": "replaceInOpenFiles",
+			
 			"Ctrl+W": "closeTab",
 			"Ctrl+Shift+T": "reopenLastClosedTab",
+			"Ctrl+Shift+W": "closeAllTabs",
+			
 			"Ctrl+PageUp": "selectPrevTab",
 			"Ctrl+PageDown": "selectNextTab",
+			
 			"Ctrl+9": "toggleWrap",
 		},
 		

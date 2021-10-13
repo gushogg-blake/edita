@@ -77,6 +77,12 @@ module.exports = {
 		this.closeTab(this.selectedTab);
 	},
 	
+	async closeAllTabs() {
+		for (let tab of this.tabs) {
+			await this.closeTab(tab);
+		}
+	},
+	
 	async reopenLastClosedTab() {
 		let details = this.closedTabs.shift();
 		
