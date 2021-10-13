@@ -157,6 +157,9 @@ class Editor extends Evented {
 	}
 	
 	onDocumentSave() {
+		this.view.updateWrappedLines();
+		this.view.redraw();
+		
 		this.clearBatchState();
 	}
 	
@@ -255,38 +258,6 @@ class Editor extends Evented {
 		this.view.updateSelectionEndCol();
 		this.view.ensureSelectionIsOnScreen();
 		this.view.startCursorBlink();
-		this.view.redraw();
-	}
-	
-	async save() {
-		let {document} = this;
-		
-		if (!document.path) {
-			return this.saveAs();
-		}
-		
-		await document.save();
-		
-		this.onSave();
-		
-		return document.path;
-	}
-	
-	async saveAs() {
-		let {document} = this;
-		let path = await platform.saveAs();
-		
-		if (path) {
-			await document.saveAs(path);
-		}
-		
-		this.onSave();
-		
-		return document.path;
-	}
-	
-	onSave() {
-		this.view.updateWrappedLines();
 		this.view.redraw();
 	}
 	

@@ -28,6 +28,7 @@ class App extends Evented {
 		this.tabs = [];
 		this.selectedTab = null;
 		this.closedTabs = [];
+		this.lastSelectedPath = null;
 		
 		this.panes = platform.getPref("panes");
 		
@@ -58,8 +59,28 @@ class App extends Evented {
 		]);
 	}
 	
-	save(tab) {
-		return tab.editor.save();
+	async save(tab) {
+		let {document} = tab.editor;
+		
+		if (tab.path) {
+			await document.save();
+		} else {
+			let dir = platform.systemInfo.homeDir;
+			
+			if (this.lastSelectedPath) {
+				dir = platform.fs(this.lastSelectedPath).parent.path;
+			}
+			
+			let path = await platform.saveAs({
+				defaultPath: dir,
+			});
+			
+			if (path) {
+				await document.saveAs(path);
+			}
+		}
+		
+		return tab.path;
 	}
 	
 	async renameTab(tab) {
@@ -89,6 +110,10 @@ class App extends Evented {
 		tab.editor.view.show();
 		
 		this.updateTitle();
+		
+		if (tab.path) {
+			this.lastSelectedPath = tab.path;
+		}
 		
 		this.fire("selectTab");
 		

@@ -31,7 +31,6 @@ class App extends Evented {
 	}
 	
 	async save(snippet) {
-		console.trace("save");
 		if (this.isNew) {
 			await platform.snippets.create(snippet);
 		} else {
