@@ -80,21 +80,35 @@ class Platform extends Common {
 	}
 	
 	createFs(key) {
-		let fs = fsWeb(this.options.fsKey + "-" + key);
+		let backend = fsWeb(this.options.fsPrefix + "-" + key);
 		
-		return createFs({
-			fs,
+		let fs = createFs({
+			fs: backend,
 			path,
 			minimatch,
+			
+			async mkdirp(path) {
+				let dirs = path.substr(1).split("/");
+				
+				for (let i = 1; i <= dirs.length; i++) {
+					let path = "/" + dirs.slice(0, i).join("/");
+					
+					if (!await fs(path).exists()) {
+						await backend.mkdir(path);
+					}
+				}
+			},
 			
 			cwd() {
 				return "/";
 			},
 	
 			watch(path, handler) {
-				return fs.watch(path, handler);
+				return backend.watch(path, handler);
 			},
 		});
+		
+		return fs;
 	}
 	
 	async save(path, code) {
@@ -110,7 +124,9 @@ class Platform extends Common {
 	backup(path, code) {
 		let name = (path || "(new file)").replaceAll("/", "_");
 		
-		this.fs("/backups", name).write(code);
+		this.fs("/backups", name).write(code, {
+			mkdirp: true,
+		});
 	}
 	
 	async filesFromDropEvent(e) {
