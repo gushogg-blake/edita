@@ -288,9 +288,10 @@ module.exports = {
 		
 		y -= this.topMargin;
 		
-		let middle = rowHeight / 2;
+		let scrollOffset = this.scrollPosition.y % rowHeight;
+		let middle = (rowHeight / 2);
 		let row = Math.floor((y + this.scrollPosition.y) / rowHeight);
-		let offset = y % rowHeight;
+		let offset = (y + scrollOffset) % rowHeight;
 		let offsetFromMiddle = offset - middle;
 		
 		let aboveLineIndex = null;

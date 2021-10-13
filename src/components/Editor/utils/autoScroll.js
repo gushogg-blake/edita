@@ -28,6 +28,6 @@ module.exports = function(
 			rows = -rows;
 		}
 		
-		view.scrollBy(xOffset, rows);
+		view.scrollBy(xOffset, rows * view.measurements.rowHeight);
 	});
 }
