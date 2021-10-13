@@ -18,6 +18,10 @@ let findAndReplace = {
 			enumerate = false,
 		} = options;
 		
+		if (!options.search) {
+			return;
+		}
+		
 		let caseSensitive = (
 			caseMode === "caseSensitive"
 			|| caseMode === "smart" && search.match(/[A-Z]/)

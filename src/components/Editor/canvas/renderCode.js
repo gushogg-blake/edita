@@ -37,7 +37,9 @@ module.exports = function(layers, view, rows) {
 	
 	let leftEdge = marginOffset - scrollPosition.x;
 	
-	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
+	let rowOffset = -(scrollPosition.y % rowHeight);
+	
+	let y = rowHeight + topMargin + rowOffset; // rowHeight added as using textBaseline="bottom"
 	
 	for (let {wrapIndent, renderCommands} of rows) {
 		let x = leftEdge + wrapIndent * colWidth;

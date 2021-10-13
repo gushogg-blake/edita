@@ -32,10 +32,12 @@ let {
 	dropTargets,
 	pickOptions,
 	scrollPosition,
+	
 	measurements: {
 		rowHeight,
 		colWidth,
 	},
+	
 	sizes: {
 		width,
 		marginWidth,
@@ -374,11 +376,11 @@ function calculateCodeStyle(
 }
 
 function rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition) {
-	let screenRow = view.screenRowFromLineIndex(lineIndex);
+	let screenY = view.screenYFromLineIndex(lineIndex);
 	let screenCol = wrappedLines[lineIndex].line.width + 1;
 	
 	return {
-		top: view.sizes.topMargin + rowYHint + screenRow * rowHeight,
+		top: view.sizes.topMargin + rowYHint + screenY,
 		left: screenCol * colWidth - scrollPosition.x,
 		height: rowHeight,
 	};

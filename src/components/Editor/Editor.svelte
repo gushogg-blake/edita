@@ -288,7 +288,7 @@ function wheel(e) {
 	if (e.shiftKey) {
 		scrolled = view.scrollBy(view.measurements.colWidth * 3 * dir, 0);
 	} else {
-		scrolled = view.scrollBy(0, 3 * dir);
+		scrolled = view.scrollBy(0, view.measurements.rowHeight * 3 * dir);
 	}
 	
 	if (scrolled) {
@@ -409,7 +409,7 @@ function updateVerticalScrollbar() {
 	let rows = view.countRows();
 	
 	let scrollHeight = (rows - 1) * rowHeight + height;
-	let scrollTop = scrollPosition.row * rowHeight;
+	let scrollTop = scrollPosition.y;
 	let scrollMax = scrollHeight - height;
 	let position = scrollTop / scrollMax;
 	
@@ -452,9 +452,8 @@ function verticalScroll({detail: position}) {
 	let scrollMax = scrollHeight - height;
 	
 	let scrollTop = scrollMax * position;
-	let scrollRows = Math.round(scrollTop / rowHeight);
 	
-	view.setVerticalScroll(scrollRows);
+	view.setVerticalScroll(scrollTop);
 	view.updateCanvas();
 }
 

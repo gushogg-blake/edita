@@ -8,6 +8,7 @@ module.exports = function(layers, view, rows) {
 	let {
 		sizes,
 		measurements,
+		scrollPosition,
 	} = view;
 	
 	let {
@@ -29,7 +30,9 @@ module.exports = function(layers, view, rows) {
 	context.fillStyle = marginBackground;
 	context.fillRect(0, 0, marginWidth, height);
 	
-	let y = rowHeight + topMargin; // not 0 -- we're using textBaseline="bottom"
+	let rowOffset = -(scrollPosition.y % rowHeight);
+	
+	let y = rowHeight + topMargin + rowOffset; // rowHeight added as using textBaseline="bottom"
 	
 	for (let {lineIndex, rowIndex} of rows) {
 		if (rowIndex === 0) {

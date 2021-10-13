@@ -46,8 +46,8 @@ class View extends Evented {
 		this.dropTargets = [];
 		
 		this.scrollPosition = {
-			row: 0,
 			x: 0,
+			y: 0,
 		};
 		
 		this.normalHilites = [];
@@ -260,15 +260,15 @@ class View extends Evented {
 		this.fire("updateDropTargets");
 	}
 	
-	scrollBy(x, rows) {
+	scrollBy(x, y) {
 		let scrolled = false;
 		
+		let {
+			measurements: {colWidth, rowHeight},
+			sizes: {codeWidth},
+		} = this;
+		
 		if (x !== 0) {
-			let {
-				measurements: {colWidth},
-				sizes: {codeWidth},
-			} = this;
-			
 			let longestLineWidth = this.document.getLongestLineWidth();
 			let scrollWidth = longestLineWidth * colWidth + codeWidth;
 			let scrollMax = scrollWidth - codeWidth;
@@ -282,25 +282,27 @@ class View extends Evented {
 			scrolled = true;
 		}
 		
-		if (rows !== 0) {
-			let newRow = this.scrollPosition.row + rows;
+		if (y !== 0) {
+			let newY = this.scrollPosition.y + y;
 			
-			newRow = Math.max(0, newRow);
-			newRow = Math.min(newRow, this.countRows() - 1);
+			newY = Math.max(0, newY);
+			newY = Math.min(newY, (this.countRows() - 1) * rowHeight);
 			
-			scrolled = newRow !== this.scrollPosition.row;
+			scrolled = newY !== this.scrollPosition.y;
 			
-			this.scrollPosition.row = newRow;
+			this.scrollPosition.y = newY;
 		}
 		
-		this.fire("scroll");
-		this.redraw();
+		if (scrolled) {
+			this.fire("scroll");
+			this.redraw();
+		}
 		
 		return scrolled;
 	}
 	
-	setVerticalScroll(row) {
-		this.scrollPosition.row = Math.max(0, row);
+	setVerticalScroll(y) {
+		this.scrollPosition.y = Math.max(0, y);
 		this.fire("scroll");
 	}
 	
@@ -348,28 +350,29 @@ class View extends Evented {
 		} = this;
 			
 		let {codeWidth: width, rows} = this.sizes;
-		let {colWidth} = measurements;
+		let {colWidth, rowHeight} = measurements;
 		
 		let {end} = this.normalSelection;
 		let {lineIndex, offset} = end;
 		let [row, col] = this.rowColFromCursor(end);
 		
 		let maxRow = this.countRows() - 1;
-		let firstVisibleRow = scrollPosition.row;
+		let firstVisibleRow = Math.floor(scrollPosition.y / rowHeight);
+		let firstFullyVisibleRow = Math.ceil(scrollPosition.y / rowHeight);
 		let lastFullyVisibleRow = firstVisibleRow + rows;
 		
 		let idealRowBuffer = 5;
 		
-		let topRowDiff = idealRowBuffer - (row - firstVisibleRow);
+		let topRowDiff = idealRowBuffer - (row - firstFullyVisibleRow);
 		
 		if (topRowDiff > 0) {
-			scrollPosition.row = Math.max(0, scrollPosition.row - topRowDiff);
+			scrollPosition.y = Math.max(0, scrollPosition.y - topRowDiff * rowHeight);
 		}
 		
 		let bottomRowDiff = idealRowBuffer - (lastFullyVisibleRow - row);
 		
 		if (bottomRowDiff > 0) {
-			scrollPosition.row = Math.min(scrollPosition.row + bottomRowDiff, maxRow);
+			scrollPosition.y = Math.min(scrollPosition.y + bottomRowDiff * rowHeight, maxRow * rowHeight);
 		}
 		
 		if (!platform.getPref("wrap")) {

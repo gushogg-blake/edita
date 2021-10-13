@@ -178,6 +178,7 @@ class Tab extends Evented {
 		
 		if (mode === "normal") {
 			editor.setNormalSelection(normalSelection);
+			editor.updateSelectionEndCol();
 		} else {
 			editor.setAstSelection(astSelection);
 		}

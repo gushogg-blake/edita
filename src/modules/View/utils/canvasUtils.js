@@ -17,8 +17,6 @@ module.exports = {
 		let lineStartingRow = this.getLineStartingRow(start.lineIndex);
 		let lineRowIndex = startRow - lineStartingRow;
 		
-		let startScreenRow = startRow - this.scrollPosition.row;
-		
 		for (let i = start.lineIndex; i <= end.lineIndex; i++) {
 			let wrappedLine = this.wrappedLines[i];
 			let {line} = wrappedLine;
@@ -196,16 +194,18 @@ module.exports = {
 	},
 	
 	findFirstVisibleLine() {
+		let {rowHeight} = this.measurements;
+		let scrollRow = Math.floor(this.scrollPosition.y / rowHeight);
 		let row = 0;
 		
 		for (let i = 0; i < this.wrappedLines.length; i++) {
 			let wrappedLine = this.wrappedLines[i];
 			
-			if (row + wrappedLine.height > this.scrollPosition.row) {
+			if (row + wrappedLine.height > scrollRow) {
 				return {
 					wrappedLine,
 					lineIndex: i,
-					rowIndex: this.scrollPosition.row - row,
+					rowIndex: scrollRow - row,
 				};
 			}
 			
@@ -284,14 +284,12 @@ module.exports = {
 	},
 	
 	insertLineIndexFromScreenY(y) {
-		let {
-			rowHeight,
-		} = this.measurements;
+		let {rowHeight} = this.measurements;
 		
 		y -= this.topMargin;
 		
 		let middle = rowHeight / 2;
-		let screenRow = Math.floor(y / rowHeight) + this.scrollPosition.row;
+		let row = Math.floor((y + this.scrollPosition.y) / rowHeight);
 		let offset = y % rowHeight;
 		let offsetFromMiddle = offset - middle;
 		
@@ -305,11 +303,11 @@ module.exports = {
 			let rowBelow;
 			
 			if (offset > middle) {
-				rowAbove = screenRow;
-				rowBelow = screenRow + 1;
+				rowAbove = row;
+				rowBelow = row + 1;
 			} else {
-				rowAbove = screenRow - 1;
-				rowBelow = screenRow;
+				rowAbove = row - 1;
+				rowBelow = row;
 			}
 			
 			if (rowAbove >= 0) {
@@ -323,8 +321,7 @@ module.exports = {
 		
 		if (aboveLineIndex === belowLineIndex) {
 			let lineIndex = aboveLineIndex;
-			let startingScreenRow = this.getLineStartingRow(lineIndex) - this.scrollPosition.row;
-			let startingY = startingScreenRow * rowHeight;
+			let startingY = this.getLineStartingRow(lineIndex) * rowHeight - this.scrollPosition.y;
 			let height = this.wrappedLines[lineIndex].height * rowHeight;
 			let middle = height / 2;
 			let offset = y - startingY;
@@ -395,7 +392,7 @@ module.exports = {
 		let coordsXHint = 2;
 		
 		let screenCol = Math.floor((x - this.sizes.marginOffset + coordsXHint + this.scrollPosition.x) / colWidth);
-		let screenRow = Math.floor((y - this.topMargin) / rowHeight) + this.scrollPosition.row;
+		let screenRow = Math.floor((y - this.topMargin + this.scrollPosition.y) / rowHeight);
 		
 		return [
 			Math.max(0, screenRow),
@@ -412,7 +409,7 @@ module.exports = {
 		let coordsXHint = 2;
 		
 		let screenCol = Math.round((x - this.sizes.marginOffset + coordsXHint + this.scrollPosition.x) / colWidth);
-		let screenRow = Math.floor((y - this.topMargin) / rowHeight) + this.scrollPosition.row;
+		let screenRow = Math.floor((y - this.topMargin + this.scrollPosition.y) / rowHeight);
 		
 		return [
 			Math.max(0, screenRow),
@@ -428,12 +425,12 @@ module.exports = {
 		let {rowHeight, colWidth} = this.measurements;
 		
 		let x = Math.round(Math.round(this.sizes.marginOffset) + col * colWidth - this.scrollPosition.x);
-		let y = (row - this.scrollPosition.row) * rowHeight + this.topMargin;
+		let y = row * rowHeight + this.topMargin - this.scrollPosition.y;
 		
 		return [x, y];
 	},
 	
 	screenRowFromLineIndex(lineIndex) {
-		return this.getLineStartingRow(lineIndex) - this.scrollPosition.row;
+		return this.getLineStartingRow(lineIndex) - Math.ceil(this.scrollPosition.y * this.measurements.rowHeight);
 	},
 };
