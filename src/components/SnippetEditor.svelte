@@ -1,5 +1,6 @@
 <script>
 import {createEventDispatcher, onMount} from "svelte";
+import getKeyCombo from "utils/getKeyCombo";
 import importFromString from "utils/importFromString";
 import Checkbox from "components/utils/Checkbox.svelte";
 import Editor from "components/Editor/Editor.svelte";
@@ -39,6 +40,24 @@ function submit(e) {
 	e.preventDefault();
 	
 	saveAndExit();
+}
+
+let functions = {
+	saveAndExit,
+};
+
+let keymap = {
+	"Ctrl+Enter": "saveAndExit",
+};
+
+function keydown(e) {
+	console.log(e);
+	let {keyCombo} = getKeyCombo(e);
+	let fnName = keymap[keyCombo];
+	
+	if (fnName) {
+		functions[fnName]();
+	}
 }
 
 function onToggleDynamic() {
@@ -109,7 +128,12 @@ input#name {
 }
 </style>
 
-<form id="main" on:submit={submit} autocomplete="off">
+<form
+	id="main"
+	on:submit={submit}
+	on:keydown={keydown}
+	autocomplete="off"
+>
 	<div id="details">
 		<div class="field">
 			<label for="name">
