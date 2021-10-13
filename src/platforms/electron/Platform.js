@@ -153,10 +153,6 @@ class Platform extends Common {
 		ipc.openDialogWindow(dialog, dialogOptions, windowOptions);
 	}
 	
-	get useSystemFocus() {
-		return false;
-	}
-	
 	callOpener(channel, method, ...args) {
 		return ipcRenderer.invoke("callOpener", "call", channel, method, ...args);
 	}

@@ -45,7 +45,6 @@ class Platform extends Common {
 			init: null,
 			localStoragePrefix: "editor.",
 			fsPrefix: "editorFs",
-			useSystemFocus: true,
 			...options,
 		};
 		
@@ -141,10 +140,6 @@ class Platform extends Common {
 		let coords = {x, y: y + height};
 		
 		contextMenu(items, coords, noCancel);
-	}
-	
-	get useSystemFocus() {
-		return this.options.useSystemFocus;
 	}
 	
 	handleIpcMessages(channel, handler) {

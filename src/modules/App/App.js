@@ -5,6 +5,7 @@ let bindFunctions = require("utils/bindFunctions");
 let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
 let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
+let windowFocus = require("utils/dom/windowFocus");
 let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
@@ -36,9 +37,18 @@ class App extends Evented {
 		this.teardownCallbacks = [
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
+			windowFocus.listen(this.onWindowFocusChanged.bind(this)),
 		];
 		
 		platform.handleIpcMessages("findAndReplace", this.findAndReplace);
+		
+		// DEV
+		setInterval(() => {
+			if (platform.getPref("dev.showFocusedElement")) {
+				console.log(this.selectedTab.editor.view.focused);
+				console.log(document.activeElement);
+			}
+		}, 1000);
 	}
 	
 	async init() {
@@ -89,6 +99,12 @@ class App extends Evented {
 		setTimeout(() => {
 			this.selectedTab?.editor.view.requestFocus();
 		}, 0);
+	}
+	
+	onWindowFocusChanged(isFocused) {
+		if (isFocused) {
+			this.focusSelectedTabAsync();
+		}
 	}
 	
 	getTabName(tab) {

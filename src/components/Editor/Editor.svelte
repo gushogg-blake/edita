@@ -508,9 +508,7 @@ function onFocus() {
 }
 
 function onBlur() {
-	if (editorMode === "textarea" || platform.useSystemFocus) {
-		view.blur();
-	}
+	view.blur();
 }
 
 async function onEdit() {
