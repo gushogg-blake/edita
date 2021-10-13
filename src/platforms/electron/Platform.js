@@ -64,6 +64,8 @@ class Platform extends Common {
 		ipcRenderer.handle("messageBoxResponse", (e, response) => {
 			if (this.messageBoxPromise) {
 				this.messageBoxPromise.resolve(response);
+				
+				this.messageBoxPromise = null;
 			}
 		});
 	}
