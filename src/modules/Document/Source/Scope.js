@@ -38,11 +38,13 @@ module.exports = class Scope {
 			this.tree = parser.parse(this.code, null, {
 				includedRanges: this.treeSitterRanges,
 			});
-			
-			this.processInjections();
 		} catch (e) {
+			this.tree = null;
+			
 			console.error("Parse error");
 			console.error(e);
+		} finally {
+			this.processInjections();
 		}
 		
 		//console.timeEnd("parse (" + this.lang.code + ")");
@@ -83,7 +85,12 @@ module.exports = class Scope {
 			this.tree = parser.parse(this.code, this.tree, {
 				includedRanges: this.treeSitterRanges,
 			});
+		} catch (e) {
+			this.tree = null;
 			
+			console.error("Parse error");
+			console.error(e);
+		} finally {
 			this.processInjections(function(injectionLang, firstRange) {
 				let {start} = firstRange.selection;
 				
@@ -104,9 +111,6 @@ module.exports = class Scope {
 			}, (existingScope, ranges) => {
 				existingScope.edit(edit, index, ranges, code);
 			});
-		} catch (e) {
-			console.error("Parse error");
-			console.error(e);
 		}
 	}
 	
@@ -114,6 +118,10 @@ module.exports = class Scope {
 		this.scopes = [];
 		this.scopesByNode = {};
 		this.scopeAndRangeByNode = {};
+		
+		if (!this.tree) {
+			return;
+		}
 		
 		for (let injection of this.lang.injections) {
 			let matches = injection.query.matches(this.tree.rootNode).map(function(match) {
