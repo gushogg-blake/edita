@@ -40,7 +40,13 @@ async function getPaths(options) {
 	let allPaths = [];
 	
 	for (let path of paths) {
-		allPaths = [...allPaths, ...await platform.fs(path).walkAll(walkOptions)];
+		let node = platform.fs(path);
+		
+		if (await node.isDir()) {
+			allPaths = [...allPaths, ...await node.walkAll(walkOptions)];
+		} else {
+			allPaths = [...allPaths, path];
+		}
 	}
 	
 	return allPaths;
