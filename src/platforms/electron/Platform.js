@@ -76,6 +76,10 @@ class Platform extends Common {
 		await this.snippets.init();
 	}
 	
+	get hasGlob() {
+		return true;
+	}
+	
 	async open(dir=null) {
 		let defaultPath = dir || os.homedir();
 		

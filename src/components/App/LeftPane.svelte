@@ -14,7 +14,11 @@ function onUpdateRootDir() {
 	({rootEntry} = fileTree);
 }
 
-function openDirMenu() {
+function openDirMenu(e) {
+	if (e.button !== 0) {
+		return;
+	}
+	
 	if (!rootEntry) {
 		return;
 	}
@@ -28,6 +32,45 @@ function openDirMenu() {
 			},
 		};
 	}));
+}
+
+function contextmenu(e) {
+	if (!rootEntry) {
+		return;
+	}
+	
+	let {node, path} = rootEntry;
+	
+	platform.showContextMenu(e, [
+		platform.hasGlob && {
+			label: "Find...",
+			
+			onClick() {
+				app.findInFiles([path]);
+			},
+		},
+		
+		platform.hasGlob && {
+			label: "Replace...",
+			
+			onClick() {
+				app.replaceInFiles([path]);
+			},
+		},
+		
+		!node.isRoot && {
+			label: "Delete...",
+			
+			onClick() {
+				if (!confirm("Delete " + path + "?")) {
+					return;
+				}
+				
+				platform.fs(path).rmrf();
+				fileTree.setRootDir(node.parent.path);
+			},
+		},
+	].filter(Boolean));
 }
 
 function wheel(e) {
@@ -97,7 +140,12 @@ onMount(async function() {
 <div id="main">
 	<div id="top">
 		{#if rootEntry}
-			<div bind:this={dirSelector} id="dirSelector" on:mousedown={openDirMenu}>
+			<div
+				bind:this={dirSelector}
+				id="dirSelector"
+				on:mousedown={openDirMenu}
+				on:contextmenu={contextmenu}
+			>
 				{rootEntry.node.name}
 			</div>
 		{/if}

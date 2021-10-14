@@ -80,6 +80,10 @@ class Platform extends Common {
 		});
 	}
 	
+	get hasGlob() {
+		return false;
+	}
+	
 	createFs(key) {
 		let fs = fsWeb(this.options.fsPrefix + "-" + key);
 		
