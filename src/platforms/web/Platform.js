@@ -34,7 +34,6 @@ class Platform extends Common {
 		this.clipboard = clipboard;
 		this.isMainWindow = true;
 		this.path = path;
-		this.walk = null;
 		
 		this.useFileUploader = true;
 	}
@@ -78,10 +77,6 @@ class Platform extends Common {
 				}
 			}
 		});
-	}
-	
-	get hasGlob() {
-		return false;
 	}
 	
 	createFs(key) {

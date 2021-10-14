@@ -12,7 +12,6 @@ let contextMenu = require("modules/contextMenu");
 let Common = require("platforms/common/Platform");
 
 let fs = require("platform/modules/fs");
-let walk = require("platform/modules/walk");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 let ipc = require("platform/modules/ipc");
 
@@ -35,7 +34,6 @@ class Platform extends Common {
 		this.clipboard = ipc.clipboard;
 		this.snippets = ipc.snippets;
 		this.path = path;
-		this.walk = walk;
 		this.fs = fs;
 		
 		this.useFileUploader = false;
@@ -74,10 +72,6 @@ class Platform extends Common {
 		this.prefs = await ipc.prefs.load() || defaultPrefs(this.systemInfo);
 		
 		await this.snippets.init();
-	}
-	
-	get hasGlob() {
-		return true;
 	}
 	
 	async open(dir=null) {

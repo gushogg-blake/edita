@@ -35,7 +35,6 @@ module.exports = function(dbName) {
 	let watchers = {};
 	
 	function notifyWatchers(path, type) {
-		
 		for (let [watchPath, handlers] of Object.entries(watchers)) {
 			if (path === watchPath || path.startsWith(withTrailingSlash(watchPath))) {
 				for (let handler of handlers) {
@@ -288,5 +287,27 @@ module.exports = function(dbName) {
 		copy,
 		exists,
 		watch,
+		
+		promises: {
+			async *opendir(path) {
+				let entries = await readdirEntries(path);
+				
+				for (let entry of entries) {
+					let {name, type} = entry;
+					
+					yield {
+						name,
+						
+						isDirectory() {
+							return type === "directory";
+						},
+						
+						isFile()  {
+							return type === "file";
+						},
+					};
+				}
+			},
+		},
 	};
 }

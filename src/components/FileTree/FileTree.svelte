@@ -21,7 +21,7 @@ function contextmenu({detail: {e, entry}}) {
 	let {path, isDir} = entry;
 	
 	platform.showContextMenu(e, [
-		platform.hasGlob && {
+		{
 			label: "Find...",
 			
 			onClick() {
@@ -29,7 +29,7 @@ function contextmenu({detail: {e, entry}}) {
 			},
 		},
 		
-		platform.hasGlob && {
+		{
 			label: "Replace...",
 			
 			onClick() {

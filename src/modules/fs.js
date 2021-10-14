@@ -1,9 +1,11 @@
 let bluebird = require("bluebird");
+let createWalk = require("modules/walk");
 let {FileIsBinary} = require("modules/errors");
 
 module.exports = function(backends) {
 	let {
 		fs,
+		open,
 		path: osPath,
 		minimatch,
 		glob,
@@ -12,6 +14,12 @@ module.exports = function(backends) {
 		cwd,
 		fileIsBinary,
 	} = backends;
+	
+	let walk = createWalk({
+		fs,
+		path: osPath,
+		minimatch,
+	});
 	
 	class Node {
 		constructor(path) {
@@ -228,6 +236,14 @@ module.exports = function(backends) {
 					}
 				});
 			});
+		}
+		
+		walk(options) {
+			return walk.walk(this.path, options);
+		}
+		
+		walkAll(options) {
+			return walk.all(this.path, options);
 		}
 		
 		watch(handler) {

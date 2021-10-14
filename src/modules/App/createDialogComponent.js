@@ -44,5 +44,31 @@ module.exports = {
 	},
 	
 	findAndReplace(el, dialogOptions, onClose) {
+		let options = {
+			replace: false,
+			searchIn: "currentDocument",
+			search: "",
+			replaceWith: "",
+			regex: false,
+			caseMode: "caseSensitive",
+			word: false,
+			multiline: false,
+			paths: [],
+			searchInSubDirs: true,
+			includePatterns: [],
+			excludePatterns: [],
+			...dialogOptions,
+		};
+		
+		let findAndReplace = new base.components.FindAndReplace({
+			target: el,
+			
+			props: {
+				options,
+				findAndReplace: this.findAndReplace,
+			},
+		});
+		
+		findAndReplace.$on("done", onClose);
 	},
 };

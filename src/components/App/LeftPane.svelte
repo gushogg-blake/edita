@@ -42,7 +42,7 @@ function contextmenu(e) {
 	let {node, path} = rootEntry;
 	
 	platform.showContextMenu(e, [
-		platform.hasGlob && {
+		{
 			label: "Find...",
 			
 			onClick() {
@@ -50,7 +50,7 @@ function contextmenu(e) {
 			},
 		},
 		
-		platform.hasGlob && {
+		{
 			label: "Replace...",
 			
 			onClick() {
