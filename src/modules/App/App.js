@@ -540,12 +540,10 @@ class App extends Evented {
 			background: "white",
 		});
 		
-		platform.addToFocusStack(container);
-		
-		function close() {
+		let close = () => {
 			overlay.parentNode.removeChild(overlay);
 			
-			platform.removeFromFocusStack(container);
+			this.focusSelectedTabAsync();
 			
 			off(overlay, "mousedown", close);
 			off(window, "keydown", keydown);

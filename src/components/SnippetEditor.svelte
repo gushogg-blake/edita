@@ -27,6 +27,10 @@ function cancel() {
 }
 
 function saveAndExit() {
+	if (!name) {
+		return;
+	}
+	
 	fire("saveAndExit", {
 		name,
 		langGroups: langGroups.split(", "),
@@ -44,10 +48,12 @@ function submit(e) {
 
 let functions = {
 	saveAndExit,
+	cancel,
 };
 
 let keymap = {
 	"Ctrl+Enter": "saveAndExit",
+	"Escape": "cancel",
 };
 
 function keydown(e) {
@@ -76,17 +82,7 @@ async function unwrap() {
 }
 
 onMount(function() {
-	let teardown = [
-		
-	];
-	
 	editor.setValue(text);
-	
-	return function() {
-		for (let fn of teardown) {
-			fn();
-		}
-	}
 });
 </script>
 
