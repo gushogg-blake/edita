@@ -74,6 +74,8 @@ class View extends Evented {
 		
 		this.updateSizes(800, 600);
 		
+		this.wrap = platform.getPref("wrap");
+		
 		this.updateWrappedLines();
 		
 		this.blur = this.blur.bind(this);
@@ -107,7 +109,7 @@ class View extends Evented {
 	
 	updateWrappedLines() {
 		this.wrappedLines = this.document.lines.map((line) => {
-			return wrapLine(line, this.document.fileDetails.indentation, this.measurements, this.sizes.codeWidth);
+			return wrapLine(this.wrap, line, this.document.fileDetails.indentation, this.measurements, this.sizes.codeWidth);
 		});
 	}
 	
@@ -429,6 +431,12 @@ class View extends Evented {
 	
 	getNormalSelectionForFind() {
 		return this.mode === "ast" ? this.Selection.fromAstSelection(this.normalSelection) : this.Selection.sort();
+	}
+	
+	setWrap(wrap) {
+		this.wrap = wrap;
+		
+		this.updateWrappedLines();
 	}
 	
 	setMeasurements(measurements) {

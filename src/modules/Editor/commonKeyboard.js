@@ -45,4 +45,11 @@ module.exports = {
 	redo() {
 		this.redo();
 	},
+	
+	toggleWrap() {
+		this.view.setWrap(!this.view.wrap);
+		this.view.redraw();
+		
+		return ["noScrollCursorIntoView"];
+	},
 };

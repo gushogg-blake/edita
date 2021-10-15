@@ -107,6 +107,8 @@ module.exports = function(systemInfo) {
 			
 			"Ctrl+Z": "undo",
 			"Ctrl+Y": "redo",
+			
+			"Ctrl+9": "toggleWrap",
 		},
 		
 		globalKeymap: {
@@ -125,8 +127,6 @@ module.exports = function(systemInfo) {
 			
 			"Ctrl+PageUp": "selectPrevTab",
 			"Ctrl+PageDown": "selectNextTab",
-			
-			"Ctrl+9": "toggleWrap",
 		},
 		
 		langs: {
