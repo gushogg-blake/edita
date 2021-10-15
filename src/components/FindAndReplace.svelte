@@ -13,6 +13,7 @@ let {
 } = platform.systemInfo;
 
 let main;
+let searchInput;
 let message = null;
 let currentResult = null;
 let mounted = false;
@@ -156,6 +157,8 @@ onMount(function() {
 	
 	updateSize();
 	
+	searchInput.select();
+	
 	mounted = true;
 });
 </script>
@@ -226,7 +229,13 @@ button {
 			<Accel label="Fi%nd"/>
 		</label>
 		<div class="input">
-			<input bind:value={search} id="find" accesskey="n" autofocus>
+			<input
+				bind:this={searchInput}
+				bind:value={search}
+				id="find"
+				accesskey="n"
+				autofocus
+			>
 		</div>
 		<label for="replaceWith">
 			<Accel label="Rep%lace with"/>

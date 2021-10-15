@@ -485,8 +485,21 @@ class App extends Evented {
 	}
 	
 	async showFindDialog(options) {
+		let search = "";
+		
+		if (this.selectedTab) {
+			let {editor} = this.selectedTab;
+			let {document} = editor;
+			let selectedText = editor.getSelectedText();
+			
+			if (selectedText.indexOf(document.fileDetails.newline) === -1) {
+				search = selectedText;
+			}
+		}
+		
 		platform.openDialogWindow(this, "findAndReplace", {
 			...await this.findAndReplace.loadOptions(),
+			search,
 			...options,
 		}, {
 			width: 640,
