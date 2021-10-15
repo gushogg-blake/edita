@@ -199,7 +199,7 @@ class App extends Evented {
 	}
 	
 	async deleteTab(tab) {
-		if (!confirm("Delete " + tab.path + "?")) {
+		if (!await platform.confirm("Delete " + tab.path + "?")) {
 			return;
 		}
 		

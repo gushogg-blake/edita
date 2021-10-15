@@ -61,8 +61,8 @@ function contextmenu(e) {
 		!node.isRoot && {
 			label: "Delete...",
 			
-			onClick() {
-				if (!confirm("Delete " + path + "?")) {
+			async onClick() {
+				if (!await platform.confirm("Delete " + path + "?")) {
 					return;
 				}
 				
