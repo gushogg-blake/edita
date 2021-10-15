@@ -165,6 +165,30 @@ let api = {
 	previous(document, selection) {
 		return selection;
 	},
+	
+	trim(document, selection) {
+		if (!AstSelection.isFull(selection)) {
+			return selection;
+		}
+		
+		let {lines} = document;
+		let {startLineIndex, endLineIndex} = selection;
+		
+		let startLine = lines[startLineIndex];
+		let endLine = lines[endLineIndex - 1];
+		
+		while (startLine.trimmed.length === 0 && startLineIndex < endLineIndex - 1) {
+			startLineIndex++;
+			startLine = lines[startLineIndex];
+		}
+		
+		while (endLine?.trimmed.length === 0 && endLineIndex > startLineIndex) {
+			endLineIndex--;
+			endLine = lines[endLineIndex - 1];
+		}
+		
+		return s(startLineIndex, endLineIndex);
+	},
 }
 
 module.exports = api;

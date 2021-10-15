@@ -403,7 +403,7 @@ class View extends Evented {
 	}
 	
 	setAstSelection(astSelection) {
-		this.astSelection = this.AstSelection.validate(astSelection);
+		this.astSelection = astCommon.selection.trim(this.document, this.AstSelection.validate(astSelection));
 		this.astSelectionHilite = null;
 		
 		this.updateNormalSelectionFromAstSelection();
