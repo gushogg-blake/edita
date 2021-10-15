@@ -47,7 +47,7 @@ function tabIsSelected(tab, selectedTab) {
 }
 
 function wheel(e) {
-	main.scrollLeft += e.deltaY;
+	main.scrollLeft += e.deltaY * 2;
 }
 
 let dropIndex = null;
