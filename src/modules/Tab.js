@@ -19,6 +19,8 @@ class Tab extends Evented {
 		
 		this.teardownCallbacks = [
 			editor.document.on("save", this.onDocumentSave.bind(this)),
+			editor.on("focus", this.onFocus.bind(this)),
+			editor.on("blur", this.onBlur.bind(this)),
 		];
 	}
 	
@@ -182,6 +184,14 @@ class Tab extends Evented {
 		} else {
 			editor.setAstSelection(astSelection);
 		}
+	}
+	
+	onFocus() {
+		this.fire("focus");
+	}
+	
+	onBlur() {
+		this.fire("blur");
 	}
 	
 	teardown() {

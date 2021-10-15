@@ -333,8 +333,11 @@ class App extends Evented {
 		let document = this.createDocument(code, path);
 		let view = new View(document);
 		let editor = new Editor(document, view);
+		let tab = new Tab(this, editor);
 		
-		return new Tab(this, editor);
+		tab.on("focus", this.onTabFocus.bind(this));
+		
+		return tab;
 	}
 	
 	createDocument(code, path) {
@@ -579,6 +582,10 @@ class App extends Evented {
 		function resize() {
 			
 		}
+	}
+	
+	onTabFocus() {
+		this.hideFindBar();
 	}
 	
 	uiMounted(mainDiv) {

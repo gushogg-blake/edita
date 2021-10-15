@@ -548,6 +548,8 @@ class View extends Evented {
 		this.startCursorBlink();
 		
 		this.redraw();
+		
+		this.fire("focus");
 	}
 	
 	blur() {
@@ -556,6 +558,8 @@ class View extends Evented {
 		this.clearCursorBlink();
 		
 		this.redraw();
+		
+		this.fire("blur");
 	}
 	
 	requestFocus() {

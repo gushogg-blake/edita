@@ -51,6 +51,8 @@ class Editor extends Evented {
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
 			document.on("save", this.onDocumentSave.bind(this)),
+			view.on("focus", this.onFocus.bind(this)),
+			view.on("blur", this.onBlur.bind(this)),
 		];
 	}
 	
@@ -438,6 +440,14 @@ class Editor extends Evented {
 		});
 		
 		this.view.redraw();
+	}
+	
+	onFocus() {
+		this.fire("focus");
+	}
+	
+	onBlur() {
+		this.fire("blur");
 	}
 	
 	mousedown() {
