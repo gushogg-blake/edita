@@ -134,6 +134,10 @@ onMount(async function() {
 	--scrollbarBackgroundColor: var(--appBackgroundColor);
 	
 	overflow: auto;
+	
+	&:not(:hover)::-webkit-scrollbar-thumb {
+		display: none;
+	}
 }
 </style>
 
