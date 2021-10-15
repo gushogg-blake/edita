@@ -451,7 +451,7 @@ function verticalScroll({detail: position}) {
 	let scrollHeight = (rows - 1) * rowHeight + height;
 	let scrollMax = scrollHeight - height;
 	
-	let scrollTop = scrollMax * position;
+	let scrollTop = Math.round(scrollMax * position);
 	
 	view.setVerticalScroll(scrollTop);
 	view.updateCanvas();
@@ -465,7 +465,7 @@ function horizontalScroll({detail: position}) {
 	let scrollWidth = longestLineWidth * colWidth + width;
 	let scrollMax = scrollWidth - width;
 	
-	let scrollLeft = scrollMax * position;
+	let scrollLeft = Math.round(scrollMax * position);
 	
 	view.setHorizontalScroll(scrollLeft);
 	view.updateCanvas();
