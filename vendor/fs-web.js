@@ -52,11 +52,11 @@ module.exports = function(dbName) {
 			let objectStore = db.createObjectStore(OS_NAME, {keyPath: "path"});
 			
 			objectStore.createIndex(DIR_IDX, "dir", {unique: false});
-		};
+		}
 		
 		req.onsuccess = function(e) {
 			callback(e.target.result);
-		};
+		}
 	}
 	
 	function initOS(type, callback) {
@@ -83,7 +83,7 @@ module.exports = function(dbName) {
 					} else {
 						reject("File not found");
 					}
-				};
+				}
 			});
 		});
 	}
@@ -122,7 +122,7 @@ module.exports = function(dbName) {
 					notifyWatchers(path, exists ? "change" : "new");
 					
 					resolve();
-				};
+				}
 			});
 		});
 	}
@@ -136,23 +136,21 @@ module.exports = function(dbName) {
 					notifyWatchers(path, "delete");
 					
 					resolve();
-				};
+				}
 			});
 		});
 	}
 	
-	function readdirEntries(directoryName) {
+	function readdirEntries(dir) {
 		return new Promise(function(resolve, reject) {
 			initOS("readonly", function(os) {
-				let dir = osPath.dirname(withTrailingSlash(directoryName));
-				
 				let idx = os.index(DIR_IDX);
 				let range = IDBKeyRange.only(dir);
 				let req = idx.openCursor(range);
 				
 				req.onerror = function(e) {
 					reject(e);
-				};
+				}
 				
 				let results = [];
 				
@@ -169,7 +167,7 @@ module.exports = function(dbName) {
 					} else {
 						resolve(results);
 					}
-				};
+				}
 			});
 		});
 	}
@@ -181,11 +179,9 @@ module.exports = function(dbName) {
 	function mkdir(path) {
 		return new Promise(function(resolve, reject) {
 			initOS("readwrite", function(os) {
-				let dir = withTrailingSlash(path);
-				
 				let req = os.put({
 					"path": path,
-					"dir": osPath.dirname(dir),
+					"dir": osPath.dirname(path),
 					"type": "directory"
 				});
 				
@@ -195,7 +191,7 @@ module.exports = function(dbName) {
 					notifyWatchers(path, "newDir");
 					
 					resolve();
-				};
+				}
 			});
 		});
 	}

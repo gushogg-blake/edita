@@ -554,5 +554,7 @@ module.exports = {
 	
 	clearHilites() {
 		this.find.clearHilites();
+		
+		return ["noScrollCursorIntoView"];
 	},
 };
