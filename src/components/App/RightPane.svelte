@@ -65,13 +65,30 @@ onMount(function() {
 </script>
 
 <style type="text/scss">
+@import "mixins/abs-sticky";
+
 #main {
+	display: flex;
+	flex-direction: column;
 	width: 100%;
 	height: 100%;
 }
 
 #title {
 	padding: 5px;
+}
+
+#list {
+	position: relative;
+	flex-grow: 1;
+}
+
+#scroll {
+	@include abs-sticky;
+	
+	--scrollbarBackgroundColor: var(--appBackgroundColor);
+	
+	overflow: auto;
 }
 
 .list {
@@ -117,44 +134,48 @@ onMount(function() {
 		Snippets
 	</div>
 	<Gap height={6}/>
-	{#each Object.entries(snippetsByLang) as [key, snippets]}
-		<div class="entry header">
-			<div class="icon dirIcon"></div>
-			<div class="name">
-				{key}
-			</div>
-		</div>
-		<div class="list">
-			{#each snippets as snippet}
-				<div
-					class="entry snippet"
-					on:click={() => app.editSnippet(snippet.id)}
-					on:contextmenu={(e) => showContextMenuForSnippet(e, snippet)}
-				>
-					<div class="icon fileIcon"></div>
+	<div id="list">
+		<div id="scroll">
+			{#each Object.entries(snippetsByLang) as [key, snippets]}
+				<div class="entry header">
+					<div class="icon dirIcon"></div>
 					<div class="name">
-						{snippet.name}
+						{key}
+					</div>
+				</div>
+				<div class="list">
+					{#each snippets as snippet}
+						<div
+							class="entry snippet"
+							on:click={() => app.editSnippet(snippet.id)}
+							on:contextmenu={(e) => showContextMenuForSnippet(e, snippet)}
+						>
+							<div class="icon fileIcon"></div>
+							<div class="name">
+								{snippet.name}
+							</div>
+						</div>
+					{/each}
+					<div
+						class="entry snippet"
+						on:click={() => newSnippetInList(snippets)}
+					>
+						<div class="icon fileIcon"></div>
+						<div class="name">
+							New
+						</div>
 					</div>
 				</div>
 			{/each}
 			<div
 				class="entry snippet"
-				on:click={() => newSnippetInList(snippets)}
+				on:click={() => newSnippet()}
 			>
 				<div class="icon fileIcon"></div>
 				<div class="name">
 					New
 				</div>
 			</div>
-		</div>
-	{/each}
-	<div
-		class="entry snippet"
-		on:click={() => newSnippet()}
-	>
-		<div class="icon fileIcon"></div>
-		<div class="name">
-			New
 		</div>
 	</div>
 </div>
