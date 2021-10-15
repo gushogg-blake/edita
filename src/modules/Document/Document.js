@@ -346,7 +346,7 @@ class Document extends Evented {
 			groups,
 			
 			replace: (str) => {
-				replace(str);
+				str = replace(str);
 				
 				let {edit} = this.replaceSelection(selection, str);
 				

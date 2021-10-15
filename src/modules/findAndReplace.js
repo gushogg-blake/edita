@@ -5,6 +5,58 @@ function containsWordBoundary(str) {
 	return !!str.match(/(\w\W|\W\w)/);
 }
 
+function parseRegexReplacePlaceholders(str) {
+	let placeholders = [];
+	let i = 0;
+	
+	while (i < str.length) {
+		let ch = str[i];
+		let next = str[i + 1];
+		
+		if (ch === "\\") {
+			i += 2;
+			
+			continue;
+		}
+		
+		if (ch === "@" && next.match(/\d/)) {
+			let n = str.substr(i + 1).match(/^\d+/)[0];
+			let length = 1 + n.length;
+			
+			placeholders.push({
+				start: i,
+				end: i + length,
+				n: Number(n),
+			});
+			
+			i += length;
+			
+			continue;
+		}
+		
+		i++;
+	}
+	
+	return placeholders;
+}
+
+function replaceGroupsForRegexReplace(str, groups) {
+	let placeholders = parseRegexReplacePlaceholders(str);
+	let replacedString = "";
+	let prevPlaceholderEnd = 0;
+	
+	for (let placeholder of placeholders) {
+		replacedString += str.substring(prevPlaceholderEnd, placeholder.start);
+		replacedString += groups[placeholder.n - 1] || "";
+		
+		prevPlaceholderEnd = placeholder.end;
+	}
+	
+	replacedString += str.substr(prevPlaceholderEnd);
+	
+	return replacedString;
+}
+
 let findAndReplace = {
 	*find(options) {
 		let {
@@ -108,10 +160,14 @@ let findAndReplace = {
 				*/
 				
 				replace(str) {
+					if (type === "regex") {
+						str = replaceGroupsForRegexReplace(str, groups);
+					}
+					
 					code = code.substr(0, index) + str + code.substr(re.lastIndex);
 					re.lastIndex = index + str.length;
 					
-					return code;
+					return str;
 				},
 			};
 		}
