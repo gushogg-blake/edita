@@ -129,18 +129,26 @@ class FindAndReplace {
 	}
 	
 	async findAllInFiles(options) {
+		let {app} = this;
 		let paths = await getPaths(options);
-		let documents = await getDocuments(paths);
+		let openPaths = paths.filter(path => app.pathIsOpen(path));
+		let nonOpenPaths = paths.filter(path => !app.pathIsOpen(path));
+		let openTabs = openPaths.map(path => app.findTabByPath(path));
+		let nonOpenDocuments = await getDocuments(nonOpenPaths);
 		let findAndReplaceOptions = getFindAndReplaceOptions(options);
 		
 		let allResults = [];
 		
-		for (let document of documents) {
+		for (let document of nonOpenDocuments) {
 			allResults = [...allResults, ...document.findAll(findAndReplaceOptions)];
 		}
 		
+		for (let tab of openTabs) {
+			allResults = [...allResults, ...tab.editor.api.findAll(findAndReplaceOptions)];
+		}
+		
 		if (allResults.length > 0) {
-			this.app.bottomPane.showFindResults(allResults);
+			app.bottomPane.showFindResults(allResults);
 			
 			return true;
 		} else {
@@ -189,13 +197,17 @@ class FindAndReplace {
 	}
 	
 	async replaceAllInFiles(options) {
+		let {app} = this;
 		let paths = await getPaths(options);
-		let documents = await getDocuments(paths);
+		let openPaths = paths.filter(path => app.pathIsOpen(path));
+		let nonOpenPaths = paths.filter(path => !app.pathIsOpen(path));
+		let openTabs = openPaths.map(path => app.findTabByPath(path));
+		let nonOpenDocuments = await getDocuments(nonOpenPaths);
 		let findAndReplaceOptions = getFindAndReplaceOptions(options);
 		
 		let allResults = [];
 		
-		await bluebird.map(documents, async function(document) {
+		await bluebird.map(nonOpenDocuments, async function(document) {
 			let {edits, results} = document.replaceAll(findAndReplaceOptions);
 			
 			document.applyEdits(edits);
@@ -205,8 +217,18 @@ class FindAndReplace {
 			allResults = [...allResults, ...results];
 		});
 		
+		for (let tab of openTabs) {
+			let save = !tab.modified;
+			
+			allResults = [...allResults, ...tab.editor.api.replaceAll(findAndReplaceOptions)];
+			
+			if (save) {
+				app.save(tab);
+			}
+		}
+		
 		if (allResults.length > 0) {
-			this.app.bottomPane.showFindResults(allResults);
+			app.bottomPane.showFindResults(allResults);
 			
 			return true;
 		} else {

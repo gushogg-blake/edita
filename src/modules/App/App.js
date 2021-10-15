@@ -208,6 +208,10 @@ class App extends Evented {
 		this.closeTab(tab);
 	}
 	
+	pathIsOpen(path) {
+		return this.tabs.some(tab => tab.path === path);
+	}
+	
 	showPane(name) {
 		this.setPaneVisibility(name, true);
 	}
