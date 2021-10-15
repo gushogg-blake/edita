@@ -45,7 +45,7 @@ class Snippets extends Evented {
 	async create(snippet) {
 		snippet = {
 			...snippet,
-			id: lid(),
+			id: snippet.id || lid(),
 		};
 		
 		let node = this.snippetsDir.child(this.generateFilename(snippet));
