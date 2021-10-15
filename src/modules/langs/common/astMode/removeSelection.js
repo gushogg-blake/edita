@@ -27,12 +27,11 @@ module.exports = function(document, selection) {
 		insertSpaces = insertBlank ? 1 : maxSpace;
 	}
 	
-	let spaces = createSpaces(insertSpaces, selectionHeaderLine.indentLevel, indentStr);
+	let insertLines = createSpaces(insertSpaces, selectionHeaderLine.indentLevel, indentStr);
 	
 	return {
 		lineIndex: removeStart,
 		removeLinesCount,
-		spaces,
-		edit: document.lineEdit(removeStart, removeLinesCount, spaces),
+		insertLines,
 	};
 }

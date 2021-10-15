@@ -25,16 +25,12 @@ module.exports = {
 			if (move && fromSelection) {
 				let {startLineIndex: fromStart, endLineIndex: fromEnd} = fromSelection;
 				
-				let {
-					removeLinesCount,
-					spaces,
-					edit,
-				} = removeSelection(document, fromSelection);
+				let edit = removeSelection(document, fromSelection);
 				
 				edits.push(edit);
 				
 				if (fromEnd < toEnd) {
-					removeDiff = removeLinesCount - spaces.length;
+					removeDiff = edit.removeLinesCount - edit.insertLines.length;
 				}
 			}
 			
@@ -52,7 +48,11 @@ module.exports = {
 				"}",
 			], indentStr, footerLine.indentLevel);
 			
-			edits.push(document.lineEdit(insertIndex, removeLines, insertLines));
+			edits.push({
+				lineIndex: insertIndex,
+				removeLinesCount: removeLines,
+				insertLines,
+			});
 			
 			let newStartLineIndex = footerLineIndex + 1 - removeDiff;
 			
@@ -85,16 +85,12 @@ module.exports = {
 			if (move && fromSelection) {
 				let {startLineIndex: fromStart, endLineIndex: fromEnd} = fromSelection;
 				
-				let {
-					removeLinesCount,
-					spaces,
-					edit,
-				} = removeSelection(document, fromSelection);
+				let edit = removeSelection(document, fromSelection);
 				
 				edits.push(edit);
 				
 				if (fromEnd < toEnd) {
-					removeDiff = removeLinesCount - spaces.length;
+					removeDiff = edit.removeLinesCount - edit.insertLines.length;
 				}
 			}
 			

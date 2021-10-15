@@ -74,7 +74,11 @@ module.exports = {
 				positions,
 			} = this.createSnippetPositionsForLines(insertLines, insertIndex);
 			
-			edits = [...edits, document.lineEdit(insertIndex, removeLines, replacedLines)];
+			edits.push({
+				lineIndex: insertIndex,
+				removeLinesCount: removeLines,
+				insertLines: replacedLines,
+			});
 			
 			this.astSelectionAfterSnippet = newSelection;
 			
@@ -90,12 +94,23 @@ module.exports = {
 		}
 		
 		if (edits.length > 0) {
+			let {lineIndex, removeLinesCount, insertLines} = edits[0];
+			
 			this.applyAndAddHistoryEntry({
-				edits,
+				edits: [document.lineEdit(lineIndex, removeLinesCount, insertLines)],
 				astSelection: newSelection,
 				normalSelection,
 				snippetSession,
 			});
+			
+			for (let {lineIndex, removeLinesCount, insertLines} of edits.slice(1)) {
+				this.applyAndMergeWithLastHistoryEntry({
+					edits: [document.lineEdit(lineIndex, removeLinesCount, insertLines)],
+					astSelection: newSelection,
+					normalSelection,
+					snippetSession,
+				});
+			}
 		}
 	},
 	

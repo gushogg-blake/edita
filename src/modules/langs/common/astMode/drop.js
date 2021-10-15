@@ -64,7 +64,11 @@ module.exports = function(
 			let spaces = (toEnd - toStart) - existingSpaces;
 			let adjustSelection = fromStart < toStart ? spaces : 0;
 			
-			edits.push(document.lineEdit(addSpacesAt, 0, createSpaces(spaces, indentLevel, indentStr)));
+			edits.push({
+				lineIndex: addSpacesAt,
+				removeLinesCount: 0,
+				insertLines: createSpaces(spaces, indentLevel, indentStr),
+			});
 			
 			newSelection = s(fromStart + adjustSelection, fromEnd + adjustSelection);
 		}
@@ -72,16 +76,12 @@ module.exports = function(
 		let removeDiff = 0;
 		
 		if (move && fromSelection) {
-			let {
-				removeLinesCount,
-				spaces,
-				edit,
-			} = removeSelection(document, fromSelection);
+			let edit = removeSelection(document, fromSelection);
 			
 			edits.push(edit);
 			
 			if (toSelection && fromEnd < toEnd) {
-				removeDiff = removeLinesCount - spaces.length;
+				removeDiff = edit.removeLinesCount - edit.insertLines.length;
 			}
 			
 			// TODO newSelection
@@ -91,52 +91,59 @@ module.exports = function(
 			let insertIndentLevel = findIndentLevel(document, toStart);
 			let lines = AstSelection.selectionLinesToStrings(selectionLines, indentStr, insertIndentLevel);
 			
-			if (toStart === toEnd) {
+			if (toStart !== toEnd) {
 				/*
-				insert between lines - only add a space if the selection
-				indicates it, e.g. it is a block and prefs are set to space
-				blocks from other lines
+				insert into space - copy the space each side by default if there's a
+				sibling on that side
 				*/
 				
-				let spaces = {
-					above: [],
-					below: [],
-				};
-				
-				if (astMode.insertSpaces) {
-					spaces = astMode.insertSpaces(document, fromSelection, toSelection, selectionLines);
-				}
-				
-				let edit = document.lineEdit(toStart - removeDiff, 0, [
-					...spaces.above,
-					...lines,
-					...spaces.below,
-				]);
-				
-				edits.push(edit);
-				
-				let newSelectionStart = toStart - removeDiff;
-				
-				newSelection = s(newSelectionStart, newSelectionStart + lines.length);
-			} else {
-				/*
-				insert into space - insert after the space and copy the space
-				below the insertion
-				*/
+				let spaceAbove = toStart > 0 && document.lines[toStart - 1].indentLevel === insertIndentLevel;
+				let spaceBelow = toEnd < document.lines.length && document.lines[toEnd].indentLevel === insertIndentLevel;
 				
 				let spaces = createSpaces(toEnd - toStart, insertIndentLevel, indentStr);
 				
-				let edit = document.lineEdit(toEnd - removeDiff, 0, [
-					...lines,
-					...spaces,
-				]);
+				if (spaceAbove) {
+					lines = [...spaces, ...lines];
+				}
 				
-				edits.push(edit);
-				
-				let newSelectionStart = toEnd - removeDiff;
-				
-				newSelection = s(newSelectionStart, newSelectionStart + lines.length);
+				if (spaceBelow) {
+					lines = [...lines, ...spaces];
+				}
 			}
+			
+			let adjustSpaces = {
+				above: 0,
+				below: 0,
+			};
+			
+			if (astMode.adjustSpaces) {
+				adjustSpaces = astMode.adjustSpaces(document, fromSelection, toSelection, selectionLines, lines);
+			}
+			
+			if (adjustSpaces.above < 0) {
+				lines = lines.slice(-adjustSpaces.above);
+			}
+			
+			if (adjustSpaces.below < 0) {
+				lines = lines.slice(0, lines.length - -adjustSpaces.below);
+			}
+			
+			let edit = {
+				lineIndex: toStart - removeDiff,
+				removeLinesCount: toEnd - toStart,
+				
+				insertLines: [
+					...createSpaces(Math.max(0, adjustSpaces.above), insertIndentLevel, indentStr),
+					...lines,
+					...createSpaces(Math.max(0, adjustSpaces.below), insertIndentLevel, indentStr),
+				],
+			};
+			
+			edits.push(edit);
+			
+			let newSelectionStart = toStart - removeDiff;
+			
+			newSelection = s(newSelectionStart, newSelectionStart + lines.length);
 		}
 	}
 	
