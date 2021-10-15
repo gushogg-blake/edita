@@ -41,7 +41,7 @@ function openContextMenuForFile(entry) {
 }
 
 function onZoomChange() {
-	({currentPath} = tab);
+	({path, currentPath} = tab);
 	
 	entries = [];
 }

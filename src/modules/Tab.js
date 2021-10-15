@@ -10,7 +10,6 @@ class Tab extends Evented {
 		
 		this.app = app;
 		this.editor = editor;
-		this.path = this.editor.document.path;
 		this.currentPath = this.path;
 		this.entries = [];
 		this.loading = false;
@@ -22,6 +21,10 @@ class Tab extends Evented {
 			editor.on("focus", this.onFocus.bind(this)),
 			editor.on("blur", this.onBlur.bind(this)),
 		];
+	}
+	
+	get path() {
+		return this.editor.document.path;
 	}
 	
 	get name() {
@@ -127,12 +130,9 @@ class Tab extends Evented {
 	}
 	
 	onDocumentSave() {
-		let {path} = this.editor.document;
+		this.currentPath = this.path;
 		
-		if (path !== this.path) {
-			this.path = path;
-			this.currentPath = path;
-		}
+		this.fire("zoomChange");
 	}
 	
 	async updateDirListing() {
