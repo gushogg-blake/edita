@@ -3,12 +3,11 @@ let codeIntel = require("./codeIntel");
 
 let wordRe = /\w/;
 
-module.exports = {
+let lang = {
 	group: "javascript",
 	code: "javascript",
 	name: "JavaScript",
 	astMode,
-	codeIntel,
 	injections: [],
 	
 	*generateRenderHints(node) {
@@ -236,3 +235,7 @@ module.exports = {
 		return null;
 	},
 };
+
+lang.codeIntel = codeIntel(lang);
+
+module.exports = lang;

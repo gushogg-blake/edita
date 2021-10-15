@@ -394,6 +394,10 @@ class Document extends Evented {
 		return this.source.getNodesOnLine(lineIndex);
 	}
 	
+	getNodesOnLineWithLang(lineIndex) {
+		return this.source.getNodesOnLineWithLang(lineIndex);
+	}
+	
 	generateNodesOnLine(lineIndex) {
 		return this.source.generateNodesOnLine(lineIndex);
 	}

@@ -111,6 +111,14 @@ module.exports = class {
 		return [...this.rootScope.generateNodesOnLine(lineIndex)];
 	}
 	
+	getNodesOnLineWithLang(lineIndex) {
+		if (!this.rootScope) {
+			return [];
+		}
+		
+		return [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
+	}
+	
 	*generateNodesOnLine(lineIndex) {
 		if (!this.rootScope) {
 			return;
