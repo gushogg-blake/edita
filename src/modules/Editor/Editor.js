@@ -367,6 +367,10 @@ class Editor extends Evented {
 		this.view.setAstSelection(selection);
 	}
 	
+	validateSelection() {
+		this.view.setNormalSelection(this.normalSelection);
+	}
+	
 	adjustIndent(adjustment) {
 		let selection = Selection.sort(this.normalSelection);
 		let {start, end} = selection;

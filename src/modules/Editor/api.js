@@ -1,3 +1,5 @@
+let Selection = require("modules/utils/Selection");
+
 /*
 functions to control the editor from outside, e.g. to set the selection when
 viewing a find result.  these functions will do any necessary redraws, making
@@ -55,6 +57,8 @@ module.exports = {
 			edits,
 		});
 		
+		this.validateSelection();
+		
 		view.normalHilites = edits.map(edit => edit.newSelection);
 		
 		view.redraw();
@@ -72,8 +76,21 @@ module.exports = {
 			endIndex: document.indexFromCursor(end),
 		});
 		
+		let selection = Selection.sort(this.normalSelection);
+		
+		for (let edit of edits) {
+			selection = Selection.adjustForEditWithinSelection(selection, edit.selection, edit.newSelection);
+			
+			if (!selection) {
+				selection = this.normalSelection;
+				
+				break;
+			}
+		}
+		
 		this.applyAndAddHistoryEntry({
 			edits,
+			normalSelection: selection,
 		});
 		
 		view.normalHilites = edits.map(edit => edit.newSelection);
