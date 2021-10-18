@@ -135,7 +135,7 @@ class Platform extends Common {
 			useOpenerAsParent: true,
 			modal: true,
 			width: 500,
-			height: 200,
+			height: 75,
 		});
 		
 		this.messageBoxPromise = promise;

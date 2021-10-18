@@ -110,13 +110,20 @@ class Platform extends Common {
 	}
 	
 	async save(path, code) {
-		await this.fs(path).write(code);
+		let node = this.fs(path);
+		
+		await node.parent.mkdirp();
+		await node.write(code);
 	}
 	
 	saveAs() {
-		let name = (prompt("Filename:") || "").replaceAll("/", "").trim();
+		let name = (prompt("Filename:") || "").trim();
 		
-		return name ? "/" + name : null;
+		if (!name) {
+			return null;
+		}
+		
+		return name[0] === "/" ? name : "/" + name;
 	}
 	
 	backup(document) {
