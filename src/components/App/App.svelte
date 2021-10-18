@@ -211,6 +211,7 @@ onMount(function() {
 	on:dragover={dragover}
 	on:drop={drop}
 	on:keydown={keydown}
+	tabindex="0"
 >
 	<div id="toolbar">
 		<Toolbar/>
