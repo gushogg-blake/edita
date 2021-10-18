@@ -7,24 +7,31 @@
 	</head>
 	<body>
 		<style>
-			#editorContainer {
+			.editorContainer {
 				width: 700px;
 				height: 500px;
 				border: 1px solid gray;
 			}
 		</style>
-		<div id="editorContainer" class="editor"></div>
+		<div id="editorContainer1" class="editorContainer"></div>
+		<div id="editorContainer2" class="editorContainer"></div>
 		<script>
 			(async function() {
 				let createEditor = await editor({
 					resourcePrefix: "./build",
 				});
 				
-				let app = await createEditor(document.getElementById("editorContainer"));
+				let app1 = await createEditor(document.getElementById("editorContainer1"));
 				
-				app.openFile("/dev.html");
+				app1.openFile("/dev.html");
 				
-				window.app = app;
+				window.app1 = app1;
+				
+				let app2 = await createEditor(document.getElementById("editorContainer2"));
+				
+				app2.openFile("/dev.html");
+				
+				window.app2 = app2;
 			})();
 		</script>
 	</body>

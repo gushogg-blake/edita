@@ -103,8 +103,6 @@ onMount(function() {
 });
 </script>
 
-<svelte:window on:keydown={keydown}/>
-
 <style type="text/scss">
 @import "mixins/flex-col";
 @import "mixins/abs-sticky";
@@ -212,6 +210,7 @@ onMount(function() {
 	class="editor"
 	on:dragover={dragover}
 	on:drop={drop}
+	on:keydown={keydown}
 >
 	<div id="toolbar">
 		<Toolbar/>
