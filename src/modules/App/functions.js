@@ -48,9 +48,15 @@ module.exports = {
 	},
 	
 	replace() {
+		if (!this.selectedTab) {
+			return;
+		}
+		
+		let {editor} = this.selectedTab;
+		
 		this.showFindDialog({
 			replace: true,
-			searchIn: "currentDocument",
+			searchIn: editor.view.Selection.isFull() ? "selectedText" : "currentDocument",
 		});
 	},
 	

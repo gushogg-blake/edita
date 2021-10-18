@@ -40,6 +40,34 @@ function parseRegexReplacePlaceholders(str) {
 	return placeholders;
 }
 
+function replaceRegexEscapes(str) {
+	let result = "";
+	let i = 0;
+	
+	while (i < str.length) {
+		let ch = str[i];
+		let next = str[i + 1];
+		
+		if (ch === "\\") {
+			if (next === "r") {
+				result += "\r";
+			} else if (next === "n") {
+				result += "\n";
+			} else if (next === "t") {
+				result += "\t";
+			}
+			
+			i += 2;
+		} else {
+			result += ch;
+			
+			i++;
+		}
+	}
+	
+	return result;
+}
+
 function replaceGroupsForRegexReplace(str, groups) {
 	let placeholders = parseRegexReplacePlaceholders(str);
 	let replacedString = "";
@@ -162,10 +190,21 @@ let findAndReplace = {
 				replace(str) {
 					if (type === "regex") {
 						str = replaceGroupsForRegexReplace(str, groups);
+						str = replaceRegexEscapes(str);
 					}
 					
 					code = code.substr(0, index) + str + code.substr(re.lastIndex);
 					re.lastIndex = index + str.length;
+					
+					let diff = str.length - string.length;
+					
+					if (index < startIndex) {
+						startIndex += diff;
+					}
+					
+					if (endIndex !== null && index < endIndex) {
+						endIndex += diff;
+					}
 					
 					return str;
 				},
