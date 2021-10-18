@@ -255,16 +255,19 @@ class App extends Evented {
 		}
 	}
 	
-	async loadJson(key) {
+	async loadJson(key, _default=null) {
 		try {
-			return await fs(this.config.userDataDir, ...key.split("/")).withExt(".json").readJson();
+			return await fs(this.config.userDataDir, ...key.split("/")).withExt(".json").readJson() || _default;
 		} catch (e) {
-			return null;
+			return _default;
 		}
 	}
 	
-	saveJson(key, data) {
-		return fs(this.config.userDataDir, ...key.split("/")).withExt(".json").writeJson(data);
+	async saveJson(key, data) {
+		let node = fs(this.config.userDataDir, ...key.split("/")).withExt(".json");
+		
+		await node.parent.mkdirp();
+		await node.writeJson(data);
 	}
 }
 

@@ -1,7 +1,7 @@
 module.exports = function(app) {
 	return {
-		load(e, key) {
-			return app.loadJson(key);
+		load(e, key, _default=null) {
+			return app.loadJson(key, _default);
 		},
 		
 		async save(e, key, data) {

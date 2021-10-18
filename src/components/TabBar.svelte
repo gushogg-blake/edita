@@ -47,6 +47,8 @@ function tabIsSelected(tab, selectedTab) {
 }
 
 function wheel(e) {
+	e.preventDefault();
+	
 	main.scrollLeft += e.deltaY * 2;
 }
 

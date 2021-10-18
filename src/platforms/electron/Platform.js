@@ -106,10 +106,11 @@ class Platform extends Common {
 		return filePath || null;
 	}
 	
-	backup(path, code) {
-		let name = (path || "(new file)").replaceAll("/", "_") + "-" + new Date();
+	backup(document) {
+		let {id, path, string: code} = document;
+		let key = path ? encodeURIComponent(path) : id;
 		
-		this.fs(this.config.userDataDir, "backups", name).write(code, {
+		this.fs(this.config.userDataDir, "backups", key).write(code, {
 			mkdirp: true,
 		});
 	}
@@ -213,8 +214,8 @@ class Platform extends Common {
 		this.fire("prefsUpdated");
 	}
 	
-	loadJson(key) {
-		return ipc.jsonStore.load(key);
+	loadJson(key, _default=null) {
+		return ipc.jsonStore.load(key, _default);
 	}
 	
 	saveJson(key, data) {

@@ -377,7 +377,7 @@ class View extends Evented {
 			scrollPosition.y = Math.min(scrollPosition.y + bottomRowDiff * rowHeight, maxRow * rowHeight);
 		}
 		
-		if (!platform.getPref("wrap")) {
+		if (!this.wrap) {
 			let colBuffer = colWidth * 4;
 			
 			let [x] = this.screenCoordsFromRowCol(row, col);
@@ -434,9 +434,15 @@ class View extends Evented {
 	}
 	
 	setWrap(wrap) {
+		if (this.wrap === wrap) {
+			return;
+		}
+		
 		this.wrap = wrap;
 		
 		this.updateWrappedLines();
+		
+		this.fire("wrapChanged", wrap);
 	}
 	
 	setMeasurements(measurements) {

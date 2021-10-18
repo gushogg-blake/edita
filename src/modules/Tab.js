@@ -1,4 +1,6 @@
+let set = require("lodash.set");
 let Evented = require("utils/Evented");
+let defaultPerFilePrefs = require("modules/defaultPerFilePrefs");
 
 function fs(...args) {
 	return platform.fs(...args);
@@ -16,11 +18,24 @@ class Tab extends Evented {
 		
 		this.pendingActions = [];
 		
+		let {document, view} = editor;
+		
 		this.teardownCallbacks = [
-			editor.document.on("save", this.onDocumentSave.bind(this)),
-			editor.on("focus", this.onFocus.bind(this)),
-			editor.on("blur", this.onBlur.bind(this)),
+			document.on("save", this.onDocumentSave.bind(this)),
+			view.on("wrapChanged", this.onWrapChanged.bind(this)),
+			...this.relayEvents(editor, "focus", "blur"),
 		];
+	}
+	
+	async init() {
+		let {
+			wrap,
+		} = {
+			...defaultPerFilePrefs(),
+			...await this.getPerFilePrefs(),
+		};
+		
+		this.editor.view.setWrap(wrap);
 	}
 	
 	get path() {
@@ -135,6 +150,10 @@ class Tab extends Evented {
 		this.fire("zoomChange");
 	}
 	
+	async onWrapChanged(wrap) {
+		await this.setPerFilePref("wrap", wrap);
+	}
+	
 	async updateDirListing() {
 		if (this.currentPath === this.path) {
 			this.entries = [];
@@ -143,6 +162,34 @@ class Tab extends Evented {
 		}
 		
 		this.fire("updateDirListing");
+	}
+	
+	get perFilePrefsKey() {
+		return "perFilePrefs/" + encodeURIComponent(this.path);
+	}
+	
+	async setPerFilePrefs(prefs) {
+		await platform.saveJson(this.perFilePrefsKey, prefs);
+	}
+	
+	async setPerFilePref(pref, value) {
+		if (!this.path) {
+			return;
+		}
+		
+		let prefs = await platform.loadJson(this.perFilePrefsKey, {});
+		
+		set(prefs, pref, value);
+		
+		await platform.saveJson(this.perFilePrefsKey, prefs);
+	}
+	
+	async getPerFilePrefs() {
+		if (!this.path) {
+			return {};
+		}
+		
+		return await platform.loadJson(this.perFilePrefsKey, {});
 	}
 	
 	saveState() {
@@ -184,14 +231,6 @@ class Tab extends Evented {
 		} else {
 			editor.setAstSelection(astSelection);
 		}
-	}
-	
-	onFocus() {
-		this.fire("focus");
-	}
-	
-	onBlur() {
-		this.fire("blur");
 	}
 	
 	teardown() {

@@ -119,10 +119,11 @@ class Platform extends Common {
 		return name ? "/" + name : null;
 	}
 	
-	backup(path, code) {
-		let name = (path || "(new file)").replaceAll("/", "_");
+	backup(document) {
+		let {id, path, string: code} = document;
+		let key = path ? encodeURIComponent(path) : id;
 		
-		this.backupFs(name).write(code);
+		this.backupFs(key).write(code);
 	}
 	
 	async filesFromDropEvent(e) {
@@ -192,8 +193,8 @@ class Platform extends Common {
 		this.fire("prefsUpdated");
 	}
 	
-	loadJson(key) {
-		return localStorage.get(this.options.localStoragePrefix + key);
+	loadJson(key, _default=null) {
+		return localStorage.get(this.options.localStoragePrefix + key) || _default;
 	}
 	
 	saveJson(key, data) {

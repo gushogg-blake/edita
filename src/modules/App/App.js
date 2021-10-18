@@ -1,4 +1,5 @@
 let bluebird = require("bluebird");
+
 let {remove, moveInPlace} = require("utils/arrayMethods");
 let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
@@ -6,10 +7,12 @@ let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
 let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
 let windowFocus = require("utils/dom/windowFocus");
+
 let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
+
 let FileTree = require("./FileTree");
 let BottomPane = require("./BottomPane");
 let FindAndReplace = require("./FindAndReplace");
@@ -291,7 +294,7 @@ class App extends Evented {
 			throw "File " + path + " has mixed newlines";
 		}
 		
-		let tab = this.createTab(code, path);
+		let tab = await this.createTab(code, path);
 		
 		this.tabs.push(tab);
 		
@@ -317,8 +320,8 @@ class App extends Evented {
 		});
 	}
 	
-	newFile() {
-		let tab = this.createTab("", null);
+	async newFile() {
+		let tab = await this.createTab("", null);
 		
 		this.tabs.push(tab);
 		
@@ -329,11 +332,13 @@ class App extends Evented {
 		return tab;
 	}
 	
-	createTab(code, path) {
+	async createTab(code, path) {
 		let document = this.createDocument(code, path);
 		let view = new View(document);
 		let editor = new Editor(document, view);
 		let tab = new Tab(this, editor);
+		
+		await tab.init();
 		
 		tab.on("focus", this.onTabFocus.bind(this));
 		
@@ -453,7 +458,7 @@ class App extends Evented {
 		if (this.tabs.length > 0) {
 			this.selectTab(this.findTabByPath(fileToSelect) || this.tabs[this.tabs.length - 1]);
 		} else {
-			this.initialNewFileTab = this.newFile();
+			this.initialNewFileTab = await this.newFile();
 		}
 	}
 	

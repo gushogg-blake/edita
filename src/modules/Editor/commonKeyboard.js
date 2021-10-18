@@ -48,7 +48,6 @@ module.exports = {
 	
 	toggleWrap() {
 		this.view.setWrap(!this.view.wrap);
-		this.view.redraw();
 		
 		return ["noScrollCursorIntoView"];
 	},

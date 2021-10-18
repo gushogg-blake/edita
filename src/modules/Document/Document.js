@@ -1,5 +1,6 @@
 let Evented = require("utils/Evented");
 let throttle = require("utils/throttle");
+let lid = require("utils/lid");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
@@ -30,8 +31,10 @@ class Document extends Evented {
 		this.modified = false;
 		this.historyIndexAtSave = 0;
 		
+		this.id = lid();
+		
 		this.throttledBackup = throttle(() => {
-			platform.backup(this.path, this.string);
+			platform.backup(this);
 		}, 15000);
 	}
 	

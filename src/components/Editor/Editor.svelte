@@ -69,7 +69,7 @@ let resizeInterval;
 
 let verticalScrollbar;
 let horizontalScrollbar;
-let showingHorizontalScrollbar = !platform.prefs.wrap;
+let showingHorizontalScrollbar = !view.wrap;
 
 let windowHasFocus;
 
@@ -471,16 +471,8 @@ function horizontalScroll({detail: position}) {
 	view.updateCanvas();
 }
 
-async function prefsUpdated() {
-	await toggleHorizontalScrollbar(!platform.prefs.wrap);
-	
-	updateMeasurements();
-	
-	resize();
-	
-	view.updateWrappedLines();
-	
-	view.redraw();
+async function onWrapChanged() {
+	await toggleHorizontalScrollbar(!view.wrap);
 }
 
 function updateMeasurements() {
@@ -500,6 +492,10 @@ async function toggleHorizontalScrollbar(show) {
 	showingHorizontalScrollbar = show;
 	
 	await tick();
+	
+	resize();
+	
+	view.redraw();
 }
 
 function onFocus() {
@@ -552,6 +548,8 @@ onMount(function() {
 		
 		view.on("updateScrollbars", updateScrollbars),
 		
+		view.on("wrapChanged", onWrapChanged),
+		
 		view.on("requestFocus", function() {
 			main.focus({
 				preventScroll: true,
@@ -569,8 +567,6 @@ onMount(function() {
 			
 			updateCanvas();
 		}),
-		
-		platform.on("prefsUpdated", prefsUpdated),
 	];
 	
 	mounted = true;

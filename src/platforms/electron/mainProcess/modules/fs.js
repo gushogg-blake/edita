@@ -3,6 +3,7 @@ let fs = require("fs-extra");
 let minimatch = require("minimatch");
 let glob = require("glob");
 let bluebird = require("bluebird");
+let mkdirp = require("mkdirp");
 
 class Node {
 	constructor(path) {

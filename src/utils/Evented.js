@@ -44,4 +44,12 @@ module.exports = class {
 			handler(...args);
 		}
 	}
+	
+	relayEvents(source, ...events) {
+		return events.map((event) => {
+			return source.on(event, (...args) => {
+				this.fire(event, ...args);
+			});
+		});
+	}
 }
