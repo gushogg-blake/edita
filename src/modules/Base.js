@@ -37,6 +37,7 @@ class Base {
 	constructor() {
 		this.langs = langs;
 		this.treeSitterLanguages = {};
+		this.initialisedLangs = new Set();
 		
 		this.DirEntries = DirEntries;
 	}
@@ -186,7 +187,7 @@ class Base {
 	}
 	
 	async initLanguage(lang) {
-		if (lang.initialised || lang.code === "plainText") {
+		if (this.initialisedLangs.has(lang) || lang.code === "plainText") {
 			return;
 		}
 		
@@ -202,7 +203,7 @@ class Base {
 			};
 		});
 		
-		lang.initialised = true;
+		this.initialisedLangs.add(lang);
 	}
 	
 	createEditorForTextArea(string="") {
