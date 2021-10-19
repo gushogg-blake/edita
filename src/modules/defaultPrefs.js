@@ -207,6 +207,18 @@ module.exports = function(systemInfo) {
 					type: "#008b8b",
 				},
 			},
+			
+			python: {
+				colors: {
+					keyword: "#0032ff",
+					id: "#202020",
+					comment: "#7f7f7f",
+					symbol: "#202020",
+					bracket: "#202020",
+					number: "#cc2222",
+					string: "#2233bb",
+				},
+			},
 		},
 		
 		fileAssociations: {
