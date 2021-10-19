@@ -136,6 +136,10 @@ module.exports = class Scope {
 				return match.injectionNode && match.injectionNode.text.length > 0;
 			});
 			
+			if (matches.length === 0) {
+				continue;
+			}
+			
 			if (injection.combined) {
 				let injectionLang = base.langs.get(injection.lang);
 				
