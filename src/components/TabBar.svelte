@@ -1,5 +1,5 @@
 <script>
-import {onMount, createEventDispatcher, tick} from "svelte";
+import {onMount, createEventDispatcher, getContext, tick} from "svelte";
 import screenOffsets from "utils/dom/screenOffsets";
 import Gap from "components/utils/Gap.svelte";
 
@@ -9,6 +9,8 @@ export let getDetails;
 export let getContextMenuItems = null;
 export let reorderable = false;
 export let mimeType = "application/vnd.editor.tab";
+
+let app = getContext("app");
 
 let fire = createEventDispatcher();
 
@@ -39,7 +41,7 @@ function showContextMenu(e, tab) {
 		return;
 	}
 	
-	platform.showContextMenu(e, getContextMenuItems(tab));
+	app.showContextMenu(e, getContextMenuItems(tab));
 }
 
 function tabIsSelected(tab, selectedTab) {

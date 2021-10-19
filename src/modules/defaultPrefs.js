@@ -170,6 +170,20 @@ module.exports = function(systemInfo) {
 				},
 			},
 			
+			scss: {
+				colors: {
+					tagName: "#0032ff",
+					className: "#008b8b",
+					idName: "#8b0000",
+					property: "#333333",
+					attribute: "#871f78",
+					string: "#2233bb",
+					comment: "#7f7f7f",
+					symbol: "#333333",
+					text: "#000000",
+				},
+			},
+			
 			php: {
 				colors: {
 					phpTag: "maroon",

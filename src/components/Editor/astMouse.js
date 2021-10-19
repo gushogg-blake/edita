@@ -37,7 +37,7 @@ function getData(e) {
 	return null;
 }
 
-module.exports = function(document, editor, view, editorComponent) {
+module.exports = function(app, document, editor, view, editorComponent) {
 	let drag = null;
 	let drawingSelection = false;
 	
@@ -190,7 +190,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			};
 		});
 		
-		platform.showContextMenu(e, items, true);
+		app.showContextMenu(e, items, true);
 	}
 	
 	function drawSelection(e) {

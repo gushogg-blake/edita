@@ -23,7 +23,7 @@ function openDirMenu(e) {
 		return;
 	}
 	
-	platform.showContextMenuForElement(dirSelector, rootEntry.node.parents.map(function(node) {
+	app.showContextMenuForElement(dirSelector, rootEntry.node.parents.map(function(node) {
 		return {
 			label: node.name,
 			

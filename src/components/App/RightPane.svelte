@@ -38,7 +38,7 @@ function newSnippetInList(list) {
 }
 
 function showContextMenuForSnippet(e, snippet) {
-	platform.showContextMenu(e, [
+	app.showContextMenu(e, [
 		{
 			label: "%Delete",
 			

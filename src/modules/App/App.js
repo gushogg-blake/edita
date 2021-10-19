@@ -613,6 +613,14 @@ class App extends Evented {
 		}
 	}
 	
+	showContextMenu(e, items, noCancel=false) {
+		platform.showContextMenu(this, e, items, noCancel);
+	}
+	
+	showContextMenuForElement(element, items, noCancel=false) {
+		platform.showContextMenuForElement(this, element, items, noCancel);
+	}
+	
 	onTabFocus() {
 		this.hideFindBar();
 	}

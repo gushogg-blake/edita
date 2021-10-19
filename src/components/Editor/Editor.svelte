@@ -1,5 +1,5 @@
 <script>
-import {tick, onMount} from "svelte";
+import {tick, onMount, getContext} from "svelte";
 
 import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
@@ -39,6 +39,8 @@ export let lang = null;
 export function setValue(value) {
 	editor.setValue(value);
 }
+
+let app = getContext("app");
 
 let editorMode = editor ? "app" : "textarea";
 
@@ -88,7 +90,7 @@ let normalMouseHandler = normalMouse(document, editor, view, {
 	mouseup,
 });
 
-let astMouseHandler = astMouse(document, editor, view, {
+let astMouseHandler = astMouse(app, document, editor, view, {
 	get canvasDiv() {
 		return canvasDiv;
 	},
