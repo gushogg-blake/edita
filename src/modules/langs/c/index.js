@@ -1,22 +1,16 @@
 let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
 
+let loggedTypes = [];
+
 let wordRe = /\w/;
 
 module.exports = {
-	code: "php",
-	name: "PHP",
+	code: "c",
+	name: "C",
 	astMode,
 	codeIntel,
-	possibleInjections: ["html"],
-	
-	injections: [
-		{
-			pattern: "(text) @injectionNode",
-			combined: true,
-			lang: "html",
-		},
-	],
+	injections: [],
 	
 	*generateRenderHints(node) {
 		let {
@@ -41,6 +35,11 @@ module.exports = {
 		let renderAsText = [
 			
 		].includes(parent?.type);
+		
+		if (!loggedTypes.includes(type)) {
+			console.log(type);
+			loggedTypes.push(type);
+		}
 		
 		if (colour) {
 			yield {
@@ -101,26 +100,32 @@ module.exports = {
 		let {type} = node;
 		
 		if ([
-			"$",
-			"name",
+			"identifier",
+			"field_identifier",
 		].includes(type)) {
 			return "id";
+		}
+		
+		if ([
+			"type_identifier",
+		].includes(type)) {
+			return "type";
+		}
+		
+		if (type === "#include") {
+			return "include";
 		}
 		
 		if (type === "comment") {
 			return "comment";
 		}
 		
-		if (["string", "\""].includes(type)) {
+		if (["string_literal", "\""].includes(type)) {
 			return "string";
 		}
 		
 		if (type === "integer" || type === "float") {
 			return "number";
-		}
-		
-		if (["php_tag", "?>"].includes(type)) {
-			return "phpTag";
 		}
 		
 		if (type[0].match(wordRe)) {
@@ -138,7 +143,7 @@ module.exports = {
 		let type = platform.fs(path).lastType;
 		
 		if ([
-			"php",
+			"c",
 		].includes(type)) {
 			return "general";
 		}

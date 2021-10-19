@@ -12,6 +12,7 @@ let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
+let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let FileTree = require("./FileTree");
 let BottomPane = require("./BottomPane");
@@ -284,16 +285,6 @@ class App extends Evented {
 			code = await platform.fs(path).read();
 		}
 		
-		let fileDetails = base.getFileDetails(code, path);
-		
-		if (fileDetails.hasMixedNewlines) {
-			// TODO prompt to change all newlines
-			// needed as fileDetails.newline.length is currently used for e.g.
-			// calculating line start offsets
-			
-			throw "File " + path + " has mixed newlines";
-		}
-		
 		let tab = await this.createTab(code, path);
 		
 		this.tabs.push(tab);
@@ -332,7 +323,19 @@ class App extends Evented {
 		return tab;
 	}
 	
-	async createTab(code, path) {
+	async createTab(code, path, fileDetails=null) {
+		if (!fileDetails) {
+			fileDetails = base.getFileDetails(code, path);
+		}
+		
+		if (fileDetails.hasMixedNewlines) {
+			// TODO prompt to change all newlines
+			
+			throw "File " + path + " has mixed newlines";
+		}
+		
+		await bluebird.map([...generateRequiredLangs(fileDetails.lang)], lang => base.initLanguage(lang));
+		
 		let document = this.createDocument(code, path);
 		let view = new View(document);
 		let editor = new Editor(document, view);

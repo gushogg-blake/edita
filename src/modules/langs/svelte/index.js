@@ -7,6 +7,7 @@ module.exports = {
 	name: "Svelte",
 	astMode,
 	codeIntel,
+	possibleInjections: ["javascript", "css"],
 	injections: [],
 	
 	*generateRenderHints(node) {

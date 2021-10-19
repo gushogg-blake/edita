@@ -15,6 +15,8 @@ let html = require("modules/langs/html");
 let css = require("modules/langs/css");
 let scss = require("modules/langs/scss");
 let php = require("modules/langs/php");
+let c = require("modules/langs/c");
+let cpp = require("modules/langs/cpp");
 //let svelte = require("modules/langs/svelte");
 let plainText = require("modules/langs/plainText");
 let langs = require("modules/langs");
@@ -33,6 +35,7 @@ the UI.
 class Base {
 	constructor() {
 		this.langs = langs;
+		this.treeSitterLanguages = {};
 		
 		this.DirEntries = DirEntries;
 	}
@@ -42,12 +45,6 @@ class Base {
 		
 		await TreeSitter.init();
 		
-		this.treeSitterLanguages = {};
-		
-		await bluebird.map(["javascript", "html", "css", "php"], async (code) => {
-			this.treeSitterLanguages[code] = await platform.loadTreeSitterLanguage(code);
-		});
-		
 		let langs = [
 			javascript,
 			//svelte,
@@ -55,6 +52,8 @@ class Base {
 			css,
 			scss,
 			php,
+			c,
+			cpp,
 			plainText,
 		];
 		
@@ -62,14 +61,18 @@ class Base {
 			this.langs.add(lang);
 		}
 		
-		for (let lang of this.langs.all) {
-			lang.injections = (lang.injections || []).map((injection) => {
-				return {
-					...injection,
-					query: this.treeSitterLanguages[lang.code].query(injection.pattern),
-				};
-			});
-		}
+		this.asyncInit();
+	}
+	
+	async asyncInit() {
+		await bluebird.map([
+			"javascript",
+			"html",
+			"css",
+			"php",
+			"c",
+			"cpp",
+		], code => this.initLanguage(this.langs.get(code)));
 	}
 	
 	/*
@@ -175,6 +178,26 @@ class Base {
 	
 	getTreeSitterLanguage(code) {
 		return this.treeSitterLanguages[code];
+	}
+	
+	async initLanguage(lang) {
+		if (lang.initialised || lang.code === "plainText") {
+			return;
+		}
+		
+		let {code} = lang;
+		let treeSitterLanguage = await platform.loadTreeSitterLanguage(code);
+		
+		this.treeSitterLanguages[code] = treeSitterLanguage;
+		
+		lang.injections = (lang.injections || []).map((injection) => {
+			return {
+				...injection,
+				query: treeSitterLanguage.query(injection.pattern),
+			};
+		});
+		
+		lang.initialised = true;
 	}
 	
 	createEditorForTextArea(string="") {
