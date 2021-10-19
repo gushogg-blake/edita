@@ -156,7 +156,7 @@ class Base {
 		};
 	}
 	
-	getDefaultFileDetails() {
+	getDefaultFileDetails(langCode=null) {
 		let {
 			defaultIndent,
 			tabWidth,
@@ -164,7 +164,9 @@ class Base {
 			defaultLang,
 		} = platform.prefs;
 		
-		let lang = this.langs.get(defaultLang);
+		langCode = langCode || defaultLang;
+		
+		let lang = this.langs.get(langCode);
 		let indentation = getIndentationDetails(defaultIndent, tabWidth);
 		
 		return {

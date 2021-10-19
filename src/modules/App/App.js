@@ -312,7 +312,7 @@ class App extends Evented {
 	}
 	
 	async newFile() {
-		let tab = await this.createTab("", null);
+		let tab = await this.createTab("", null, base.getDefaultFileDetails());
 		
 		this.tabs.push(tab);
 		
@@ -336,7 +336,7 @@ class App extends Evented {
 		
 		await bluebird.map([...generateRequiredLangs(fileDetails.lang)], lang => base.initLanguage(lang));
 		
-		let document = this.createDocument(code, path);
+		let document = this.createDocument(code, path, fileDetails);
 		let view = new View(document);
 		let editor = new Editor(document, view);
 		let tab = new Tab(this, editor);
@@ -348,8 +348,10 @@ class App extends Evented {
 		return tab;
 	}
 	
-	createDocument(code, path) {
-		let document = new Document(code, path);
+	createDocument(code, path, fileDetails) {
+		let document = new Document(code, path, {
+			fileDetails,
+		});
 		
 		for (let event of ["edit", "undo", "redo", "save"]) {
 			document.on(event, (...args) => {

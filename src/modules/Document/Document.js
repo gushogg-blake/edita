@@ -16,15 +16,21 @@ class Document extends Evented {
 		super();
 		
 		this.options = {
+			fileDetails: null,
 			noParse: false,
 			...options,
 		};
 		
-		this.forceLang = null;
-		
 		this.source = new Source(code, this.options.noParse);
 		this.path = path;
-		this.updateFileDetails();
+		
+		if (this.options.fileDetails) {
+			this.fileDetails = this.options.fileDetails;
+		} else {
+			this.fileDetails = base.getFileDetails(this.string, this.path);
+		}
+		
+		this.source.init(this.fileDetails);
 		
 		this.history = [];
 		this.historyIndex = 0;
@@ -230,23 +236,18 @@ class Document extends Evented {
 	updateFileDetails() {
 		this.fileDetails = base.getFileDetails(this.string, this.path);
 		
-		if (this.forceLang) {
-			this.fileDetails.lang = this.forceLang;
-		}
-		
 		this.source.init(this.fileDetails);
 	}
 	
 	setLang(lang) {
-		this.forceLang = lang;
+		this.fileDetails.lang = lang;
 		
-		this.updateFileDetails();
+		this.source.init(this.fileDetails);
 	}
 	
 	async save() {
 		await platform.save(this.path, this.toString());
 		
-		this.updateFileDetails();
 		this.modified = false;
 		this.historyIndexAtSave = this.historyIndex;
 		
@@ -255,6 +256,8 @@ class Document extends Evented {
 	
 	saveAs(path) {
 		this.path = path;
+		
+		this.updateFileDetails();
 		
 		return this.save();
 	}
