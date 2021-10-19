@@ -7,6 +7,18 @@ let app = getContext("app");
 function upload({detail: files}) {
 	app.openFilesFromUpload(files);
 }
+
+function openLanguages(e) {
+	platform.showContextMenuForElement(e.target, base.langs.all.map(function(lang) {
+		return {
+			label: lang.name,
+			
+			onClick() {
+				app.newFile(lang);
+			},
+		};
+	}));
+}
 </script>
 
 <style type="text/scss">
@@ -32,6 +44,9 @@ button {
 <div id="main" on:mousedown={() => app.focusSelectedTabAsync()}>
 	<button on:click={() => app.functions._new()}>
 		New
+	</button>
+	<button on:mousedown={openLanguages}>
+		Lang
 	</button>
 	{#if platform.useFileUploader}
 		<FileInput on:upload={upload}/>

@@ -163,6 +163,10 @@ class Platform extends Common {
 	
 	showContextMenuForElement(element, items, noCancel=false) {
 		let {x, y, height} = screenOffsets(element);
+		
+		x = Math.round(x);
+		y = Math.round(y);
+		
 		let coords = {x, y: y + height};
 		
 		if (noCancel) {

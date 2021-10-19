@@ -311,8 +311,8 @@ class App extends Evented {
 		});
 	}
 	
-	async newFile() {
-		let tab = await this.createTab("", null, base.getDefaultFileDetails());
+	async newFile(lang=null) {
+		let tab = await this.createTab("", null, base.getDefaultFileDetails(lang));
 		
 		this.tabs.push(tab);
 		
