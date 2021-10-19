@@ -199,6 +199,12 @@ class App extends Evented {
 		
 		if (selectNext) {
 			this.selectTab(selectNext);
+		} else {
+			if (this.selectedTab === tab) {
+				this.selectedTab = null;
+			}
+			
+			this.updateTitle();
 		}
 	}
 	
