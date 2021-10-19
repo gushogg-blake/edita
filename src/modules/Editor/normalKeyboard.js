@@ -248,6 +248,7 @@ module.exports = {
 	},
 	
 	tab() {
+		let flags;
 		let {view} = this;
 		let {start} = view.normalSelection;
 		let snippet = null;
@@ -272,6 +273,8 @@ module.exports = {
 			this.astMode.multiStepCommandReturnToAstMode();
 		} else if (this.view.Selection.isMultiline()) {
 			this.indentSelection();
+			
+			flags = ["noScrollCursorIntoView"];
 		} else {
 			// insert tab
 			
@@ -303,19 +306,23 @@ module.exports = {
 		
 		this.clearBatchState();
 		
-		return ["noScrollCursorIntoView"];
+		return flags;
 	},
 	
 	shiftTab() {
+		let flags;
+		
 		if (this.snippetSession) {
 			this.prevTabstop();
 		} else {
 			this.dedentSelection();
+			
+			flags = ["noScrollCursorIntoView"];
 		}
 		
 		this.clearBatchState();
 		
-		return ["noScrollCursorIntoView"];
+		return flags;
 	},
 	
 	completeWord() {

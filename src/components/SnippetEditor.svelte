@@ -15,6 +15,7 @@ let {
 	langs,
 	text,
 	isDynamic,
+	keyCombo: assignedKeyCombo,
 } = snippet;
 
 langGroups = langGroups.join(", ");
@@ -37,6 +38,7 @@ function saveAndExit() {
 		langs: langs.split(", "),
 		text,
 		isDynamic,
+		keyCombo: assignedKeyCombo || null,
 	});
 }
 
@@ -70,6 +72,19 @@ function onToggleDynamic() {
 		wrap();
 	} else {
 		unwrap();
+	}
+}
+
+function setKeyCombo(e) {
+	let {keyCombo} = getKeyCombo(e);
+	
+	if (["Ctrl", "Alt", "Shift", "Command"].some(modifier => keyCombo.includes(modifier + "+"))) {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		assignedKeyCombo = keyCombo;
+	} else if (["Backspace", "Delete"].includes(keyCombo)) {
+		assignedKeyCombo = null;
 	}
 }
 
@@ -152,7 +167,20 @@ input#name {
 	<div id="editor">
 		<Editor bind:this={editor} bind:value={text}/>
 	</div>
-	<div id="options">
+	<div class="options">
+		<div class="field">
+			<label for="keyCombo">
+				Key combo
+			</label>
+			<input
+				bind:value={assignedKeyCombo}
+				id="keyCombo"
+				readonly
+				on:keydown={setKeyCombo}
+			>
+		</div>
+	</div>
+	<div class="options">
 		<Checkbox
 			bind:checked={isDynamic}
 			on:change={onToggleDynamic}

@@ -264,7 +264,13 @@ class Editor extends Evented {
 	}
 	
 	willHandleNormalKeydown(key, keyCombo, isModified) {
-		return platform.prefs.normalKeymap[keyCombo] || key.length === 1 && !isModified;
+		let lang = this.document.langFromCursor(this.normalSelection.start);
+		
+		return (
+			platform.prefs.normalKeymap[keyCombo]
+			|| key.length === 1 && !isModified
+			|| platform.snippets.findByLangAndKeyCombo(lang, keyCombo)
+		);
 	}
 	
 	willHandleAstKeydown(keyCombo) {
@@ -276,6 +282,20 @@ class Editor extends Evented {
 	}
 	
 	async normalKeydown(key, keyCombo, isModified) {
+		let lang = this.document.langFromCursor(this.normalSelection.start);
+		let snippet = platform.snippets.findByLangAndKeyCombo(lang, keyCombo);
+		
+		if (snippet) {
+			this.clearSnippetSession();
+			this.insertSnippet(snippet);
+			
+			this.view.ensureSelectionIsOnScreen();
+			this.view.startCursorBlink();
+			this.view.redraw();
+			
+			return;
+		}
+		
 		let fnName = platform.prefs.normalKeymap[keyCombo];
 		let flags;
 		

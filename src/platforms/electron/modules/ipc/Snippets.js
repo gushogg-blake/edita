@@ -30,6 +30,15 @@ class Snippets extends Evented {
 		});
 	}
 	
+	findByLangAndKeyCombo(lang, keyCombo) {
+		return this.snippets.find(function(snippet) {
+			return snippet.keyCombo === keyCombo && (
+				snippet.langGroups.includes(lang.group)
+				|| snippet.langs.includes(lang.code)
+			);
+		});
+	}
+	
 	onNewSnippet(e, snippet) {
 		this.snippets.push(snippet);
 		
