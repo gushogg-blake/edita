@@ -99,6 +99,9 @@ module.exports = function(systemInfo) {
 			
 			"Space": "toggleSpaceBelow",
 			"Shift+Space": "toggleSpaceAbove",
+			
+			"3": "comment",
+			"2": "uncomment",
 		},
 		
 		commonKeymap: {

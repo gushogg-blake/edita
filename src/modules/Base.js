@@ -17,6 +17,7 @@ let scss = require("modules/langs/scss");
 let php = require("modules/langs/php");
 let c = require("modules/langs/c");
 let cpp = require("modules/langs/cpp");
+let python = require("modules/langs/python");
 //let svelte = require("modules/langs/svelte");
 let plainText = require("modules/langs/plainText");
 let langs = require("modules/langs");
@@ -54,6 +55,7 @@ class Base {
 			php,
 			c,
 			cpp,
+			python,
 			plainText,
 		];
 		

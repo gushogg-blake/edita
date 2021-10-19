@@ -88,4 +88,12 @@ module.exports = {
 	unwrap() {
 		this.astMode.commands.unwrap();
 	},
+	
+	comment() {
+		this.commonKeyboard.toggleComment(true);
+	},
+	
+	uncomment() {
+		this.commonKeyboard.toggleComment(false);
+	},
 };
