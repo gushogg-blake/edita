@@ -562,12 +562,12 @@ class App extends Evented {
 		document.body.appendChild(overlay);
 		overlay.appendChild(container);
 		
-		let {
-			width,
-			height,
-		} = windowOptions;
-		
 		if (!windowOptions.fitContents) {
+			let {
+				width,
+				height,
+			} = windowOptions;
+			
 			container.style = inlineStyle({
 				width,
 				height,

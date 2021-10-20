@@ -101,6 +101,7 @@ let lang = {
 			"statement_block",
 			"class_body",
 			"template_string",
+			"variable_declarator",
 		].includes(node.type);
 	},
 	
