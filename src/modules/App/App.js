@@ -529,6 +529,7 @@ class App extends Evented {
 		}, {
 			width: 640,
 			height: 300,
+			fitContents: true,
 		});
 	}
 	
@@ -566,10 +567,12 @@ class App extends Evented {
 			height,
 		} = windowOptions;
 		
-		container.style = inlineStyle({
-			width,
-			height,
-		});
+		if (!windowOptions.fitContents) {
+			container.style = inlineStyle({
+				width,
+				height,
+			});
+		}
 		
 		let closed = false;
 		
