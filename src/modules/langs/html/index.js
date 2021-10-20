@@ -8,6 +8,7 @@ module.exports = {
 	astMode,
 	codeIntel,
 	possibleInjections: ["javascript", "css"],
+	defaultExtension: "html",
 	
 	injections: [
 		{

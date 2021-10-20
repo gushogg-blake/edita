@@ -6,8 +6,10 @@ let loggedTypes = [];
 let wordRe = /\w/;
 
 module.exports = {
+	group: "c",
 	code: "c",
 	name: "C",
+	defaultExtension: "c",
 	astMode,
 	codeIntel,
 	injections: [],

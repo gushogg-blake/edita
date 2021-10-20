@@ -5,6 +5,7 @@ module.exports = {
 	group: "css",
 	code: "scss",
 	name: "SCSS",
+	defaultExtension: "scss",
 	astMode,
 	codeIntel,
 	injections: [],

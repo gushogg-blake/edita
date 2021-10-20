@@ -7,6 +7,7 @@ let lang = {
 	group: "javascript",
 	code: "javascript",
 	name: "JavaScript",
+	defaultExtension: "js",
 	astMode,
 	injections: [],
 	

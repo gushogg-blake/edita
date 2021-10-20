@@ -6,6 +6,7 @@ let wordRe = /\w/;
 module.exports = {
 	code: "php",
 	name: "PHP",
+	defaultExtension: "php",
 	astMode,
 	codeIntel,
 	possibleInjections: ["html"],

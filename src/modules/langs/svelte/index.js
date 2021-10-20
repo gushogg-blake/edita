@@ -5,6 +5,7 @@ module.exports = {
 	group: "html",
 	code: "svelte",
 	name: "Svelte",
+	defaultExtension: "svelte",
 	astMode,
 	codeIntel,
 	possibleInjections: ["javascript", "css"],

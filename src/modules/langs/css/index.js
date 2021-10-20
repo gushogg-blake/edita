@@ -5,6 +5,7 @@ module.exports = {
 	group: "css",
 	code: "css",
 	name: "CSS",
+	defaultExtension: "css",
 	astMode,
 	codeIntel,
 	injections: [],

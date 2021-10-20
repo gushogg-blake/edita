@@ -6,8 +6,10 @@ let loggedTypes = [];
 let wordRe = /\w/;
 
 module.exports = {
+	group: "c",
 	code: "cpp",
 	name: "C++",
+	defaultExtension: "cpp",
 	astMode,
 	codeIntel,
 	injections: [],

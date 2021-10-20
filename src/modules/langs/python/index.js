@@ -8,6 +8,7 @@ let wordRe = /\w/;
 module.exports = {
 	code: "python",
 	name: "Python",
+	defaultExtension: "py",
 	astMode,
 	codeIntel,
 	injections: [],
