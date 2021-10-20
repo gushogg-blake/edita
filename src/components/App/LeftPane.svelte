@@ -41,7 +41,7 @@ function contextmenu(e) {
 	
 	let {node, path} = rootEntry;
 	
-	platform.showContextMenu(e, [
+	app.showContextMenu(e, [
 		{
 			label: "Find...",
 			

@@ -88,7 +88,7 @@ class Platform extends Common {
 			minimatch,
 			
 			async mkdirp(path) {
-				let dirs = path.substr(1).split("/");
+				let dirs = path.substr(1).split("/").filter(Boolean);
 				
 				for (let i = 1; i <= dirs.length; i++) {
 					let path = "/" + dirs.slice(0, i).join("/");
