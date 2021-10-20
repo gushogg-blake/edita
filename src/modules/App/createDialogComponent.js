@@ -57,6 +57,7 @@ module.exports = {
 			searchInSubDirs: true,
 			includePatterns: [],
 			excludePatterns: [],
+			showResults: false,
 			...dialogOptions,
 		};
 		

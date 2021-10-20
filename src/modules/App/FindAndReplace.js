@@ -161,7 +161,9 @@ class FindAndReplace {
 		let results = this.app.selectedTab.editor.api.replaceAll(getFindAndReplaceOptions(options));
 		
 		if (results.length > 0) {
-			this.app.bottomPane.showFindResults(results);
+			if (options.showResults) {
+				this.app.bottomPane.showFindResults(results);
+			}
 			
 			return true;
 		} else {
@@ -173,7 +175,9 @@ class FindAndReplace {
 		let results = this.app.selectedTab.editor.api.replaceAllInSelectedText(getFindAndReplaceOptions(options));
 		
 		if (results.length > 0) {
-			this.app.bottomPane.showFindResults(results);
+			if (options.showResults) {
+				this.app.bottomPane.showFindResults(results);
+			}
 			
 			return true;
 		} else {
@@ -189,7 +193,9 @@ class FindAndReplace {
 		}
 		
 		if (results.length > 0) {
-			this.app.bottomPane.showFindResults(results);
+			if (options.showResults) {
+				this.app.bottomPane.showFindResults(results);
+			}
 			
 			return true;
 		} else {

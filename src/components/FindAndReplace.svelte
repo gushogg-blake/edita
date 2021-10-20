@@ -32,6 +32,7 @@ let {
 	searchInSubDirs,
 	includePatterns,
 	excludePatterns,
+	showResults,
 } = options;
 
 let smartCase = caseMode === "smart";
@@ -54,6 +55,7 @@ $: options = {
 	searchInSubDirs,
 	includePatterns: includePatterns ? includePatterns.split(multiPathSeparator) : [],
 	excludePatterns: excludePatterns ? excludePatterns.split(multiPathSeparator) : [],
+	showResults,
 };
 
 $: if (isMounted()) {
@@ -318,6 +320,7 @@ button {
 				<button on:click={functions.replaceAll}>
 					<Accel label="Replace %all"/>
 				</button>
+				<Checkbox bind:value={showResults} label="Sh%ow results"/>
 			{:else}
 				<button on:click={functions.findPrevious}>
 					<Accel label="Find pre%vious"/>
