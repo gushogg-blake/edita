@@ -14,7 +14,7 @@ function select({detail: entry}) {
 }
 
 function open({detail: entry}) {
-	app.openFile(entry.path);
+	app.openPath(entry.path);
 }
 
 function contextmenu({detail: {e, entry}}) {

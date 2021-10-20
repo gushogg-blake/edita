@@ -190,6 +190,10 @@ class Platform extends Common {
 		});
 	}
 	
+	get isWindows() {
+		return process.platform === "win32";
+	}
+	
 	setTitle(title) {
 		document.title = (title ? title + " - " : "") + "Editor";
 	}

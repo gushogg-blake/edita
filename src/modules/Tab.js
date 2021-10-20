@@ -38,26 +38,42 @@ class Tab extends Evented {
 		this.editor.view.setWrap(wrap);
 	}
 	
+	get document() {
+		return this.editor.document;
+	}
+	
+	get url() {
+		return this.document.url;
+	}
+	
 	get path() {
-		return this.editor.document.path;
+		return this.document.path;
+	}
+	
+	get isSaved() {
+		return this.document.isSaved;
+	}
+	
+	get protocol() {
+		return this.document.protocol;
+	}
+	
+	get modified() {
+		return this.document.modified;
 	}
 	
 	get name() {
 		return this.app.getTabName(this);
 	}
 	
-	get modified() {
-		return this.editor.document.modified;
-	}
-	
 	async zoomOut() {
-		if (this.loading) {
-			this.pendingActions.push(this.zoomOut.bind(this));
-			
+		if (!this.isSaved) {
 			return;
 		}
 		
-		if (!this.currentPath) {
+		if (this.loading) {
+			this.pendingActions.push(this.zoomOut.bind(this));
+			
 			return;
 		}
 		
@@ -85,13 +101,13 @@ class Tab extends Evented {
 	}
 	
 	async zoomIn() {
-		if (this.loading) {
-			this.pendingActions.push(this.zoomIn.bind(this));
-			
+		if (!this.isSaved) {
 			return;
 		}
 		
-		if (!this.currentPath) {
+		if (this.loading) {
+			this.pendingActions.push(this.zoomIn.bind(this));
+			
 			return;
 		}
 		
@@ -133,7 +149,7 @@ class Tab extends Evented {
 			
 			this.updateDirListing();
 		} else {
-			this.app.openFile(entry.path);
+			this.app.openPath(entry.path);
 		
 			this.currentPath = this.path;
 		}
@@ -193,7 +209,7 @@ class Tab extends Evented {
 	}
 	
 	saveState() {
-		let {path} = this;
+		let {url} = this;
 		
 		let {
 			mode,
@@ -203,7 +219,7 @@ class Tab extends Evented {
 		} = this.editor.view;
 		
 		return {
-			path,
+			url,
 			mode,
 			normalSelection,
 			astSelection,

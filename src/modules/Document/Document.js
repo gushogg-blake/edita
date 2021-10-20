@@ -5,6 +5,7 @@ let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let findAndReplace = require("modules/findAndReplace");
+let protocol = require("modules/protocol");
 let Source = require("./Source");
 
 let {s} = Selection;
@@ -12,7 +13,7 @@ let {c} = Cursor;
 let {s: a} = AstSelection;
 
 class Document extends Evented {
-	constructor(code, path, options={}) {
+	constructor(code, url=null, options={}) {
 		super();
 		
 		this.options = {
@@ -22,12 +23,13 @@ class Document extends Evented {
 		};
 		
 		this.source = new Source(code, this.options.noParse);
-		this.path = path;
+		
+		this.url = url;
 		
 		if (this.options.fileDetails) {
 			this.fileDetails = this.options.fileDetails;
 		} else {
-			this.fileDetails = base.getFileDetails(this.string, this.path);
+			this.fileDetails = base.getFileDetails(this.string, this.url);
 		}
 		
 		this.source.init(this.fileDetails);
@@ -234,7 +236,7 @@ class Document extends Evented {
 	}
 	
 	updateFileDetails() {
-		this.fileDetails = base.getFileDetails(this.string, this.path);
+		this.fileDetails = base.getFileDetails(this.string, this.url);
 		
 		this.source.init(this.fileDetails);
 	}
@@ -245,8 +247,20 @@ class Document extends Evented {
 		this.source.init(this.fileDetails);
 	}
 	
+	get path() {
+		return this.url?.path;
+	}
+	
+	get protocol() {
+		return this.url?.protocol;
+	}
+	
+	get isSaved() {
+		return this.protocol && this.protocol !== "new";
+	}
+	
 	async save() {
-		await platform.save(this.path, this.toString());
+		await protocol(this.url).write(this.toString());
 		
 		this.modified = false;
 		this.historyIndexAtSave = this.historyIndex;
@@ -254,8 +268,8 @@ class Document extends Evented {
 		this.fire("save");
 	}
 	
-	saveAs(path) {
-		this.path = path;
+	saveAs(url) {
+		this.url = url;
 		
 		this.updateFileDetails();
 		

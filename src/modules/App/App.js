@@ -8,6 +8,8 @@ let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
 let windowFocus = require("utils/dom/windowFocus");
 
+let URL = require("modules/URL");
+let protocol = require("modules/protocol");
 let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
@@ -33,6 +35,7 @@ class App extends Evented {
 		this.selectedTab = null;
 		this.closedTabs = [];
 		this.lastSelectedPath = null;
+		this.newFileCountsByLangCode = {};
 		
 		this.panes = platform.getPref("panes");
 		
@@ -66,7 +69,7 @@ class App extends Evented {
 	async save(tab) {
 		let {document} = tab.editor;
 		
-		if (tab.path) {
+		if (document.isSaved) {
 			await document.save();
 		} else {
 			let dir = platform.systemInfo.homeDir;
@@ -76,27 +79,26 @@ class App extends Evented {
 			}
 			
 			let path = await platform.saveAs({
-				defaultPath: dir,
+				defaultPath: platform.fs(dir, platform.fs(document.path).name).path,
 			});
 			
 			if (path) {
-				await document.saveAs(path);
+				await document.saveAs(URL.file(path));
 			}
 		}
-		
-		return tab.path;
 	}
 	
 	async renameTab(tab) {
-		let oldPath = tab.editor.document.path;
+		let {url} = tab;
+		let oldPath = tab.path;
 		
 		let path = await platform.saveAs({
 			defaultPath: oldPath,
 		});
 		
 		if (path && path !== oldPath) {
-			await tab.editor.document.saveAs(path);
-			await platform.fs(oldPath).delete();
+			await tab.document.saveAs(URL.file(path));
+			await protocol(url).delete();
 		}
 	}
 	
@@ -115,7 +117,7 @@ class App extends Evented {
 		
 		this.updateTitle();
 		
-		if (tab.path) {
+		if (tab.isSaved) {
 			this.lastSelectedPath = tab.path;
 		}
 		
@@ -137,35 +139,24 @@ class App extends Evented {
 	}
 	
 	getTabName(tab) {
-		let {path} = tab.editor.document;
-		
-		if (path) {
-			return platform.fs(path).name;
-		} else {
-			return "New file";
-		}
+		return platform.fs(tab.path).name;
 	}
 	
 	getTabLabel(tab) {
-		return this.getTabName(tab) + (tab.editor.document.modified ? " *" : "");
+		return tab.name + (tab.modified ? " *" : "");
 	}
 	
 	async closeTab(tab) {
-		let {
-			path,
-			modified,
-		} = tab.editor.document;
-		
-		if (modified) {
+		if (tab.modified) {
 			let response = await platform.showMessageBox({
 				message: "Save changes to " + tab.name + "?",
 				buttons: ["%Yes", "%No", "%Cancel"],
 			});
 			
 			if (response === 0) {
-				let path = await this.save(tab);
+				await this.save(tab);
 				
-				if (!path) {
+				if (!tab.isSaved) {
 					return;
 				}
 			} else if (response !== 1) {
@@ -189,7 +180,9 @@ class App extends Evented {
 		
 		this.tabs = remove(this.tabs, tab);
 		
-		this.closedTabs.unshift(tab.saveState());
+		if (tab.isSaved) {
+			this.closedTabs.unshift(tab.saveState());
+		}
 		
 		if (tab === this.initialNewFileTab) {
 			this.initialNewFileTab = null;
@@ -213,13 +206,13 @@ class App extends Evented {
 			return;
 		}
 		
-		await platform.fs(tab.path).delete();
+		await protocol(tab.url).delete();
 		
 		this.closeTab(tab);
 	}
 	
 	pathIsOpen(path) {
-		return this.tabs.some(tab => tab.path === path);
+		return this.tabs.some(tab => tab.protocol === "file" && tab.path === path);
 	}
 	
 	showPane(name) {
@@ -268,8 +261,12 @@ class App extends Evented {
 		}
 	}
 	
-	async openFile(path, code=null) {
-		path = platform.fs(path).path;
+	openPath(path, code=null) {
+		return this.openFile(URL.file(path), code);
+	}
+	
+	async openFile(url, code=null) {
+		let {path} = url;
 		
 		if (
 			this.tabs.length === 1
@@ -279,7 +276,7 @@ class App extends Evented {
 			this.closeTab(this.initialNewFileTab);
 		}
 		
-		let existingTab = this.findTabByPath(path);
+		let existingTab = this.findTabByUrl(url);
 		
 		if (existingTab) {
 			this.selectTab(existingTab);
@@ -291,7 +288,7 @@ class App extends Evented {
 			code = await platform.fs(path).read();
 		}
 		
-		let tab = await this.createTab(code, path);
+		let tab = await this.createTab(code, url);
 		
 		this.tabs.push(tab);
 		
@@ -313,12 +310,23 @@ class App extends Evented {
 			
 			await node.write(code);
 			
-			await this.openFile(path, code);
+			await this.openPath(path, code);
 		});
 	}
 	
 	async newFile(lang=null) {
-		let tab = await this.createTab("", null, base.getDefaultFileDetails(lang));
+		let fileDetails = base.getDefaultFileDetails(lang);
+		
+		({lang} = fileDetails);
+		
+		if (!this.newFileCountsByLangCode[lang.code]) {
+			this.newFileCountsByLangCode[lang.code] = 0;
+		}
+		
+		let {defaultExtension} = lang;
+		let name = lang.name + "-" + (++this.newFileCountsByLangCode[lang.code]) + (defaultExtension ? "." + defaultExtension : "");
+		
+		let tab = await this.createTab("", URL._new("/" + name), fileDetails);
 		
 		this.tabs.push(tab);
 		
@@ -329,20 +337,20 @@ class App extends Evented {
 		return tab;
 	}
 	
-	async createTab(code, path, fileDetails=null) {
+	async createTab(code, url, fileDetails=null) {
 		if (!fileDetails) {
-			fileDetails = base.getFileDetails(code, path);
+			fileDetails = base.getFileDetails(code, url);
 		}
 		
 		if (fileDetails.hasMixedNewlines) {
 			// TODO prompt to change all newlines
 			
-			throw "File " + path + " has mixed newlines";
+			throw "File " + url.path + " has mixed newlines";
 		}
 		
 		await bluebird.map([...generateRequiredLangs(fileDetails.lang)], lang => base.initLanguage(lang));
 		
-		let document = this.createDocument(code, path, fileDetails);
+		let document = this.createDocument(code, url, fileDetails);
 		let view = new View(document);
 		let editor = new Editor(document, view);
 		let tab = new Tab(this, editor);
@@ -354,8 +362,8 @@ class App extends Evented {
 		return tab;
 	}
 	
-	createDocument(code, path, fileDetails) {
-		let document = new Document(code, path, {
+	createDocument(code, url, fileDetails) {
+		let document = new Document(code, url, {
 			fileDetails,
 		});
 		
@@ -378,13 +386,11 @@ class App extends Evented {
 	}
 	
 	findTabByPath(path) {
-		for (let tab of this.tabs) {
-			if (tab.editor.document.path === path) {
-				return tab;
-			}
-		}
-		
-		return null;
+		return this.tabs.find(tab => tab.protocol === "file" && tab.path === path);
+	}
+	
+	findTabByUrl(url) {
+		return this.tabs.find(tab => tab.url.toString() === url.toString());
 	}
 	
 	selectNextTab(dir) {
@@ -408,7 +414,7 @@ class App extends Evented {
 	
 	onOpenFromElectronSecondInstance(files) {
 		for (let path of files) {
-			this.openFile(path);
+			this.openPath(path);
 		}
 	}
 	
@@ -418,7 +424,7 @@ class App extends Evented {
 		if (this.selectedTab) {
 			title = this.getTabName(this.selectedTab);
 			
-			if (this.selectedTab.path) {
+			if (this.selectedTab.isSaved) {
 				title += " (" + replaceHomeDirWithTilde(platform.fs(this.selectedTab.path).parent.path) + ")";
 			}
 		}
@@ -435,7 +441,7 @@ class App extends Evented {
 			
 			if (session) {
 				tabsToOpen = session.tabs;
-				fileToSelect = session.selectedTabPath;
+				fileToSelect = session.selectedTabUrl;
 			}
 			
 			window.addEventListener("beforeunload", () => {
@@ -446,13 +452,15 @@ class App extends Evented {
 		tabsToOpen.push(...platform.getFilesToOpenOnStartup().map(function(path) {
 			return {
 				isNew: true,
-				path,
+				url: URL.file(path),
 			};
 		}));
 		
-		this.tabs = await bluebird.map(tabsToOpen, async ({path}) => {
+		this.tabs = await bluebird.map(tabsToOpen, async ({url}) => {
+			url = new URL(url);
+			
 			try {
-				return this.createTab(await platform.fs(path).read(), path);
+				return this.createTab(await protocol(url).read(), url);
 			} catch (e) {
 				console.error(e);
 				
@@ -462,12 +470,12 @@ class App extends Evented {
 		
 		for (let details of tabsToOpen) {
 			if (!details.isNew) {
-				this.findTabByPath(details.path)?.restoreState(details);
+				this.findTabByUrl(details.url)?.restoreState(details);
 			}
 		}
 		
 		if (this.tabs.length > 0) {
-			this.selectTab(this.findTabByPath(fileToSelect) || this.tabs[this.tabs.length - 1]);
+			this.selectTab(this.findTabByUrl(fileToSelect) || this.tabs[this.tabs.length - 1]);
 		} else {
 			this.initialNewFileTab = await this.newFile();
 		}
@@ -475,12 +483,12 @@ class App extends Evented {
 	
 	async saveSession() {
 		let tabs = this.tabs.map(function(tab) {
-			return tab.path ? tab.saveState() : null;
+			return tab.isSaved ? tab.saveState() : null;
 		}).filter(Boolean);
 		
 		await platform.saveJson("session", {
 			tabs,
-			selectedTabPath: this.selectedTab?.path,
+			selectedTabUrl: this.selectedTab?.url.toString(),
 		});
 	}
 	
@@ -647,9 +655,9 @@ class App extends Evented {
 		
 		if (response === 0) {
 			for (let tab of modifiedTabs) {
-				let path = await this.save(tab);
+				await this.save(tab);
 				
-				if (!path) {
+				if (!tab.isSaved) {
 					return;
 				}
 			}

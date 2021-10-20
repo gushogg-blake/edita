@@ -16,7 +16,7 @@ module.exports = {
 		});
 		
 		for (let {path, code} of files) {
-			this.openFile(path, code);
+			this.openPath(path, code);
 		}
 	},
 	
@@ -96,7 +96,7 @@ module.exports = {
 			return;
 		}
 		
-		let tab = await this.openFile(details.path);
+		let tab = await this.openFile(details.url);
 		
 		tab.restoreState(details);
 	},

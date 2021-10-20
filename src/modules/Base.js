@@ -99,11 +99,11 @@ class Base {
 	langs are found, so it should just return null.
 	*/
 	
-	guessLang(code, path) {
-		if (path) {
+	guessLang(code, url) {
+		if (url) {
 			for (let [langCode, patterns] of Object.entries(platform.prefs.fileAssociations)) {
 				for (let pattern of patterns) {
-					if (platform.fs(path).matchName(pattern)) {
+					if (platform.fs(url.path).matchName(pattern)) {
 						return this.langs.get(langCode);
 					}
 				}
@@ -115,7 +115,7 @@ class Base {
 		let fallback = this.langs.get("plainText");
 		
 		for (let lang of this.langs.all) {
-			let supportLevel = lang.getSupportLevel(code, path);
+			let supportLevel = lang.getSupportLevel(code, url?.path);
 			
 			if (supportLevel === "specific") {
 				return lang;
@@ -129,7 +129,7 @@ class Base {
 		return general || alternate || fallback;
 	}
 	
-	getFileDetails(code, path) {
+	getFileDetails(code, url) {
 		let {
 			defaultIndent,
 			tabWidth,
@@ -137,7 +137,7 @@ class Base {
 		} = platform.prefs;
 		
 		let indent = guessIndent(code) || defaultIndent;
-		let lang = this.guessLang(code, path);
+		let lang = this.guessLang(code, url);
 		
 		let {
 			mixed: hasMixedNewlines,

@@ -47,7 +47,7 @@ class FindResults extends Evented {
 	async goToResult(result) {
 		let {document, selection} = result;
 		
-		await app.openFile(document.path);
+		await app.openFile(document.url);
 		
 		let {api: editorApi} = app.selectedTab.editor;
 		

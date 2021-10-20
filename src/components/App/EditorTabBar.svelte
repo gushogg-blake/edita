@@ -29,10 +29,10 @@ function reorder({detail: {tab, index}}) {
 }
 
 function getContextMenuItems(tab) {
-	let {path} = tab.editor.document;
+	let {isSaved} = tab.editor.document;
 	
 	return [
-		path && {
+		isSaved && {
 			label: "%Rename...",
 			
 			onClick() {
@@ -40,7 +40,7 @@ function getContextMenuItems(tab) {
 			},
 		},
 		
-		path && {
+		isSaved && {
 			label: "%Delete...",
 			
 			onClick() {

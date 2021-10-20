@@ -172,6 +172,10 @@ class Platform extends Common {
 		// noop
 	}
 	
+	get isWindows() {
+		return false;
+	}
+	
 	setTitle(title) {
 		// noop
 	}

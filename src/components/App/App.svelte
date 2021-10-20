@@ -44,7 +44,7 @@ async function drop(e) {
 	e.preventDefault();
 	
 	for (let {path, code} of await platform.filesFromDropEvent(e)) {
-		app.openFile(path, code);
+		app.openPath(path, code);
 	}
 }
 

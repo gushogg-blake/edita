@@ -57,7 +57,7 @@ async function getDocuments(paths) {
 		try {
 			let code = await platform.fs(path).read();
 			
-			return new Document(code, path, {
+			return new Document(code, new URL("file://" + path), {
 				noParse: true,
 			});
 		} catch (e) {
