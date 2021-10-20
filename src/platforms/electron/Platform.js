@@ -63,7 +63,7 @@ class Platform extends Common {
 			if (this.messageBoxPromise) {
 				this.messageBoxPromise.resolve(response);
 				
-				this.messageBoxPromise = null;
+				delete this.messageBoxPromise;
 			}
 		});
 	}
