@@ -12,6 +12,7 @@ class Base extends Evented {
 		
 		this.history = [];
 		this.historyIndex = 0;
+		this.historyIndexAtSave = 0;
 		this.modified = false;
 	}
 	

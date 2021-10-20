@@ -14,8 +14,6 @@ class Document extends Base {
 	constructor(code, url=null, options={}) {
 		super();
 		
-		this.historyIndexAtSave = 0;
-		
 		this.options = {
 			fileDetails: null,
 			noParse: false,
