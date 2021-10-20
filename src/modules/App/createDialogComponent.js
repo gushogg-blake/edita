@@ -72,4 +72,20 @@ module.exports = {
 		
 		findAndReplace.$on("done", onClose);
 	},
+	
+	messageBox(el, dialogOptions, onClose) {
+		let messageBox = new base.components.MessageBox({
+			target: el,
+			
+			props: {
+				options: dialogOptions,
+			},
+		});
+		
+		messageBox.$on("response", ({detail: response}) => {
+			this.messageBoxRespond(response);
+			
+			onClose();
+		});
+	},
 };

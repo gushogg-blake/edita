@@ -127,7 +127,7 @@ class Platform extends Common {
 		return this.filesToOpenOnStartup;
 	}
 	
-	showMessageBox(options) {
+	showMessageBox(app, options) {
 		let promise = promiseWithMethods();
 		
 		ipc.openDialogWindow("messageBox", options, {

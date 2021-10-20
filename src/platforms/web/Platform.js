@@ -149,8 +149,8 @@ class Platform extends Common {
 		app.openDialogWindow(dialog, dialogOptions, windowOptions);
 	}
 	
-	showMessageBox(options) {
-		
+	showMessageBox(app, options) {
+		return app.showMessageBox(options);
 	}
 	
 	showContextMenu(app, e, items, noCancel=false) {

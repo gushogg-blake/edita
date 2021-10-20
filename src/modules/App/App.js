@@ -4,6 +4,7 @@ let {remove, moveInPlace} = require("utils/arrayMethods");
 let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
 let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
+let promiseWithMethods = require("utils/promiseWithMethods");
 let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
 let windowFocus = require("utils/dom/windowFocus");
@@ -148,7 +149,7 @@ class App extends Evented {
 	
 	async closeTab(tab) {
 		if (tab.modified) {
-			let response = await platform.showMessageBox({
+			let response = await platform.showMessageBox(this, {
 				message: "Save changes to " + tab.name + "?",
 				buttons: ["%Yes", "%No", "%Cancel"],
 			});
@@ -570,12 +571,20 @@ class App extends Evented {
 			height,
 		});
 		
+		let closed = false;
+		
 		let close = () => {
+			if (closed) {
+				return;
+			}
+			
 			overlay.parentNode.removeChild(overlay);
 			
 			this.focusSelectedTabAsync();
 			
 			off(overlay, "mousedown", close);
+			
+			closed = true;
 		}
 		
 		on(container, "mousedown", function(e) {
@@ -597,6 +606,23 @@ class App extends Evented {
 		function resize() {
 			
 		}
+	}
+	
+	showMessageBox(options) {
+		let promise = promiseWithMethods();
+		
+		this.openDialogWindow("messageBox", options, {
+			width: 500,
+			height: 75,
+		});
+		
+		this.messageBoxPromise = promise;
+		
+		return promise;
+	}
+	
+	messageBoxRespond(response) {
+		this.messageBoxPromise.resolve(response);
 	}
 	
 	showContextMenu(e, items, noCancel=false) {
@@ -626,7 +652,7 @@ class App extends Evented {
 		
 		let tabNames = modifiedTabs.map(tab => tab.name).join(", ");
 		
-		let response = await platform.showMessageBox({
+		let response = await platform.showMessageBox(this, {
 			message: "Save changes to " + tabNames + "?",
 			buttons: ["%Yes", "%No", "%Cancel"],
 		});
