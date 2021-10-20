@@ -141,7 +141,7 @@ class FindAndReplace {
 		let allResults = [];
 		
 		for (let document of nonOpenDocuments) {
-			allResults = [...allResults, ...document.findAll(findAndReplace, findAndReplaceOptions)];
+			allResults = [...allResults, ...document.findAll(findAndReplaceOptions)];
 		}
 		
 		for (let tab of openTabs) {
@@ -209,7 +209,7 @@ class FindAndReplace {
 		let allResults = [];
 		
 		await bluebird.map(nonOpenDocuments, async function(document) {
-			let {edits, results} = document.replaceAll(findAndReplace, findAndReplaceOptions);
+			let {edits, results} = document.replaceAll(findAndReplaceOptions);
 			
 			document.applyEdits(edits);
 			

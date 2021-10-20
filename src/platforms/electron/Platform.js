@@ -107,10 +107,9 @@ class Platform extends Common {
 	}
 	
 	backup(document) {
-		let {id, path, string: code} = document;
-		let key = path ? encodeURIComponent(path) : id;
+		let key = encodeURIComponent(document.url);
 		
-		this.fs(this.config.userDataDir, "backups", key).write(code, {
+		this.fs(this.config.userDataDir, "backups", key).write(document.string, {
 			mkdirp: true,
 		});
 	}

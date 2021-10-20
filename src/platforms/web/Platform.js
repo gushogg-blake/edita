@@ -127,10 +127,9 @@ class Platform extends Common {
 	}
 	
 	backup(document) {
-		let {id, path, string: code} = document;
-		let key = path ? encodeURIComponent(path) : id;
+		let key = encodeURIComponent(document.url);
 		
-		this.backupFs(key).write(code);
+		this.backupFs(key).write(document.string);
 	}
 	
 	async filesFromDropEvent(e) {

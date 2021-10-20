@@ -23,7 +23,7 @@ module.exports = {
 	},
 	
 	findAll(options) {
-		let results = this.document.findAll(findAndReplace, options);
+		let results = this.document.findAll(options);
 		
 		this.view.normalHilites = results.map(result => result.selection);
 		
@@ -36,7 +36,7 @@ module.exports = {
 		let {document, view} = this;
 		let {start, end} = view.getNormalSelectionForFind();
 		
-		let results = document.findAll(findAndReplace, {
+		let results = document.findAll({
 			...options,
 			startIndex: document.indexFromCursor(start),
 			endIndex: document.indexFromCursor(end),
@@ -52,7 +52,7 @@ module.exports = {
 	replaceAll(options) {
 		let {document, view} = this;
 		
-		let {edits, results} = document.replaceAll(findAndReplace, options);
+		let {edits, results} = document.replaceAll(options);
 		
 		this.applyAndAddHistoryEntry({
 			edits,
@@ -71,7 +71,7 @@ module.exports = {
 		let {document, view} = this;
 		let {start, end} = view.getNormalSelectionForFind();
 		
-		let {edits, results} = document.replaceAll(findAndReplace, {
+		let {edits, results} = document.replaceAll({
 			...options,
 			startIndex: document.indexFromCursor(start),
 			endIndex: document.indexFromCursor(end),

@@ -83,7 +83,7 @@ class FindSession {
 			caseMode,
 		} = this;
 		
-		return this.document.find(findAndReplace, {
+		return this.document.find({
 			search,
 			type,
 			caseMode,
