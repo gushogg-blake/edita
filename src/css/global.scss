@@ -54,3 +54,22 @@
 		
 	}
 }
+
+.editor-dialog-overlay {
+	position: fixed;
+	z-index: 100;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+	
+.editor-dialog {
+	border: 1px solid gray;
+	border-radius: 2px;
+    box-shadow: 0 2px 6px -3px #00000040;
+	background: white;
+}

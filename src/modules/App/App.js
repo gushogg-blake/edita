@@ -554,23 +554,11 @@ class App extends Evented {
 		let overlay = document.createElement("div");
 		let container = document.createElement("div");
 		
-		overlay.className = "editor";
+		overlay.className = "editor editor-dialog-overlay";
+		container.className = "editor-dialog";
 		
 		document.body.appendChild(overlay);
 		overlay.appendChild(container);
-		
-		overlay.style = inlineStyle({
-			position: "fixed",
-			zIndex: 100,
-			display: "flex",
-			justifyContent: "center",
-			alignItems: "center",
-			top: 0,
-			right: 0,
-			bottom: 0,
-			left: 0,
-			//background: "#00000020",
-		});
 		
 		let {
 			width,
@@ -580,8 +568,6 @@ class App extends Evented {
 		container.style = inlineStyle({
 			width,
 			height,
-			border: "1px solid gray",
-			background: "white",
 		});
 		
 		let close = () => {
@@ -590,17 +576,6 @@ class App extends Evented {
 			this.focusSelectedTabAsync();
 			
 			off(overlay, "mousedown", close);
-			off(window, "keydown", keydown);
-		}
-		
-		function keydown(e) {
-			if (e.key === "Escape") {
-				e.preventDefault();
-				
-				close();
-				
-				return;
-			}
 		}
 		
 		on(container, "mousedown", function(e) {
@@ -609,10 +584,13 @@ class App extends Evented {
 		
 		on(container, "keydown", function(e) {
 			e.stopPropagation();
+			
+			if (e.key === "Escape") {
+				close();
+			}
 		});
 		
 		on(overlay, "mousedown", close);
-		on(window, "keydown", keydown);
 		
 		await this.createDialogComponent[dialog](container, dialogOptions, close);
 		
