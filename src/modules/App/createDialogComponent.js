@@ -5,7 +5,7 @@ could be made generic and moved to Base maybe
 */
 
 module.exports = {
-	async snippetEditor(el, dialogOptions, onClose) {
+	async snippetEditor(el, dialogOptions, close) {
 		let {id} = dialogOptions;
 		let isNew = !id;
 		let snippet;
@@ -37,13 +37,13 @@ module.exports = {
 				await platform.snippets.update(id, snippet);
 			}
 			
-			onClose();
+			close();
 		});
 		
-		snippetEditor.$on("cancel", onClose);
+		snippetEditor.$on("cancel", close);
 	},
 	
-	findAndReplace(el, dialogOptions, onClose) {
+	findAndReplace(el, dialogOptions, close) {
 		let options = {
 			replace: false,
 			searchIn: "currentDocument",
@@ -70,10 +70,12 @@ module.exports = {
 			},
 		});
 		
-		findAndReplace.$on("done", onClose);
+		findAndReplace.$on("done", close);
 	},
 	
-	messageBox(el, dialogOptions, onClose) {
+	messageBox(el, dialogOptions, close) {
+		let responded = false;
+		
 		let messageBox = new base.components.MessageBox({
 			target: el,
 			
@@ -85,7 +87,11 @@ module.exports = {
 		messageBox.$on("response", ({detail: response}) => {
 			this.messageBoxRespond(response);
 			
-			onClose();
+			close();
 		});
+		
+		return () => {
+			this.messageBoxRespond(null);
+		}
 	},
 };

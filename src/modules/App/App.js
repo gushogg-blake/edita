@@ -587,6 +587,14 @@ class App extends Evented {
 			closed = true;
 		}
 		
+		function cancel() {
+			close();
+			
+			if (onCancel) {
+				onCancel();
+			}
+		}
+		
 		on(container, "mousedown", function(e) {
 			e.stopPropagation();
 		});
@@ -595,13 +603,13 @@ class App extends Evented {
 			e.stopPropagation();
 			
 			if (e.key === "Escape") {
-				close();
+				cancel();
 			}
 		});
 		
-		on(overlay, "mousedown", close);
+		on(overlay, "mousedown", cancel);
 		
-		await this.createDialogComponent[dialog](container, dialogOptions, close);
+		let onCancel = await this.createDialogComponent[dialog](container, dialogOptions, close);
 		
 		function resize() {
 			
@@ -622,7 +630,11 @@ class App extends Evented {
 	}
 	
 	messageBoxRespond(response) {
-		this.messageBoxPromise.resolve(response);
+		if (this.messageBoxPromise) {
+			this.messageBoxPromise.resolve(response);
+		}
+		
+		delete this.messageBoxPromise;
 	}
 	
 	showContextMenu(e, items, noCancel=false) {
