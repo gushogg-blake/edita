@@ -13,7 +13,7 @@ import {terser} from "rollup-plugin-terser";
 import _delete from "rollup-plugin-delete";
 import preprocess from "svelte-preprocess";
 import builtins from "rollup-plugin-node-builtins";
-import globals from "rollup-plugin-node-globals";
+import nodePolyfills from "rollup-plugin-polyfill-node";
 
 let prod = !process.env.ROLLUP_WATCH;
 let dev = !prod;
@@ -80,7 +80,10 @@ function electronPlugins() {
 			],
 		}),
 		
-		globals(),
+		nodePolyfills({
+			include: null,
+		}),
+		
 		builtins(),
 	];
 }
