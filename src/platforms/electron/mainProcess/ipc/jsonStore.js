@@ -5,6 +5,8 @@ module.exports = function(app) {
 		},
 		
 		async save(e, key, data) {
+			data = JSON.parse(data);
+			
 			await app.saveJson(key, data);
 			
 			app.sendToRenderers("jsonStore.update", key, data);

@@ -21,7 +21,7 @@ class JsonStore extends Evented {
 	}
 	
 	save(data) {
-		return ipcRenderer.invoke("jsonStore", "save", this.key, data);
+		return ipcRenderer.invoke("jsonStore", "save", this.key, JSON.stringify(data));
 	}
 }
 

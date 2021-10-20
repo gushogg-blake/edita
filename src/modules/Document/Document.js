@@ -4,7 +4,6 @@ let lid = require("utils/lid");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let findAndReplace = require("modules/findAndReplace");
 let protocol = require("modules/protocol");
 let Source = require("./Source");
 
@@ -313,7 +312,7 @@ class Document extends Evented {
 		};
 	}
 	
-	*find(options) {
+	*find(findAndReplace, options) {
 		let results = findAndReplace.find({
 			code: this.string,
 			...options,
@@ -324,11 +323,11 @@ class Document extends Evented {
 		}
 	}
 	
-	findAll(options) {
-		return [...this.find(options)];
+	findAll(findAndReplace, options) {
+		return [...this.find(findAndReplace, options)];
 	}
 	
-	replaceAll(options) {
+	replaceAll(findAndReplace, options) {
 		let document = new Document(this.string, null, {
 			noParse: true,
 		});
@@ -336,7 +335,7 @@ class Document extends Evented {
 		let results = [];
 		let edits = [];
 		
-		for (let result of document.find(options)) {
+		for (let result of document.find(findAndReplace, options)) {
 			edits.push(result.replace(options.replaceWith));
 			
 			results.push({

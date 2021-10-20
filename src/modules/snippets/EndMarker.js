@@ -8,6 +8,10 @@ class EndMarker {
 	getDefaultValue(context) {
 		return "";
 	}
+	
+	getValue(context) {
+		return "";
+	}
 }
 
 module.exports = EndMarker;

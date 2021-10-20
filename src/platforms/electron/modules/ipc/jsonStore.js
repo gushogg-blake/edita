@@ -16,7 +16,7 @@ module.exports = {
 	},
 	
 	async save(key, data) {
-		await ipcRenderer.invoke("jsonStore", "save", key, data);
+		await ipcRenderer.invoke("jsonStore", "save", key, JSON.stringify(data));
 		
 		cache[key] = data;
 	},

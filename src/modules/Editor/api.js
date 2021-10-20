@@ -1,4 +1,5 @@
 let Selection = require("modules/utils/Selection");
+let findAndReplace = require("modules/findAndReplace");
 
 /*
 functions to control the editor from outside, e.g. to set the selection when
@@ -22,7 +23,7 @@ module.exports = {
 	},
 	
 	findAll(options) {
-		let results = this.document.findAll(options);
+		let results = this.document.findAll(findAndReplace, options);
 		
 		this.view.normalHilites = results.map(result => result.selection);
 		
@@ -35,7 +36,7 @@ module.exports = {
 		let {document, view} = this;
 		let {start, end} = view.getNormalSelectionForFind();
 		
-		let results = document.findAll({
+		let results = document.findAll(findAndReplace, {
 			...options,
 			startIndex: document.indexFromCursor(start),
 			endIndex: document.indexFromCursor(end),
@@ -51,7 +52,7 @@ module.exports = {
 	replaceAll(options) {
 		let {document, view} = this;
 		
-		let {edits, results} = document.replaceAll(options);
+		let {edits, results} = document.replaceAll(findAndReplace, options);
 		
 		this.applyAndAddHistoryEntry({
 			edits,
@@ -70,7 +71,7 @@ module.exports = {
 		let {document, view} = this;
 		let {start, end} = view.getNormalSelectionForFind();
 		
-		let {edits, results} = document.replaceAll({
+		let {edits, results} = document.replaceAll(findAndReplace, {
 			...options,
 			startIndex: document.indexFromCursor(start),
 			endIndex: document.indexFromCursor(end),

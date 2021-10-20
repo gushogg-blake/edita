@@ -1,43 +1,27 @@
 let escapeRe = require("utils/escapeRe");
 let createPlaceholderString = require("utils/createPlaceholderString");
+let getPlaceholders = require("modules/snippets/getPlaceholders");
 
 function containsWordBoundary(str) {
 	return !!str.match(/(\w\W|\W\w)/);
 }
 
-function parseRegexReplacePlaceholders(str) {
-	let placeholders = [];
-	let i = 0;
+function replaceExpressionsForRegexReplace(str, match) {
+	let placeholders = getPlaceholders(str, false);
 	
-	while (i < str.length) {
-		let ch = str[i];
-		let next = str[i + 1];
+	let replacedString = "";
+	let prevPlaceholderEnd = 0;
+	
+	for (let placeholder of placeholders) {
+		replacedString += str.substring(prevPlaceholderEnd, placeholder.start);
+		replacedString += placeholder.getValue(match) || "";
 		
-		if (ch === "\\") {
-			i += 2;
-			
-			continue;
-		}
-		
-		if (ch === "@" && next.match(/\d/)) {
-			let n = str.substr(i + 1).match(/^\d+/)[0];
-			let length = 1 + n.length;
-			
-			placeholders.push({
-				start: i,
-				end: i + length,
-				n: Number(n),
-			});
-			
-			i += length;
-			
-			continue;
-		}
-		
-		i++;
+		prevPlaceholderEnd = placeholder.end;
 	}
 	
-	return placeholders;
+	replacedString += str.substr(prevPlaceholderEnd);
+	
+	return replacedString;
 }
 
 function replaceRegexEscapes(str) {
@@ -66,23 +50,6 @@ function replaceRegexEscapes(str) {
 	}
 	
 	return result;
-}
-
-function replaceGroupsForRegexReplace(str, groups) {
-	let placeholders = parseRegexReplacePlaceholders(str);
-	let replacedString = "";
-	let prevPlaceholderEnd = 0;
-	
-	for (let placeholder of placeholders) {
-		replacedString += str.substring(prevPlaceholderEnd, placeholder.start);
-		replacedString += groups[placeholder.n - 1] || "";
-		
-		prevPlaceholderEnd = placeholder.end;
-	}
-	
-	replacedString += str.substr(prevPlaceholderEnd);
-	
-	return replacedString;
 }
 
 let findAndReplace = {
@@ -189,7 +156,7 @@ let findAndReplace = {
 				
 				replace(str) {
 					if (type === "regex") {
-						str = replaceGroupsForRegexReplace(str, groups);
+						str = replaceExpressionsForRegexReplace(str, match);
 						str = replaceRegexEscapes(str);
 					}
 					

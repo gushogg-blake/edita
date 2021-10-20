@@ -1,6 +1,7 @@
 let bluebird = require("bluebird");
 let findAndReplace = require("modules/findAndReplace");
 let Document = require("modules/Document");
+let URL = require("modules/URL");
 let {FileIsBinary} = require("modules/errors");
 
 function getFindAndReplaceOptions(options) {
@@ -57,7 +58,7 @@ async function getDocuments(paths) {
 		try {
 			let code = await platform.fs(path).read();
 			
-			return new Document(code, new URL("file://" + path), {
+			return new Document(code, URL.file(path), {
 				noParse: true,
 			});
 		} catch (e) {
@@ -140,7 +141,7 @@ class FindAndReplace {
 		let allResults = [];
 		
 		for (let document of nonOpenDocuments) {
-			allResults = [...allResults, ...document.findAll(findAndReplaceOptions)];
+			allResults = [...allResults, ...document.findAll(findAndReplace, findAndReplaceOptions)];
 		}
 		
 		for (let tab of openTabs) {
@@ -208,7 +209,7 @@ class FindAndReplace {
 		let allResults = [];
 		
 		await bluebird.map(nonOpenDocuments, async function(document) {
-			let {edits, results} = document.replaceAll(findAndReplaceOptions);
+			let {edits, results} = document.replaceAll(findAndReplace, findAndReplaceOptions);
 			
 			document.applyEdits(edits);
 			
