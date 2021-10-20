@@ -28,6 +28,8 @@ let thumbOffset = 0;
 let startThumbOffset;
 let startEvent;
 
+let overlay; // to prevent hover effects on other elements while scrolling
+
 function key(horizontal, vertical) {
 	return {horizontal, vertical}[orientation];
 }
@@ -47,6 +49,19 @@ function updateSizes() {
 function mousedown(e) {
 	startEvent = e;
 	startThumbOffset = thumbOffset;
+	
+	overlay = document.createElement("div");
+	
+	overlay.style = inlineStyle({
+		position: "fixed",
+		zIndex: 100,
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0,
+	});
+	
+	document.body.appendChild(overlay);
 	
 	on(window, "mouseup", mouseup);
 	on(window, "mousemove", mousemove);
@@ -68,6 +83,8 @@ function mousemove(e) {
 }
 
 function mouseup() {
+	document.body.removeChild(overlay);
+	
 	off(window, "mouseup", mouseup);
 	off(window, "mousemove", mousemove);
 }
