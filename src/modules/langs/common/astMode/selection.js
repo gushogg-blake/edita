@@ -166,8 +166,18 @@ let api = {
 		return selection;
 	},
 	
+	containsNonBlankLines(document, selection) {
+		return document.getSelectedLines(selection).some(line => line.trimmed.length > 0);
+	},
+	
 	trim(document, selection) {
+		// only trim selections that have at least one non-blank line
+		
 		if (!AstSelection.isFull(selection)) {
+			return selection;
+		}
+		
+		if (!api.containsNonBlankLines(document, selection)) {
 			return selection;
 		}
 		
