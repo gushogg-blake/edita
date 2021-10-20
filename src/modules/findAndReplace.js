@@ -3,7 +3,7 @@ let createPlaceholderString = require("utils/createPlaceholderString");
 let getPlaceholders = require("modules/snippets/getPlaceholders");
 
 function containsWordBoundary(str) {
-	return !!str.match(/(\w\W|\W\w)/);
+	return !!str.match(/\W/);
 }
 
 function replaceExpressionsForRegexReplace(str, match) {
@@ -80,10 +80,6 @@ let findAndReplace = {
 		if (type === "plain") {
 			let pattern = escapeRe(search);
 			
-			if (word) {
-				pattern = "\\b" + pattern + "\\b";
-			}
-			
 			re = new RegExp(pattern, flags);
 		} else if (type === "wildcard") {
 			let pattern = search;
@@ -92,10 +88,6 @@ let findAndReplace = {
 			pattern = pattern.replace(/\*/g, wildcardPlaceholder);
 			pattern = escapeRe(pattern);
 			pattern = pattern.replace(wildcardPlaceholder, ".*");
-			
-			if (word) {
-				pattern = "\\b" + pattern + "\\b";
-			}
 			
 			re = new RegExp(pattern, flags);
 		} else if (type === "regex") {
@@ -127,7 +119,6 @@ let findAndReplace = {
 			
 			if (
 				word
-				&& type === "regex"
 				&& (
 					(
 						index > 0
