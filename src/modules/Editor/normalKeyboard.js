@@ -265,7 +265,23 @@ module.exports = {
 			this.clearSnippetSession();
 		}
 		
-		if (snippet) {
+		if (this.completions.active) {
+			
+			//let {
+			//	edit,
+			//	newSelection,
+			//} = this.document.replaceSelection(selection, nextWord);
+			//
+			//let edits = [edit];
+			//
+			//this.applyAndAddHistoryEntry({
+			//	edits,
+			//	normalSelection: newSelection,
+			//	snippetSession: this.adjustSnippetSession(edits),
+			//});
+			//
+			//this.updateSnippetExpressions();
+		} else if (snippet) {
 			this.insertSnippet(snippet, snippet.name);
 		} else if (this.snippetSession) {
 			this.nextTabstop();
@@ -332,7 +348,7 @@ module.exports = {
 		
 		this.inWordComplete = true;
 		
-		let {normalSelection} = this.view;
+		let {normalSelection} = this;
 		let cursor = Selection.sort(normalSelection).start;
 		let {lineIndex, offset} = cursor;
 		
@@ -530,8 +546,11 @@ module.exports = {
 		
 		this.view.updateSelectionEndCol();
 		
+		this.showCompletions();
 		this.updateSnippetExpressions();
 		this.setBatchState(newBatchState);
+		
+		return ["noClearCompletions"];
 	},
 	
 	insertAstClipboard() {

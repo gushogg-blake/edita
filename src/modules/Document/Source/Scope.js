@@ -342,19 +342,23 @@ module.exports = class Scope {
 	}
 	
 	langFromCursor(cursor) {
+		return this.scopeFromCursor(cursor)?.lang;
+	}
+	
+	scopeFromCursor(cursor) {
 		if (!this.ranges.some(range => Selection.cursorIsWithinOrNextToSelection(range.selection, cursor))) {
 			return null;
 		}
 		
 		for (let scope of this.scopes) {
-			let langFromChild = scope.langFromCursor(cursor);
+			let scopeFromChild = scope.scopeFromCursor(cursor);
 			
-			if (langFromChild) {
-				return langFromChild;
+			if (scopeFromChild) {
+				return scopeFromChild;
 			}
 		}
 		
-		return this.lang;
+		return this;
 	}
 	
 	/*

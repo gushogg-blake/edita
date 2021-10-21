@@ -212,12 +212,12 @@ module.exports = class {
 		}
 	}
 	
-	langFromCursor(cursor, scope=this.rootScope) {
-		if (!this.rootScope) {
-			return this.lang;
-		}
-		
-		return this.rootScope.langFromCursor(cursor);
+	scopeFromCursor(cursor) {
+		return this.rootScope?.scopeFromCursor(cursor);
+	}
+	
+	langFromCursor(cursor) {
+		return this.rootScope?.langFromCursor(cursor) || this.lang;
 	}
 	
 	cursorAtEnd() {

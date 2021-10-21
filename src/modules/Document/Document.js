@@ -154,6 +154,10 @@ class Document extends Base {
 		return this.langFromCursor(c(startLineIndex, line.indentOffset));
 	}
 	
+	scopeFromCursor(cursor) {
+		return this.source.scopeFromCursor(cursor);
+	}
+	
 	langFromCursor(cursor) {
 		return this.source.langFromCursor(cursor);
 	}

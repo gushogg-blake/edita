@@ -4,7 +4,8 @@ let {removeInPlace} = require("utils/arrayMethods");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let find = require("./find");
+let lspClient = require("modules/lspClient");
+
 let AstMode = require("./AstMode");
 let normalMouse = require("./normalMouse");
 let normalKeyboard = require("./normalKeyboard");
@@ -13,7 +14,9 @@ let astKeyboard = require("./astKeyboard");
 let commonKeyboard = require("./commonKeyboard");
 let modeSwitchKey = require("./modeSwitchKey");
 let snippets = require("./snippets");
+let find = require("./find");
 let api = require("./api");
+let Completions = require("./Completions");
 
 let {s: a} = AstSelection;
 let {s} = Selection;
@@ -47,6 +50,8 @@ class Editor extends Evented {
 		this.batchState = null;
 		
 		this.api = bindFunctions(this, api);
+		
+		this.completions = new Completions();
 		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
@@ -145,6 +150,16 @@ class Editor extends Evented {
 		}
 		
 		return false;
+	}
+	
+	async showCompletions() {
+		let completions = await lspClient.getCompletions(this.document, Selection.sort(this.normalSelection).start);
+		
+		this.completions.show(completions);
+	}
+	
+	clearCompletions() {
+		this.completions.clear();
 	}
 	
 	onDocumentEdit(edit) {
@@ -311,6 +326,10 @@ class Editor extends Evented {
 		
 		if (!flags.includes("noScrollCursorIntoView")) {
 			this.view.ensureSelectionIsOnScreen();
+		}
+		
+		if (!flags.includes("noClearCompletions")) {
+			this.clearCompletions();
 		}
 		
 		this.view.startCursorBlink();
