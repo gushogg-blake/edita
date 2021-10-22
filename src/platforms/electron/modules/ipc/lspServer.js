@@ -2,12 +2,16 @@ let ipcRenderer = require("platform/modules/ipcRenderer");
 
 let servers = {};
 
+ipcRenderer.on("lspNotification", function(e, serverId, notification) {
+	servers[serverId]?.notificationReceived(notification);
+}
+
 module.exports = {
-	async create(langCode, capabilities, initOptions, dirs) {
+	async create(langCode, capabilities, initOptions, workspaceFolders) {
 		let {
 			id,
 			serverCapabilities,
-		} = await ipcRenderer.invoke("lspServer", "create", langCode, capabilities, initOptions, dirs);
+		} = await ipcRenderer.invoke("lspServer", "create", langCode, capabilities, initOptions, workspaceFolders);
 		
 		let server = new LspServer(id, langCode, serverCapabilities);
 		
