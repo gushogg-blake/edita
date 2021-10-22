@@ -2,7 +2,7 @@ let {app: electronApp} = require("electron");
 let {spawn} = require("child_process");
 let path = require("path");
 let chokidar = require("chokidar");
-let {removeInPlace} = require("../../../utils/arrayMethods");
+let {removeInPlace} = require("./utils/arrayMethods");
 let fs = require("./modules/fs");
 
 function debounce(fn, delay) {

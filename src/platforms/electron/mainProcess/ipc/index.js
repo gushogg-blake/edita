@@ -8,6 +8,7 @@ let callOpener = require("./callOpener");
 let jsonStore = require("./jsonStore");
 let snippets = require("./snippets");
 let devTools = require("./devTools");
+let lspServer = require("./lspServer");
 
 let asyncModules = {
 	dialog,
@@ -17,6 +18,7 @@ let asyncModules = {
 	jsonStore,
 	snippets,
 	devTools,
+	lspServer,
 };
 
 let syncModules = {

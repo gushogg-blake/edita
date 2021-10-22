@@ -5,6 +5,7 @@ let contextMenu = require("./contextMenu");
 let Snippets = require("./Snippets");
 let jsonStore = require("./jsonStore");
 let JsonStore = require("./JsonStore");
+let lspServer = require("./lspServer");
 
 module.exports = {
 	init: ipcRenderer.sendSync("init", "init"),
@@ -13,6 +14,7 @@ module.exports = {
 	clipboard,
 	contextMenu,
 	jsonStore,
+	lspServer,
 	prefs: new JsonStore("prefs"),
 	snippets: new Snippets(),
 	

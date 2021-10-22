@@ -6,7 +6,7 @@ let Cursor = require("modules/utils/Cursor");
 let {s} = Selection;
 let {c} = Cursor;
 
-class Base extends Evented {
+class BaseDocument extends Evented {
 	constructor() {
 		super();
 		
@@ -308,4 +308,4 @@ class Base extends Evented {
 	}
 }
 
-module.exports = Base;
+module.exports = BaseDocument;

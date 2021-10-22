@@ -9,6 +9,8 @@ let Editor = require("modules/Editor");
 let View = require("modules/View");
 
 let DirEntries = require("modules/DirEntries");
+let langs = require("modules/langs");
+let LspServer = require("modules/LspServer");
 
 let javascript = require("modules/langs/javascript");
 let html = require("modules/langs/html");
@@ -20,7 +22,6 @@ let cpp = require("modules/langs/cpp");
 let python = require("modules/langs/python");
 //let svelte = require("modules/langs/svelte");
 let plainText = require("modules/langs/plainText");
-let langs = require("modules/langs");
 
 /*
 top-level object for general, global things like langs, as well as any
@@ -38,6 +39,8 @@ class Base {
 		this.langs = langs;
 		this.treeSitterLanguages = {};
 		this.initialisedLangs = new Set();
+		
+		this.lspServersByLangCode = {};
 		
 		this.DirEntries = DirEntries;
 	}
@@ -164,11 +167,11 @@ class Base {
 			defaultIndent,
 			tabWidth,
 			defaultNewline,
-			defaultLang,
+			defaultLangCode,
 		} = platform.prefs;
 		
 		if (!lang) {
-			lang = this.langs.get(defaultLang);
+			lang = this.langs.get(defaultLangCode);
 		}
 		
 		let indentation = getIndentationDetails(defaultIndent, tabWidth);
@@ -211,6 +214,20 @@ class Base {
 		let view = new View(document);
 		
 		return new Editor(document, view);
+	}
+	
+	async lspRequest(langCode, method, params) {
+		if (!this.lspServersByLangCode[langCode]) {
+			await this.createLspServerForLangCode(langCode);
+		}
+		
+		let server = this.lspServersByLangCode[langCode];
+		
+		return server.request(method, params);
+	}
+	
+	async createLspServerForLangCode(langCode) {
+		this.lspServersByLangCode[langCode] = await platform.createLspServer(langCode);
 	}
 }
 

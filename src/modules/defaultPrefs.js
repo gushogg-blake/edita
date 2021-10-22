@@ -5,7 +5,7 @@ module.exports = function(systemInfo) {
 		tabWidth: 4,
 		defaultIndent: "\t",
 		defaultNewline: systemInfo.newline,
-		defaultLang: "javascript",
+		defaultLangCode: "javascript",
 		
 		lineNumberColor: "#9f9f9f",
 		marginBackground: "#f0f0f0",

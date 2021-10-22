@@ -66,6 +66,10 @@ class Platform extends Common {
 				delete this.messageBoxPromise;
 			}
 		});
+		
+		ipcRenderer.on("lspNotification", (e, serverId, notification) => {
+			this.fire("lspNotification", serverId, notification);
+		});
 	}
 	
 	async init() {
@@ -112,6 +116,14 @@ class Platform extends Common {
 		this.fs(this.config.userDataDir, "backups", key).write(document.string, {
 			mkdirp: true,
 		});
+	}
+	
+	createLspServer(langCode, capabilities, initOptions, dirs) {
+		return ipc.lspServer.create(langCode, capabilities, initOptions, dirs);
+	}
+	
+	lspRequest(serverId, method, params) {
+		return ipc.lspServer.request(serverId, method, params);
 	}
 	
 	filesFromDropEvent(e) {

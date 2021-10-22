@@ -4,32 +4,32 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let protocol = require("modules/protocol");
 let findAndReplace = require("modules/findAndReplace");
-let Base = require("./Base");
+let BaseDocument = require("./BaseDocument");
 let Source = require("./Source");
 
 let {s} = Selection;
 let {c} = Cursor;
 
-class Document extends Base {
+class Document extends BaseDocument {
 	constructor(code, url=null, options={}) {
 		super();
 		
-		this.options = {
+		options = {
+			project: null,
 			fileDetails: null,
 			noParse: false,
 			...options,
 		};
 		
 		this.url = url;
-		this.source = new Source(code, this.options.noParse);
+		this.project = options.project;
+		this.fileDetails = options.fileDetails || base.getFileDetails(code, url);
 		
-		if (this.options.fileDetails) {
-			this.fileDetails = this.options.fileDetails;
-		} else {
-			this.fileDetails = base.getFileDetails(this.string, this.url);
-		}
+		this.source = new Source(code, options.noParse);
 		
 		this.source.init(this.fileDetails);
+		
+		this.project?.registerDocument(this);
 		
 		this.throttledBackup = throttle(() => {
 			platform.backup(this);
@@ -57,7 +57,7 @@ class Document extends Base {
 	}
 	
 	get isSaved() {
-		return this.protocol && this.protocol !== "new";
+		return ["file"].includes(this.protocol);
 	}
 	
 	async save() {

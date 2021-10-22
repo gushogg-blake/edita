@@ -1,6 +1,8 @@
+let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
+let URL = require("modules/URL");
 
 let maskOtherRegions = require("./utils/maskOtherRegions");
 
@@ -17,21 +19,35 @@ class LspClient extends Evented {
 	}
 	
 	async getCompletions(document, cursor) {
-		let scope = document.scopeFromCursor(cursor);
-		
-		if (!scope) {
+		try {
+			let scope = document.scopeFromCursor(cursor);
+			
+			if (!scope) {
+				return [];
+			}
+			
+			let {project} = document;
+			let langCode = scope.lang.code;
+			let code = maskOtherRegions(document, scope);
+			let uri = URL.tmpVirtual();
+			
+			await (project || base).lspRequest(langCode, "textDocument/didOpen", {
+				textDocument: {
+					uri,
+					languageId: langCode,
+					version: 1,
+					text: code,
+				},
+			});
+			
+			return await bluebird.map(project.lspRequest(langCode, "textDocument/completion", {
+				
+			}), function(completion) {
+				return completion;
+			});
+		} catch (e) {
 			return [];
 		}
-		
-		let {lang} = scope;
-		
-		let code = maskOtherRegions(document, scope);
-		
-		console.log(code);
-		
-		return platform.lspRequest(lang.code, "textDocument/completion", {
-			
-		});
 	}
 }
 

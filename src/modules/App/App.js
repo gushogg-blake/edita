@@ -15,6 +15,7 @@ let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
+let Project = require("modules/Project");
 let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let FileTree = require("./FileTree");
@@ -37,6 +38,8 @@ class App extends Evented {
 		this.closedTabs = [];
 		this.lastSelectedPath = null;
 		this.newFileCountsByLangCode = {};
+		
+		this.openProjects = [];
 		
 		this.panes = platform.getPref("panes");
 		
@@ -326,6 +329,7 @@ class App extends Evented {
 		
 		let {defaultExtension} = lang;
 		let name = lang.name + "-" + (++this.newFileCountsByLangCode[lang.code]) + (defaultExtension ? "." + defaultExtension : "");
+		let dir = this.selectedProject?.dirs[0] || null;
 		
 		let tab = await this.createTab("", URL._new("/" + name), fileDetails);
 		
@@ -365,6 +369,7 @@ class App extends Evented {
 	
 	createDocument(code, url, fileDetails) {
 		let document = new Document(code, url, {
+			project: this.selectedProject,
 			fileDetails,
 		});
 		
@@ -480,6 +485,10 @@ class App extends Evented {
 		} else {
 			this.initialNewFileTab = await this.newFile();
 		}
+	}
+	
+	get selectedProject() {
+		return this.selectedTab?.document.project;
 	}
 	
 	async saveSession() {
