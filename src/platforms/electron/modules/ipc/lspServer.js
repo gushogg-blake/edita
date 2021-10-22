@@ -4,7 +4,7 @@ let servers = {};
 
 ipcRenderer.on("lspNotification", function(e, serverId, notification) {
 	servers[serverId]?.notificationReceived(notification);
-}
+});
 
 module.exports = {
 	async create(langCode, capabilities, initOptions, workspaceFolders) {
