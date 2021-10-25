@@ -102,6 +102,8 @@ class Platform extends Common {
 	
 	async save(path, code) {
 		await fs(path).write(code);
+		
+		this.removeBackup(path);
 	}
 	
 	async saveAs(options) {
@@ -116,6 +118,12 @@ class Platform extends Common {
 		this.fs(this.config.userDataDir, "backups", key).write(document.string, {
 			mkdirp: true,
 		});
+	}
+	
+	removeBackup(document) {
+		let key = encodeURIComponent(document.url);
+		
+		this.fs(this.config.userDataDir, "backups", key).delete();
 	}
 	
 	createLspServer(langCode, initOptions, dirs) {

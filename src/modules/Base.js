@@ -10,7 +10,6 @@ let View = require("modules/View");
 
 let DirEntries = require("modules/DirEntries");
 let langs = require("modules/langs");
-let LspServer = require("modules/LspServer");
 
 let javascript = require("modules/langs/javascript");
 let html = require("modules/langs/html");

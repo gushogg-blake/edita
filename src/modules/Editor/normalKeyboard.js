@@ -265,7 +265,7 @@ module.exports = {
 			this.clearSnippetSession();
 		}
 		
-		if (this.completions.active) {
+		if (this.completions) {
 			
 			//let {
 			//	edit,
