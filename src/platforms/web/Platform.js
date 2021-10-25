@@ -132,6 +132,12 @@ class Platform extends Common {
 		this.backupFs(key).write(document.string);
 	}
 	
+	removeBackup(document) {
+		let key = encodeURIComponent(document.url);
+		
+		this.fs(this.config.userDataDir, "backups", key).delete();
+	}
+	
 	createLspServer(langCode, initOptions, dirs) {
 		let capabilities = this.lspConfig.capabilities[langCode];
 		

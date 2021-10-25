@@ -61,7 +61,9 @@ class Document extends BaseDocument {
 	}
 	
 	async save() {
-		await protocol(this.url).write(this.toString());
+		await protocol(this).save(this.toString());
+		
+		platform.removeBackup(this);
 		
 		this.modified = false;
 		this.historyIndexAtSave = this.historyIndex;

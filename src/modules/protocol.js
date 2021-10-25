@@ -7,7 +7,7 @@ module.exports = function(url) {
 				return platform.fs(path).read();
 			},
 			
-			write(code) {
+			save(code) {
 				return platform.save(path, code);
 			},
 			

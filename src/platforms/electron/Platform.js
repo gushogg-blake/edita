@@ -102,8 +102,6 @@ class Platform extends Common {
 	
 	async save(path, code) {
 		await fs(path).write(code);
-		
-		this.removeBackup(path);
 	}
 	
 	async saveAs(options) {
