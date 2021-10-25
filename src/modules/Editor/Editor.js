@@ -16,7 +16,6 @@ let modeSwitchKey = require("./modeSwitchKey");
 let snippets = require("./snippets");
 let find = require("./find");
 let api = require("./api");
-let Completions = require("./Completions");
 
 let {s: a} = AstSelection;
 let {s} = Selection;
@@ -50,8 +49,6 @@ class Editor extends Evented {
 		this.batchState = null;
 		
 		this.api = bindFunctions(this, api);
-		
-		this.completions = new Completions();
 		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
