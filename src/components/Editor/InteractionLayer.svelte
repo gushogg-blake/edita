@@ -31,6 +31,7 @@ let {
 	mode,
 	dropTargets,
 	pickOptions,
+	completions,
 	scrollPosition,
 	
 	measurements: {
@@ -344,6 +345,12 @@ function onUpdateDropTargets() {
 	} = view);
 }
 
+function onUpdateCompletions() {
+	({
+		completions,
+	} = view);
+}
+
 function onEdit() {
 	({
 		wrappedLines,
@@ -386,6 +393,18 @@ function rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition) 
 	};
 }
 
+function completionsStyle(wrappedLines, completions, rowHeight, colWidth, scrollPosition) {
+	let {cursor} = completions;
+	let {lineIndex, offset} = cursor;
+	let screenY = view.screenYFromLineIndex(lineIndex);
+	let screenCol = offset;
+	
+	return {
+		top: view.sizes.topMargin + rowYHint + screenY,
+		left: screenCol * colWidth - scrollPosition.x,
+	};
+}
+
 function targetIsActive(target, currentDropTarget) {
 	if (!currentDropTarget) {
 		return false;
@@ -414,6 +433,7 @@ onMount(function() {
 		view.on("modeSwitch", onModeSwitch),
 		view.on("updatePickOptions", onUpdatePickOptions),
 		view.on("updateDropTargets", onUpdateDropTargets),
+		view.on("updateCompletions", onUpdateCompletions),
 		
 		editor.on("edit", onEdit),
 	];
@@ -556,6 +576,22 @@ onMount(function() {
 			on:dragend={dragend}
 			on:dragenter={dragenter}
 			on:dragleave={dragleave}
-		></div>
+		>
+			{#if completions}
+				<div
+					id="completions"
+					style={inlineStyle(completionsStyle(wrappedLines, completions, rowHeight, colWidth, scrollPosition))}
+				>
+					{#each completions.completions as completion}
+						<div
+							class="completion"
+							class:selected={completion === completions.selectedCompletion}
+						>
+							asd
+						</div>
+					{/each}
+				</div>
+			{/if}
+		</div>
 	</div>
 </div>

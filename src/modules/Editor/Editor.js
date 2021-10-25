@@ -153,13 +153,26 @@ class Editor extends Evented {
 	}
 	
 	async showCompletions() {
-		let completions = await lspClient.getCompletions(this.document, Selection.sort(this.normalSelection).start);
+		let cursor = Selection.sort(this.normalSelection).start;
+		let completions = await lspClient.getCompletions(this.document, cursor);
 		
-		this.completions.show(completions);
+		if (completions.length > 0) {
+			this.completions = {
+				completions,
+				selectedCompletion: completions[0],
+				cursor,
+			};
+		} else {
+			this.completions = null;
+		}
+		
+		this.view.setCompletions(this.completions);
 	}
 	
 	clearCompletions() {
-		this.completions.clear();
+		this.completions = null;
+		
+		this.view.setCompletions(this.completions);
 	}
 	
 	onDocumentEdit(edit) {

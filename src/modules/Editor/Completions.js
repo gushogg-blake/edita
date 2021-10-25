@@ -1,24 +1,22 @@
 module.exports = class {
 	constructor() {
 		this.active = false;
-		this.selectedCompletion = null;
+		this.cursor = null;
 		this.completions = [];
+		this.selectedCompletion = null;
 	}
 	
 	clear() {
 		this.active = false;
-		this.selectedCompletion = null;
+		this.cursor = null;
 		this.completions = [];
+		this.selectedCompletion = null;
 	}
 	
-	show(completions) {
+	show(cursor, completions) {
+		this.active = true;
+		this.cursor = cursor;
 		this.completions = completions;
-		
-		if (this.completions.length > 0) {
-			this.active = true;
-			this.selectedCompletion = completions[0];
-		} else {
-			this.clear();
-		}
+		this.selectedCompletion = completions[0];
 	}
 }

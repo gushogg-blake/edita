@@ -56,6 +56,8 @@ class View extends Evented {
 		this.astSelectionHilite = null;
 		this.astInsertionHilite = null;
 		
+		this.completions = null;
+		
 		this.cursorBlinkOn = false;
 		this.cursorInterval = null;
 		
@@ -443,6 +445,12 @@ class View extends Evented {
 		this.updateWrappedLines();
 		
 		this.fire("wrapChanged", wrap);
+	}
+	
+	setCompletions(completions) {
+		this.completions = completions;
+		
+		this.fire("updateCompletions");
 	}
 	
 	setMeasurements(measurements) {
