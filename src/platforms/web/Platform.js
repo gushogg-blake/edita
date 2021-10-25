@@ -132,6 +132,21 @@ class Platform extends Common {
 		this.backupFs(key).write(document.string);
 	}
 	
+	createLspServer(langCode, initOptions, dirs) {
+		let capabilities = this.lspConfig.capabilities[langCode];
+		
+		initOptions = {
+			...this.lspConfig.initOptions[langCode],
+			...initOptions,
+		};
+		
+		// POST
+	}
+	
+	lspRequest(serverId, method, params) {
+		// POST
+	}
+	
 	async filesFromDropEvent(e) {
 		return bluebird.map([...e.dataTransfer.files], async function(file) {
 			return {

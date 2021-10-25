@@ -227,7 +227,7 @@ class Base {
 	}
 	
 	async createLspServerForLangCode(langCode) {
-		this.lspServersByLangCode[langCode] = await platform.createLspServer(langCode);
+		this.lspServersByLangCode[langCode] = await platform.createLspServer(langCode, null, []);
 	}
 }
 

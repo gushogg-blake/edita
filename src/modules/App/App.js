@@ -455,12 +455,18 @@ class App extends Evented {
 			});
 		}
 		
-		tabsToOpen.push(...platform.getFilesToOpenOnStartup().map(function(path) {
+		let filesToOpenOnStartup = platform.getFilesToOpenOnStartup().map(function(path) {
 			return {
 				isNew: true,
 				url: URL.file(path),
 			};
-		}));
+		}).filter(({url}) => !tabsToOpen.find(tab => url.toString() === tab.url.toString()));
+		
+		tabsToOpen.push(...filesToOpenOnStartup);
+		
+		if (filesToOpenOnStartup.length > 0) {
+			fileToSelect = filesToOpenOnStartup[filesToOpenOnStartup.length - 1].url;
+		}
 		
 		this.tabs = await bluebird.map(tabsToOpen, async ({url}) => {
 			url = new URL(url);
@@ -481,7 +487,7 @@ class App extends Evented {
 		}
 		
 		if (this.tabs.length > 0) {
-			this.selectTab(this.findTabByUrl(fileToSelect) || this.tabs[this.tabs.length - 1]);
+			this.selectTab(fileToSelect && this.findTabByUrl(fileToSelect) || this.tabs[this.tabs.length - 1]);
 		} else {
 			this.initialNewFileTab = await this.newFile();
 		}
@@ -689,7 +695,7 @@ class App extends Evented {
 					return;
 				}
 			}
-		} else if (response !== 2) {
+		} else if (response !== 1) {
 			return;
 		}
 		

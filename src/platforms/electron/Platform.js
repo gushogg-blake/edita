@@ -118,7 +118,14 @@ class Platform extends Common {
 		});
 	}
 	
-	createLspServer(langCode, capabilities, initOptions, dirs) {
+	createLspServer(langCode, initOptions, dirs) {
+		let capabilities = this.lspConfig.capabilities[langCode];
+		
+		initOptions = {
+			...this.lspConfig.initOptions[langCode],
+			...initOptions,
+		};
+		
 		return ipc.lspServer.create(langCode, capabilities, initOptions, dirs);
 	}
 	

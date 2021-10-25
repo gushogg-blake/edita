@@ -24,6 +24,8 @@ class LspServer extends Evented {
 		this.id = id;
 		this.langCode = langCode;
 		this.requestPromises = {};
+		
+		this.buffer = "";
 	}
 	
 	async init(capabilities, initOptions, workspaceFolders) {
@@ -42,7 +44,6 @@ class LspServer extends Evented {
 			processId: process.pid,
 			capabilities,
 			initializationOptions: initOptions,
-			rootUri: null,
 			workspaceFolders,
 		});
 		
@@ -59,8 +60,6 @@ class LspServer extends Evented {
 			params,
 		});
 		
-		console.log("Content-Length: " + json.length + "\r\n\r\n" + json);
-		
 		this.process.stdin.write("Content-Length: " + json.length + "\r\n\r\n" + json + "\r\n");
 		
 		let promise = promiseWithMethods();
@@ -70,12 +69,56 @@ class LspServer extends Evented {
 		return promise;
 	}
 	
+	close() {
+		this.process.kill();
+	}
+	
 	onData(data) {
-		console.log(data.toString());
+		try {
+			this.buffer += data.toString();
+			
+			let split = this.buffer.indexOf("\r\n\r\n");
+			
+			if (split === -1) {
+				return;
+			}
+			
+			let [headers, rest] = [this.buffer.substr(0, split), this.buffer.substr(split + 4)];
+			
+			if (!rest) {
+				return;
+			}
+			
+			let length = Number(headers.match(/Content-Length: (\d+)/)[1]);
+			let body = rest.substr(0, length);
+			
+			if (body.length < length) {
+				return;
+			}
+			
+			this.buffer = this.buffer.substr(split + 4 + length);
+			
+			let message = JSON.parse(body);
+			
+			if (message.id) {
+				let promise = this.requestPromises[message.id];
+				
+				if (message.error) {
+					promise.reject(error);
+				} else {
+					promise.resolve(message.result);
+				}
+			} else {
+				let {method, params} = message;
+				
+				this.fire("notification", {method, params}); //
+			}
+		} catch (e) {
+			console.error(e);
+		}
 	}
 	
 	onExit(code) {
-		console.error(code);
 		this.fire("exit");
 	}
 }

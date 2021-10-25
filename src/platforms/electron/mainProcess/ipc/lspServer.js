@@ -5,7 +5,8 @@ module.exports = function(app) {
 	let servers = {};
 	
 	function sendNotification(serverId, notification) {
-		app.sendToRenderers("lspNotification", serverId, notification);
+		//console.log(notification);
+		//app.sendToRenderers("lspNotification", serverId, notification);
 	}
 	
 	function remove(server) {
@@ -21,6 +22,8 @@ module.exports = function(app) {
 			server.on("exit", () => remove(server));
 			
 			let serverCapabilities = await server.init(capabilities, initOptions, workspaceFolders);
+			
+			console.log(serverCapabilities);
 			
 			return {
 				id,
