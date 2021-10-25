@@ -29,7 +29,7 @@ class LspClient extends Evented {
 			let {project} = document;
 			let langCode = scope.lang.code;
 			let code = maskOtherRegions(document, scope);
-			let uri = URL.tmpVirtual();
+			let uri = URL.tmpVirtual(document.path);
 			
 			await (project || base).lspRequest(langCode, "textDocument/didOpen", {
 				textDocument: {
@@ -46,6 +46,8 @@ class LspClient extends Evented {
 				return completion;
 			});
 		} catch (e) {
+			console.error(e);
+			
 			return [];
 		}
 	}

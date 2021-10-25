@@ -36,7 +36,11 @@ class URL {
 	}
 	
 	static _new(path) {
-		return new URL("new://" + path);
+		return new URL("new://" + pathToUrl(path));
+	}
+	
+	static tmpVirtual(path) {
+		return new URL("virtual://" + pathToUrl(path));
 	}
 	
 	toString() {

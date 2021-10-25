@@ -153,6 +153,8 @@ class Editor extends Evented {
 		let cursor = Selection.sort(this.normalSelection).start;
 		let completions = await lspClient.getCompletions(this.document, cursor);
 		
+		console.log(completions);
+		
 		if (completions.length > 0) {
 			this.completions = {
 				completions,
