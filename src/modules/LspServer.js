@@ -2,6 +2,8 @@ let Evented = require("utils/Evented");
 
 class LspServer extends Evented {
 	constructor(id, langCode, serverCapabilities) {
+		super();
+		
 		this.id = id;
 		this.langCode = langCode;
 		this.serverCapabilities = serverCapabilities;
@@ -9,6 +11,10 @@ class LspServer extends Evented {
 	
 	request(method, params) {
 		return platform.lspRequest(this.id, method, params);
+	}
+	
+	notify(method, params) {
+		platform.lspNotify(this.id, method, params);
 	}
 	
 	notificationReceived(notification) {

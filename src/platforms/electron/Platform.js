@@ -139,6 +139,10 @@ class Platform extends Common {
 		return ipc.lspServer.request(serverId, method, params);
 	}
 	
+	lspNotify(serverId, method, params) {
+		ipc.lspServer.notify(serverId, method, params);
+	}
+	
 	filesFromDropEvent(e) {
 		return [...e.dataTransfer.files].map(function(file) {
 			return {

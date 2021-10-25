@@ -10,6 +10,7 @@ module.exports = function(app) {
 	}
 	
 	function remove(server) {
+		console.log("remove", server);
 		delete servers[server.id];
 	}
 	
@@ -23,7 +24,7 @@ module.exports = function(app) {
 			
 			let serverCapabilities = await server.init(capabilities, initOptions, workspaceFolders);
 			
-			console.log(serverCapabilities);
+			servers[id] = server;
 			
 			return {
 				id,
@@ -31,10 +32,12 @@ module.exports = function(app) {
 			};
 		},
 		
-		call(e, serverId, method, params) {
-			let server = servers[serverId];
-			
-			return server.request(method, params);
+		request(e, serverId, method, params) {
+			return servers[serverId].request(method, params);
+		},
+		
+		notify(e, serverId, method, params) {
+			servers[serverId].notify(method, params);
 		},
 	};
 }

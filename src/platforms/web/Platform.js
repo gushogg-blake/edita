@@ -153,6 +153,10 @@ class Platform extends Common {
 		// POST
 	}
 	
+	lspNotify(serverId, method, params) {
+		// POST
+	}
+	
 	async filesFromDropEvent(e) {
 		return bluebird.map([...e.dataTransfer.files], async function(file) {
 			return {

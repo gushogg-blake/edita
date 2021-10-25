@@ -225,6 +225,16 @@ class Base {
 		return server.request(method, params);
 	}
 	
+	async lspNotify(langCode, method, params) {
+		if (!this.lspServersByLangCode[langCode]) {
+			await this.createLspServerForLangCode(langCode);
+		}
+		
+		let server = this.lspServersByLangCode[langCode];
+		
+		server.notify(method, params);
+	}
+	
 	async createLspServerForLangCode(langCode) {
 		this.lspServersByLangCode[langCode] = await platform.createLspServer(langCode, null, []);
 	}

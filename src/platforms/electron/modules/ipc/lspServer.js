@@ -1,3 +1,4 @@
+let LspServer = require("modules/LspServer");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 
 let servers = {};
@@ -20,7 +21,11 @@ module.exports = {
 		return server;
 	},
 	
-	async request(serverId, method, params) {
-		await ipcRenderer.invoke("lspServer", "call", serverId, method, params);
+	request(serverId, method, params) {
+		return ipcRenderer.invoke("lspServer", "request", serverId, method, params);
+	},
+	
+	notify(serverId, method, params) {
+		ipcRenderer.invoke("lspServer", "notify", serverId, method, params);
 	},
 };

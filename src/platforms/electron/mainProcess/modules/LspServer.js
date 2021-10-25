@@ -34,7 +34,7 @@ class LspServer extends Evented {
 		this.process = await spawn(cmd, args);
 		
 		this.process.stdout.on("data", this.onData.bind(this));
-		this.process.stderr.on("data", this.onData.bind(this));
+		this.process.stderr.on("data", this.onError.bind(this));
 		
 		this.process.on("exit", this.onExit.bind(this));
 		
@@ -60,13 +60,31 @@ class LspServer extends Evented {
 			params,
 		});
 		
-		this.process.stdin.write("Content-Length: " + json.length + "\r\n\r\n" + json + "\r\n");
+		let message = "Content-Length: " + json.length + "\r\n\r\n" + json;
+		
+		console.log(message);
+		
+		this.process.stdin.write(message);
 		
 		let promise = promiseWithMethods();
 		
 		this.requestPromises[id] = promise;
 		
 		return promise;
+	}
+	
+	notify(method, params) {
+		let json = JSON.stringify({
+			jsonrpc: "2.0",
+			method,
+			params,
+		});
+		
+		let message = "Content-Length: " + json.length + "\r\n\r\n" + json;
+		
+		console.log(message);
+		
+		this.process.stdin.write(message);
 	}
 	
 	close() {
@@ -101,12 +119,15 @@ class LspServer extends Evented {
 			let message = JSON.parse(body);
 			
 			if (message.id) {
-				let promise = this.requestPromises[message.id];
+				let {id, error, result} = message;
+				let promise = this.requestPromises[id];
 				
-				if (message.error) {
+				if (error) {
+					console.error(error);
+					
 					promise.reject(error);
 				} else {
-					promise.resolve(message.result);
+					promise.resolve(result);
 				}
 			} else {
 				let {method, params} = message;
@@ -118,7 +139,12 @@ class LspServer extends Evented {
 		}
 	}
 	
+	onError(data) {
+		console.error(data.toString());
+	}
+	
 	onExit(code) {
+		console.log("exit", code);
 		this.fire("exit");
 	}
 }

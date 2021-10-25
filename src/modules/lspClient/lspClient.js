@@ -1,5 +1,6 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
+let sleep = require("utils/sleep");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let URL = require("modules/URL");
@@ -20,41 +21,56 @@ class LspClient extends Evented {
 	}
 	
 	async getCompletions(document, cursor) {
-		try {
-			let scope = document.scopeFromCursor(cursor);
-			
-			if (!scope) {
-				return [];
-			}
-			
-			let {project} = document;
-			let langCode = scope.lang.code;
-			let code = maskOtherRegions(document, scope);
-			let uri = URL.virtual(document.path);
-			
-			await (project || base).lspRequest(langCode, "textDocument/didOpen", {
-				textDocument: {
-					uri,
-					languageId: langCode,
-					version: 1,
-					text: code,
-				},
-			});
-			
-			return await bluebird.map(project.lspRequest(langCode, "textDocument/completion", {
-				textDocument: {
-					uri,
-				},
-				
-				position: cursorToLspPosition(cursor),
-			}), function(completion) {
-				return completion;
-			});
-		} catch (e) {
-			console.error(e);
-			
+		let scope = document.scopeFromCursor(cursor);
+		
+		console.log(scope);
+		
+		if (!scope) {
 			return [];
 		}
+		
+		let {project} = document;
+		let langCode = scope.lang.code;
+		let code = maskOtherRegions(document, scope);
+		let uri = URL.virtual(document.path).toString();
+		let lsp = project || base;
+		
+		await lsp.lspNotify(langCode, "textDocument/didOpen", {
+			textDocument: {
+				uri,
+				languageId: langCode,
+				version: 1,
+				text: code,
+			},
+		});
+		
+		await sleep(100);
+		
+		console.log(cursorToLspPosition(cursor));
+		
+		let result = await lsp.lspRequest(langCode, "textDocument/completion", {
+			textDocument: {
+				uri,
+			},
+			
+			position: cursorToLspPosition(cursor),
+		});
+		
+		let {items, isIncomplete} = result;
+		
+		let completions = items.map(function(completion) {
+			return completion;
+		});
+		
+		await lsp.lspNotify(langCode, "textDocument/didClose", {
+			textDocument: {
+				uri,
+			},
+		});
+		
+		console.log("??");
+		
+		return completions;
 	}
 }
 
