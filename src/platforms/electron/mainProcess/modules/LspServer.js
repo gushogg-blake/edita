@@ -25,7 +25,7 @@ class LspServer extends Evented {
 		this.langCode = langCode;
 		this.requestPromises = {};
 		
-		this.buffer = "";
+		this.buffer = Buffer.alloc(0);
 	}
 	
 	async init(capabilities, initOptions, workspaceFolders) {
@@ -93,32 +93,37 @@ class LspServer extends Evented {
 	
 	onData(data) {
 		try {
-			this.buffer += data.toString();
+			let {buffer} = this;
 			
-			let split = this.buffer.indexOf("\r\n\r\n");
+			this.buffer = Buffer.alloc(buffer.length + data.length);
+			this.buffer.set(buffer);
+			this.buffer.set(data, buffer.length);
+			
+			let split = -1;
+			
+			for (let i = 0; i < this.buffer.length; i++) {
+				if (this.buffer.subarray(i, i + 4).toString() === "\r\n\r\n") {
+					split = i + 4;
+					
+					break;
+				}
+			}
 			
 			if (split === -1) {
 				return;
 			}
 			
-			let [headers, rest] = [this.buffer.substr(0, split), this.buffer.substr(split + 4)];
-			
-			if (!rest) {
-				return;
-			}
-			
+			let headers = this.buffer.subarray(0, split).toString();
 			let length = Number(headers.match(/Content-Length: (\d+)/)[1]);
-			let body = rest.substr(0, length);
+			let rest = this.buffer.subarray(split, split + length);
 			
-			if (body.length < length) {
+			if (rest.length < length) {
 				return;
 			}
 			
-			this.buffer = this.buffer.substr(split + 4 + length);
+			this.buffer = Buffer.from(this.buffer.subarray(split + length));
 			
-			let message = JSON.parse(body);
-			
-			//console.log(message);
+			let message = JSON.parse(rest.toString());
 			
 			if (message.id) {
 				let {id, error, result} = message;
