@@ -5,12 +5,11 @@ module.exports = function(app) {
 	let servers = {};
 	
 	function sendNotification(serverId, notification) {
-		//console.log(notification);
-		//app.sendToRenderers("lspNotification", serverId, notification);
+		console.log(notification);
+		app.sendToRenderers("lspNotification", serverId, notification);
 	}
 	
 	function remove(server) {
-		console.log("remove", server);
 		delete servers[server.id];
 	}
 	
@@ -19,7 +18,7 @@ module.exports = function(app) {
 			let id = lid();
 			let server = new LspServer(id, langCode);
 			
-			server.on("notification", (notification) => sendNotification(server, notification));
+			server.on("notification", (notification) => sendNotification(id, notification));
 			server.on("exit", () => remove(server));
 			
 			let serverCapabilities = await server.init(capabilities, initOptions, workspaceFolders);

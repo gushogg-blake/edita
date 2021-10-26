@@ -118,6 +118,8 @@ class LspServer extends Evented {
 			
 			let message = JSON.parse(body);
 			
+			console.log(message);
+			
 			if (message.id) {
 				let {id, error, result} = message;
 				let promise = this.requestPromises[id];

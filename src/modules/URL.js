@@ -1,3 +1,5 @@
+let lid = require("utils/lid");
+
 function pathToUrl(path) {
 	if (platform.isWindows) {
 		return "/" + path.replaceAll("\\", "/").toLowerCase();
@@ -40,7 +42,7 @@ class URL {
 	}
 	
 	static virtual(path) {
-		return new URL("virtual://" + pathToUrl(path));
+		return new URL("virtual://" + pathToUrl(path) + "-" + lid());
 	}
 	
 	toString() {
