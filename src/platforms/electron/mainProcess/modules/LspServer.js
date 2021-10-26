@@ -144,7 +144,6 @@ class LspServer extends Evented {
 	}
 	
 	onExit(code) {
-		console.log("exit", code);
 		this.fire("exit", code);
 	}
 }

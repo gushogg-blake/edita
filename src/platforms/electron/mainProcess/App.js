@@ -88,10 +88,6 @@ class App extends Evented {
 			});
 			
 			this.mainWindow = this.createAppWindow();
-			
-			globalShortcut.register("CommandOrControl+Q", () => {
-				electronApp.quit();
-			});
 		});
 		
 		electronApp.on("window-all-closed", () => {

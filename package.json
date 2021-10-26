@@ -4,7 +4,7 @@
 	"author": "Gus Hogg-Blake",
 	"version": "1.0.0",
 	"main": "./src/platforms/electron/mainProcess/main.js",
-	"electronVersion": "13.1.7",
+	"electronVersion": "15.3.0",
 	"dependencies": {
 		"bluebird": "^3.7.2",
 		"chokidar": "^3.5.2",
@@ -54,7 +54,7 @@
 	},
 	"scripts": {
 		"start": "electron .",
-		"electron": "NODE_ENV=development electron . --inspect -- /home/gus/projects/editor-site/src/components/Index.svelte",
+		"electron": "NODE_ENV=development npx electron . --inspect -- /home/gus/projects/editor-site/src/components/Index.svelte",
 		"build-all": "rollup -c",
 		"autobuild-all": "rollup -c -w",
 		"build-test": "PLATFORM=test rollup -c",
