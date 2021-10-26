@@ -66,10 +66,6 @@ class Platform extends Common {
 				delete this.messageBoxPromise;
 			}
 		});
-		
-		ipcRenderer.on("lspNotification", (e, serverId, notification) => {
-			this.fire("lspNotification", serverId, notification);
-		});
 	}
 	
 	async init() {

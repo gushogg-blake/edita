@@ -13,7 +13,7 @@ let cmds = {
 		"--stdio", 
 		"--log-level=4", 
 		"--tsserver-path=" + nodeModules.child("typescript/lib/tsserver.js").path,
-		"--tsserver-log-file=/home/gus/logs.txt",
+		//"--tsserver-log-file=/home/gus/logs.txt",
 	],
 };
 
@@ -62,7 +62,7 @@ class LspServer extends Evented {
 		
 		let message = "Content-Length: " + json.length + "\r\n\r\n" + json;
 		
-		console.log(message);
+		//console.log(message);
 		
 		this.process.stdin.write(message);
 		
@@ -82,7 +82,7 @@ class LspServer extends Evented {
 		
 		let message = "Content-Length: " + json.length + "\r\n\r\n" + json;
 		
-		console.log(message);
+		//console.log(message);
 		
 		this.process.stdin.write(message);
 	}
@@ -118,23 +118,16 @@ class LspServer extends Evented {
 			
 			let message = JSON.parse(body);
 			
-			console.log(message);
+			//console.log(message);
 			
 			if (message.id) {
 				let {id, error, result} = message;
-				let promise = this.requestPromises[id];
 				
-				if (error) {
-					console.error(error);
-					
-					promise.reject(error);
-				} else {
-					promise.resolve(result);
-				}
+				this.requestPromises[id].resolve({error, result});
 			} else {
 				let {method, params} = message;
 				
-				this.fire("notification", {method, params}); //
+				this.fire("notification", {method, params});
 			}
 		} catch (e) {
 			console.error(e);
@@ -147,7 +140,7 @@ class LspServer extends Evented {
 	
 	onExit(code) {
 		console.log("exit", code);
-		this.fire("exit");
+		this.fire("exit", code);
 	}
 }
 

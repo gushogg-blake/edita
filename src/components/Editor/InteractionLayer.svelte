@@ -395,9 +395,9 @@ function rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition) 
 
 function completionsStyle(wrappedLines, completions, rowHeight, colWidth, scrollPosition) {
 	let {cursor} = completions;
-	let {lineIndex, offset} = cursor;
-	let screenY = view.screenYFromLineIndex(lineIndex);
-	let screenCol = offset;
+	let [row, col] = view.rowColFromCursor(cursor);
+	let screenY = view.screenYFromLineIndex(cursor.lineIndex + 1);
+	let screenCol = col;
 	
 	return {
 		top: view.sizes.topMargin + rowYHint + screenY,
@@ -513,6 +513,12 @@ onMount(function() {
 		opacity: .35;
 	}
 }
+
+#completions {
+	position: absolute;
+	max-height: 150px;
+	overflow-y: auto;
+}
 </style>
 
 <div id="main">
@@ -581,13 +587,14 @@ onMount(function() {
 				<div
 					id="completions"
 					style={inlineStyle(completionsStyle(wrappedLines, completions, rowHeight, colWidth, scrollPosition))}
+					on:wheel={e => e.stopPropagation()}
 				>
 					{#each completions.completions as completion}
 						<div
 							class="completion"
 							class:selected={completion === completions.selectedCompletion}
 						>
-							asd
+							{completion.label}
 						</div>
 					{/each}
 				</div>

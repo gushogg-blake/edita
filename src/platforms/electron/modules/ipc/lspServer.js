@@ -7,6 +7,12 @@ ipcRenderer.on("lspNotification", function(e, serverId, notification) {
 	servers[serverId]?.notificationReceived(notification);
 });
 
+ipcRenderer.on("lspServerExit", function(e, serverId) {
+	servers[serverId]?.exit();
+	
+	delete servers[serverId];
+});
+
 module.exports = {
 	async create(langCode, capabilities, initOptions, workspaceFolders) {
 		let {

@@ -16,10 +16,6 @@ class LspClient extends Evented {
 		super();
 	}
 	
-	init() {
-		platform.on("lspNotification", this.onNotification.bind(this));
-	}
-	
 	async getCompletions(document, cursor) {
 		let scope = document.scopeFromCursor(cursor);
 		
@@ -33,24 +29,32 @@ class LspClient extends Evented {
 		//let uri = URL.virtual(document.path).toString();
 		let lspContext = project || base;
 		
-		//await lspContext.lspNotify(langCode, "textDocument/didOpen", {
-		//	textDocument: {
-		//		uri,
-		//		languageId: langCode,
-		//		version: 1,
-		//		text: code,
-		//	},
-		//});
+		let uri = document.url.toString();
+		
+		await lspContext.lspNotify(langCode, "textDocument/didOpen", {
+			textDocument: {
+				uri,
+				languageId: langCode,
+				version: 1,
+				text: code,
+			},
+		});
 		
 		await sleep(100);
 		
-		let result = await lspContext.lspRequest(langCode, "textDocument/completion", {
+		let {error, result} = await lspContext.lspRequest(langCode, "textDocument/completion", {
 			textDocument: {
-				uri: document.url.toString(),
+				uri,
 			},
 			
 			position: cursorToLspPosition(cursor),
 		});
+		
+		if (error) {
+			console.error(error);
+			
+			return [];
+		}
 		
 		let {items, isIncomplete} = result;
 		
@@ -58,11 +62,11 @@ class LspClient extends Evented {
 			return completion;
 		});
 		
-		//await lspContext.lspNotify(langCode, "textDocument/didClose", {
-		//	textDocument: {
-		//		uri,
-		//	},
-		//});
+		await lspContext.lspNotify(langCode, "textDocument/didClose", {
+			textDocument: {
+				uri,
+			},
+		});
 		
 		return completions;
 	}
