@@ -269,6 +269,14 @@ class App extends Evented {
 		await node.parent.mkdirp();
 		await node.writeJson(data);
 	}
+	
+	forceQuit() {
+		for (let browserWindow of this.appWindows) {
+			this.closeWithoutConfirming.set(browserWindow);
+		}
+		
+		electronApp.quit();
+	}
 }
 
 module.exports = App;

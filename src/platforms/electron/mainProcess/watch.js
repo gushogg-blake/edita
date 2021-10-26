@@ -87,7 +87,7 @@ module.exports = async function(app) {
 		
 		closeWatchers();
 		
-		electronApp.quit();
+		app.forceQuit();
 	}, 300));
 	
 	function closeWatchers() {
