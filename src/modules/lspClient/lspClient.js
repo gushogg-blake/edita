@@ -58,7 +58,7 @@ class LspClient extends Evented {
 		
 		let {items, isIncomplete} = result;
 		
-		let completions = items.map(function(completion) {
+		let completions = items.slice(0, 20).map(function(completion) {
 			return completion;
 		});
 		

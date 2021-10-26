@@ -21,6 +21,10 @@ class LspServer extends Evented {
 		this.fire("notification", notification);
 	}
 	
+	exit() {
+		this.fire("exit");
+	}
+	
 	teardown() {
 		for (let fn of this.teardownCallbacks) {
 			fn();

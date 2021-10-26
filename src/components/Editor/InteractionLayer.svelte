@@ -518,6 +518,7 @@ onMount(function() {
 	position: absolute;
 	max-height: 150px;
 	overflow-y: auto;
+	background: white;
 }
 </style>
 
