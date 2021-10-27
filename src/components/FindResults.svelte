@@ -1,5 +1,6 @@
 <script>
 import {onMount, getContext} from "svelte";
+import replaceHomeDirWithTilde from "utils/replaceHomeDirWithTilde";
 import inlineStyle from "utils/dom/inlineStyle";
 import Spacer from "components/utils/Spacer.svelte";
 
@@ -97,7 +98,7 @@ onMount(function() {
 						on:click={() => clickResult(result)}
 					>
 						<div class="path">
-							{result.document.path}
+							{replaceHomeDirWithTilde(result.document.path)}
 						</div>
 						<div class="lineNumber">
 							{result.selection.start.lineIndex + 1}
