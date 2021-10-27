@@ -20,6 +20,7 @@ let Common = require("platforms/common/Platform");
 let clipboard = require("./modules/clipboard");
 let localStorage = require("./modules/localStorage");
 let Snippets = require("./modules/Snippets");
+let lsp = require("./modules/lsp");
 
 class Platform extends Common {
 	constructor() {
@@ -44,6 +45,7 @@ class Platform extends Common {
 			init: null,
 			localStoragePrefix: "editor.",
 			fsPrefix: "editorFs",
+			lspUrl: "wss://" + location.hostname + "/lsp",
 			...options,
 		};
 		
@@ -63,6 +65,8 @@ class Platform extends Common {
 		this.snippets = new Snippets(this.createFs("snippets"));
 		
 		await this.snippets.init();
+		
+		this.lsp = lsp(options.lspUrl);
 		
 		if (options.init) {
 			await options.init();

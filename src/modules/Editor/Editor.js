@@ -150,6 +150,10 @@ class Editor extends Evented {
 	}
 	
 	async showCompletions() {
+		if (!platform.getPref("completions")) {
+			return;
+		}
+		
 		let cursor = Selection.sort(this.normalSelection).start;
 		let completions = await lspClient.getCompletions(this.document, cursor);
 		
@@ -399,6 +403,7 @@ class Editor extends Evented {
 		this.clearSnippetSession();
 		this.clearBatchState();
 		this.astMode.clearMultiStepCommand();
+		this.clearCompletions();
 	}
 	
 	setNormalSelection(selection) {
@@ -460,6 +465,7 @@ class Editor extends Evented {
 	}
 	
 	switchToAstMode() {
+		this.clearCompletions();
 		this.view.switchToAstMode();
 	}
 	
