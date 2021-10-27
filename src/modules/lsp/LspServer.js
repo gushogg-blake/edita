@@ -10,11 +10,11 @@ class LspServer extends Evented {
 	}
 	
 	request(method, params) {
-		return platform.lspRequest(this.id, method, params);
+		return platform.lsp.request(this.id, method, params);
 	}
 	
 	notify(method, params) {
-		platform.lspNotify(this.id, method, params);
+		platform.lsp.notify(this.id, method, params);
 	}
 	
 	notificationReceived(notification) {

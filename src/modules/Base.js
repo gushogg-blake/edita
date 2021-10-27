@@ -10,6 +10,7 @@ let View = require("modules/View");
 
 let DirEntries = require("modules/DirEntries");
 let langs = require("modules/langs");
+let LspContext = require("modules/lsp/LspContext");
 
 let javascript = require("modules/langs/javascript");
 let html = require("modules/langs/html");
@@ -39,7 +40,7 @@ class Base {
 		this.treeSitterLanguages = {};
 		this.initialisedLangs = new Set();
 		
-		this.lspServersByLangCode = {};
+		this.lspContext = new LspContext();
 		
 		this.DirEntries = DirEntries;
 	}
@@ -213,34 +214,6 @@ class Base {
 		let view = new View(document);
 		
 		return new Editor(document, view);
-	}
-	
-	async lspRequest(langCode, method, params) {
-		if (!this.lspServersByLangCode[langCode]) {
-			await this.createLspServerForLangCode(langCode);
-		}
-		
-		let server = this.lspServersByLangCode[langCode];
-		
-		return server.request(method, params);
-	}
-	
-	async lspNotify(langCode, method, params) {
-		if (!this.lspServersByLangCode[langCode]) {
-			await this.createLspServerForLangCode(langCode);
-		}
-		
-		let server = this.lspServersByLangCode[langCode];
-		
-		server.notify(method, params);
-	}
-	
-	async createLspServerForLangCode(langCode) {
-		let server = await platform.createLspServer(langCode, null, []);
-		
-		server.on("exit", () => delete this.lspServersByLangCode[langCode]);
-		
-		this.lspServersByLangCode[langCode] = server;
 	}
 }
 

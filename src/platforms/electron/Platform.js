@@ -14,6 +14,7 @@ let Common = require("platforms/common/Platform");
 let fs = require("platform/modules/fs");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 let ipc = require("platform/modules/ipc");
+let lsp = require("platform/modules/lsp");
 
 class Platform extends Common {
 	constructor() {
@@ -66,6 +67,8 @@ class Platform extends Common {
 				delete this.messageBoxPromise;
 			}
 		});
+		
+		this.lsp = lsp(this.lspConfig);
 	}
 	
 	async init() {
@@ -118,25 +121,6 @@ class Platform extends Common {
 		let key = encodeURIComponent(document.url);
 		
 		this.fs(this.config.userDataDir, "backups", key).delete();
-	}
-	
-	createLspServer(langCode, initOptions, dirs) {
-		let capabilities = this.lspConfig.capabilities[langCode];
-		
-		initOptions = {
-			...this.lspConfig.initOptions[langCode],
-			...initOptions,
-		};
-		
-		return ipc.lspServer.create(langCode, capabilities, initOptions, dirs);
-	}
-	
-	lspRequest(serverId, method, params) {
-		return ipc.lspServer.request(serverId, method, params);
-	}
-	
-	lspNotify(serverId, method, params) {
-		ipc.lspServer.notify(serverId, method, params);
 	}
 	
 	filesFromDropEvent(e) {

@@ -1,4 +1,5 @@
 let Evented = require("utils/Evented");
+let LspContext = require("modules/lsp/LspContext");
 
 class Project extends Evented {
 	constructor(dirs, implicit) {
@@ -6,8 +7,7 @@ class Project extends Evented {
 		
 		this.dirs = dirs;
 		this.implicit = implicit;
-		
-		this.lspServersByLangCode = {};
+		this.lspContext = new LspContext();
 		
 		this.init();
 	}
@@ -21,26 +21,12 @@ class Project extends Evented {
 		return this.dirs.includes(dir);
 	}
 	
-	async lspRequest(langCode, method, params) {
-		if (!this.lspServersByLangCode[langCode]) {
-			await this.createLspServerForLangCode(langCode);
-		}
-		
-		let server = this.lspServersByLangCode[langCode];
-		
-		return server.request(method, params);
-	}
-	
 	registerDocument(document) {
 		
 	}
 	
 	unregisterDocument(document) {
 		
-	}
-	
-	async createLspServerForLangCode(langCode) {
-		this.lspServersByLangCode[langCode] = await platform.createLspServer(langCode);
 	}
 }
 

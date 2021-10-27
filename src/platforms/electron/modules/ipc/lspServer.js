@@ -1,4 +1,4 @@
-let LspServer = require("modules/LspServer");
+let LspServer = require("modules/lsp/LspServer");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 
 let servers = {};

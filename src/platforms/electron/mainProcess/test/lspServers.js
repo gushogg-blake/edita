@@ -1,5 +1,5 @@
 let lid = require("../utils/lid");
-let LspServer = require("../modules/LspServer");
+let LspServer = require("../modules/lsp/LspServer");
 
 let servers = {};
 

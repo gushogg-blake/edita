@@ -4,7 +4,7 @@ let {removeInPlace} = require("utils/arrayMethods");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let lspClient = require("modules/lspClient");
+let lspClient = require("modules/lsp/lspClient");
 
 let AstMode = require("./AstMode");
 let normalMouse = require("./normalMouse");

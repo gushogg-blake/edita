@@ -17,10 +17,10 @@ let createFs = require("modules/fs");
 
 let Common = require("platforms/common/Platform");
 
-let clipboard = require("./modules/clipboard");
-let localStorage = require("./modules/localStorage");
-let Snippets = require("./modules/Snippets");
-let lsp = require("./modules/lsp");
+let clipboard = require("platform/modules/clipboard");
+let localStorage = require("platform/modules/localStorage");
+let Snippets = require("platform/modules/Snippets");
+let lsp = require("platform/modules/lsp");
 
 class Platform extends Common {
 	constructor() {
@@ -140,25 +140,6 @@ class Platform extends Common {
 		let key = encodeURIComponent(document.url);
 		
 		this.fs(this.config.userDataDir, "backups", key).delete();
-	}
-	
-	createLspServer(langCode, initOptions, dirs) {
-		let capabilities = this.lspConfig.capabilities[langCode];
-		
-		initOptions = {
-			...this.lspConfig.initOptions[langCode],
-			...initOptions,
-		};
-		
-		// POST
-	}
-	
-	lspRequest(serverId, method, params) {
-		// POST
-	}
-	
-	lspNotify(serverId, method, params) {
-		// POST
 	}
 	
 	async filesFromDropEvent(e) {

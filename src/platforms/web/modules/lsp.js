@@ -1,4 +1,4 @@
-let LspServer = require("modules/LspServer");
+let LspServer = require("modules/lsp/LspServer");
 let webSocket = require("platform/modules/webSocket");
 
 let servers = {
@@ -10,12 +10,15 @@ let servers = {
 module.exports = function(url) {
 	let socket = webSocket(url, {
 		notification(message) {
+			let {serverId, notification} = message;
+			let {method, params} = notification;
 			
+			servers[serverId].notificationReceived(method, params);
 		},
 	});
 	
 	return {
-		async create(langCode, capabilities, initOptions, workspaceFolders) {
+		async createServer(langCode, capabilities, initOptions, workspaceFolders) {
 			return servers[langCode];
 		},
 		
