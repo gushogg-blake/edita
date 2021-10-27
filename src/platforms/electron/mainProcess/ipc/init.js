@@ -1,4 +1,5 @@
 let os = require("os");
+let path = require("path");
 
 module.exports = function(app) {
 	return {
@@ -16,6 +17,7 @@ module.exports = function(app) {
 				systemInfo: {
 					newline: os.EOL,
 					homeDir: os.homedir(),
+					pathSeparator: path.sep,
 					multiPathSeparator: process.platform === "win32" ? ";" : ":",
 				},
 			};

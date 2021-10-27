@@ -47,9 +47,9 @@ class FindResults extends Evented {
 	async goToResult(result) {
 		let {document, selection} = result;
 		
-		await app.openFile(document.url);
+		await this.app.openFile(document.url);
 		
-		let {api: editorApi} = app.selectedTab.editor;
+		let {api: editorApi} = this.app.selectedTab.editor;
 		
 		editorApi.setNormalSelectionAndCenter(selection);
 	}

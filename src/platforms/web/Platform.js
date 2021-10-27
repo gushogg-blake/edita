@@ -29,6 +29,7 @@ class Platform extends Common {
 		this.systemInfo = {
 			newline: "\n",
 			homeDir: "/",
+			pathSeparator: "/",
 			multiPathSeparator: ":",
 		};
 		

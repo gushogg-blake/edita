@@ -67,13 +67,26 @@ onMount(function() {
 	cursor: pointer;
 	
 	&:hover {
-		.path, .lineNumber {
+		.file, .lineNumber {
 			text-decoration: underline;
 		}
 	}
 	
 	> div {
 		padding: 3px;
+	}
+}
+
+.file {
+	display: flex;
+	
+	.path {
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+	
+	.name {
+		flex-shrink: 0;
 	}
 }
 </style>
@@ -97,8 +110,13 @@ onMount(function() {
 						style={inlineStyle(columnWidths)}
 						on:click={() => clickResult(result)}
 					>
-						<div class="path">
-							{replaceHomeDirWithTilde(result.document.path)}
+						<div class="file">
+							<div class="path">
+								{replaceHomeDirWithTilde(platform.fs(result.document.path).parent.path)}
+							</div>
+							<div class="name">
+								{platform.fs(result.document.path).parent.isRoot ? "" : platform.systemInfo.pathSeparator}{platform.fs(result.document.path).name}
+							</div>
 						</div>
 						<div class="lineNumber">
 							{result.selection.start.lineIndex + 1}
