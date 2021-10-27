@@ -45,7 +45,7 @@ class Platform extends Common {
 			init: null,
 			localStoragePrefix: "editor.",
 			fsPrefix: "editorFs",
-			lspUrl: "wss://" + location.hostname + "/lsp",
+			lspUrl: null,
 			...options,
 		};
 		
@@ -66,7 +66,9 @@ class Platform extends Common {
 		
 		await this.snippets.init();
 		
-		this.lsp = lsp(options.lspUrl);
+		if (options.lspUrl) {
+			this.lsp = lsp(options.lspUrl);
+		}
 		
 		if (options.init) {
 			await options.init();

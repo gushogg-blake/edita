@@ -26,7 +26,7 @@
 		"yargs": "^17.0.1"
 	},
 	"devDependencies": {
-		"@rollup/plugin-alias": "^3.1.5",
+		"@rollup/plugin-alias": "^3.1.8",
 		"@rollup/plugin-commonjs": "^19.0.0",
 		"@rollup/plugin-multi-entry": "^4.1.0",
 		"@rollup/plugin-node-resolve": "^13.0.0",
@@ -53,7 +53,7 @@
 	},
 	"scripts": {
 		"start": "electron .",
-		"electron": "NODE_ENV=development npx electron . --inspect -- /home/gus/projects/editor-site/src/components/Index.svelte",
+		"electron": "NODE_ENV=development electron . --inspect -- /home/gus/projects/editor-site/src/components/Index.svelte",
 		"build-all": "rollup -c",
 		"autobuild-all": "rollup -c -w",
 		"build-test": "PLATFORM=test rollup -c",
@@ -66,8 +66,8 @@
 		"electron-dev": "run-p autobuild-electron test electron",
 		"web-dev": "run-p autobuild-web test web",
 		"test-dev": "run-p autobuild-test test",
-		"web": "sirv --dev --port 5000 src/platforms/web/public",
-		"test": "sirv --dev --port 5001 test/public",
+		"web": "sirv --dev --no-clear --port 5000 src/platforms/web/public",
+		"test": "sirv --dev --no-clear --port 5001 test/public",
 		"dist": "run-s build-electron pure-dist-win",
 		"pure-dist-win": "electron-builder --win --config electron-builder.yml"
 	}

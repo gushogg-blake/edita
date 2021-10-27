@@ -88,8 +88,16 @@ function electronPlugins() {
 	];
 }
 
-function onwarn() {
-	
+function addBuilds(...configs) {
+	builds.push(...configs.map(config => ({
+		onwarn() {},
+		
+		watch: {
+			clearScreen: false,
+		},
+		
+		...config,
+	})));
 }
 
 function globalCssBuild(path) {
@@ -115,7 +123,7 @@ function globalCssBuild(path) {
 let builds = [];
 
 if (!platform || platform === "all" || platform === "electron") {
-	builds.push(globalCssBuild("src/platforms/electron/public/build/global.js"), {
+	addBuilds(globalCssBuild("src/platforms/electron/public/build/global.js"), {
 		input: "src/platforms/electron/main.js",
 		
 		output: {
@@ -125,8 +133,6 @@ if (!platform || platform === "all" || platform === "electron") {
 		},
 		
 		plugins: electronPlugins(),
-		
-		onwarn,
 	}, {
 		input: "src/platforms/electron/dialogs/messageBox/main.js",
 		
@@ -137,8 +143,6 @@ if (!platform || platform === "all" || platform === "electron") {
 		},
 		
 		plugins: electronPlugins(),
-		
-		onwarn,
 	}, {
 		input: "src/platforms/electron/dialogs/snippetEditor/main.js",
 		
@@ -149,8 +153,6 @@ if (!platform || platform === "all" || platform === "electron") {
 		},
 		
 		plugins: electronPlugins(),
-		
-		onwarn,
 	}, {
 		input: "src/platforms/electron/dialogs/findAndReplace/main.js",
 		
@@ -161,13 +163,11 @@ if (!platform || platform === "all" || platform === "electron") {
 		},
 		
 		plugins: electronPlugins(),
-		
-		onwarn,
 	});
 }
 
 if (!platform || platform === "all" || platform === "web") {
-	builds.push(globalCssBuild("src/platforms/web/public/build/global.js"), {
+	addBuilds(globalCssBuild("src/platforms/web/public/build/global.js"), {
 		input: "src/platforms/web/main.js",
 		
 		output: {
@@ -183,13 +183,11 @@ if (!platform || platform === "all" || platform === "web") {
 			dev && livereload("src/platforms/web/public"),
 			prod && terser(),
 		],
-		
-		onwarn,
 	});
 }
 
 if (!platform || platform === "all" || platform === "test") {
-	builds.push({
+	addBuilds({
 		input: "test/main.js",
 		
 		output: {
@@ -199,7 +197,7 @@ if (!platform || platform === "all" || platform === "test") {
 		},
 		
 		plugins: [
-			...commonPlugins("test"),
+			...commonPlugins("web"),
 			commonjs(),
 			
 			copy({
@@ -215,8 +213,6 @@ if (!platform || platform === "all" || platform === "test") {
 				],
 			}),
 		],
-		
-		onwarn,
 	}, {
 		input: "test/tests/**/*.test.js",
 		
@@ -228,11 +224,9 @@ if (!platform || platform === "all" || platform === "test") {
 		
 		plugins: [
 			multi(),
-			...commonPlugins("test"),
+			...commonPlugins("web"),
 			commonjs(),
 		],
-		
-		onwarn,
 	});
 }
 

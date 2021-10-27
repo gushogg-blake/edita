@@ -19,6 +19,7 @@
 			(async function() {
 				let createEditor = await editor({
 					resourcePrefix: "./build",
+					//lspUrl: "wss://" + location.hostname + "/lsp",
 				});
 				
 				let app1 = await createEditor(document.getElementById("editorContainer1"));

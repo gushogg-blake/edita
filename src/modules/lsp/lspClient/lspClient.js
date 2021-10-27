@@ -26,12 +26,12 @@ class LspClient extends Evented {
 		let {project} = document;
 		let langCode = scope.lang.code;
 		let code = maskOtherRegions(document, scope);
-		//let uri = URL.virtual(document.path).toString();
-		let lspContext = project || base;
+		let uri = URL.virtual(document.path).toString();
+		let {lspContext} = project || base;
 		
-		let uri = document.url.toString();
+		//let uri = document.url.toString();
 		
-		await lspContext.lspNotify(langCode, "textDocument/didOpen", {
+		await lspContext.notify(langCode, "textDocument/didOpen", {
 			textDocument: {
 				uri,
 				languageId: langCode,
@@ -40,9 +40,9 @@ class LspClient extends Evented {
 			},
 		});
 		
-		await sleep(100);
+		//await sleep(1000);
 		
-		let {error, result} = await lspContext.lspRequest(langCode, "textDocument/completion", {
+		let {error, result} = await lspContext.request(langCode, "textDocument/completion", {
 			textDocument: {
 				uri,
 			},
@@ -62,7 +62,7 @@ class LspClient extends Evented {
 			return completion;
 		});
 		
-		await lspContext.lspNotify(langCode, "textDocument/didClose", {
+		await lspContext.notify(langCode, "textDocument/didClose", {
 			textDocument: {
 				uri,
 			},
