@@ -518,6 +518,7 @@ onMount(function() {
 	position: absolute;
 	max-height: 150px;
 	overflow-y: auto;
+	cursor: default;
 	background: white;
 }
 </style>
@@ -589,6 +590,9 @@ onMount(function() {
 					id="completions"
 					style={inlineStyle(completionsStyle(wrappedLines, completions, rowHeight, colWidth, scrollPosition))}
 					on:wheel={e => e.stopPropagation()}
+					on:mousedown={e => e.stopPropagation()}
+					on:click={e => e.stopPropagation()}
+					on:dblclick={e => e.stopPropagation()}
 				>
 					{#each completions.completions as completion}
 						<div

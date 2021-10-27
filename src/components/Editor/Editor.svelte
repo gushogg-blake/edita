@@ -293,7 +293,7 @@ function wheel(e) {
 		scrolled = view.scrollBy(0, view.measurements.rowHeight * 3 * dir);
 	}
 	
-	if (scrolled) {
+	if (scrolled || editorMode === "app") {
 		e.preventDefault();
 		e.stopPropagation();
 	}
