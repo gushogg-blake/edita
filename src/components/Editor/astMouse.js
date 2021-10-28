@@ -287,23 +287,25 @@ module.exports = function(app, document, editor, view, editorComponent) {
 			return;
 		}
 		
-		let selection = getHilite(e);
-		
-		let {
-			option,
-		} = data;
-		
-		// TODO auto scroll at edges of code area
-		
-		view.showDropTargets();
-		
-		if (target) {
-			editor.astMouse.setInsertionHilite(null);
-		} else {
-			editor.astMouse.setInsertionHilite(getInsertionRange(e));
-		}
-		
-		view.redraw();
+		requestAnimationFrame(function() {
+			let selection = getHilite(e);
+			
+			let {
+				option,
+			} = data;
+			
+			// TODO auto scroll at edges of code area
+			
+			view.showDropTargets();
+			
+			if (target) {
+				editor.astMouse.setInsertionHilite(null);
+			} else {
+				editor.astMouse.setInsertionHilite(getInsertionRange(e));
+			}
+			
+			view.redraw();
+		});
 	}
 	
 	function dragenter(e) {
