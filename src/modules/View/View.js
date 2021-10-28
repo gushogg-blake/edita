@@ -272,7 +272,7 @@ class View extends Evented {
 			sizes: {codeWidth},
 		} = this;
 		
-		if (x !== 0) {
+		if (x !== 0 && !this.wrap) {
 			let longestLineWidth = this.document.getLongestLineWidth();
 			let scrollWidth = longestLineWidth * colWidth + codeWidth;
 			let scrollMax = scrollWidth - codeWidth;
@@ -299,6 +299,7 @@ class View extends Evented {
 		
 		if (scrolled) {
 			this.fire("scroll");
+			
 			this.redraw();
 		}
 		
@@ -307,17 +308,29 @@ class View extends Evented {
 	
 	setVerticalScroll(y) {
 		this.scrollPosition.y = Math.max(0, y);
+		
 		this.fire("scroll");
 	}
 	
 	setHorizontalScroll(x) {
+		if (this.wrap && x !== 0) {
+			return;
+		}
+		
 		this.scrollPosition.x = x;
+		
 		this.fire("scroll");
 	}
 	
 	setScrollPosition(scrollPosition) {
-		this.scrollPosition = scrollPosition;
+		this.scrollPosition = {...scrollPosition};
+		
+		if (this.wrap) {
+			this.scrollPosition.x = 0;
+		}
+		
 		this.updateScrollbars();
+		
 		this.fire("scroll");
 	}
 	
@@ -441,6 +454,10 @@ class View extends Evented {
 		}
 		
 		this.wrap = wrap;
+		
+		if (this.wrap) {
+			this.setHorizontalScroll(0);
+		}
 		
 		this.updateWrappedLines();
 		
