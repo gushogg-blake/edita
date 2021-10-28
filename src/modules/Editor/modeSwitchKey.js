@@ -41,7 +41,9 @@ module.exports = function(editor) {
 			return;
 		}
 		
-		keyPressedWhilePeeking = true;
+		if (!["Control", "Alt", "Shift", "Command"].includes(e.key)) {
+			keyPressedWhilePeeking = true;
+		}
 	}
 	
 	function keyup(e) {

@@ -45,10 +45,10 @@ module.exports = class {
 		}
 	}
 	
-	relayEvents(source, ...events) {
+	relayEvents(source, events, prefix="", extraArgs=[]) {
 		return events.map((event) => {
 			return source.on(event, (...args) => {
-				this.fire(event, ...args);
+				this.fire(prefix + event, ...[...extraArgs, ...args]);
 			});
 		});
 	}

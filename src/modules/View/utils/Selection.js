@@ -408,7 +408,7 @@ module.exports = {
 	},
 	
 	all() {
-		return s(c(0, 0), this.document.cursorAtEnd());
+		return this.document.selectAll();
 	},
 	
 	validate(selection) {

@@ -54,6 +54,8 @@ module.exports = function(systemInfo) {
 			"Tab": "tab",
 			"Shift+Backspace": "backspace",
 			"Shift+Delete": "delete",
+			"Ctrl+Backspace": "backspace",
+			"Ctrl+Delete": "delete",
 			"Shift+Enter": "enter",
 			"Ctrl+Enter": "enterNoAutoIndent",
 			"Shift+Tab": "shiftTab",

@@ -99,10 +99,6 @@ class Platform extends Common {
 		return filePaths;
 	}
 	
-	async save(path, code) {
-		await fs(path).write(code);
-	}
-	
 	async saveAs(options) {
 		let {filePath} = await ipc.dialog.showSave(options);
 		
@@ -120,7 +116,7 @@ class Platform extends Common {
 	removeBackup(document) {
 		let key = encodeURIComponent(document.url);
 		
-		this.fs(this.config.userDataDir, "backups", key).delete();
+		this.fs(this.config.userDataDir, "backups", key).deleteIfExists();
 	}
 	
 	filesFromDropEvent(e) {

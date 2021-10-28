@@ -303,6 +303,10 @@ class BaseDocument extends Evented {
 		return this.source.cursorAtEnd();
 	}
 	
+	selectAll() {
+		return this.source.selectAll();
+	}
+	
 	toString() {
 		return this.string;
 	}

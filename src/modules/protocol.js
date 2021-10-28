@@ -8,11 +8,15 @@ module.exports = function(url) {
 			},
 			
 			save(code) {
-				return platform.save(path, code);
+				return platform.fs(path).write(code);
 			},
 			
 			delete() {
 				return platform.fs(path).delete();
+			},
+			
+			exists() {
+				return platform.fs(path).exists();
 			},
 		},
 	}[protocol];

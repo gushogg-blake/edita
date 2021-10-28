@@ -258,8 +258,6 @@ module.exports = function(backends) {
 			try {
 				return (await fs.stat(this.path)).isDirectory();
 			} catch (e) {
-				console.error(e);
-				
 				return false;
 			}
 		}
@@ -268,8 +266,6 @@ module.exports = function(backends) {
 			try {
 				return (await fs.stat(this.path)).isFile();
 			} catch (e) {
-				console.error(e);
-				
 				return false;
 			}
 		}

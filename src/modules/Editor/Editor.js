@@ -53,6 +53,7 @@ class Editor extends Evented {
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
 			document.on("save", this.onDocumentSave.bind(this)),
+			document.on("fileChanged", this.onDocumentFileChanged.bind(this)),
 			view.on("focus", this.onFocus.bind(this)),
 			view.on("blur", this.onBlur.bind(this)),
 		];
@@ -196,6 +197,30 @@ class Editor extends Evented {
 		this.clearBatchState();
 	}
 	
+	onDocumentFileChanged(updateEntry) {
+		if (updateEntry) {
+			this.historyEntries.set(updateEntry, {
+				before: {
+					normalSelection: this.mode === "normal" ? this.normalSelection : undefined,
+					astSelection: this.mode === "ast" ? this.astSelection : undefined,
+					snippetSession: this.snippetSession,
+				},
+				
+				after: {
+					normalSelection: this.normalSelection,
+					astSelection: this.astSelection,
+				},
+			});
+			
+			this.applyHistoryEntry(updateEntry, "after");
+		}
+		
+		this.view.updateWrappedLines();
+		this.view.redraw();
+		
+		this.clearBatchState();
+	}
+	
 	applyHistoryEntry(entry, state) {
 		let {
 			normalSelection,
@@ -225,8 +250,8 @@ class Editor extends Evented {
 		
 		this.historyEntries.set(entry, {
 			before: {
-				normalSelection: this.view.mode === "normal" ? this.view.normalSelection : undefined,
-				astSelection: this.view.mode === "ast" ? this.view.astSelection : undefined,
+				normalSelection: this.mode === "normal" ? this.normalSelection : undefined,
+				astSelection: this.mode === "ast" ? this.astSelection : undefined,
 				snippetSession: this.snippetSession,
 			},
 			

@@ -34,6 +34,10 @@ class Document extends BaseDocument {
 		this.throttledBackup = throttle(() => {
 			platform.backup(this);
 		}, 15000);
+		
+		this.fileChangedWhileModified = false;
+		
+		this.setupWatch();
 	}
 	
 	updateFileDetails() {
@@ -61,7 +65,11 @@ class Document extends BaseDocument {
 	}
 	
 	async save() {
-		await protocol(this).save(this.toString());
+		this.saving = true;
+		
+		await protocol(this.url).save(this.toString());
+		
+		this.saving = false;
 		
 		platform.removeBackup(this);
 		
@@ -71,12 +79,59 @@ class Document extends BaseDocument {
 		this.fire("save");
 	}
 	
-	saveAs(url) {
+	async saveAs(url) {
 		this.url = url;
 		
 		this.updateFileDetails();
 		
-		return this.save();
+		await this.save();
+		
+		this.setupWatch();
+	}
+	
+	setupWatch() {
+		if (this.teardownWatch) {
+			this.teardownWatch();
+			
+			delete this.teardownWatch;
+		}
+		
+		if (this.protocol !== "file") {
+			return;
+		}
+		
+		this.teardownWatch = platform.fs(this.path).watch(this.onWatchEvent.bind(this));
+	}
+	
+	async onWatchEvent() {
+		if (this.saving) {
+			return;
+		}
+		
+		let updateEntry = null;
+		
+		try {
+			let file = protocol(this.url);
+			
+			if (await file.exists()) {
+				if (this.modified) {
+					this.fileChangedWhileModified = true;
+				} else {
+					let code = await file.read();
+					let edit = this.edit(this.selectAll(), code);
+					
+					updateEntry = this.applyAndAddHistoryEntry([edit]);
+					
+					this.modified = false;
+				}
+			} else {
+				this.fileChangedWhileModified = true;
+			}
+		} catch (e) {
+			this.fileChangedWhileModified = true;
+		}
+		
+		this.fire("fileChanged", updateEntry);
 	}
 	
 	*find(options) {

@@ -223,4 +223,8 @@ module.exports = class {
 	cursorAtEnd() {
 		return c(this.lines.length - 1, this.lines[this.lines.length - 1].string.length);
 	}
+	
+	selectAll() {
+		return s(c(0, 0), this.cursorAtEnd());
+	}
 }

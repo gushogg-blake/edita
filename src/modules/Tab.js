@@ -23,7 +23,7 @@ class Tab extends Evented {
 		this.teardownCallbacks = [
 			document.on("save", this.onDocumentSave.bind(this)),
 			view.on("wrapChanged", this.onWrapChanged.bind(this)),
-			...this.relayEvents(editor, "focus", "blur"),
+			...this.relayEvents(editor, ["focus", "blur"]),
 		];
 	}
 	

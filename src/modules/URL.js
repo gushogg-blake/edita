@@ -22,15 +22,15 @@ class URL {
 			url = url.toString();
 		}
 		
-		this.url = new window.URL(url);
+		this.url = url;
 	}
 	
 	get path() {
-		return urlToPath(this.url.pathname);
+		return urlToPath(this.url.substr(this.url.indexOf("://") + 3));
 	}
 	
 	get protocol() {
-		return this.url.protocol.replace(/:$/, "");
+		return this.url.substr(0, this.url.indexOf(":"));
 	}
 	
 	static file(path) {
@@ -46,7 +46,7 @@ class URL {
 	}
 	
 	toString() {
-		return this.url.toString();
+		return this.url;
 	}
 	
 	toJSON() {

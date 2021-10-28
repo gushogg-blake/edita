@@ -373,7 +373,7 @@ class App extends Evented {
 			fileDetails,
 		});
 		
-		for (let event of ["edit", "undo", "redo", "save"]) {
+		for (let event of ["edit", "undo", "redo", "save", "fileChanged"]) {
 			document.on(event, (...args) => {
 				this.updateTitle();
 				
