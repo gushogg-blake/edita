@@ -8,10 +8,12 @@ let {c} = Cursor;
 module.exports = {
 	up() {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.up());
+		this.clearSnippetSession();
 	},
 	
 	down() {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.down());
+		this.clearSnippetSession();
 	},
 	
 	left() {
@@ -26,10 +28,12 @@ module.exports = {
 	
 	pageUp() {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.pageUp());
+		this.clearSnippetSession();
 	},
 	
 	pageDown() {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.pageDown());
+		this.clearSnippetSession();
 	},
 	
 	end() {
@@ -54,10 +58,12 @@ module.exports = {
 	
 	expandOrContractSelectionUp() {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractUp());
+		this.clearSnippetSession();
 	},
 	
 	expandOrContractSelectionDown() {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractDown());
+		this.clearSnippetSession();
 	},
 	
 	expandOrContractSelectionLeft() {
@@ -72,10 +78,12 @@ module.exports = {
 	
 	expandOrContractSelectionPageUp() {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractPageUp());
+		this.clearSnippetSession();
 	},
 	
 	expandOrContractSelectionPageDown() {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.expandOrContractPageDown());
+		this.clearSnippetSession();
 	},
 	
 	expandOrContractSelectionEnd() {
@@ -101,6 +109,7 @@ module.exports = {
 	selectAll() {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.all());
 		this.view.updateSelectionEndCol();
+		this.clearSnippetSession();
 	},
 	
 	enter() {
@@ -176,7 +185,7 @@ module.exports = {
 		
 		let {
 			edit,
-		} = document.replaceSelection(selection, indent + newline);
+		} = document.replaceSelection(selection, newline + indent);
 		
 		let edits = [edit];
 		

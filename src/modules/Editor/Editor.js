@@ -416,7 +416,6 @@ class Editor extends Evented {
 			platform.clipboard.writeSelection(this.document.getSelectedText(selection));
 		}
 		
-		this.clearSnippetSession();
 		this.clearBatchState();
 		this.astMode.clearMultiStepCommand();
 	}
