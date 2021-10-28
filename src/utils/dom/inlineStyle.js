@@ -1,5 +1,6 @@
-let flatten = require("../array/flatten");
-let camelToKebab = require("../camelToKebab");
+function camelToCssProp(str) {
+	return str.replace(/([A-Z])/g, (_, ch) => "-" + ch.toLowerCase());
+}
 
 let nonSizeProps = [
 	"opacity",
@@ -9,11 +10,11 @@ let nonSizeProps = [
 ];
 
 module.exports = function(...styles) {
-	let all = Object.assign({}, ...flatten(styles));
+	let all = Object.assign({}, ...styles.flat());
 	let str = "";
 	
 	for (let k in all) {
-		let prop = camelToKebab(k);
+		let prop = camelToCssProp(k);
 		let value = all[k];
 		
 		if (typeof value === "number" && value !== 0 && !nonSizeProps.includes(prop)) {
