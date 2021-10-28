@@ -1,7 +1,8 @@
 let middle = require("utils/middle");
+let nodeGetters = require("./nodeGetters");
 
 module.exports = function(node, lineIndex) {
-	let {children} = node;
+	let children = nodeGetters.children(node)
 	let startIndex = 0;
 	let endIndex = children.length;
 	let lastChildBeforeLine = null;
@@ -31,8 +32,8 @@ module.exports = function(node, lineIndex) {
 		}
 	}
 	
-	while (lastChildBeforeLine && lastChildBeforeLine.lastChild) {
-		lastChildBeforeLine = lastChildBeforeLine.lastChild;
+	while (lastChildBeforeLine && nodeGetters.lastChild(lastChildBeforeLine)) {
+		lastChildBeforeLine = nodeGetters.lastChild(lastChildBeforeLine);
 	}
 	
 	return lastChildBeforeLine;

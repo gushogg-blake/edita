@@ -1,4 +1,5 @@
 let middle = require("utils/middle");
+let nodeGetters = require("./nodeGetters");
 let prev = require("./prev");
 
 /*
@@ -8,7 +9,7 @@ ends on or after)
 */
 
 module.exports = function(node, lineIndex) {
-	let children = node.children;
+	let children = nodeGetters.children(node);
 	let startIndex = 0;
 	let endIndex = children.length;
 	
@@ -30,7 +31,7 @@ module.exports = function(node, lineIndex) {
 			return child;
 		} else if (child.startPosition.row < lineIndex && child.endPosition.row >= lineIndex) {
 			node = child;
-			children = node.children;
+			children = nodeGetters.children(node);
 			startIndex = 0;
 			endIndex = children.length;
 		} else if (child.startPosition.row < lineIndex) {
