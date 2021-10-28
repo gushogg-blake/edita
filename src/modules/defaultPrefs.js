@@ -59,6 +59,8 @@ module.exports = function(systemInfo) {
 			"Shift+Enter": "enter",
 			"Ctrl+Enter": "enterNoAutoIndent",
 			"Shift+Tab": "shiftTab",
+			"Alt+Enter": "newLineAfterSelection",
+			"Alt+Shift+Enter": "newLineBeforeSelection",
 			
 			"Ctrl+X": "cut",
 			"Ctrl+C": "copy",

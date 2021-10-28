@@ -104,9 +104,8 @@ module.exports = {
 	},
 	
 	enter() {
-		let {document} = this;
-		let {newline} = document.fileDetails;
-		let {normalSelection: selection} = this.view;
+		let {document, normalSelection: selection} = this;
+		let {newline, indentation} = document.fileDetails;
 		let {start} = Selection.sort(selection);
 		let {lineIndex} = start;
 		let line = document.lines[lineIndex];
@@ -116,7 +115,7 @@ module.exports = {
 			indentLevel++;
 		}
 		
-		let indent = document.fileDetails.indentation.string.repeat(indentLevel);
+		let indent = indentation.string.repeat(indentLevel);
 		
 		let {
 			edit,
@@ -139,8 +138,60 @@ module.exports = {
 		
 	},
 	
+	newLineBeforeSelection() {
+		let {document, normalSelection} = this;
+		let {newline, indentation} = document.fileDetails;
+		let {lineIndex} = Selection.sort(normalSelection).start;
+		let {indentLevel} = document.lines[lineIndex];
+		
+		let selection = s(c(lineIndex, 0));
+		let newSelection = s(c(lineIndex, Infinity));
+		let indent = indentation.string.repeat(indentLevel);
+		
+		let {
+			edit,
+		} = document.replaceSelection(selection, indent + newline);
+		
+		let edits = [edit];
+		
+		this.applyAndAddHistoryEntry({
+			edits,
+			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
+		});
+		
+		this.updateSnippetExpressions();
+		this.clearBatchState();
+	},
+	
+	newLineAfterSelection() {
+		let {document, normalSelection} = this;
+		let {newline, indentation} = document.fileDetails;
+		let {lineIndex} = Selection.sort(normalSelection).start;
+		let line = document.lines[lineIndex];
+		
+		let selection = s(c(lineIndex, line.string.length));
+		let newSelection = s(c(lineIndex + 1, Infinity));
+		let indent = indentation.string.repeat(line.indentLevel);
+		
+		let {
+			edit,
+		} = document.replaceSelection(selection, indent + newline);
+		
+		let edits = [edit];
+		
+		this.applyAndAddHistoryEntry({
+			edits,
+			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
+		});
+		
+		this.updateSnippetExpressions();
+		this.clearBatchState();
+	},
+	
 	backspace() {
-		let selection = Selection.sort(this.view.normalSelection);
+		let selection = Selection.sort(this.normalSelection);
 		let {start} = selection;
 		let {lineIndex, offset} = start;
 		let isFull = this.view.Selection.isFull();
@@ -191,7 +242,7 @@ module.exports = {
 	},
 	
 	delete() {
-		let selection = Selection.sort(this.view.normalSelection);
+		let selection = Selection.sort(this.normalSelection);
 		let {start} = selection;
 		let {lineIndex, offset} = start;
 		let isFull = this.view.Selection.isFull();
@@ -249,8 +300,7 @@ module.exports = {
 	
 	tab() {
 		let flags;
-		let {view} = this;
-		let {start} = view.normalSelection;
+		let {start} = this.normalSelection;
 		let snippet = null;
 		
 		if (!this.view.Selection.isFull()) {

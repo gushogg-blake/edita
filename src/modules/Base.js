@@ -20,7 +20,7 @@ let php = require("modules/langs/php");
 let c = require("modules/langs/c");
 let cpp = require("modules/langs/cpp");
 let python = require("modules/langs/python");
-//let svelte = require("modules/langs/svelte");
+let svelte = require("modules/langs/svelte");
 let plainText = require("modules/langs/plainText");
 
 /*
@@ -52,7 +52,7 @@ class Base {
 		
 		let langs = [
 			javascript,
-			//svelte,
+			svelte,
 			html,
 			css,
 			scss,
