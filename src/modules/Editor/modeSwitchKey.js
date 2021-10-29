@@ -47,6 +47,10 @@ module.exports = function(editor) {
 	}
 	
 	function keyup(e) {
+		if (e.key !== platform.prefs.modeSwitchKey) {
+			return;
+		}
+		
 		let downTime = Date.now() - keyDownAt;
 		
 		if (editor.mode === "ast") {
