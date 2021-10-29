@@ -168,7 +168,7 @@ let lang = {
 			return "comment";
 		}
 		
-		if (type === "string" || type === "template_string") {
+		if (type === "string" || type === "template_string" || type === "`") {
 			return "string";
 		}
 		
