@@ -499,7 +499,7 @@ module.exports = {
 	},
 	
 	async cut() {
-		// TODO line if not full selection?
+		// TODO line if not full selection
 		if (!this.view.Selection.isFull()) {
 			return;
 		}

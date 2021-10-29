@@ -70,11 +70,11 @@ class Document extends BaseDocument {
 		await protocol(this.url).save(this.toString());
 		
 		this.saving = false;
+		this.modified = false;
+		this.fileChangedWhileModified = false;
+		this.historyIndexAtSave = this.historyIndex;
 		
 		platform.removeBackup(this);
-		
-		this.modified = false;
-		this.historyIndexAtSave = this.historyIndex;
 		
 		this.fire("save");
 	}

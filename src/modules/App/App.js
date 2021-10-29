@@ -74,6 +74,12 @@ class App extends Evented {
 		let {document} = tab.editor;
 		
 		if (document.isSaved) {
+			if (document.fileChangedWhileModified) {
+				if (!await platform.confirm(tab.name + " has changed on disk since the last save.  Overwrite current version?")) {
+					return;
+				}
+			}
+			
 			await document.save();
 		} else {
 			let dir = platform.systemInfo.homeDir;

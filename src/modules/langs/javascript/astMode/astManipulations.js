@@ -32,10 +32,6 @@ module.exports = {
 			return true;
 		},
 		
-		/*
-		
-		*/
-		
 		apply(document, selection) {
 			let {lines} = document;
 			let indentStr = document.fileDetails.indentation.string;
