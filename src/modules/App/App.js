@@ -375,7 +375,7 @@ class App extends Evented {
 	
 	createDocument(code, url, fileDetails) {
 		let document = new Document(code, url, {
-			project: this.selectedProject,
+			//project: this.selectedProject,
 			fileDetails,
 		});
 		
