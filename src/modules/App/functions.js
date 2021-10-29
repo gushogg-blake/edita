@@ -56,7 +56,7 @@ module.exports = {
 		
 		this.showFindDialog({
 			replace: true,
-			searchIn: editor.view.Selection.isFull() ? "selectedText" : "currentDocument",
+			searchIn: editor.view.Selection.isMultiline() ? "selectedText" : "currentDocument",
 		});
 	},
 	

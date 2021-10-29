@@ -6,6 +6,7 @@ let findFirstNodeToRender = require("modules/utils/treeSitter/findFirstNodeToRen
 let findFirstNodeOnLine = require("modules/utils/treeSitter/findFirstNodeOnLine");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
+let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 let Range = require("./Range");
 
 let {s} = Selection;
@@ -406,7 +407,7 @@ module.exports = class Scope {
 				lang: this.lang,
 			} : node;
 			
-			startOffset = node.endPosition.column;
+			startOffset = nodeGetters.endPosition(node).column;
 			
 			let scope = this.scopesByNode[node.id];
 			
@@ -414,7 +415,7 @@ module.exports = class Scope {
 				for (let childNode of scope._generateNodesOnLine(withLang, lineIndex, startOffset)) {
 					yield childNode;
 					
-					startOffset = withLang ? childNode.node.endPosition.column : childNode.endPosition.column;
+					startOffset = nodeGetters.endPosition(withLang ? childNode.node : childNode).column;
 				}
 			}
 		}
@@ -423,7 +424,7 @@ module.exports = class Scope {
 			for (let childNode of scope._generateNodesOnLine(withLang, lineIndex, startOffset)) {
 				yield childNode;
 				
-				startOffset = withLang ? childNode.node.endPosition.column : childNode.endPosition.column;
+				startOffset = nodeGetters.endPosition(withLang ? childNode.node : childNode).column;
 			}
 		}
 	}

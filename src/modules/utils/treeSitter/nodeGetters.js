@@ -14,7 +14,7 @@ let api = {
 	
 	firstChild: cachedNodeFunction(function(node) {
 		for (let child of api.children(node)) {
-			if (child.text.length > 0) {
+			if (api.text(child).length > 0) {
 				return child;
 			}
 		}
@@ -28,7 +28,7 @@ let api = {
 		for (let i = children.length - 1; i >= 0; i--) {
 			let child = children[i];
 			
-			if (child.text.length > 0) {
+			if (api.text(child).length > 0) {
 				return child;
 			}
 		}
@@ -46,7 +46,7 @@ let api = {
 		let foundNode = false;
 		
 		for (let child of api.children(parent)) {
-			if (foundNode && child.text.length > 0) {
+			if (foundNode && api.text(child).length > 0) {
 				return child;
 			}
 			
@@ -72,7 +72,7 @@ let api = {
 		for (let i = children.length - 1; i >= 0; i--) {
 			let child = children[i];
 			
-			if (foundNode && child.text.length > 0) {
+			if (foundNode && api.text(child).length > 0) {
 				return child;
 			}
 			
