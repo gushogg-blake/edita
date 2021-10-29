@@ -7,11 +7,11 @@ class NodeResultCache {
 	}
 	
 	has(node) {
-		let cache = this.cacheByTree.get(node.tree)?.has(node.id);
+		return this.cacheByTree.get(node.tree)?.has(node.id);
 	}
 	
 	get(node) {
-		let cache = this.cacheByTree.get(node.tree).get(node.id);
+		return this.cacheByTree.get(node.tree).get(node.id);
 	}
 	
 	set(node, value) {

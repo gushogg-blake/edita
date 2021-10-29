@@ -1,7 +1,12 @@
 let cachedNodeFunction = require("./cachedNodeFunction");
 
 let api = {
+	type: cachedNodeFunction(node => node.type),
+	text: cachedNodeFunction(node => node.text),
+	startPosition: cachedNodeFunction(node => node.startPosition),
+	endPosition: cachedNodeFunction(node => node.endPosition),
 	parent: cachedNodeFunction(node => node.parent),
+	childCount: cachedNodeFunction(node => node.childCount),
 	children: cachedNodeFunction(node => node.children),
 	
 	firstChild: cachedNodeFunction(function(node) {
@@ -75,6 +80,16 @@ let api = {
 		
 		return null;
 	}),
+	
+	get(node, ...fields) {
+		let result = {};
+		
+		for (let field of fields) {
+			result[field] = api[field](node);
+		}
+		
+		return result;
+	},
 };
 
 module.exports = api;
