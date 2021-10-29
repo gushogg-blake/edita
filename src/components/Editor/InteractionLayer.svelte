@@ -494,7 +494,7 @@ onMount(function() {
 		background: #A88712;
 	}
 	
-	&:not(.hover) {
+	&:not(.hover):not(.active) {
 		opacity: .5;
 	}
 }
