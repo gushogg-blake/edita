@@ -1,5 +1,9 @@
 let NodeResultCache = require("./NodeResultCache");
 
+/*
+node getters (node.parent etc) are slow, so keep the results in a cache
+*/
+
 module.exports = function(fn) {
 	let cache = new NodeResultCache();
 	

@@ -1,5 +1,6 @@
 let findSubtreeContainingFirstNodeOnLine = require("./findSubtreeContainingFirstNodeOnLine");
 let findLastChildBeforeLine = require("./findLastChildBeforeLine");
+let nodeGetters = require("./nodeGetters");
 
 /*
 find the first node to start walking the tree from to render just the visible
@@ -21,7 +22,7 @@ a single node.
 module.exports = function(node, lineIndex) {
 	let subtree = findSubtreeContainingFirstNodeOnLine(node, lineIndex);
 	
-	if (subtree.startPosition.row < lineIndex) {
+	if (nodeGetters.startPosition(subtree).row < lineIndex) {
 		let lastChildBeforeLine = findLastChildBeforeLine(subtree, lineIndex);
 		
 		if (lastChildBeforeLine) {

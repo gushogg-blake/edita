@@ -9,6 +9,9 @@ let api = {
 	childCount: cachedNodeFunction(node => node.childCount),
 	children: cachedNodeFunction(node => node.children),
 	
+	// NOTE tree-sitter has a bug where zero-length nodes don't have
+	// the right parent, so we skip them for traversal
+	
 	firstChild: cachedNodeFunction(function(node) {
 		for (let child of api.children(node)) {
 			if (child.text.length > 0) {

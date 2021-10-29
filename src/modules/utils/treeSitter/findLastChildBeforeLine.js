@@ -15,7 +15,7 @@ module.exports = function(node, lineIndex) {
 		let index = middle(startIndex, endIndex);
 		let child = children[index];
 		
-		if (child.startPosition.row > lineIndex) {
+		if (nodeGetters.startPosition(child).row > lineIndex) {
 			endIndex = index;
 			
 			if (endIndex === 0) {

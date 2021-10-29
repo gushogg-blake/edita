@@ -21,20 +21,20 @@ module.exports = function(node, lineIndex) {
 		let index = middle(startIndex, endIndex);
 		let child = children[index];
 		
-		if (child.startPosition.row === lineIndex) {
+		if (nodeGetters.startPosition(child).row === lineIndex) {
 			let prevChild;
 			
-			while ((prevChild = prev(child))?.startPosition.row === lineIndex) {
+			while ((prevChild = prev(child)) && nodeGetters.startPosition(prevChild).row === lineIndex) {
 				child = prevChild;
 			}
 			
 			return child;
-		} else if (child.startPosition.row < lineIndex && child.endPosition.row >= lineIndex) {
+		} else if (nodeGetters.startPosition(child).row < lineIndex && nodeGetters.endPosition(child).row >= lineIndex) {
 			node = child;
 			children = nodeGetters.children(node);
 			startIndex = 0;
 			endIndex = children.length;
-		} else if (child.startPosition.row < lineIndex) {
+		} else if (nodeGetters.startPosition(child).row < lineIndex) {
 			startIndex = index + 1;
 			
 			if (startIndex === children.length) {

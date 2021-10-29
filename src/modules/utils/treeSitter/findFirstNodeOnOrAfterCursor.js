@@ -2,7 +2,7 @@ let middle = require("utils/middle");
 let nodeGetters = require("./nodeGetters");
 
 function isOnOrAfter(node, cursor) {
-	let {row, column} = node.startPosition;
+	let {row, column} = nodeGetters.startPosition(node);
 	
 	return (
 		row > cursor.lineIndex
@@ -11,7 +11,7 @@ function isOnOrAfter(node, cursor) {
 }
 
 function endsAfter(node, cursor) {
-	let {row, column} = node.endPosition;
+	let {row, column} = nodeGetters.endPosition(node);
 	
 	return (
 		row > cursor.lineIndex
@@ -44,7 +44,7 @@ module.exports = function(node, cursor) {
 			if (endIndex === 0) {
 				break;
 			}
-		} else if (endsAfter(child, cursor) && child.children.length > 0) {
+		} else if (endsAfter(child, cursor) && nodeGetters.children(child).length > 0) {
 			node = child;
 			children = nodeGetters.children(node);
 			startIndex = 0;
