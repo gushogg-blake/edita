@@ -1,9 +1,11 @@
 let throttle = require("utils/throttle");
+let sleep = require("utils/sleep");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let protocol = require("modules/protocol");
 let findAndReplace = require("modules/findAndReplace");
+
 let BaseDocument = require("./BaseDocument");
 let Source = require("./Source");
 
@@ -117,6 +119,8 @@ class Document extends BaseDocument {
 				if (this.modified) {
 					this.fileChangedWhileModified = true;
 				} else {
+					await sleep(50); // read can return blank sometimes otherwise
+					
 					let code = await file.read();
 					let edit = this.edit(this.selectAll(), code);
 					
