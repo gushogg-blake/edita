@@ -99,7 +99,9 @@ function fromLineRange(document, startLineIndex, endLineIndex) {
 	let startIndex = startLineIndex;
 	let endIndex = startIndex;
 	
-	for (let i = startLineIndex; i <= endLineIndex - 1; i++) {
+	let i = startLineIndex;
+	
+	while (i <= endLineIndex - 1) {
 		let selection = selectionFromLineIndex(document, i);
 		
 		if (selection.startLineIndex < startIndex) {
@@ -107,6 +109,7 @@ function fromLineRange(document, startLineIndex, endLineIndex) {
 		}
 		
 		endIndex = Math.max(endIndex, selection.endLineIndex);
+		i = Math.max(i + 1, endIndex);
 	}
 	
 	return s(startIndex, endIndex);
