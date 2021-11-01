@@ -129,8 +129,6 @@ module.exports = function(document, editor, view, editorComponent) {
 			editor.normalMouse.finishDrawingSelection();
 		}
 		
-		console.log(e);
-		
 		editorComponent.mouseup(e);
 		
 		drawingSelection = false;

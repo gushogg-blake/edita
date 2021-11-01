@@ -92,7 +92,6 @@ module.exports = function(editor) {
 		},
 		
 		mouseup() {
-			console.log("mode switch mouseup");
 			mouseIsDown = false;
 			
 			if (switchToAstModeOnMouseUp) {
