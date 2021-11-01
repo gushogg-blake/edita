@@ -123,13 +123,15 @@ module.exports = function(document, editor, view, editorComponent) {
 		}
 	}
 	
-	function mouseup() {
+	function mouseup(e) {
 		if (view.Selection.isFull()) {
 			editor.normalMouse.setSelectionClipboard();
 			editor.normalMouse.finishDrawingSelection();
 		}
 		
-		editorComponent.mouseup();
+		console.log(e);
+		
+		editorComponent.mouseup(e);
 		
 		drawingSelection = false;
 		

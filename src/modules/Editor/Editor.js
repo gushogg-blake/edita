@@ -498,7 +498,11 @@ class Editor extends Evented {
 	}
 	
 	setMode(mode) {
-		this.view.setMode(mode);
+		if (mode === "ast") {
+			this.switchToAstMode();
+		} else {
+			this.switchToNormalMode();
+		}
 	}
 	
 	setBatchState(state) {

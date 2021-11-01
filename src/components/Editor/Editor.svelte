@@ -87,7 +87,7 @@ let normalMouseHandler = normalMouse(document, editor, view, {
 		return showingHorizontalScrollbar;
 	},
 	
-	mouseup,
+	mouseup: _mouseup,
 });
 
 let astMouseHandler = astMouse(app, document, editor, view, {
@@ -99,7 +99,7 @@ let astMouseHandler = astMouse(app, document, editor, view, {
 		return showingHorizontalScrollbar;
 	},
 	
-	mouseup,
+	mouseup: _mouseup,
 });
 
 function mousedown({detail}) {
@@ -169,8 +169,16 @@ function mouseleave({detail: e}) {
 	}
 }
 
-function mouseup() {
+function _mouseup(e) {
 	editor.mouseup();
+	
+	if (view.mode === "ast") {
+		astMouseHandler.updateHilites(e);
+	}
+}
+
+function mouseup({detail: e}) {
+	_mouseup(e);
 }
 
 function click({detail: e}) {

@@ -27,13 +27,13 @@ module.exports = function(editor) {
 		
 		editor.switchToAstMode();
 		
-		editor.view.redraw();
+		view.redraw();
 	}
 	
 	function switchToNormalMode() {
 		editor.switchToNormalMode();
 		
-		editor.view.redraw();
+		view.redraw();
 	}
 	
 	function keydown(e) {
@@ -92,12 +92,11 @@ module.exports = function(editor) {
 		},
 		
 		mouseup() {
+			console.log("mode switch mouseup");
 			mouseIsDown = false;
 			
 			if (switchToAstModeOnMouseUp) {
 				switchToAstMode();
-				
-				view.redraw();
 				
 				switchToAstModeOnMouseUp = false;
 			}

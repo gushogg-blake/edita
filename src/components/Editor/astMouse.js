@@ -216,7 +216,7 @@ module.exports = function(app, document, editor, view, editorComponent) {
 		
 		view.redraw();
 		
-		editorComponent.mouseup();
+		editorComponent.mouseup(e);
 		
 		off(window, "mousemove", drawSelection);
 		off(window, "mouseup", mouseup);

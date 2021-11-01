@@ -118,6 +118,8 @@ class View extends Evented {
 	switchToAstMode() {
 		this.mode = "ast";
 		
+		this.clearCursorBlink();
+		
 		this.fire("modeSwitch");
 		this.fire("redraw");
 	}
@@ -129,15 +131,6 @@ class View extends Evented {
 		this.startCursorBlink();
 		this.redraw();
 		
-		this.fire("modeSwitch");
-	}
-	
-	setMode(mode) {
-		if (this.mode === mode) {
-			return;
-		}
-		
-		this.mode = mode;
 		this.fire("modeSwitch");
 	}
 	
