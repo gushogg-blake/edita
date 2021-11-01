@@ -196,20 +196,18 @@ module.exports = {
 	findFirstVisibleLine() {
 		let {rowHeight} = this.measurements;
 		let scrollRow = Math.floor(this.scrollPosition.y / rowHeight);
-		let row = 0;
+		let rowIndex = 0;
 		
-		for (let i = 0; i < this.wrappedLines.length; i++) {
-			let wrappedLine = this.wrappedLines[i];
-			
-			if (row + wrappedLine.height > scrollRow) {
+		for (let {lineIndex, wrappedLine} of this.generateWrappedLinesFolded()) {
+			if (rowIndex + wrappedLine.height > scrollRow) {
 				return {
 					wrappedLine,
-					lineIndex: i,
-					rowIndex: scrollRow - row,
+					lineIndex,
+					rowIndexInLine: scrollRow - rowIndex,
 				};
 			}
 			
-			row += wrappedLine.height;
+			rowIndex += wrappedLine.height;
 		}
 		
 		return null;
@@ -221,15 +219,19 @@ module.exports = {
 		let {height} = this.sizes;
 		let {rowHeight} = this.measurements;
 		let rowsToRender = Math.ceil(height / rowHeight);
-		let rowsRendered = this.wrappedLines[firstVisibleLine.lineIndex].height - firstVisibleLine.rowIndex;
-		let lineIndex = firstVisibleLine.lineIndex + 1;
+		let rowsRendered = this.wrappedLines[firstVisibleLine.lineIndex].height - firstVisibleLine.rowIndexInLine;
+		let lastVisibleLineIndex = firstVisibleLine.lineIndex + 1;
 		
-		while (rowsRendered < rowsToRender && lineIndex < this.wrappedLines.length) {
-			rowsRendered += this.wrappedLines[lineIndex].height;
-			lineIndex++;
+		for (let {lineIndex, wrappedLine} of this.generateWrappedLinesFolded(firstVisibleLine.lineIndex + 1)) {
+			if (rowsRendered >= rowsToRender) {
+				break;
+			}
+			
+			rowsRendered += wrappedLine.height;
+			lastVisibleLineIndex = lineIndex + 1;
 		}
 		
-		return lineIndex + 1;
+		return lastVisibleLineIndex;
 	},
 	
 	getLineRangeTotalHeight(startLineIndex, endLineIndex) {

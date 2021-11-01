@@ -91,22 +91,9 @@ function *generateRowsToRender() {
 	
 	let firstVisibleLine = this.findFirstVisibleLine();
 	
-	/*
-	when switching away from a tab the view will unwrap all lines, so if the last
-	line is wrapped and we're scrolled right to the bottom, there will be no
-	visible line at first when switching back to the tab.  the next resize will
-	re-wrap the lines and rerender.
-	
-	NOTE not sure if this is true anymore
-	*/
-	
-	if (!firstVisibleLine) {
-		return;
-	}
-	
 	let {
 		lineIndex: firstLineIndex,
-		rowIndex: firstLineRowIndex,
+		rowIndexInLine: firstLineRowIndex,
 	} = firstVisibleLine;
 	
 	let lastVisibleLineIndex = this.findLastVisibleLineIndex(firstVisibleLine);
@@ -120,9 +107,11 @@ function *generateRowsToRender() {
 		let renderLine = new RenderLine(lineIndex, line, decoratedLine, wrappedLine);
 		
 		for (let row of renderLine.generateRows()) {
-			if (lineIndex > firstLineIndex || row.rowIndex >= firstLineRowIndex) {
-				yield row;
+			if (lineIndex === firstLineIndex && row.rowIndex < firstLineRowIndex) {
+				continue;
 			}
+			
+			yield row;
 		}
 		
 		lineIndex++;

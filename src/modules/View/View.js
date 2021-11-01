@@ -42,6 +42,8 @@ class View extends Evented {
 		
 		this.updateAstSelectionFromNormalSelection();
 		
+		this.folds = {};
+		
 		this.pickOptions = [];
 		this.dropTargets = [];
 		
@@ -87,13 +89,8 @@ class View extends Evented {
 		// NOTE perf - findFirstVisibleLine and findFirstNodeToRender are also
 		// called in getDecoratedLines
 		
-		let firstVisibleLine = this.findFirstVisibleLine();
-		
-		if (!firstVisibleLine) {
-			return null;
-		}
-		
-		let {scope, node} = this.document.findFirstNodeToRender(firstVisibleLine.lineIndex);
+		let {lineIndex} = this.findFirstVisibleLine();
+		let {scope, node} = this.document.findFirstNodeToRender(lineIndex);
 		
 		if (!node) {
 			return null;
@@ -107,6 +104,72 @@ class View extends Evented {
 	
 	generateRowsToRender() {
 		return generateRowsToRender.call(this);
+	}
+	
+	*generateRowsFolded(start={lineIndex: 0, rowIndex: 0}) {
+		let {lineIndex, rowIndex} = start;
+		
+		while (lineIndex < this.wrappedLines.length) {
+			let wrappedLine = this.wrappedLines[lineIndex];
+			let {line} = wrappedLine;
+			let foldEndLineIndex = this.folds[lineIndex];
+			let isFoldHeader = !!foldEndLineIndex;
+			
+			let rowIndexInLine = 0;
+			
+			for (let row of wrappedLine.rows) {
+				yield {
+					isFoldHeader,
+					lineIndex,
+					rowIndex,
+					rowIndexInLine,
+					wrappedLine,
+					line,
+					row,
+				};
+				
+				rowIndex++;
+				rowIndexInLine++;
+				
+				if (isFoldHeader) {
+					break;
+				}
+			}
+			
+			if (isFoldHeader) {
+				lineIndex = foldEndLineIndex;
+				
+				continue;
+			}
+			
+			lineIndex++;
+		}
+	}
+	
+	*generateWrappedLinesFolded(startLineIndex=0) {
+		let lineIndex = startLineIndex;
+		
+		while (lineIndex < this.wrappedLines.length) {
+			let wrappedLine = this.wrappedLines[lineIndex];
+			let {line} = wrappedLine;
+			let foldEndLineIndex = this.folds[lineIndex];
+			let isFoldHeader = !!foldEndLineIndex;
+			
+			yield {
+				isFoldHeader,
+				lineIndex,
+				wrappedLine,
+				height: isFoldHeader ? 1 : wrappedLine.height,
+			};
+			
+			if (isFoldHeader) {
+				lineIndex = foldEndLineIndex;
+				
+				continue;
+			}
+			
+			lineIndex++;
+		}
 	}
 	
 	updateWrappedLines() {

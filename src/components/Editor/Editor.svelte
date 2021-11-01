@@ -571,6 +571,10 @@ onMount(function() {
 		windowFocus.listen(function(isFocused) {
 			windowHasFocus = isFocused;
 			
+			if (!view.visible) {
+				return;
+			}
+			
 			if (windowHasFocus) {
 				view.startCursorBlink();
 			}
