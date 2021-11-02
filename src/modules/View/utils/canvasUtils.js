@@ -193,6 +193,70 @@ module.exports = {
 		return cursorFromRowCol(...this.cursorRowColFromScreenCoords(x, y));
 	},
 	
+	*generateRowsFolded(startLineIndex=0) {
+		let lineIndex = startLineIndex;
+		
+		while (lineIndex < this.wrappedLines.length) {
+			let wrappedLine = this.wrappedLines[lineIndex];
+			let {line} = wrappedLine;
+			let foldEndLineIndex = this.folds[lineIndex];
+			let isFoldHeader = !!foldEndLineIndex;
+			
+			let rowIndexInLine = 0;
+			
+			for (let row of wrappedLine.rows) {
+				yield {
+					isFoldHeader,
+					lineIndex,
+					rowIndexInLine,
+					wrappedLine,
+					line,
+					row,
+				};
+				
+				rowIndexInLine++;
+				
+				if (isFoldHeader) {
+					break;
+				}
+			}
+			
+			if (isFoldHeader) {
+				lineIndex = foldEndLineIndex;
+				
+				continue;
+			}
+			
+			lineIndex++;
+		}
+	},
+	
+	*generateWrappedLinesFolded(startLineIndex=0) {
+		let lineIndex = startLineIndex;
+		
+		while (lineIndex < this.wrappedLines.length) {
+			let wrappedLine = this.wrappedLines[lineIndex];
+			let {line} = wrappedLine;
+			let foldEndLineIndex = this.folds[lineIndex];
+			let isFoldHeader = !!foldEndLineIndex;
+			
+			yield {
+				isFoldHeader,
+				lineIndex,
+				wrappedLine,
+				height: isFoldHeader ? 1 : wrappedLine.height,
+			};
+			
+			if (isFoldHeader) {
+				lineIndex = foldEndLineIndex;
+				
+				continue;
+			}
+			
+			lineIndex++;
+		}
+	},
+	
 	findFirstVisibleLine() {
 		let {rowHeight} = this.measurements;
 		let scrollRow = Math.floor(this.scrollPosition.y / rowHeight);

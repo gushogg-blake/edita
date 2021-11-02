@@ -96,6 +96,17 @@ function *generateRowsToRender() {
 		rowIndexInLine: firstLineRowIndex,
 	} = firstVisibleLine;
 	
+	//let {height} = this.sizes;
+	//let {rowHeight} = this.measurements;
+	//let rowsToRender = Math.ceil(height / rowHeight);
+	//
+	//let rowGenerator = this.generateRowsFolded(firstLineIndex);
+	//let hintGenerator = this.document.generateRenderHints(c(firstLineIndex, 0));
+	//
+	//while (true) {
+	//	
+	//}
+	
 	let lastVisibleLineIndex = this.findLastVisibleLineIndex(firstVisibleLine);
 	
 	let decoratedLines = this.document.getDecoratedLines(firstLineIndex, lastVisibleLineIndex);
