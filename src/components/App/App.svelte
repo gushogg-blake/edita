@@ -168,6 +168,7 @@ onMount(function() {
 	grid-template-rows: 1fr;
 	grid-template-columns: 1fr;
 	background: white;
+	contain: strict;
 	
 	&.selected {
 		z-index: 1;
