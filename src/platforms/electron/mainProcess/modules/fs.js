@@ -258,6 +258,10 @@ class Node {
 		return fs.writeFile(this.path, data);
 	}
 	
+	createReadStream() {
+		return fs.createReadStream(this.path);
+	}
+	
 	exists() {
 		return fs.exists(this.path);
 	}

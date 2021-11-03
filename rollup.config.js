@@ -129,7 +129,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		output: {
 			sourcemap: dev,
 			format: "iife",
-			file: "src/platforms/electron/public/build/main.js",
+			file: "src/platforms/electron/public/build/" + (dev ? "main.dev" : "main") + ".js",
 		},
 		
 		plugins: electronPlugins(),

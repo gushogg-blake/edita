@@ -12,8 +12,10 @@ let yargs = require("yargs/yargs");
 let {hideBin} = require("yargs/helpers");
 let {removeInPlace} = require("./utils/arrayMethods");
 let Evented = require("./utils/Evented");
+let streamFromString = require("./utils/streamFromString");
 let fs = require("./modules/fs");
 let ipcMain = require("./modules/ipcMain");
+let mimeTypes = require("./modules/mimeTypes");
 let ipc = require("./ipc");
 let config = require("./config");
 
@@ -70,20 +72,42 @@ class App extends Evented {
 		]);
 		
 		electronApp.on("ready", () => {
-			protocol.registerFileProtocol("app", (request, callback) => {
-				let path = decodeURIComponent(new URL(request.url).pathname);
+			protocol.registerStreamProtocol("app", async (request, callback) => {
+				let publicDir = fs(__dirname, "..", "public");
 				
 				// tree-sitter.js requests an incorrect absolute path for some reason
-				if (path.endsWith("tree-sitter.wasm")) {
+				if (request.url.endsWith("tree-sitter.wasm")) {
 					callback({
-						path: fs(__dirname, "..", "public", "vendor", "tree-sitter", "tree-sitter.wasm").path,
+						mimeType: "application/wasm",
+						data: publicDir.child("vendor", "tree-sitter", "tree-sitter.wasm").createReadStream(),
 					});
 					
 					return;
 				}
 				
+				if (request.url === "app://-/main.html") {
+					let code = await publicDir.child("main.html").read();
+					
+					let replacements = {
+						js: this.config.dev ? "main.dev" : "main",
+					};
+					
+					code = code.replace(/\$\{(\w+)\}/g, (_, k) => replacements[k]);
+					
+					callback({
+						mimeType: "text/html",
+						data: streamFromString(code),
+					});
+					
+					return;
+				}
+				
+				let path = decodeURIComponent(new URL(request.url).pathname);
+				let mimeType = mimeTypes[fs(path).type];
+				
 				callback({
-					path: fs(__dirname, "..", "public", ...path.split("/").filter(Boolean)).path,
+					mimeType,
+					data: publicDir.child(...path.substr(1).split("/")).createReadStream(),
 				});
 			});
 			
