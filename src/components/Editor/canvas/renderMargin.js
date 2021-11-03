@@ -1,4 +1,4 @@
-module.exports = function(layers, view, rows) {
+module.exports = function(layers, view) {
 	let {
 		font,
 		marginBackground,
@@ -34,15 +34,17 @@ module.exports = function(layers, view, rows) {
 	
 	let y = rowHeight + topMargin + rowOffset; // rowHeight added as using textBaseline="bottom"
 	
-	for (let {lineIndex, rowIndex} of rows) {
-		if (rowIndex === 0) {
+	return {
+		endRow() {
+			y += rowHeight;
+		},
+		
+		drawLineNumber(lineIndex) {
 			let lineNumber = String(lineIndex + 1);
 			let x = marginWidth - marginStyle.paddingRight - lineNumber.length * colWidth;
 			
 			context.fillStyle = lineNumberColor;
 			context.fillText(lineNumber, x, y);
-		}
-		
-		y += rowHeight;
-	}
+		},
+	};
 }

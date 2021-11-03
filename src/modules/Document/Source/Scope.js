@@ -219,19 +219,6 @@ module.exports = class Scope {
 		}
 	}
 	
-	*generateRenderHints(node) {
-		if (node.type === "ERROR") {
-			yield {
-				lang: this.lang,
-				node,
-			};
-			
-			return;
-		}
-		
-		yield* this.lang.generateRenderHints(node);
-	}
-	
 	findFirstNodeToRender(lineIndex) {
 		if (!this.tree) {
 			return {};
@@ -257,6 +244,24 @@ module.exports = class Scope {
 		}
 		
 		let node = findFirstNodeOnLine(this.tree.rootNode, lineIndex);
+		
+		if (!node) {
+			return {};
+		}
+		
+		return {
+			scope: this,
+			range: this.findContainingRange(node),
+			node,
+		};
+	}
+	
+	findFirstNodeOnOrAfterCursor(cursor) {
+		if (!this.tree) {
+			return {};
+		}
+		
+		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
 		
 		if (!node) {
 			return {};

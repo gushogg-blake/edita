@@ -4,7 +4,6 @@ let Cursor = require("modules/utils/Cursor");
 let Scope = require("./Scope");
 let Range = require("./Range");
 let Line = require("./Line");
-let generateRenderCommandsForLine = require("./generateRenderCommandsForLine");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -74,49 +73,29 @@ module.exports = class {
 		return this.rootScope.findFirstNodeToRender(lineIndex);
 	}
 	
-	getDecoratedLines(startLineIndex, endLineIndex) {
-		let lines = this.lines.slice(startLineIndex, endLineIndex).map((line) => {
-			return {
-				line,
-				renderHints: [],
+	findFirstNodeOnOrAfterCursor(cursor) {
+		if (!this.rootScope) {
+			return {};
+		}
+		
+		return this.rootScope.findFirstNodeOnOrAfterCursor(cursor);
+	}
+	
+	*generateNodesFromCursorWithLang(cursor) {
+		if (!this.rootScope) {
+			return;
+		}
+		
+		let {scope, range, node} = this.findFirstNodeOnOrAfterCursor(cursor);
+		
+		while (node) {
+			yield {
+				node,
+				lang: scope.lang,
 			};
-		});
-		
-		if (this.rootScope) {
-			let {scope, range, node} = this.findFirstNodeToRender(startLineIndex);
 			
-			while (node && node.startPosition.row < endLineIndex) {
-				if (node.startPosition.row >= startLineIndex) {
-					let line = lines[node.startPosition.row - startLineIndex];
-					
-					line.renderHints.push(...scope.generateRenderHints(node));
-				}
-				
-				({scope, range, node} = scope.next(node, range));
-			}
+			({scope, range, node} = scope.next(node, range));
 		}
-		
-		for (let line of lines) {
-			line.renderCommands = [...generateRenderCommandsForLine(line.line, line.renderHints)];
-		}
-		
-		return lines;
-	}
-	
-	getNodesOnLine(lineIndex) {
-		if (!this.rootScope) {
-			return [];
-		}
-		
-		return [...this.rootScope.generateNodesOnLine(lineIndex)];
-	}
-	
-	getNodesOnLineWithLang(lineIndex) {
-		if (!this.rootScope) {
-			return [];
-		}
-		
-		return [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
 	}
 	
 	*generateNodesOnLine(lineIndex) {
@@ -132,11 +111,7 @@ module.exports = class {
 			return;
 		}
 		
-		let {
-			scope,
-			range,
-			node,
-		} = this.rootScope.findFirstNodeOnLine(lineIndex);
+		let {scope, range, node} = this.rootScope.findFirstNodeOnLine(lineIndex);
 		
 		while (node && node.startPosition.row === lineIndex) {
 			yield {
@@ -144,11 +119,22 @@ module.exports = class {
 				lang: scope.lang,
 			};
 			
-			({
-				scope,
-				range,
-				node,
-			} = scope.next(node, range));
+			({scope, range, node} = scope.next(node, range));
+		}
+	}
+	
+	*generateRenderHintsFromCursor(cursor) {
+		for (let {node, lang} of this.generateNodesFromCursorWithLang(cursor)) {
+			if (node.type === "ERROR") {
+				yield {
+					lang,
+					node,
+				};
+				
+				continue;
+			}
+			
+			yield* lang.generateRenderHints(node);
 		}
 	}
 	

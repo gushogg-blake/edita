@@ -9,7 +9,7 @@ let SelectionUtils = require("./utils/Selection");
 let AstSelectionUtils = require("./utils/AstSelection");
 let wrapLine = require("./utils/wrapLine");
 let canvasUtils = require("./utils/canvasUtils");
-let generateRowsToRender = require("./generateRowsToRender");
+let renderCodeAndMargin = require("./renderCodeAndMargin");
 
 let {s: a} = AstSelection;
 let {c} = Cursor;
@@ -23,6 +23,7 @@ class View extends Evented {
 		this.AstSelection = bindFunctions(this, AstSelectionUtils);
 		
 		Object.assign(this, canvasUtils);
+		Object.assign(this, renderCodeAndMargin);
 		
 		this.document = document;
 		
@@ -83,27 +84,6 @@ class View extends Evented {
 		this.updateWrappedLines();
 		
 		this.blur = this.blur.bind(this);
-	}
-	
-	findInitialColourHint() {
-		// NOTE perf - findFirstVisibleLine and findFirstNodeToRender are also
-		// called in getDecoratedLines
-		
-		let {lineIndex} = this.findFirstVisibleLine();
-		let {scope, node} = this.document.findFirstNodeToRender(lineIndex);
-		
-		if (!node) {
-			return null;
-		}
-		
-		return {
-			lang: scope.lang,
-			node,
-		};
-	}
-	
-	generateRowsToRender() {
-		return generateRowsToRender.call(this);
 	}
 	
 	updateWrappedLines() {

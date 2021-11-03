@@ -232,11 +232,11 @@ class Document extends BaseDocument {
 	}
 	
 	getNodesOnLine(lineIndex) {
-		return this.source.getNodesOnLine(lineIndex);
+		return [...this.source.generateNodesOnLine(lineIndex)];
 	}
 	
 	getNodesOnLineWithLang(lineIndex) {
-		return this.source.getNodesOnLineWithLang(lineIndex);
+		return [...this.source.generateNodesOnLineWithLang(lineIndex)];
 	}
 	
 	generateNodesOnLine(lineIndex) {
@@ -245,6 +245,10 @@ class Document extends BaseDocument {
 	
 	generateNodesOnLineWithLang(lineIndex) {
 		return this.source.generateNodesOnLineWithLang(lineIndex);
+	}
+	
+	generateRenderHintsFromCursor(cursor) {
+		return this.source.generateRenderHintsFromCursor(cursor);
 	}
 	
 	getHeadersOnLine(lineIndex) {
