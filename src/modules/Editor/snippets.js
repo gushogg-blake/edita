@@ -29,13 +29,15 @@ function getContextFromPositions(document, positions) {
 }
 
 function getCurrentValue(document, position) {
-	return document.getSelectedText(position.selection);
+	let {selection} = position;
+	
+	return selection ? document.getSelectedText(selection) : "";
 }
 
 function isActiveTabstop(position) {
-	let {placeholder, selection} = position;
+	let {selection, placeholder} = position;
 	
-	return placeholder.type === "tabstop" && selection;
+	return selection && placeholder.type === "tabstop";
 }
 
 function sessionFromPositions(positions, tabstops, firstTabstopIndex) {
@@ -163,9 +165,9 @@ let api = {
 		
 		for (let i = 0; i < positions.length; i++) {
 			let position = positions[i];
-			let {placeholder} = position;
+			let {selection, placeholder} = position;
 			
-			if (placeholder.type !== "expression") {
+			if (!selection || placeholder.type !== "expression") {
 				continue;
 			}
 			
@@ -181,7 +183,7 @@ let api = {
 				for (let j = i + 1; j < positions.length; j++) {
 					let laterPosition = positions[j];
 					
-					laterPosition.selection = Selection.adjustForEarlierEdit(laterPosition.selection, edit.selection, edit.newSelection);
+					laterPosition.selection = laterPosition.selection && Selection.adjustForEarlierEdit(laterPosition.selection, edit.selection, edit.newSelection);
 				}
 			}
 		}
@@ -215,9 +217,9 @@ let api = {
 			index++;
 			
 			let position = positions[index];
-			let {placeholder, selection} = position;
+			let {selection, placeholder} = position;
 			
-			if (placeholder.type === "tabstop" && selection) {
+			if (selection && placeholder.type === "tabstop") {
 				return {
 					position,
 					session: {index, positions},
