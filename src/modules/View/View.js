@@ -43,7 +43,9 @@ class View extends Evented {
 		
 		this.updateAstSelectionFromNormalSelection();
 		
-		this.folds = {};
+		this.folds = {
+			18: 30,
+		};
 		
 		this.pickOptions = [];
 		this.dropTargets = [];

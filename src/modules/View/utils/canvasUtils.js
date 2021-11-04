@@ -99,25 +99,32 @@ module.exports = {
 	},
 	
 	cursorFromRowCol(row, col, beforeTab=false) {
-		let lineIndex = 0;
-		let offset = 0;
-		let r = 0;
+		let rowsCounted = 0;
+		let foldedRow;
 		
-		for (let i = 0; i < this.wrappedLines.length - 1; i++) {
-			let {height} = this.wrappedLines[i];
+		for (let _row of this.generateRowsFolded()) {
+			foldedRow = _row;
 			
-			if (r + height > row) {
+			if (rowsCounted === row) {
 				break;
 			}
 			
-			r += height;
-			lineIndex++;
+			rowsCounted++;
 		}
+		
+		console.log(foldedRow);
+		
+		let {
+			lineIndex,
+			wrappedLine,
+			rowIndexInLine,
+		} = foldedRow;
 		
 		lineIndex = Math.min(lineIndex, this.wrappedLines.length - 1);
 		
-		let wrappedLine = this.wrappedLines[lineIndex];
-		let lineRowIndex = row - r;
+		let lineRowIndex = row - rowsCounted;
+		
+		console.log(lineRowIndex);
 		
 		if (lineRowIndex > wrappedLine.height - 1) { // mouse is below text
 			return {
@@ -126,14 +133,9 @@ module.exports = {
 			};
 		}
 		
-		let i = 0;
+		let offset = foldedRow.row.startOffset;
 		
-		while (i < lineRowIndex) {
-			offset += wrappedLine.rows[i].string.length;
-			i++;
-		}
-		
-		if (lineRowIndex > 0) {
+		if (rowIndexInLine > 0) {
 			col -= wrappedLine.line.indentCols;
 			
 			if (col < 0) {
@@ -145,9 +147,7 @@ module.exports = {
 		
 		let c = 0;
 		
-		let {variableWidthParts} = wrappedLine.rows[lineRowIndex];
-		
-		for (let part of variableWidthParts) {
+		for (let part of foldedRow.row.variableWidthParts) {
 			if (c === col) {
 				break;
 			}
@@ -407,8 +407,12 @@ module.exports = {
 		let {lineIndex, offset} = cursor;
 		let row = 0;
 		
-		for (let i = 0; i < lineIndex; i++) {
-			row += this.wrappedLines[i].height;
+		for (let foldedRow of this.generateRowsFolded()) {
+			if (foldedRow.lineIndex === lineIndex) {
+				break;
+			}
+			
+			row++;
 		}
 		
 		let wrappedLine = this.wrappedLines[lineIndex];
