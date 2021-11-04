@@ -71,45 +71,23 @@ module.exports = {
 		
 		//console.log(firstLineIndex, offsetInLine);
 		//console.log(row.rowIndexInLine);
-		console.log(hint);
-		console.log(variableWidthPart);
-		console.log(row);
+		//console.log(hint);
+		//console.log(variableWidthPart);
+		//console.log(row);
 		
 		if (row.rowIndexInLine === 0) {
 			renderMargin.drawLineNumber(row.lineIndex);
 		}
 		
+		renderCode.startRow(row.rowIndexInLine === 0 ? 0 : row.line.indentCols);
+		
+		let i = 0;
+		
 		while (true) {
-			break;
-			if (!variableWidthPart) {
-				break;
-			}
-			
-			if (hint && nodeGetters.startPosition(hint.node).row < row.lineIndex) {
-				hintGenerator = document.generateRenderHintsFromCursor(c(row.lineIndex, offsetInLine));
-			}
-			
-			while (hint && getOffset(hint) === offsetInLine) {
-				renderCode.setColour(hint);
-				
-				hint = hintGenerator.next().value;
-			}
-			
-			if (variableWidthPart.type === "tab") {
-				renderCode.drawTab(variableWidthPart.width);
-				
-				offsetInLine++;
-				variableWidthPart = variableWidthPartGenerator.next().value;
-			} else if (variableWidthPart.type === "string") {
-				let {string} = variableWidthPart;
-				
-				let renderTo = hint ? getOffset(hint) : row.line.string.length;
-				let renderLength = Math.min(string.length, renderTo - offsetInLine);
-				
-				
-			}
-			
-			
+			//break;
+			//if (!variableWidthPart) {
+			//	break;
+			//}
 			
 			if (!variableWidthPart) {
 				renderCode.endRow();
@@ -127,11 +105,68 @@ module.exports = {
 					break;
 				}
 				
+				variableWidthPartGenerator = this.generateVariableWidthParts(row.row);
+				variableWidthPart = variableWidthPartGenerator.next().value;
+				offsetInRow = 0;
+				
+				if (row.rowIndexInLine === 0) {
+					offsetInLine = 0;
+				}
+				
 				renderCode.startRow(row.rowIndexInLine === 0 ? 0 : row.line.indentCols);
 				
 				if (row.rowIndexInLine === 0) {
 					renderMargin.drawLineNumber(row.lineIndex);
 				}
+				
+				continue;
+			}
+			
+			if (hint && nodeGetters.startPosition(hint.node).row < row.lineIndex) {
+				hintGenerator = document.generateRenderHintsFromCursor(c(row.lineIndex, offsetInLine));
+				hint = hintGenerator.next().value;
+			}
+			
+			while (hint && nodeGetters.startPosition(hint.node).row === row.lineIndex && getOffset(hint) === offsetInLine) {
+				renderCode.setColour(hint);
+				
+				hint = hintGenerator.next().value;
+			}
+			
+			if (variableWidthPart.type === "tab") {
+				renderCode.drawTab(variableWidthPart.width);
+				
+				offsetInLine++;
+				offsetInRow++;
+				variableWidthPart = variableWidthPartGenerator.next().value;
+			} else if (variableWidthPart.type === "string") {
+				let {string, offsetInRow: stringOffsetInRow} = variableWidthPart;
+				
+				let nextHintOffsetInRowOrEnd = (
+					hint && nodeGetters.startPosition(hint.node).row === row.lineIndex
+					? getOffset(hint) - row.row.startOffset
+					: row.row.string.length
+				);
+				
+				let renderFrom = offsetInRow - stringOffsetInRow;
+				let renderTo = Math.min(string.length, nextHintOffsetInRowOrEnd - stringOffsetInRow);
+				let length = renderTo - renderFrom;
+				
+				renderCode.drawText(string.substring(renderFrom, renderTo));
+				
+				offsetInLine += length;
+				offsetInRow += length;
+				
+				if (renderTo === string.length) {
+					variableWidthPart = variableWidthPartGenerator.next().value;
+				}
+			}
+			
+			i++;
+			
+			if (i > 10000) {
+				console.log("??");
+				break;
 			}
 		}
 	},

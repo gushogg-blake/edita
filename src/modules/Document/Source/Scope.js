@@ -257,14 +257,14 @@ module.exports = class Scope {
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
-		if (!this.tree) {
-			return {};
-		}
-		
-		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
+		let node = this.tree && findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
 		
 		if (!node) {
-			return {};
+			if (this.parent) {
+				return this.parent.findFirstNodeOnOrAfterCursor(cursor);
+			} else {
+				return {};
+			}
 		}
 		
 		return {
