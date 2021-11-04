@@ -111,16 +111,7 @@ module.exports = class {
 			return;
 		}
 		
-		let {scope, range, node} = this.rootScope.findFirstNodeOnLine(lineIndex);
-		
-		while (node && node.startPosition.row === lineIndex) {
-			yield {
-				node,
-				lang: scope.lang,
-			};
-			
-			({scope, range, node} = scope.next(node, range));
-		}
+		yield* this.rootScope.generateNodesOnLineWithLang(lineIndex);
 	}
 	
 	*generateRenderHintsFromCursor(cursor) {
