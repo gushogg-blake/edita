@@ -49,7 +49,7 @@ module.exports = {
 		
 		let {height} = sizes;
 		let {rowHeight} = measurements;
-		let rowsToRender = Math.ceil(height / rowHeight);
+		let rowsToRender = Math.ceil(height / rowHeight) + 1;
 		let rowsRendered = 0;
 		
 		let foldedLineRowGenerator = this.generateLineRowsFolded(firstLineIndex);
