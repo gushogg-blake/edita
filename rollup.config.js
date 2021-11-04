@@ -61,6 +61,8 @@ function electronPlugins() {
 		...commonPlugins("electron"),
 		
 		commonjs({
+			requireReturnsDefault: "preferred",
+			
 			ignore: [
 				"os",
 				"fs",
@@ -85,6 +87,16 @@ function electronPlugins() {
 		}),
 		
 		builtins(),
+	];
+}
+
+function webPlugins() {
+	return [
+		...commonPlugins("web"),
+		
+		commonjs({
+			requireReturnsDefault: "preferred",
+		}),
 	];
 }
 
@@ -178,8 +190,7 @@ if (!platform || platform === "all" || platform === "web") {
 		},
 		
 		plugins: [
-			...commonPlugins("web"),
-			commonjs(),
+			...webPlugins(),
 			dev && livereload("src/platforms/web/public"),
 			prod && terser(),
 		],
@@ -197,8 +208,7 @@ if (!platform || platform === "all" || platform === "test") {
 		},
 		
 		plugins: [
-			...commonPlugins("web"),
-			commonjs(),
+			...webPlugins(),
 			
 			copy({
 				targets: [
@@ -224,8 +234,7 @@ if (!platform || platform === "all" || platform === "test") {
 		
 		plugins: [
 			multi(),
-			...commonPlugins("web"),
-			commonjs(),
+			...webPlugins(),
 		],
 	});
 }
