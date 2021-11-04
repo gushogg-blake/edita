@@ -17,7 +17,7 @@ module.exports = {
 		let lineStartingRow = this.getLineStartingRow(start.lineIndex);
 		let lineRowIndex = startRow - lineStartingRow;
 		
-		for (let i = start.lineIndex; i <= end.lineIndex; i++) {
+		lines: for (let i = start.lineIndex; i <= end.lineIndex; i++) {
 			let wrappedLine = this.wrappedLines[i];
 			let {line} = wrappedLine;
 			
@@ -57,7 +57,7 @@ module.exports = {
 					
 					let [x, y] = this.screenCoordsFromRowCol(startRow, startCol);
 					
-					let width = wrappedLine.rows[j].width - startCol + (i < end.lineIndex && j === wrappedLine.rows.length - 1 ? 1 : 0);
+					let width = wrappedLine.lineRows[j].width - startCol + (i < end.lineIndex && j === wrappedLine.lineRows.length - 1 ? 1 : 0);
 					
 					if (j > 0) {
 						width += line.indentCols;
@@ -72,7 +72,7 @@ module.exports = {
 					
 					let [x, y] = this.screenCoordsFromRowCol(row, 0);
 					
-					let width = wrappedLine.rows[j].width + (i < end.lineIndex && j === wrappedLine.rows.length - 1 ? 1 : 0);
+					let width = wrappedLine.lineRows[j].width + (i < end.lineIndex && j === wrappedLine.lineRows.length - 1 ? 1 : 0);
 					
 					if (j > 0) {
 						width += line.indentCols;
@@ -82,15 +82,24 @@ module.exports = {
 				}
 				
 				row++;
+				
+				if (this.folds[i]) {
+					i = this.folds[i] - 1;
+					
+					continue lines;
+				}
 			}
 		}
 		
 		return regions;
 	},
 	
-	countRows() {
+	countLineRowsFolded() {
 		let rows = 0;
 		
+		for (let lineRow of this.generateLineRowsFolded()) {
+			
+		}
 		for (let wrappedLine of this.wrappedLines) {
 			rows += wrappedLine.height;
 		}
@@ -100,11 +109,9 @@ module.exports = {
 	
 	cursorFromRowCol(row, col, beforeTab=false) {
 		let rowsCounted = 0;
-		let foldedRow;
+		let foldedLineRow;
 		
-		for (let _row of this.generateRowsFolded()) {
-			foldedRow = _row;
-			
+		for (foldedLineRow of this.generateLineRowsFolded()) {
 			if (rowsCounted === row) {
 				break;
 			}
@@ -112,28 +119,23 @@ module.exports = {
 			rowsCounted++;
 		}
 		
-		console.log(foldedRow);
-		
 		let {
+			lineRow,
 			lineIndex,
 			wrappedLine,
 			rowIndexInLine,
-		} = foldedRow;
+		} = foldedLineRow;
 		
 		lineIndex = Math.min(lineIndex, this.wrappedLines.length - 1);
 		
-		let lineRowIndex = row - rowsCounted;
-		
-		console.log(lineRowIndex);
-		
-		if (lineRowIndex > wrappedLine.height - 1) { // mouse is below text
+		if (row - rowsCounted > 0) { // mouse is below text
 			return {
 				lineIndex,
 				offset: wrappedLine.line.string.length,
 			};
 		}
 		
-		let offset = foldedRow.row.startOffset;
+		let offset = lineRow.startOffset;
 		
 		if (rowIndexInLine > 0) {
 			col -= wrappedLine.line.indentCols;
@@ -147,7 +149,7 @@ module.exports = {
 		
 		let c = 0;
 		
-		for (let part of foldedRow.row.variableWidthParts) {
+		for (let part of lineRow.variableWidthParts) {
 			if (c === col) {
 				break;
 			}
@@ -193,7 +195,7 @@ module.exports = {
 		return cursorFromRowCol(...this.cursorRowColFromScreenCoords(x, y));
 	},
 	
-	*generateRowsFolded(startLineIndex=0) {
+	*generateLineRowsFolded(startLineIndex=0) {
 		let lineIndex = startLineIndex;
 		
 		while (lineIndex < this.wrappedLines.length) {
@@ -204,14 +206,14 @@ module.exports = {
 			
 			let rowIndexInLine = 0;
 			
-			for (let row of wrappedLine.rows) {
+			for (let lineRow of wrappedLine.lineRows) {
 				yield {
 					isFoldHeader,
 					lineIndex,
 					rowIndexInLine,
 					wrappedLine,
 					line,
-					row,
+					lineRow,
 				};
 				
 				rowIndexInLine++;
@@ -277,27 +279,6 @@ module.exports = {
 		return null;
 	},
 	
-	// returns the index to slice at (index of the last visible line + 1)
-	
-	findLastVisibleLineIndex(firstVisibleLine) {
-		let {height} = this.sizes;
-		let {rowHeight} = this.measurements;
-		let rowsToRender = Math.ceil(height / rowHeight);
-		let rowsRendered = this.wrappedLines[firstVisibleLine.lineIndex].height - firstVisibleLine.rowIndexInLine;
-		let lastVisibleLineIndex = firstVisibleLine.lineIndex + 1;
-		
-		for (let {lineIndex, wrappedLine} of this.generateWrappedLinesFolded(firstVisibleLine.lineIndex + 1)) {
-			if (rowsRendered >= rowsToRender) {
-				break;
-			}
-			
-			rowsRendered += wrappedLine.height;
-			lastVisibleLineIndex = lineIndex + 1;
-		}
-		
-		return lastVisibleLineIndex;
-	},
-	
 	getLineRangeTotalHeight(startLineIndex, endLineIndex) {
 		let height = 0;
 		
@@ -308,7 +289,7 @@ module.exports = {
 		return height;
 	},
 	
-	getLineStartingRow(lineIndex) {
+	getLineStartingRow(lineIndex) { // TODO use generateLineRowsFolded
 		let startingRow = 0;
 		
 		for (let i = 0; i < this.wrappedLines.length; i++) {
@@ -322,31 +303,30 @@ module.exports = {
 		return startingRow;
 	},
 	
-	innerLineIndexAndOffsetFromCursor(cursor) {
+	lineRowIndexAndOffsetFromCursor(cursor) {
 		let {lineIndex, offset} = cursor;
 		let wrappedLine = this.wrappedLines[lineIndex];
-		let innerLineIndex = 0;
-		let lineRow;
-		let innerLineOffset = offset;
+		let lineRowIndex = 0;
+		let offsetInRow = offset;
 		
 		for (let i = 0; i < wrappedLine.height; i++) {
-			lineRow = wrappedLine.rows[i];
+			let lineRow = wrappedLine.lineRows[i];
 			
 			if (wrappedLine.height > 1 && i !== wrappedLine.height - 1) {
-				if (innerLineOffset < lineRow.string.length) {
+				if (offsetInRow < lineRow.string.length) {
 					break;
 				}
 			} else {
-				if (innerLineOffset <= lineRow.string.length) {
+				if (offsetInRow <= lineRow.string.length) {
 					break;
 				}
 			}
 			
-			innerLineIndex++;
-			innerLineOffset -= lineRow.string.length;
+			lineRowIndex++;
+			offsetInRow -= lineRow.string.length;
 		}
 		
-		return [innerLineIndex, innerLineOffset];
+		return [lineRowIndex, offsetInRow];
 	},
 	
 	insertLineIndexFromScreenY(y) {
@@ -407,8 +387,8 @@ module.exports = {
 		let {lineIndex, offset} = cursor;
 		let row = 0;
 		
-		for (let foldedRow of this.generateRowsFolded()) {
-			if (foldedRow.lineIndex === lineIndex) {
+		for (let foldedLineRow of this.generateLineRowsFolded()) {
+			if (foldedLineRow.lineIndex === lineIndex) {
 				break;
 			}
 			
@@ -422,7 +402,7 @@ module.exports = {
 		let innerOffset = offset;
 		
 		for (let i = 0; i < wrappedLine.height; i++) {
-			lineRow = wrappedLine.rows[i];
+			lineRow = wrappedLine.lineRows[i];
 			
 			/*
 			if we're at the end of a line that ends in a soft wrap, go to the next row

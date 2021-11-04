@@ -416,7 +416,7 @@ function updateVerticalScrollbar() {
 		},
 	} = view;
 	
-	let rows = view.countRows();
+	let rows = view.countLineRowsFolded();
 	
 	let scrollHeight = (rows - 1) * rowHeight + height;
 	let scrollTop = scrollPosition.y;
@@ -457,7 +457,7 @@ function verticalScroll({detail: position}) {
 	let {rowHeight} = view.measurements;
 	let {height} = view.sizes;
 	
-	let rows = view.countRows();
+	let rows = view.countLineRowsFolded();
 	let scrollHeight = (rows - 1) * rowHeight + height;
 	let scrollMax = scrollHeight - height;
 	

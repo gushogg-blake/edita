@@ -41,7 +41,7 @@ class LineWrapper {
 		return {
 			line,
 			height: 1,
-			rows: [
+			lineRows: [
 				{
 					startOffset: 0,
 					string,
@@ -53,7 +53,7 @@ class LineWrapper {
 	}
 	
 	init() {
-		this.rows = [{
+		this.lineRows = [{
 			startOffset: 0,
 			string: "",
 			width: 0,
@@ -68,7 +68,7 @@ class LineWrapper {
 	nextRow() {
 		let {startOffset} = this;
 		
-		this.rows.push({
+		this.lineRows.push({
 			startOffset,
 			string: "",
 			width: 0,
@@ -79,28 +79,28 @@ class LineWrapper {
 		this.currentlyAvailableCols = this.availableCols;
 	}
 	
-	get currentRow() {
-		return this.rows[this.rows.length - 1];
+	get currentLineRow() {
+		return this.lineRows[this.lineRows.length - 1];
 	}
 	
 	addTabToCurrentRow(part) {
-		let row = this.currentRow;
+		let lineRow = this.currentLineRow;
 		
-		row.string += "\t";
-		row.width += part.width;
-		row.variableWidthParts.push(part);
+		lineRow.string += "\t";
+		lineRow.width += part.width;
+		lineRow.variableWidthParts.push(part);
 		
 		this.currentlyAvailableCols -= part.width;
 		this.startOffset++;
 	}
 	
-	addStringToCurrentRow(string) {
-		let row = this.currentRow;
+	addStringToCurrentLineRow(string) {
+		let lineRow = this.currentLineRow;
 		
-		row.string += string;
-		row.width += string.length;
+		lineRow.string += string;
+		lineRow.width += string.length;
 		
-		row.variableWidthParts.push({
+		lineRow.variableWidthParts.push({
 			type: "string",
 			string,
 		});
@@ -164,7 +164,7 @@ class LineWrapper {
 					}
 					
 					if (toEnd) {
-						this.addStringToCurrentRow(toEnd);
+						this.addStringToCurrentLineRow(toEnd);
 					}
 					
 					if (overflow) {
@@ -180,12 +180,12 @@ class LineWrapper {
 	}
 	
 	result() {
-		let {line, rows} = this;
+		let {line, lineRows} = this;
 		
 		return {
 			line,
-			height: rows.length,
-			rows,
+			height: lineRows.length,
+			lineRows,
 		};
 	}
 }

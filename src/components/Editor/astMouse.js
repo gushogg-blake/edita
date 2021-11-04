@@ -71,7 +71,7 @@ module.exports = function(app, document, editor, view, editorComponent) {
 		
 		let [row, col] = view.cursorRowColFromScreenCoords(x, y);
 		
-		if (row >= view.countRows()) {
+		if (row >= view.countLineRowsFolded()) {
 			return null;
 		}
 		

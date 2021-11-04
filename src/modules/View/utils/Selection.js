@@ -50,7 +50,7 @@ module.exports = {
 		let {end} = sort(this.normalSelection);
 		let [endRow, endCol] = this.rowColFromCursor(end);
 		
-		if (endRow === this.countRows() - 1) {
+		if (endRow === this.countLineRowsFolded() - 1) {
 			return s(c(end.lineIndex, this.lines[end.lineIndex].string.length));
 		}
 		
@@ -117,7 +117,7 @@ module.exports = {
 		
 		let [endRow, endCol] = this.rowColFromCursor(end);
 		
-		let row = Math.min(endRow + rows, this.countRows() - 1);
+		let row = Math.min(endRow + rows, this.countLineRowsFolded() - 1);
 		let col = this.selectionEndCol;
 		
 		return s(this.cursorFromRowCol(row, col));
@@ -130,11 +130,11 @@ module.exports = {
 		let [row, col] = this.rowColFromCursor(start);
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [innerLineIndex, innerLineOffset] = this.innerLineIndexAndOffsetFromCursor(start);
+		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(start);
 		let {indentCols} = line;
 		
-		if (wrappedLine.height > 1 && innerLineIndex > 0) {
-			if (innerLineOffset === 0) {
+		if (wrappedLine.height > 1 && lineRowIndex > 0) {
+			if (offsetInRow === 0) {
 				let startingRow = this.getLineStartingRow(lineIndex);
 				
 				return s(this.cursorFromRowCol(startingRow, indentCols));
@@ -156,15 +156,15 @@ module.exports = {
 		let {lineIndex, offset} = end;
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [innerLineIndex, innerLineOffset] = this.innerLineIndexAndOffsetFromCursor(end);
+		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(end);
 		
-		if (wrappedLine.height > 1 && innerLineIndex < wrappedLine.height - 1) {
-			let lineRow = wrappedLine.rows[innerLineIndex];
+		if (wrappedLine.height > 1 && lineRowIndex < wrappedLine.height - 1) {
+			let lineRow = wrappedLine.lineRows[lineRowIndex];
 			
-			if (innerLineOffset === lineRow.string.length - 1) {
+			if (offsetInRow === lineRow.string.length - 1) {
 				return s(c(lineIndex, line.string.length));
 			} else {
-				return s(c(lineIndex, offset + (lineRow.string.length - innerLineOffset) - 1));
+				return s(c(lineIndex, offset + (lineRow.string.length - offsetInRow) - 1));
 			}
 		} else {
 			return s(c(lineIndex, line.string.length));
@@ -221,7 +221,7 @@ module.exports = {
 		let {lineIndex} = end;
 		let [endRow, endCol] = this.rowColFromCursor(end);
 		
-		if (endRow === this.countRows() - 1) {
+		if (endRow === this.countLineRowsFolded() - 1) {
 			return s(start, c(lineIndex, wrappedLines[lineIndex].line.string.length));
 		}
 		
@@ -282,7 +282,7 @@ module.exports = {
 		let {start, end} = this.normalSelection;
 		let [endRow, endCol] = this.rowColFromCursor(end);
 		
-		let row = Math.min(endRow + rows, this.countRows() - 1);
+		let row = Math.min(endRow + rows, this.countLineRowsFolded() - 1);
 		let col = this.selectionEndCol;
 		
 		return s(start, this.cursorFromRowCol(row, col));
@@ -295,11 +295,11 @@ module.exports = {
 		let [row, col] = this.rowColFromCursor(end);
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [innerLineIndex, innerLineOffset] = this.innerLineIndexAndOffsetFromCursor(end);
+		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(end);
 		let {indentCols} = line;
 		
-		if (wrappedLine.height > 1 && innerLineIndex > 0) {
-			if (innerLineOffset === 0) {
+		if (wrappedLine.height > 1 && lineRowIndex > 0) {
+			if (offsetInRow === 0) {
 				let startingRow = this.getLineStartingRow(lineIndex);
 				
 				return s(start, this.cursorFromRowCol(startingRow, indentCols));
@@ -321,15 +321,15 @@ module.exports = {
 		let {lineIndex, offset} = end;
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [innerLineIndex, innerLineOffset] = this.innerLineIndexAndOffsetFromCursor(end);
+		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(end);
 		
-		if (wrappedLine.height > 1 && innerLineIndex < wrappedLine.height - 1) {
-			let lineRow = wrappedLine.rows[innerLineIndex];
+		if (wrappedLine.height > 1 && lineRowIndex < wrappedLine.height - 1) {
+			let lineRow = wrappedLine.lineRows[lineRowIndex];
 			
-			if (innerLineOffset === lineRow.string.length - 1) {
+			if (offsetInRow === lineRow.string.length - 1) {
 				return s(start, c(lineIndex, line.string.length));
 			} else {
-				return s(start, c(lineIndex, offset + (lineRow.string.length - innerLineOffset) - 1));
+				return s(start, c(lineIndex, offset + (lineRow.string.length - offsetInRow) - 1));
 			}
 		} else {
 			return s(start, c(lineIndex, line.string.length));

@@ -18,10 +18,10 @@ module.exports = {
 		yield* scope.lang.generateRenderHints(node);
 	},
 	
-	*generateVariableWidthParts(row) {
+	*generateVariableWidthParts(lineRow) {
 		let offsetInRow = 0;
 		
-		for (let part of row.variableWidthParts) {
+		for (let part of lineRow.variableWidthParts) {
 			yield {
 				...part,
 				offsetInRow,
@@ -52,43 +52,29 @@ module.exports = {
 		let rowsToRender = Math.ceil(height / rowHeight);
 		let rowsRendered = 0;
 		
-		let rowGenerator = this.generateRowsFolded(firstLineIndex);
-		let row = rowGenerator.next().value;
+		let foldedLineRowGenerator = this.generateLineRowsFolded(firstLineIndex);
+		let foldedLineRow = foldedLineRowGenerator.next().value;
 		
-		while (row && row.rowIndexInLine < firstLineRowIndex) {
-			row = rowGenerator.next().value;
+		while (foldedLineRow && foldedLineRow.rowIndexInLine < firstLineRowIndex) {
+			foldedLineRow = foldedLineRowGenerator.next().value;
 		}
 		
-		let offsetInLine = row.row.startOffset;
+		let offsetInLine = foldedLineRow.lineRow.startOffset;
 		let offsetInRow = 0;
 		
-		let variableWidthPartGenerator = this.generateVariableWidthParts(row.row);
+		let variableWidthPartGenerator = this.generateVariableWidthParts(foldedLineRow.lineRow);
 		let variableWidthPart = variableWidthPartGenerator.next().value;
 		
 		let hintGenerator = document.generateRenderHintsFromCursor(c(firstLineIndex, offsetInLine));
 		let hint = hintGenerator.next().value;
-		//let hintOffset = hint && getOffset(hint);
 		
-		//console.log(firstLineIndex, offsetInLine);
-		//console.log(row.rowIndexInLine);
-		//console.log(hint);
-		//console.log(variableWidthPart);
-		//console.log(row);
-		
-		if (row.rowIndexInLine === 0) {
-			renderMargin.drawLineNumber(row.lineIndex);
+		if (foldedLineRow.rowIndexInLine === 0) {
+			renderMargin.drawLineNumber(foldedLineRow.lineIndex);
 		}
 		
-		renderCode.startRow(row.rowIndexInLine === 0 ? 0 : row.line.indentCols);
-		
-		let i = 0;
+		renderCode.startRow(foldedLineRow.rowIndexInLine === 0 ? 0 : foldedLineRow.line.indentCols);
 		
 		while (true) {
-			//break;
-			//if (!variableWidthPart) {
-			//	break;
-			//}
-			
 			if (!variableWidthPart) {
 				renderCode.endRow();
 				renderMargin.endRow();
@@ -99,35 +85,35 @@ module.exports = {
 					break;
 				}
 				
-				row = rowGenerator.next().value;
+				foldedLineRow = foldedLineRowGenerator.next().value;
 				
-				if (!row) {
+				if (!foldedLineRow) {
 					break;
 				}
 				
-				variableWidthPartGenerator = this.generateVariableWidthParts(row.row);
+				variableWidthPartGenerator = this.generateVariableWidthParts(foldedLineRow.lineRow);
 				variableWidthPart = variableWidthPartGenerator.next().value;
 				offsetInRow = 0;
 				
-				if (row.rowIndexInLine === 0) {
+				if (foldedLineRow.rowIndexInLine === 0) {
 					offsetInLine = 0;
 				}
 				
-				renderCode.startRow(row.rowIndexInLine === 0 ? 0 : row.line.indentCols);
+				renderCode.startRow(foldedLineRow.rowIndexInLine === 0 ? 0 : foldedLineRow.line.indentCols);
 				
-				if (row.rowIndexInLine === 0) {
-					renderMargin.drawLineNumber(row.lineIndex);
+				if (foldedLineRow.rowIndexInLine === 0) {
+					renderMargin.drawLineNumber(foldedLineRow.lineIndex);
 				}
 				
 				continue;
 			}
 			
-			if (hint && nodeGetters.startPosition(hint.node).row < row.lineIndex) {
-				hintGenerator = document.generateRenderHintsFromCursor(c(row.lineIndex, offsetInLine));
+			if (hint && nodeGetters.startPosition(hint.node).row < foldedLineRow.lineIndex) {
+				hintGenerator = document.generateRenderHintsFromCursor(c(foldedLineRow.lineIndex, offsetInLine));
 				hint = hintGenerator.next().value;
 			}
 			
-			while (hint && nodeGetters.startPosition(hint.node).row === row.lineIndex && getOffset(hint) === offsetInLine) {
+			while (hint && nodeGetters.startPosition(hint.node).row === foldedLineRow.lineIndex && getOffset(hint) === offsetInLine) {
 				renderCode.setColour(hint);
 				
 				hint = hintGenerator.next().value;
@@ -143,9 +129,9 @@ module.exports = {
 				let {string, offsetInRow: stringOffsetInRow} = variableWidthPart;
 				
 				let nextHintOffsetInRowOrEnd = (
-					hint && nodeGetters.startPosition(hint.node).row === row.lineIndex
-					? getOffset(hint) - row.row.startOffset
-					: row.row.string.length
+					hint && nodeGetters.startPosition(hint.node).row === foldedLineRow.lineIndex
+					? getOffset(hint) - foldedLineRow.lineRow.startOffset
+					: foldedLineRow.lineRow.string.length
 				);
 				
 				let renderFrom = offsetInRow - stringOffsetInRow;
@@ -160,13 +146,6 @@ module.exports = {
 				if (renderTo === string.length) {
 					variableWidthPart = variableWidthPartGenerator.next().value;
 				}
-			}
-			
-			i++;
-			
-			if (i > 10000) {
-				console.log("??");
-				break;
 			}
 		}
 	},

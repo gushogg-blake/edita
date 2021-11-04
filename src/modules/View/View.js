@@ -262,7 +262,7 @@ class View extends Evented {
 			let newY = this.scrollPosition.y + y;
 			
 			newY = Math.max(0, newY);
-			newY = Math.min(newY, (this.countRows() - 1) * rowHeight);
+			newY = Math.min(newY, (this.countLineRowsFolded() - 1) * rowHeight);
 			
 			scrolled = newY !== this.scrollPosition.y;
 			
@@ -345,7 +345,7 @@ class View extends Evented {
 		let {lineIndex, offset} = end;
 		let [row, col] = this.rowColFromCursor(end);
 		
-		let maxRow = this.countRows() - 1;
+		let maxRow = this.countLineRowsFolded() - 1;
 		let firstVisibleRow = Math.floor(scrollPosition.y / rowHeight);
 		let firstFullyVisibleRow = Math.ceil(scrollPosition.y / rowHeight);
 		let lastFullyVisibleRow = firstVisibleRow + rows;
