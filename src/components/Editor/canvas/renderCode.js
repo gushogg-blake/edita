@@ -18,8 +18,9 @@ module.exports = function(layers, view) {
 	
 	let {
 		height,
-		marginWidth,
 		topMargin,
+		marginWidth,
+		marginOffset,
 		marginStyle,
 	} = sizes;
 	
@@ -35,12 +36,10 @@ module.exports = function(layers, view) {
 	let y = rowHeight + topMargin + rowOffset; // rowHeight added as using textBaseline="bottom"
 	
 	return {
-		initialColourHint(command) {
-			let {node, lang} = command;
+		setColour(hint) {
+			let {node, lang} = hint;
 			
-			if (node) {
-				context.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
-			}
+			context.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
 		},
 		
 		startRow(wrapIndent) {
@@ -51,22 +50,14 @@ module.exports = function(layers, view) {
 			y += rowHeight;
 		},
 		
-		draw(command) {
-			let {string, node, lang, width} = command;
+		drawTab(width) {
+			x += width * colWidth;
+		},
+		
+		drawText(string) {
+			context.fillText(string, x, y);
 			
-			if (!width) {
-				width = string?.length || 0;
-			}
-			
-			if (node) {
-				context.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
-			}
-			
-			if (string) {
-				context.fillText(string, x, y);
-				
-				x += width * colWidth;
-			}
+			x += string.length * colWidth;
 		},
 	};
 }

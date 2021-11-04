@@ -78,7 +78,7 @@ module.exports = class {
 			return {};
 		}
 		
-		return this.rootScope.findFirstNodeOnOrAfterCursor(cursor);
+		return this.scopeFromCursor(cursor).findFirstNodeOnOrAfterCursor(cursor);
 	}
 	
 	*generateNodesFromCursorWithLang(cursor) {

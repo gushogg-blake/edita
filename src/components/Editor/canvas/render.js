@@ -42,10 +42,10 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		renderAstInsertionHilite(layers, view, isPeekingAstMode);
 	}
 	
-	let rows = [...view.generateRowsToRender()];
+	let codeRenderer = renderCode(layers, view);
+	let marginRenderer = renderMargin(layers, view);
 	
-	renderCode(layers, view, rows);
-	renderMargin(layers, view, rows);
+	view.renderCodeAndMargin(codeRenderer, marginRenderer);
 	
 	if (platform.getPref("dev.timing.render")) {
 		console.timeEnd("render");
