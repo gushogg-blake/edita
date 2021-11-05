@@ -29,7 +29,7 @@ module.exports = function(layers, view, isPeeking) {
 	let {startLineIndex, endLineIndex} = hilite;
 	let startLine = wrappedLines[startLineIndex].line;
 	let startRow = view.getLineStartingRow(startLineIndex);
-	let height = (view.getLineRangeTotalHeight(startLineIndex, endLineIndex - 1)) * rowHeight;
+	let height = (view.getLineRangeTotalHeight(startLineIndex, endLineIndex)) * rowHeight;
 	
 	let [x, y] = view.screenCoordsFromRowCol(
 		startRow,

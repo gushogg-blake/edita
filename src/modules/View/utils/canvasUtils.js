@@ -282,25 +282,27 @@ module.exports = {
 	getLineRangeTotalHeight(startLineIndex, endLineIndex) {
 		let height = 0;
 		
-		for (let i = startLineIndex; i <= endLineIndex; i++) {
-			height += this.wrappedLines[i].height;
+		for (let foldedLineRow of this.generateLineRowsFolded(startLineIndex)) {
+			if (foldedLineRow.lineIndex >= endLineIndex) {
+				break;
+			}
+			
+			height++;
 		}
 		
 		return height;
 	},
 	
-	getLineStartingRow(lineIndex) { // TODO use generateLineRowsFolded
+	getLineStartingRow(lineIndex) {
 		let startingRow = 0;
 		
-		for (let i = 0; i < this.wrappedLines.length; i++) {
-			if (i === lineIndex) {
-				break;
+		for (let foldedLineRow of this.generateLineRowsFolded()) {
+			if (foldedLineRow.lineIndex === lineIndex) {
+				return startingRow;
 			}
 			
-			startingRow += this.wrappedLines[i].height;
+			startingRow++;
 		}
-		
-		return startingRow;
 	},
 	
 	lineRowIndexAndOffsetFromCursor(cursor) {
