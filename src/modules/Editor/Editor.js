@@ -363,10 +363,8 @@ class Editor extends Evented {
 		
 		if (fnName) {
 			flags = await this.normalKeyboard[fnName]();
-		} else if (!isModified && key.length === 1) {
-			flags = this.normalKeyboard.insert(key);
 		} else {
-			return;
+			flags = this.normalKeyboard.insert(key);
 		}
 		
 		flags = flags || [];
@@ -389,10 +387,6 @@ class Editor extends Evented {
 	async astKeydown(keyCombo) {
 		let fnName = platform.prefs.astKeymap[keyCombo];
 		
-		if (!fnName) {
-			return;
-		}
-		
 		await this.astKeyboard[fnName]();
 		
 		this.view.ensureSelectionIsOnScreen();
@@ -401,10 +395,6 @@ class Editor extends Evented {
 	
 	async commonKeydown(keyCombo) {
 		let fnName = platform.prefs.commonKeymap[keyCombo];
-		
-		if (!fnName) {
-			return;
-		}
 		
 		let flags = await this.commonKeyboard[fnName]() || [];
 		

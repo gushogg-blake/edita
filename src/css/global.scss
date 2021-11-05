@@ -39,6 +39,8 @@
 		&::-webkit-scrollbar-thumb {
 			width: var(--scrollbarThumbWidth);
 			height: var(--scrollbarThumbWidth);
+			min-width: 40px;
+			min-height: 40px;
 			border-radius: 8px;
 			border: var(--scrollbarPadding) solid var(--scrollbarBackgroundColor);
 			background-clip: content-box;
