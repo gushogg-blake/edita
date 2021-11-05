@@ -12,8 +12,9 @@ module.exports = function(systemInfo) {
 		selectionBackground: "#d0d0d0",
 		hiliteBackground: "#fdee20",
 		astSelectionBackground: "#dfdfdf",
-		astSelectionHiliteBackground: "#F2F2F2",
+		astSelectionHiliteBackground: "#f2f2f2",
 		astInsertionHiliteBackground: "#606060",
+		foldHeaderBackground: "#f2f2f2",
 		
 		wrap: false,
 		

@@ -3,11 +3,12 @@ let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 
 let {c} = Cursor;
 
-class Render {
-	constructor(view, renderCode, renderMargin) {
+class Renderer {
+	constructor(view, renderCode, renderMargin, renderFoldHilites) {
 		this.view = view;
 		this.renderCode = renderCode;
 		this.renderMargin = renderMargin;
+		this.renderFoldHilites = renderFoldHilites;
 		
 		this.nodeWithLang = null;
 		this.lineIndex = null;
@@ -90,11 +91,24 @@ class Render {
 		this.renderCode.setColour(colors[hiliteClass]);
 	}
 	
+	startRow() {
+		this.renderCode.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
+		
+		if (this.foldedLineRow.isFoldHeader) {
+			this.renderFoldHilites.drawHilite(this.line.indentCols);
+		}
+		
+		if (this.rowIndexInLine === 0) {
+			this.renderMargin.drawLineNumber(this.lineIndex);
+		}
+	}
+	
 	render() {
 		let {
 			view,
 			renderCode,
 			renderMargin,
+			renderFoldHilites,
 		} = this;
 		
 		let {
@@ -128,16 +142,13 @@ class Render {
 		this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.cursor);
 		this.nextNode();
 		
-		if (this.rowIndexInLine === 0) {
-			renderMargin.drawLineNumber(this.lineIndex);
-		}
-		
-		renderCode.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
+		this.startRow();
 		
 		while (true) {
 			if (!this.variableWidthPart) {
 				renderCode.endRow();
 				renderMargin.endRow();
+				renderFoldHilites.endRow();
 				
 				rowsRendered++;
 				
@@ -160,11 +171,7 @@ class Render {
 					this.offset = 0;
 				}
 				
-				renderCode.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
-				
-				if (this.rowIndexInLine === 0) {
-					renderMargin.drawLineNumber(this.lineIndex);
-				}
+				this.startRow();
 				
 				continue;
 			}
@@ -212,8 +219,8 @@ class Render {
 	}
 }
 
-module.exports = function(view, renderCode, renderMargin) {
-	let render = new Render(view, renderCode, renderMargin);
+module.exports = function(...args) {
+	let renderer = new Renderer(...args);
 	
-	render.render();
+	renderer.render();
 }

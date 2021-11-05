@@ -676,6 +676,9 @@ canvas {
 		bind:this={canvasDiv}
 	>
 		<div class="layer">
+			<canvas bind:this={canvases.foldHilites}/>
+		</div>
+		<div class="layer">
 			<canvas bind:this={canvases.hilites}/>
 		</div>
 		<div class="layer">

@@ -6,6 +6,7 @@ let renderAstInsertionHilite = require("./renderAstInsertionHilite");
 let renderNormalHilites = require("./renderNormalHilites");
 let renderCode = require("./renderCode");
 let renderMargin = require("./renderMargin");
+let renderFoldHilites = require("./renderFoldHilites");
 let renderNormalCursor = require("./renderNormalCursor");
 let renderInsertCursor = require("./renderInsertCursor");
 
@@ -44,8 +45,9 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	
 	let codeRenderer = renderCode(layers, view);
 	let marginRenderer = renderMargin(layers, view);
+	let foldHiliteRenderer = renderFoldHilites(layers, view);
 	
-	view.renderCodeAndMargin(codeRenderer, marginRenderer);
+	view.renderCodeAndMargin(codeRenderer, marginRenderer, foldHiliteRenderer);
 	
 	if (platform.getPref("dev.timing.render")) {
 		console.timeEnd("render");

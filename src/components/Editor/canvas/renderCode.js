@@ -17,11 +17,10 @@ module.exports = function(layers, view) {
 	} = measurements;
 	
 	let {
-		height,
+		codeWidth,
 		topMargin,
 		marginWidth,
 		marginOffset,
-		marginStyle,
 	} = sizes;
 	
 	let context = layers.code;
@@ -40,8 +39,8 @@ module.exports = function(layers, view) {
 			context.fillStyle = colour;
 		},
 		
-		startRow(wrapIndent) {
-			x = leftEdge + wrapIndent * colWidth;
+		startRow(wrapIndentCols) {
+			x = leftEdge + wrapIndentCols * colWidth;
 		},
 		
 		endRow() {
