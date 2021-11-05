@@ -23,7 +23,6 @@ class View extends Evented {
 		this.AstSelection = bindFunctions(this, AstSelectionUtils);
 		
 		Object.assign(this, canvasUtils);
-		Object.assign(this, renderCodeAndMargin);
 		
 		this.document = document;
 		
@@ -86,6 +85,10 @@ class View extends Evented {
 		this.updateWrappedLines();
 		
 		this.blur = this.blur.bind(this);
+	}
+	
+	renderCodeAndMargin(...args) {
+		return renderCodeAndMargin(this, ...args);
 	}
 	
 	updateWrappedLines() {

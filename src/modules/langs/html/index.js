@@ -41,56 +41,6 @@ module.exports = {
 		},
 	],
 	
-	*generateRenderHints(node) {
-		let {
-			type,
-			startPosition,
-			endPosition,
-			parent,
-			childCount,
-			text,
-		} = node;
-		
-		let canIncludeTabs = [
-			"comment",
-			"text",
-			"raw_text",
-			"quoted_attribute_value",
-		].includes(type);
-		
-		let colour = [
-			"comment",
-			"quoted_attribute_value",
-			"text",
-			"raw_text",
-		].includes(type);
-		
-		let renderAsText = [
-			"quoted_attribute_value",
-			"doctype",
-		].includes(parent?.type);
-		
-		if (colour) {
-			yield {
-				lang: this,
-				node,
-			};
-		}
-		
-		if (
-			!canIncludeTabs
-			&& !renderAsText
-			&& childCount === 0
-			&& startPosition.row === endPosition.row
-		) {
-			yield {
-				lang: this,
-				node,
-				string: text,
-			};
-		}
-	},
-	
 	isElementBlock(node) {
 		return (
 			[
@@ -130,7 +80,17 @@ module.exports = {
 	},
 	
 	getHiliteClass(node) {
-		let {type} = node;
+		let {
+			type,
+			parent,
+		} = node;
+		
+		if ([
+			"quoted_attribute_value",
+			"doctype",
+		].includes(parent?.type)) {
+			return null;
+		}
 		
 		if ([
 			"<",

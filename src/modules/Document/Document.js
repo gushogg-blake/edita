@@ -247,8 +247,8 @@ class Document extends BaseDocument {
 		return this.source.generateNodesOnLineWithLang(lineIndex);
 	}
 	
-	generateRenderHintsFromCursor(cursor) {
-		return this.source.generateRenderHintsFromCursor(cursor);
+	generateNodesFromCursorWithLang(cursor) {
+		return this.source.generateNodesFromCursorWithLang(cursor);
 	}
 	
 	getHeadersOnLine(lineIndex) {

@@ -114,21 +114,6 @@ module.exports = class {
 		yield* this.rootScope.generateNodesOnLineWithLang(lineIndex);
 	}
 	
-	*generateRenderHintsFromCursor(cursor) {
-		for (let {node, lang} of this.generateNodesFromCursorWithLang(cursor)) {
-			if (node.type === "ERROR") {
-				yield {
-					lang,
-					node,
-				};
-				
-				continue;
-			}
-			
-			yield* lang.generateRenderHints(node);
-		}
-	}
-	
 	getHeadersOnLine(lineIndex) {
 		if (!this.rootScope) {
 			return [];

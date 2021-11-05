@@ -11,20 +11,6 @@ module.exports = {
 	possibleInjections: ["javascript", "css"],
 	injections: [],
 	
-	*generateRenderHints(node) {
-		let {
-			type,
-			startPosition,
-			endPosition,
-			parent,
-			childCount,
-		} = node;
-		
-		let startOffset = startPosition.column;
-		
-		// TODO
-	},
-	
 	getHiliteClass(node) {
 		// TODO
 	},

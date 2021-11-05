@@ -11,87 +11,6 @@ let lang = {
 	astMode,
 	injections: [],
 	
-	*generateRenderHints(node) {
-		let {
-			type,
-			startPosition,
-			endPosition,
-			parent,
-			childCount,
-			text,
-		} = node;
-		
-		/*
-		if a node can contain tabs, we just set the hilite colour and then
-		render the contents as a string.
-		
-		this allows the tabs to be handled by the variableWidthParts logic
-		
-		having tabs in nodes in renderHints would break the logic, as the
-		nodes wouldn't line up with the variable width parts.
-		*/
-		
-		/*
-		canIncludeTabs/colour = these are separate because regexes are
-		composed of multiple parts.  the "regex" is the outermost node, so
-		we set the colour when we see that.  then there's a syntax node for
-		the opening /, then a regex_pattern for the actual pattern -- this
-		is the bit that can contain tabs.
-		*/
-		
-		let canIncludeTabs = [
-			"comment",
-			"string",
-			"template_string",
-			"regex_pattern",
-		].includes(type);
-		
-		let colour = [
-			"comment",
-			"string",
-			"template_string",
-			"regex",
-		].includes(type);
-		
-		let renderAsText = [
-			"string",
-			"template_string",
-			"regex",
-		].includes(parent?.type);
-		
-		if (colour) {
-			yield {
-				lang: this,
-				node,
-			};
-		}
-		
-		if (
-			!canIncludeTabs
-			&& !renderAsText
-			&& childCount === 0
-			&& startPosition.row === endPosition.row
-		) {
-			yield {
-				lang: this,
-				node,
-				string: text,
-			};
-			
-			/*
-			reset colour to string after template string interpolation
-			*/
-			
-			if (type === "}" && parent?.type === "template_substitution") {
-				yield {
-					lang: this,
-					node: parent.parent, // the template_string node, which is just used for selecting the colour
-					offset: endPosition.column,
-				};
-			}
-		}
-	},
-	
 	isBlock(node) {
 		return node.startPosition.row !== node.endPosition.row && [
 			"object",
@@ -152,7 +71,18 @@ let lang = {
 	},
 	
 	getHiliteClass(node) {
-		let {type} = node;
+		let {
+			type,
+			parent,
+		} = node;
+		
+		if ([
+			"string",
+			"template_string",
+			"regex",
+		].includes(parent?.type)) {
+			return null;
+		}
 		
 		if ([
 			"identifier",
@@ -178,6 +108,10 @@ let lang = {
 		
 		if (type === "regex") {
 			return "regex";
+		}
+		
+		if (type === "}" && parent?.type === "template_substitution") {
+			return "string";
 		}
 		
 		if ("(){}[]".includes(type) || type === "${") {

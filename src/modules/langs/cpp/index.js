@@ -14,56 +14,6 @@ module.exports = {
 	codeIntel,
 	injections: [],
 	
-	*generateRenderHints(node) {
-		let {
-			type,
-			startPosition,
-			endPosition,
-			parent,
-			childCount,
-			text,
-		} = node;
-		
-		let canIncludeTabs = [
-			"comment",
-			"string",
-		].includes(type);
-		
-		let colour = [
-			"comment",
-			"string",
-		].includes(type);
-		
-		let renderAsText = [
-			
-		].includes(parent?.type);
-		
-		if (!loggedTypes.includes(type)) {
-			console.log(type);
-			loggedTypes.push(type);
-		}
-		
-		if (colour) {
-			yield {
-				lang: this,
-				node,
-			};
-		}
-		
-		if (
-			!canIncludeTabs
-			&& !renderAsText
-			&& childCount === 0
-			&& startPosition.row === endPosition.row
-		) {
-			yield {
-				lang: this,
-				node,
-				string: text,
-			};
-		}
-	},
-	
 	isBlock(node) {
 		return node.startPosition.row !== node.endPosition.row && [
 			
@@ -99,7 +49,17 @@ module.exports = {
 	},
 	
 	getHiliteClass(node) {
-		let {type} = node;
+		let {
+			type,
+			parent,
+		} = node;
+		
+		if ([
+			"comment",
+			"string",
+		].includes(parent?.type)) {
+			return null;
+		}
 		
 		if ([
 			"identifier",

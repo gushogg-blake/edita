@@ -3,79 +3,139 @@ let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 
 let {c} = Cursor;
 
-function getOffset(hint) {
-	return ("offset" in hint) ? hint.offset : nodeGetters.startPosition(hint.node).column;
-}
-
-module.exports = {
-	*generateInitialColourHints(lineIndex) {
-		let {scope, node} = this.document.findFirstNodeToRender(lineIndex);
+class Render {
+	constructor(view, renderCode, renderMargin) {
+		this.view = view;
+		this.renderCode = renderCode;
+		this.renderMargin = renderMargin;
 		
-		if (!node) {
+		this.nodeWithLang = null;
+		this.lineIndex = null;
+		this.offset = null;
+		this.offsetInRow = 0;
+	}
+	
+	*generateVariableWidthParts() {
+		this.partOffsetInRow = 0;
+		
+		for (let part of this.foldedLineRow.lineRow.variableWidthParts) {
+			yield part;
+			
+			this.partOffsetInRow += part.type === "tab" ? 1 : part.string.length;
+		}
+	}
+	
+	get rowIndexInLine() {
+		return this.foldedLineRow?.rowIndexInLine;
+	}
+	
+	get line() {
+		return this.foldedLineRow?.line;
+	}
+	
+	get lineRow() {
+		return this.foldedLineRow?.lineRow;
+	}
+	
+	get cursor() {
+		return c(this.lineIndex, this.offset);
+	}
+	
+	get nodeLineIndex() {
+		return this.nodeWithLang && nodeGetters.startPosition(this.nodeWithLang.node).row;
+	}
+	
+	get nodeOffset() {
+		return this.nodeWithLang && nodeGetters.startPosition(this.nodeWithLang.node).column;
+	}
+	
+	nextFoldedLineRow() {
+		this.foldedLineRow = this.foldedLineRowGenerator.next().value;
+		this.lineIndex = this.foldedLineRow?.lineIndex;
+		this.offset = this.lineRow?.startOffset;
+	}
+	
+	nextVariableWidthPart() {
+		this.variableWidthPart = this.variableWidthPartGenerator.next().value;
+	}
+	
+	nextNode() {
+		this.nodeWithLang = this.nodeWithLangGenerator.next().value;
+	}
+	
+	nodeIsAtCursor() {
+		return this.nodeLineIndex === this.lineIndex && this.nodeOffset === this.offset;
+	}
+	
+	setStartingColour(lineIndex) {
+		let {scope, node} = this.view.document.findFirstNodeToRender(lineIndex);
+		
+		if (node) {
+			this.setColour(scope.lang, node);
+		}
+	}
+	
+	setColour(lang=null, node=null) {
+		if (!lang) {
+			({lang, node} = this.nodeWithLang);
+		}
+		
+		let {colors} = platform.prefs.langs[lang.code];
+		let hiliteClass = lang.getHiliteClass(node);
+		
+		if (!hiliteClass) {
 			return;
 		}
 		
-		yield* scope.lang.generateRenderHints(node);
-	},
+		this.renderCode.setColour(colors[hiliteClass]);
+	}
 	
-	*generateVariableWidthParts(lineRow) {
-		let offsetInRow = 0;
+	render() {
+		let {
+			view,
+			renderCode,
+			renderMargin,
+		} = this;
 		
-		for (let part of lineRow.variableWidthParts) {
-			yield {
-				...part,
-				offsetInRow,
-			};
-			
-			offsetInRow += part.type === "tab" ? 1 : part.string.length;
-		}
-	},
-	
-	renderCodeAndMargin(renderCode, renderMargin) {
 		let {
 			document,
 			measurements,
 			sizes,
-		} = this;
+		} = view;
 		
 		let {
 			lineIndex: firstLineIndex,
 			rowIndexInLine: firstLineRowIndex,
-		} = this.findFirstVisibleLine();
+		} = view.findFirstVisibleLine();
 		
-		for (let hint of this.generateInitialColourHints(firstLineIndex)) {
-			renderCode.setColour(hint);
-		}
+		this.setStartingColour(firstLineIndex);
 		
 		let {height} = sizes;
 		let {rowHeight} = measurements;
 		let rowsToRender = Math.ceil(height / rowHeight) + 1;
 		let rowsRendered = 0;
 		
-		let foldedLineRowGenerator = this.generateLineRowsFolded(firstLineIndex);
-		let foldedLineRow = foldedLineRowGenerator.next().value;
+		this.foldedLineRowGenerator = view.generateLineRowsFolded(firstLineIndex);
+		this.nextFoldedLineRow();
 		
-		while (foldedLineRow && foldedLineRow.rowIndexInLine < firstLineRowIndex) {
-			foldedLineRow = foldedLineRowGenerator.next().value;
+		while (this.foldedLineRow?.rowIndexInLine < firstLineRowIndex) {
+			this.nextFoldedLineRow();
 		}
 		
-		let offsetInLine = foldedLineRow.lineRow.startOffset;
-		let offsetInRow = 0;
+		this.variableWidthPartGenerator = this.generateVariableWidthParts();
+		this.nextVariableWidthPart();
 		
-		let variableWidthPartGenerator = this.generateVariableWidthParts(foldedLineRow.lineRow);
-		let variableWidthPart = variableWidthPartGenerator.next().value;
+		this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.cursor);
+		this.nextNode();
 		
-		let hintGenerator = document.generateRenderHintsFromCursor(c(firstLineIndex, offsetInLine));
-		let hint = hintGenerator.next().value;
-		
-		if (foldedLineRow.rowIndexInLine === 0) {
-			renderMargin.drawLineNumber(foldedLineRow.lineIndex);
+		if (this.rowIndexInLine === 0) {
+			renderMargin.drawLineNumber(this.lineIndex);
 		}
 		
-		renderCode.startRow(foldedLineRow.rowIndexInLine === 0 ? 0 : foldedLineRow.line.indentCols);
+		renderCode.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
 		
 		while (true) {
-			if (!variableWidthPart) {
+			if (!this.variableWidthPart) {
 				renderCode.endRow();
 				renderMargin.endRow();
 				
@@ -85,68 +145,75 @@ module.exports = {
 					break;
 				}
 				
-				foldedLineRow = foldedLineRowGenerator.next().value;
+				this.nextFoldedLineRow();
 				
-				if (!foldedLineRow) {
+				if (!this.foldedLineRow) {
 					break;
 				}
 				
-				variableWidthPartGenerator = this.generateVariableWidthParts(foldedLineRow.lineRow);
-				variableWidthPart = variableWidthPartGenerator.next().value;
-				offsetInRow = 0;
+				this.variableWidthPartGenerator = this.generateVariableWidthParts();
+				this.nextVariableWidthPart();
 				
-				if (foldedLineRow.rowIndexInLine === 0) {
-					offsetInLine = 0;
+				this.offsetInRow = 0;
+				
+				if (this.rowIndexInLine === 0) {
+					this.offset = 0;
 				}
 				
-				renderCode.startRow(foldedLineRow.rowIndexInLine === 0 ? 0 : foldedLineRow.line.indentCols);
+				renderCode.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
 				
-				if (foldedLineRow.rowIndexInLine === 0) {
-					renderMargin.drawLineNumber(foldedLineRow.lineIndex);
+				if (this.rowIndexInLine === 0) {
+					renderMargin.drawLineNumber(this.lineIndex);
 				}
 				
 				continue;
 			}
 			
-			if (hint && nodeGetters.startPosition(hint.node).row < foldedLineRow.lineIndex) {
-				hintGenerator = document.generateRenderHintsFromCursor(c(foldedLineRow.lineIndex, offsetInLine));
-				hint = hintGenerator.next().value;
+			if (this.nodeLineIndex < this.lineIndex) {
+				this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.cursor);
+				this.nextNode();
 			}
 			
-			while (hint && nodeGetters.startPosition(hint.node).row === foldedLineRow.lineIndex && getOffset(hint) === offsetInLine) {
-				renderCode.setColour(hint);
-				
-				hint = hintGenerator.next().value;
+			while (this.nodeIsAtCursor()) {
+				this.setColour();
+				this.nextNode();
 			}
 			
-			if (variableWidthPart.type === "tab") {
-				renderCode.drawTab(variableWidthPart.width);
+			if (this.variableWidthPart.type === "tab") {
+				renderCode.drawTab(this.variableWidthPart.width);
 				
-				offsetInLine++;
-				offsetInRow++;
-				variableWidthPart = variableWidthPartGenerator.next().value;
-			} else if (variableWidthPart.type === "string") {
-				let {string, offsetInRow: stringOffsetInRow} = variableWidthPart;
+				this.offset++;
+				this.offsetInRow++;
 				
-				let nextHintOffsetInRowOrEnd = (
-					hint && nodeGetters.startPosition(hint.node).row === foldedLineRow.lineIndex
-					? getOffset(hint) - foldedLineRow.lineRow.startOffset
-					: foldedLineRow.lineRow.string.length
+				this.nextVariableWidthPart();
+			} else if (this.variableWidthPart.type === "string") {
+				let {string} = this.variableWidthPart;
+				
+				let nextNodeOffsetInRowOrEnd = (
+					this.nodeLineIndex === this.lineIndex
+					? this.nodeOffset - this.lineRow.startOffset
+					: this.lineRow.string.length
 				);
 				
-				let renderFrom = offsetInRow - stringOffsetInRow;
-				let renderTo = Math.min(string.length, nextHintOffsetInRowOrEnd - stringOffsetInRow);
+				let renderFrom = this.offsetInRow - this.partOffsetInRow;
+				let renderTo = Math.min(string.length, nextNodeOffsetInRowOrEnd - this.partOffsetInRow);
 				let length = renderTo - renderFrom;
 				
 				renderCode.drawText(string.substring(renderFrom, renderTo));
 				
-				offsetInLine += length;
-				offsetInRow += length;
+				this.offset += length;
+				this.offsetInRow += length;
 				
 				if (renderTo === string.length) {
-					variableWidthPart = variableWidthPartGenerator.next().value;
+					this.nextVariableWidthPart();
 				}
 			}
 		}
-	},
-};
+	}
+}
+
+module.exports = function(view, renderCode, renderMargin) {
+	let render = new Render(view, renderCode, renderMargin);
+	
+	render.render();
+}

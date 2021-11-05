@@ -36,10 +36,8 @@ module.exports = function(layers, view) {
 	let y = rowHeight + topMargin + rowOffset; // rowHeight added as using textBaseline="bottom"
 	
 	return {
-		setColour(hint) {
-			let {node, lang} = hint;
-			
-			context.fillStyle = platform.prefs.langs[lang.code].colors[lang.getHiliteClass(node)];
+		setColour(colour) {
+			context.fillStyle = colour;
 		},
 		
 		startRow(wrapIndent) {
