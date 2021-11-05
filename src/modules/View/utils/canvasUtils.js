@@ -15,15 +15,15 @@ module.exports = {
 		let col = startCol;
 		
 		let lineStartingRow = this.getLineStartingRow(start.lineIndex);
-		let lineRowIndex = startRow - lineStartingRow;
+		let startLineRowIndex = startRow - lineStartingRow;
 		
-		lines: for (let i = start.lineIndex; i <= end.lineIndex; i++) {
-			let wrappedLine = this.wrappedLines[i];
+		lines: for (let lineIndex = start.lineIndex; lineIndex <= end.lineIndex; lineIndex++) {
+			let wrappedLine = this.wrappedLines[lineIndex];
 			let {line} = wrappedLine;
-			let lineIsFoldHeader = this.folds[i];
+			let lineIsFoldHeader = this.folds[lineIndex];
 			
-			for (let j = 0; j < wrappedLine.height; j++) {
-				if (i === start.lineIndex && j < lineRowIndex) {
+			for (let lineRowIndex = 0; lineRowIndex < wrappedLine.height; lineRowIndex++) {
+				if (lineIndex === start.lineIndex && lineRowIndex < startLineRowIndex) {
 					continue;
 				}
 				
@@ -53,9 +53,8 @@ module.exports = {
 				}
 				
 				let showNewline = (
-					!lineIsFoldHeader
-					&& i < end.lineIndex
-					&& j === wrappedLine.lineRows.length - 1
+					lineIndex < end.lineIndex
+					&& lineRowIndex === wrappedLine.lineRows.length - 1
 				);
 				
 				if (row === startRow) {
@@ -64,9 +63,9 @@ module.exports = {
 					
 					let [x, y] = this.screenCoordsFromRowCol(startRow, startCol);
 					
-					let width = wrappedLine.lineRows[j].width - startCol + (showNewline ? 1 : 0);
+					let width = wrappedLine.lineRows[lineRowIndex].width - startCol + (showNewline ? 1 : 0);
 					
-					if (j > 0) {
+					if (lineRowIndex > 0) {
 						width += line.indentCols;
 					}
 					
@@ -79,9 +78,9 @@ module.exports = {
 					
 					let [x, y] = this.screenCoordsFromRowCol(row, 0);
 					
-					let width = wrappedLine.lineRows[j].width + (showNewline ? 1 : 0);
+					let width = wrappedLine.lineRows[lineRowIndex].width + (showNewline ? 1 : 0);
 					
-					if (j > 0) {
+					if (lineRowIndex > 0) {
 						width += line.indentCols;
 					}
 					
@@ -91,7 +90,7 @@ module.exports = {
 				row++;
 				
 				if (lineIsFoldHeader) {
-					i = this.folds[i] - 1;
+					lineIndex = this.folds[lineIndex] - 1;
 					
 					continue lines;
 				}

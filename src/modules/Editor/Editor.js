@@ -12,6 +12,7 @@ let normalKeyboard = require("./normalKeyboard");
 let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
 let commonKeyboard = require("./commonKeyboard");
+let commonWheel = require("./commonWheel");
 let modeSwitchKey = require("./modeSwitchKey");
 let snippets = require("./snippets");
 let find = require("./find");
@@ -35,6 +36,7 @@ class Editor extends Evented {
 		this.astMouse = bindFunctions(this, astMouse);
 		this.astKeyboard = bindFunctions(this, astKeyboard);
 		this.commonKeyboard = bindFunctions(this, commonKeyboard);
+		this.commonWheel = bindFunctions(this, commonWheel);
 		
 		this.modeSwitchKey = modeSwitchKey(this);
 		
@@ -337,6 +339,10 @@ class Editor extends Evented {
 		return platform.prefs.commonKeymap[keyCombo];
 	}
 	
+	willHandleWheel(wheelCombo) {
+		return platform.prefs.editorMouseMap[wheelCombo.wheelCombo];
+	}
+	
 	async normalKeydown(key, keyCombo, isModified) {
 		let lang = this.document.langFromCursor(this.normalSelection.start);
 		let snippet = platform.snippets.findByLangAndKeyCombo(lang, keyCombo);
@@ -407,6 +413,12 @@ class Editor extends Evented {
 		}
 		
 		this.view.redraw();
+	}
+	
+	handleWheel(wheelCombo) {
+		let fnName = platform.prefs.editorMouseMap[wheelCombo.wheelCombo];
+		
+		this.commonWheel[fnName](wheelCombo);
 	}
 	
 	setSelectionFromNormalKeyboard(selection) {

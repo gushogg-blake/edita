@@ -1,5 +1,6 @@
 <script>
 import {onMount} from "svelte";
+import getWheelCombo from "utils/getWheelCombo";
 import Editor from "components/Editor/Editor.svelte";
 
 export let tab;
@@ -7,24 +8,41 @@ export let tab;
 let {platform} = window;
 
 let {
+	editor,
 	path,
 	currentPath,
 	entries,
 } = tab;
 
+let mouseFunctions = {
+	fileZoom(wheelCombo) {
+		if (wheelCombo.dir === "up") {
+			tab.zoomIn();
+		} else {
+			tab.zoomOut();
+		}
+	},
+};
+
 function wheel(e) {
-	if (!e.ctrlKey) {
+	let wheelCombo = getWheelCombo(e);
+	
+	if (editor.willHandleWheel(wheelCombo)) {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		editor.handleWheel(wheelCombo);
+		
 		return;
 	}
 	
-	e.stopPropagation();
+	let fnName = platform.prefs.tabMouseMap[wheelCombo.wheelCombo];
 	
-	let dir = e.deltaY > 0 ? "out" : "in";
-	
-	if (dir === "out") {
-		tab.zoomOut();
-	} else {
-		tab.zoomIn();
+	if (fnName) {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		mouseFunctions[fnName](wheelCombo);
 	}
 }
 
@@ -143,7 +161,7 @@ onMount(function() {
 
 <div id="main" on:wheel={wheel}>
 	<div id="editor" class:hide={currentPath !== path}>
-		<Editor editor={tab.editor}/>
+		<Editor {editor}/>
 	</div>
 	<div id="files" class:hide={currentPath === path}>
 		{#if currentPath}

@@ -139,7 +139,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		input: "src/platforms/electron/main.js",
 		
 		output: {
-			sourcemap: dev,
+			sourcemap: true,
 			format: "iife",
 			file: "src/platforms/electron/public/build/" + (dev ? "main.dev" : "main") + ".js",
 		},
@@ -149,7 +149,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		input: "src/platforms/electron/dialogs/messageBox/main.js",
 		
 		output: {
-			sourcemap: dev,
+			sourcemap: true,
 			format: "iife",
 			file: "src/platforms/electron/public/build/dialogs/messageBox/main.js",
 		},
@@ -159,7 +159,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		input: "src/platforms/electron/dialogs/snippetEditor/main.js",
 		
 		output: {
-			sourcemap: dev,
+			sourcemap: true,
 			format: "iife",
 			file: "src/platforms/electron/public/build/dialogs/snippetEditor/main.js",
 		},
@@ -169,7 +169,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		input: "src/platforms/electron/dialogs/findAndReplace/main.js",
 		
 		output: {
-			sourcemap: dev,
+			sourcemap: true,
 			format: "iife",
 			file: "src/platforms/electron/public/build/dialogs/findAndReplace/main.js",
 		},

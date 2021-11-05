@@ -80,6 +80,10 @@ module.exports = function(systemInfo) {
 			"Ctrl+K": "clearHilites",
 		},
 		
+		editorMouseMap: {
+			"Ctrl+Wheel": "foldZoom",
+		},
+		
 		astKeymap: {
 			"PageUp": "pageUp",
 			"PageDown": "pageDown",
@@ -118,6 +122,10 @@ module.exports = function(systemInfo) {
 			"Ctrl+Y": "redo",
 			
 			"Ctrl+9": "toggleWrap",
+		},
+		
+		tabMouseMap: {
+			"Alt+Wheel": "fileZoom",
 		},
 		
 		globalKeymap: {
