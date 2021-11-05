@@ -92,8 +92,15 @@ class View extends Evented {
 	}
 	
 	updateWrappedLines() {
-		this.wrappedLines = this.document.lines.map((line) => {
-			return wrapLine(this.wrap, line, this.document.fileDetails.indentation, this.measurements, this.sizes.codeWidth);
+		this.wrappedLines = this.document.lines.map((line, lineIndex) => {
+			return wrapLine(
+				this.wrap,
+				line,
+				this.folds[lineIndex],
+				this.document.fileDetails.indentation,
+				this.measurements,
+				this.sizes.codeWidth,
+			);
 		});
 	}
 	

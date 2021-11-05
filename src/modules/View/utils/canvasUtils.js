@@ -246,7 +246,6 @@ module.exports = {
 				isFoldHeader,
 				lineIndex,
 				wrappedLine,
-				height: isFoldHeader ? 1 : wrappedLine.height,
 			};
 			
 			if (isFoldHeader) {

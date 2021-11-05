@@ -11,7 +11,6 @@ module.exports = function(layers, view) {
 	} = measurements;
 	
 	let {
-		codeWidth,
 		topMargin,
 		marginOffset,
 	} = sizes;
@@ -24,9 +23,15 @@ module.exports = function(layers, view) {
 	let y = topMargin + rowOffset;
 	
 	return {
-		drawHilite(indentCols) {
+		drawHilite(indentCols, lineWidth) {
+			let x = Math.round(leftEdge + indentCols * colWidth);
+			let width = lineWidth * colWidth;
+			
+			context.fillStyle = "#b0b0b0";
+			context.strokeRect(x, y, width, rowHeight);
+			
 			context.fillStyle = platform.prefs.foldHeaderBackground;
-			context.fillRect(leftEdge + indentCols * colWidth, y, codeWidth, rowHeight);
+			context.fillRect(x, y, width, rowHeight);
 		},
 		
 		endRow() {

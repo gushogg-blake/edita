@@ -109,8 +109,8 @@ class LineWrapper {
 		this.startOffset += string.length;
 	}
 	
-	wrap(wrap) {
-		if (!wrap || !this.requiresWrapping()) {
+	wrap(wrap, isFoldHeader) {
+		if (isFoldHeader || !wrap || !this.requiresWrapping()) {
 			return this.unwrapped();
 		}
 		
@@ -190,8 +190,8 @@ class LineWrapper {
 	}
 }
 
-module.exports = function(wrap, line, indentation, measurements, availableWidth) {
+module.exports = function(wrap, line, isFoldHeader, indentation, measurements, availableWidth) {
 	let wrapper = new LineWrapper(line, indentation, measurements, availableWidth);
 	
-	return wrapper.wrap(wrap);
+	return wrapper.wrap(wrap, isFoldHeader);
 }

@@ -95,7 +95,7 @@ class Renderer {
 		this.renderCode.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
 		
 		if (this.foldedLineRow.isFoldHeader) {
-			this.renderFoldHilites.drawHilite(this.line.indentCols);
+			this.renderFoldHilites.drawHilite(this.line.indentCols, this.line.width - this.line.indentCols);
 		}
 		
 		if (this.rowIndexInLine === 0) {
