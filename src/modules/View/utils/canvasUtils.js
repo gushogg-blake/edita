@@ -20,6 +20,7 @@ module.exports = {
 		lines: for (let i = start.lineIndex; i <= end.lineIndex; i++) {
 			let wrappedLine = this.wrappedLines[i];
 			let {line} = wrappedLine;
+			let lineIsFoldHeader = this.folds[i];
 			
 			for (let j = 0; j < wrappedLine.height; j++) {
 				if (i === start.lineIndex && j < lineRowIndex) {
@@ -51,13 +52,19 @@ module.exports = {
 					break;
 				}
 				
+				let showNewline = (
+					!lineIsFoldHeader
+					&& i < end.lineIndex
+					&& j === wrappedLine.lineRows.length - 1
+				);
+				
 				if (row === startRow) {
 					// first row of multi-row selection
 					// highlight start col to end of line, plus 1 for the newline
 					
 					let [x, y] = this.screenCoordsFromRowCol(startRow, startCol);
 					
-					let width = wrappedLine.lineRows[j].width - startCol + (i < end.lineIndex && j === wrappedLine.lineRows.length - 1 ? 1 : 0);
+					let width = wrappedLine.lineRows[j].width - startCol + (showNewline ? 1 : 0);
 					
 					if (j > 0) {
 						width += line.indentCols;
@@ -72,7 +79,7 @@ module.exports = {
 					
 					let [x, y] = this.screenCoordsFromRowCol(row, 0);
 					
-					let width = wrappedLine.lineRows[j].width + (i < end.lineIndex && j === wrappedLine.lineRows.length - 1 ? 1 : 0);
+					let width = wrappedLine.lineRows[j].width + (showNewline ? 1 : 0);
 					
 					if (j > 0) {
 						width += line.indentCols;
@@ -83,7 +90,7 @@ module.exports = {
 				
 				row++;
 				
-				if (this.folds[i]) {
+				if (lineIsFoldHeader) {
 					i = this.folds[i] - 1;
 					
 					continue lines;

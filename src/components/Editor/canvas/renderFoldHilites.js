@@ -15,7 +15,7 @@ module.exports = function(layers, view) {
 		marginOffset,
 	} = sizes;
 	
-	let context = layers.foldHilites;
+	let context;
 	
 	let leftEdge = marginOffset - scrollPosition.x;
 	let rowOffset = -(scrollPosition.y % rowHeight);
@@ -25,10 +25,20 @@ module.exports = function(layers, view) {
 	return {
 		drawHilite(indentCols, lineWidth) {
 			let x = Math.round(leftEdge + indentCols * colWidth);
-			let width = lineWidth * colWidth;
+			let width = Math.round(lineWidth * colWidth);
 			
-			context.fillStyle = "#b0b0b0";
-			context.strokeRect(x, y, width, rowHeight);
+			context = layers.hilites;
+			
+			context.save();
+			
+			context.translate(0.5, 0.5);
+			context.lineWidth = 1;
+			context.strokeStyle = platform.prefs.foldHeaderBorder;
+			context.strokeRect(x - 1, y, width + 1, rowHeight - 1);
+			
+			context.restore();
+			
+			context = layers.foldHilites;
 			
 			context.fillStyle = platform.prefs.foldHeaderBackground;
 			context.fillRect(x, y, width, rowHeight);
