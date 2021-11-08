@@ -490,6 +490,12 @@ class View extends Evented {
 		this.batchRedraw();
 	}
 	
+	setNormalHilites(hilites) {
+		this.normalHilites = hilites;
+		
+		this.batchRedraw();
+	}
+	
 	setWrap(wrap) {
 		if (this.wrap === wrap) {
 			return;
