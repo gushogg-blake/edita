@@ -16,6 +16,10 @@ module.exports = function(editor, editorComponent) {
 			return;
 		}
 		
+		if (wheelCombo.isModified) {
+			return;
+		}
+		
 		let dir = e.deltaY > 0 ? 1 : -1;
 		let scrolled;
 		
@@ -25,7 +29,7 @@ module.exports = function(editor, editorComponent) {
 			scrolled = view.scrollBy(0, view.measurements.rowHeight * 3 * dir);
 		}
 		
-		if (scrolled || editorMode === "app") {
+		if (scrolled || editorComponent.editorMode === "app") {
 			e.preventDefault();
 			e.stopPropagation();
 		}

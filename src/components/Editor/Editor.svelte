@@ -107,6 +107,10 @@ let _wheelHandler = wheelHandler(editor, {
 	get canvasDiv() {
 		return canvasDiv;
 	},
+	
+	get editorMode() {
+		return editorMode;
+	},
 });
 
 function mousedown({detail}) {
@@ -495,8 +499,6 @@ async function toggleHorizontalScrollbar(show) {
 	await tick();
 	
 	resize();
-	
-	view.redraw();
 }
 
 function onFocus() {

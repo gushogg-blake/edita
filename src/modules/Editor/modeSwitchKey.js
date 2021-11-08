@@ -26,14 +26,10 @@ module.exports = function(editor) {
 		}
 		
 		editor.switchToAstMode();
-		
-		view.redraw();
 	}
 	
 	function switchToNormalMode() {
 		editor.switchToNormalMode();
-		
-		view.redraw();
 	}
 	
 	function keydown(e) {

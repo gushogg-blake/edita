@@ -101,7 +101,6 @@ class Editor extends Evented {
 		
 		if (position) {
 			this.setNormalSelection(position.selection);
-			this.view.redraw();
 		}
 		
 		this.snippetSession = session;

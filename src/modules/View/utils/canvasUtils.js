@@ -104,10 +104,7 @@ module.exports = {
 		let rows = 0;
 		
 		for (let lineRow of this.generateLineRowsFolded()) {
-			
-		}
-		for (let wrappedLine of this.wrappedLines) {
-			rows += wrappedLine.height;
+			rows++;
 		}
 		
 		return rows;

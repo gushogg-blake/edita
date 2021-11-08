@@ -162,8 +162,6 @@ module.exports = function(app, editor, editorComponent) {
 			on(window, "mouseup", mouseup);
 			on(window, "dragend", dragend);
 		}
-		
-		view.redraw();
 	}
 	
 	function mousedownMiddle() {
@@ -185,8 +183,6 @@ module.exports = function(app, editor, editorComponent) {
 				
 				onClick() {
 					editor.doAstManipulation(code);
-					
-					view.redraw();
 				},
 			};
 		});
@@ -214,8 +210,6 @@ module.exports = function(app, editor, editorComponent) {
 	
 	function mouseup(e) {
 		editor.astMouse.setInsertionHilite(null);
-		
-		view.redraw();
 		
 		editorComponent.mouseup(e);
 		
@@ -304,8 +298,6 @@ module.exports = function(app, editor, editorComponent) {
 			} else {
 				editor.astMouse.setInsertionHilite(getInsertionRange(e));
 			}
-			
-			view.redraw();
 		});
 	}
 	
@@ -371,8 +363,6 @@ module.exports = function(app, editor, editorComponent) {
 			option,
 			target,
 		);
-		
-		view.redraw();
 	}
 	
 	function dragend() {
