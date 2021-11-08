@@ -4,19 +4,21 @@ let astCommon = require("modules/langs/common/astMode");
 module.exports = {
 	setSelection(selection) {
 		this.view.setAstSelection(selection);
-		this.view.redraw();
 	},
 	
 	setSelectionHilite(selection) {
-		this.view.astSelectionHilite = selection;
+		let {view} = this;
 		
-		this.view.showPickOptionsFor(selection);
+		view.startBatch();
 		
-		this.view.redraw();
+		view.setAstSelectionHilite(selection);
+		view.showPickOptionsFor(selection);
+		
+		view.endBatch();
 	},
 	
 	setInsertionHilite(selection) {
-		this.view.astInsertionHilite = selection;
+		this.view.setAstInsertionHilite(selection);
 	},
 	
 	drop(
@@ -38,11 +40,14 @@ module.exports = {
 			return;
 		}
 		
-		this.view.clearDropTargets();
 		this.astMouse.setInsertionHilite(null);
 		
-		let {document} = this;
+		let {document, view} = this;
 		let {astMode} = document.langFromAstSelection(fromSelection || toSelection);
+		
+		view.startBatch();
+		
+		view.clearDropTargets();
 		
 		let {
 			edits,
@@ -112,11 +117,19 @@ module.exports = {
 				});
 			}
 		}
+		
+		view.endBatch();
 	},
 	
 	invalidDrop() {
-		this.view.clearDropTargets();
+		let {view} = this;
+		
+		view.startBatch();
+		
+		view.clearDropTargets();
+		
 		this.astMouse.setInsertionHilite(null);
-		this.view.redraw();
+		
+		view.endBatch();
 	},
 };

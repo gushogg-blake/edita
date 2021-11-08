@@ -369,13 +369,15 @@ function resize() {
 			context.textBaseline = "bottom";
 		}
 		
+		view.startBatch();
+		
 		view.setCanvasSize(width, height);
 		
 		if (width !== prevWidth) {
 			view.updateWrappedLines();
 		}
 		
-		view.redraw();
+		view.endBatch();
 		
 		updateScrollbars();
 		
@@ -463,8 +465,7 @@ function verticalScroll({detail: position}) {
 	
 	let scrollTop = Math.round(scrollMax * position);
 	
-	view.setVerticalScroll(scrollTop);
-	view.updateCanvas();
+	view.setVerticalScrollNoValidate(scrollTop);
 }
 
 function horizontalScroll({detail: position}) {
@@ -477,8 +478,7 @@ function horizontalScroll({detail: position}) {
 	
 	let scrollLeft = Math.round(scrollMax * position);
 	
-	view.setHorizontalScroll(scrollLeft);
-	view.updateCanvas();
+	view.setHorizontalScrollNoValidate(scrollLeft);
 }
 
 async function onWrapChanged() {

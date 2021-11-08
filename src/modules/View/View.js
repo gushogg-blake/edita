@@ -65,6 +65,9 @@ class View extends Evented {
 		this.cursorBlinkOn = false;
 		this.cursorInterval = null;
 		
+		this.batchDepth = 0;
+		this.hasBatchedUpdates = false;
+		
 		this.topMargin = 2;
 		
 		this.marginStyle = {
@@ -102,6 +105,8 @@ class View extends Evented {
 				this.sizes.codeWidth,
 			);
 		});
+		
+		this.batchRedraw();
 	}
 	
 	switchToAstMode() {
@@ -110,7 +115,8 @@ class View extends Evented {
 		this.clearCursorBlink();
 		
 		this.fire("modeSwitch");
-		this.fire("redraw");
+		
+		this.batchRedraw();
 	}
 	
 	switchToNormalMode() {
@@ -118,7 +124,7 @@ class View extends Evented {
 		this.astSelectionHilite = null;
 		
 		this.startCursorBlink();
-		this.redraw();
+		this.batchRedraw();
 		
 		this.fire("modeSwitch");
 	}
@@ -246,6 +252,36 @@ class View extends Evented {
 		this.fire("updateDropTargets");
 	}
 	
+	startBatch() {
+		this.batchDepth++;
+	}
+	
+	endBatch() {
+		this.batchDepth--;
+		
+		if (!this.inBatch) {
+			if (this.hasBatchedUpdates) {
+				this.redraw();
+			}
+			
+			this.hasBatchedUpdates = false;
+		}
+	}
+	
+	get inBatch() {
+		return this.batchDepth > 0;
+	}
+	
+	batchRedraw() {
+		if (this.inBatch) {
+			this.hasBatchedUpdates = true;
+			
+			return;
+		}
+		
+		this.redraw();
+	}
+	
 	scrollBy(x, y) {
 		let scrolled = false;
 		
@@ -282,19 +318,21 @@ class View extends Evented {
 		if (scrolled) {
 			this.fire("scroll");
 			
-			this.redraw();
+			this.batchRedraw();
 		}
 		
 		return scrolled;
 	}
 	
-	setVerticalScroll(y) {
+	setVerticalScrollNoValidate(y) {
 		this.scrollPosition.y = Math.max(0, y);
 		
 		this.fire("scroll");
+		
+		this.batchRedraw();
 	}
 	
-	setHorizontalScroll(x) {
+	setHorizontalScrollNoValidate(x) {
 		if (this.wrap && x !== 0) {
 			return;
 		}
@@ -302,6 +340,8 @@ class View extends Evented {
 		this.scrollPosition.x = x;
 		
 		this.fire("scroll");
+		
+		this.batchRedraw();
 	}
 	
 	setScrollPosition(scrollPosition) {
@@ -396,14 +436,22 @@ class View extends Evented {
 	setNormalSelection(selection) {
 		this.normalSelection = this.Selection.validate(selection);
 		
+		// TODO validate for folds
+		
 		this.updateAstSelectionFromNormalSelection();
+		
+		this.batchRedraw();
 	}
 	
 	setAstSelection(astSelection) {
 		this.astSelection = astCommon.selection.trim(this.document, this.AstSelection.validate(astSelection));
 		this.astSelectionHilite = null;
 		
+		// TODO validate for folds
+		
 		this.updateNormalSelectionFromAstSelection();
+		
+		this.batchRedraw();
 	}
 	
 	updateSelectionEndCol() {
@@ -416,6 +464,8 @@ class View extends Evented {
 		this.normalSelection = this.Selection.endOfLineContent(this.astSelection.endLineIndex - 1);
 		
 		this.updateSelectionEndCol();
+		
+		this.batchRedraw();
 	}
 	
 	updateAstSelectionFromNormalSelection() {
@@ -424,10 +474,20 @@ class View extends Evented {
 		let {astMode} = this.lang;
 		
 		this.astSelection = astCommon.selection.fromLineRange(document, start.lineIndex, end.lineIndex + 1);
+		
+		this.batchRedraw();
 	}
 	
 	getNormalSelectionForFind() {
 		return this.mode === "ast" ? this.Selection.fromAstSelection(this.normalSelection) : this.Selection.sort();
+	}
+	
+	setFolds(folds) {
+		this.folds = folds;
+		
+		// TODO validate selection
+		
+		this.batchRedraw();
 	}
 	
 	setWrap(wrap) {
@@ -438,12 +498,14 @@ class View extends Evented {
 		this.wrap = wrap;
 		
 		if (this.wrap) {
-			this.setHorizontalScroll(0);
+			this.setHorizontalScrollNoValidate(0);
 		}
 		
 		this.updateWrappedLines();
 		
 		this.fire("wrapChanged", wrap);
+		
+		this.batchRedraw();
 	}
 	
 	setCompletions(completions) {
@@ -496,16 +558,22 @@ class View extends Evented {
 		};
 		
 		this.fire("updateSizes");
+		
+		this.batchRedraw();
 	}
 	
 	updateMarginSize() {
 		let {marginWidth} = this.sizes;
+		
+		this.startBatch();
 		
 		this.updateSizes();
 		
 		if (marginWidth !== this.sizes.marginWidth) {
 			this.updateWrappedLines();
 		}
+		
+		this.endBatch();
 	}
 	
 	startCursorBlink() {
@@ -524,6 +592,8 @@ class View extends Evented {
 			
 			this.updateCanvas();
 		}, platform.prefs.cursorBlinkPeriod);
+		
+		this.batchRedraw();
 	}
 	
 	clearCursorBlink() {

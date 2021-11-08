@@ -183,23 +183,31 @@ class Editor extends Evented {
 	
 	onDocumentEdit(edit) {
 		let {selection: oldSelection, newSelection} = edit;
-		let {normalHilites} = this.view;
+		let {view} = this;
+		let {normalHilites} = view;
 		
-		this.view.normalHilites = normalHilites.map(function(hilite) {
+		view.startBatch();
+		
+		view.setNormalHilites(normalHilites.map(function(hilite) {
 			return Selection.edit(hilite, oldSelection, newSelection);
-		}).filter(Boolean);
+		}).filter(Boolean));
 		
-		this.view.updateMarginSize();
+		view.updateMarginSize();
+		
+		view.endBatch();
 	}
 	
 	onDocumentSave() {
 		this.view.updateWrappedLines();
-		this.view.redraw();
 		
 		this.clearBatchState();
 	}
 	
 	onDocumentFileChanged(updateEntry) {
+		let {view} = this;
+		
+		view.startBatch();
+		
 		if (updateEntry) {
 			this.historyEntries.set(updateEntry, {
 				before: {
@@ -217,8 +225,9 @@ class Editor extends Evented {
 			this.applyHistoryEntry(updateEntry, "after");
 		}
 		
-		this.view.updateWrappedLines();
-		this.view.redraw();
+		view.updateWrappedLines();
+		
+		view.endBatch();
 		
 		this.clearBatchState();
 	}
@@ -230,7 +239,11 @@ class Editor extends Evented {
 			snippetSession,
 		} = this.historyEntries.get(entry)[state];
 		
-		this.view.updateWrappedLines();
+		let {view} = this;
+		
+		view.startBatch();
+		
+		view.updateWrappedLines();
 		
 		if (normalSelection !== undefined) {
 			this.setNormalSelection(normalSelection);
@@ -243,6 +256,8 @@ class Editor extends Evented {
 		if (snippetSession !== undefined) {
 			this.snippetSession = snippetSession;
 		}
+		
+		view.endBatch();
 		
 		this.fire("edit");
 	}
@@ -298,10 +313,15 @@ class Editor extends Evented {
 		
 		this.clearBatchState();
 		
-		this.view.updateSelectionEndCol();
-		this.view.ensureSelectionIsOnScreen();
-		this.view.startCursorBlink();
-		this.view.redraw();
+		let {view} = this;
+		
+		view.startBatch();
+		
+		view.updateSelectionEndCol();
+		view.ensureSelectionIsOnScreen();
+		view.startCursorBlink();
+		
+		view.endBatch();
 	}
 	
 	redo() {
@@ -315,10 +335,15 @@ class Editor extends Evented {
 		
 		this.clearBatchState();
 		
-		this.view.updateSelectionEndCol();
-		this.view.ensureSelectionIsOnScreen();
-		this.view.startCursorBlink();
-		this.view.redraw();
+		let {view} = this;
+		
+		view.startBatch();
+		
+		view.updateSelectionEndCol();
+		view.ensureSelectionIsOnScreen();
+		view.startCursorBlink();
+		
+		view.endBatch();
 	}
 	
 	willHandleNormalKeydown(key, keyCombo, isModified) {
@@ -347,22 +372,39 @@ class Editor extends Evented {
 		let lang = this.document.langFromCursor(this.normalSelection.start);
 		let snippet = platform.snippets.findByLangAndKeyCombo(lang, keyCombo);
 		
+		let {view} = this;
+		
 		if (snippet) {
+			view.startBatch();
+			
 			this.clearSnippetSession();
 			this.insertSnippet(snippet);
 			
-			this.view.ensureSelectionIsOnScreen();
-			this.view.startCursorBlink();
-			this.view.redraw();
+			view.ensureSelectionIsOnScreen();
+			view.startCursorBlink();
+			
+			view.endBatch();
 			
 			return;
 		}
 		
 		let fnName = platform.prefs.normalKeymap[keyCombo];
 		let flags;
+		let str;
+		
+		if (fnName === "paste") {
+			// read clipboard before startBatch to keep startBatch/endBatch pairs sync
+			str = await platform.clipboard.read();
+		}
+		
+		view.startBatch();
 		
 		if (fnName) {
-			flags = await this.normalKeyboard[fnName]();
+			if (fnName === "paste") {
+				flags = this.normalKeyboard.paste(str);
+			} else {
+				flags = this.normalKeyboard[fnName]();
+			}
 		} else {
 			flags = this.normalKeyboard.insert(key);
 		}
@@ -370,39 +412,46 @@ class Editor extends Evented {
 		flags = flags || [];
 		
 		if (!flags.includes("noScrollCursorIntoView")) {
-			this.view.ensureSelectionIsOnScreen();
+			view.ensureSelectionIsOnScreen();
 		}
 		
 		if (!flags.includes("noClearCompletions")) {
 			this.clearCompletions();
 		}
 		
-		this.view.startCursorBlink();
+		view.startCursorBlink();
 		
-		console.time("redraw");
-		this.view.redraw();
-		console.timeEnd("redraw");
+		view.endBatch();
 	}
 	
-	async astKeydown(keyCombo) {
+	astKeydown(keyCombo) {
 		let fnName = platform.prefs.astKeymap[keyCombo];
 		
-		await this.astKeyboard[fnName]();
+		let {view} = this;
 		
-		this.view.ensureSelectionIsOnScreen();
-		this.view.redraw();
+		view.startBatch();
+		
+		this.astKeyboard[fnName]();
+		
+		view.ensureSelectionIsOnScreen();
+		
+		view.endBatch();
 	}
 	
-	async commonKeydown(keyCombo) {
+	commonKeydown(keyCombo) {
 		let fnName = platform.prefs.commonKeymap[keyCombo];
 		
-		let flags = await this.commonKeyboard[fnName]() || [];
+		let {view} = this;
+		
+		view.startBatch();
+		
+		let flags = this.commonKeyboard[fnName]() || [];
 		
 		if (!flags.includes("noScrollCursorIntoView")) {
-			this.view.ensureSelectionIsOnScreen();
+			view.ensureSelectionIsOnScreen();
 		}
 		
-		this.view.redraw();
+		view.endBatch();
 	}
 	
 	handleWheel(wheelCombo) {
@@ -449,9 +498,9 @@ class Editor extends Evented {
 		this.view.setAstSelection(selection);
 	}
 	
-	validateSelection() {
-		this.view.setNormalSelection(this.normalSelection);
-	}
+	//validateSelection() {
+	//	this.view.setNormalSelection(this.normalSelection);
+	//}
 	
 	adjustIndent(adjustment) {
 		let selection = Selection.sort(this.normalSelection);
@@ -529,8 +578,6 @@ class Editor extends Evented {
 			edits: [edit],
 			normalSelection: s(newSelection.end),
 		});
-		
-		this.view.redraw();
 	}
 	
 	onFocus() {

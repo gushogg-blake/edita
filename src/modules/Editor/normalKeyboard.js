@@ -498,13 +498,13 @@ module.exports = {
 		this.inWordComplete = false;
 	},
 	
-	async cut() {
+	cut() {
 		// TODO line if not full selection
 		if (!this.view.Selection.isFull()) {
 			return;
 		}
 		
-		await platform.clipboard.write(this.getSelectedText());
+		platform.clipboard.write(this.getSelectedText());
 		
 		let {
 			edit,
@@ -523,21 +523,21 @@ module.exports = {
 		this.clearBatchState();
 	},
 	
-	async copy() {
+	copy() {
 		if (this.view.Selection.isFull()) {
-			await platform.clipboard.write(this.getSelectedText());
+			platform.clipboard.write(this.getSelectedText());
 		} else if (platform.getPref("copyLineIfSelectionNotFull")) {
-			await platform.clipboard.write(this.document.lines[this.normalSelection.start.lineIndex].string);
+			platform.clipboard.write(this.document.lines[this.normalSelection.start.lineIndex].string);
 		}
 		
 		return ["noScrollCursorIntoView"];
 	},
 	
-	async paste() {
+	paste(str) {
 		let {
 			edit,
 			newSelection,
-		} = this.document.replaceSelection(this.view.normalSelection, await platform.clipboard.read());
+		} = this.document.replaceSelection(this.view.normalSelection, str);
 		
 		let edits = [edit];
 		

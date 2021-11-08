@@ -10,24 +10,27 @@ avoid doing it unnecessarily)
 
 module.exports = {
 	setNormalSelectionAndCenter(selection) {
+		let {view} = this;
+		
+		view.startBatch();
+		
 		this.setNormalSelection(selection);
 		
-		let {rows} = this.view.sizes;
-		let {rowHeight} = this.view.measurements;
-		let [selectionRow] = this.view.rowColFromCursor(selection.start);
+		let {rows} = view.sizes;
+		let {rowHeight} = view.measurements;
+		let [selectionRow] = view.rowColFromCursor(selection.start);
 		let scrollToRow = selectionRow - Math.ceil(rows / 2);
 		let scrollTop = scrollToRow * rowHeight;
 		
-		this.view.setVerticalScroll(scrollTop);
-		this.view.redraw();
+		view.setVerticalScrollNoValidate(scrollTop);
+		
+		view.endBatch();
 	},
 	
 	findAll(options) {
 		let results = this.document.findAll(options);
 		
-		this.view.normalHilites = results.map(result => result.selection);
-		
-		this.view.redraw();
+		this.view.setNormalHilites(results.map(result => result.selection));
 		
 		return results;
 	},
@@ -42,27 +45,26 @@ module.exports = {
 			endIndex: document.indexFromCursor(end),
 		});
 		
-		view.normalHilites = results.map(result => result.selection);
-		
-		view.redraw();
+		view.setNormalHilites(results.map(result => result.selection));
 		
 		return results;
 	},
 	
 	replaceAll(options) {
 		let {document, view} = this;
-		
 		let {edits, results} = document.replaceAll(options);
+		
+		view.startBatch();
 		
 		this.applyAndAddHistoryEntry({
 			edits,
 		});
 		
-		this.validateSelection();
+		//this.validateSelection(); // TODO not sure if needed
 		
-		view.normalHilites = edits.map(edit => edit.newSelection);
+		view.setNormalHilites(edits.map(edit => edit.newSelection));
 		
-		view.redraw();
+		view.endBatch();
 		
 		return results;
 	},
@@ -89,14 +91,16 @@ module.exports = {
 			}
 		}
 		
+		view.startBatch();
+		
 		this.applyAndAddHistoryEntry({
 			edits,
 			normalSelection: selection,
 		});
 		
-		view.normalHilites = edits.map(edit => edit.newSelection);
+		view.setNormalHilites(edits.map(edit => edit.newSelection));
 		
-		view.redraw();
+		view.endBatch();
 		
 		return results;
 	},

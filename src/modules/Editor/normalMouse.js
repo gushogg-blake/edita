@@ -6,7 +6,7 @@ let {c} = Cursor;
 
 module.exports = {
 	drawSelection(selection) {
-		this.view.normalSelection = selection;
+		this.view.setNormalSelection(selection);
 	},
 	
 	finishDrawingSelection() {
@@ -14,10 +14,17 @@ module.exports = {
 	},
 	
 	setSelectionAndStartCursorBlink(selection) {
+		let {view} = this;
+		
+		view.startBatch();
+		
 		this.setSelectionFromNormalMouse(selection);
 		
-		this.view.startCursorBlink();
-		this.view.redraw();
+		view.startCursorBlink();
+		
+		view.endBatch();
+		
+		console.log("setSelectionFromNormalMouse", view.batchDepth);
 	},
 	
 	setSelectionClipboard() {
@@ -32,17 +39,23 @@ module.exports = {
 			newSelection,
 		} = this.document.replaceSelection(Selection.s(cursor), str);
 		
+		let {view} = this;
+		
+		view.startBatch();
+		
 		this.applyAndAddHistoryEntry({
 			edits: [edit],
 			normalSelection: newSelection,
 		});
 		
-		this.view.startCursorBlink();
-		this.view.redraw();
+		view.startCursorBlink();
+		
+		view.endBatch();
 	},
 	
 	drop(cursor, str, move, fromUs, toUs) {
-		let {normalSelection: selection} = this.view;
+		let {document, view} = this;
+		let {normalSelection: selection} = view;
 		
 		if (move && fromUs) {
 			if (Selection.cursorIsWithinOrNextToSelection(selection, cursor)) {
@@ -61,21 +74,24 @@ module.exports = {
 			({
 				edits,
 				newSelection,
-			} = this.document.move(selection, cursor));
+			} = document.move(selection, cursor));
 		} else {
-			let edit = this.document.replaceSelection(Selection.s(cursor), str);
+			let edit = document.replaceSelection(Selection.s(cursor), str);
 			
 			edits = [edit.edit];
-			newSelection = this.document.getSelectionContainingString(cursor, str);
+			newSelection = document.getSelectionContainingString(cursor, str);
 		}
+		
+		view.startBatch();
 		
 		this.applyAndAddHistoryEntry({
 			edits,
 			normalSelection: newSelection,
 		});
 		
-		this.view.insertCursor = null;
-		this.view.startCursorBlink();
-		this.view.redraw();
+		view.setInsertCursor(null);
+		view.startCursorBlink();
+		
+		view.endBatch();
 	},
 };

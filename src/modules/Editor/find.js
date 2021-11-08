@@ -29,9 +29,15 @@ module.exports = function(editor) {
 			
 			session.find(search, type, caseMode);
 			
-			editor.view.normalHilites = session.all.map(result => result.selection);
+			let {view} = editor;
+			
+			view.startBatch();
+			
+			view.setNormalHilites(session.all.map(result => result.selection));
 			
 			this.next();
+			
+			view.endBatch();
 		},
 		
 		next() {
@@ -44,9 +50,14 @@ module.exports = function(editor) {
 				return null;
 			}
 			
-			editor.view.normalSelection = result.selection;
-			editor.view.ensureNormalCursorIsOnScreen();
-			editor.view.redraw();
+			let {view} = editor;
+			
+			view.startBatch();
+			
+			view.setNormalSelection(result.selection);
+			view.ensureNormalCursorIsOnScreen();
+			
+			view.endBatch();
 			
 			return {
 				loopedFile,
@@ -63,9 +74,14 @@ module.exports = function(editor) {
 				return null;
 			}
 			
-			editor.view.normalSelection = result.selection;
-			editor.view.ensureNormalCursorIsOnScreen();
-			editor.view.redraw();
+			let {view} = editor;
+			
+			view.startBatch();
+			
+			view.normalSelection = result.selection;
+			view.ensureNormalCursorIsOnScreen();
+			
+			view.endBatch();
 			
 			return {
 				loopedFile,
@@ -73,8 +89,7 @@ module.exports = function(editor) {
 		},
 		
 		clearHilites() {
-			editor.view.normalHilites = [];
-			editor.view.redraw();
+			editor.view.setNormalHilites([]);
 		},
 		
 		reset() {
