@@ -42,8 +42,8 @@ module.exports = class Scope {
 		} catch (e) {
 			this.tree = null;
 			
-			console.error("Parse error");
-			console.error(e);
+			//console.error("Parse error");
+			//console.error(e);
 		} finally {
 			this.processInjections();
 		}
@@ -89,8 +89,8 @@ module.exports = class Scope {
 		} catch (e) {
 			this.tree = null;
 			
-			console.error("Parse error");
-			console.error(e);
+			//console.error("Parse error");
+			//console.error(e);
 		} finally {
 			this.processInjections(function(injectionLang, firstRange) {
 				let {start} = firstRange.selection;

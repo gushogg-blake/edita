@@ -23,8 +23,6 @@ module.exports = {
 		view.startCursorBlink();
 		
 		view.endBatch();
-		
-		console.log("setSelectionFromNormalMouse", view.batchDepth);
 	},
 	
 	setSelectionClipboard() {

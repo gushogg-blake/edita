@@ -454,6 +454,18 @@ class View extends Evented {
 		this.batchRedraw();
 	}
 	
+	setAstSelectionHilite(astSelection) {
+		this.astSelectionHilite = astSelection;
+		
+		this.batchRedraw();
+	}
+	
+	setAstInsertionHilite(astSelection) {
+		this.astInsertionHilite = astSelection;
+		
+		this.batchRedraw();
+	}
+	
 	updateSelectionEndCol() {
 		let [, endCol] = this.rowColFromCursor(this.normalSelection.end);
 		
