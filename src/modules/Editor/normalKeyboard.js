@@ -307,6 +307,48 @@ module.exports = {
 		this.setBatchState(newBatchState);
 	},
 	
+	deleteWordLeft() {
+		let isFull = this.view.Selection.isFull();
+		let selection = isFull ? this.normalSelection : this.view.Selection.expandOrContractWordLeft();
+		
+		let {
+			edit,
+			newSelection,
+		} = this.document.replaceSelection(selection, "");
+		
+		let edits = [edit];
+		
+		this.applyAndAddHistoryEntry({
+			edits,
+			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
+		});
+		
+		this.updateSnippetExpressions();
+		this.clearBatchState();
+	},
+	
+	deleteWordRight() {
+		let isFull = this.view.Selection.isFull();
+		let selection = isFull ? this.normalSelection : this.view.Selection.expandOrContractWordRight();
+		
+		let {
+			edit,
+			newSelection,
+		} = this.document.replaceSelection(selection, "");
+		
+		let edits = [edit];
+		
+		this.applyAndAddHistoryEntry({
+			edits,
+			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
+		});
+		
+		this.updateSnippetExpressions();
+		this.clearBatchState();
+	},
+	
 	tab() {
 		let flags;
 		let {start} = this.normalSelection;
