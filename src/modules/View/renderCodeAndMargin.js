@@ -42,6 +42,17 @@ class Renderer {
 		return c(this.lineIndex, this.offset);
 	}
 	
+	/*
+	look for nodes starting from the indent to find the node quicker.  in HTML
+	the start of the line will sometimes be within a text node that spans
+	multiple lines, so findFirstNodeOnOrAfterCursor will descend to that node
+	and then have to return the next node
+	*/
+	
+	get trimmedCursor() {
+		return c(this.lineIndex, this.view.document.lines[this.lineIndex].indentOffset);
+	}
+	
 	get nodeLineIndex() {
 		return this.nodeWithLang && nodeGetters.startPosition(this.nodeWithLang.node).row;
 	}
@@ -139,7 +150,7 @@ class Renderer {
 		this.variableWidthPartGenerator = this.generateVariableWidthParts();
 		this.nextVariableWidthPart();
 		
-		this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.cursor);
+		this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.trimmedCursor);
 		this.nextNode();
 		
 		this.startRow();
@@ -177,7 +188,7 @@ class Renderer {
 			}
 			
 			if (this.nodeLineIndex < this.lineIndex) {
-				this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.cursor);
+				this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.trimmedCursor);
 				this.nextNode();
 			}
 			

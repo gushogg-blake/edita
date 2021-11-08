@@ -1,4 +1,5 @@
 let middle = require("utils/middle");
+let next = require("./next");
 let nodeGetters = require("./nodeGetters");
 
 function isOnOrAfter(node, cursor) {
@@ -28,6 +29,7 @@ module.exports = function(node, cursor) {
 	let startIndex = 0;
 	let endIndex = children.length;
 	let first = null;
+	let foundContainingNode = false;
 	
 	while (true) {
 		if (endIndex - startIndex === 0) {
@@ -49,6 +51,7 @@ module.exports = function(node, cursor) {
 			children = nodeGetters.children(node);
 			startIndex = 0;
 			endIndex = children.length;
+			foundContainingNode = true;
 		} else {
 			startIndex = index + 1;
 			
@@ -56,6 +59,15 @@ module.exports = function(node, cursor) {
 				break;
 			}
 		}
+	}
+	
+	/*
+	the cursor might be within a node that doesn't have children, in which case
+	the first node after the cursor will be the next node
+	*/
+	
+	if (foundContainingNode && !first) {
+		return next(node);
 	}
 	
 	return first;
