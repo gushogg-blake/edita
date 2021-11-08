@@ -37,7 +37,8 @@ function getData(e) {
 	return null;
 }
 
-module.exports = function(app, document, editor, view, editorComponent) {
+module.exports = function(app, editor, editorComponent) {
+	let {document, view} = editor;
 	let drag = null;
 	let drawingSelection = false;
 	

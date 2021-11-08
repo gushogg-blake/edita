@@ -9,6 +9,7 @@ import render from "./canvas/render";
 
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
+import wheelHandler from "./wheelHandler";
 
 import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer.svelte";
@@ -78,7 +79,7 @@ let windowHasFocus;
 let isDragging = false;
 let lastMouseEvent;
 
-let normalMouseHandler = normalMouse(document, editor, view, {
+let normalMouseHandler = normalMouse(editor, {
 	get canvasDiv() {
 		return canvasDiv;
 	},
@@ -90,7 +91,7 @@ let normalMouseHandler = normalMouse(document, editor, view, {
 	mouseup: _mouseup,
 });
 
-let astMouseHandler = astMouse(app, document, editor, view, {
+let astMouseHandler = astMouse(app, editor, {
 	get canvasDiv() {
 		return canvasDiv;
 	},
@@ -100,6 +101,12 @@ let astMouseHandler = astMouse(app, document, editor, view, {
 	},
 	
 	mouseup: _mouseup,
+});
+
+let _wheelHandler = wheelHandler(editor, {
+	get canvasDiv() {
+		return canvasDiv;
+	},
 });
 
 function mousedown({detail}) {
@@ -288,23 +295,7 @@ function drop({detail}) {
 }
 
 function wheel(e) {
-	if (e.ctrlKey || e.altKey) {
-		return;
-	}
-	
-	let dir = e.deltaY > 0 ? 1 : -1;
-	let scrolled;
-	
-	if (e.shiftKey) {
-		scrolled = view.scrollBy(view.measurements.colWidth * 3 * dir, 0);
-	} else {
-		scrolled = view.scrollBy(0, view.measurements.rowHeight * 3 * dir);
-	}
-	
-	if (scrolled || editorMode === "app") {
-		e.preventDefault();
-		e.stopPropagation();
-	}
+	_wheelHandler.wheel(e);
 }
 
 async function keydown(e) {

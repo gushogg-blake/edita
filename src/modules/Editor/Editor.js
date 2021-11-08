@@ -454,10 +454,10 @@ class Editor extends Evented {
 		view.endBatch();
 	}
 	
-	handleWheel(wheelCombo) {
+	handleWheel(wheelCombo, cursor) {
 		let fnName = platform.prefs.editorMouseMap[wheelCombo.wheelCombo];
 		
-		this.commonWheel[fnName](wheelCombo);
+		this.commonWheel[fnName](wheelCombo, cursor);
 	}
 	
 	setSelectionFromNormalKeyboard(selection) {

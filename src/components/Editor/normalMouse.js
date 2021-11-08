@@ -1,54 +1,11 @@
 let {on, off} = require("utils/dom/domEvents");
 let Selection = require("modules/utils/Selection");
 let autoScroll = require("./utils/autoScroll");
+let {getCursor, getCharCursor} = require("./utils/cursorFromEvent");
 
-module.exports = function(document, editor, view, editorComponent) {
+module.exports = function(editor, editorComponent) {
+	let {document, view} = editor;
 	let drawingSelection = false;
-	
-	/*
-	get insert cursor from mouse event (the cursor either side of the clicked
-	char, depending on position within the char)
-	*/
-	
-	function getCursor(e) {
-		let {
-			canvasDiv,
-		} = editorComponent;
-		
-		let {
-			x: left,
-			y: top,
-		} = canvasDiv.getBoundingClientRect();
-		
-		let x = e.clientX - left;
-		let y = e.clientY - top;
-		
-		let [row, col] = view.cursorRowColFromScreenCoords(x, y);
-		
-		return view.cursorFromRowCol(row, col);
-	}
-	
-	/*
-	get char cursor (the cursor before the clicked char)
-	*/
-	
-	function getCharCursor(e) {
-		let {
-			canvasDiv,
-		} = editorComponent;
-		
-		let {
-			x: left,
-			y: top,
-		} = canvasDiv.getBoundingClientRect();
-		
-		let x = e.clientX - left;
-		let y = e.clientY - top;
-		
-		let [row, col] = view.rowColFromScreenCoords(x, y);
-		
-		return view.cursorFromRowCol(row, col, true);
-	}
 	
 	async function mousedown(e, enableDrag) {
 		if (e.button === 2) {
@@ -60,8 +17,8 @@ module.exports = function(document, editor, view, editorComponent) {
 			showingHorizontalScrollbar,
 		} = editorComponent;
 		
-		let cursor = getCursor(e);
-		let charCursor = getCharCursor(e);
+		let cursor = getCursor(e, view, canvasDiv);
+		let charCursor = getCharCursor(e, view, canvasDiv);
 		
 		let {
 			x: left,
@@ -107,14 +64,12 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function drawSelection(e) {
-		let cursor = getCursor(e);
+		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		
 		editor.normalMouse.drawSelection({
 			start: view.normalSelection.start,
 			end: cursor,
 		});
-		
-		view.redraw();
 	}
 	
 	function mousemove(e) {
@@ -151,13 +106,13 @@ module.exports = function(document, editor, view, editorComponent) {
 			return;
 		}
 		
-		let cursor = getCursor(e);
+		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		
 		editor.normalMouse.setSelectionAndStartCursorBlink(Selection.s(cursor));
 	}
 	
 	function dblclick(e) {
-		let cursor = getCharCursor(e);
+		let cursor = getCharCursor(e, view, editorComponent.canvasDiv);
 		
 		editor.normalMouse.setSelectionAndStartCursorBlink(view.Selection.wordUnderCursor(cursor));
 		
@@ -179,10 +134,9 @@ module.exports = function(document, editor, view, editorComponent) {
 			return;
 		}
 		
-		let cursor = getCursor(e);
+		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		
-		view.insertCursor = cursor;
-		view.redraw();
+		view.setInsertCursor(cursor);
 	}
 	
 	function dragenter(e) {
@@ -190,8 +144,7 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function dragleave(e) {
-		view.insertCursor = null;
-		view.redraw();
+		view.setInsertCursor(null);
 	}
 	
 	function drop(e, fromUs, toUs, extra) {
@@ -205,7 +158,7 @@ module.exports = function(document, editor, view, editorComponent) {
 			return;
 		}
 		
-		let cursor = getCursor(e);
+		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		let move = !e.ctrlKey;
 		
 		e.dataTransfer.dropEffect = move ? "move" : "copy";
@@ -214,8 +167,7 @@ module.exports = function(document, editor, view, editorComponent) {
 	}
 	
 	function dragend() {
-		view.insertCursor = null;
-		view.redraw();
+		view.setInsertCursor(null);
 		
 		mouseup();
 	}

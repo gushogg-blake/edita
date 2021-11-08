@@ -26,16 +26,6 @@ let mouseFunctions = {
 
 function wheel(e) {
 	let wheelCombo = getWheelCombo(e);
-	
-	if (editor.willHandleWheel(wheelCombo)) {
-		e.preventDefault();
-		e.stopPropagation();
-		
-		editor.handleWheel(wheelCombo);
-		
-		return;
-	}
-	
 	let fnName = platform.prefs.tabMouseMap[wheelCombo.wheelCombo];
 	
 	if (fnName) {

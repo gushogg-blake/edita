@@ -1,5 +1,5 @@
 module.exports = {
-	foldZoom(wheelCombo) {
+	foldZoom(wheelCombo, cursor) {
 		let foldIndentAdjustment = wheelCombo.dir === "up" ? 1 : -1;
 		
 		let {document, view} = this;
@@ -13,7 +13,7 @@ module.exports = {
 		*/
 		
 		function isFoldable(lineIndex) {
-			return lines[lineIndex + 1]?.indentLevel === lines[lineIndex].indentLevel;
+			return lines[lineIndex + 1]?.indentLevel >= lines[lineIndex].indentLevel;
 		}
 		
 		let maxFoldableIndent = lines.reduce(function(max, line, i) {
@@ -22,16 +22,12 @@ module.exports = {
 		
 		let minFoldIndent = Math.min(...foldHeaders.map(lineIndex => lines[lineIndex].indentLevel));
 		
-		//minFoldIndent = Math.min(minFoldIndent, maxIndent + 1);
-		
-		console.log(minFoldIndent);
+		minFoldIndent = Math.min(minFoldIndent, maxFoldableIndent + 1);
 		
 		let newFoldIndent = minFoldIndent + foldIndentAdjustment;
 		
 		newFoldIndent = Math.min(newFoldIndent, maxFoldableIndent + 1);
 		newFoldIndent = Math.max(1, newFoldIndent);
-		
-		console.log(newFoldIndent);
 		
 		folds = {};
 		
