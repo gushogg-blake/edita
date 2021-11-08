@@ -23,12 +23,6 @@ case it creates its own Editor).
 the point of this is to allow it to be used as a textarea with just
 bind:value as opposed to having to create a Document, a View, and an Editor.
 
-the other main difference between the two modes is focus behaviour - in app
-mode, we don't want the view to lose focus when clicking around the rest of
-the app (on either inactive areas or the editor's own tab at least), but in
-textarea mode we want the standard behaviour (blurring whenever we click
-somewhere else).
-
 lang is for setting the language in textarea mode, where there isn't a file
 to guess the language from.
 */
