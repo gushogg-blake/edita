@@ -252,7 +252,7 @@ class App extends Evented {
 		
 		browserWindow.show();
 		
-		this.callRenderer(browserWindow, "dialogInit", dialogOptions);
+		this.sendToRenderer(browserWindow, "dialogInit", dialogOptions);
 		
 		if (config.dev) {
 			//browserWindow.webContents.openDevTools();
@@ -273,6 +273,10 @@ class App extends Evented {
 	
 	callRenderer(browserWindow, channel, ...args) {
 		return ipcMain.callRenderer(browserWindow, channel, ...args);
+	}
+	
+	sendToRenderer(browserWindow, channel, ...args) {
+		ipcMain.sendToRenderer(browserWindow, channel, ...args);
 	}
 	
 	sendToRenderers(channel, ...args) {

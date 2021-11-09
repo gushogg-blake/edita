@@ -1,5 +1,4 @@
 let Evented = require("utils/Evented");
-let ipcRenderer = require("platform/modules/ipcRenderer");
 
 class App extends Evented {
 	constructor(options) {
@@ -13,7 +12,7 @@ class App extends Evented {
 	}
 	
 	respond(buttonIndex) {
-		ipcRenderer.invoke("callOpener", "call", "messageBoxResponse", buttonIndex);
+		platform.callOpener("messageBoxResponse", buttonIndex);
 	}
 	
 	teardown() {
