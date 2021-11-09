@@ -1,6 +1,6 @@
 module.exports = {
-	test: {
-		type: "test",
-		label: "Test",
+	contents: {
+		type: "contents",
+		label: "Contents",
 	},
 };
