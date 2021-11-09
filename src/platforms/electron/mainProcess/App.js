@@ -183,7 +183,6 @@ class App extends Evented {
 			}
 		});
 		
-		//setTimeout(() => {
 		this.dialogsByAppWindowAndName.set(browserWindow, {
 			findAndReplace: this.createDialogWindow("findAndReplace", {
 				width: 640,
@@ -200,7 +199,6 @@ class App extends Evented {
 				height: 75,
 			}, browserWindow),
 		});
-		//}, 1000);
 		
 		this.appWindows.push(browserWindow);
 		
@@ -212,6 +210,7 @@ class App extends Evented {
 		
 		let browserWindow = new BrowserWindow({
 			show: false,
+			useContentSize: true,
 			
 			webPreferences: {
 				nodeIntegration: true,
@@ -237,18 +236,23 @@ class App extends Evented {
 		return browserWindow;
 	}
 	
-	openDialogWindow(name, dialogOptions, opener) {
-		let browserWindow = this.dialogsByAppWindowAndName.get(opener)[name];
+	calculateDialogPosition(dialogWindow, opener) {
 		let openerBounds = opener.getBounds();
-		let dialogBounds = browserWindow.getBounds();
-		
+		let dialogBounds = dialogWindow.getBounds();
 		let x = Math.round(openerBounds.x + (openerBounds.width - dialogBounds.width) / 2);
 		let y = Math.round(openerBounds.y + (openerBounds.height - dialogBounds.height) / 2);
 		
-		this.callRenderer(browserWindow, "dialogInit", dialogOptions);
+		return [x, y];
+	}
+	
+	openDialogWindow(name, dialogOptions, opener) {
+		let browserWindow = this.dialogsByAppWindowAndName.get(opener)[name];
 		
-		browserWindow.setPosition(x, y);
+		browserWindow.setPosition(...this.calculateDialogPosition(browserWindow, opener));
+		
 		browserWindow.show();
+		
+		this.callRenderer(browserWindow, "dialogInit", dialogOptions);
 		
 		if (config.dev) {
 			//browserWindow.webContents.openDevTools();
