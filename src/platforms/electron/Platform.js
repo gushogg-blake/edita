@@ -68,6 +68,10 @@ class Platform extends Common {
 			}
 		});
 		
+		ipcRenderer.on("dialogInit", (e, options) => {
+			this.fire("dialogInit", options);
+		});
+		
 		this.lsp = lsp(this.lspConfig);
 	}
 	
@@ -135,12 +139,7 @@ class Platform extends Common {
 	showMessageBox(app, options) {
 		let promise = promiseWithMethods();
 		
-		ipc.openDialogWindow("messageBox", options, {
-			useOpenerAsParent: true,
-			modal: true,
-			width: 500,
-			height: 75,
-		});
+		ipc.openDialogWindow("messageBox", options);
 		
 		this.messageBoxPromise = promise;
 		
@@ -181,7 +180,7 @@ class Platform extends Common {
 	}
 	
 	openDialogWindow(app, dialog, dialogOptions, windowOptions) {
-		ipc.openDialogWindow(dialog, dialogOptions, windowOptions);
+		ipc.openDialogWindow(dialog, dialogOptions);
 	}
 	
 	callOpener(channel, method, ...args) {

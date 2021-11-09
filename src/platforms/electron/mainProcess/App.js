@@ -2,7 +2,6 @@ let {
 	app: electronApp,
 	protocol,
 	BrowserWindow,
-	globalShortcut,
 	Menu,
 } = require("electron");
 
@@ -26,14 +25,21 @@ class App extends Evented {
 		this.config = config;
 		
 		this.appWindows = [];
-		this.dialogWindows = [];
 		this.mainWindow = null;
 		
-		this.closeWithoutConfirming = new WeakMap();
+		this.closeWithoutConfirming = new WeakSet();
 		this.dialogOpeners = new WeakMap();
-		this.dialogWindowsByName = {};
+		this.dialogsByAppWindowAndName = new WeakMap();
 		
 		this.filesToOpenOnStartup = yargs(hideBin(process.argv)).argv._.map(p => path.resolve(process.cwd(), p));
+	}
+	
+	get dialogWindows() {
+		return this.appWindows.map(w => this.getDialogs(w)).flat();
+	}
+	
+	getDialogs(appWindow) {
+		return Object.values(this.dialogsByAppWindowAndName.get(appWindow));
 	}
 	
 	async launch() {
@@ -52,7 +58,7 @@ class App extends Evented {
 		ipcMain.on("closeWindow", (e) => {
 			let browserWindow = this.browserWindowFromEvent(e);
 			
-			this.closeWithoutConfirming.set(browserWindow);
+			this.closeWithoutConfirming.add(browserWindow);
 			
 			browserWindow.close();
 		});
@@ -114,10 +120,6 @@ class App extends Evented {
 			this.mainWindow = this.createAppWindow();
 		});
 		
-		electronApp.on("window-all-closed", () => {
-			electronApp.quit();
-		});
-		
 		electronApp.on("second-instance", (e, argv, dir) => {
 			let files = yargs(hideBin(argv)).argv._.map(p => path.resolve(dir, p));
 			
@@ -157,6 +159,8 @@ class App extends Evented {
 		
 		let close = false;
 		
+		console.log("??");
+		
 		browserWindow.on("close", (e) => {
 			if (!this.closeWithoutConfirming.has(browserWindow)) {
 				e.preventDefault();
@@ -168,11 +172,29 @@ class App extends Evented {
 		browserWindow.on("closed", () => {
 			removeInPlace(this.appWindows, browserWindow);
 			
-			for (let dialogWindow of this.dialogWindows) {
-				if (this.dialogOpeners.get(dialogWindow) === browserWindow) {
-					dialogWindow.close();
-				}
+			if (this.mainWindow === browserWindow) {
+				this.mainWindow = this.appWindows[0] || null;
 			}
+			
+			for (let dialogWindow of this.getDialogs(browserWindow)) {
+				dialogWindow.close();
+			}
+		});
+		
+		this.dialogsByAppWindowAndName.set(browserWindow, {
+			//findAndReplace: this.createDialogWindow("findAndReplace", {}, browserWindow),
+			//
+			//snippetEditor: this.createDialogWindow("snippetEditor", {
+			//	width: 680,
+			//	height: 480,
+			//}, browserWindow),
+			//
+			//messageBox: this.createDialogWindow("messageBox", {
+			//	modal: true,
+			//	parent: browserWindow,
+			//	width: 500,
+			//	height: 75,
+			//}, browserWindow),
 		});
 		
 		this.appWindows.push(browserWindow);
@@ -180,9 +202,11 @@ class App extends Evented {
 		return browserWindow;
 	}
 	
-	createDialogWindow(name, url, options, opener) {
+	createDialogWindow(name, windowOptions, opener) {
+		let url = "app://-/dialogs/" + name + ".html";
+		
 		let browserWindow = new BrowserWindow({
-			...options,
+			show: false,
 			
 			webPreferences: {
 				nodeIntegration: true,
@@ -190,67 +214,38 @@ class App extends Evented {
 			},
 			
 			backgroundColor: "#edecea",
+			...windowOptions,
+		});
+		
+		browserWindow.on("close", (e) => {
+			e.preventDefault();
+			
+			browserWindow.hide();
 		});
 		
 		browserWindow.loadURL(url);
 		
-		browserWindow.on("closed", () => {
-			removeInPlace(this.dialogWindows, browserWindow);
-			
-			delete this.dialogWindowsByName[name];
-						
-			this.fire("dialogWindowClosed", {
-				browserWindow,
-			});
-		});
-		
-		this.dialogWindows.push(browserWindow);
-		this.dialogWindowsByName[name] = browserWindow;
 		this.dialogOpeners.set(browserWindow, opener);
 		
 		return browserWindow;
 	}
 	
-	openDialogWindow(name, dialogOptions, windowOptions, opener) {
-		let url = "app://-/dialogs/" + name + ".html?options=" + encodeURIComponent(JSON.stringify(dialogOptions));
-		let existingWindow = this.dialogWindowsByName[name];
-		
-		if (existingWindow) {
-			existingWindow.loadURL(url);
-			existingWindow.show();
-			
-			return;
-		}
-		
-		windowOptions = {
-			width: 800,
-			height: 600,
-			useOpenerAsParent: false,
-			...windowOptions,
-		};
-		
+	openDialogWindow(name, dialogOptions, opener) {
+		let browserWindow = this.dialogsByAppWindowAndName.get(opener)[name];
 		let openerBounds = opener.getBounds();
+		let dialogBounds = browserWindow.getBounds();
 		
-		let x = Math.round(openerBounds.x + (openerBounds.width - windowOptions.width) / 2);
-		let y = Math.round(openerBounds.y + (openerBounds.height - windowOptions.height) / 2);
+		let x = Math.round(openerBounds.x + (openerBounds.width - dialogBounds.width) / 2);
+		let y = Math.round(openerBounds.y + (openerBounds.height - dialogBounds.height) / 2);
 		
-		let browserWindow = this.createDialogWindow(name, url, {
-			x,
-			y,
-			parent: windowOptions.useOpenerAsParent ? opener : undefined,
-			...windowOptions,
-		}, opener);
+		this.callRenderer(browserWindow, "dialogInit", dialogOptions);
+		
+		browserWindow.setPosition(x, y);
+		browserWindow.show();
 		
 		if (config.dev) {
 			//browserWindow.webContents.openDevTools();
 		}
-		
-		this.fire("dialogWindowOpened", {
-			browserWindow,
-			url,
-			windowOptions,
-			opener,
-		});
 	}
 	
 	browserWindowFromEvent(e) {
@@ -292,7 +287,7 @@ class App extends Evented {
 	
 	forceQuit() {
 		for (let browserWindow of this.appWindows) {
-			this.closeWithoutConfirming.set(browserWindow);
+			this.closeWithoutConfirming.add(browserWindow);
 		}
 		
 		electronApp.quit();

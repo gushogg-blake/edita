@@ -2,7 +2,6 @@ let {app: electronApp} = require("electron");
 let {spawn} = require("child_process");
 let path = require("path");
 let chokidar = require("chokidar");
-let {removeInPlace} = require("./utils/arrayMethods");
 let fs = require("./modules/fs");
 
 function debounce(fn, delay) {
@@ -25,28 +24,6 @@ module.exports = async function(app) {
 		],
 	});
 	
-	let dialogsByName = {};
-	
-	app.on("dialogWindowOpened", function({url, browserWindow}) {
-		let name = fs(url).basename;
-		
-		if (!dialogsByName[name]) {
-			dialogsByName[name] = [];
-		}
-		
-		dialogsByName[name].push(browserWindow);
-	});
-	
-	app.on("dialogWindowClosed", function({browserWindow}) {
-		for (let [name, list] of Object.entries(dialogsByName)) {
-			removeInPlace(list, browserWindow);
-			
-			if (list.length === 0) {
-				delete dialogsByName[name];
-			}
-		}
-	});
-	
 	let watchDialogs = (await fs(__dirname, "../dialogs").ls()).map(function({name}) {
 		let watcher = chokidar.watch([
 			path.resolve(__dirname, "../public/dialogs/" + name + ".html"),
@@ -55,9 +32,9 @@ module.exports = async function(app) {
 		]);
 		
 		watcher.on("change", function() {
-			if (dialogsByName[name]) {
-				for (let browserWindow of dialogsByName[name]) {
-					browserWindow.reload();
+			for (let appWindow of app.appWindows) {
+				for (let dialogWindow of Object.values(app.dialogsByAppWindowAndName.get(appWindow))) {
+					dialogWindow.reload();
 				}
 			}
 		});

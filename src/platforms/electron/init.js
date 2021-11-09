@@ -29,9 +29,13 @@ window.addEventListener("keydown", function(e) {
 
 window.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
 
-export default async function(init) {
+export default async function(init, isDialog=false) {
 	await platform.init();
 	await base.init(components);
 	
-	init();
+	if (isDialog) {
+		platform.on("dialogInit", init);
+	} else {
+		init();
+	}
 }

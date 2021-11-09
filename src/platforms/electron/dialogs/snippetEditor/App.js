@@ -37,6 +37,10 @@ class App extends Evented {
 			await platform.snippets.update(this.options.id, snippet);
 		}
 	}
+	
+	teardown() {
+		
+	}
 }
 
 module.exports = App;

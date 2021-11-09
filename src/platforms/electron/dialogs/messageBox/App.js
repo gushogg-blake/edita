@@ -15,6 +15,10 @@ class App extends Evented {
 	respond(buttonIndex) {
 		ipcRenderer.invoke("callOpener", "call", "messageBoxResponse", buttonIndex);
 	}
+	
+	teardown() {
+		
+	}
 }
 
 module.exports = App;

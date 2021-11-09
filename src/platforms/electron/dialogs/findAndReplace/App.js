@@ -55,6 +55,10 @@ class App extends Evented {
 	async init() {
 		
 	}
+	
+	teardown() {
+		
+	}
 }
 
 module.exports = App;
