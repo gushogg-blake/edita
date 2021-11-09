@@ -116,8 +116,8 @@ module.exports = function(
 				below: 0,
 			};
 			
-			if (astMode.adjustSpaces) {
-				adjustSpaces = astMode.adjustSpaces(document, fromSelection, toSelection, selectionLines, lines);
+			if (astMode.adjustSpaces && toStart === toEnd) {
+				adjustSpaces = astMode.adjustSpaces(document, fromSelection, toSelection, selectionLines, lines, insertIndentLevel);
 			}
 			
 			if (adjustSpaces.above < 0) {
@@ -141,7 +141,7 @@ module.exports = function(
 			
 			edits.push(edit);
 			
-			let newSelectionStart = toStart - removeDiff;
+			let newSelectionStart = toStart - removeDiff + adjustSpaces.above;
 			
 			newSelection = s(newSelectionStart, newSelectionStart + lines.length);
 		}

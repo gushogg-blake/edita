@@ -17,16 +17,31 @@ module.exports = {
 		});
 	},
 	
-	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines) {
-		console.log(document);
-		console.log(fromSelection);
-		console.log(toSelection);
-		console.log(selectionLines);
-		console.log(insertLines);
+	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines, insertIndentLevel) {
+		let spaceBlocks = platform.getPref("verticalSpacing.spaceBlocks");
+		
+		if (!spaceBlocks) {
+			return {
+				above: 0,
+				below: 0,
+			};
+		}
+		
+		let insertLineIndex = toSelection.startLineIndex;
+		
+		let lineAbove = insertLineIndex > 0 ? document.lines[insertLineIndex - 1] : null;
+		let lineBelow = insertLineIndex < document.lines.length ? document.lines[insertLineIndex] : null;
+		
+		let isBlock = document.getHeadersOnLine(fromSelection.startLineIndex).length > 0;
+		let isBelowSibling = lineAbove?.indentLevel === insertIndentLevel && lineAbove.trimmed.length > 0;
+		let isAboveSibling = lineBelow?.indentLevel === insertIndentLevel && lineBelow.trimmed.length > 0;
+		
+		let isBelowBlock = lineAbove && document.getFootersOnLine(insertLineIndex - 1).length > 0;
+		let isAboveBlock = lineBelow && document.getHeadersOnLine(insertLineIndex).length > 0;
 		
 		return {
-			above: 0,
-			below: 0,
+			above: isBelowBlock || isBlock && isBelowSibling ? 1 : 0,
+			below: isAboveBlock || isBlock && isAboveSibling ? 1 : 0,
 		};
 	},
 };

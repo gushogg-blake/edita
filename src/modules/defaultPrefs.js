@@ -28,6 +28,10 @@ module.exports = function(systemInfo) {
 		
 		copyLineIfSelectionNotFull: false,
 		
+		verticalSpacing: {
+			spaceBlocks: true,
+		},
+		
 		normalKeymap: {
 			"ArrowUp": "up",
 			"ArrowDown": "down",
