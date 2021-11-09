@@ -441,6 +441,12 @@ class View extends Evented {
 		this.batchRedraw();
 	}
 	
+	setInsertCursor(cursor) {
+		this.insertCursor = cursor;
+		
+		this.batchRedraw();
+	}
+	
 	setAstSelection(astSelection) {
 		this.astSelection = astCommon.selection.trim(this.document, this.AstSelection.validate(astSelection));
 		this.astSelectionHilite = null;

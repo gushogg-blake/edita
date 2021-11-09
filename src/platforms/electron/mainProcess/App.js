@@ -177,25 +177,26 @@ class App extends Evented {
 			}
 			
 			for (let dialogWindow of this.getDialogs(browserWindow)) {
+				console.log(dialogWindow.getBounds());
 				dialogWindow.close();
 			}
 		});
 		
+		setTimeout(() => {
 		this.dialogsByAppWindowAndName.set(browserWindow, {
-			//findAndReplace: this.createDialogWindow("findAndReplace", {}, browserWindow),
-			//
-			//snippetEditor: this.createDialogWindow("snippetEditor", {
-			//	width: 680,
-			//	height: 480,
-			//}, browserWindow),
-			//
-			//messageBox: this.createDialogWindow("messageBox", {
-			//	modal: true,
-			//	parent: browserWindow,
-			//	width: 500,
-			//	height: 75,
-			//}, browserWindow),
+			findAndReplace: this.createDialogWindow("findAndReplace", {}, browserWindow),
+			
+			snippetEditor: this.createDialogWindow("snippetEditor", {
+				width: 680,
+				height: 480,
+			}, browserWindow),
+			
+			messageBox: this.createDialogWindow("messageBox", {
+				width: 500,
+				height: 75,
+			}, browserWindow),
 		});
+		}, 1000);
 		
 		this.appWindows.push(browserWindow);
 		
@@ -206,7 +207,7 @@ class App extends Evented {
 		let url = "app://-/dialogs/" + name + ".html";
 		
 		let browserWindow = new BrowserWindow({
-			show: false,
+			//show: false,
 			
 			webPreferences: {
 				nodeIntegration: true,
@@ -217,11 +218,13 @@ class App extends Evented {
 			...windowOptions,
 		});
 		
-		browserWindow.on("close", (e) => {
-			e.preventDefault();
-			
-			browserWindow.hide();
-		});
+		//browserWindow.on("close", (e) => {
+		//	e.preventDefault();
+		//	
+		//	browserWindow.hide();
+		//});
+		
+		console.log("????");
 		
 		browserWindow.loadURL(url);
 		
