@@ -142,7 +142,7 @@ class Platform extends Common {
 	removeBackup(document) {
 		let key = encodeURIComponent(document.url);
 		
-		this.fs(this.config.userDataDir, "backups", key).delete();
+		this.backupFs(key).delete();
 	}
 	
 	async filesFromDropEvent(e) {

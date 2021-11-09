@@ -49,7 +49,7 @@ button {
 		Lang
 	</button>
 	{#if platform.useFileUploader}
-		<FileInput on:upload={upload}/>
+		<FileInput multiple on:upload={upload}/>
 	{:else}
 		<button on:click={() => app.functions.open()}>
 			Open

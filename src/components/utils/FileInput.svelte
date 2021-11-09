@@ -3,6 +3,8 @@ import {createEventDispatcher} from "svelte";
 import bluebird from "bluebird";
 import lid from "utils/lid";
 
+export let multiple = false;
+
 let fire = createEventDispatcher();
 
 let id = lid();
@@ -51,7 +53,13 @@ button {
 </style>
 
 <button>
-	<input type="file" {id} class="hideInput" on:change={upload}>
+	<input
+		type="file"
+		{id}
+		class="hideInput"
+		{multiple}
+		on:change={upload}
+	>
 	<label for={id}>
 		Open
 	</label>
