@@ -118,6 +118,10 @@ class App extends Evented {
 			});
 			
 			this.mainWindow = this.createAppWindow();
+			
+			electronApp.on("window-all-closed", () => {
+				electronApp.quit();
+			});
 		});
 		
 		electronApp.on("second-instance", (e, argv, dir) => {
@@ -159,8 +163,6 @@ class App extends Evented {
 		
 		let close = false;
 		
-		console.log("??");
-		
 		browserWindow.on("close", (e) => {
 			if (!this.closeWithoutConfirming.has(browserWindow)) {
 				e.preventDefault();
@@ -177,14 +179,16 @@ class App extends Evented {
 			}
 			
 			for (let dialogWindow of this.getDialogs(browserWindow)) {
-				console.log(dialogWindow.getBounds());
 				dialogWindow.close();
 			}
 		});
 		
-		setTimeout(() => {
+		//setTimeout(() => {
 		this.dialogsByAppWindowAndName.set(browserWindow, {
-			findAndReplace: this.createDialogWindow("findAndReplace", {}, browserWindow),
+			findAndReplace: this.createDialogWindow("findAndReplace", {
+				width: 640,
+				height: 300,
+			}, browserWindow),
 			
 			snippetEditor: this.createDialogWindow("snippetEditor", {
 				width: 680,
@@ -196,7 +200,7 @@ class App extends Evented {
 				height: 75,
 			}, browserWindow),
 		});
-		}, 1000);
+		//}, 1000);
 		
 		this.appWindows.push(browserWindow);
 		
@@ -207,7 +211,7 @@ class App extends Evented {
 		let url = "app://-/dialogs/" + name + ".html";
 		
 		let browserWindow = new BrowserWindow({
-			//show: false,
+			show: false,
 			
 			webPreferences: {
 				nodeIntegration: true,
@@ -218,13 +222,13 @@ class App extends Evented {
 			...windowOptions,
 		});
 		
-		//browserWindow.on("close", (e) => {
-		//	e.preventDefault();
-		//	
-		//	browserWindow.hide();
-		//});
-		
-		console.log("????");
+		browserWindow.on("close", (e) => {
+			if (this.appWindows.includes(this.dialogOpeners.get(browserWindow))) {
+				e.preventDefault();
+				
+				browserWindow.hide();
+			}
+		});
 		
 		browserWindow.loadURL(url);
 		
