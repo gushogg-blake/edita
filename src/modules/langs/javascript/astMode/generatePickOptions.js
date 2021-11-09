@@ -7,7 +7,7 @@ module.exports = function(document, selection) {
 	let headerLine = lines[startLineIndex];
 	
 	if (document.getHeadersOnLine(startLineIndex).length > 0) {
-		options.push(pickOptions.contents);
+		//options.push(pickOptions.contents);
 	}
 	
 	return options;
