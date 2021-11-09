@@ -5,6 +5,10 @@ class App extends Evented {
 		super();
 		
 		this.options = options;
+		
+		this.teardownCallbacks = [
+			platform.on("dialogClosed", this.onDialogClosed.bind(this)),
+		];
 	}
 	
 	async init() {
@@ -15,8 +19,14 @@ class App extends Evented {
 		platform.callOpener("messageBoxResponse", buttonIndex);
 	}
 	
+	onDialogClosed() {
+		this.respond(null);
+	}
+	
 	teardown() {
-		
+		for (let fn of this.teardownCallbacks) {
+			fn();
+		}
 	}
 }
 

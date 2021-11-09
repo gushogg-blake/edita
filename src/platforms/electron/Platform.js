@@ -72,6 +72,10 @@ class Platform extends Common {
 			this.fire("dialogInit", options);
 		});
 		
+		ipcRenderer.on("dialogClosed", () => {
+			this.fire("dialogClosed");
+		});
+		
 		this.lsp = lsp(this.lspConfig);
 	}
 	

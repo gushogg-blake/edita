@@ -226,6 +226,8 @@ class App extends Evented {
 				e.preventDefault();
 				
 				browserWindow.hide();
+				
+				this.sendToRenderer(browserWindow, "dialogClosed");
 			}
 		});
 		
