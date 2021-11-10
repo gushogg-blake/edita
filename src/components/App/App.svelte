@@ -109,8 +109,6 @@ onMount(function() {
 @import "mixins/abs-sticky";
 
 #main {
-	--resizeHandleSize: 3px;
-	
 	display: grid;
 	grid-template-rows: auto auto 1fr auto auto;
 	grid-template-columns: auto 1fr auto;
