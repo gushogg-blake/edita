@@ -10,6 +10,7 @@ import Tab from "./Tab.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
 import BottomPane from "./BottomPane.svelte";
+import ResizeHandle from "./ResizeHandle.svelte";
 import FindBar from "./FindBar.svelte";
 
 export let app;
@@ -108,6 +109,8 @@ onMount(function() {
 @import "mixins/abs-sticky";
 
 #main {
+	--resizeHandleSize: 3px;
+	
 	display: grid;
 	grid-template-rows: auto auto 1fr auto auto;
 	grid-template-columns: auto 1fr auto;
@@ -133,6 +136,7 @@ onMount(function() {
 }
 
 #leftContainer {
+	position: relative;
 	grid-area: left;
 	min-width: 0;
 }
@@ -185,6 +189,7 @@ onMount(function() {
 }
 
 #rightContainer {
+	position: relative;
 	grid-area: right;
 	min-width: 0;
 }
@@ -195,6 +200,7 @@ onMount(function() {
 }
 
 #bottomContainer {
+	position: relative;
 	grid-area: bottom;
 	min-width: 0;
 }
@@ -225,6 +231,12 @@ onMount(function() {
 		<div id="left">
 			<LeftPane/>
 		</div>
+		<ResizeHandle
+			position="left"
+			getSize={() => panes.left.size}
+			on:resize={({detail: size}) => app.resizePane("left", size)}
+			on:end={({detail: size}) => app.resizePaneAndSave("left", size)}
+		/>
 	</div>
 	<div id="tabBarContainer">
 		{#if tabs.length > 0}
@@ -255,6 +267,12 @@ onMount(function() {
 		<div id="right">
 			<RightPane/>
 		</div>
+		<ResizeHandle
+			position="right"
+			getSize={() => panes.right.size}
+			on:resize={({detail: size}) => app.resizePane("right", size)}
+			on:end={({detail: size}) => app.resizePaneAndSave("right", size)}
+		/>
 	</div>
 	<div
 		id="bottomContainer"
@@ -264,5 +282,11 @@ onMount(function() {
 		<div id="bottom">
 			<BottomPane/>
 		</div>
+		<ResizeHandle
+			position="bottom"
+			getSize={() => panes.bottom.size}
+			on:resize={({detail: size}) => app.resizePane("bottom", size)}
+			on:end={({detail: size}) => app.resizePaneAndSave("bottom", size)}
+		/>
 	</div>
 </div>

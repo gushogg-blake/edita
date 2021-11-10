@@ -243,8 +243,10 @@ class App extends Evented {
 		this.fire("updatePanes");
 	}
 	
-	savePaneSize(name) {
-		platform.setPref("panes." + name + ".size", this.panes[name].size);
+	resizePaneAndSave(name, size) {
+		this.resizePane(name, size);
+		
+		platform.setPref("panes." + name + ".size", size);
 	}
 	
 	showFindBar() {
