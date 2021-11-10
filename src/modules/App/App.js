@@ -7,7 +7,6 @@ let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
 let promiseWithMethods = require("utils/promiseWithMethods");
 let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
-let windowFocus = require("utils/dom/windowFocus");
 
 let URL = require("modules/URL");
 let protocol = require("modules/protocol");
@@ -49,7 +48,6 @@ class App extends Evented {
 		this.teardownCallbacks = [
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
-			windowFocus.listen(this.onWindowFocusChanged.bind(this)),
 		];
 		
 		platform.handleIpcMessages("findAndReplace", this.findAndReplace);
@@ -140,12 +138,6 @@ class App extends Evented {
 		setTimeout(() => {
 			this.selectedTab?.editor.view.requestFocus();
 		}, 0);
-	}
-	
-	onWindowFocusChanged(isFocused) {
-		if (isFocused) {
-			this.focusSelectedTabAsync();
-		}
 	}
 	
 	getTabName(tab) {

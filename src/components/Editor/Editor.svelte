@@ -289,6 +289,10 @@ function drop({detail}) {
 		astMouseHandler.drop(e, fromUs, toUs, extra);
 	}
 	
+	if (!fromUs) {
+		view.requestFocus();
+	}
+	
 	lastMouseEvent = e;
 }
 
