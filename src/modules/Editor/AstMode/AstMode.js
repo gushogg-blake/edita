@@ -16,6 +16,13 @@ let commands = {
 	},
 	
 	unwrap() {
+		let {editor} = this;
+		
+		let {
+			document,
+			astSelection,
+		} = editor;
+		
 		
 	},
 };
