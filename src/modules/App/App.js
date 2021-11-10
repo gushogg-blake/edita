@@ -358,6 +358,10 @@ class App extends Evented {
 		let editor = new Editor(document, view);
 		let tab = new Tab(this, editor);
 		
+		editor.on("cut copy", (str) => {
+			this.bottomPane.addClipping(str);
+		});
+		
 		await tab.init();
 		
 		tab.on("focus", this.onTabFocus.bind(this));

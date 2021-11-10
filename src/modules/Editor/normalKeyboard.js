@@ -546,7 +546,9 @@ module.exports = {
 			return;
 		}
 		
-		platform.clipboard.write(this.getSelectedText());
+		let str = this.getSelectedText();
+		
+		platform.clipboard.write(str);
 		
 		let {
 			edit,
@@ -563,14 +565,20 @@ module.exports = {
 		
 		this.updateSnippetExpressions();
 		this.clearBatchState();
+		
+		this.fire("cut", str);
 	},
 	
 	copy() {
-		if (this.view.Selection.isFull()) {
-			platform.clipboard.write(this.getSelectedText());
-		} else if (platform.getPref("copyLineIfSelectionNotFull")) {
-			platform.clipboard.write(this.document.lines[this.normalSelection.start.lineIndex].string);
-		}
+		let str = (
+			this.view.Selection.isFull()
+			? this.getSelectedText()
+			: this.document.lines[this.normalSelection.start.lineIndex].string
+		);
+		
+		platform.clipboard.write(str);
+		
+		this.fire("copy", str);
 		
 		return ["noScrollCursorIntoView"];
 	},
