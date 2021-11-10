@@ -173,9 +173,7 @@ function mousemove(e) {
 
 function mouseup(e) {
 	if (useSyntheticDrag) {
-		if (mode === "ast") {
-			syntheticDragHandler.mouseup(e);
-		}
+		syntheticDragHandler.mouseup(e);
 	} else {
 		if (mouseMovedDistance <= clickDistanceThreshold) {
 			fire("click", e);

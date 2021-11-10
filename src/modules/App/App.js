@@ -129,6 +129,8 @@ class App extends Evented {
 			this.lastSelectedPath = tab.path;
 		}
 		
+		this.bottomPane.clippingsEditor.setLang(tab.editor.document.lang);
+		
 		this.fire("selectTab");
 		
 		this.focusSelectedTabAsync();

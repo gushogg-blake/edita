@@ -3,6 +3,7 @@ module.exports = function(editor) {
 	
 	let mouseIsDown = false;
 	let switchToAstModeOnMouseUp = false;
+	let switchToNormalModeOnMouseUp = false;
 	
 	let keyIsDown = false;
 	let keyDownAt;
@@ -51,7 +52,11 @@ module.exports = function(editor) {
 		
 		if (editor.mode === "ast") {
 			if (downTime >= platform.prefs.minHoldTime || keyPressedWhilePeeking) {
-				switchToNormalMode();
+				if (mouseIsDown) {
+					switchToNormalModeOnMouseUp = true;
+				} else {
+					switchToNormalMode();
+				}
 			} else {
 				switchToAstMode();
 			}
@@ -94,6 +99,12 @@ module.exports = function(editor) {
 				switchToAstMode();
 				
 				switchToAstModeOnMouseUp = false;
+			}
+			
+			if (switchToNormalModeOnMouseUp) {
+				switchToNormalMode();
+				
+				switchToNormalModeOnMouseUp = false;
 			}
 		},
 		
