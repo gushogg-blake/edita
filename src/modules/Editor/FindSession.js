@@ -20,12 +20,9 @@ class FindSession {
 	}
 	
 	next() {
-		let {
-			done,
-			value: result,
-		} = this.generator.next();
+		let {value: result} = this.generator.next();
 		
-		if (done) {
+		if (!value) {
 			return null;
 		}
 		
