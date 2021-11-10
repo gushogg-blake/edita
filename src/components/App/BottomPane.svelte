@@ -2,6 +2,7 @@
 import {onMount, getContext} from "svelte";
 import TabBar from "components/TabBar.svelte";
 import FindResults from "components/FindResults.svelte";
+import Clippings from "components/Clippings.svelte";
 
 let app = getContext("app");
 
@@ -78,6 +79,15 @@ onMount(function() {
 	<div id="content">
 		<div class="content" class:hide={selectedTab.id !== "findResults"}>
 			<FindResults/>
+		</div>
+		<div class="content" class:hide={selectedTab.id !== "clippings"}>
+			<Clippings/>
+		</div>
+		<div class="content" class:hide={selectedTab.id !== "log"}>
+			Log
+		</div>
+		<div class="content" class:hide={selectedTab.id !== "commandLine"}>
+			Command line
 		</div>
 	</div>
 </div>

@@ -104,4 +104,19 @@ module.exports = {
 		
 		return results;
 	},
+	
+	edit(selection, replaceWith) {
+		let {
+			edit,
+			newSelection,
+		} = this.document.replaceSelection(selection, replaceWith);
+		
+		let edits = [edit];
+		
+		this.applyAndAddHistoryEntry({
+			edits,
+			normalSelection: newSelection,
+			snippetSession: this.adjustSnippetSession(edits),
+		});
+	},
 };

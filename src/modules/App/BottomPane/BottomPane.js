@@ -9,11 +9,26 @@ class BottomPane extends Evented {
 		this.app = app;
 		
 		this.findResults = new FindResults(app);
+		this.clippingsEditor = app.createEditor();
+		
+		this.clippingsEditor.view.show();
 		
 		this.tabs = [
 			{
 				id: "findResults",
 				label: "Find results",
+			},
+			{
+				id: "clippings",
+				label: "Clippings",
+			},
+			{
+				id: "log",
+				label: "Log",
+			},
+			{
+				id: "commandLine",
+				label: "Command line",
 			},
 		];
 		
@@ -34,6 +49,10 @@ class BottomPane extends Evented {
 		this.selectTab(this.tabsById.findResults);
 		
 		this.app.showPane("bottom");
+	}
+	
+	addClipping(str) {
+		this.clippingsEditor.api.edit(this.clippingsEditor.document.cursorAtStart(), str + "\n\n");
 	}
 }
 

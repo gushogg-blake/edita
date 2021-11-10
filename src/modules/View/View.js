@@ -194,6 +194,9 @@ class View extends Evented {
 		let rowsRenderedOrSkipped = 0;
 		
 		while (lineIndex < wrappedLines.length) {
+			let wrappedLine = wrappedLines[lineIndex];
+			let {line} = wrappedLine;
+			
 			if (
 				AstSelection.lineIsWithinSelection(lineIndex, astSelection)
 				|| astSelectionHilite && AstSelection.lineIsWithinSelection(lineIndex, astSelectionHilite)
@@ -211,9 +214,6 @@ class View extends Evented {
 				
 				continue;
 			}
-			
-			let wrappedLine = wrappedLines[lineIndex];
-			let {line} = wrappedLine;
 			
 			byLineIndex.set(lineIndex, astMode.generateDropTargets(
 				document,

@@ -299,6 +299,10 @@ class BaseDocument extends Evented {
 		return width;
 	}
 	
+	cursorAtStart() {
+		return s(c(0, 0));
+	}
+	
 	cursorAtEnd() {
 		return this.source.cursorAtEnd();
 	}
