@@ -2,14 +2,13 @@
 import {onMount, getContext} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import {on} from "utils/dom/domEvents";
+import Spacer from "components/utils/Spacer.svelte";
 
 let app = getContext("app");
 
 let editor = app.selectedTab.editor;
 
 let blur = function() {
-	editor.find.reset();
-	
 	app.hideFindBarAndFocusEditor();
 }
 
@@ -109,10 +108,12 @@ onMount(function() {
 	
 	input.focus();
 	
+	editor.find.reset();
+	
 	if (search) {
-		 input.select();
-		 
-		 editor.find.find(search, type, caseMode);
+		input.select();
+		
+		editor.find.find(search, type, caseMode);
 	}
 	
 	let teardown = [
@@ -128,7 +129,10 @@ onMount(function() {
 </script>
 
 <style type="text/scss">
-
+#main {
+	display: flex;
+	padding: 3px;
+}
 </style>
 
 <div
@@ -137,10 +141,11 @@ onMount(function() {
 	tabindex="0"
 	on:focus={onFocus}
 >
-	<button on:click={blur}>x</button>
 	<input
 		bind:this={input}
 		on:keydown={inputKeydown}
 		on:input={onInput}
 	>
+	<Spacer/>
+	<button on:click={blur}>x</button>
 </div>

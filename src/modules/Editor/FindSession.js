@@ -87,7 +87,7 @@ class FindSession {
 			search,
 			type,
 			caseMode,
-			startCursor: this.document.cursorFromIndex(startIndex),
+			startIndex,
 			enumerate,
 		});
 	}
