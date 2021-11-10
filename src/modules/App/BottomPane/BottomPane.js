@@ -11,6 +11,7 @@ class BottomPane extends Evented {
 		this.findResults = new FindResults(app);
 		this.clippingsEditor = app.createEditor();
 		
+		this.clippingsEditor.view.setWrap(true);
 		this.clippingsEditor.view.show();
 		
 		this.tabs = [
@@ -52,7 +53,9 @@ class BottomPane extends Evented {
 	}
 	
 	addClipping(str) {
-		this.clippingsEditor.api.edit(this.clippingsEditor.document.cursorAtStart(), str + "\n\n");
+		let {newline} = this.clippingsEditor.document.fileDetails;
+		
+		this.clippingsEditor.api.edit(this.clippingsEditor.document.cursorAtStart(), str + newline + newline);
 	}
 }
 
