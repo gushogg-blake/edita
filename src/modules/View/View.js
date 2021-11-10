@@ -86,6 +86,10 @@ class View extends Evented {
 		this.updateWrappedLines();
 		
 		this.blur = this.blur.bind(this);
+		
+		this.teardownCallbacks = [
+			document.on("edit fileDetailsChanged", () => this.batchRedraw()),
+		];
 	}
 	
 	renderCodeAndMargin(...args) {
@@ -693,6 +697,10 @@ class View extends Evented {
 	
 	teardown() {
 		this.clearCursorBlink();
+		
+		for (let fn of this.teardownCallbacks) {
+			fn();
+		}
 	}
 }
 

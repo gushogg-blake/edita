@@ -581,8 +581,6 @@ class Editor extends Evented {
 	
 	setLang(lang) {
 		this.document.setLang(lang);
-		
-		this.view.batchRedraw();
 	}
 	
 	onFocus() {

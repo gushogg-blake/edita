@@ -42,16 +42,23 @@ class Document extends BaseDocument {
 		this.setupWatch();
 	}
 	
-	updateFileDetails() {
-		this.fileDetails = base.getFileDetails(this.string, this.url);
+	setFileDetails(fileDetails) {
+		this.fileDetails = fileDetails;
 		
 		this.source.init(this.fileDetails);
+		
+		this.fire("fileDetailsChanged");
+	}
+	
+	updateFileDetails() {
+		this.setFileDetails(base.getFileDetails(this.string, this.url));
 	}
 	
 	setLang(lang) {
-		this.fileDetails.lang = lang;
-		
-		this.source.init(this.fileDetails);
+		this.setFileDetails({
+			...this.fileDetails,
+			lang,
+		});
 	}
 	
 	get path() {
