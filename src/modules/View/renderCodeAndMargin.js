@@ -156,6 +156,16 @@ class Renderer {
 		this.startRow();
 		
 		while (true) {
+			if (this.nodeLineIndex < this.lineIndex) {
+				this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.trimmedCursor);
+				this.nextNode();
+			}
+			
+			while (this.nodeIsAtCursor()) {
+				this.setColour();
+				this.nextNode();
+			}
+			
 			if (!this.variableWidthPart) {
 				renderCode.endRow();
 				renderMargin.endRow();
@@ -185,16 +195,6 @@ class Renderer {
 				this.startRow();
 				
 				continue;
-			}
-			
-			if (this.nodeLineIndex < this.lineIndex) {
-				this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.trimmedCursor);
-				this.nextNode();
-			}
-			
-			while (this.nodeIsAtCursor()) {
-				this.setColour();
-				this.nextNode();
 			}
 			
 			if (this.variableWidthPart.type === "tab") {
