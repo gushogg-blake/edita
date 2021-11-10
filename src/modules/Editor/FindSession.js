@@ -3,7 +3,6 @@ let findAndReplace = require("modules/findAndReplace");
 class FindSession {
 	constructor(document, startCursor) {
 		this.document = document;
-		this.startCursor = startCursor;
 		this.startIndex = document.indexFromCursor(startCursor);
 		
 		this.currentResult = null;
