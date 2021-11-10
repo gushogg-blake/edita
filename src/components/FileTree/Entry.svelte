@@ -171,6 +171,7 @@ onMount(function() {
 					class="button"
 					style={inlineStyle(buttonStyle)}
 					on:click={toggle}
+					on:dblclick={e => e.stopPropagation()}
 				>
 					{expanded ? "-" : "+"}
 				</div>
