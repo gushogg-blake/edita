@@ -591,6 +591,12 @@ class Editor extends Evented {
 		this.fire("blur");
 	}
 	
+	focusAsync() {
+		setTimeout(() => {
+			this.view.requestFocus();
+		}, 0);
+	}
+	
 	mousedown() {
 		this.modeSwitchKey.mousedown();
 	}

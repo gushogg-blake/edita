@@ -41,6 +41,10 @@ class BottomPane extends Evented {
 	selectTab(tab) {
 		this.selectedTab = tab;
 		
+		if (tab === this.tabsById.clippings) {
+			this.clippingsEditor.focusAsync();
+		}
+		
 		this.fire("selectTab");
 	}
 	
