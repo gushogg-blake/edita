@@ -1,6 +1,6 @@
 <script>
 import {onMount, tick, createEventDispatcher} from "svelte";
-let mapObject = require("utils/mapObject");
+import mapObject from "utils/mapObject";
 import Accel from "components/utils/Accel.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 
