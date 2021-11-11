@@ -123,4 +123,17 @@ module.exports = {
 			], indentStr, baseIndentLevel);
 		},
 	},
+	
+	unwrap: {
+		code: "unwrap",
+		name: "Unwrap",
+		
+		isAvailable(document, selection) {
+			
+		},
+		
+		apply(document, selection) {
+			
+		},
+	},
 };

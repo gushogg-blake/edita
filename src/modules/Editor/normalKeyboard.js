@@ -684,7 +684,7 @@ module.exports = {
 	},
 	
 	unwrap() {
-		this.astMode.commands.unwrap();
+		this.doAstManipulation("unwrap");
 	},
 	
 	clearHilites() {

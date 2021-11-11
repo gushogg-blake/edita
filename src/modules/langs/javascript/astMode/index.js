@@ -11,12 +11,6 @@ module.exports = {
 	generatePickOptions,
 	generateDropTargets,
 	
-	getAvailableAstManipulations(document, selection) {
-		return Object.values(astManipulations).filter(function(manipulation) {
-			return manipulation.isAvailable(document, selection);
-		});
-	},
-	
 	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines, insertIndentLevel) {
 		let spaceBlocks = platform.getPref("verticalSpacing.spaceBlocks");
 		

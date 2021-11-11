@@ -58,7 +58,7 @@ module.exports = function(app, editor, editorComponent) {
 		return [x, y];
 	}
 	
-	function getHilite(e, withinSelection=false) {
+	function getHilite(e, withinSelection=true) {
 		let {
 			astSelection,
 			normalSelection,
@@ -232,7 +232,7 @@ module.exports = function(app, editor, editorComponent) {
 			return;
 		}
 		
-		let selection = getHilite(e, true);
+		let selection = getHilite(e);
 		
 		if (selection) {
 			view.setAstSelection(selection);
@@ -349,10 +349,6 @@ module.exports = function(app, editor, editorComponent) {
 			toSelection = target ? getHilite(e) : getInsertionRange(e);
 		} else {
 			toSelection = null;
-		}
-		
-		if (fromUs && toUs && AstSelection.equals(fromSelection, toSelection)) {
-			return;
 		}
 		
 		editor.astMouse.drop(

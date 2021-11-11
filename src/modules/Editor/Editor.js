@@ -62,29 +62,30 @@ class Editor extends Evented {
 	}
 	
 	getAvailableAstManipulations() {
-		let {astMode} = this.view.lang;
+		let {document, view, astSelection} = this;
+		let {astMode} = view.lang;
 		
 		if (!astMode) {
+			return [];
+		}
+		
+		return Object.values(astMode.astManipulations).filter(function(manipulation) {
+			return manipulation.isAvailable(document, astSelection);
+		});
+	}
+	
+	astManipulationIsAvailable(code) {
+		let {document, view, astSelection} = this;
+		let {astMode} = view.lang;
+		
+		return astMode?.astManipulation[code]?.isAvailable(document, astSelection);
+	}
+	
+	doAstManipulation(code) {
+		if (!this.astManipulationIsAvailable(code)) {
 			return;
 		}
 		
-		return astMode.getAvailableAstManipulations(
-			this.document,
-			this.view.astSelection,
-		);
-	}
-	
-	/*
-	[init:let ][name:] = {
-		[selection]
-	};
-	
-	- replace the selection with the template
-	- apply spacing rules to new selection (e.g. space if converting unspaced variable declarations to object)
-	- fill template
-	*/
-	
-	doAstManipulation(code) {
 		this.astMode.doLangManipulation(code);
 	}
 	

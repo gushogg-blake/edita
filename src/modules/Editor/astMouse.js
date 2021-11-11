@@ -29,12 +29,10 @@ module.exports = {
 		option,
 		target,
 	) {
-		if (
-			fromSelection
-			&& toSelection
-			&& !AstSelection.isFull(toSelection)
-			&& AstSelection.isAdjacent(fromSelection, toSelection)
-		) {
+		if (fromSelection && toSelection && (
+			!AstSelection.isFull(toSelection) && AstSelection.isAdjacent(fromSelection, toSelection)
+			|| AstSelection.equals(fromSelection, toSelection)
+		)) {
 			this.astMouse.invalidDrop();
 			
 			return;

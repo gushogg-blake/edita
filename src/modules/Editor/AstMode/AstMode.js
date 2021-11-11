@@ -14,17 +14,6 @@ let commands = {
 	wrap() {
 		this.startMultiStepCommand(new multiStepCommands.Wrap(this));
 	},
-	
-	unwrap() {
-		let {editor} = this;
-		
-		let {
-			document,
-			astSelection,
-		} = editor;
-		
-		
-	},
 };
 
 class AstMode extends Evented {
