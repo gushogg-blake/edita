@@ -379,6 +379,12 @@ function resize() {
 	}
 }
 
+async function resizeAsync() {
+	await tick();
+	
+	resize();
+}
+
 function updateCanvas() {
 	render(
 		contexts,
@@ -491,12 +497,10 @@ function updateMeasurements() {
 	});
 }
 
-async function toggleHorizontalScrollbar(show) {
+function toggleHorizontalScrollbar(show) {
 	showingHorizontalScrollbar = show;
 	
-	await tick();
-	
-	resize();
+	resizeAsync();
 }
 
 function onFocus() {
@@ -559,7 +563,7 @@ onMount(function() {
 		
 		editor.on("edit", onEdit),
 		
-		app.on("updatePanes", resize),
+		app.on("updatePanes", resizeAsync),
 		
 		windowFocus.listen(function(isFocused) {
 			windowHasFocus = isFocused;
