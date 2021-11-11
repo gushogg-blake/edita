@@ -27,7 +27,7 @@ class AstMode extends Evented {
 	}
 	
 	doLangManipulation(code) {
-		this.startMultiStepCommand(new multiStepCommands.LangManipulation(this, code));
+		this.startMultiStepCommand(new multiStepCommands.LangManipulation(this.editor, code));
 	}
 	
 	startMultiStepCommand(command) {
@@ -64,11 +64,7 @@ class AstMode extends Evented {
 	
 	replaceSelectionWithBlankLine() {
 		let {editor} = this;
-		
-		let {
-			document,
-			astSelection,
-		} = editor;
+		let {document, astSelection} = editor;
 		
 		let {startLineIndex, endLineIndex} = astSelection;
 		let headerLine = document.lines[startLineIndex];

@@ -4,21 +4,12 @@ let Command = require("./Command");
 let {s} = AstSelection;
 
 class Wrap extends Command {
-	constructor(astMode) {
-		super(astMode);
+	constructor(editor) {
+		super(editor);
 		
 		this.teardownCallbacks = [
-			astMode.on("pasteFromNormalMode", this.onPasteFromNormalMode.bind(this)),
+			editor.astMode.on("pasteFromNormalMode", this.onPasteFromNormalMode.bind(this)),
 		];
-	}
-	
-	onPasteFromNormalMode(paste) {
-		let {astSelection, insertLines, edit} = paste;
-		let {startLineIndex} = astSelection;
-		
-		if (!this.peekingAstMode) {
-			this.selectionOnReturnToAstMode = s(startLineIndex, startLineIndex + insertLines.length);
-		}
 	}
 	
 	start() {
@@ -28,6 +19,15 @@ class Wrap extends Command {
 		astMode.replaceSelectionWithBlankLine();
 		
 		editor.switchToNormalMode();
+	}
+	
+	onPasteFromNormalMode(paste) {
+		let {astSelection, insertLines, edit} = paste;
+		let {startLineIndex} = astSelection;
+		
+		if (!this.peekingAstMode) {
+			this.selectionOnReturnToAstMode = s(startLineIndex, startLineIndex + insertLines.length);
+		}
 	}
 }
 

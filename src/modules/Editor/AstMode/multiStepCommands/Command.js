@@ -1,11 +1,10 @@
 let Evented = require("utils/Evented");
 
 class Command extends Evented {
-	constructor(astMode) {
+	constructor(editor) {
 		super();
 		
-		this.astMode = astMode;
-		this.editor = astMode.editor;
+		this.editor = editor;
 		this.selectionOnReturnToAstMode = null;
 		this.peekingAstMode = this.editor.modeSwitchKey.isPeeking;
 		

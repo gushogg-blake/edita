@@ -78,7 +78,7 @@ class Editor extends Evented {
 		let {document, view, astSelection} = this;
 		let {astMode} = view.lang;
 		
-		return astMode?.astManipulation[code]?.isAvailable(document, astSelection);
+		return astMode?.astManipulations[code]?.isAvailable(document, astSelection);
 	}
 	
 	doAstManipulation(code) {
