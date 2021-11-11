@@ -13,10 +13,10 @@ class Wrap extends Command {
 	}
 	
 	start() {
-		let {astMode, editor} = this;
+		let {editor} = this;
 		
-		astMode.setClipboard();
-		astMode.replaceSelectionWithBlankLine();
+		editor.astMode.setClipboard();
+		editor.astMode.replaceSelectionWithBlankLine();
 		
 		editor.switchToNormalMode();
 	}

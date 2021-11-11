@@ -12,7 +12,7 @@ let {c} = Cursor;
 
 let commands = {
 	wrap() {
-		this.startMultiStepCommand(new multiStepCommands.Wrap(this));
+		this.startMultiStepCommand(new multiStepCommands.Wrap(this.editor));
 	},
 };
 

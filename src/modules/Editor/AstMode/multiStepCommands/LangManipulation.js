@@ -4,14 +4,14 @@ let Command = require("./Command");
 let {s} = AstSelection;
 
 class LangManipulation extends Command {
-	constructor(astMode, code) {
-		super(astMode);
+	constructor(editor, code) {
+		super(editor);
 		
 		this.code = code;
 	}
 	
 	start() {
-		let {astMode, editor} = this;
+		let {editor} = this;
 		let {document, view, astSelection} = editor;
 		let {startLineIndex, endLineIndex} = astSelection;
 		
