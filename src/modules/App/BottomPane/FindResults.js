@@ -1,6 +1,6 @@
 let Evented = require("utils/Evented");
 
-let maxResultsToRemember = 12;
+let maxPages = 12;
 
 class FindResults extends Evented {
 	constructor(app) {
@@ -8,24 +8,34 @@ class FindResults extends Evented {
 		
 		this.app = app;
 		
-		this.results = [];
+		this.pages = [];
 		this.index = null;
 	}
 	
-	add(results) {
-		this.results.push(results);
+	add(options, results) {
+		this.pages.unshift({options, results});
 		
-		if (this.results.length > maxResultsToRemember) {
-			this.results.shift();
+		if (this.pages.length > maxPages) {
+			this.pages.pop();
 		}
 		
-		this.index = this.results.length - 1;
+		this.index = 0;
 		
 		this.fire("resultsAdded");
 	}
 	
 	forward() {
-		if (this.index === null || this.index === this.results.length - 1) {
+		if (this.index === null || this.index === 0) {
+			return;
+		}
+		
+		this.index--;
+		
+		this.fire("nav");
+	}
+	
+	back() {
+		if (this.index === null || this.index === this.pages.length - 1) {
 			return;
 		}
 		
@@ -34,12 +44,8 @@ class FindResults extends Evented {
 		this.fire("nav");
 	}
 	
-	back() {
-		if (this.index === null || this.index === 0) {
-			return;
-		}
-		
-		this.index--;
+	goToPage(index) {
+		this.index = index;
 		
 		this.fire("nav");
 	}
@@ -54,8 +60,8 @@ class FindResults extends Evented {
 		editorApi.setNormalSelectionAndCenter(selection);
 	}
 	
-	get currentResults() {
-		return this.index !== null ? this.results[this.index] : null;
+	get currentPage() {
+		return this.index !== null ? this.pages[this.index] : null;
 	}
 }
 

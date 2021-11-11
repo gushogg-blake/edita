@@ -19,7 +19,7 @@
 		box-sizing: border-box;
 	}
 	
-	input, select {
+	input, select:not(.compact) {
 		padding: 5px;
 	}
 	

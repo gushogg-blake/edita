@@ -93,7 +93,7 @@ class FindAndReplace {
 		let results = this.app.selectedTab.editor.api.findAll(getFindAndReplaceOptions(options));
 		
 		if (results.length > 0) {
-			this.app.bottomPane.showFindResults(results);
+			this.app.bottomPane.showFindResults(options, results);
 			
 			return true;
 		} else {
@@ -105,7 +105,7 @@ class FindAndReplace {
 		let results = this.app.selectedTab.editor.api.findAllInSelectedText(getFindAndReplaceOptions(options));
 		
 		if (results.length > 0) {
-			this.app.bottomPane.showFindResults(results);
+			this.app.bottomPane.showFindResults(options, results);
 			
 			return true;
 		} else {
@@ -121,7 +121,7 @@ class FindAndReplace {
 		}
 		
 		if (results.length > 0) {
-			this.app.bottomPane.showFindResults(results);
+			this.app.bottomPane.showFindResults(options, results);
 			
 			return true;
 		} else {
@@ -149,7 +149,7 @@ class FindAndReplace {
 		}
 		
 		if (allResults.length > 0) {
-			app.bottomPane.showFindResults(allResults);
+			app.bottomPane.showFindResults(options, allResults);
 			
 			return true;
 		} else {
@@ -162,7 +162,7 @@ class FindAndReplace {
 		
 		if (results.length > 0) {
 			if (options.showResults) {
-				this.app.bottomPane.showFindResults(results);
+				this.app.bottomPane.showFindResults(options, results);
 			}
 			
 			return true;
@@ -176,7 +176,7 @@ class FindAndReplace {
 		
 		if (results.length > 0) {
 			if (options.showResults) {
-				this.app.bottomPane.showFindResults(results);
+				this.app.bottomPane.showFindResults(options, results);
 			}
 			
 			return true;
@@ -194,7 +194,7 @@ class FindAndReplace {
 		
 		if (results.length > 0) {
 			if (options.showResults) {
-				this.app.bottomPane.showFindResults(results);
+				this.app.bottomPane.showFindResults(options, results);
 			}
 			
 			return true;
@@ -235,7 +235,7 @@ class FindAndReplace {
 		}
 		
 		if (allResults.length > 0) {
-			app.bottomPane.showFindResults(allResults);
+			app.bottomPane.showFindResults(options, allResults);
 			
 			return true;
 		} else {

@@ -10,18 +10,16 @@ let {findResults} = app.bottomPane;
 
 let {
 	index,
-	currentResults: results,
+	pages,
+	currentPage,
 } = findResults;
 
 function update() {
 	({
 		index,
-		currentResults: results,
+		pages,
+		currentPage,
 	} = findResults);
-}
-
-function clickResult(result) {
-	findResults.goToResult(result);
 }
 
 $: columnWidths = {
@@ -43,16 +41,24 @@ onMount(function() {
 </script>
 
 <style type="text/scss">
+@import "classes/hide";
 @import "mixins/abs-sticky";
 
 #main {
-	display: grid;
-	grid-template-rows: 1fr;
+	display: flex;
+	flex-direction: column;
 	height: 100%;
+}
+
+#nav {
+	border-bottom: var(--appBorder);
+	padding: 3px;
+	background: var(--appBackgroundColor);
 }
 
 #results {
 	position: relative;
+	flex-grow: 1;
 }
 
 #scroll {
@@ -92,23 +98,29 @@ onMount(function() {
 </style>
 
 <div id="main">
-	<!--<div>-->
-	<!--	File-->
-	<!--</div>-->
-	<!--<div>-->
-	<!--	Line-->
-	<!--</div>-->
-	<!--<div>-->
-	<!--	Match-->
-	<!--</div>-->
-	<div id="results">
-		<div id="scroll">
-			{#if results}
+	{#if pages.length > 0}
+		<div id="nav">
+			<button disabled={index === pages.length - 1} on:click={() => findResults.back()}>
+				&lt;
+			</button>
+			<button disabled={index === 0} on:click={() => findResults.forward()}>
+				&gt;
+			</button>
+			<select class="compact" value={index} on:change={(e) => findResults.goToPage(Number(e.target.value))}>
+				{#each pages as {options, results}, i}
+					<option value={i}>{-i}: {options.search}</option>
+				{/each}
+			</select>
+		</div>
+	{/if}
+	{#each pages as {results}, i}
+		<div id="results" class:hide={index !== i}>
+			<div id="scroll">
 				{#each results as result}
 					<div
 						class="result"
 						style={inlineStyle(columnWidths)}
-						on:click={() => clickResult(result)}
+						on:click={() => findResults.goToResult(result)}
 					>
 						<div class="file">
 							<div class="path">
@@ -126,7 +138,7 @@ onMount(function() {
 						</div>
 					</div>
 				{/each}
-			{/if}
+			</div>
 		</div>
-	</div>
+	{/each}
 </div>

@@ -23,14 +23,14 @@ class BottomPane extends Evented {
 				id: "clippings",
 				label: "Clippings",
 			},
-			{
-				id: "log",
-				label: "Log",
-			},
-			{
-				id: "commandLine",
-				label: "Command line",
-			},
+			//{
+			//	id: "log",
+			//	label: "Log",
+			//},
+			//{
+			//	id: "commandLine",
+			//	label: "Command line",
+			//},
 		];
 		
 		this.tabsById = mapArrayToObject(this.tabs, tab => [tab.id, tab]);
@@ -48,8 +48,8 @@ class BottomPane extends Evented {
 		this.fire("selectTab");
 	}
 	
-	showFindResults(results) {
-		this.findResults.add(results);
+	showFindResults(options, results) {
+		this.findResults.add(options, results);
 		
 		this.selectTab(this.tabsById.findResults);
 		
