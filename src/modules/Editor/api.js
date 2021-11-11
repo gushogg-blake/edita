@@ -3,9 +3,7 @@ let findAndReplace = require("modules/findAndReplace");
 
 /*
 functions to control the editor from outside, e.g. to set the selection when
-viewing a find result.  these functions will do any necessary redraws, making
-sure the selection is on screen etc (the underlying methods don't do that to
-avoid doing it unnecessarily)
+viewing a find result.
 */
 
 module.exports = {
@@ -59,8 +57,6 @@ module.exports = {
 		this.applyAndAddHistoryEntry({
 			edits,
 		});
-		
-		//this.validateSelection(); // TODO not sure if needed
 		
 		view.setNormalHilites(edits.map(edit => edit.newSelection));
 		

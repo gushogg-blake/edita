@@ -3,55 +3,9 @@ let findAndReplace = require("modules/findAndReplace");
 let Document = require("modules/Document");
 let URL = require("modules/URL");
 let {FileIsBinary} = require("modules/errors");
-
-function getFindAndReplaceOptions(options) {
-	let {
-		search,
-		replaceWith,
-		regex,
-		caseMode,
-		word,
-		//multiline,
-	} = options;
-	
-	return {
-		search,
-		replaceWith,
-		type: regex ? "regex" : "plain",
-		caseMode,
-		word,
-		enumerate: true,
-	};
-}
-
-async function getPaths(options) {
-	let {
-		paths,
-		includePatterns,
-		excludePatterns,
-		searchInSubDirs,
-	} = options;
-	
-	let walkOptions = {
-		includePatterns,
-		excludePatterns,
-		searchInSubDirs,
-	};
-	
-	let allPaths = [];
-	
-	for (let path of paths) {
-		let node = platform.fs(path);
-		
-		if (await node.isDir()) {
-			allPaths = [...allPaths, ...await node.walkAll(walkOptions)];
-		} else {
-			allPaths = [...allPaths, path];
-		}
-	}
-	
-	return allPaths;
-}
+let getPaths = require("./getPaths");
+let getFindAndReplaceOptions = require("./getFindAndReplaceOptions");
+let Session = require("./Session");
 
 async function getDocuments(paths) {
 	return bluebird.map(paths, async function(path) {
@@ -243,30 +197,6 @@ class FindAndReplace {
 		}
 	}
 	
-	findNextInCurrentDocument(options) {
-		
-	}
-	
-	findNextInSelectedText(options) {
-		
-	}
-	
-	findNextInOpenFiles(options) {
-		
-	}
-	
-	findPreviousInCurrentDocument(options) {
-		
-	}
-	
-	findPreviousInSelectedText(options) {
-		
-	}
-	
-	findPreviousInOpenFiles(options) {
-		
-	}
-	
 	findAll(options) {
 		let {searchIn} = options;
 		
@@ -303,52 +233,36 @@ class FindAndReplace {
 		}
 	}
 	
-	findNext(options) {
-		if (!this.app.selectedTab) {
-			return false;
+	async ensureSession(options) {
+		if (this.useExistingSession(options)) {
+			return;
 		}
 		
-		let {searchIn} = options;
+		this.session = new Session(options);
 		
-		if (searchIn === "currentDocument") {
-			return this.findNextInCurrentDocument(options);
-		} else if (searchIn === "selectedText") {
-			return this.findNextInSelectedText(options);
-		} else if (searchIn === "openFiles") {
-			return this.findNextInOpenFiles(options);
-		}
+		await this.session.init();
 	}
 	
-	findPrevious(options) {
-		if (!this.app.selectedTab) {
-			return false;
-		}
+	async findNext(options) {
+		await this.ensureSession(options);
 		
-		let {searchIn} = options;
 		
-		if (searchIn === "currentDocument") {
-			return this.findPreviousInCurrentDocument(options);
-		} else if (searchIn === "selectedText") {
-			return this.findPreviousInSelectedText(options);
-		} else if (searchIn === "openFiles") {
-			return this.findPreviousInOpenFiles(options);
-		}
 	}
 	
-	replace(options) {
-		if (!this.app.selectedTab) {
+	async findPrevious(options) {
+		await this.ensureSession(options);
+	}
+	
+	async replace(options) {
+		if (!this.session) {
+			await this.findNext(options);
+		}
+		
+		if (!this.session.currentResult) {
 			return false;
 		}
 		
-		if (!this.session) {
-			this.findNext(options);
-		}
-		
-		if (!this.session) {
-			return false;
-		}
-		
-		console.log(this.session);
+		this.session.currentResult.replace();
 	}
 	
 	loadOptions() {

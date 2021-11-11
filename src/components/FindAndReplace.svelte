@@ -1,5 +1,6 @@
 <script>
 import {onMount, tick, createEventDispatcher} from "svelte";
+let mapObject = require("utils/mapObject");
 import Accel from "components/utils/Accel.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 
@@ -18,6 +19,7 @@ let message = null;
 let currentResult = null;
 let mounted = false;
 let isMounted = () => mounted;
+let loading = false;
 
 let {
 	replace,
@@ -78,7 +80,21 @@ $: if (isMounted()) {
 	});
 }
 
-let functions = {
+function withLoading(fn) {
+	return async function() {
+		if (loading) {
+			return;
+		}
+		
+		loading = true;
+		
+		await fn();
+		
+		loading = false;
+	}
+}
+
+let functions = mapObject({
 	async findAll() {
 		await setMessage(null);
 		
@@ -113,10 +129,6 @@ let functions = {
 			
 			return;
 		}
-		
-		if (result.loopedFile) {
-			
-		}
 	},
 	
 	async findPrevious() {
@@ -126,7 +138,7 @@ let functions = {
 	async replace() {
 		
 	},
-};
+}, fn => withLoading(fn));
 
 function submit(e) {
 	e.preventDefault();
@@ -155,7 +167,9 @@ async function resize(fn) {
 }
 
 onMount(function() {
-	findAndReplace.init();
+	loading = true;
+	
+	findAndReplace.init().then(() => loading = false);
 	
 	updateSize();
 	
