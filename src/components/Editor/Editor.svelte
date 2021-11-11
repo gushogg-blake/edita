@@ -559,6 +559,8 @@ onMount(function() {
 		
 		editor.on("edit", onEdit),
 		
+		app.on("updatePanes", resize),
+		
 		windowFocus.listen(function(isFocused) {
 			windowHasFocus = isFocused;
 			
@@ -585,6 +587,8 @@ onMount(function() {
 	}
 });
 </script>
+
+<svelte:window on:resize={resize}/>
 
 <style type="text/scss">
 @import "mixins/abs-sticky";

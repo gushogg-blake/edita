@@ -78,7 +78,7 @@ module.exports = function(editor) {
 			
 			view.startBatch();
 			
-			view.normalSelection = result.selection;
+			view.setNormalSelection(result.selection);
 			view.ensureNormalCursorIsOnScreen();
 			
 			view.endBatch();

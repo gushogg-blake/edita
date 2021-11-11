@@ -22,7 +22,7 @@ class FindSession {
 	next() {
 		let {value: result} = this.generator.next();
 		
-		if (!value) {
+		if (!result) {
 			return null;
 		}
 		
