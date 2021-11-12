@@ -116,7 +116,7 @@ module.exports = function(app, editor, editorComponent) {
 	}
 	
 	function hilite(e) {
-		let selection = getHilite(e);
+		let selection = getHilite(e, !view.Selection.isMultiline());
 		
 		editor.astMouse.setSelectionHilite(selection);
 	}
@@ -149,7 +149,7 @@ module.exports = function(app, editor, editorComponent) {
 			on(window, "mousemove", drawSelection);
 			on(window, "mouseup", finishSelection);
 		} else {
-			let selection = getHilite(e);
+			let selection = getHilite(e, !view.Selection.isMultiline());
 			
 			if (!selection) {
 				return;
@@ -169,7 +169,7 @@ module.exports = function(app, editor, editorComponent) {
 	}
 	
 	function mousedownRight(e) {
-		let selection = getHilite(e);
+		let selection = getHilite(e, !view.Selection.isMultiline());
 		
 		if (!selection) {
 			return;
