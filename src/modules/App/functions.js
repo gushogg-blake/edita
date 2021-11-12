@@ -100,4 +100,16 @@ module.exports = {
 		
 		tab.restoreState(details);
 	},
+	
+	toggleLeftPane() {
+		this.togglePane("left");
+	},
+	
+	toggleRightPane() {
+		this.togglePane("right");
+	},
+		
+	toggleBottomPane() {
+		this.togglePane("bottom");
+	},
 };

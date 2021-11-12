@@ -148,6 +148,10 @@ module.exports = function(systemInfo) {
 			
 			"Ctrl+PageUp": "selectPrevTab",
 			"Ctrl+PageDown": "selectNextTab",
+			
+			"Ctrl+[": "toggleLeftPane",
+			"Ctrl+]": "toggleRightPane",
+			"Ctrl+-": "toggleBottomPane",
 		},
 		
 		langs: {
