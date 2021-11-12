@@ -22,21 +22,20 @@ module.exports = {
 			pattern: "(style_element (raw_text) @injectionNode)",
 			
 			lang(captures) {
-				let lang = "css";
+				let lang;
 				
 				let startTag = captures.injectionNode.parent.firstChild;
 				let [, ...attributes] = startTag.namedChildren;
+				let langAttribute = attributes.find(a => a.text.match(/^lang=/));
 				let typeAttribute = attributes.find(a => a.text.match(/^type=/));
 				
-				if (typeAttribute) {
-					let match = typeAttribute.text.match(/^type=["']text\/(scss|sass)/);
-					
-					if (match) {
-						lang = match[1];
-					}
+				if (langAttribute) {
+					lang = langAttribute.text.match(/^lang=["'](scss|sass)/)?.[1];
+				} else if (typeAttribute) {
+					lang = typeAttribute.text.match(/^type=["']text\/(scss|sass)/)?.[1];
 				}
 				
-				return lang;
+				return lang || "css";
 			},
 		},
 	],
