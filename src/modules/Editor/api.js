@@ -1,11 +1,6 @@
 let Selection = require("modules/utils/Selection");
 let FindAndReplaceSession = require("./FindAndReplaceSession");
 
-/*
-functions to control the editor from outside, e.g. to set the selection when
-viewing a find result.
-*/
-
 module.exports = {
 	setNormalSelectionAndCenter(selection) {
 		let {view} = this;
