@@ -105,7 +105,6 @@ onMount(function() {
 </script>
 
 <style type="text/scss">
-@import "mixins/flex-col";
 @import "mixins/abs-sticky";
 
 #main {

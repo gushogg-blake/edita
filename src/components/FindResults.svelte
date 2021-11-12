@@ -43,6 +43,7 @@ onMount(function() {
 <style type="text/scss">
 @import "classes/hide";
 @import "mixins/abs-sticky";
+@import "mixins/ellipsis";
 
 #main {
 	display: flex;
@@ -87,8 +88,7 @@ onMount(function() {
 	display: flex;
 	
 	.path {
-		text-overflow: ellipsis;
-		overflow: hidden;
+		@include ellipsis;
 	}
 	
 	.name {
