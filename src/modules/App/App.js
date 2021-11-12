@@ -215,6 +215,10 @@ class App extends Evented {
 		this.closeTab(tab);
 	}
 	
+	urlIsOpen(url) {
+		return this.tabs.some(tab => tab.url.toString() === url.toString());
+	}
+	
 	pathIsOpen(path) {
 		return this.tabs.some(tab => tab.protocol === "file" && tab.path === path);
 	}

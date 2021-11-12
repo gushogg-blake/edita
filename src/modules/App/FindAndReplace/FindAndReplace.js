@@ -1,31 +1,9 @@
 let bluebird = require("bluebird");
 let findAndReplace = require("modules/findAndReplace");
-let Document = require("modules/Document");
-let URL = require("modules/URL");
-let {FileIsBinary} = require("modules/errors");
 let getPaths = require("./getPaths");
 let getFindAndReplaceOptions = require("./getFindAndReplaceOptions");
+let getDocuments = require("./getDocuments");
 let Session = require("./Session");
-
-async function getDocuments(paths) {
-	return bluebird.map(paths, async function(path) {
-		try {
-			let code = await platform.fs(path).read();
-			
-			return new Document(code, URL.file(path), {
-				noParse: true,
-			});
-		} catch (e) {
-			if (e instanceof FileIsBinary) {
-				console.info("Skipping binary file " + path);
-			} else {
-				console.error(e);
-			}
-			
-			return null;
-		}
-	}).filter(Boolean);
-}
 
 class FindAndReplace {
 	constructor(app) {
@@ -238,7 +216,7 @@ class FindAndReplace {
 			return;
 		}
 		
-		this.session = new Session(options);
+		this.session = new Session(this.app, options);
 		
 		await this.session.init();
 	}

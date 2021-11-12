@@ -312,40 +312,27 @@ button {
 		{/if}
 	</div>
 	<div class="actions">
-		{#if searchIn === "files"}
-			{#if replace}
-				<button on:click={functions.replaceAll}>
-					<Accel label="Replace %all"/>
-				</button>
-				<!--<Checkbox bind:value={confirm} label="Confir%m"/>-->
-			{:else}
-				<button on:click={functions.findAll}>
-					<Accel label="Find %all"/>
-				</button>
-			{/if}
+		{#if replace}
+			<button on:click={functions.findNext}>
+				<Accel label="%Find next"/>
+			</button>
+			<button on:click={functions.replace}>
+				<Accel label="%Replace"/>
+			</button>
+			<button on:click={functions.replaceAll}>
+				<Accel label="Replace %all"/>
+			</button>
+			<Checkbox bind:value={showResults} label="Sh%ow results"/>
 		{:else}
-			{#if replace}
-				<button on:click={functions.findNext}>
-					<Accel label="%Find next"/>
-				</button>
-				<button on:click={functions.replace}>
-					<Accel label="%Replace"/>
-				</button>
-				<button on:click={functions.replaceAll}>
-					<Accel label="Replace %all"/>
-				</button>
-				<Checkbox bind:value={showResults} label="Sh%ow results"/>
-			{:else}
-				<button on:click={functions.findPrevious}>
-					<Accel label="Find pre%vious"/>
-				</button>
-				<button on:click={functions.findNext}>
-					<Accel label="%Find next"/>
-				</button>
-				<button on:click={functions.findAll}>
-					<Accel label="Find %all"/>
-				</button>
-			{/if}
+			<button on:click={functions.findPrevious}>
+				<Accel label="Find pre%vious"/>
+			</button>
+			<button on:click={functions.findNext}>
+				<Accel label="%Find next"/>
+			</button>
+			<button on:click={functions.findAll}>
+				<Accel label="Find %all"/>
+			</button>
 		{/if}
 	</div>
 </form>
