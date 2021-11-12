@@ -1,5 +1,5 @@
 <script>
-import {tick, onMount, getContext} from "svelte";
+import {tick, onMount} from "svelte";
 
 import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
@@ -34,8 +34,6 @@ export let lang = null;
 export function setValue(value) {
 	editor.setValue(value);
 }
-
-let app = getContext("app");
 
 let editorMode = editor ? "app" : "textarea";
 
@@ -85,7 +83,7 @@ let normalMouseHandler = normalMouse(editor, {
 	mouseup: _mouseup,
 });
 
-let astMouseHandler = astMouse(app, editor, {
+let astMouseHandler = astMouse(editor, {
 	get canvasDiv() {
 		return canvasDiv;
 	},
@@ -545,14 +543,10 @@ onMount(function() {
 			clearInterval(resizeInterval);
 		},
 		
-		view.on("show", function() {
-			resize();
-		}),
-		
+		view.on("show", resize),
+		view.on("requestResizeAsync", resizeAsync),
 		view.on("updateCanvas", updateCanvas),
-		
 		view.on("updateScrollbars", updateScrollbars),
-		
 		view.on("wrapChanged", onWrapChanged),
 		
 		view.on("requestFocus", function() {
@@ -562,8 +556,6 @@ onMount(function() {
 		}),
 		
 		editor.on("edit", onEdit),
-		
-		app.on("updatePanes", resizeAsync),
 		
 		windowFocus.listen(function(isFocused) {
 			windowHasFocus = isFocused;

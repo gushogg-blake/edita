@@ -23,6 +23,7 @@ class Tab extends Evented {
 		this.teardownCallbacks = [
 			document.on("save", this.onDocumentSave.bind(this)),
 			view.on("wrapChanged", this.onWrapChanged.bind(this)),
+			app.on("updatePanes", this.onAppUpdatePanes.bind(this)),
 			...this.relayEvents(editor, ["focus", "blur"]),
 		];
 	}
@@ -168,6 +169,10 @@ class Tab extends Evented {
 	
 	async onWrapChanged(wrap) {
 		await this.setPerFilePref("wrap", wrap);
+	}
+	
+	onAppUpdatePanes() {
+		this.editor.view.requestResizeAsync();
 	}
 	
 	async updateDirListing() {

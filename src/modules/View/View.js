@@ -687,6 +687,10 @@ class View extends Evented {
 		}
 	}
 	
+	requestResizeAsync() {
+		this.fire("requestResizeAsync");
+	}
+	
 	uiMounted() {
 		this.mounted = true;
 		

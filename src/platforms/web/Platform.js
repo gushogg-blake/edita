@@ -166,18 +166,18 @@ class Platform extends Common {
 		return app.showMessageBox(options);
 	}
 	
-	showContextMenu(app, e, items, noCancel=false) {
-		contextMenu(app, items, {
+	showContextMenu(e, items, noCancel=false) {
+		contextMenu(items, {
 			x: e.clientX,
 			y: e.clientY,
 		}, noCancel);
 	}
 	
-	showContextMenuForElement(app, element, items, noCancel=false) {
+	showContextMenuForElement(element, items, noCancel=false) {
 		let {x, y, height} = screenOffsets(element);
 		let coords = {x, y: y + height};
 		
-		contextMenu(app, items, coords, noCancel);
+		contextMenu(items, coords, noCancel);
 	}
 	
 	handleIpcMessages(channel, handler) {

@@ -20,7 +20,7 @@ function open({detail: entry}) {
 function contextmenu({detail: {e, entry}}) {
 	let {path, isDir} = entry;
 	
-	app.showContextMenu(e, [
+	platform.showContextMenu(e, [
 		{
 			label: "Find...",
 			

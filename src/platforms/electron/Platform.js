@@ -150,7 +150,7 @@ class Platform extends Common {
 		return promise;
 	}
 	
-	showContextMenu(app, e, items, noCancel=false) {
+	showContextMenu(e, items, noCancel=false) {
 		items = items.map(function(item) {
 			return {
 				...item,
@@ -159,7 +159,7 @@ class Platform extends Common {
 		});
 		
 		if (noCancel) {
-			contextMenu(app, items, {
+			contextMenu(items, {
 				x: e.clientX,
 				y: e.clientY,
 			}, true);
@@ -168,7 +168,7 @@ class Platform extends Common {
 		}
 	}
 	
-	showContextMenuForElement(app, element, items, noCancel=false) {
+	showContextMenuForElement(element, items, noCancel=false) {
 		let {x, y, height} = screenOffsets(element);
 		
 		x = Math.round(x);
@@ -177,7 +177,7 @@ class Platform extends Common {
 		let coords = {x, y: y + height};
 		
 		if (noCancel) {
-			contextMenu(app, items, coords, true);
+			contextMenu(items, coords, true);
 		} else {
 			ipc.contextMenu(items, coords);
 		}

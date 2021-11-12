@@ -9,7 +9,7 @@ function upload({detail: files}) {
 }
 
 function openLanguages(e) {
-	app.showContextMenuForElement(e.target, base.langs.all.map(function(lang) {
+	platform.showContextMenuForElement(e.target, base.langs.all.map(function(lang) {
 		return {
 			label: lang.name,
 			

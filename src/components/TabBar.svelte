@@ -41,7 +41,7 @@ function showContextMenu(e, tab) {
 		return;
 	}
 	
-	app.showContextMenu(e, getContextMenuItems(tab));
+	platform.showContextMenu(e, getContextMenuItems(tab));
 }
 
 function tabIsSelected(tab, selectedTab) {

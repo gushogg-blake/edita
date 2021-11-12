@@ -661,20 +661,12 @@ class App extends Evented {
 		delete this.messageBoxPromise;
 	}
 	
-	showContextMenu(e, items, noCancel=false) {
-		platform.showContextMenu(this, e, items, noCancel);
-	}
-	
-	showContextMenuForElement(element, items, noCancel=false) {
-		platform.showContextMenuForElement(this, element, items, noCancel);
-	}
-	
 	onTabFocus() {
 		this.hideFindBar();
 	}
 	
 	uiMounted(mainDiv) {
-		this.mainDiv = mainDiv;
+		
 	}
 	
 	async onCloseWindow(e) {

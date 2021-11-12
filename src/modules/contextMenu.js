@@ -2,7 +2,7 @@ let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
 let screenOffsets = require("utils/dom/screenOffsets");
 
-module.exports = function(app, items, coords, noCancel=false) {
+module.exports = function(items, coords, noCancel=false) {
 	if (items.length === 0) {
 		return;
 	}
@@ -61,11 +61,7 @@ module.exports = function(app, items, coords, noCancel=false) {
 		overlay.parentNode.removeChild(overlay);
 		
 		setTimeout(function() {
-			if (app.mainDiv.contains(previousActiveElement)) {
-				previousActiveElement.focus();
-			} else {
-				app.focusSelectedTabAsync();
-			}
+			previousActiveElement.focus();
 		}, 0);
 		
 		off(overlay, "mousedown", close);
