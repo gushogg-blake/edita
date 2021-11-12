@@ -15,7 +15,6 @@ let commonKeyboard = require("./commonKeyboard");
 let commonWheel = require("./commonWheel");
 let modeSwitchKey = require("./modeSwitchKey");
 let snippets = require("./snippets");
-let find = require("./find");
 let api = require("./api");
 
 let {s: a} = AstSelection;
@@ -41,8 +40,6 @@ class Editor extends Evented {
 		this.modeSwitchKey = modeSwitchKey(this);
 		
 		this.mouseIsDown = false;
-		
-		this.find = find(this);
 		
 		this.snippetSession = null;
 		

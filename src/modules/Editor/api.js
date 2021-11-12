@@ -1,5 +1,5 @@
 let Selection = require("modules/utils/Selection");
-let findAndReplace = require("modules/findAndReplace");
+let FindAndReplaceSession = require("./FindAndReplaceSession");
 
 /*
 functions to control the editor from outside, e.g. to set the selection when
@@ -23,6 +23,10 @@ module.exports = {
 		view.setVerticalScrollNoValidate(scrollTop);
 		
 		view.endBatch();
+	},
+	
+	findAndReplace(options) {
+		return new FindAndReplaceSession(this, options);
 	},
 	
 	findAll(options) {

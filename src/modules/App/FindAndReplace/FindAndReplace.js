@@ -224,11 +224,25 @@ class FindAndReplace {
 	async findNext(options) {
 		await this.ensureSession(options);
 		
+		let result = await session.next();
 		
+		if (!result) {
+			this.session = null;
+		}
+		
+		return result;
 	}
 	
 	async findPrevious(options) {
 		await this.ensureSession(options);
+		
+		let result = await session.previous();
+		
+		if (!result) {
+			this.session = null;
+		}
+		
+		return result;
 	}
 	
 	async replace(options) {
@@ -236,11 +250,13 @@ class FindAndReplace {
 			await this.findNext(options);
 		}
 		
-		if (!this.session.currentResult) {
+		if (!this.session?.currentResult) {
 			return false;
 		}
 		
 		this.session.currentResult.replace();
+		
+		this.findNext(options);
 	}
 	
 	loadOptions() {

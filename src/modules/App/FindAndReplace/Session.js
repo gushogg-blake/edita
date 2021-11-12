@@ -8,6 +8,7 @@ class Session {
 		this.app = app;
 		this.options = options;
 		this.findAndReplaceOptions = getFindAndReplaceOptions(options);
+		this.urlIndex = -1;
 	}
 	
 	async init() {
@@ -22,33 +23,39 @@ class Session {
 			this.urls = partition(await getPaths(options), path => app.pathIsOpen(path)).map(path => URL.file(path));
 		}
 		
-		this.urlGenerator = this.generateUrls();
 		this.nextUrl();
 	}
 	
-	*generateUrls() {
-		for (let url of this.urls) {
-			yield url;
-		}
+	get url() {
+		return this.urls[this.urlIndex];
 	}
 	
-	nextUrl() {
-		this.url = this.urlGenerator.next().value;
+	async nextUrl() {
+		this.urlIndex++;
 		
-		if (this.url) {
-			this.resultGenerator = this.generateResults();
+		let {url} = this;
+		
+		if (!url) {
+			return;
 		}
+		
+		if (!app.urlIsOpen(url)) {
+			await app.openFile(url);
+		}
+		
+		this.createEditorSession();
 	}
 	
-	async generateResults() {
-		let {app} = this;
+	createEditorSession() {
+		let {editor} = this.app.findTabByUrl(this.url);
 		
-		if (!app.urlIsOpen(this.url)) {
-			await app.openFile(this.url);
-		}
+		this.editorSession = editor.api.findAndReplace(this.options);
 	}
 	
 	async next() {
+	}
+	
+	async previous() {
 	}
 }
 

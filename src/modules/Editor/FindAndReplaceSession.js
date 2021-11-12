@@ -1,22 +1,28 @@
 let findAndReplace = require("modules/findAndReplace");
+let Cursor = require("modules/utils/Cursor");
 
-class FindSession {
-	constructor(document, startCursor) {
-		this.document = document;
-		this.startIndex = document.indexFromCursor(startCursor);
+let {c} = Cursor;
+
+module.exports = class {
+	constructor(editor, options) {
+		this.editor = editor;
+		this.options = options;
 		
-		this.currentResult = null;
-		this.firstResult = null;
-	}
-	
-	find(search, type, caseMode) {
-		this.search = search;
-		this.type = type;
-		this.caseMode = caseMode;
+		if (options.startAtCursor) {
+			let cursor = editor.mode === "normal" ? editor.normalSelection.start : c(editor.astSelection.startLineIndex, 0);
+			
+			this.startIndex = editor.document.indexFromCursor(cursor);
+		} else {
+			this.startIndex = 0;
+		}
 		
 		this.generator = this.createGenerator(this.startIndex);
 		this.all = this.getAll();
 		this.currentResult = null;
+		this.firstResult = null;
+		
+		this.hiliteResults();
+		this.next();
 	}
 	
 	next() {
@@ -38,6 +44,8 @@ class FindSession {
 		//	this.firstResult = result;
 		//}
 		
+		this.goToResult(result);
+		
 		return {
 			loopedFile,
 			//loopedResults,
@@ -53,14 +61,14 @@ class FindSession {
 		let previousIndex = findAndReplace.previousIndex(this.currentResult, this.all);
 		
 		if (previousIndex === null) {
-			return {
-				result: null,
-			};
+			return null;
 		}
 		
 		let loopedFile = previousIndex > this.currentResult.index;
 		
 		this.generator = this.createGenerator(previousIndex);
+		
+		this.goToResult(result);
 		
 		return {
 			loopedFile,
@@ -68,25 +76,34 @@ class FindSession {
 		};
 	}
 	
+	hiliteResults() {
+		this.editor.view.setNormalHilites(this.all.map(result => result.selection));
+	}
+	
+	goToResult(result) {
+		let {view} = this.editor;
+		
+		view.startBatch();
+		
+		view.setNormalSelection(result.selection);
+		view.ensureNormalCursorIsOnScreen();
+		
+		view.endBatch();
+	}
+	
+	clearHilites() {
+		this.editor.view.setNormalHilites([]);
+	}
+	
 	getAll() {
 		return [...this.createGenerator(0, true)];
 	}
 	
 	createGenerator(startIndex, enumerate=false) {
-		let {
-			search,
-			type,
-			caseMode,
-		} = this;
-		
-		return this.document.find({
-			search,
-			type,
-			caseMode,
+		return this.editor.document.find({
+			...this.options,
 			startIndex,
 			enumerate,
 		});
 	}
 }
-
-module.exports = FindSession;

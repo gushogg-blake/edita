@@ -1,16 +1,12 @@
 <script>
 import {onMount, getContext} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
-import {on} from "utils/dom/domEvents";
 import Spacer from "components/utils/Spacer.svelte";
 
 let app = getContext("app");
 
-let editor = app.selectedTab.editor;
-
-let blur = function() {
-	app.hideFindBarAndFocusEditor();
-}
+let {editor} = app.selectedTab;
+let session;
 
 let main;
 let input;
@@ -24,26 +20,35 @@ if (editor.view.Selection.isMultiline()) {
 	search = editor.getSelectedText();
 }
 
-let windowKeymap = {
-	"Escape": "close",
-};
+function createSession() {
+	if (search) {
+		session = editor.api.findAndReplace({
+			searchIn: "currentDocument",
+			startAtCursor: true,
+			search,
+			type,
+			caseMode,
+		});
+	} else {
+		session = null;
+	}
+}
 
 let inputKeymap = {
 	"Enter": "findNext",
 	"Shift+Enter": "findPrevious",
+	"Escape": "close",
 };
 
 let functions = {
-	close() {
-		blur();
-	},
+	close,
 	
 	findNext() {
 		let {
 			result,
 			loopedFile,
 			loopedResults,
-		} = editor.find.next() || {};
+		} = session?.next() || {};
 		
 		if (loopedFile) {
 			console.log("looped");
@@ -59,7 +64,7 @@ let functions = {
 			result,
 			loopedFile,
 			loopedResults,
-		} = editor.find.previous() || {};
+		} = session?.previous() || {};
 		
 		if (loopedFile) {
 			console.log("looped");
@@ -70,14 +75,6 @@ let functions = {
 		}
 	},
 };
-
-function windowKeydown(e) {
-	let {keyCombo} = getKeyCombo(e);
-	
-	if (windowKeymap[keyCombo]) {
-		functions[windowKeymap[keyCombo]]();
-	}
-}
 
 function inputKeydown(e) {
 	let {keyCombo} = getKeyCombo(e);
@@ -90,40 +87,22 @@ function inputKeydown(e) {
 function onInput(e) {
 	search = input.value;
 	
-	if (search) {
-		editor.find.find(search, type, caseMode);
-	} else {
-		editor.find.reset();
-	}
+	createSession();
 }
 
-function onFocus() {
-	
+function close() {
+	app.hideFindBarAndFocusEditor();
 }
 
 onMount(function() {
-	main.focus();
-	
 	input.value = search;
 	
 	input.focus();
 	
-	editor.find.reset();
-	
 	if (search) {
 		input.select();
 		
-		editor.find.find(search, type, caseMode);
-	}
-	
-	let teardown = [
-		on(window, "keydown", windowKeydown),
-	];
-	
-	return function() {
-		for (let fn of teardown) {
-			fn();
-		}
+		createSession();
 	}
 });
 </script>
@@ -138,8 +117,6 @@ onMount(function() {
 <div
 	bind:this={main}
 	id="main"
-	tabindex="0"
-	on:focus={onFocus}
 >
 	<input
 		bind:this={input}
@@ -147,5 +124,5 @@ onMount(function() {
 		on:input={onInput}
 	>
 	<Spacer/>
-	<button on:click={blur}>x</button>
+	<button on:click={close}>x</button>
 </div>
