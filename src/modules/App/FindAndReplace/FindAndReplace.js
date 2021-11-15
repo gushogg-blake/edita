@@ -9,8 +9,6 @@ class FindAndReplace {
 	constructor(app) {
 		this.app = app;
 		this.session = null;
-		
-		this.loadOptions(); // cache saved options
 	}
 	
 	init() {
@@ -250,11 +248,7 @@ class FindAndReplace {
 			await this.findNext(options);
 		}
 		
-		if (!this.session?.currentResult) {
-			return false;
-		}
-		
-		this.session.currentResult.replace();
+		this.session.replace();
 		
 		this.findNext(options);
 	}

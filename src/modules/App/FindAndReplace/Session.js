@@ -12,6 +12,8 @@ class Session {
 		this.urls = [];
 		this.urlIndex = -1;
 		this.openedTabs = new WeakSet();
+		
+		this.currentResult = null;
 	}
 	
 	async init() {
@@ -69,7 +71,7 @@ class Session {
 		let result = this.editorSession.next();
 		
 		if (!result || result.loopedFile) {
-			if (!result && this.openedTabs.has(this.tab)) {
+			if (this.editorSession.results.length === 0 && this.openedTabs.has(this.tab)) {
 				await this.app.closeTab(this.tab);
 			}
 			
@@ -77,6 +79,8 @@ class Session {
 			
 			return await this.next();
 		}
+		
+		this.currentResult = result;
 		
 		return result;
 	}
@@ -86,7 +90,7 @@ class Session {
 	}
 	
 	replace() {
-		
+		this.editorSession.replace(this.options.replaceWith);
 	}
 }
 

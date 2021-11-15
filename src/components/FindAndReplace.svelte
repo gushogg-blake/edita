@@ -122,23 +122,40 @@ let functions = mapObject({
 	async findNext() {
 		await setMessage(null);
 		
-		let result = await findAndReplace.findNext(options);
+		currentResult = await findAndReplace.findNext(options);
 		
-		if (!result) {
+		if (!currentResult) {
 			await setMessage("No occurrences found");
-			
-			return;
 		}
 	},
 	
 	async findPrevious() {
+		await setMessage(null);
 		
+		currentResult = await findAndReplace.findPrevious(options);
+		
+		if (!currentResult) {
+			await setMessage("No occurrences found");
+		}
 	},
 	
 	async replace() {
+		if (!currentResult) {
+			await functions.findNext();
+		}
 		
+		await setMessage(null);
+		
+		if (!currentResult) {
+			await setMessage("No occurrences found");
+			
+			return;
+		}
+		
+		await findAndReplace.replace(options);
+		await functions.findNext();
 	},
-}, fn => withLoading(fn));
+}, withLoading);
 
 function submit(e) {
 	e.preventDefault();
@@ -317,7 +334,7 @@ button {
 				<Accel label="%Find next"/>
 			</button>
 			<button on:click={functions.replace}>
-				<Accel label="%Replace"/>
+				<Accel label="Re%place"/>
 			</button>
 			<button on:click={functions.replaceAll}>
 				<Accel label="Replace %all"/>

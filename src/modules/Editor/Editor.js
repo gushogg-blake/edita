@@ -206,20 +206,7 @@ class Editor extends Evented {
 		view.startBatch();
 		
 		if (updateEntry) {
-			this.historyEntries.set(updateEntry, {
-				before: {
-					normalSelection: this.mode === "normal" ? this.normalSelection : undefined,
-					astSelection: this.mode === "ast" ? this.astSelection : undefined,
-					snippetSession: this.snippetSession,
-				},
-				
-				after: {
-					normalSelection: this.normalSelection,
-					astSelection: this.astSelection,
-				},
-			});
-			
-			this.applyHistoryEntry(updateEntry, "after");
+			this.applyExistingDocumentEntry(updateEntry);
 		}
 		
 		view.updateWrappedLines();
@@ -273,6 +260,23 @@ class Editor extends Evented {
 				normalSelection: edit.normalSelection,
 				astSelection: edit.astSelection,
 				snippetSession: edit.snippetSession,
+			},
+		});
+		
+		this.applyHistoryEntry(entry, "after");
+	}
+	
+	applyExistingDocumentEntry(entry, newSelection=null) {
+		this.historyEntries.set(entry, {
+			before: {
+				normalSelection: this.mode === "normal" ? this.normalSelection : undefined,
+				astSelection: this.mode === "ast" ? this.astSelection : undefined,
+				snippetSession: this.snippetSession,
+			},
+			
+			after: {
+				normalSelection: newSelection || this.normalSelection,
+				astSelection: this.astSelection,
 			},
 		});
 		

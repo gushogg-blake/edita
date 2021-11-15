@@ -300,7 +300,7 @@ class App extends Evented {
 		
 		let tab = await this.createTab(code, url);
 		
-		this.tabs.splice(this.tabs.indexOf(this.selectTab), 0, tab);
+		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
 		
 		this.fire("updateTabs");
 		

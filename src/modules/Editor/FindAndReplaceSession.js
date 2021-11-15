@@ -17,7 +17,7 @@ module.exports = class {
 		}
 		
 		this.generator = this.createGenerator(this.startIndex);
-		this.all = this.getAll();
+		this.results = this.getAllResults();
 		this.currentResult = null;
 		this.firstResult = null;
 		this.resultsReplaced = 0;
@@ -44,7 +44,7 @@ module.exports = class {
 			return null;
 		}
 		
-		let previousIndex = findAndReplace.previousIndex(this.currentResult, this.all);
+		let previousIndex = findAndReplace.previousIndex(this.currentResult, this.results);
 		
 		if (previousIndex === null) {
 			return null;
@@ -77,11 +77,13 @@ module.exports = class {
 			edit,
 			newSelection,
 			entry,
-		} = currentResult.replace(str);
+		} = this.currentResult.replace(str);
+		
+		this.editor.applyExistingDocumentEntry(entry, newSelection);
 	}
 	
 	hiliteResults() {
-		this.editor.view.setNormalHilites(this.all.map(result => result.selection));
+		this.editor.view.setNormalHilites(this.results.map(result => result.selection));
 	}
 	
 	goToResult(result) {
@@ -99,7 +101,7 @@ module.exports = class {
 		this.editor.view.setNormalHilites([]);
 	}
 	
-	getAll() {
+	getAllResults() {
 		return [...this.createGenerator(this.options.startIndex, true)];
 	}
 	
