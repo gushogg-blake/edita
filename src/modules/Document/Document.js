@@ -169,7 +169,7 @@ class Document extends BaseDocument {
 		let edits = [];
 		
 		for (let result of document.find(options)) {
-			edits.push(result.replace(options.replaceWith));
+			edits.push(result.replace(options.replaceWith).edit);
 			
 			results.push({
 				...result,
@@ -185,7 +185,15 @@ class Document extends BaseDocument {
 	}
 	
 	createFindResult(result) {
-		let {index, match, groups, replace} = result;
+		let {
+			index,
+			match,
+			groups,
+			replace,
+			loopedFile,
+			loopedResults,
+		} = result;
+		
 		let cursor = this.cursorFromIndex(index);
 		let selection = s(cursor, this.cursorFromIndex(index + match.length));
 		
@@ -196,15 +204,20 @@ class Document extends BaseDocument {
 			selection,
 			match,
 			groups,
+			loopedFile,
+			loopedResults,
 			
 			replace: (str) => {
 				str = replace(str);
 				
-				let {edit} = this.replaceSelection(selection, str);
+				let {edit, newSelection} = this.replaceSelection(selection, str);
+				let entry = this.applyAndAddHistoryEntry([edit]);
 				
-				this.apply(edit);
-				
-				return edit;
+				return {
+					edit,
+					newSelection,
+					entry,
+				};
 			},
 		};
 	}

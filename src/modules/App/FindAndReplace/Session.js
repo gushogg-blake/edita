@@ -8,6 +8,8 @@ class Session {
 		this.app = app;
 		this.options = options;
 		this.findAndReplaceOptions = getFindAndReplaceOptions(options);
+		
+		this.urls = [];
 		this.urlIndex = -1;
 	}
 	
@@ -49,13 +51,23 @@ class Session {
 	createEditorSession() {
 		let {editor} = this.app.findTabByUrl(this.url);
 		
-		this.editorSession = editor.api.findAndReplace(this.options);
+		this.editorSession = editor.api.findAndReplace(this.findAndReplaceOptions);
 	}
 	
 	async next() {
+		let result = this.editorSession.next();
+		
+		console.log(result);
+		
+		return result;
 	}
 	
 	async previous() {
+		
+	}
+	
+	replace() {
+		
 	}
 }
 

@@ -6,6 +6,16 @@ function containsWordBoundary(str) {
 	return !!str.match(/\W/);
 }
 
+function hasWordBoundaries(code, index, match) {
+	return (
+		index === 0
+		|| containsWordBoundary(code.substr(index - 1, 2))
+	) && (
+		index + match.length === code.length
+		|| containsWordBoundary(code.substr(index + match.length - 1, 2))
+	);
+}
+
 function replaceExpressionsForRegexReplace(str, match) {
 	let placeholders = getPlaceholders(str, false);
 	
@@ -60,10 +70,15 @@ let findAndReplace = {
 			type,
 			caseMode,
 			word = false,
-			startIndex = 0,
-			endIndex = null,
+			startIndex = null,
+			rangeStartIndex = 0,
+			rangeEndIndex = null,
 			enumerate = false,
 		} = options;
+		
+		if (startIndex === null) {
+			startIndex = rangeStartIndex;
+		}
 		
 		if (!options.search) {
 			return;
@@ -96,18 +111,24 @@ let findAndReplace = {
 		
 		re.lastIndex = startIndex;
 		
+		let loopedFile = false;
+		let loopedResults = false;
+		
 		while (true) {
 			let {lastIndex} = re;
 			let match = re.exec(code);
 			
-			if (!match || endIndex !== null && match.index >= endIndex) {
+			if (!match || rangeEndIndex !== null && match.index >= rangeEndIndex) {
 				if (enumerate) {
 					break;
 				}
 				
-				re.lastIndex = 0;
+				re.lastIndex = rangeStartIndex;
 				
 				match = re.exec(code);
+				
+				loopedFile = rangeEndIndex === null;
+				loopedResults = true;
 			}
 			
 			if (!match) {
@@ -117,18 +138,7 @@ let findAndReplace = {
 			let [string, ...groups] = match;
 			let {index} = match;
 			
-			if (
-				word
-				&& (
-					(
-						index > 0
-						&& !containsWordBoundary(code.substr(index - 1, 2))
-					) || (
-						index + string.length < code.length
-						&& !containsWordBoundary(code.substr(index + string.length - 1, 2))
-					)
-				)
-			) {
+			if (word && !hasWordBoundaries(code, index, string)) {
 				continue;
 			}
 			
@@ -136,6 +146,8 @@ let findAndReplace = {
 				index,
 				match: string,
 				groups,
+				loopedFile,
+				loopedResults,
 				
 				/*
 				NOTE replace must be called while iterating through the
@@ -160,13 +172,16 @@ let findAndReplace = {
 						startIndex += diff;
 					}
 					
-					if (endIndex !== null && index < endIndex) {
-						endIndex += diff;
+					if (rangeEndIndex !== null && index < rangeEndIndex) {
+						rangeEndIndex += diff;
 					}
 					
 					return str;
 				},
 			};
+			
+			loopedFile = false;
+			loopedResults = false;
 		}
 	},
 	

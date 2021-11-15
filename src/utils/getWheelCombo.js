@@ -14,7 +14,6 @@ module.exports = function(e) {
 	}
 	
 	if (e.shiftKey) {
-		isModified = true;
 		wheelCombo += "Shift+";
 	}
 	

@@ -45,7 +45,6 @@ let functions = {
 	
 	findNext() {
 		let {
-			result,
 			loopedFile,
 			loopedResults,
 		} = session?.next() || {};
@@ -61,7 +60,6 @@ let functions = {
 	
 	findPrevious() {
 		let {
-			result,
 			loopedFile,
 			loopedResults,
 		} = session?.previous() || {};

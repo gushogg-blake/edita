@@ -20,9 +20,9 @@ module.exports = class {
 		this.all = this.getAll();
 		this.currentResult = null;
 		this.firstResult = null;
+		this.resultsReplaced = 0;
 		
 		this.hiliteResults();
-		this.next();
 	}
 	
 	next() {
@@ -32,25 +32,11 @@ module.exports = class {
 			return null;
 		}
 		
-		let loopedFile = (
-			this.currentResult && result.index < this.currentResult.index
-			|| !this.currentResult && result.index < this.startIndex
-		);
-		
 		this.currentResult = result;
-		
-		// TODO loopedResults
-		//if (!this.firstResult) {
-		//	this.firstResult = result;
-		//}
 		
 		this.goToResult(result);
 		
-		return {
-			loopedFile,
-			//loopedResults,
-			result,
-		};
+		return result;
 	}
 	
 	previous() {
@@ -64,16 +50,34 @@ module.exports = class {
 			return null;
 		}
 		
-		let loopedFile = previousIndex > this.currentResult.index;
+		let loopedResults = previousIndex > this.currentResult.index;
+		let loopedFile = this.options.startIndex === 0 && loopedResults;
 		
 		this.generator = this.createGenerator(previousIndex);
+		
+		let {result} = this.next();
+		
+		this.currentResult = result;
 		
 		this.goToResult(result);
 		
 		return {
+			...result,
 			loopedFile,
-			result: this.next().result,
+			loopedResults,
 		};
+	}
+	
+	replace(str) {
+		if (!this.currentResult) {
+			return;
+		}
+		
+		let {
+			edit,
+			newSelection,
+			entry,
+		} = currentResult.replace(str);
 	}
 	
 	hiliteResults() {
@@ -96,7 +100,7 @@ module.exports = class {
 	}
 	
 	getAll() {
-		return [...this.createGenerator(0, true)];
+		return [...this.createGenerator(this.options.startIndex, true)];
 	}
 	
 	createGenerator(startIndex, enumerate=false) {

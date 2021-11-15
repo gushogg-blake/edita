@@ -38,8 +38,8 @@ module.exports = {
 		
 		let results = document.findAll({
 			...options,
-			startIndex: document.indexFromCursor(start),
-			endIndex: document.indexFromCursor(end),
+			rangeStartIndex: document.indexFromCursor(start),
+			rangeEndIndex: document.indexFromCursor(end),
 		});
 		
 		view.setNormalHilites(results.map(result => result.selection));
@@ -70,8 +70,8 @@ module.exports = {
 		
 		let {edits, results} = document.replaceAll({
 			...options,
-			startIndex: document.indexFromCursor(start),
-			endIndex: document.indexFromCursor(end),
+			rangeStartIndex: document.indexFromCursor(start),
+			rangeEndIndex: document.indexFromCursor(end),
 		});
 		
 		let selection = Selection.sort(this.normalSelection);
