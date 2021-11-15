@@ -15,11 +15,36 @@ let {
 
 let main;
 let searchInput;
-let message = null;
-let currentResult = null;
+
+let session = null;
+let optionsChangedSinceLastInit = false;
+
 let mounted = false;
 let isMounted = () => mounted;
+
 let loading = false;
+
+createSession();
+
+function createSession() {
+	session = {
+		foundResults: false,
+		currentResult: null,
+		message: null,
+	};
+}
+
+function ensureSession() {
+	if (!session) {
+		createSession();
+	}
+}
+
+function optionsChanged() {
+	createSession();
+	
+	optionsChangedSinceLastInit = true;
+}
 
 let {
 	replace,
@@ -80,7 +105,17 @@ $: if (isMounted()) {
 	});
 }
 
-function withLoading(fn) {
+$: optionsChanged(options);
+
+async function init() {
+	if (optionsChangedSinceLastInit) {
+		await findAndReplace.init();
+		
+		optionsChangedSinceLastInit = false;
+	}
+}
+
+function action(fn) {
 	return async function() {
 		if (loading) {
 			return;
@@ -88,16 +123,17 @@ function withLoading(fn) {
 		
 		loading = true;
 		
+		await init();
+		await setMessage(null);
+		
 		await fn();
 		
 		loading = false;
 	}
 }
 
-let functions = mapObject({
+let functions = {
 	async findAll() {
-		await setMessage(null);
-		
 		let result = await findAndReplace.findAll(options);
 		
 		if (!result) {
@@ -108,8 +144,6 @@ let functions = mapObject({
 	},
 	
 	async replaceAll() {
-		await setMessage(null);
-		
 		let result = await findAndReplace.replaceAll(options);
 		
 		if (!result) {
@@ -120,42 +154,40 @@ let functions = mapObject({
 	},
 	
 	async findNext() {
-		await setMessage(null);
+		let result = await findAndReplace.findNext(options);
 		
-		currentResult = await findAndReplace.findNext(options);
+		session.currentResult = result;
 		
-		if (!currentResult) {
+		if (!result) {
 			await setMessage("No occurrences found");
 		}
 	},
 	
 	async findPrevious() {
-		await setMessage(null);
+		let result = await findAndReplace.findPrevious(options);
 		
-		currentResult = await findAndReplace.findPrevious(options);
+		session.currentResult = result;
 		
-		if (!currentResult) {
+		if (!result) {
 			await setMessage("No occurrences found");
 		}
 	},
 	
 	async replace() {
-		if (!currentResult) {
+		if (!session.currentResult) {
 			await functions.findNext();
 		}
 		
-		await setMessage(null);
-		
-		if (!currentResult) {
-			await setMessage("No occurrences found");
-			
+		if (!session.currentResult) {
 			return;
 		}
 		
 		await findAndReplace.replace(options);
 		await functions.findNext();
 	},
-}, withLoading);
+};
+
+let actions = mapObject(functions, action);
 
 function submit(e) {
 	e.preventDefault();
@@ -165,7 +197,7 @@ function submit(e) {
 
 function setMessage(str) {
 	return resize(function() {
-		message = str;
+		session.message = str;
 	});
 }
 
@@ -186,7 +218,7 @@ async function resize(fn) {
 onMount(function() {
 	loading = true;
 	
-	findAndReplace.init().then(() => loading = false);
+	init().then(() => loading = false);
 	
 	updateSize();
 	
@@ -330,24 +362,24 @@ button {
 	</div>
 	<div class="actions">
 		{#if replace}
-			<button on:click={functions.findNext}>
+			<button on:click={actions.findNext}>
 				<Accel label="%Find next"/>
 			</button>
-			<button on:click={functions.replace}>
+			<button on:click={actions.replace}>
 				<Accel label="Re%place"/>
 			</button>
-			<button on:click={functions.replaceAll}>
+			<button on:click={actions.replaceAll}>
 				<Accel label="Replace %all"/>
 			</button>
 			<Checkbox bind:value={showResults} label="Sh%ow results"/>
 		{:else}
-			<button on:click={functions.findPrevious}>
+			<button on:click={actions.findPrevious}>
 				<Accel label="Find pre%vious"/>
 			</button>
-			<button on:click={functions.findNext}>
+			<button on:click={actions.findNext}>
 				<Accel label="%Find next"/>
 			</button>
-			<button on:click={functions.findAll}>
+			<button on:click={actions.findAll}>
 				<Accel label="Find %all"/>
 			</button>
 		{/if}
