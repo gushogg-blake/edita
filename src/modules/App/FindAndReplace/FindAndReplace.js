@@ -243,14 +243,8 @@ class FindAndReplace {
 		return !!result;
 	}
 	
-	async replace(options) {
-		if (!this.session) {
-			await this.findNext(options);
-		}
-		
+	replace(options) {
 		this.session.replace();
-		
-		this.findNext(options);
 	}
 	
 	loadOptions() {
