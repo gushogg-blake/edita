@@ -9,14 +9,12 @@ export let heightEm = null;
 
 function getValue(pxOrNameValue, emValue) {
 	if (emValue) {
-		emValue += "em";
+		return emValue + "em";
 	}
 	
-	let value = pxOrNameValue || emValue;
+	let value = pxOrNameValue;
 	
-	if (emValue) {
-		return emValue;
-	} else if (value === null) {
+	if (value === null) {
 		return "100%";
 	} else if (_typeof(value) === "Number") {
 		return value;

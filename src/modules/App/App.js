@@ -150,7 +150,7 @@ class App extends Evented {
 		return tab.name + (tab.modified ? " *" : "");
 	}
 	
-	async closeTab(tab) {
+	async closeTab(tab, noSave=false) {
 		if (tab.modified) {
 			let response = await platform.showMessageBox(this, {
 				message: "Save changes to " + tab.name + "?",
@@ -184,7 +184,7 @@ class App extends Evented {
 		
 		this.tabs = remove(this.tabs, tab);
 		
-		if (tab.isSaved) {
+		if (tab.isSaved && !noSave) {
 			this.closedTabs.unshift(tab.saveState());
 		}
 		

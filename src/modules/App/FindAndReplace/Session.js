@@ -96,7 +96,7 @@ class Session {
 		
 		if (!result || result.loopedFile) {
 			if (this.editorSession.results.length === 0 && this.openedTabs.has(this.tab)) {
-				await this.app.closeTab(this.tab);
+				await this.app.closeTab(this.tab, true);
 			}
 			
 			await this.nextUrl();
