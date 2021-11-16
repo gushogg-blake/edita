@@ -106,9 +106,10 @@ onMount(function() {
 			<button disabled={index === 0} on:click={() => findResults.forward()}>
 				&gt;
 			</button>
+			&nbsp;
 			<select class="compact" value={index} on:change={(e) => findResults.goToPage(Number(e.target.value))}>
 				{#each pages as {options, results}, i}
-					<option value={i}>{-i}: {options.search}</option>
+					<option value={i}>{options.search} ({results.length} results)</option>
 				{/each}
 			</select>
 		</div>
