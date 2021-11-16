@@ -1,4 +1,3 @@
-let partition = require("utils/array/partition");
 let URL = require("modules/URL");
 let getPaths = require("./getPaths");
 let getFindAndReplaceOptions = require("./getFindAndReplaceOptions");
@@ -27,7 +26,11 @@ class Session {
 		} else if (searchIn === "openFiles") {
 			this.urls = app.tabs.map(tab => tab.url);
 		} else if (searchIn === "files") {
-			this.urls = partition(await getPaths(options), path => app.pathIsOpen(path)).map(path => URL.file(path));
+			let paths = await getPaths(options);
+			let openPaths = app.tabs.map(tab => tab.path).filter(path => paths.includes(path));
+			let nonOpenPaths = paths.filter(path => !openPaths.includes(path));
+			
+			this.urls = [...openPaths, ...nonOpenPaths].map(path => URL.file(path));
 		}
 		
 		await this.nextUrl();
@@ -109,6 +112,10 @@ class Session {
 		let result = this.editorSession.next();
 		
 		if (!result || result.loopedFile) {
+			//if (result?.loopedFile) {
+			//	this.editorSession.previous();
+			//}
+			
 			if (this.editorSession.results.length === 0 && this.openedTabs.has(this.tab)) {
 				await this.app.closeTab(this.tab, true);
 			}
@@ -129,7 +136,15 @@ class Session {
 		let result = this.editorSession.previous();
 		
 		if (!result || result.loopedFile) {
+			//if (result?.loopedFile) {
+			//	this.editorSession.next();
+			//}
+			
 			await this.previousUrl();
+			
+			if (!this.editorSession) {
+				return null;
+			}
 			
 			this.editorSession.previous();
 			
