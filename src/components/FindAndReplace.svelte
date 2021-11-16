@@ -318,9 +318,9 @@ button {
 			<!--<Checkbox bind:checked={multiline} label="Mul%tiline"/>-->
 			<Checkbox bind:checked={replace} label="%Replace"/>
 		</div>
-		{#if message}
+		{#if session.message}
 			<div id="message">
-				{message}
+				{session.message}
 			</div>
 		{:else}
 			<div class="spacer"></div>

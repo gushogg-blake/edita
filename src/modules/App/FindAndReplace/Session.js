@@ -39,10 +39,10 @@ class Session {
 		return this.app.findTabByUrl(this.url);
 	}
 	
-	async nextUrl() {
+	async _nextUrl(dir) {
 		this.editorSession = null;
 		
-		this.urlIndex++;
+		this.urlIndex += dir;
 		
 		let {url} = this;
 		
@@ -56,7 +56,17 @@ class Session {
 			this.openedTabs.add(this.tab);
 		}
 		
+		app.selectTab(this.tab);
+		
 		this.createEditorSession();
+	}
+	
+	nextUrl() {
+		return this._nextUrl(1);
+	}
+	
+	previousUrl() {
+		return this._nextUrl(-1);
 	}
 	
 	createEditorSession() {
@@ -65,6 +75,8 @@ class Session {
 	
 	async next() {
 		if (!this.editorSession) {
+			this.currentResult = null;
+			
 			return null;
 		}
 		
@@ -86,7 +98,32 @@ class Session {
 	}
 	
 	async previous() {
+		if (!this.editorSession) {
+			this.currentResult = null;
+			
+			return null;
+		}
 		
+		let result = this.editorSession.previous();
+		
+		if (!result || result.loopedFile) {
+			if (this.editorSession.results.length === 0 && this.openedTabs.has(this.tab)) {
+				await this.app.closeTab(this.tab);
+			}
+			
+			await this.previousUrl();
+			
+			return await this.previous();
+		}
+		
+		let {loopedFile} = result;
+		
+		console.log(result);
+		console.log(loopedFile);
+		
+		this.currentResult = result;
+		
+		return result;
 	}
 	
 	replace() {

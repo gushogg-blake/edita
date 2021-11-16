@@ -6,20 +6,30 @@ let {c} = Cursor;
 module.exports = class {
 	constructor(editor, options) {
 		this.editor = editor;
-		this.options = options;
+		
+		let {document, view} = editor;
+		let {searchIn, startAtCursor} = options;
+		let normalSelection = view.Selection.sort();
+		let startIndex;
 		
 		if (options.startAtCursor) {
-			let cursor = editor.mode === "normal" ? editor.normalSelection.start : c(editor.astSelection.startLineIndex, 0);
+			let cursor = editor.mode === "normal" ? normalSelection.start : c(editor.astSelection.startLineIndex, 0);
 			
-			this.startIndex = editor.document.indexFromCursor(cursor);
+			startIndex = document.indexFromCursor(cursor);
 		} else {
-			this.startIndex = 0;
+			startIndex = 0;
 		}
 		
-		this.generator = this.createGenerator(this.startIndex);
+		this.options = {
+			...options,
+			startIndex,
+			rangeStartIndex: searchIn === "selectedText" ? document.indexFromCursor(normalSelection.start) : 0,
+			rangeEndIndex: searchIn === "selectedText" ? document.indexFromCursor(normalSelection.end) : null,
+		};
+		
+		this.generator = this.createGenerator(this.options.startIndex);
 		this.results = this.getAllResults();
 		this.currentResult = null;
-		this.firstResult = null;
 		this.resultsReplaced = 0;
 		
 		this.hiliteResults();
@@ -51,11 +61,11 @@ module.exports = class {
 		}
 		
 		let loopedResults = previousIndex > this.currentResult.index;
-		let loopedFile = this.options.startIndex === 0 && loopedResults;
+		let loopedFile = this.options.rangeStartIndex === 0 && loopedResults;
 		
 		this.generator = this.createGenerator(previousIndex);
 		
-		let {result} = this.next();
+		let result = this.next();
 		
 		this.currentResult = result;
 		
