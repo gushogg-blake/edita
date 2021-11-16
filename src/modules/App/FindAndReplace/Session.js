@@ -30,7 +30,7 @@ class Session {
 			this.urls = partition(await getPaths(options), path => app.pathIsOpen(path)).map(path => URL.file(path));
 		}
 		
-		this.nextUrl();
+		await this.nextUrl();
 	}
 	
 	get url() {
@@ -44,7 +44,7 @@ class Session {
 	async _nextUrl(dir) {
 		this.urlIndex += dir;
 		
-		let {url} = this;
+		let {app, url} = this;
 		
 		if (!url) {
 			return;
