@@ -13,7 +13,7 @@ class Session {
 		this.urlIndex = -1;
 		this.openedTabs = new WeakSet();
 		
-		this.editorSessions = new WeakMap();
+		this.editorSessions = new Map();
 		
 		this.currentResult = null;
 	}
@@ -64,7 +64,9 @@ class Session {
 	async nextUrl() {
 		await this._nextUrl(1);
 		
-		this.createEditorSession();
+		if (this.url) {
+			this.createEditorSession();
+		}
 	}
 	
 	async previousUrl() {
@@ -73,6 +75,18 @@ class Session {
 	
 	get editorSession() {
 		return this.editorSessions.get(this.tab);
+	}
+	
+	countResults() {
+		let total = 0;
+		let replaced = 0;
+		
+		for (let session of this.editorSessions.values()) {
+			total += session.results.length;
+			replaced += session.resultsReplaced;
+		}
+		
+		return {total, replaced};
 	}
 	
 	createEditorSession() {
@@ -117,7 +131,9 @@ class Session {
 		if (!result || result.loopedFile) {
 			await this.previousUrl();
 			
-			result = this.editorSession?.currentResult;
+			this.editorSession.previous();
+			
+			result = this.editorSession?.currentResult || null;
 		}
 		
 		this.currentResult = result;

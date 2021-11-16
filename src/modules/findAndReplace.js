@@ -111,6 +111,7 @@ let findAndReplace = {
 		
 		re.lastIndex = startIndex;
 		
+		let foundMatches = false;
 		let loopedFile = false;
 		let loopedResults = false;
 		
@@ -119,7 +120,7 @@ let findAndReplace = {
 			let match = re.exec(code);
 			
 			if (!match || rangeEndIndex !== null && match.index >= rangeEndIndex) {
-				if (enumerate) {
+				if (enumerate || !foundMatches) {
 					break;
 				}
 				
@@ -129,10 +130,6 @@ let findAndReplace = {
 				
 				loopedFile = rangeEndIndex === null;
 				loopedResults = true;
-			}
-			
-			if (!match) {
-				break;
 			}
 			
 			let [string, ...groups] = match;
@@ -180,6 +177,7 @@ let findAndReplace = {
 				},
 			};
 			
+			foundMatches = true;
 			loopedFile = false;
 			loopedResults = false;
 		}

@@ -28,8 +28,7 @@ createSession();
 
 function createSession() {
 	session = {
-		foundResults: false,
-		currentResult: null,
+		hasResult: false,
 		message: null,
 	};
 }
@@ -154,31 +153,38 @@ let functions = {
 	},
 	
 	async findNext() {
-		let result = await findAndReplace.findNext(options);
+		let {
+			done,
+			counts,
+		} = await findAndReplace.findNext(options);
 		
-		session.currentResult = result;
+		session.hasResult = !done;
 		
-		if (!result) {
-			await setMessage("No occurrences found");
+		if (done) {
+			await endSession(counts);
 		}
 	},
 	
 	async findPrevious() {
-		let result = await findAndReplace.findPrevious(options);
+		let {
+			result,
+			done,
+			counts,
+		} = await findAndReplace.findPrevious(options);
 		
-		session.currentResult = result;
+		session.hasResult = !done;
 		
-		if (!result) {
-			await setMessage("No occurrences found");
+		if (done) {
+			await endSession(counts);
 		}
 	},
 	
 	async replace() {
-		if (!session.currentResult) {
+		if (!session.hasResult) {
 			await functions.findNext();
 		}
 		
-		if (!session.currentResult) {
+		if (!session.hasResult) {
 			return;
 		}
 		
@@ -199,6 +205,22 @@ function setMessage(str) {
 	return resize(function() {
 		session.message = str;
 	});
+}
+
+async function endSession(counts) {
+	let message;
+	
+	if (counts.total === 0) {
+		message = "No occurrences found";
+	} else {
+		if (options.replace) {
+			message = counts.replaced + " of " + counts.total + " occurrences replaced";
+		} else {
+			message = counts.total + " occurrences found";
+		}
+	}
+	
+	await setMessage(message);
 }
 
 async function updateSize() {
