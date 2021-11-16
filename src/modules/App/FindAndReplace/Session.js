@@ -13,6 +13,8 @@ class Session {
 		this.urlIndex = -1;
 		this.openedTabs = new WeakSet();
 		
+		this.editorSessions = new WeakMap();
+		
 		this.currentResult = null;
 	}
 	
@@ -32,16 +34,14 @@ class Session {
 	}
 	
 	get url() {
-		return this.urls[this.urlIndex];
+		return this.urls[this.urlIndex] || null;
 	}
 	
 	get tab() {
-		return this.app.findTabByUrl(this.url);
+		return this.url && this.app.findTabByUrl(this.url);
 	}
 	
 	async _nextUrl(dir) {
-		this.editorSession = null;
-		
 		this.urlIndex += dir;
 		
 		let {url} = this;
@@ -58,25 +58,37 @@ class Session {
 		
 		app.selectTab(this.tab);
 		
+		this.ensureEditorSession();
+	}
+	
+	async nextUrl() {
+		await this._nextUrl(1);
+		
 		this.createEditorSession();
 	}
 	
-	nextUrl() {
-		return this._nextUrl(1);
+	async previousUrl() {
+		await this._nextUrl(-1);
 	}
 	
-	previousUrl() {
-		return this._nextUrl(-1);
+	get editorSession() {
+		return this.editorSessions.get(this.tab);
 	}
 	
 	createEditorSession() {
-		this.editorSession = this.tab.editor.api.findAndReplace(this.findAndReplaceOptions);
+		this.editorSessions.set(this.tab, this.tab.editor.api.findAndReplace(this.findAndReplaceOptions));
+	}
+	
+	ensureEditorSession() {
+		if (!this.editorSession) {
+			this.createEditorSession();
+		}
 	}
 	
 	async next() {
+		this.currentResult = null;
+		
 		if (!this.editorSession) {
-			this.currentResult = null;
-			
 			return null;
 		}
 		
@@ -98,28 +110,15 @@ class Session {
 	}
 	
 	async previous() {
-		if (!this.editorSession) {
-			this.currentResult = null;
-			
-			return null;
-		}
+		this.currentResult = null;
 		
 		let result = this.editorSession.previous();
 		
 		if (!result || result.loopedFile) {
-			if (this.editorSession.results.length === 0 && this.openedTabs.has(this.tab)) {
-				await this.app.closeTab(this.tab);
-			}
-			
 			await this.previousUrl();
 			
-			return await this.previous();
+			result = this.editorSession?.currentResult;
 		}
-		
-		let {loopedFile} = result;
-		
-		console.log(result);
-		console.log(loopedFile);
 		
 		this.currentResult = result;
 		
