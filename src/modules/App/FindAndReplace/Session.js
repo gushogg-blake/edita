@@ -135,6 +135,10 @@ class Session {
 		
 		let result = this.editorSession.previous();
 		
+		if (!result) {
+			return null;
+		}
+		
 		if (result.loopedFile) {
 			this.editorSession.next();
 			
