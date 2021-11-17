@@ -30,8 +30,17 @@ module.exports = {
 		let isBelowSibling = lineAbove?.indentLevel === insertIndentLevel && lineAbove.trimmed.length > 0;
 		let isAboveSibling = lineBelow?.indentLevel === insertIndentLevel && lineBelow.trimmed.length > 0;
 		
-		let isBelowBlock = lineAbove && document.getFootersOnLine(insertLineIndex - 1).length > 0;
-		let isAboveBlock = lineBelow && document.getHeadersOnLine(insertLineIndex).length > 0;
+		let isBelowBlock = (
+			lineAbove
+			&& document.getFootersOnLine(insertLineIndex - 1).length > 0
+			&& document.getHeadersOnLine(insertLineIndex - 1).length === 0
+		);
+		
+		let isAboveBlock = (
+			lineBelow
+			&& document.getHeadersOnLine(insertLineIndex).length > 0
+			&& document.getFootersOnLine(insertLineIndex).length === 0
+		);
 		
 		return {
 			above: isBelowBlock || isBlock && isBelowSibling ? 1 : 0,
