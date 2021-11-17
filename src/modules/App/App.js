@@ -555,6 +555,7 @@ class App extends Evented {
 			search,
 			...options,
 		}, {
+			title: "Find",
 			width: 640,
 			height: 300,
 			fitContents: true,
@@ -566,6 +567,7 @@ class App extends Evented {
 			id: null,
 			details,
 		}, {
+			title: "New snippet",
 			width: 680,
 			height: 480,
 		});
@@ -575,6 +577,7 @@ class App extends Evented {
 		platform.openDialogWindow(this, "snippetEditor", {
 			id,
 		}, {
+			title: "Edit snippet",
 			width: 680,
 			height: 480,
 		});

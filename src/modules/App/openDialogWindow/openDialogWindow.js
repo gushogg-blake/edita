@@ -11,21 +11,9 @@ module.exports = function(app, createDialogComponent) {
 		container.appendChild(toolbar);
 		container.appendChild(content);
 		
-		toolbar.className = "editor-dialog-toolbar";
-		
 		on(toolbar, "mousedown", function(e) {
 			e.preventDefault();
 		});
-		
-		let closeButton = document.createElement("button");
-		
-		toolbar.appendChild(closeButton);
-		
-		closeButton.innerHTML = "x";
-		
-		container.className = "editor editor-dialog";
-		
-		container.style.visibility = "hidden";
 		
 		let closed = false;
 		
@@ -41,9 +29,21 @@ module.exports = function(app, createDialogComponent) {
 			closed = true;
 		}
 		
-		let onCancel = await createDialogComponent[dialog](content, dialogOptions, close);
+		let toolbarComponent = new base.components.DialogToolbar({
+			target: toolbar,
+			
+			props: {
+				title: windowOptions.title,
+			},
+		});
 		
-		on(closeButton, "click", close);
+		toolbarComponent.$on("close", close);
+		
+		container.className = "editor editor-dialog";
+		
+		container.style.visibility = "hidden";
+		
+		let onCancel = await createDialogComponent[dialog](content, dialogOptions, close);
 		
 		function cancel() {
 			close();
@@ -87,18 +87,8 @@ module.exports = function(app, createDialogComponent) {
 		function mousedown(e) {
 			e.stopPropagation();
 			
-			let node = e.target;
-			
-			while (node) {
-				if (node === container) {
-					break;
-				}
-				
-				if (!["div", "form"].includes(node.nodeName.toLowerCase())) {
-					return;
-				}
-				
-				node = node.parentNode;
+			if (e.target.nodeName.toLowerCase() === "button") {
+				return;
 			}
 			
 			on(window, "mousemove", mousemove);
@@ -145,7 +135,7 @@ module.exports = function(app, createDialogComponent) {
 			off(window, "mouseup", mouseup);
 		}
 		
-		on(container, "mousedown", mousedown);
+		on(toolbar, "mousedown", mousedown);
 		
 		on(container, "keydown", function(e) {
 			e.stopPropagation();
