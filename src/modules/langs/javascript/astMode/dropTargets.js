@@ -37,7 +37,7 @@ module.exports = {
 			let footerLineIndex = toEnd - 1;
 			let footerLine = document.lines[footerLineIndex];
 			
-			let insertIndex = footerLineIndex;
+			let insertIndex = footerLineIndex - removeDiff;
 			let removeLines = 1;
 			
 			let insertLines = indentLines([
