@@ -33,12 +33,10 @@ let {
 	pickOptions,
 	completions,
 	scrollPosition,
-	
 	measurements: {
 		rowHeight,
 		colWidth,
 	},
-	
 	sizes: {
 		width,
 		marginWidth,
