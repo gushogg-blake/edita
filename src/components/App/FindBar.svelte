@@ -45,13 +45,10 @@ let functions = {
 	close,
 	
 	findNext() {
-		let r;
 		let {
 			loopedFile,
 			loopedResults,
-		} = r = session?.next() || {};
-		
-		console.log(r);
+		} = session?.next() || {};
 		
 		if (loopedFile) {
 			console.log("looped");

@@ -131,6 +131,9 @@ let findAndReplace = {
 		let loopedRange = false;
 		let loopedResults = false;
 		let loopedFile = false;
+		let hasSetLoopedResults = false;
+		let hasSetLoopedFile = false;
+		let firstResultIndex = null;
 		
 		while (true) {
 			let match = findMatch();
@@ -150,9 +153,11 @@ let findAndReplace = {
 				
 				loopedRange = true;
 				loopedFile = rangeEndIndex === null;
+				hasSetLoopedResults = false;
+				hasSetLoopedFile = false;
 			}
 			
-			loopedResults = loopedRange && match.index >= startIndex;
+			loopedResults = loopedRange && match.index === firstResultIndex;
 			
 			if (enumerate && loopedResults) {
 				break;
@@ -165,8 +170,8 @@ let findAndReplace = {
 				index,
 				match: string,
 				groups,
-				loopedFile,
-				loopedResults,
+				loopedFile: loopedFile && !hasSetLoopedFile,
+				loopedResults: loopedResults && !hasSetLoopedResults,
 				
 				/*
 				NOTE replace must be called while iterating through the
@@ -199,8 +204,12 @@ let findAndReplace = {
 				},
 			};
 			
-			loopedFile = false;
-			loopedResults = false;
+			if (firstResultIndex === null) {
+				firstResultIndex = index;
+			}
+			
+			hasSetLoopedFile = loopedFile;
+			hasSetLoopedResults = loopedResults;
 		}
 	},
 	
