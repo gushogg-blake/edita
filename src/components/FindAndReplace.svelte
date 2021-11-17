@@ -385,24 +385,24 @@ button {
 	</div>
 	<div class="actions">
 		{#if replace}
-			<button on:click={actions.findNext}>
+			<button type="submit" on:click={actions.findNext}>
 				<Accel label="%Find next"/>
 			</button>
-			<button on:click={actions.replace}>
+			<button type="button" on:click={actions.replace}>
 				<Accel label="Re%place"/>
 			</button>
-			<button on:click={actions.replaceAll}>
+			<button type="button" on:click={actions.replaceAll}>
 				<Accel label="Replace %all"/>
 			</button>
 			<Checkbox bind:value={showResults} label="Sh%ow results"/>
 		{:else}
-			<button on:click={actions.findPrevious}>
+			<button type="button" on:click={actions.findPrevious}>
 				<Accel label="Find pre%vious"/>
 			</button>
-			<button on:click={actions.findNext}>
+			<button type="submit" on:click={actions.findNext}>
 				<Accel label="%Find next"/>
 			</button>
-			<button on:click={actions.findAll}>
+			<button type="button" on:click={actions.findAll}>
 				<Accel label="Find %all"/>
 			</button>
 		{/if}
