@@ -41,6 +41,7 @@ module.exports = function(editor, editorComponent) {
 	let {document, view} = editor;
 	let drag = null;
 	let drawingSelection = false;
+	let isDraggingOver = false;
 	
 	function getCanvasCoords(e) {
 		let {
@@ -58,7 +59,7 @@ module.exports = function(editor, editorComponent) {
 		return [x, y];
 	}
 	
-	function getHilite(e, withinSelection=true) {
+	function getHilite(e, withinSelection=false) {
 		let {
 			astSelection,
 			normalSelection,
@@ -116,7 +117,7 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function hilite(e) {
-		let selection = getHilite(e, !view.Selection.isMultiline());
+		let selection = getHilite(e);
 		
 		editor.astMouse.setSelectionHilite(selection);
 	}
@@ -149,7 +150,7 @@ module.exports = function(editor, editorComponent) {
 			on(window, "mousemove", drawSelection);
 			on(window, "mouseup", finishSelection);
 		} else {
-			let selection = getHilite(e, !view.Selection.isMultiline());
+			let selection = getHilite(e);
 			
 			if (!selection) {
 				return;
@@ -169,7 +170,7 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function mousedownRight(e) {
-		let selection = getHilite(e, !view.Selection.isMultiline());
+		let selection = getHilite(e);
 		
 		if (!selection) {
 			return;
@@ -232,7 +233,7 @@ module.exports = function(editor, editorComponent) {
 			return;
 		}
 		
-		let selection = getHilite(e);
+		let selection = getHilite(e, true);
 		
 		if (selection) {
 			view.setAstSelection(selection);
@@ -282,7 +283,13 @@ module.exports = function(editor, editorComponent) {
 			return;
 		}
 		
+		isDraggingOver = true;
+		
 		requestAnimationFrame(function() {
+			if (!isDraggingOver) {
+				return;
+			}
+			
 			let selection = getHilite(e);
 			
 			let {
@@ -302,11 +309,13 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function dragenter(e) {
-		
+		isDraggingOver = true;
 	}
 	
 	function dragleave(e) {
+		isDraggingOver = false;
 		
+		view.clearDropTargets();
 	}
 	
 	function drop(e, fromUs, toUs, extra) {
@@ -367,6 +376,7 @@ module.exports = function(editor, editorComponent) {
 		mouseup();
 		
 		drag = null;
+		isDraggingOver = false;
 	}
 	
 	function updateHilites(e) {
