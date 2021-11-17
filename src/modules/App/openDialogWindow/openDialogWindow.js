@@ -4,12 +4,26 @@ let {on, off} = require("utils/dom/domEvents");
 module.exports = function(app, createDialogComponent) {
 	return async function(dialog, dialogOptions, windowOptions) {
 		let container = document.createElement("div");
+		let toolbar = document.createElement("div");
+		let content = document.createElement("div");
+		
+		document.body.appendChild(container);
+		container.appendChild(toolbar);
+		container.appendChild(content);
+		
+		toolbar.className = "editor-dialog-toolbar";
+		
+		let closeButton = document.createElement("button");
+		
+		toolbar.appendChild(closeButton);
+		
+		closeButton.innerHTML = "x";
 		
 		container.className = "editor editor-dialog";
 		
-		document.body.appendChild(container);
-		
 		container.style.visibility = "hidden";
+		
+		let closed = false;
 		
 		let close = () => {
 			if (closed) {
@@ -23,9 +37,9 @@ module.exports = function(app, createDialogComponent) {
 			closed = true;
 		}
 		
-		let onCancel = await createDialogComponent[dialog](container, dialogOptions, close);
+		let onCancel = await createDialogComponent[dialog](content, dialogOptions, close);
 		
-		let closed = false;
+		on(closeButton, "click", close);
 		
 		function cancel() {
 			close();
@@ -41,7 +55,7 @@ module.exports = function(app, createDialogComponent) {
 				height,
 			} = windowOptions;
 			
-			inlineStyle.assign(container, {
+			inlineStyle.assign(content, {
 				width,
 				height,
 			});

@@ -24,7 +24,7 @@ function openLanguages(e) {
 <style type="text/scss">
 #main {
 	padding: 3px;
-	background: #f2f2f0;
+	background: var(--toolbarBackgroundColor);
 	//background: white;
 }
 
