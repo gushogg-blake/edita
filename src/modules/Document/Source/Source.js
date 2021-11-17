@@ -40,6 +40,8 @@ module.exports = class {
 		
 		if (!this.noParse && this.lang.code !== "plainText") {
 			this.rootScope = new Scope(null, this.lang, this.string, [this.getContainingRange()]);
+		} else {
+			this.rootScope = null;
 		}
 	}
 	

@@ -92,7 +92,9 @@ class App extends Evented {
 			if (path) {
 				await document.saveAs(URL.file(path));
 				
-				this.lastSelectedPath = path;
+				if (this.selectedTab === tab) {
+					this.lastSelectedPath = path;
+				}
 			}
 		}
 	}
