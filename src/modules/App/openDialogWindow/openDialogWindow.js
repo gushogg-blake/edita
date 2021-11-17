@@ -13,6 +13,10 @@ module.exports = function(app, createDialogComponent) {
 		
 		toolbar.className = "editor-dialog-toolbar";
 		
+		on(toolbar, "mousedown", function(e) {
+			e.preventDefault();
+		});
+		
 		let closeButton = document.createElement("button");
 		
 		toolbar.appendChild(closeButton);
