@@ -1,6 +1,7 @@
 <script>
 import {onMount, tick, createEventDispatcher} from "svelte";
 import mapObject from "utils/mapObject";
+import autoFocusAsync from "components/actions/autoFocusAsync";
 import Accel from "components/utils/Accel.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 
@@ -321,7 +322,7 @@ button {
 				bind:value={search}
 				id="find"
 				accesskey="n"
-				autofocus
+				use:autoFocusAsync
 			>
 		</div>
 		<label for="replaceWith">

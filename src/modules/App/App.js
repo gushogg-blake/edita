@@ -5,8 +5,6 @@ let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
 let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
 let promiseWithMethods = require("utils/promiseWithMethods");
-let inlineStyle = require("utils/dom/inlineStyle");
-let {on, off} = require("utils/dom/domEvents");
 
 let URL = require("modules/URL");
 let protocol = require("modules/protocol");
@@ -20,7 +18,7 @@ let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 let FileTree = require("./FileTree");
 let BottomPane = require("./BottomPane");
 let FindAndReplace = require("./FindAndReplace");
-let createDialogComponent = require("./createDialogComponent");
+let openDialogWindow = require("./openDialogWindow");
 let functions = require("./functions");
 
 class App extends Evented {
@@ -42,8 +40,9 @@ class App extends Evented {
 		
 		this.panes = platform.getPref("panes");
 		
-		this.createDialogComponent = bindFunctions(this, createDialogComponent);
 		this.functions = bindFunctions(this, functions);
+		
+		this.openDialogWindow = openDialogWindow(this);
 		
 		this.teardownCallbacks = [
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
@@ -575,73 +574,6 @@ class App extends Evented {
 			width: 680,
 			height: 480,
 		});
-	}
-	
-	async openDialogWindow(dialog, dialogOptions, windowOptions) {
-		let overlay = document.createElement("div");
-		let container = document.createElement("div");
-		
-		overlay.className = "editor editor-dialog-overlay";
-		container.className = "editor-dialog";
-		
-		document.body.appendChild(overlay);
-		overlay.appendChild(container);
-		
-		if (!windowOptions.fitContents) {
-			let {
-				width,
-				height,
-			} = windowOptions;
-			
-			container.style = inlineStyle({
-				width,
-				height,
-			});
-		}
-		
-		let closed = false;
-		
-		let close = () => {
-			if (closed) {
-				return;
-			}
-			
-			overlay.parentNode.removeChild(overlay);
-			
-			this.focusSelectedTabAsync();
-			
-			off(overlay, "mousedown", close);
-			
-			closed = true;
-		}
-		
-		function cancel() {
-			close();
-			
-			if (onCancel) {
-				onCancel();
-			}
-		}
-		
-		on(container, "mousedown", function(e) {
-			e.stopPropagation();
-		});
-		
-		on(container, "keydown", function(e) {
-			e.stopPropagation();
-			
-			if (e.key === "Escape") {
-				cancel();
-			}
-		});
-		
-		on(overlay, "mousedown", cancel);
-		
-		let onCancel = await this.createDialogComponent[dialog](container, dialogOptions, close);
-		
-		function resize() {
-			
-		}
 	}
 	
 	showMessageBox(options) {

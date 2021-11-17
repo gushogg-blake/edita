@@ -9,7 +9,7 @@ let nonSizeProps = [
 	"z-index",
 ];
 
-module.exports = function(...styles) {
+function inlineStyle(...styles) {
 	let all = Object.assign({}, ...styles.flat());
 	let str = "";
 	
@@ -28,3 +28,22 @@ module.exports = function(...styles) {
 	
 	return str;
 }
+
+inlineStyle.assign = function(node, ...styles) {
+	let all = Object.assign({}, ...styles.flat());
+	
+	for (let k in all) {
+		let prop = camelToCssProp(k);
+		let value = all[k];
+		
+		if (typeof value === "number" && value !== 0 && !nonSizeProps.includes(prop)) {
+			value += "px";
+		}
+		
+		if (value !== undefined) {
+			node.style[prop] = value;
+		}
+	}
+}
+
+module.exports = inlineStyle;

@@ -2,6 +2,7 @@
 import {createEventDispatcher, onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import importFromString from "utils/importFromString";
+import autoFocusAsync from "components/actions/autoFocusAsync";
 import Checkbox from "components/utils/Checkbox.svelte";
 import Editor from "components/Editor/Editor.svelte";
 
@@ -149,7 +150,7 @@ input#name {
 			<label for="name">
 				Abbreviation
 			</label>
-			<input bind:value={name} id="name" autofocus>
+			<input bind:value={name} id="name" use:autoFocusAsync>
 		</div>
 		<div class="field">
 			<label for="langGroups">
