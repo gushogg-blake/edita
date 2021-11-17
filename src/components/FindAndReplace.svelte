@@ -333,7 +333,7 @@ button {
 		</div>
 		<div class="input checkboxes">
 			<Checkbox bind:checked={regex} label="Rege%x"/>
-			<Checkbox bind:checked={smartCase} label="%Smart case"/>
+			<!--<Checkbox bind:checked={smartCase} label="%Smart case"/>-->
 			{#if !smartCase}
 				<Checkbox bind:checked={matchCase} label="Match %case"/>
 			{/if}

@@ -6,7 +6,7 @@ import Spacer from "components/utils/Spacer.svelte";
 let app = getContext("app");
 
 let {editor} = app.selectedTab;
-let startCursor = editor.view.Selection.sort().start;
+let startCursor = editor.view.Selection.sort().end;
 let session;
 
 let main;
