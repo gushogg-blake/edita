@@ -6,13 +6,16 @@ function containsWordBoundary(str) {
 	return !!str.match(/\W/);
 }
 
-function hasWordBoundaries(code, index, match) {
+function hasWordBoundaries(code, match) {
+	let [string] = match;
+	let {index} = match;
+	
 	return (
 		index === 0
 		|| containsWordBoundary(code.substr(index - 1, 2))
 	) && (
-		index + match.length === code.length
-		|| containsWordBoundary(code.substr(index + match.length - 1, 2))
+		index + string.length === code.length
+		|| containsWordBoundary(code.substr(index + string.length - 1, 2))
 	);
 }
 
@@ -111,33 +114,41 @@ let findAndReplace = {
 		
 		re.lastIndex = startIndex;
 		
-		let foundMatches = false;
 		let loopedFile = false;
 		let loopedResults = false;
 		
-		while (true) {
-			let {lastIndex} = re;
+		function findMatch() {
 			let match = re.exec(code);
 			
-			if (!match || rangeEndIndex !== null && match.index >= rangeEndIndex) {
-				if (enumerate || !foundMatches) {
+			if (
+				!match
+				|| word && !hasWordBoundaries(code, match)
+				|| rangeEndIndex !== null && match.index >= rangeEndIndex
+			) {
+				return null;
+			}
+			
+			return match;
+		}
+		
+		while (true) {
+			let match = findMatch();
+			
+			if (!match) {
+				re.lastIndex = rangeStartIndex;
+				
+				match = findMatch();
+				
+				if (!match || enumerate && match.index >= startIndex) {
 					break;
 				}
 				
-				re.lastIndex = rangeStartIndex;
-				
-				match = re.exec(code);
-				
 				loopedFile = rangeEndIndex === null;
-				loopedResults = true;
+				loopedResults = match.index >= startIndex;
 			}
 			
 			let [string, ...groups] = match;
 			let {index} = match;
-			
-			if (word && !hasWordBoundaries(code, index, string)) {
-				continue;
-			}
 			
 			yield {
 				index,
@@ -177,7 +188,6 @@ let findAndReplace = {
 				},
 			};
 			
-			foundMatches = true;
 			loopedFile = false;
 			loopedResults = false;
 		}

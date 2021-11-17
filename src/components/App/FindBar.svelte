@@ -6,6 +6,7 @@ import Spacer from "components/utils/Spacer.svelte";
 let app = getContext("app");
 
 let {editor} = app.selectedTab;
+let startCursor = editor.view.Selection.sort().start;
 let session;
 
 let main;
@@ -24,7 +25,7 @@ function createSession() {
 	if (search) {
 		session = editor.api.findAndReplace({
 			searchIn: "currentDocument",
-			startAtCursor: true,
+			startCursor,
 			search,
 			type,
 			caseMode,
@@ -44,10 +45,13 @@ let functions = {
 	close,
 	
 	findNext() {
+		let r;
 		let {
 			loopedFile,
 			loopedResults,
-		} = session?.next() || {};
+		} = r = session?.next() || {};
+		
+		console.log(r);
 		
 		if (loopedFile) {
 			console.log("looped");
@@ -86,6 +90,8 @@ function onInput(e) {
 	search = input.value;
 	
 	createSession();
+	
+	functions.findNext();
 }
 
 function close() {

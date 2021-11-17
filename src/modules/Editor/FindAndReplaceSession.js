@@ -8,17 +8,9 @@ module.exports = class {
 		this.editor = editor;
 		
 		let {document, view} = editor;
-		let {searchIn, startAtCursor} = options;
+		let {searchIn, startCursor} = options;
 		let normalSelection = view.Selection.sort();
-		let startIndex;
-		
-		if (options.startAtCursor) {
-			let cursor = editor.mode === "normal" ? normalSelection.start : c(editor.astSelection.startLineIndex, 0);
-			
-			startIndex = document.indexFromCursor(cursor);
-		} else {
-			startIndex = 0;
-		}
+		let startIndex = startCursor ? document.indexFromCursor(startCursor) : 0;
 		
 		this.options = {
 			...options,
