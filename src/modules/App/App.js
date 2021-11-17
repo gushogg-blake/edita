@@ -91,6 +91,8 @@ class App extends Evented {
 			
 			if (path) {
 				await document.saveAs(URL.file(path));
+				
+				this.lastSelectedPath = path;
 			}
 		}
 	}
