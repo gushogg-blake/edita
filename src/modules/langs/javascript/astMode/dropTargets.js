@@ -1,7 +1,7 @@
 let indentLines = require("modules/utils/indentLines");
 let AstSelection = require("modules/utils/AstSelection");
 let removeSelection = require("modules/astCommon/removeSelection");
-let isIfFooterOnly = require("./utils/isIfFooterOnly");
+let isIfFooter = require("./utils/isIfFooter");
 
 let {s} = AstSelection;
 
@@ -11,7 +11,7 @@ module.exports = {
 		label: "+ else",
 		
 		isAvailable(document, lineIndex) {
-			return isIfFooterOnly(document, lineIndex);
+			return isIfFooter(document, lineIndex);
 		},
 		
 		handleDrop(
@@ -73,7 +73,7 @@ module.exports = {
 		label: "+ else if",
 		
 		isAvailable(document, lineIndex) {
-			return isIfFooterOnly(document, lineIndex);
+			return isIfFooter(document, lineIndex);
 		},
 		
 		handleDrop(
