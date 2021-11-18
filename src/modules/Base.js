@@ -71,6 +71,8 @@ class Base {
 	}
 	
 	async asyncInit() {
+		// pre-init common langs
+		
 		await bluebird.map([
 			"javascript",
 			"html",
