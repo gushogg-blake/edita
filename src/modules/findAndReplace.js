@@ -157,7 +157,8 @@ let findAndReplace = {
 				hasSetLoopedFile = false;
 			}
 			
-			loopedResults = loopedRange && match.index === firstResultIndex;
+			// >= firstResultIndex as the first result might have been replaced
+			loopedResults = loopedRange && match.index >= firstResultIndex;
 			
 			if (enumerate && loopedResults) {
 				break;
