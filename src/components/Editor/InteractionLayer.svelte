@@ -159,14 +159,12 @@ function mousemove(e) {
 	
 	if (mode === "ast") {
 		hoveredOption = pickOptionFromMouseEvent(e);
-		
-		fire("optionhover", {
-			e,
-			option: hoveredOption,
-		});
 	}
 	
-	fire("mousemove", e);
+	fire("mousemove", {
+		e,
+		option: hoveredOption?.type,
+	});
 }
 
 function mouseup(e) {
@@ -174,7 +172,10 @@ function mouseup(e) {
 		syntheticDragHandler.mouseup(e);
 	} else {
 		if (mouseMovedDistance <= clickDistanceThreshold) {
-			fire("click", e);
+			fire("click", {
+				e,
+				option: hoveredOption?.type,
+			});
 		}
 	}
 	

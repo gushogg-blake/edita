@@ -59,7 +59,7 @@ module.exports = function(editor, editorComponent) {
 		return [x, y];
 	}
 	
-	function getHilite(e, withinSelection=false) {
+	function getHilite(e, pickOptionType=null, withinSelection=false) {
 		let {
 			astSelection,
 			normalSelection,
@@ -116,23 +116,23 @@ module.exports = function(editor, editorComponent) {
 		return range;
 	}
 	
-	function hilite(e) {
-		let selection = getHilite(e);
+	function hilite(e, pickOptionType) {
+		let selection = getHilite(e, pickOptionType);
 		
 		editor.astMouse.setSelectionHilite(selection);
 	}
 	
-	function mousedown(e, option, enableDrag) {
+	function mousedown(e, pickOptionType, enableDrag) {
 		if (e.button === 0) {
-			mousedownLeft(e, option, enableDrag);
+			mousedownLeft(e, pickOptionType, enableDrag);
 		} else if (e.button === 1) {
-			mousedownMiddle(e, option);
+			mousedownMiddle(e, pickOptionType);
 		} else if (e.button === 2) {
-			mousedownRight(e, option);
+			mousedownRight(e, pickOptionType);
 		}
 	}
 	
-	function mousedownLeft(e, option, enableDrag) {
+	function mousedownLeft(e, pickOptionType, enableDrag) {
 		let {
 			canvasDiv,
 			showingHorizontalScrollbar,
@@ -150,7 +150,7 @@ module.exports = function(editor, editorComponent) {
 			on(window, "mousemove", drawSelection);
 			on(window, "mouseup", finishSelection);
 		} else {
-			let selection = getHilite(e);
+			let selection = getHilite(e, pickOptionType);
 			
 			if (!selection) {
 				return;
@@ -169,8 +169,8 @@ module.exports = function(editor, editorComponent) {
 		
 	}
 	
-	function mousedownRight(e) {
-		let selection = getHilite(e);
+	function mousedownRight(e, pickOptionType) {
+		let selection = getHilite(e, pickOptionType);
 		
 		if (!selection) {
 			return;
@@ -199,13 +199,13 @@ module.exports = function(editor, editorComponent) {
 		drawingSelection = false;
 	}
 	
-	function mousemove(e) {
+	function mousemove(e, pickOptionType) {
 		if (drawingSelection) {
 			return;
 		}
 		
 		requestAnimationFrame(function() {
-			hilite(e);
+			hilite(e, pickOptionType);
 		});
 	}
 	
@@ -228,7 +228,7 @@ module.exports = function(editor, editorComponent) {
 		editor.astMouse.setSelectionHilite(null);
 	}
 	
-	function click(e) {
+	function click(e, pickOptionType) {
 		if (e.button !== 0) {
 			return;
 		}
@@ -242,19 +242,11 @@ module.exports = function(editor, editorComponent) {
 		hilite(e);
 	}
 	
-	function dblclick(e) {
+	function dblclick(e, pickOptionType) {
 		
 	}
 	
-	function optionhover(option, e) {
-		//let {
-		//	showDropTargetsFor,
-		//} = editor;
-		//
-		//showDropTargetsFor(getHilite(e), option);
-	}
-	
-	function dragstart(e, option) {
+	function dragstart(e, pickOptionType) {
 		let {
 			astSelection: selection,
 		} = view;
@@ -264,17 +256,17 @@ module.exports = function(editor, editorComponent) {
 		
 		drag = {
 			selection,
-			option,
+			pickOptionType,
 			lines,
 		};
 		
 		setData(e, {
-			option,
+			pickOptionType,
 			lines,
 		});
 	}
 	
-	function dragover(e, target) {
+	function dragover(e, dropTargetType) {
 		e.dataTransfer.dropEffect = e.ctrlKey ? "copy" : "move";
 		
 		let data = getData(e);
@@ -292,15 +284,11 @@ module.exports = function(editor, editorComponent) {
 			
 			let selection = getHilite(e);
 			
-			let {
-				option,
-			} = data;
-			
 			// TODO auto scroll at edges of code area
 			
 			view.showDropTargets();
 			
-			if (target) {
+			if (dropTargetType) {
 				editor.astMouse.setInsertionHilite(null);
 			} else {
 				editor.astMouse.setInsertionHilite(getInsertionRange(e));
@@ -326,11 +314,11 @@ module.exports = function(editor, editorComponent) {
 		
 		e.dataTransfer.dropEffect = move ? "move" : "copy";
 		
-		let {target} = extra;
+		let {dropTargetType} = extra;
 		let fromSelection;
 		let toSelection;
 		let lines;
-		let option;
+		let pickOptionType;
 		let data = getData(e);
 		
 		if (toUs && !data) {
@@ -342,7 +330,7 @@ module.exports = function(editor, editorComponent) {
 		if (fromUs) {
 			({
 				selection: fromSelection,
-				option,
+				pickOptionType,
 				lines,
 			} = drag);
 		} else {
@@ -350,12 +338,12 @@ module.exports = function(editor, editorComponent) {
 			
 			({
 				lines,
-				option,
+				pickOptionType,
 			} = data);
 		}
 		
 		if (toUs) {
-			toSelection = target ? getHilite(e) : getInsertionRange(e);
+			toSelection = dropTargetType ? getHilite(e) : getInsertionRange(e);
 		} else {
 			toSelection = null;
 		}
@@ -365,8 +353,8 @@ module.exports = function(editor, editorComponent) {
 			toSelection,
 			lines,
 			move,
-			option,
-			target,
+			pickOptionType,
+			dropTargetType,
 		);
 	}
 	
@@ -394,7 +382,6 @@ module.exports = function(editor, editorComponent) {
 		mouseleave,
 		click,
 		dblclick,
-		optionhover,
 		dragstart,
 		dragover,
 		dragenter,

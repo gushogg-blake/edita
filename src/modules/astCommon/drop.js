@@ -16,14 +16,17 @@ module.exports = function(
 	option,
 	target,
 ) {
-	if (target) {
-		return astMode.dropTargets[target].handleDrop(
+	let pickOption = option && astMode.pickOptions[option];
+	let dropTarget = target && astMode.dropTargets[target];
+	
+	if (dropTarget) {
+		return dropTarget.handleDrop(
 			document,
 			fromSelection,
 			toSelection,
 			selectionLines,
 			move,
-			option,
+			pickOption,
 		);
 	}
 	

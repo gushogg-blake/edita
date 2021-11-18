@@ -134,7 +134,7 @@ function mousedown({detail}) {
 	}
 }
 
-function mousemove({detail: e}) {
+function mousemove({detail: {e, option}}) {
 	if (isDragging) {
 		return;
 	}
@@ -144,7 +144,7 @@ function mousemove({detail: e}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.mousemove(e);
 	} else if (view.mode === "ast") {
-		astMouseHandler.mousemove(e);
+		astMouseHandler.mousemove(e, option);
 	}
 }
 
@@ -184,11 +184,11 @@ function mouseup({detail: e}) {
 	_mouseup(e);
 }
 
-function click({detail: e}) {
+function click({detail: {e, option}}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.click(e);
 	} else if (view.mode === "ast") {
-		astMouseHandler.click(e);
+		astMouseHandler.click(e, option);
 	}
 }
 
@@ -198,15 +198,6 @@ function dblclick(e) {
 	} else if (view.mode === "ast") {
 		astMouseHandler.dblclick(e);
 	}
-}
-
-function optionhover({detail}) {
-	let {
-		e,
-		option,
-	} = detail;
-	
-	astMouseHandler.optionhover(option, e);
 }
 
 function dragstart({detail}) {
@@ -690,7 +681,6 @@ canvas {
 				on:mouseup={mouseup}
 				on:click={click}
 				on:dblclick={dblclick}
-				on:optionhover={optionhover}
 				on:dragstart={dragstart}
 				on:dragover={dragover}
 				on:dragend={dragend}
