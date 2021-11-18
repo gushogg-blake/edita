@@ -117,7 +117,7 @@ class Base {
 		let alternate = null;
 		let fallback = this.langs.get("plainText");
 		
-		for (let lang of this.langs.all) {
+		for (let lang of this.langs.all.filter(lang => lang !== fallback)) {
 			let supportLevel = lang.getSupportLevel(code, url?.path);
 			
 			if (supportLevel === "specific") {
