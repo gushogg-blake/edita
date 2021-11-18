@@ -275,11 +275,7 @@ module.exports = function(editor, editorComponent) {
 		});
 	}
 	
-	function dragover(e, dropTargetType, isOverPickOption) {
-		if (isOverPickOption) {
-			return;
-		}
-		
+	function dragover(e, dropTargetType) {
 		e.dataTransfer.dropEffect = e.ctrlKey ? "copy" : "move";
 		
 		let data = getData(e);
@@ -319,11 +315,7 @@ module.exports = function(editor, editorComponent) {
 		view.clearDropTargets();
 	}
 	
-	function drop(e, fromUs, toUs, extra, isOverPickOption) {
-		if (isOverPickOption) {
-			return;
-		}
-		
+	function drop(e, fromUs, toUs, extra) {
 		// NOTE dropEffect doesn't work when dragging between windows
 		// (it will always be none in the source window)
 		

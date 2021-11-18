@@ -212,11 +212,11 @@ function dragstart({detail: {e, pickOptionType}}) {
 	lastMouseEvent = e;
 }
 
-function dragover({detail: {e, dropTargetType, isOverPickOption}}) {
+function dragover({detail: {e, dropTargetType}}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.dragover(e);
 	} else if (view.mode === "ast") {
-		astMouseHandler.dragover(e, dropTargetType, isOverPickOption);
+		astMouseHandler.dragover(e, dropTargetType);
 	}
 	
 	lastMouseEvent = e;
@@ -260,13 +260,12 @@ function drop({detail}) {
 		fromUs,
 		toUs,
 		extra,
-		isOverPickOption,
 	} = detail;
 	
 	if (view.mode === "normal") {
 		normalMouseHandler.drop(e, fromUs, toUs, extra);
 	} else if (view.mode === "ast") {
-		astMouseHandler.drop(e, fromUs, toUs, extra, isOverPickOption);
+		astMouseHandler.drop(e, fromUs, toUs, extra);
 	}
 	
 	if (!fromUs) {

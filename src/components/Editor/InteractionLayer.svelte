@@ -227,6 +227,10 @@ function dragstart(e) {
 function dragover(e) {
 	e.preventDefault();
 	
+	if (pickOptionFromMouseEvent(e)) {
+		return;
+	}
+	
 	if (mode === "ast") {
 		currentDropTarget = dropTargetFromMouseEvent(e);
 	}
@@ -234,7 +238,6 @@ function dragover(e) {
 	fire("dragover", {
 		e,
 		dropTargetType: mode === "ast" ? currentDropTarget?.target?.type : null,
-		isOverPickOption: mode === "ast" && !!pickOptionFromMouseEvent(e),
 	});
 }
 
@@ -252,12 +255,15 @@ function drop(e) {
 	if (dragStartedHere) {
 		justDropped = true;
 		
+		if (pickOptionFromMouseEvent(e)) {
+			return;
+		}
+		
 		fire("drop", {
 			e,
 			fromUs: true,
 			toUs: true,
 			extra,
-			isOverPickOption: !!pickOptionFromMouseEvent(e),
 		});
 	} else {
 		fire("drop", {
