@@ -93,7 +93,7 @@ let findAndReplace = {
 		);
 		
 		let re;
-		let flags = ["g", !caseSensitive ? "i" : ""].join("");
+		let flags = ["g", !caseSensitive ? "i" : "", "m"].join("");
 		
 		if (type === "plain") {
 			let pattern = escapeRe(search);

@@ -42,6 +42,7 @@ module.exports = function(editor, editorComponent) {
 	let drag = null;
 	let drawingSelection = false;
 	let isDraggingOver = false;
+	let mouseIsOver = false;
 	
 	function getCanvasCoords(e) {
 		let {
@@ -207,6 +208,10 @@ module.exports = function(editor, editorComponent) {
 		}
 		
 		requestAnimationFrame(function() {
+			if (!mouseIsOver) {
+				return;
+			}
+			
 			hilite(e, pickOptionType);
 		});
 	}
@@ -223,11 +228,13 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function mouseenter() {
-		
+		mouseIsOver = true;
 	}
 	
 	function mouseleave(e) {
 		editor.astMouse.setSelectionHilite(null);
+		
+		mouseIsOver = false;
 	}
 	
 	function click(e, pickOptionType) {
