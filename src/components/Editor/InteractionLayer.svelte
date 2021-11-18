@@ -220,18 +220,21 @@ function dragstart(e) {
 	
 	fire("dragstart", {
 		e,
-		pickOptionType: selectedPickOption?.type,
+		pickOptionType: mode === "ast" ? selectedPickOption?.type : null,
 	});
 }
 
 function dragover(e) {
 	e.preventDefault();
 	
-	currentDropTarget = dropTargetFromMouseEvent(e);
+	if (mode === "ast") {
+		currentDropTarget = dropTargetFromMouseEvent(e);
+	}
 	
 	fire("dragover", {
 		e,
-		dropTargetType: currentDropTarget?.target?.type,
+		dropTargetType: mode === "ast" ? currentDropTarget?.target?.type : null,
+		isOverPickOption: mode === "ast" && !!pickOptionFromMouseEvent(e),
 	});
 }
 
@@ -254,6 +257,7 @@ function drop(e) {
 			fromUs: true,
 			toUs: true,
 			extra,
+			isOverPickOption: !!pickOptionFromMouseEvent(e),
 		});
 	} else {
 		fire("drop", {
