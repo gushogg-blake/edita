@@ -61,8 +61,16 @@ function selectionFromLineIndex(document, lineIndex) {
 	return fromLineIndex(document, lineIndex, false);
 }
 
-function hiliteFromLineIndex(document, lineIndex) {
-	return fromLineIndex(document, lineIndex, true);
+function hiliteFromLineIndex(document, lineIndex, pickOptionType=null) {
+	let selection = fromLineIndex(document, lineIndex, true);
+	
+	if (pickOptionType) {
+		let {astMode} = document.langFromAstSelection(selection);
+		
+		return astMode.pickOptions[pickOptionType].getSelection(document, selection);
+	} else {
+		return selection;
+	}
 }
 
 /*
@@ -116,7 +124,6 @@ function fromLineRange(document, startLineIndex, endLineIndex) {
 }
 
 let api = {
-	selectionFromLineIndex,
 	hiliteFromLineIndex,
 	fromLineRange,
 	

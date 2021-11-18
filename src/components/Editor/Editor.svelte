@@ -108,7 +108,7 @@ let _wheelHandler = wheelHandler(editor, {
 function mousedown({detail}) {
 	let {
 		e,
-		option,
+		pickOptionType,
 		enableDrag,
 	} = detail;
 	
@@ -119,7 +119,7 @@ function mousedown({detail}) {
 			enableDrag(false);
 		});
 	} else if (view.mode === "ast") {
-		astMouseHandler.mousedown(e, option, function() {
+		astMouseHandler.mousedown(e, pickOptionType, function() {
 			// if we're holding the Esc key down to peek AST mode, use synthetic
 			// drag as native will be canceled by the repeated keydown events
 			// (unless another key has been pressed while Esc is down, which
@@ -134,7 +134,7 @@ function mousedown({detail}) {
 	}
 }
 
-function mousemove({detail: {e, option}}) {
+function mousemove({detail: {e, pickOptionType}}) {
 	if (isDragging) {
 		return;
 	}
@@ -144,7 +144,7 @@ function mousemove({detail: {e, option}}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.mousemove(e);
 	} else if (view.mode === "ast") {
-		astMouseHandler.mousemove(e, option);
+		astMouseHandler.mousemove(e, pickOptionType);
 	}
 }
 
@@ -184,11 +184,11 @@ function mouseup({detail: e}) {
 	_mouseup(e);
 }
 
-function click({detail: {e, option}}) {
+function click({detail: {e, pickOptionType}}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.click(e);
 	} else if (view.mode === "ast") {
-		astMouseHandler.click(e, option);
+		astMouseHandler.click(e, pickOptionType);
 	}
 }
 
@@ -200,33 +200,23 @@ function dblclick(e) {
 	}
 }
 
-function dragstart({detail}) {
-	let {
-		e,
-		option,
-	} = detail;
-	
+function dragstart({detail: {e, pickOptionType}}) {
 	isDragging = true;
 	
 	if (view.mode === "normal") {
 		normalMouseHandler.dragstart(e);
 	} else if (view.mode === "ast") {
-		astMouseHandler.dragstart(e, option);
+		astMouseHandler.dragstart(e, pickOptionType);
 	}
 	
 	lastMouseEvent = e;
 }
 
-function dragover({detail}) {
-	let {
-		e,
-		target,
-	} = detail;
-	
+function dragover({detail: {e, dropTargetType}}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.dragover(e);
 	} else if (view.mode === "ast") {
-		astMouseHandler.dragover(e, target);
+		astMouseHandler.dragover(e, dropTargetType);
 	}
 	
 	lastMouseEvent = e;

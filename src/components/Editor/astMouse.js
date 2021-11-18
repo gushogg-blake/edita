@@ -60,6 +60,10 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function getHilite(e, pickOptionType=null, withinSelection=false) {
+		if (pickOptionType) {
+			withinSelection = true;
+		}
+		
 		let {
 			astSelection,
 			normalSelection,
@@ -79,13 +83,11 @@ module.exports = function(editor, editorComponent) {
 		
 		let {lineIndex} = view.cursorFromRowCol(row, col);
 		
-		if (!withinSelection) {
-			if (AstSelection.lineIsWithinSelection(lineIndex, astSelection)) {
-				return astSelection;
-			}
+		if (!withinSelection && AstSelection.lineIsWithinSelection(lineIndex, astSelection)) {
+			return astSelection;
 		}
 		
-		return astCommon.selection.hiliteFromLineIndex(document, lineIndex);
+		return astCommon.selection.hiliteFromLineIndex(document, lineIndex, pickOptionType);
 	}
 	
 	function getInsertionRange(e) {
@@ -119,7 +121,7 @@ module.exports = function(editor, editorComponent) {
 	function hilite(e, pickOptionType) {
 		let selection = getHilite(e, pickOptionType);
 		
-		editor.astMouse.setSelectionHilite(selection);
+		editor.astMouse.setSelectionHilite(selection, !pickOptionType);
 	}
 	
 	function mousedown(e, pickOptionType, enableDrag) {
@@ -233,7 +235,7 @@ module.exports = function(editor, editorComponent) {
 			return;
 		}
 		
-		let selection = getHilite(e, true);
+		let selection = getHilite(e, pickOptionType, true);
 		
 		if (selection) {
 			view.setAstSelection(selection);
@@ -242,7 +244,7 @@ module.exports = function(editor, editorComponent) {
 		hilite(e);
 	}
 	
-	function dblclick(e, pickOptionType) {
+	function dblclick(e) {
 		
 	}
 	

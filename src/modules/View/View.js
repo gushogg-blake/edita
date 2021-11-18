@@ -152,6 +152,10 @@ class View extends Evented {
 	
 	showPickOptionsFor(astSelection) {
 		if (!astSelection) {
+			this.pickOptions = [];
+			
+			this.fire("updatePickOptions");
+			
 			return;
 		}
 		

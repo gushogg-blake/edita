@@ -6,13 +6,16 @@ module.exports = {
 		this.view.setAstSelection(selection);
 	},
 	
-	setSelectionHilite(selection) {
+	setSelectionHilite(selection, showPickOptions=true) {
 		let {view} = this;
 		
 		view.startBatch();
 		
 		view.setAstSelectionHilite(selection);
-		view.showPickOptionsFor(selection);
+		
+		if (showPickOptions) {
+			view.showPickOptionsFor(selection);
+		}
 		
 		view.endBatch();
 	},
@@ -26,8 +29,8 @@ module.exports = {
 		toSelection,
 		lines,
 		move,
-		option,
-		target,
+		pickOptionType,
+		dropTargetType,
 	) {
 		if (fromSelection && toSelection && (
 			!AstSelection.isFull(toSelection) && AstSelection.isAdjacent(fromSelection, toSelection)
@@ -58,8 +61,8 @@ module.exports = {
 			toSelection,
 			lines,
 			move,
-			option,
-			target,
+			pickOptionType,
+			dropTargetType,
 		);
 		
 		let normalSelection;

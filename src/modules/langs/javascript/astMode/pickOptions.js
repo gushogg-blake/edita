@@ -1,3 +1,7 @@
+let AstSelection = require("modules/utils/AstSelection");
+
+let {s: a} = AstSelection;
+
 module.exports = {
 	contents: {
 		type: "contents",
@@ -8,7 +12,9 @@ module.exports = {
 		},
 		
 		getSelection(document, selection) {
-			console.log(document.getHeadersOnLine(selection.startLineIndex));
+			let [{header, footer}] = document.getHeadersOnLine(selection.startLineIndex);
+			
+			return a(header.startPosition.row + 1, footer.startPosition.row);
 		},
 	},
 };

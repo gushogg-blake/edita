@@ -14,8 +14,8 @@ export let view;
 let fire = createEventDispatcher();
 
 let interactionDiv;
-let hoveredOption;
-let selectedOption;
+let hoveredPickOption;
+let selectedPickOption;
 let draggable = false;
 let useSyntheticDrag;
 let currentDropTarget;
@@ -133,11 +133,11 @@ function mousedown(e) {
 	
 	on(window, "mouseup", mouseup);
 	
-	selectedOption = pickOptionFromMouseEvent(e);
+	selectedPickOption = pickOptionFromMouseEvent(e);
 	
 	fire("mousedown", {
 		e,
-		option: selectedOption?.type,
+		pickOptionType: selectedPickOption?.type,
 		
 		enableDrag(useSynthetic) {
 			draggable = true;
@@ -158,12 +158,12 @@ function mousemove(e) {
 	}
 	
 	if (mode === "ast") {
-		hoveredOption = pickOptionFromMouseEvent(e);
+		hoveredPickOption = pickOptionFromMouseEvent(e);
 	}
 	
 	fire("mousemove", {
 		e,
-		option: hoveredOption?.type,
+		pickOptionType: hoveredPickOption?.type,
 	});
 }
 
@@ -174,12 +174,12 @@ function mouseup(e) {
 		if (mouseMovedDistance <= clickDistanceThreshold) {
 			fire("click", {
 				e,
-				option: hoveredOption?.type,
+				pickOptionType: hoveredPickOption?.type,
 			});
 		}
 	}
 	
-	selectedOption = null;
+	selectedPickOption = null;
 	draggable = false;
 	useSyntheticDrag = false;
 	
@@ -205,8 +205,8 @@ function contextmenu(e) {
 function dragstart(e) {
 	dragStartedHere = true;
 	
-	//if (selectedOption) {
-	//	let {node, x, y} = selectedOption;
+	//if (selectedPickOption) {
+	//	let {node, x, y} = selectedPickOption;
 	//	
 	//	//e.dataTransfer.setDragImage(node, x, y);
 	//	e.dataTransfer.setDragImage(new Image(), 0, 0);
@@ -220,7 +220,7 @@ function dragstart(e) {
 	
 	fire("dragstart", {
 		e,
-		option: selectedOption?.type,
+		pickOptionType: selectedPickOption?.type,
 	});
 }
 
@@ -231,7 +231,7 @@ function dragover(e) {
 	
 	fire("dragover", {
 		e,
-		target: currentDropTarget?.target?.type,
+		dropTargetType: currentDropTarget?.target?.type,
 	});
 }
 
@@ -243,7 +243,7 @@ function drop(e) {
 	let extra = {};
 	
 	if (mode === "ast") {
-		extra.target = dropTargetFromMouseEvent(e)?.target?.type;
+		extra.dropTargetType = dropTargetFromMouseEvent(e)?.target?.type;
 	}
 	
 	if (dragStartedHere) {
@@ -280,7 +280,7 @@ function dragend(e) {
 	justDropped = false;
 	draggable = false;
 	useSyntheticDrag = false;
-	selectedOption = null;
+	selectedPickOption = null;
 	dragStartedHere = false;
 	isDragging = false;
 }
@@ -556,8 +556,8 @@ onMount(function() {
 						<div
 							use:registerPickOption={option}
 							class="item pickOption"
-							class:hover={option.type === hoveredOption?.type}
-							class:active={option.type === selectedOption?.type}
+							class:hover={option.type === hoveredPickOption?.type}
+							class:active={option.type === selectedPickOption?.type}
 						>
 							{option.label}
 						</div>
