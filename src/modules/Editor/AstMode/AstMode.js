@@ -4,7 +4,7 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let AstSelection = require("modules/utils/AstSelection");
 let indentLines = require("modules/utils/indentLines");
-let findIndentLevel = require("modules/langs/common/astMode/utils/findIndentLevel");
+let findIndentLevel = require("modules/astCommon/utils/findIndentLevel");
 let multiStepCommands = require("./multiStepCommands");
 
 let {s} = AstSelection;

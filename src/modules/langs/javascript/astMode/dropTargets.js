@@ -1,6 +1,7 @@
 let indentLines = require("modules/utils/indentLines");
 let AstSelection = require("modules/utils/AstSelection");
-let removeSelection = require("modules/langs/common/astMode/removeSelection");
+let removeSelection = require("modules/astCommon/removeSelection");
+let isIfFooterOnly = require("./utils/isIfFooterOnly");
 
 let {s} = AstSelection;
 
@@ -8,6 +9,10 @@ module.exports = {
 	addSelectionToNewElse: {
 		type: "addSelectionToNewElse",
 		label: "+ else",
+		
+		isAvailable(document, lineIndex) {
+			return isIfFooterOnly(document, lineIndex);
+		},
 		
 		handleDrop(
 			document,
@@ -66,6 +71,10 @@ module.exports = {
 	addSelectionToNewElseIf: {
 		type: "addSelectionToNewElseIf",
 		label: "+ else if",
+		
+		isAvailable(document, lineIndex) {
+			return isIfFooterOnly(document, lineIndex);
+		},
 		
 		handleDrop(
 			document,

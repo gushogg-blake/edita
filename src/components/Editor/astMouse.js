@@ -1,7 +1,7 @@
 let parseJson = require("utils/parseJson");
 let {on, off} = require("utils/dom/domEvents");
 let AstSelection = require("modules/utils/AstSelection");
-let astCommon = require("modules/langs/common/astMode");
+let astCommon = require("modules/astCommon");
 let autoScroll = require("./utils/autoScroll");
 
 let {s} = AstSelection;

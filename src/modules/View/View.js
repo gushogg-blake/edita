@@ -3,7 +3,7 @@ let bindFunctions = require("utils/bindFunctions");
 let Cursor = require("modules/utils/Cursor");
 let Selection = require("modules/utils/Selection");
 let AstSelection = require("modules/utils/AstSelection");
-let astCommon = require("modules/langs/common/astMode");
+let astCommon = require("modules/astCommon");
 
 let SelectionUtils = require("./utils/Selection");
 let AstSelectionUtils = require("./utils/AstSelection");
@@ -162,7 +162,8 @@ class View extends Evented {
 		this.pickOptions = [{
 			lineIndex,
 			
-			options: astMode.generatePickOptions(
+			options: astCommon.getPickOptions(
+				astMode,
 				this.document,
 				astSelection,
 			).map(function(option) {
@@ -219,7 +220,8 @@ class View extends Evented {
 				continue;
 			}
 			
-			byLineIndex.set(lineIndex, astMode.generateDropTargets(
+			byLineIndex.set(lineIndex, astCommon.getDropTargets(
+				astMode,
 				document,
 				lineIndex,
 			).map(function(target) {

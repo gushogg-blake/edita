@@ -1,5 +1,5 @@
 let AstSelection = require("modules/utils/AstSelection");
-let astCommon = require("modules/langs/common/astMode");
+let astCommon = require("modules/astCommon");
 
 module.exports = {
 	setSelection(selection) {
