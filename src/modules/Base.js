@@ -99,9 +99,6 @@ class Base {
 	
 	alternate means the lang supports the file but wouldn't usually be used,
 	e.g. JavaScript supports JSON files and SCSS supports CSS files.
-	
-	plainText is a special case and is hard-coded as the fallback if no supporting
-	langs are found, so it should just return null.
 	*/
 	
 	guessLang(code, url) {
