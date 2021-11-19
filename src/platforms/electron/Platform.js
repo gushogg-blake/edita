@@ -202,7 +202,7 @@ class Platform extends Common {
 	}
 	
 	setTitle(title) {
-		document.title = (title ? title + " - " : "") + "Editor";
+		document.title = (title ? title + " - " : "") + this.config.appName;
 	}
 	
 	loadTreeSitterLanguage(name) {

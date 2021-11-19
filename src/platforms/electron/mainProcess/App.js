@@ -10,7 +10,6 @@ let path = require("path");
 let yargs = require("yargs/yargs");
 let {hideBin} = require("yargs/helpers");
 let {removeInPlace} = require("./utils/arrayMethods");
-let Evented = require("./utils/Evented");
 let streamFromString = require("./utils/streamFromString");
 let fs = require("./modules/fs");
 let ipcMain = require("./modules/ipcMain");
@@ -18,10 +17,8 @@ let mimeTypes = require("./modules/mimeTypes");
 let ipc = require("./ipc");
 let config = require("./config");
 
-class App extends Evented {
+class App {
 	constructor() {
-		super();
-		
 		this.config = config;
 		
 		this.appWindows = [];
@@ -95,7 +92,8 @@ class App extends Evented {
 					let code = await publicDir.child("main.html").read();
 					
 					let replacements = {
-						js: this.config.dev ? "main.dev" : "main",
+						appName: config.appName,
+						js: config.dev ? "main.dev" : "main",
 					};
 					
 					code = code.replace(/\$\{(\w+)\}/g, (_, k) => replacements[k]);
@@ -289,14 +287,14 @@ class App extends Evented {
 	
 	async loadJson(key, _default=null) {
 		try {
-			return await fs(this.config.userDataDir, ...key.split("/")).withExt(".json").readJson() || _default;
+			return await fs(config.userDataDir, ...key.split("/")).withExt(".json").readJson() || _default;
 		} catch (e) {
 			return _default;
 		}
 	}
 	
 	async saveJson(key, data) {
-		let node = fs(this.config.userDataDir, ...key.split("/")).withExt(".json");
+		let node = fs(config.userDataDir, ...key.split("/")).withExt(".json");
 		
 		await node.parent.mkdirp();
 		await node.writeJson(data);

@@ -21,6 +21,7 @@ let {
 forceNewInstance = forceNewInstance || process.env.EDITOR_NEW_INSTANCE === "1";
 
 module.exports = {
+	appName: "ZenText",
 	dev,
 	userDataDir,
 	forceNewInstance,
