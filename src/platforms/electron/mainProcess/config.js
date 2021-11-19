@@ -10,7 +10,7 @@ args.boolean("forceNewInstance");
 
 args.default({
 	userDataDir: path.join(os.homedir(), dev ? ".editor-dev" : ".editor"),
-	forceNewInstance: false,
+	forceNewInstance: process.env.EDITOR_NEW_INSTANCE === "1",
 });
 
 let {
@@ -18,10 +18,7 @@ let {
 	forceNewInstance,
 } = args.argv;
 
-forceNewInstance = forceNewInstance || process.env.EDITOR_NEW_INSTANCE === "1";
-
 module.exports = {
-	appName: "ZenText",
 	dev,
 	userDataDir,
 	forceNewInstance,

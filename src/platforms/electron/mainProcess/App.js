@@ -29,6 +29,8 @@ class App {
 		this.dialogsByAppWindowAndName = new WeakMap();
 		
 		this.filesToOpenOnStartup = yargs(hideBin(process.argv)).argv._.map(p => path.resolve(process.cwd(), p));
+		
+		this.buildDir = fs(__dirname, "..", "..", "..", "..", "build", config.dev ? "electron-dev" : "electron");
 	}
 	
 	get dialogWindows() {
@@ -76,31 +78,11 @@ class App {
 		
 		electronApp.on("ready", () => {
 			protocol.registerStreamProtocol("app", async (request, callback) => {
-				let publicDir = fs(__dirname, "..", "public");
-				
 				// tree-sitter.js requests an incorrect absolute path for some reason
 				if (request.url.endsWith("tree-sitter.wasm")) {
 					callback({
 						mimeType: "application/wasm",
-						data: publicDir.child("vendor", "tree-sitter", "tree-sitter.wasm").createReadStream(),
-					});
-					
-					return;
-				}
-				
-				if (request.url === "app://-/main.html") {
-					let code = await publicDir.child("main.html").read();
-					
-					let replacements = {
-						appName: config.appName,
-						js: config.dev ? "main.dev" : "main",
-					};
-					
-					code = code.replace(/\$\{(\w+)\}/g, (_, k) => replacements[k]);
-					
-					callback({
-						mimeType: "text/html",
-						data: streamFromString(code),
+						data: this.buildDir.child("vendor", "tree-sitter", "tree-sitter.wasm").createReadStream(),
 					});
 					
 					return;
@@ -111,7 +93,7 @@ class App {
 				
 				callback({
 					mimeType,
-					data: publicDir.child(...path.substr(1).split("/")).createReadStream(),
+					data: this.buildDir.child(...path.substr(1).split("/")).createReadStream(),
 				});
 			});
 			

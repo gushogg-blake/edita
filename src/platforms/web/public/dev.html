@@ -1,9 +1,9 @@
 <!doctype html>
 <html>
 	<head>
-		<title>ZenText</title>
+		<title>Editor</title>
 		<meta charset="utf-8">
-		<script src="./build/main.js"></script>
+		<script src="./js/main.js"></script>
 	</head>
 	<body>
 		<style>
@@ -14,11 +14,11 @@
 			}
 		</style>
 		<div id="editorContainer1" class="editorContainer"></div>
-		<div id="editorContainer2" class="editorContainer"></div>
+		<!--<div id="editorContainer2" class="editorContainer"></div>-->
 		<script>
 			(async function() {
 				let createEditor = await editor({
-					resourcePrefix: "./build",
+					//resourcePrefix: "./build",
 					//lspUrl: "wss://" + location.hostname + "/lsp",
 				});
 				

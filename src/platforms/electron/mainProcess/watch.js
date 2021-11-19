@@ -15,21 +15,23 @@ function debounce(fn, delay) {
 }
 
 module.exports = async function(app) {
-	let watchRenderer = chokidar.watch(path.resolve(__dirname, "../public"), {
+	let {buildDir} = app;
+	
+	let watchRenderer = chokidar.watch(app.buildDir.path, {
 		ignoreInitial: true,
 		
 		ignored: [
-			path.resolve(__dirname, "../public/dialogs"),
-			path.resolve(__dirname, "../public/build/dialogs"),
-		],
+			"dialogs",
+			"js/dialogs",
+		].map(dir => buildDir.child(dir).path),
 	});
 	
-	let watchDialogs = (await fs(__dirname, "../dialogs").ls()).map(function({name}) {
+	let watchDialogs = (await buildDir.child("dialogs").ls()).map(function({name}) {
 		let watcher = chokidar.watch([
-			path.resolve(__dirname, "../public/dialogs/" + name + ".html"),
-			path.resolve(__dirname, "../public/build/dialogs/" + name),
-			path.resolve(__dirname, "../public/build/global.css"),
-		]);
+			"dialogs/" + name + ".html",
+			"js/dialogs/" + name,
+			"css/global.css",
+		].map(file => buildDir.child(file).path));
 		
 		watcher.on("change", function() {
 			for (let appWindow of app.appWindows) {

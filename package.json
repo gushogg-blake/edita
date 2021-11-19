@@ -64,8 +64,8 @@
 		"electron-dev": "run-p autobuild-electron test electron",
 		"web-dev": "run-p autobuild-web test web",
 		"test-dev": "run-p autobuild-test test",
-		"web": "sirv --dev --no-clear --port 5000 src/platforms/web/public",
-		"test": "sirv --dev --no-clear --port 5001 test/public",
+		"web": "sirv --dev --no-clear --port 5000 build/web",
+		"test": "sirv --dev --no-clear --port 5001 build/test",
 		"dist": "run-s build-electron pure-dist-win",
 		"pure-dist-win": "electron-builder --win --config electron-builder.yml"
 	}

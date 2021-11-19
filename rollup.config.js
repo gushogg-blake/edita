@@ -135,23 +135,40 @@ function globalCssBuild(path) {
 let builds = [];
 
 if (!platform || platform === "all" || platform === "electron") {
-	addBuilds(globalCssBuild("src/platforms/electron/public/build/global.js"), {
+	let dir = "build/" + (dev ? "electron-dev" : "electron");
+	
+	addBuilds(globalCssBuild(dir + "/css/global.js"), {
 		input: "src/platforms/electron/main.js",
 		
 		output: {
 			sourcemap: true,
 			format: "iife",
-			file: "src/platforms/electron/public/build/" + (dev ? "main.dev" : "main") + ".js",
+			file: dir + "/js/main.js",
 		},
 		
-		plugins: electronPlugins(),
+		plugins: [
+			...electronPlugins(),
+			
+			copy({
+				targets: [
+					{
+						src: "src/platforms/electron/public/*",
+						dest: dir,
+					},
+					{
+						src: "vendor/public/*",
+						dest: dir + "/vendor",
+					},
+				],
+			}),
+		],
 	}, {
 		input: "src/platforms/electron/dialogs/messageBox/main.js",
 		
 		output: {
 			sourcemap: true,
 			format: "iife",
-			file: "src/platforms/electron/public/build/dialogs/messageBox/main.js",
+			file: dir + "/js/dialogs/messageBox/main.js",
 		},
 		
 		plugins: electronPlugins(),
@@ -161,7 +178,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		output: {
 			sourcemap: true,
 			format: "iife",
-			file: "src/platforms/electron/public/build/dialogs/snippetEditor/main.js",
+			file: dir + "/js/dialogs/snippetEditor/main.js",
 		},
 		
 		plugins: electronPlugins(),
@@ -171,7 +188,7 @@ if (!platform || platform === "all" || platform === "electron") {
 		output: {
 			sourcemap: true,
 			format: "iife",
-			file: "src/platforms/electron/public/build/dialogs/findAndReplace/main.js",
+			file: dir + "/js/dialogs/findAndReplace/main.js",
 		},
 		
 		plugins: electronPlugins(),
@@ -179,19 +196,35 @@ if (!platform || platform === "all" || platform === "electron") {
 }
 
 if (!platform || platform === "all" || platform === "web") {
-	addBuilds(globalCssBuild("src/platforms/web/public/build/global.js"), {
+	let dir = "build/" + (dev ? "web-dev" : "web");
+	
+	addBuilds(globalCssBuild("build/web/css/global.js"), {
 		input: "src/platforms/web/main.js",
 		
 		output: {
 			sourcemap: dev,
 			format: "iife",
 			name: "editor",
-			file: "src/platforms/web/public/build/" + (dev ? "main.js" : "main.min.js"),
+			file: dir + "/js/main.js",
 		},
 		
 		plugins: [
 			...webPlugins(),
-			dev && livereload("src/platforms/web/public"),
+			
+			copy({
+				targets: [
+					{
+						src: "src/platforms/web/public/*",
+						dest: dir,
+					},
+					{
+						src: "vendor/public/*",
+						dest: dir + "/vendor",
+					},
+				],
+			}),
+			
+			dev && livereload(dir),
 			prod && terser(),
 		],
 	});
@@ -203,7 +236,7 @@ if (!platform || platform === "all" || platform === "test") {
 		
 		output: {
 			format: "iife",
-			file: "test/public/build/main.js",
+			file: "build/test/js/main.js",
 			name: "main",
 		},
 		
@@ -213,12 +246,20 @@ if (!platform || platform === "all" || platform === "test") {
 			copy({
 				targets: [
 					{
+						src: "test/public/*",
+						dest: "build/test",
+					},
+					{
+						src: "vendor/public/*",
+						dest: "build/test/vendor",
+					},
+					{
 						src: "node_modules/mocha/mocha.css",
-						dest: "test/public/build",
+						dest: "build/test/vendor/mocha",
 					},
 					{
 						src: "node_modules/mocha/mocha.js",
-						dest: "test/public/build",
+						dest: "build/test/vendor/mocha",
 					},
 				],
 			}),
@@ -229,7 +270,7 @@ if (!platform || platform === "all" || platform === "test") {
 		output: {
 			sourcemap: true,
 			format: "iife",
-			file: "test/public/build/tests.js",
+			file: "build/test/js/tests.js",
 		},
 		
 		plugins: [

@@ -202,11 +202,11 @@ class Platform extends Common {
 	}
 	
 	setTitle(title) {
-		document.title = (title ? title + " - " : "") + this.config.appName;
+		document.title = (title ? title + " - " : "") + "Editor";
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load(path.join(__dirname, "public", "vendor", "tree-sitter", "langs", "tree-sitter-" + name + ".wasm"));
+		return TreeSitter.Language.load(path.join(__dirname, "..", "..", "..", "build", "electron", "vendor", "tree-sitter", "langs", "tree-sitter-" + name + ".wasm"));
 	}
 	
 	getPref(key) {

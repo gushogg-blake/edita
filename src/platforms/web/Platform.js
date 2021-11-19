@@ -53,9 +53,9 @@ class Platform extends Common {
 		this.options = options;
 		
 		await Promise.all([
-			loadCss(options.resourcePrefix + "/global.css"),
-			loadCss(options.resourcePrefix + "/main.css"),
-			loadScript(options.resourcePrefix + "/vendor/tree-sitter/tree-sitter.js"),
+			loadCss(options.resourcePrefix + "css/global.css"),
+			loadCss(options.resourcePrefix + "css/main.css"),
+			loadScript(options.resourcePrefix + "vendor/tree-sitter/tree-sitter.js"),
 		]);
 		
 		this.fs = this.createFs("files");
