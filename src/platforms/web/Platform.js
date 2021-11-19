@@ -54,7 +54,7 @@ class Platform extends Common {
 		
 		await Promise.all([
 			loadCss(options.resourcePrefix + "css/global.css"),
-			loadCss(options.resourcePrefix + "css/main.css"),
+			loadCss(options.resourcePrefix + "js/main.css"),
 			loadScript(options.resourcePrefix + "vendor/tree-sitter/tree-sitter.js"),
 		]);
 		

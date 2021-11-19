@@ -198,7 +198,7 @@ if (!platform || platform === "all" || platform === "electron") {
 if (!platform || platform === "all" || platform === "web") {
 	let dir = "build/" + (dev ? "web-dev" : "web");
 	
-	addBuilds(globalCssBuild("build/web/css/global.js"), {
+	addBuilds(globalCssBuild(dir + "/css/global.js"), {
 		input: "src/platforms/web/main.js",
 		
 		output: {
