@@ -2,7 +2,7 @@ import path from "path";
 
 import multi from "@rollup/plugin-multi-entry";
 import livereload from "rollup-plugin-livereload";
-import copy from "rollup-plugin-copy";
+import copy from "rollup-plugin-copy-watch";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import alias from "@rollup/plugin-alias";
@@ -150,6 +150,8 @@ if (!platform || platform === "all" || platform === "electron") {
 			...electronPlugins(),
 			
 			copy({
+				watch: dev && "src/platforms/electron/public",
+				
 				targets: [
 					{
 						src: "src/platforms/electron/public/*",
@@ -212,6 +214,8 @@ if (!platform || platform === "all" || platform === "web") {
 			...webPlugins(),
 			
 			copy({
+				watch: dev && "src/platforms/web/public",
+				
 				targets: [
 					{
 						src: "src/platforms/web/public/*",
@@ -244,6 +248,8 @@ if (!platform || platform === "all" || platform === "test") {
 			...webPlugins(),
 			
 			copy({
+				watch: dev && "test/public",
+				
 				targets: [
 					{
 						src: "test/public/*",

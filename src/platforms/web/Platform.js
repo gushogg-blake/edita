@@ -47,14 +47,15 @@ class Platform extends Common {
 			localStoragePrefix: "editor.",
 			fsPrefix: "editorFs",
 			lspUrl: null,
+			test: false,
 			...options,
 		};
 		
 		this.options = options;
 		
 		await Promise.all([
-			loadCss(options.resourcePrefix + "css/global.css"),
-			loadCss(options.resourcePrefix + "js/main.css"),
+			!options.test && loadCss(options.resourcePrefix + "css/global.css"),
+			!options.test && loadCss(options.resourcePrefix + "js/main.css"),
 			loadScript(options.resourcePrefix + "vendor/tree-sitter/tree-sitter.js"),
 		]);
 		
