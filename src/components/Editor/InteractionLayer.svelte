@@ -124,7 +124,10 @@ let syntheticDragHandler = drag({
 	},
 	
 	click(e) {
-		fire("click", e);
+		fire("click", {
+			e,
+			pickOptionType: hoveredPickOption?.type,
+		});
 	},
 });
 
