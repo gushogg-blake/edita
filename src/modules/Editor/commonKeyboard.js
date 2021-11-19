@@ -19,6 +19,11 @@ module.exports = {
 		let langCursor = c(startLineIndex, document.lines[startLineIndex].indentOffset);
 		let method = comment ? "commentLines" : "uncommentLines";
 		let lang = document.langFromCursor(langCursor);
+		
+		if (!lang[method]) {
+			return;
+		}
+		
 		let replaceWith = lang[method](document, startLineIndex, endLineIndex);
 		
 		let edits = [document.edit(selection, replaceWith)];
