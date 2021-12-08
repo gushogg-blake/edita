@@ -556,7 +556,16 @@ onMount(function() {
 }
 </style>
 
-<div id="main">
+<div
+	id="main"
+	on:mouseenter={mouseenter}
+	on:mouseleave={mouseleave}
+	on:dragover={dragover}
+	on:drop={drop}
+	on:dragend={dragend}
+	on:dragenter={dragenter}
+	on:dragleave={dragleave}
+>
 	<div
 		id="margin"
 		style={inlineStyle(marginStyle)}
@@ -605,17 +614,10 @@ onMount(function() {
 			bind:this={interactionDiv}
 			id="interactionLayer"
 			on:mousedown={mousedown}
-			on:mouseenter={mouseenter}
-			on:mouseleave={mouseleave}
 			on:mousemove={mousemove}
 			on:contextmenu={contextmenu}
 			draggable={draggable && !useSyntheticDrag}
 			on:dragstart={dragstart}
-			on:dragover={dragover}
-			on:drop={drop}
-			on:dragend={dragend}
-			on:dragenter={dragenter}
-			on:dragleave={dragleave}
 		>
 			{#if completions}
 				<div
