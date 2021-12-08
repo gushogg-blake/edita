@@ -18,6 +18,8 @@ let hoveredPickOption;
 let selectedPickOption;
 let draggable = false;
 let useSyntheticDrag;
+let lastMousedownTime;
+let lastMousedownWasDoubleClick = false;
 let currentDropTarget;
 let clickDistanceThreshold = 2;
 let mouseMovedDistance;
@@ -123,12 +125,7 @@ let syntheticDragHandler = drag({
 		syntheticDrag = null;
 	},
 	
-	click(e) {
-		fire("click", {
-			e,
-			pickOptionType: hoveredPickOption?.type,
-		});
-	},
+	click,
 });
 
 function mousedown(e) {
@@ -151,6 +148,16 @@ function mousedown(e) {
 	if (useSyntheticDrag) {
 		syntheticDragHandler.mousedown(e);
 	}
+	
+	let time = Date.now();
+	
+	if (lastMousedownTime && time - lastMousedownTime <= platform.getPref("doubleClickSpeed")) {
+		fire("dblclick", e);
+		
+		lastMousedownWasDoubleClick = true;
+	}
+	
+	lastMousedownTime = time;
 }
 
 function mousemove(e) {
@@ -175,10 +182,7 @@ function mouseup(e) {
 		syntheticDragHandler.mouseup(e);
 	} else {
 		if (mouseMovedDistance <= clickDistanceThreshold) {
-			fire("click", {
-				e,
-				pickOptionType: hoveredPickOption?.type,
-			});
+			click(e);
 		}
 	}
 	
@@ -189,6 +193,17 @@ function mouseup(e) {
 	fire("mouseup", e);
 	
 	off(window, "mouseup", mouseup);
+}
+
+function click(e) {
+	if (!lastMousedownWasDoubleClick) {
+		fire("click", {
+			e,
+			pickOptionType: hoveredPickOption?.type,
+		});
+	}
+	
+	lastMousedownWasDoubleClick = false;
 }
 
 function mouseenter(e) {
@@ -585,7 +600,6 @@ onMount(function() {
 			on:mouseenter={mouseenter}
 			on:mouseleave={mouseleave}
 			on:mousemove={mousemove}
-			on:dblclick
 			on:contextmenu={contextmenu}
 			draggable={draggable && !useSyntheticDrag}
 			on:dragstart={dragstart}

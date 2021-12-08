@@ -192,7 +192,7 @@ function click({detail: {e, pickOptionType}}) {
 	}
 }
 
-function dblclick(e) {
+function dblclick({detail: e}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.dblclick(e);
 	} else if (view.mode === "ast") {

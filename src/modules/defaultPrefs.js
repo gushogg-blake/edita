@@ -154,6 +154,8 @@ module.exports = function(systemInfo) {
 			"Ctrl+-": "toggleBottomPane",
 		},
 		
+		doubleClickSpeed: 400,
+		
 		langs: {
 			javascript: {
 				colors: {
