@@ -186,6 +186,10 @@ function mouseup(e) {
 		}
 	}
 	
+	if (mouseMovedDistance > clickDistanceThreshold) {
+		lastMousedownTime = null;
+	}
+	
 	selectedPickOption = null;
 	draggable = false;
 	useSyntheticDrag = false;
