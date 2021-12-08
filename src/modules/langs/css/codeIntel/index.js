@@ -1,9 +1,9 @@
 module.exports = {
-	shouldIndentOnNewline(document, line, lineIndex, cursor) {
+	shouldIndentOnNewline(document, line, cursor) {
 		return line.string.substr(0, cursor.offset).match(/[\[{(]$/);
 	},
 	
-	indentAdjustmentAfterInsertion(document, line, lineIndex) {
+	indentAdjustmentAfterInsertion(document, line, cursor) {
 		let nodes = document.getNodesOnLine(lineIndex);
 		let lastNode = nodes[nodes.length - 1];
 		
