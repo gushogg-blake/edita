@@ -71,7 +71,7 @@ class View extends Evented {
 		this.marginStyle = {
 			margin: 2,
 			paddingLeft: 3,
-			paddingRight: 5,
+			paddingRight: 7,
 		};
 		
 		this.measurements = {

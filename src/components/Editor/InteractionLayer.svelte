@@ -39,12 +39,18 @@ let {
 		rowHeight,
 		colWidth,
 	},
-	sizes: {
-		width,
-		marginWidth,
-		marginOffset,
-	},
+	sizes,
 } = view;
+
+let codeWidth;
+let marginWidth;
+
+updateSizes();
+
+function updateSizes() {
+	marginWidth = sizes.marginWidth - sizes.marginStyle.paddingRight;
+	codeWidth = sizes.width - marginWidth;
+}
 
 let divToPickOption = new Map();
 let divToDropTarget = new Map();
@@ -335,12 +341,10 @@ function dragleave(e) {
 
 function onUpdateSizes() {
 	({
-		sizes: {
-			width,
-			marginWidth,
-			marginOffset,
-		},
+		sizes,
 	} = view);
+	
+	updateSizes();
 }
 
 function onScroll() {
@@ -393,7 +397,7 @@ function calculateMarginStyle(marginWidth) {
 }
 
 function calculateCodeStyle(
-	width,
+	codeWidth,
 	marginWidth,
 	mode,
 	dragStartedHere,
@@ -406,7 +410,7 @@ function calculateCodeStyle(
 	
 	return {
 		left: marginWidth,
-		width: width - marginWidth,
+		width: codeWidth,
 		cursor,
 	};
 }
@@ -416,7 +420,7 @@ function rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition) 
 	let screenCol = wrappedLines[lineIndex].line.width + 1;
 	
 	return {
-		top: view.sizes.topMargin + rowYHint + screenY,
+		top: sizes.topMargin + rowYHint + screenY,
 		left: screenCol * colWidth - scrollPosition.x,
 		height: rowHeight,
 	};
@@ -429,7 +433,7 @@ function completionsStyle(wrappedLines, completions, rowHeight, colWidth, scroll
 	let screenCol = col;
 	
 	return {
-		top: view.sizes.topMargin + rowYHint + screenY,
+		top: sizes.topMargin + rowYHint + screenY,
 		left: screenCol * colWidth - scrollPosition.x,
 	};
 }
@@ -448,8 +452,8 @@ function targetIsActive(target, currentDropTarget) {
 $: marginStyle = calculateMarginStyle(marginWidth);
 
 $: codeStyle = calculateCodeStyle(
-	width,
-	marginOffset,
+	codeWidth,
+	marginWidth,
 	mode,
 	dragStartedHere,
 );
