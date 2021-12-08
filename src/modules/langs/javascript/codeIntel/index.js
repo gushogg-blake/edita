@@ -8,7 +8,7 @@ module.exports = function(lang) {
 			let nodes = document.getNodesOnLineWithLang(cursor.lineIndex);
 			
 			for (let {lang: l, node} of nodes) {
-				if (l !== lang) {
+				if (l !== lang || node.endPosition.column !== cursor.offset) {
 					continue;
 				}
 				
