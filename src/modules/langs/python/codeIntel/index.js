@@ -1,13 +1,13 @@
 module.exports = {
-	shouldIndentOnNewline(document, line, lineIndex, cursor) {
+	shouldIndentOnNewline(document, line, cursor) {
 		
 	},
 	
-	indentAdjustmentAfterInsertion(document, line, lineIndex) {
+	indentAdjustmentAfterInsertion(document, line, cursor) {
 		return 0;
 	},
 	
 	async isProjectRoot(dir) {
-		return (await platform.fs(dir).readdir()).includes("septu.py");
+		return (await platform.fs(dir).readdir()).includes("setup.py");
 	},
 };

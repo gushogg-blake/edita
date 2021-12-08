@@ -120,7 +120,7 @@ module.exports = {
 		let line = document.lines[lineIndex];
 		let {indentLevel} = line;
 		
-		if (this.view.lang.codeIntel?.shouldIndentOnNewline(document, line, lineIndex, start)) {
+		if (this.view.lang.codeIntel?.shouldIndentOnNewline(document, line, start)) {
 			indentLevel++;
 		}
 		
@@ -630,7 +630,7 @@ module.exports = {
 		
 		let line = document.lines[lineIndex];
 		
-		let indentAdjustment = this.view.lang.codeIntel?.indentAdjustmentAfterInsertion(document, line, lineIndex) || 0;
+		let indentAdjustment = this.view.lang.codeIntel?.indentAdjustmentAfterInsertion(document, line, newSelection.start) || 0;
 		
 		if (indentAdjustment !== 0) {
 			let {string: indentStr} = document.fileDetails.indentation;
