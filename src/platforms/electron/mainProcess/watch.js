@@ -17,13 +17,15 @@ function debounce(fn, delay) {
 module.exports = async function(app) {
 	let {buildDir} = app;
 	
-	let watchRenderer = chokidar.watch(app.buildDir.path, {
+	let watchRenderer = chokidar.watch([
+		"js/main.js",
+		"css/global.css",
+	].map(path => buildDir.child(path).path), {
 		ignoreInitial: true,
-		
-		ignored: [
-			"dialogs",
-			"js/dialogs",
-		].map(dir => buildDir.child(dir).path),
+	});
+	
+	watchRenderer.on("change", function() {
+		app.appWindows.forEach(browserWindow => browserWindow.reload());
 	});
 	
 	let watchDialogs = (await buildDir.child("dialogs").ls()).map(function({name}) {
@@ -46,16 +48,6 @@ module.exports = async function(app) {
 	
 	let watchMain = chokidar.watch(__dirname);
 	
-	let watchers = [
-		watchMain,
-		watchRenderer,
-		...watchDialogs,
-	];
-	
-	watchRenderer.on("change", function() {
-		app.appWindows.forEach(browserWindow => browserWindow.reload());
-	});
-	
 	watchMain.on("change", debounce(function() {
 		let child = spawn("npm", ["run", "electron"], {
 			detached: true,
@@ -70,7 +62,7 @@ module.exports = async function(app) {
 	}, 300));
 	
 	function closeWatchers() {
-		watchers.forEach(w => w.close());
+		[watchMain, watchRenderer, ...watchDialogs].forEach(w => w.close());
 	}
 	
 	electronApp.on("before-quit", closeWatchers);
