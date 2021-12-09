@@ -1,9 +1,9 @@
 <script>
 import {onMount, createEventDispatcher} from "svelte";
-import {fade} from "svelte/transition";
 import unique from "utils/array/unique";
 import {on, off} from "utils/dom/domEvents";
 import inlineStyle from "utils/dom/inlineStyle";
+import getDistanceBetweenMouseEvents from "utils/dom/getDistanceBetweenMouseEvents";
 import drag from "./utils/drag";
 import createDragEvent from "./utils/createDragEvent";
 
@@ -18,14 +18,14 @@ let hoveredPickOption;
 let selectedPickOption;
 let draggable = false;
 let useSyntheticDrag;
-let lastMousedownTime;
-let lastMousedownWasDoubleClick = false;
 let currentDropTarget;
-let clickDistanceThreshold = 2;
-let mouseMovedDistance;
 let syntheticDrag = null;
 let dragStartedHere = false;
 let isDragging = false;
+let lastMousedownTime;
+let lastMousedownWasDoubleClick = false;
+let lastMousedownEvent;
+let clickDistanceThreshold = 2;
 let rowYHint = 0;
 
 let {
@@ -135,7 +135,7 @@ let syntheticDragHandler = drag({
 });
 
 function mousedown(e) {
-	mouseMovedDistance = 0;
+	lastMousedownEvent = e;
 	
 	on(window, "mouseup", mouseup);
 	
@@ -167,8 +167,6 @@ function mousedown(e) {
 }
 
 function mousemove(e) {
-	mouseMovedDistance++;
-	
 	if (useSyntheticDrag) {
 		syntheticDragHandler.mousemove(e);
 	}
@@ -184,15 +182,17 @@ function mousemove(e) {
 }
 
 function mouseup(e) {
+	let mouseMoved = getDistanceBetweenMouseEvents(e, lastMousedownEvent) > clickDistanceThreshold;
+	
 	if (useSyntheticDrag) {
 		syntheticDragHandler.mouseup(e);
 	} else {
-		if (mouseMovedDistance <= clickDistanceThreshold) {
+		if (!mouseMoved) {
 			click(e);
 		}
 	}
 	
-	if (mouseMovedDistance > clickDistanceThreshold) {
+	if (mouseMoved) {
 		lastMousedownTime = null;
 	}
 	
