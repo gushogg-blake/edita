@@ -49,6 +49,12 @@ async function drop(e) {
 	}
 }
 
+function mousedown(e) {
+	if (e.button === 2) {
+		e.preventDefault(); // prevent right click blurring active element
+	}
+}
+
 function onUpdateTabs() {
 	tabs = app.tabs;
 }
@@ -215,6 +221,7 @@ onMount(function() {
 	on:dragover={dragover}
 	on:drop={drop}
 	on:keydown={keydown}
+	on:mousedown={mousedown}
 	tabindex="0"
 >
 	<div id="toolbar">
