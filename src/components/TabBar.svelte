@@ -1,6 +1,7 @@
 <script>
 import {onMount, createEventDispatcher, getContext, tick} from "svelte";
 import screenOffsets from "utils/dom/screenOffsets";
+import scrollIntoView from "utils/dom/scrollIntoView";
 import Gap from "components/utils/Gap.svelte";
 
 export let tabs;
@@ -116,9 +117,13 @@ function registerTabButton(node, tab) {
 async function scrollSelectedTabIntoView() {
 	await tick();
 	
-	tabButtons.get(selectedTab)?.scrollIntoView({
-		block: "nearest",
-	});
+	let tabButton = tabButtons.get(selectedTab);
+	
+	if (!tabButton) {
+		return;
+	}
+	
+	scrollIntoView(tabButton, main);
 }
 
 $: if (isMounted() && [tabs, selectedTab]) {
