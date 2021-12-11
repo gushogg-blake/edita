@@ -9,7 +9,7 @@ handleMessages("contextMenu", {
 		clickHandlers[id][itemId]();
 	},
 	
-	close(e, id,) {
+	close(e, id) {
 		delete clickHandlers[id];
 	},
 });
