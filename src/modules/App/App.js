@@ -268,10 +268,7 @@ class App extends Evented {
 	
 	hideFindBarAndFocusEditor() {
 		this.hideFindBar();
-		
-		if (this.selectedTab) {
-			this.selectedTab.editor.view.requestFocus();
-		}
+		this.selectedTab?.editor.view.requestFocus();
 	}
 	
 	openPath(path, code=null) {
