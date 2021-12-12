@@ -1,6 +1,7 @@
-let wordRe = /\w/;
-let startWordRe = /^\w+/;
-let endWordRe = /\w+$/;
+let regexMatch = require("utils/regexMatch");
+
+let endWordRe = /\S*\w+[\S\w]*\s*$/;
+let wordRe = /\S*\w+[\S\w]*\s*/g;
 
 class LineWrapper {
 	constructor(line, indentation, measurements, availableWidth) {
@@ -129,37 +130,22 @@ class LineWrapper {
 				while (string) {
 					let toEnd = string.substr(0, this.currentlyAvailableCols);
 					let overflow = string.substr(toEnd.length);
+					let endWord = regexMatch(toEnd, endWordRe);
 					
-					if (overflow && overflow[0] === " ") {
-						// don't start a new row with a space
+					if (endWord) {
+						wordRe.lastIndex = toEnd.length - endWord.length;
 						
-						let [, str, endSpaces] = toEnd.match(/([^ ]*)( *)$/);
-						let endWord = "";
+						let [fullWord] = wordRe.exec(string);
 						
-						if (str) {
-							if (str.match(/\w$/)) {
-								endWord = str.match(/\w+$/)[0];
-							} else {
-								endWord = str[str.length - 1];
-							}
+						if (fullWord.length > endWord.length) {
+							toEnd = toEnd.substr(0, toEnd.length - endWord.length);
 							
-							if (endWord.length < toEnd.length) {
-								toEnd = string.substr(0, toEnd.length - endWord.length);
+							if (toEnd) {
+								overflow = endWord + overflow;
+							} else {
+								toEnd = endWord;
 								overflow = string.substr(toEnd.length);
 							}
-						}
-					} else if (toEnd[toEnd.length - 1].match(wordRe) && overflow && overflow[0].match(wordRe)) {
-						// don't break a line mid-word
-						
-						let [endWord] = toEnd.match(endWordRe);
-						
-						toEnd = toEnd.substr(0, toEnd.length - endWord.length);
-						
-						if (toEnd) {
-							overflow = endWord + overflow;
-						} else {
-							toEnd = endWord;
-							overflow = string.substr(toEnd.length);
 						}
 					}
 					
