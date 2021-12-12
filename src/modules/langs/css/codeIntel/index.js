@@ -4,7 +4,7 @@ module.exports = {
 	},
 	
 	indentAdjustmentAfterInsertion(document, line, cursor) {
-		let nodes = document.getNodesOnLine(lineIndex);
+		let nodes = document.getNodesOnLine(cursor.lineIndex);
 		let lastNode = nodes[nodes.length - 1];
 		
 		if (!lastNode || !lastNode.type.match(/[\]})]/)) {
