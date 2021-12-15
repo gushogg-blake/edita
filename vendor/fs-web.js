@@ -205,7 +205,7 @@ module.exports = function(dbName) {
 			let file = files.shift();
 			let func = file.type === "directory" ? rmdir : removeFile;
 			
-			return func(file.name).then(function() {
+			return func(file.path).then(function() {
 				return removeFiles(files);
 			});
 		});
@@ -227,6 +227,14 @@ module.exports = function(dbName) {
 				return entry.type === "directory";
 			},
 		};
+	}
+	
+	async function remove(path) {
+		if ((await stat(path)).isDirectory()) {
+			await rmdir(path);
+		} else {
+			await removeFile(path);
+		}
 	}
 	
 	async function rename(oldPath, newPath) {
@@ -273,7 +281,7 @@ module.exports = function(dbName) {
 	return {
 		readFile,
 		writeFile,
-		remove: removeFile,
+		remove,
 		unlink: removeFile,
 		readdir,
 		mkdir,
