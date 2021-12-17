@@ -22,9 +22,11 @@ let currentDropTarget;
 let syntheticDrag = null;
 let dragStartedHere = false;
 let isDragging = false;
-let lastMousedownTime;
 let lastMousedownWasDoubleClick = false;
 let lastMousedownEvent;
+let lastMousedownTime;
+let lastClickMousedownEvent;
+let lastClickMousedownTime;
 let clickDistanceThreshold = 2;
 let rowYHint = 0;
 
@@ -157,7 +159,13 @@ function mousedown(e) {
 	
 	let time = Date.now();
 	
-	if (lastMousedownTime && time - lastMousedownTime <= platform.getPref("doubleClickSpeed")) {
+	if (
+		!lastMousedownWasDoubleClick
+		&& lastClickMousedownEvent
+		&& getDistanceBetweenMouseEvents(e, lastClickMousedownEvent) <= clickDistanceThreshold
+		&& lastClickMousedownTime
+		&& time - lastClickMousedownTime <= platform.getPref("doubleClickSpeed")
+	) {
 		fire("dblclick", e);
 		
 		lastMousedownWasDoubleClick = true;
@@ -192,10 +200,6 @@ function mouseup(e) {
 		}
 	}
 	
-	if (mouseMoved) {
-		lastMousedownTime = null;
-	}
-	
 	selectedPickOption = null;
 	draggable = false;
 	useSyntheticDrag = false;
@@ -213,6 +217,8 @@ function click(e) {
 		});
 	}
 	
+	lastClickMousedownEvent = lastMousedownEvent;
+	lastClickMousedownTime = lastMousedownTime;
 	lastMousedownWasDoubleClick = false;
 }
 
