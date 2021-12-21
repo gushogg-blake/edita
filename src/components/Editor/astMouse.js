@@ -203,6 +203,8 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function mousemove(e, pickOptionType) {
+		mouseIsOver = true;
+		
 		if (drawingSelection) {
 			return;
 		}
