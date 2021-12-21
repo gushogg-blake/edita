@@ -181,13 +181,13 @@ input#name {
 			>
 		</div>
 	</div>
-	<div class="options">
-		<Checkbox
-			bind:checked={isDynamic}
-			on:change={onToggleDynamic}
-			label="Dynamic"
-		/>
-	</div>
+	<!--<div class="options">-->
+	<!--	<Checkbox-->
+	<!--		bind:checked={isDynamic}-->
+	<!--		on:change={onToggleDynamic}-->
+	<!--		label="Dynamic"-->
+	<!--	/>-->
+	<!--</div>-->
 	<div id="actions">
 		<button type="button" on:click={cancel}>Cancel</button>
 		<button type="submit">OK</button>
