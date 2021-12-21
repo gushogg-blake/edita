@@ -1,6 +1,6 @@
 {
-	"name": "editor",
-	"description": "editor",
+	"name": "treefrog",
+	"description": "Treefrog editor",
 	"author": "Gus Hogg-Blake",
 	"version": "0.1.0",
 	"main": "./src/platforms/electron/mainProcess/main.js",
