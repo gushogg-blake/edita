@@ -13,5 +13,6 @@ mkdir $dir/build
 cp -R build/electron $dir/build/
 cp -R src $dir/
 cp -R vendor $dir/
+cp rollup.config.js $dir/
 cp package* $dir/
 cp licenses $dir/
