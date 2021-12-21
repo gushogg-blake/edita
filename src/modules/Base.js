@@ -77,9 +77,9 @@ class Base {
 			"javascript",
 			"html",
 			"css",
-			"php",
-			"c",
-			"cpp",
+			//"php",
+			//"c",
+			//"cpp",
 		], code => this.initLanguage(this.langs.get(code)));
 	}
 	
