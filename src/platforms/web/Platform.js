@@ -44,8 +44,8 @@ class Platform extends Common {
 		options = {
 			resourcePrefix: "",
 			init: null,
-			localStoragePrefix: "editor.",
-			fsPrefix: "editorFs",
+			localStoragePrefix: "treefrog.",
+			fsPrefix: "treefrogFs",
 			lspUrl: null,
 			test: false,
 			...options,

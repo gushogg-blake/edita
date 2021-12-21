@@ -39,7 +39,7 @@ module.exports = function(app, createDialogComponent) {
 		
 		toolbarComponent.$on("close", close);
 		
-		container.className = "editor editor-dialog";
+		container.className = "treefrog treefrog-dialog";
 		
 		container.style.visibility = "hidden";
 		

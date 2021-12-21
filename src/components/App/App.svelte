@@ -217,7 +217,7 @@ onMount(function() {
 <div
 	bind:this={main}
 	id="main"
-	class="editor"
+	class="treefrog"
 	on:dragover={dragover}
 	on:drop={drop}
 	on:keydown={keydown}
