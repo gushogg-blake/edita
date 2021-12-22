@@ -1,10 +1,11 @@
 let Evented = require("utils/Evented");
 let mapArrayToObject = require("utils/mapArrayToObject");
+let Pane = require("../Pane");
 let FindResults = require("./FindResults");
 
-class BottomPane extends Evented {
+class BottomPane extends Pane {
 	constructor(app) {
-		super();
+		super("bottom");
 		
 		this.app = app;
 		
@@ -45,6 +46,8 @@ class BottomPane extends Evented {
 			this.clippingsEditor.focusAsync();
 		}
 		
+		this.updateClippingsEditorVisibility();
+		
 		this.fire("selectTab");
 	}
 	
@@ -60,6 +63,20 @@ class BottomPane extends Evented {
 		let {newline} = this.clippingsEditor.document.fileDetails;
 		
 		this.clippingsEditor.api.edit(this.clippingsEditor.document.cursorAtStart(), str + newline + newline);
+	}
+	
+	setVisibility(show) {
+		super.setVisibility(show);
+		
+		this.updateClippingsEditorVisibility();
+	}
+	
+	updateClippingsEditorVisibility() {
+		if (this.show && this.selectedTab === this.tabsById.clippings) {
+			this.clippingsEditor.view.show();
+		} else {
+			this.clippingsEditor.view.hide();
+		}
 	}
 }
 

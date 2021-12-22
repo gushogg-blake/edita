@@ -238,8 +238,8 @@ onMount(function() {
 		<ResizeHandle
 			position="left"
 			getSize={() => panes.left.size}
-			on:resize={({detail: size}) => app.resizePane("left", size)}
-			on:end={({detail: size}) => app.resizePaneAndSave("left", size)}
+			on:resize={({detail: size}) => app.panes.left.resize(size)}
+			on:end={({detail: size}) => app.panes.left.resizeAndSave(size)}
 		/>
 	</div>
 	<div id="tabBarContainer">
@@ -274,8 +274,8 @@ onMount(function() {
 		<ResizeHandle
 			position="right"
 			getSize={() => panes.right.size}
-			on:resize={({detail: size}) => app.resizePane("right", size)}
-			on:end={({detail: size}) => app.resizePaneAndSave("right", size)}
+			on:resize={({detail: size}) => app.panes.right.resize(size)}
+			on:end={({detail: size}) => app.panes.right.resizeAndSave(size)}
 		/>
 	</div>
 	<div
@@ -284,13 +284,13 @@ onMount(function() {
 		style={inlineStyle(paneStyle.bottom)}
 	>
 		<div id="bottom">
-			<BottomPane/>
+			<!--<BottomPane/>-->
 		</div>
 		<ResizeHandle
 			position="bottom"
 			getSize={() => panes.bottom.size}
-			on:resize={({detail: size}) => app.resizePane("bottom", size)}
-			on:end={({detail: size}) => app.resizePaneAndSave("bottom", size)}
+			on:resize={({detail: size}) => app.panes.bottom.resize(size)}
+			on:end={({detail: size}) => app.panes.bottom.resizeAndSave(size)}
 		/>
 	</div>
 </div>

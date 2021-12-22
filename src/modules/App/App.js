@@ -16,6 +16,7 @@ let Project = require("modules/Project");
 let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let FileTree = require("./FileTree");
+let Pane = require("./Pane");
 let BottomPane = require("./BottomPane");
 let FindAndReplace = require("./FindAndReplace");
 let openDialogWindow = require("./openDialogWindow");
@@ -25,8 +26,15 @@ class App extends Evented {
 	constructor() {
 		super();
 		
+		this.panes = {
+			left: new Pane("left"),
+			right: new Pane("right"),
+			bottom: new BottomPane(this),
+		};
+		
+		this.bottomPane = this.panes.bottom;
+		
 		this.fileTree = new FileTree(this);
-		this.bottomPane = new BottomPane(this);
 		
 		this.findAndReplace = new FindAndReplace(this);
 		
@@ -38,8 +46,6 @@ class App extends Evented {
 		
 		this.openProjects = [];
 		
-		this.panes = platform.getPref("panes");
-		
 		this.functions = bindFunctions(this, functions);
 		
 		this.openDialogWindow = openDialogWindow(this);
@@ -47,6 +53,7 @@ class App extends Evented {
 		this.teardownCallbacks = [
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
+			...Object.values(this.panes).map(pane => pane.on("show hide resize", () => this.fire("updatePanes"))),
 		];
 		
 		platform.handleIpcMessages("findAndReplace", this.findAndReplace);
@@ -224,38 +231,6 @@ class App extends Evented {
 	
 	pathIsOpen(path) {
 		return this.tabs.some(tab => tab.protocol === "file" && tab.path === path);
-	}
-	
-	showPane(name) {
-		this.setPaneVisibility(name, true);
-	}
-	
-	hidePane(name) {
-		this.setPaneVisibility(name, false);
-	}
-	
-	togglePane(name) {
-		this.setPaneVisibility(name, !this.panes[name].show);
-	}
-	
-	setPaneVisibility(name, visible) {
-		this.panes[name].show = visible;
-		
-		platform.setPref("panes." + name + ".show", visible);
-		
-		this.fire("updatePanes");
-	}
-	
-	resizePane(name, size) {
-		this.panes[name].size = size;
-		
-		this.fire("updatePanes");
-	}
-	
-	resizePaneAndSave(name, size) {
-		this.resizePane(name, size);
-		
-		platform.setPref("panes." + name + ".size", size);
 	}
 	
 	showFindBar() {

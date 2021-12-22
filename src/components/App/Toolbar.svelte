@@ -58,13 +58,13 @@ button {
 	<button on:click={() => app.functions.save()}>
 		Save
 	</button>
-	<button on:click={() => app.togglePane("left")}>
+	<button on:click={() => app.panes.left.toggle()}>
 		[
 	</button>
-	<button on:click={() => app.togglePane("bottom")}>
+	<button on:click={() => app.panes.bottom.toggle()}>
 		_
 	</button>
-	<button on:click={() => app.togglePane("right")}>
+	<button on:click={() => app.panes.right.toggle()}>
 		]
 	</button>
 </div>
