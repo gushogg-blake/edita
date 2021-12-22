@@ -57,6 +57,8 @@ module.exports = {
 			edits,
 		});
 		
+		view.validateSelection();
+		
 		view.setNormalHilites(edits.map(edit => edit.newSelection));
 		
 		view.endBatch();
@@ -92,6 +94,8 @@ module.exports = {
 			edits,
 			normalSelection: selection,
 		});
+		
+		view.validateSelection();
 		
 		view.setNormalHilites(edits.map(edit => edit.newSelection));
 		

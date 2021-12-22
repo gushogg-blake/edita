@@ -451,6 +451,14 @@ class View extends Evented {
 		this.batchRedraw();
 	}
 	
+	validateSelection() {
+		if (this.mode === "normal") {
+			this.setNormalSelection(this.normalSelection);
+		} else {
+			this.setAstSelection(this.astSelection);
+		}
+	}
+	
 	setInsertCursor(cursor) {
 		this.insertCursor = cursor;
 		
