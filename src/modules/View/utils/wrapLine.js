@@ -1,7 +1,7 @@
 let regexMatch = require("utils/regexMatch");
 
-let endWordRe = /\S*\w+[\S\w]*\s*$/;
-let wordRe = /\S*\w+[\S\w]*\s*/g;
+let endWordRe = /[\S\w]+\s*$/;
+let wordRe = /[\S\w]+\s*/g;
 
 class LineWrapper {
 	constructor(line, indentation, measurements, availableWidth) {
