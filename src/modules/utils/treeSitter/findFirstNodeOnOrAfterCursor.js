@@ -52,6 +52,7 @@ module.exports = function(node, cursor) {
 			startIndex = 0;
 			endIndex = children.length;
 			foundContainingNode = true;
+			first = null;
 		} else {
 			startIndex = index + 1;
 			
