@@ -636,6 +636,7 @@ canvas {
 	bind:this={main}
 	id="main"
 	on:wheel={wheel}
+	class="treefrog"
 	class:showingHorizontalScrollbar
 	class:textarea={editorMode === "textarea"}
 	tabindex="0"
