@@ -27,7 +27,7 @@ function endsAfter(node, cursor) {
 }
 
 module.exports = function(node, cursor) {
-	if (isOnOrAfter(node, cursor)) {
+	if (isOn(node, cursor) || isAfter(node, cursor)) {
 		return node;
 	}
 	

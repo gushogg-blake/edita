@@ -194,7 +194,7 @@ class Platform extends Common {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load(this.options.resourcePrefix + "/vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
+		return TreeSitter.Language.load(this.options.resourcePrefix + "vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
 	}
 	
 	getPref(key) {
