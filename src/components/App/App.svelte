@@ -284,7 +284,7 @@ onMount(function() {
 		style={inlineStyle(paneStyle.bottom)}
 	>
 		<div id="bottom">
-			<!--<BottomPane/>-->
+			<BottomPane/>
 		</div>
 		<ResizeHandle
 			position="bottom"
