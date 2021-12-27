@@ -7,7 +7,7 @@ module.exports = function(editor, editorComponent) {
 	let {document, view} = editor;
 	let drawingSelection = false;
 	
-	async function mousedown(e, enableDrag) {
+	function mousedown(e, enableDrag) {
 		if (e.button === 2) {
 			return;
 		}
@@ -101,7 +101,7 @@ module.exports = function(editor, editorComponent) {
 		
 	}
 	
-	async function click(e) {
+	function click(e) {
 		if (e.button !== 0) {
 			return;
 		}
