@@ -143,20 +143,6 @@ function mousedown(e) {
 	
 	selectedPickOption = pickOptionFromMouseEvent(e);
 	
-	fire("mousedown", {
-		e,
-		pickOptionType: selectedPickOption?.type,
-		
-		enableDrag(useSynthetic) {
-			draggable = true;
-			useSyntheticDrag = useSynthetic;
-		},
-	});
-	
-	if (useSyntheticDrag) {
-		syntheticDragHandler.mousedown(e);
-	}
-	
 	let time = Date.now();
 	
 	if (
@@ -169,6 +155,20 @@ function mousedown(e) {
 		fire("dblclick", e);
 		
 		lastMousedownWasDoubleClick = true;
+	} else {
+		fire("mousedown", {
+			e,
+			pickOptionType: selectedPickOption?.type,
+			
+			enableDrag(useSynthetic) {
+				draggable = true;
+				useSyntheticDrag = useSynthetic;
+			},
+		});
+		
+		if (useSyntheticDrag) {
+			syntheticDragHandler.mousedown(e);
+		}
 	}
 	
 	lastMousedownTime = time;
@@ -203,6 +203,7 @@ function mouseup(e) {
 	selectedPickOption = null;
 	draggable = false;
 	useSyntheticDrag = false;
+	lastMousedownWasDoubleClick = false;
 	
 	fire("mouseup", e);
 	
@@ -219,7 +220,6 @@ function click(e) {
 	
 	lastClickMousedownEvent = lastMousedownEvent;
 	lastClickMousedownTime = lastMousedownTime;
-	lastMousedownWasDoubleClick = false;
 }
 
 function mouseenter(e) {
