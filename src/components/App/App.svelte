@@ -80,15 +80,15 @@ function onUpdatePanes() {
 let paneStyle = {};
 
 $: paneStyle.left = {
-	width: panes.left.show ? panes.left.size : 0,
+	width: panes.left.visible ? panes.left.size : 0,
 };
 
 $: paneStyle.right = {
-	width: panes.right.show ? panes.right.size : 0,
+	width: panes.right.visible ? panes.right.size : 0,
 };
 
 $: paneStyle.bottom = {
-	height: panes.bottom.show ? panes.bottom.size : 0,
+	height: panes.bottom.visible ? panes.bottom.size : 0,
 };
 
 onMount(function() {

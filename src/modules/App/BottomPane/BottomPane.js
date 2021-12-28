@@ -56,7 +56,7 @@ class BottomPane extends Pane {
 		
 		this.selectTab(this.tabsById.findResults);
 		
-		this.app.showPane("bottom");
+		this.show();
 	}
 	
 	addClipping(str) {
@@ -72,7 +72,7 @@ class BottomPane extends Pane {
 	}
 	
 	updateClippingsEditorVisibility() {
-		if (this.show && this.selectedTab === this.tabsById.clippings) {
+		if (this.visible && this.selectedTab === this.tabsById.clippings) {
 			this.clippingsEditor.view.show();
 		} else {
 			this.clippingsEditor.view.hide();

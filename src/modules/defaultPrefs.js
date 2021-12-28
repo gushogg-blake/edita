@@ -271,17 +271,17 @@ module.exports = function(systemInfo) {
 		
 		panes: {
 			left: {
-				show: true,
+				visible: true,
 				size: 150,
 			},
 			
 			right: {
-				show: true,
+				visible: true,
 				size: 150,
 			},
 			
 			bottom: {
-				show: false,
+				visible: false,
 				size: 240,
 			},
 		},
