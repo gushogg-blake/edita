@@ -126,6 +126,7 @@ onMount(function() {
 	width: 100%;
 	height: 100%;
 	outline: none;
+	cursor: default;
 	background: var(--appBackgroundColor);
 }
 
