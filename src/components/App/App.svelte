@@ -125,6 +125,7 @@ onMount(function() {
 		"bottom bottom bottom";
 	width: 100%;
 	height: 100%;
+	outline: none;
 	background: var(--appBackgroundColor);
 }
 
