@@ -1,6 +1,16 @@
+let checkOs = require("utils/checkOs");
+
+let fonts = {
+	linux: "DejaVu Sans Mono",
+	windows: "Consolas",
+	mac: "SF Mono",
+};
+
 module.exports = function(systemInfo) {
+	let os = checkOs();
+	
 	return {
-		font: "DejaVu Sans Mono",
+		font: fonts[os],
 		fontSize: 14,
 		
 		tabWidth: 4,
