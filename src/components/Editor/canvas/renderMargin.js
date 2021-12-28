@@ -1,6 +1,7 @@
 module.exports = function(layers, view) {
 	let {
 		font,
+		fontSize,
 		marginBackground,
 		lineNumberColor,
 	} = platform.prefs;
@@ -25,7 +26,7 @@ module.exports = function(layers, view) {
 	
 	let context = layers.margin;
 	
-	context.font = font;
+	context.font = fontSize + "px " + font;
 	
 	context.fillStyle = marginBackground;
 	context.fillRect(0, 0, marginWidth, height);

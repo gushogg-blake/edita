@@ -1,6 +1,7 @@
 module.exports = function(systemInfo) {
 	return {
-		font: "14px DejaVu Sans Mono",
+		font: "DejaVu Sans Mono",
+		fontSize: 14,
 		
 		tabWidth: 4,
 		defaultIndent: "\t",

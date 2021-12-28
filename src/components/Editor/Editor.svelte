@@ -465,7 +465,8 @@ async function onWrapChanged() {
 
 function updateMeasurements() {
 	measurementsDiv.style = inlineStyle({
-		font: platform.prefs.font,
+		fontFamily: platform.prefs.font,
+		fontSize: platform.prefs.fontSize,
 	});
 	
 	measurementsDiv.innerHTML = "A".repeat(10000);
