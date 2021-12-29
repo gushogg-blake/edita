@@ -660,9 +660,9 @@ class View extends Evented {
 	show() {
 		this.visible = true;
 		
-		this.startCursorBlink();
-		
 		this.fire("show");
+		
+		this.startCursorBlink();
 	}
 	
 	hide() {
