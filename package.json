@@ -51,7 +51,7 @@
 	},
 	"scripts": {
 		"start": "ELECTRON_IS_DEV=0 electron .",
-		"electron": "NODE_ENV=development electron . --inspect -- /home/gus/projects/editor-site/src/components/Index.svelte",
+		"electron": "NODE_ENV=development electron . --inspect",
 		"build": "PLATFORM=electron rollup -c",
 		"build-all": "rollup -c",
 		"autobuild-all": "rollup -cw",

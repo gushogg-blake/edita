@@ -621,6 +621,10 @@ class View extends Evented {
 			return;
 		}
 		
+		if (this.mode !== "normal") {
+			return;
+		}
+		
 		if (this.cursorInterval) {
 			clearInterval(this.cursorInterval);
 		}

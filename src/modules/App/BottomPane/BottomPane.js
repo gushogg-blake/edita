@@ -13,7 +13,6 @@ class BottomPane extends Pane {
 		this.clippingsEditor = app.createEditor();
 		
 		this.clippingsEditor.view.setWrap(true);
-		this.clippingsEditor.view.show();
 		
 		this.tabs = [
 			{
