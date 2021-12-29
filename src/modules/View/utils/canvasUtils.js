@@ -191,6 +191,10 @@ module.exports = {
 			}
 		}
 		
+		if (rowIndexInLine < wrappedLine.height - 1 && offset === lineRow.startOffset + lineRow.string.length) {
+			offset--;
+		}
+		
 		return {lineIndex, offset};
 	},
 	
