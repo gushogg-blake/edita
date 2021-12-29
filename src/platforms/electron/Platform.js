@@ -206,7 +206,7 @@ class Platform extends Common {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load(path.join(__dirname, "..", "..", "..", "build", "electron", "vendor", "tree-sitter", "langs", "tree-sitter-" + name + ".wasm"));
+		return TreeSitter.Language.load(path.join(__dirname, "..", "..", "..", "build", this.config.dev ? "electron-dev" : "electron", "vendor", "tree-sitter", "langs", "tree-sitter-" + name + ".wasm"));
 	}
 	
 	getPref(key) {
