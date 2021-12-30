@@ -7,7 +7,7 @@ module.exports = JsonStore({
 	},
 	
 	save(name, key, data) {
-		return ipcRenderer.invoke("jsonStore", "save", name, key, data);
+		return ipcRenderer.invoke("jsonStore", "save", name, key, JSON.stringify(data));
 	},
 	
 	watch(fn) {

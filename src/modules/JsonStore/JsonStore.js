@@ -49,10 +49,10 @@ module.exports = function(backend) {
 				key = null;
 			}
 			
-			return backend.save(this.name, key, JSON.stringify({
+			return backend.save(this.name, key, {
 				_version: this.version,
 				value,
-			}));
+			});
 		}
 	}
 	
