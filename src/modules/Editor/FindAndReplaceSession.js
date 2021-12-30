@@ -21,6 +21,7 @@ module.exports = class {
 		
 		this.generator = this.createGenerator(this.options.startIndex);
 		this.results = this.getAllResults();
+		this.countResults = this.results.length;
 		this.currentResult = null;
 		this.resultsReplaced = 0;
 		
@@ -82,6 +83,10 @@ module.exports = class {
 		} = this.currentResult.replace(str);
 		
 		this.editor.applyExistingDocumentEntry(entry, newSelection);
+		
+		this.resultsReplaced++;
+		
+		this.results = this.getAllResults();
 	}
 	
 	hiliteResults() {

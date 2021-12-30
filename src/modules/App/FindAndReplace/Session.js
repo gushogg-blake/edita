@@ -85,7 +85,7 @@ class Session {
 		let replaced = 0;
 		
 		for (let session of this.editorSessions.values()) {
-			total += session.results.length;
+			total += session.countResults;
 			replaced += session.resultsReplaced;
 		}
 		
