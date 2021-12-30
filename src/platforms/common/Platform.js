@@ -19,7 +19,7 @@ class Platform extends Evented {
 			findAndReplaceOptions: new JsonStore("findAndReplaceOptions", {}),
 			fileTree: new JsonStore("fileTree"),
 			session: new JsonStore("session"),
-			perFilePrefs: new JsonStore("perFilePrefs"),
+			perFilePrefs: new JsonStore("perFilePrefs", {}),
 		};
 		
 		this.prefs = await this.jsonStores.prefs.load();

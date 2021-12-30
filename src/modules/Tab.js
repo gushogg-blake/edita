@@ -190,7 +190,7 @@ class Tab extends Evented {
 	}
 	
 	async setPerFilePrefs(prefs) {
-		await platform.saveJson(this.perFilePrefsKey, prefs);
+		await platform.jsonStores.perFilePrefs.save(this.perFilePrefsKey, prefs);
 	}
 	
 	async setPerFilePref(pref, value) {
@@ -202,7 +202,7 @@ class Tab extends Evented {
 		
 		set(prefs, pref, value);
 		
-		await platform.jsonStores.perFilePrefs.save(this.perFilePrefsKey, prefs);
+		await this.setPerFilePrefs(prefs);
 	}
 	
 	async getPerFilePrefs() {

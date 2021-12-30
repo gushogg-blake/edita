@@ -26,11 +26,8 @@ module.exports = function(backend) {
 		async load(key=null) {
 			let json = await backend.load(this.name, key);
 			
-			if (json?._version === undefined) {
-				json = {
-					_version: this.version,
-					value: this.defaultValue,
-				};
+			if (json?._version === undefined || !json?.value) {
+				return this.defaultValue;
 			}
 			
 			let {_version, value} = json;
