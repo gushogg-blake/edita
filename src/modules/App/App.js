@@ -428,7 +428,7 @@ class App extends Evented {
 		let fileToSelect;
 		
 		if (platform.isMainWindow) {
-			let session = await platform.loadJson("session");
+			let session = await platform.jsonStores.session.load();
 			
 			if (session) {
 				tabsToOpen = session.tabs;
@@ -487,7 +487,7 @@ class App extends Evented {
 			return tab.isSaved ? tab.saveState() : null;
 		}).filter(Boolean);
 		
-		await platform.saveJson("session", {
+		await platform.jsonStores.session.save({
 			tabs,
 			selectedTabUrl: this.selectedTab?.url.toString(),
 		});

@@ -1,7 +1,5 @@
 let minimatch = require("minimatch-browser");
 let bluebird = require("bluebird");
-let get = require("lodash.get");
-let set = require("lodash.set");
 
 let path = require("vendor/path-browser");
 let fsWeb = require("vendor/fs-web");
@@ -18,7 +16,7 @@ let createFs = require("modules/fs");
 let Common = require("platforms/common/Platform");
 
 let clipboard = require("platform/modules/clipboard");
-let localStorage = require("platform/modules/localStorage");
+let JsonStore = require("platform/modules/JsonStore");
 let Snippets = require("platform/modules/Snippets");
 let lsp = require("platform/modules/lsp");
 
@@ -37,10 +35,14 @@ class Platform extends Common {
 		this.isMainWindow = true;
 		this.path = path;
 		
+		this.JsonStore = JsonStore;
+		
 		this.useFileUploader = true;
 	}
 	
 	async init(options) {
+		super.init();
+		
 		options = {
 			resourcePrefix: "",
 			init: null,
@@ -61,8 +63,6 @@ class Platform extends Common {
 		
 		this.fs = this.createFs("files");
 		this.backupFs = this.createFs("backups");
-		
-		this.prefs = this.loadJson("prefs") || defaultPrefs(this.systemInfo);
 		
 		this.snippets = new Snippets(this.createFs("snippets"));
 		
@@ -195,34 +195,6 @@ class Platform extends Common {
 	
 	loadTreeSitterLanguage(name) {
 		return TreeSitter.Language.load(this.options.resourcePrefix + "vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
-	}
-	
-	getPref(key) {
-		return get(this.prefs, key);
-	}
-	
-	setPref(key, value) {
-		set(this.prefs, key, value);
-		
-		this.saveJson("prefs", this.prefs);
-		
-		this.fire("prefsUpdated");
-	}
-	
-	resetPrefs() {
-		this.prefs = defaultPrefs(this.systemInfo);
-		
-		this.saveJson("prefs", this.prefs);
-		
-		this.fire("prefsUpdated");
-	}
-	
-	loadJson(key, _default=null) {
-		return localStorage.get(this.options.localStoragePrefix + key) || _default;
-	}
-	
-	saveJson(key, data) {
-		localStorage.set(this.options.localStoragePrefix + key, data);
 	}
 	
 	closeWindow() {

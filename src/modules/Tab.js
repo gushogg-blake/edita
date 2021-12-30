@@ -186,7 +186,7 @@ class Tab extends Evented {
 	}
 	
 	get perFilePrefsKey() {
-		return "perFilePrefs/" + encodeURIComponent(this.path);
+		return encodeURIComponent(this.path);
 	}
 	
 	async setPerFilePrefs(prefs) {
@@ -198,11 +198,11 @@ class Tab extends Evented {
 			return;
 		}
 		
-		let prefs = await platform.loadJson(this.perFilePrefsKey, {});
+		let prefs = await this.getPerFilePrefs();
 		
 		set(prefs, pref, value);
 		
-		await platform.saveJson(this.perFilePrefsKey, prefs);
+		await platform.jsonStores.perFilePrefs.save(this.perFilePrefsKey, prefs);
 	}
 	
 	async getPerFilePrefs() {
@@ -210,7 +210,7 @@ class Tab extends Evented {
 			return {};
 		}
 		
-		return await platform.loadJson(this.perFilePrefsKey, {});
+		return await platform.jsonStores.perFilePrefs.load(this.perFilePrefsKey);
 	}
 	
 	saveState() {

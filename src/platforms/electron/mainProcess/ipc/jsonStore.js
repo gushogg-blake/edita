@@ -1,15 +1,15 @@
 module.exports = function(app) {
 	return {
-		load(e, key, _default=null) {
-			return app.loadJson(key, _default);
+		load(e, name, key) {
+			return app.loadJson(name, key);
 		},
 		
-		async save(e, key, data) {
+		async save(e, name, key, data) {
 			data = JSON.parse(data);
 			
-			await app.saveJson(key, data);
+			await app.saveJson(name, key, data);
 			
-			app.sendToRenderers("jsonStore.update", key, data);
+			app.sendToRenderers("jsonStore.update", name, key, data.value);
 		},
 	};
 }

@@ -10,10 +10,10 @@ module.exports = class extends Evented {
 	}
 	
 	async init() {
-		let dir = await platform.loadJson("fileTree.rootDir");
+		let options = await platform.jsonStores.fileTree.load();
 		
-		if (dir) {
-			this.dir = dir;
+		if (options) {
+			this.dir = options.rootDir;
 		}
 		
 		this.rootEntry = await this.getRootEntry();
@@ -23,7 +23,9 @@ module.exports = class extends Evented {
 		this.dir = dir;
 		this.rootEntry = await this.getRootEntry();
 		
-		platform.saveJson("fileTree.rootDir", dir);
+		platform.jsonStores.fileTree.save({
+			rootDir: dir,
+		});
 		
 		this.fire("updateRootDir");
 	}

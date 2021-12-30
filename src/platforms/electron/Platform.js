@@ -1,18 +1,16 @@
 let os = require("os");
 let path = require("path");
 let bluebird = require("bluebird");
-let get = require("lodash.get");
-let set = require("lodash.set");
 
 let screenOffsets = require("utils/dom/screenOffsets");
 let promiseWithMethods = require("utils/promiseWithMethods");
-let defaultPrefs = require("modules/defaultPrefs");
 let contextMenu = require("modules/contextMenu");
 
 let Common = require("platforms/common/Platform");
 
 let fs = require("platform/modules/fs");
 let ipcRenderer = require("platform/modules/ipcRenderer");
+let JsonStore = require("platform/modules/JsonStore");
 let ipc = require("platform/modules/ipc");
 let lsp = require("platform/modules/lsp");
 
@@ -37,9 +35,9 @@ class Platform extends Common {
 		this.path = path;
 		this.fs = fs;
 		
-		this.useFileUploader = false;
+		this.JsonStore = JsonStore;
 		
-		ipc.prefs.on("update", this.onPrefsUpdate.bind(this));
+		this.useFileUploader = false;
 		
 		ipcRenderer.on("closeWindow", () => {
 			let defaultPrevented = false;
@@ -80,7 +78,13 @@ class Platform extends Common {
 	}
 	
 	async init() {
-		this.prefs = await ipc.prefs.load() || defaultPrefs(this.systemInfo);
+		await super.init();
+		
+		this.jsonStores.prefs.on("update", (key, value) => {
+			this.prefs = value;
+			
+			this.fire("prefsUpdated");
+		});
 		
 		await this.snippets.init();
 	}
@@ -209,32 +213,9 @@ class Platform extends Common {
 		return TreeSitter.Language.load(path.join(__dirname, "..", "..", "..", "build", this.config.dev ? "electron-dev" : "electron", "vendor", "tree-sitter", "langs", "tree-sitter-" + name + ".wasm"));
 	}
 	
-	getPref(key) {
-		return get(this.prefs, key);
-	}
-	
-	setPref(key, value) {
-		set(this.prefs, key, value);
-		
-		ipc.prefs.save(this.prefs);
-	}
-	
-	resetPrefs() {
-		this.prefs = defaultPrefs(this.systemInfo);
-		
-		ipc.prefs.save(this.prefs);
-	}
-	
 	onPrefsUpdate() {
-		this.fire("prefsUpdated");
-	}
-	
-	loadJson(key, _default=null) {
-		return ipc.jsonStore.load(key, _default);
-	}
-	
-	saveJson(key, data) {
-		return ipc.jsonStore.save(key, data);
+		// TODO set
+		//this.fire("prefsUpdated");
 	}
 	
 	closeWindow() {

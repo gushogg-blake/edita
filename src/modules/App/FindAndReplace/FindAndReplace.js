@@ -264,11 +264,11 @@ class FindAndReplace {
 	}
 	
 	loadOptions() {
-		return platform.loadJson("findAndReplaceOptions", {});
+		return platform.jsonStores.findAndReplaceOptions.load();
 	}
 	
 	saveOptions(options) {
-		return platform.saveJson("findAndReplaceOptions", options);
+		return platform.jsonStores.findAndReplaceOptions.save(options);
 	}
 }
 
