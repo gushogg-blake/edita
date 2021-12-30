@@ -35,14 +35,10 @@ class Platform extends Common {
 		this.isMainWindow = true;
 		this.path = path;
 		
-		this.JsonStore = JsonStore;
-		
 		this.useFileUploader = true;
 	}
 	
 	async init(options) {
-		super.init();
-		
 		options = {
 			resourcePrefix: "",
 			init: null,
@@ -54,6 +50,10 @@ class Platform extends Common {
 		};
 		
 		this.options = options;
+		
+		this.JsonStore = JsonStore(options);
+		
+		super.init();
 		
 		await Promise.all([
 			!options.test && loadCss(options.resourcePrefix + "css/global.css"),

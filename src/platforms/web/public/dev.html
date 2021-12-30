@@ -17,20 +17,16 @@
 		<!--<div id="editorContainer2" class="editorContainer"></div>-->
 		<script>
 			(async function() {
-				let createEditor = await Treefrog({
+				let {app} = await Treefrog({
 					//resourcePrefix: "./build",
 					//lspUrl: "wss://" + location.hostname + "/lsp",
 				});
 				
-				let app1 = await createEditor(document.getElementById("editorContainer1"));
-				
-				app1.openPath("/dev.html");
+				let app1 = await app(document.getElementById("editorContainer1"));
 				
 				window.app1 = app1;
 				
-				//let app2 = await createEditor(document.getElementById("editorContainer2"));
-				//
-				//app2.openPath("/dev.html");
+				//let app2 = await app(document.getElementById("editorContainer2"));
 				//
 				//window.app2 = app2;
 			})();
