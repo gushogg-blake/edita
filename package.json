@@ -52,22 +52,19 @@
 	"scripts": {
 		"start": "ELECTRON_IS_DEV=0 electron .",
 		"electron": "NODE_ENV=development electron . --inspect",
-		"build": "PLATFORM=electron rollup -c",
-		"build-all": "rollup -c",
-		"autobuild-all": "rollup -cw",
-		"build-test": "PLATFORM=test rollup -c",
-		"autobuild-test": "PLATFORM=test rollup -cw",
+		"build": "rollup -c",
+		"autobuild": "rollup -cw",
 		"build-electron": "PLATFORM=electron rollup -c",
 		"autobuild-electron": "PLATFORM=electron rollup -cw",
 		"build-web": "PLATFORM=web rollup -c",
 		"autobuild-web": "PLATFORM=web rollup -cw",
-		"dev": "run-p autobuild-all test electron web",
+		"build-test": "PLATFORM=test rollup -c",
+		"autobuild-test": "PLATFORM=test rollup -cw",
+		"dev": "run-p autobuild test electron web",
 		"electron-dev": "run-p autobuild-electron test electron",
 		"web-dev": "run-p autobuild-web test web",
 		"test-dev": "run-p autobuild-test test",
 		"web": "sirv --dev --no-clear --port 5000 build/web-dev",
-		"test": "sirv --dev --no-clear --port 5001 build/test",
-		"dist": "run-s build-electron pure-dist-win",
-		"pure-dist-win": "electron-builder --win --config electron-builder.yml"
+		"test": "sirv --dev --no-clear --port 5001 build/test"
 	}
 }
