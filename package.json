@@ -2,7 +2,7 @@
 	"name": "treefrog",
 	"description": "Treefrog editor",
 	"author": "Gus Hogg-Blake",
-	"version": "0.8.0",
+	"version": "0.9.0",
 	"main": "./src/platforms/electron/mainProcess/main.js",
 	"electronVersion": "15.3.0",
 	"dependencies": {
