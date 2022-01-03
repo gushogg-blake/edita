@@ -11,10 +11,18 @@ module.exports = function(app) {
 		},
 		
 		readSelection() {
+			if (process.platform !== "linux") {
+				return "";
+			}
+			
 			return clipboard.readText("selection");
 		},
 		
 		writeSelection(e, str) {
+			if (process.platform !== "linux") {
+				return;
+			}
+			
 			clipboard.writeText(str, "selection");
 		},
 	};
