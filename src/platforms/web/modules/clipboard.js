@@ -1,16 +1,16 @@
 module.exports = {
-	write(str) {
-		return navigator.clipboard.writeText(str);
-	},
-	
-	writeSelection() {
-	},
-	
 	read() {
 		return navigator.clipboard.readText();
 	},
 	
+	write(str) {
+		return navigator.clipboard.writeText(str);
+	},
+	
 	readSelection() {
 		return "";
+	},
+	
+	writeSelection() {
 	},
 };
