@@ -30,6 +30,7 @@ class App {
 		
 		this.filesToOpenOnStartup = yargs(hideBin(process.argv)).argv._.map(p => path.resolve(process.cwd(), p));
 		
+		this.dataDir = fs(this.config.userDataDir);
 		this.buildDir = fs(__dirname, "..", "..", "..", "..", "build", config.dev ? "electron-dev" : "electron");
 	}
 	
@@ -48,10 +49,10 @@ class App {
 			return;
 		}
 		
-		this.init();
+		await this.init();
 	}
 	
-	init() {
+	async init() {
 		ipc(this);
 		
 		ipcMain.on("closeWindow", (e) => {
@@ -113,6 +114,8 @@ class App {
 				this.createAppWindow();
 			}
 		});
+		
+		await this.mkdirs();
 	}
 	
 	createAppWindow() {
@@ -284,6 +287,12 @@ class App {
 		
 		await node.parent.mkdirp();
 		await node.writeJson(data);
+	}
+	
+	mkdirs() {
+		return Promise.all([
+			"snippets",
+		].map(dir => this.dataDir.child(dir).mkdirp()));
 	}
 	
 	forceQuit() {
