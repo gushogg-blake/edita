@@ -61,7 +61,9 @@ module.exports = function(systemInfo) {
 			"Shift+PageUp": "expandOrContractSelectionPageUp",
 			"Shift+PageDown": "expandOrContractSelectionPageDown",
 			"Shift+End": "expandOrContractSelectionEnd",
+			"Ctrl+Shift+End": "expandOrContractSelectionEnd",
 			"Shift+Home": "expandOrContractSelectionHome",
+			"Ctrl+Shift+Home": "expandOrContractSelectionHome",
 			"Ctrl+Shift+ArrowLeft": "expandOrContractSelectionWordLeft",
 			"Ctrl+Shift+ArrowRight": "expandOrContractSelectionWordRight",
 			
