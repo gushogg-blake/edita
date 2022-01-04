@@ -1,7 +1,7 @@
 let checkOs = require("utils/checkOs");
 
 let fonts = {
-	linux: "DejaVu Sans Mono, monospace",
+	linux: "\"DejaVu Sans Mono\", monospace",
 	windows: "Consolas, monospace",
 	mac: "Menlo, monospace",
 };
