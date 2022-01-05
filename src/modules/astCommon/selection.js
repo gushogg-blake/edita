@@ -173,7 +173,7 @@ let api = {
 		let {indentLevel} = document.lines[selection.endLineIndex - 1];
 		let index = findSiblingIndex(document, selection.endLineIndex, indentLevel, 1);
 		
-		return index ? selectionFromLineIndex(document, index) : selection;
+		return index !== null ? selectionFromLineIndex(document, index) : selection;
 	},
 	
 	previous(document, selection) {
@@ -184,7 +184,7 @@ let api = {
 		let {indentLevel} = document.lines[selection.startLineIndex];
 		let index = findSiblingIndex(document, selection.startLineIndex - 1, indentLevel, -1);
 		
-		return index ? selectionFromLineIndex(document, index) : selection;
+		return index !== null ? selectionFromLineIndex(document, index) : selection;
 	},
 	
 	containsNonBlankLines(document, selection) {
