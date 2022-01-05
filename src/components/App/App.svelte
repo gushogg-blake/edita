@@ -30,10 +30,10 @@ let showingFindBar = false;
 function keydown(e) {
 	let {keyCombo} = getKeyCombo(e);
 	
-	if (platform.prefs.globalKeymap[keyCombo]) {
+	if (base.prefs.globalKeymap[keyCombo]) {
 		e.preventDefault();
 		
-		app.functions[platform.prefs.globalKeymap[keyCombo]]();
+		app.functions[base.prefs.globalKeymap[keyCombo]]();
 	}
 }
 

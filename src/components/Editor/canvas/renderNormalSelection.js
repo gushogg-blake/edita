@@ -5,7 +5,7 @@ module.exports = function(layers, view) {
 	
 	let context = layers.hilites;
 	
-	context.fillStyle = platform.prefs.selectionBackground;
+	context.fillStyle = base.prefs.selectionBackground;
 	
 	let regions = view.calculateNormalSelectionRegions(normalSelection);
 	

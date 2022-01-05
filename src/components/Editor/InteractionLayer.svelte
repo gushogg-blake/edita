@@ -140,7 +140,7 @@ function mousedown(e) {
 		&& lastClickMousedownEvent
 		&& getDistanceBetweenMouseEvents(e, lastClickMousedownEvent) <= clickDistanceThreshold
 		&& lastClickMousedownTime
-		&& time - lastClickMousedownTime <= platform.getPref("doubleClickSpeed")
+		&& time - lastClickMousedownTime <= base.getPref("doubleClickSpeed")
 	) {
 		fire("dblclick", e);
 		

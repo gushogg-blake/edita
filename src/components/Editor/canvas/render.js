@@ -20,7 +20,7 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		mode,
 	} = view;
 	
-	if (platform.getPref("dev.timing.render")) {
+	if (base.getPref("dev.timing.render")) {
 		console.time("render");
 	}
 	
@@ -49,7 +49,7 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	
 	view.renderCodeAndMargin(codeRenderer, marginRenderer, foldHiliteRenderer);
 	
-	if (platform.getPref("dev.timing.render")) {
+	if (base.getPref("dev.timing.render")) {
 		console.timeEnd("render");
 	}
 }

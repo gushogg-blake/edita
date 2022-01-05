@@ -1,21 +1,28 @@
 let checkOs = require("utils/checkOs");
+let JsonStore = require("modules/JsonStore");
 
-let fonts = {
-	linux: "\"DejaVu Sans Mono\", monospace",
-	windows: "Consolas, monospace",
-	mac: "Menlo, monospace",
+let migrations = {
+	"1"(prefs) {
+		prefs.astKeymap["c"] = "change";
+	},
 };
 
-module.exports = function(systemInfo) {
+module.exports = function() {
 	let os = checkOs();
 	
-	return {
+	let fonts = {
+		linux: "\"DejaVu Sans Mono\", monospace",
+		windows: "Consolas, monospace",
+		mac: "Menlo, monospace",
+	};
+	
+	let defaultPrefs = {
 		font: fonts[os],
 		fontSize: 14,
 		
 		tabWidth: 4,
 		defaultIndent: "\t",
-		defaultNewline: systemInfo.newline,
+		defaultNewline: platform.systemInfo.newline,
 		defaultLangCode: "javascript",
 		
 		lineNumberColor: "#9f9f9f",
@@ -109,6 +116,8 @@ module.exports = function(systemInfo) {
 			"d": "down",
 			"j": "next",
 			"k": "previous",
+			
+			"c": "change",
 			
 			"w": "wrap",
 			"u": "unwrap",
@@ -299,4 +308,6 @@ module.exports = function(systemInfo) {
 			},
 		},
 	};
+	
+	return new JsonStore("prefs", defaultPrefs, migrations);
 }

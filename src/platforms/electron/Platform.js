@@ -5,12 +5,13 @@ let bluebird = require("bluebird");
 let screenOffsets = require("utils/dom/screenOffsets");
 let promiseWithMethods = require("utils/promiseWithMethods");
 let contextMenu = require("modules/contextMenu");
+let stores = require("stores");
 
 let Common = require("platforms/common/Platform");
 
 let fs = require("platform/modules/fs");
 let ipcRenderer = require("platform/modules/ipcRenderer");
-let JsonStore = require("platform/modules/JsonStore");
+let jsonStore = require("platform/modules/jsonStore");
 let ipc = require("platform/modules/ipc");
 let lsp = require("platform/modules/lsp");
 
@@ -34,8 +35,7 @@ class Platform extends Common {
 		this.snippets = ipc.snippets;
 		this.path = path;
 		this.fs = fs;
-		
-		this.JsonStore = JsonStore;
+		this.jsonStore = jsonStore;
 		
 		this.useFileUploader = false;
 		
@@ -78,14 +78,6 @@ class Platform extends Common {
 	}
 	
 	async init() {
-		await super.init();
-		
-		this.jsonStores.prefs.on("update", (key, value) => {
-			this.prefs = value;
-			
-			this.fire("prefsUpdated");
-		});
-		
 		await this.snippets.init();
 	}
 	
@@ -211,11 +203,6 @@ class Platform extends Common {
 	
 	loadTreeSitterLanguage(name) {
 		return TreeSitter.Language.load("/vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
-	}
-	
-	onPrefsUpdate() {
-		// TODO set
-		//this.fire("prefsUpdated");
 	}
 	
 	closeWindow() {

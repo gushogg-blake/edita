@@ -1,7 +1,6 @@
-let JsonStore = require("modules/JsonStore");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 
-module.exports = JsonStore({
+module.exports = {
 	load(name, key) {
 		return ipcRenderer.invoke("jsonStore", "load", name, key);
 	},
@@ -10,7 +9,13 @@ module.exports = JsonStore({
 		return ipcRenderer.invoke("jsonStore", "save", name, key, JSON.stringify(data));
 	},
 	
-	watch(fn) {
-		return ipcRenderer.on("jsonStore.update", (e, name, key, value) => fn(name, key, value));
+	watch(name, fn) {
+		return ipcRenderer.on("jsonStore.update", function(e, _name, key, value) {
+			if (_name !== name) {
+				return;
+			}
+			
+			fn(key, value);
+		});
 	},
-});
+};

@@ -9,14 +9,13 @@ let parentNodes = require("utils/dom/parentNodes");
 let {on} = require("utils/dom/domEvents");
 let loadScript = require("utils/dom/loadScript");
 let loadCss = require("utils/dom/loadCss");
-let defaultPrefs = require("modules/defaultPrefs");
 let contextMenu = require("modules/contextMenu");
 let createFs = require("modules/fs");
 
 let Common = require("platforms/common/Platform");
 
 let clipboard = require("platform/modules/clipboard");
-let JsonStore = require("platform/modules/JsonStore");
+let jsonStore = require("platform/modules/jsonStore");
 let Snippets = require("platform/modules/Snippets");
 let lsp = require("platform/modules/lsp");
 
@@ -51,9 +50,7 @@ class Platform extends Common {
 		
 		this.options = options;
 		
-		this.JsonStore = JsonStore(options);
-		
-		super.init();
+		this.jsonStore = jsonStore(options);
 		
 		await Promise.all([
 			!options.test && loadCss(options.resourcePrefix + "css/global.css"),

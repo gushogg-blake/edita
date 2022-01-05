@@ -79,7 +79,7 @@ class Tab extends Evented {
 		}
 		
 		if (
-			platform.prefs.zoom.stopAtProjectRoot
+			base.prefs.zoom.stopAtProjectRoot
 			&& this.currentPath !== this.path
 			&& await this.document.lang.codeIntel?.isProjectRoot(this.currentPath)
 		) {
@@ -190,7 +190,7 @@ class Tab extends Evented {
 	}
 	
 	async setPerFilePrefs(prefs) {
-		await platform.jsonStores.perFilePrefs.save(this.perFilePrefsKey, prefs);
+		await base.stores.perFilePrefs.save(this.perFilePrefsKey, prefs);
 	}
 	
 	async setPerFilePref(pref, value) {
@@ -210,7 +210,7 @@ class Tab extends Evented {
 			return {};
 		}
 		
-		return await platform.jsonStores.perFilePrefs.load(this.perFilePrefsKey);
+		return await base.stores.perFilePrefs.load(this.perFilePrefsKey);
 	}
 	
 	saveState() {

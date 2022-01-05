@@ -4,7 +4,7 @@ module.exports = function(layers, view) {
 		fontSize,
 		marginBackground,
 		lineNumberColor,
-	} = platform.prefs;
+	} = base.prefs;
 	
 	let {
 		sizes,

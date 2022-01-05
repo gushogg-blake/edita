@@ -19,7 +19,7 @@ let showEntry = !isRoot;
 let expanded = isRoot ? true : false; // TODO get from store
 let entries = [];
 let loaded = false;
-let showHiddenFiles = platform.getPref("showHiddenFiles");
+let showHiddenFiles = base.getPref("showHiddenFiles");
 
 $: dirs = entries.filter(e => e.isDir);
 $: files = entries.filter(e => !e.isDir);
@@ -70,7 +70,7 @@ if (expanded) {
 }
 
 function onPrefsUpdated() {
-	showHiddenFiles = platform.getPref("showHiddenFiles");
+	showHiddenFiles = base.getPref("showHiddenFiles");
 	
 	update();
 }

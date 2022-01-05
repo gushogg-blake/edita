@@ -9,7 +9,7 @@ class Pane extends Evented {
 		let {
 			size,
 			visible,
-		} = platform.getPref("panes." + position);
+		} = base.getPref("panes." + position);
 		
 		this.size = size;
 		this.visible = visible;
@@ -24,7 +24,7 @@ class Pane extends Evented {
 	resizeAndSave(size) {
 		this.resize(size);
 		
-		platform.setPref("panes." + this.position + ".size", size);
+		base.setPref("panes." + this.position + ".size", size);
 	}
 	
 	show() {
@@ -42,7 +42,7 @@ class Pane extends Evented {
 	setVisibility(visible) {
 		this.visible = visible;
 		
-		platform.setPref("panes." + this.position + ".visible", visible);
+		base.setPref("panes." + this.position + ".visible", visible);
 		
 		this.fire(visible ? "show" : "hide");
 	}

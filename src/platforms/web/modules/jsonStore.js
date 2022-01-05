@@ -1,4 +1,3 @@
-let JsonStore = require("modules/JsonStore");
 let localStorage = require("platform/modules/localStorage");
 
 module.exports = function(options) {
@@ -6,7 +5,7 @@ module.exports = function(options) {
 		return key ? name + "/" + key : name;
 	}
 	
-	return JsonStore({
+	return {
 		load(name, key) {
 			return localStorage.get(options.localStoragePrefix + storageKey(name, key));
 		},
@@ -14,5 +13,5 @@ module.exports = function(options) {
 		save(name, key, data) {
 			localStorage.set(options.localStoragePrefix + storageKey(name, key), data);
 		},
-	});
+	};
 }

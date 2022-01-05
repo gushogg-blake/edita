@@ -1,5 +1,5 @@
 module.exports = function() {
 	return {
-		wrap: platform.getPref("wrap"),
+		wrap: base.getPref("wrap"),
 	};
 }

@@ -34,7 +34,7 @@ module.exports = function(editor) {
 	}
 	
 	function keydown(e) {
-		if (e.key === platform.prefs.modeSwitchKey) {
+		if (e.key === base.prefs.modeSwitchKey) {
 			return;
 		}
 		
@@ -44,14 +44,14 @@ module.exports = function(editor) {
 	}
 	
 	function keyup(e) {
-		if (e.key !== platform.prefs.modeSwitchKey) {
+		if (e.key !== base.prefs.modeSwitchKey) {
 			return;
 		}
 		
 		let downTime = Date.now() - keyDownAt;
 		
 		if (editor.mode === "ast") {
-			if (downTime >= platform.prefs.minHoldTime || keyPressedWhilePeeking) {
+			if (downTime >= base.prefs.minHoldTime || keyPressedWhilePeeking) {
 				if (mouseIsDown) {
 					switchToNormalModeOnMouseUp = true;
 				} else {

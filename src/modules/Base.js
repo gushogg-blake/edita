@@ -1,4 +1,6 @@
 let bluebird = require("bluebird");
+let get = require("lodash.get");
+let set = require("lodash.set");
 
 let getIndentationDetails = require("modules/utils/getIndentationDetails");
 let guessIndent = require("modules/utils/guessIndent");
@@ -11,6 +13,7 @@ let View = require("modules/View");
 let DirEntries = require("modules/DirEntries");
 let langs = require("modules/langs");
 let LspContext = require("modules/lsp/LspContext");
+let stores = require("modules/stores");
 
 let javascript = require("modules/langs/javascript");
 let html = require("modules/langs/html");
@@ -43,6 +46,8 @@ class Base {
 		this.lspContext = new LspContext();
 		
 		this.DirEntries = DirEntries;
+		
+		this.stores = stores();
 	}
 	
 	async init(components) {
@@ -66,6 +71,8 @@ class Base {
 		for (let lang of langs) {
 			this.langs.add(lang);
 		}
+		
+		this.prefs = await this.stores.prefs.load();
 		
 		this.asyncInit();
 	}
@@ -103,7 +110,7 @@ class Base {
 	
 	guessLang(code, url) {
 		if (url) {
-			for (let [langCode, patterns] of Object.entries(platform.prefs.fileAssociations)) {
+			for (let [langCode, patterns] of Object.entries(base.prefs.fileAssociations)) {
 				for (let pattern of patterns) {
 					if (platform.fs(url.path).matchName(pattern)) {
 						return this.langs.get(langCode);
@@ -136,7 +143,7 @@ class Base {
 			defaultIndent,
 			tabWidth,
 			defaultNewline,
-		} = platform.prefs;
+		} = base.prefs;
 		
 		let indent = guessIndent(code) || defaultIndent;
 		let lang = this.guessLang(code, url);
@@ -167,7 +174,7 @@ class Base {
 			tabWidth,
 			defaultNewline,
 			defaultLangCode,
-		} = platform.prefs;
+		} = base.prefs;
 		
 		if (!lang) {
 			lang = this.langs.get(defaultLangCode);
@@ -213,6 +220,24 @@ class Base {
 		let view = new View(document);
 		
 		return new Editor(document, view);
+	}
+	
+	getPref(key) {
+		return get(this.prefs, key);
+	}
+	
+	setPref(key, value) {
+		set(this.prefs, key, value);
+		
+		this.stores.prefs.save(this.prefs);
+	}
+	
+	resetPrefs() {
+		this.prefs = this.stores.prefs.defaultValue;
+		
+		this.stores.prefs.save(this.prefs);
+		
+		this.fire("prefsUpdated");
 	}
 }
 

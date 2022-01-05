@@ -26,7 +26,7 @@ let mouseFunctions = {
 
 function wheel(e) {
 	let wheelCombo = getWheelCombo(e);
-	let fnName = platform.prefs.tabMouseMap[wheelCombo.wheelCombo];
+	let fnName = base.prefs.tabMouseMap[wheelCombo.wheelCombo];
 	
 	if (fnName) {
 		e.preventDefault();

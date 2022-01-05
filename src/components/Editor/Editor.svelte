@@ -128,7 +128,7 @@ function mousedown({detail}) {
 			enableDrag(
 				modeSwitchKey.isPeeking
 				&& !modeSwitchKey.keyPressedWhilePeeking
-				&& platform.prefs.modeSwitchKey === "Escape"
+				&& base.prefs.modeSwitchKey === "Escape"
 			);
 		});
 	}
@@ -286,7 +286,7 @@ async function keydown(e) {
 		return;
 	}
 	
-	if (e.key === platform.prefs.modeSwitchKey) {
+	if (e.key === base.prefs.modeSwitchKey) {
 		e.preventDefault();
 		
 		modeSwitchKey.keydown(e);
@@ -465,8 +465,8 @@ async function onWrapChanged() {
 
 function updateMeasurements() {
 	measurementsDiv.style = inlineStyle({
-		fontFamily: platform.prefs.font,
-		fontSize: platform.prefs.fontSize,
+		fontFamily: base.prefs.font,
+		fontSize: base.prefs.fontSize,
 	});
 	
 	measurementsDiv.innerHTML = "A".repeat(10000);

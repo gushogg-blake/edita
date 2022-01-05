@@ -150,7 +150,7 @@ class Editor extends Evented {
 	}
 	
 	async showCompletions() {
-		if (!platform.getPref("completions")) {
+		if (!base.getPref("completions")) {
 			return;
 		}
 		
@@ -351,22 +351,22 @@ class Editor extends Evented {
 		let lang = this.document.langFromCursor(this.normalSelection.start);
 		
 		return (
-			platform.prefs.normalKeymap[keyCombo]
+			base.prefs.normalKeymap[keyCombo]
 			|| key.length === 1 && !isModified
 			|| platform.snippets.findByLangAndKeyCombo(lang, keyCombo)
 		);
 	}
 	
 	willHandleAstKeydown(keyCombo) {
-		return platform.prefs.astKeymap[keyCombo];
+		return base.prefs.astKeymap[keyCombo];
 	}
 	
 	willHandleCommonKeydown(keyCombo) {
-		return platform.prefs.commonKeymap[keyCombo];
+		return base.prefs.commonKeymap[keyCombo];
 	}
 	
 	willHandleWheel(wheelCombo) {
-		return platform.prefs.editorMouseMap[wheelCombo.wheelCombo];
+		return base.prefs.editorMouseMap[wheelCombo.wheelCombo];
 	}
 	
 	async normalKeydown(key, keyCombo, isModified) {
@@ -389,7 +389,7 @@ class Editor extends Evented {
 			return;
 		}
 		
-		let fnName = platform.prefs.normalKeymap[keyCombo];
+		let fnName = base.prefs.normalKeymap[keyCombo];
 		let flags;
 		let str;
 		
@@ -426,7 +426,7 @@ class Editor extends Evented {
 	}
 	
 	astKeydown(keyCombo) {
-		let fnName = platform.prefs.astKeymap[keyCombo];
+		let fnName = base.prefs.astKeymap[keyCombo];
 		
 		let {view} = this;
 		
@@ -440,7 +440,7 @@ class Editor extends Evented {
 	}
 	
 	commonKeydown(keyCombo) {
-		let fnName = platform.prefs.commonKeymap[keyCombo];
+		let fnName = base.prefs.commonKeymap[keyCombo];
 		
 		let {view} = this;
 		
@@ -456,7 +456,7 @@ class Editor extends Evented {
 	}
 	
 	handleWheel(wheelCombo, cursor) {
-		let fnName = platform.prefs.editorMouseMap[wheelCombo.wheelCombo];
+		let fnName = base.prefs.editorMouseMap[wheelCombo.wheelCombo];
 		
 		this.commonWheel[fnName](wheelCombo, cursor);
 	}

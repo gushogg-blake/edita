@@ -81,7 +81,7 @@ class View extends Evented {
 		
 		this.updateSizes(800, 600);
 		
-		this.wrap = platform.getPref("wrap");
+		this.wrap = base.getPref("wrap");
 		
 		this.updateWrappedLines();
 		
@@ -635,7 +635,7 @@ class View extends Evented {
 			this.cursorBlinkOn = !this.cursorBlinkOn;
 			
 			this.updateCanvas();
-		}, platform.prefs.cursorBlinkPeriod);
+		}, base.prefs.cursorBlinkPeriod);
 		
 		this.batchRedraw();
 	}

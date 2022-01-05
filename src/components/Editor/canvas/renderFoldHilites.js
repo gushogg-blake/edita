@@ -33,14 +33,14 @@ module.exports = function(layers, view) {
 			
 			context.translate(0.5, 0.5);
 			context.lineWidth = 1;
-			context.strokeStyle = platform.prefs.foldHeaderBorder;
+			context.strokeStyle = base.prefs.foldHeaderBorder;
 			context.strokeRect(x - 1, y, width + 1, rowHeight - 1);
 			
 			context.restore();
 			
 			context = layers.foldHilites;
 			
-			context.fillStyle = platform.prefs.foldHeaderBackground;
+			context.fillStyle = base.prefs.foldHeaderBackground;
 			context.fillRect(x, y, width, rowHeight);
 		},
 		

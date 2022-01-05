@@ -26,6 +26,7 @@ function commonPlugins(platform) {
 			entries: {
 				"components": path.join(root, "src/components"),
 				"modules": path.join(root, "src/modules"),
+				"stores": path.join(root, "src/stores"),
 				"utils": path.join(root, "src/utils"),
 				"platforms": path.join(root, "src/platforms"),
 				"platform": path.join(root, "src/platforms/" + platform),

@@ -60,7 +60,7 @@ class App extends Evented {
 		
 		// DEV
 		setInterval(() => {
-			if (platform.getPref("dev.showFocusedElement")) {
+			if (base.getPref("dev.showFocusedElement")) {
 				console.log(this.selectedTab.editor.view.focused);
 				console.log(document.activeElement);
 			}
@@ -428,7 +428,7 @@ class App extends Evented {
 		let fileToSelect;
 		
 		if (platform.isMainWindow) {
-			let session = await platform.jsonStores.session.load();
+			let session = await base.stores.session.load();
 			
 			if (session) {
 				tabsToOpen = session.tabs;
@@ -487,7 +487,7 @@ class App extends Evented {
 			return tab.isSaved ? tab.saveState() : null;
 		}).filter(Boolean);
 		
-		await platform.jsonStores.session.save({
+		await base.stores.session.save({
 			tabs,
 			selectedTabUrl: this.selectedTab?.url.toString(),
 		});

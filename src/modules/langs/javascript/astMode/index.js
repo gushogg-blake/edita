@@ -8,7 +8,7 @@ module.exports = {
 	astManipulations,
 	
 	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines, insertIndentLevel) {
-		let spaceBlocks = platform.getPref("verticalSpacing.spaceBlocks");
+		let spaceBlocks = base.getPref("verticalSpacing.spaceBlocks");
 		
 		if (!spaceBlocks) {
 			return {
