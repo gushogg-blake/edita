@@ -20,13 +20,12 @@ module.exports = function(editor, editorComponent) {
 			return;
 		}
 		
-		let dir = e.deltaY > 0 ? 1 : -1;
 		let scrolled;
 		
 		if (e.shiftKey) {
-			scrolled = view.scrollBy(view.measurements.colWidth * 3 * dir, 0);
+			scrolled = view.scrollBy(e.deltaY, 0);
 		} else {
-			scrolled = view.scrollBy(0, view.measurements.rowHeight * 3 * dir);
+			scrolled = view.scrollBy(0, e.deltaY);
 		}
 		
 		if (scrolled || editorComponent.editorMode === "app") {
