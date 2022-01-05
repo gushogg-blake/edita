@@ -3,6 +3,7 @@ let AstSelection = require("modules/utils/AstSelection");
 let {
 	//findNextLineIndexAtIndentLevel,
 	findPrevLineIndexAtIndentLevel,
+	findSiblingIndex,
 } = require("./utils");
 
 let {s} = AstSelection;
@@ -169,11 +170,21 @@ let api = {
 	},
 	
 	next(document, selection) {
-		return selection;
+		let {indentLevel} = document.lines[selection.endLineIndex - 1];
+		let index = findSiblingIndex(document, selection.endLineIndex, indentLevel, 1);
+		
+		return index ? selectionFromLineIndex(document, index) : selection;
 	},
 	
 	previous(document, selection) {
-		return selection;
+		if (selection.startLineIndex === 0) {
+			return selection;
+		}
+		
+		let {indentLevel} = document.lines[selection.startLineIndex];
+		let index = findSiblingIndex(document, selection.startLineIndex - 1, indentLevel, -1);
+		
+		return index ? selectionFromLineIndex(document, index) : selection;
 	},
 	
 	containsNonBlankLines(document, selection) {
