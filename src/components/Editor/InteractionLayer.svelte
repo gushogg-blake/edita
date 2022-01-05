@@ -44,16 +44,6 @@ let {
 	sizes,
 } = view;
 
-let codeWidth;
-let marginWidth;
-
-updateSizes();
-
-function updateSizes() {
-	marginWidth = sizes.marginWidth - sizes.marginStyle.paddingRight;
-	codeWidth = sizes.width - marginWidth;
-}
-
 let divToPickOption = new Map();
 let divToDropTarget = new Map();
 
@@ -349,8 +339,6 @@ function onUpdateSizes() {
 	({
 		sizes,
 	} = view);
-	
-	updateSizes();
 }
 
 function onScroll() {
@@ -396,15 +384,14 @@ function onEdit() {
 	} = view);
 }
 
-function calculateMarginStyle(marginWidth) {
+function calculateMarginStyle(sizes) {
 	return {
-		width: marginWidth,
+		width: sizes.marginWidth - sizes.marginStyle.paddingRight,
 	};
 }
 
 function calculateCodeStyle(
-	codeWidth,
-	marginWidth,
+	sizes,
 	mode,
 	dragStartedHere,
 ) {
@@ -415,8 +402,8 @@ function calculateCodeStyle(
 	}
 	
 	return {
-		left: marginWidth,
-		width: codeWidth,
+		left: sizes.marginOffset,
+		width: sizes.codeWidth,
 		cursor,
 	};
 }
@@ -455,11 +442,10 @@ function targetIsActive(target, currentDropTarget) {
 	);
 }
 
-$: marginStyle = calculateMarginStyle(marginWidth);
+$: marginStyle = calculateMarginStyle(sizes);
 
 $: codeStyle = calculateCodeStyle(
-	codeWidth,
-	marginWidth,
+	sizes,
 	mode,
 	dragStartedHere,
 );
