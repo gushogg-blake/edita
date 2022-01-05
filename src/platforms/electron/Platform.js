@@ -5,7 +5,6 @@ let bluebird = require("bluebird");
 let screenOffsets = require("utils/dom/screenOffsets");
 let promiseWithMethods = require("utils/promiseWithMethods");
 let contextMenu = require("modules/contextMenu");
-let stores = require("stores");
 
 let Common = require("platforms/common/Platform");
 
