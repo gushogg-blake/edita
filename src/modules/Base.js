@@ -46,8 +46,6 @@ class Base {
 		this.lspContext = new LspContext();
 		
 		this.DirEntries = DirEntries;
-		
-		this.stores = stores();
 	}
 	
 	async init(components) {
@@ -71,6 +69,8 @@ class Base {
 		for (let lang of langs) {
 			this.langs.add(lang);
 		}
+		
+		this.stores = stores();
 		
 		this.prefs = await this.stores.prefs.load();
 		
