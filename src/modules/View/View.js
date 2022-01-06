@@ -387,7 +387,32 @@ class View extends Evented {
 	}
 	
 	ensureAstSelectionIsOnScreen() {
+		let {height} = this.sizes;
+		let {startLineIndex, endLineIndex} = this.astSelection;
 		
+		let topY = this.screenYFromLineIndex(startLineIndex);
+		let bottomY = this.screenYFromLineIndex(endLineIndex);
+		let selectionHeight = bottomY - topY;
+		let bottomDistance = height - bottomY;
+		
+		let idealBuffer = this.measurements.rowHeight * 5;
+		let spaceAvailable = height - selectionHeight;
+		
+		if (spaceAvailable >= idealBuffer * 2) {
+			let topBuffer = Math.max(idealBuffer, topY);
+			let topDiff = topBuffer - topY;
+			let newBottomDistance = bottomDistance + topDiff;
+			let idealBottomBuffer = Math.max(idealBuffer, newBottomDistance);
+			
+			let bottomDiff = idealBottomBuffer - newBottomDistance;
+			
+			this.scrollBy(0, -topDiff + bottomDiff);
+		} else {
+			let topBuffer = Math.max(0, spaceAvailable / 2);
+			let topDiff = topBuffer - topY;
+			
+			this.scrollBy(0, -topDiff);
+		}
 	}
 	
 	ensureNormalCursorIsOnScreen() {
@@ -395,7 +420,7 @@ class View extends Evented {
 			scrollPosition,
 			measurements,
 		} = this;
-			
+		
 		let {codeWidth: width, rows} = this.sizes;
 		let {colWidth, rowHeight} = measurements;
 		

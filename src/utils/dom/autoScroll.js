@@ -26,7 +26,7 @@ module.exports = function(offsets, handler) {
 			|| bottom > 0
 			|| left > 0
 		) {
-			let x = left > 0 ? -left: right;
+			let x = left > 0 ? -left : right;
 			let y = top > 0 ? -top : bottom;
 			
 			handler(x, y);
