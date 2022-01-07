@@ -7,7 +7,7 @@ module.exports = function(app, createDialogComponent) {
 		let toolbar = document.createElement("div");
 		let content = document.createElement("div");
 		
-		document.body.appendChild(container);
+		app.mainDiv.appendChild(container);
 		container.appendChild(toolbar);
 		container.appendChild(content);
 		
@@ -39,9 +39,15 @@ module.exports = function(app, createDialogComponent) {
 		
 		toolbarComponent.$on("close", close);
 		
-		container.className = "treefrog treefrog-dialog";
-		
-		container.style.visibility = "hidden";
+		container.style = inlineStyle({
+			position: "fixed",
+			zIndex: 100,
+			border: "1px solid gray",
+			borderRadius: 2,
+		    boxShadow: "0 2px 6px -3px #00000040",
+			background: "var(--appBackgroundColor)",
+			visibility: "hidden",
+		});
 		
 		let onCancel = await createDialogComponent[dialog](content, dialogOptions, close);
 		

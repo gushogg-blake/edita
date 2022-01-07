@@ -581,7 +581,7 @@ class App extends Evented {
 	}
 	
 	uiMounted(mainDiv) {
-		
+		this.mainDiv = mainDiv;
 	}
 	
 	async onCloseWindow(e) {

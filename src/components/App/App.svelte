@@ -4,6 +4,8 @@ import {onMount, setContext} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import inlineStyle from "utils/dom/inlineStyle";
 
+import theme from "components/theme";
+
 import Toolbar from "./Toolbar.svelte";
 import EditorTabBar from "./EditorTabBar.svelte";
 import Tab from "./Tab.svelte";
@@ -18,6 +20,10 @@ export let app;
 let main;
 
 setContext("app", app);
+
+let {
+	prefs,
+} = base;
 
 let {
 	tabs,
@@ -75,6 +81,12 @@ function onUpdatePanes() {
 	({
 		panes,
 	} = app);
+}
+
+function onUpdatePrefs() {
+	({
+		prefs,
+	} = base);
 }
 
 let paneStyle = {};
@@ -220,6 +232,7 @@ onMount(function() {
 	bind:this={main}
 	id="main"
 	class="treefrog"
+	style={theme(prefs)}
 	on:dragover={dragover}
 	on:drop={drop}
 	on:keydown={keydown}

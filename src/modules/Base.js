@@ -51,6 +51,19 @@ class Base {
 	async init(components) {
 		this.components = components;
 		
+		await Promise.all([
+			() => this.initLangs(),
+			() => this.initThemes(),
+		]);
+		
+		this.stores = stores();
+		
+		this.prefs = await this.stores.prefs.load();
+		
+		this.asyncInit();
+	}
+	
+	async initLangs() {
 		await TreeSitter.init();
 		
 		let langs = [
@@ -69,12 +82,9 @@ class Base {
 		for (let lang of langs) {
 			this.langs.add(lang);
 		}
-		
-		this.stores = stores();
-		
-		this.prefs = await this.stores.prefs.load();
-		
-		this.asyncInit();
+	}
+	
+	async initThemes() {
 	}
 	
 	async asyncInit() {

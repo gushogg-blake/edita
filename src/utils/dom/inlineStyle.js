@@ -1,5 +1,5 @@
-function camelToCssProp(str) {
-	return str.replace(/([A-Z])/g, (_, ch) => "-" + ch.toLowerCase());
+function cssProp(str) {
+	return str.startsWith("--") ? str : str.replace(/([A-Z])/g, (_, ch) => "-" + ch.toLowerCase());
 }
 
 let nonSizeProps = [
@@ -14,7 +14,7 @@ function inlineStyle(...styles) {
 	let str = "";
 	
 	for (let k in all) {
-		let prop = camelToCssProp(k);
+		let prop = cssProp(k);
 		let value = all[k];
 		
 		if (typeof value === "number" && value !== 0 && !nonSizeProps.includes(prop)) {
@@ -33,7 +33,7 @@ inlineStyle.assign = function(node, ...styles) {
 	let all = Object.assign({}, ...styles.flat());
 	
 	for (let k in all) {
-		let prop = camelToCssProp(k);
+		let prop = cssProp(k);
 		let value = all[k];
 		
 		if (typeof value === "number" && value !== 0 && !nonSizeProps.includes(prop)) {
