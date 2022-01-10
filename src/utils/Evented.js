@@ -1,4 +1,4 @@
-let {removeInPlace} = require("./arrayMethods");
+let {removeInPlace} = require("utils/arrayMethods");
 
 module.exports = class {
 	constructor() {
