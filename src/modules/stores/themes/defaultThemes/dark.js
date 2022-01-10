@@ -17,7 +17,7 @@ module.exports = {
 		
 		inputColor: "var(--appColor)",
 		inputBorder: "1px solid #adaba6",
-		inputBackgroundColor: "var(--appBackgroundColor)",
+		inputBackgroundColor: "#ffffff10",
 		
 		listItemSelectedBackgroundColor: "rgba(0, 0, 0, 0.1)",
 		listItemExpandContractBackgroundColor: "#ffffff15",
@@ -53,7 +53,7 @@ module.exports = {
 		astSelectionHiliteBackground: "#303030",
 		astInsertionHiliteBackground: "#d0d0d0",
 		
-		lineNumberColor: "#e0e0e0",
+		lineNumberColor: "#d0d0d0",
 		marginBackground: "#505050",
 		
 		foldHeaderBackground: "#f2f2f2",
@@ -73,7 +73,7 @@ module.exports = {
 		},
 		
 		html: {
-			tag: "#268bd2",
+			tag: "#d6ad0c",//ffcd00
 			attribute: "#e8f8fd",
 			string: "#2aa198",
 			text: "#e8f8fd",
