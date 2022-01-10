@@ -115,11 +115,14 @@ let findAndReplace = {
 		re.lastIndex = startIndex;
 		
 		function findMatch() {
-			let match = re.exec(code);
+			let match;
+			
+			do {
+				match = re.exec(code);
+			} while (match && word && !hasWordBoundaries(code, match));
 			
 			if (
 				!match
-				|| word && !hasWordBoundaries(code, match)
 				|| rangeEndIndex !== null && match.index >= rangeEndIndex
 			) {
 				return null;
