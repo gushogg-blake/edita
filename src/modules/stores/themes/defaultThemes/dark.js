@@ -11,7 +11,7 @@ module.exports = {
 		
 		buttonColor: "#ffffffee",
 		buttonBackgroundColor: "#ffffff15",
-		tabBackgroundColor: "#ffffff15",
+		tabBackgroundColor: "transparent",
 		tabSelectedBackgroundColor: "#505050",
 		toolbarBackgroundColor: "#404040",
 		

@@ -2,6 +2,7 @@
 import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import clickButtonFromAccel from "utils/dom/clickButtonFromAccel";
+import themeStyle from "components/themeStyle";
 import SnippetEditor from "components/SnippetEditor.svelte";
 
 export let app;
@@ -49,7 +50,7 @@ function keydown(e) {
 }
 </style>
 
-<div id="main">
+<div id="main" class="treefrog" style={themeStyle(base.theme)}>
 	<SnippetEditor
 		snippet={app.snippet}
 		on:saveAndExit={saveAndExit}

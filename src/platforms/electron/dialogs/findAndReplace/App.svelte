@@ -1,6 +1,7 @@
 <script>
 import getKeyCombo from "utils/getKeyCombo";
 import clickButtonFromAccel from "utils/dom/clickButtonFromAccel";
+import themeStyle from "components/themeStyle";
 import FindAndReplace from "components/FindAndReplace.svelte";
 
 export let app;
@@ -39,9 +40,11 @@ function done({detail: result}) {
 
 <svelte:window on:keydown={keydown}/>
 
-<FindAndReplace
-	{options}
-	{findAndReplace}
-	on:resize={({detail: contentHeight}) => window.resizeTo(window.innerWidth, contentHeight)}
-	on:done={done}
-/>
+<div class="treefrog" style={themeStyle(base.theme)}>
+	<FindAndReplace
+		{options}
+		{findAndReplace}
+		on:resize={({detail: contentHeight}) => window.resizeTo(window.innerWidth, contentHeight)}
+		on:done={done}
+	/>
+</div>

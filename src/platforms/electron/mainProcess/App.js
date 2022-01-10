@@ -230,14 +230,14 @@ class App {
 		return [x, y];
 	}
 	
-	openDialogWindow(name, dialogOptions, opener) {
+	async openDialogWindow(name, dialogOptions, opener) {
 		let browserWindow = this.dialogsByAppWindowAndName.get(opener)[name];
 		
 		browserWindow.setPosition(...this.calculateDialogPosition(browserWindow, opener));
 		
-		browserWindow.show();
+		await this.callRenderer(browserWindow, "dialogInit", dialogOptions);
 		
-		this.sendToRenderer(browserWindow, "dialogInit", dialogOptions);
+		browserWindow.show();
 		
 		if (config.dev) {
 			//browserWindow.webContents.openDevTools();

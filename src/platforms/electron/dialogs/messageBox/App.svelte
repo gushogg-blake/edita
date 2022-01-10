@@ -1,4 +1,5 @@
 <script>
+import themeStyle from "components/themeStyle";
 import MessageBox from "components/MessageBox.svelte";
 
 export let app;
@@ -17,6 +18,6 @@ function respond({detail: response}) {
 }
 </style>
 
-<div id="main">
+<div id="main" class="treefrog" style={themeStyle(base.theme)}>
 	<MessageBox options={app.options} on:response={respond}/>
 </div>

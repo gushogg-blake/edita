@@ -6,7 +6,7 @@ let clickHandlers = {};
 
 handleMessages("contextMenu", {
 	click(e, id, itemId) {
-		clickHandlers[id][itemId]();
+		clickHandlers[id]?.[itemId]();
 	},
 	
 	close(e, id) {

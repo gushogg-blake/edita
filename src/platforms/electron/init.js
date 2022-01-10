@@ -1,6 +1,7 @@
 import getKeyCombo from "utils/getKeyCombo";
 import Base from "modules/Base";
 import components from "components";
+import ipcRenderer from "platform/modules/ipcRenderer";
 import Platform from "./Platform";
 
 // misc shims etc:
@@ -43,7 +44,7 @@ export default async function(init, options={}) {
 	});
 	
 	if (isDialog) {
-		platform.on("dialogInit", init);
+		ipcRenderer.handle("dialogInit", (e, ...args) => init(...args));
 	} else {
 		init();
 	}

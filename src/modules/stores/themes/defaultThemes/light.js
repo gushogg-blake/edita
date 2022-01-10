@@ -10,8 +10,8 @@ module.exports = {
 		appBackgroundColor: "#edecea",
 		
 		buttonColor: "#333333",
-		buttonBackgroundColor: "",
-		tabBackgroundColor: "",
+		buttonBackgroundColor: "#efefef",
+		tabBackgroundColor: "transparent",
 		tabSelectedBackgroundColor: "white",
 		toolbarBackgroundColor: "#f2f2f0",
 		

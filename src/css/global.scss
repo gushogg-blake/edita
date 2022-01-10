@@ -3,6 +3,7 @@
 	font-size: var(--fontSize);
 	color: var(--color);
 	user-select: none;
+	background: var(--appBackgroundColor);
 	
 	&, div, form, input {
 		box-sizing: border-box;

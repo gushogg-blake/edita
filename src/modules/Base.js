@@ -75,8 +75,8 @@ class Base extends Evented {
 		
 		this.theme = this.themes[this.prefs.theme];
 		
+		this.stores.prefs.on("update", (key, prefs) => this.updatePrefs(prefs));
 		this.stores.themes.on("update", () => this.updateTheme());
-		this.stores.prefs.on("update", () => this.updateTheme());
 		
 		if (options.prefs) {
 			this.setPrefs(options.prefs);
@@ -120,6 +120,12 @@ class Base extends Evented {
 	
 	async initPrefs() {
 		this.prefs = await this.stores.prefs.load();
+	}
+	
+	updatePrefs(prefs) {
+		this.prefs = prefs;
+		
+		this.updateTheme();
 	}
 	
 	async initThemes() {
