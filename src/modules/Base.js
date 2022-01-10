@@ -52,8 +52,8 @@ class Base {
 		this.components = components;
 		
 		await Promise.all([
-			() => this.initLangs(),
-			() => this.initThemes(),
+			this.initLangs(),
+			this.initThemes(),
 		]);
 		
 		this.stores = stores();
