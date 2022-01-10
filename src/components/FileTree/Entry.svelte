@@ -128,11 +128,11 @@ onMount(function() {
 }
 
 .dirIcon {
-	background: #b9d7f1;
+	background: var(--dirEntryFolderBackgroundColor);
 }
 
 .fileIcon {
-	background: #fbfbfb;
+	background: var(--dirEntryFileBackgroundColor);
 }
 
 #name {

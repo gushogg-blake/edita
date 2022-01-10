@@ -12,9 +12,11 @@
 		padding: 5px;
 	}
 	
-	input {
+	input, select {
+		color: var(--inputColor);
 		border: var(--inputBorder);
 		border-radius: 3px;
+		background: var(--inputBackgroundColor);
 	}
 	
 	div {

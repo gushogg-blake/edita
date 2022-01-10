@@ -28,6 +28,10 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		context.clearRect(0, 0, width, height);
 	}
 	
+	layers.background.fillStyle = base.theme.editor.background;
+	
+	layers.background.fillRect(0, 0, width, height);
+	
 	renderNormalHilites(layers, view);
 	
 	if (mode === "normal") {

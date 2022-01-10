@@ -18,8 +18,16 @@
 		<script>
 			(async function() {
 				let {app} = await Treefrog({
+					config: {
+						dev: true,
+					},
+					
 					//resourcePrefix: "./build",
 					//lspUrl: "wss://" + location.hostname + "/lsp",
+					
+					prefs: {
+						showThemeSelector: true,
+					},
 				});
 				
 				let app1 = await app(document.getElementById("editorContainer1"));

@@ -594,7 +594,6 @@ onMount(function() {
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-	background: white;
 	
 	&.showingHorizontalScrollbar {
 		grid-template-rows: 1fr auto;
@@ -661,6 +660,9 @@ canvas {
 		id="canvas"
 		bind:this={canvasDiv}
 	>
+		<div class="layer">
+			<canvas bind:this={canvases.background}/>
+		</div>
 		<div class="layer">
 			<canvas bind:this={canvases.foldHilites}/>
 		</div>

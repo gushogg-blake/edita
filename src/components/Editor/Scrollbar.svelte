@@ -110,6 +110,8 @@ onMount(function() {
 
 <style type="text/scss">
 #main {
+	background: var(--scrollbarBackgroundColor);
+	
 	&.vertical {
 		height: 100%;
 	}

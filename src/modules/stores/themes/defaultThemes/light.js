@@ -15,11 +15,18 @@ module.exports = {
 		tabSelectedBackgroundColor: "white",
 		toolbarBackgroundColor: "#f2f2f0",
 		
+		inputColor: "#444444",
 		inputBorder: "1px solid #adaba6",
+		inputBackgroundColor: "white",
 		
 		listItemSelectedBackgroundColor: "rgba(0, 0, 0, 0.1)",
 		listItemExpandContractBackgroundColor: "white",
 		listItemExpandContractBorder: "#bbbbbb",
+		
+		dirEntryFolderBackgroundColor: "#b9d7f1",
+		dirEntryFileBackgroundColor: "#fbfbfb",
+		
+		findResultsBackgroundColor: "#ffffff",
 		
 		scrollbarThumbWidth: 8,
 		scrollbarPadding: 3,
@@ -35,6 +42,8 @@ module.exports = {
 		fontSize: 14,
 		
 		cursorColor: "black",
+		
+		background: "white",
 		selectionBackground: "#d0d0d0",
 		hiliteBackground: "#fdee20",
 		astSelectionBackground: "#dfdfdf",

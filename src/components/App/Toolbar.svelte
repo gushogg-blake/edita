@@ -72,6 +72,10 @@ button {
 		box-shadow: inset 1px 1px 3px #00000025;
 	}
 }
+
+select {
+	outline: none;
+}
 </style>
 
 <div id="main">

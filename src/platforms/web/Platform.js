@@ -30,8 +30,6 @@ class Platform extends Common {
 			multiPathSeparator: ":",
 		};
 		
-		this.config = {};
-		
 		this.clipboard = clipboard;
 		this.isMainWindow = true;
 		this.path = path;
@@ -41,6 +39,7 @@ class Platform extends Common {
 	
 	async init(options) {
 		options = {
+			config: {},
 			resourcePrefix: "",
 			init: null,
 			localStoragePrefix: "treefrog.",
@@ -51,6 +50,11 @@ class Platform extends Common {
 		};
 		
 		this.options = options;
+		
+		this.config = {
+			dev: false,
+			...options.config,
+		};
 		
 		this.jsonStore = jsonStore(options);
 		

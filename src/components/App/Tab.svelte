@@ -80,17 +80,6 @@ onMount(function() {
 	height: 100%;
 }
 
-#main {
-	background: white;
-}
-
-#editor {
-	
-}
-
-#files {
-}
-
 #breadcrumbs {
 	display: flex;
 	gap: .6em;
@@ -141,11 +130,11 @@ onMount(function() {
 }
 
 .dirIcon {
-	background: #b9d7f1;
+	background: var(--dirEntryFolderBackgroundColor);
 }
 
 .fileIcon {
-	background: #eeeeee;
+	background: var(--dirEntryFileBackgroundColor);
 }
 </style>
 

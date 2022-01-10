@@ -58,7 +58,6 @@ onMount(function() {
 
 #content {
 	border-top: var(--appBorder);
-	background: white;
 }
 
 .content {

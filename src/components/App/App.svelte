@@ -190,7 +190,7 @@ onMount(function() {
 	display: grid;
 	grid-template-rows: 1fr;
 	grid-template-columns: 1fr;
-	background: white;
+	background: var(--appBackgroundColor);
 	contain: strict;
 	
 	&.selected {
