@@ -109,7 +109,7 @@ class Base extends Evented {
 	updateTheme() {
 		this.theme = this.themes[this.prefs.theme];
 		
-		this.fire("updateTheme");
+		this.fire("themeUpdated");
 	}
 	
 	async asyncInit() {

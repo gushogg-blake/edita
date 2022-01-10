@@ -25,10 +25,6 @@ let {
 	theme,
 } = base;
 
-$: console.log(base);
-
-$: console.log(theme);
-
 let {
 	tabs,
 	selectedTab,
@@ -87,7 +83,7 @@ function onUpdatePanes() {
 	} = app);
 }
 
-function onUpdateTheme() {
+function onThemeUpdated() {
 	({
 		theme,
 	} = base);
@@ -109,6 +105,8 @@ $: paneStyle.bottom = {
 
 onMount(function() {
 	let teardown = [
+		base.on("themeUpdated", onThemeUpdated),
+		
 		app.on("updateTabs", onUpdateTabs),
 		app.on("selectTab", onSelectTab),
 		app.on("hideFindBar", onHideFindBar),

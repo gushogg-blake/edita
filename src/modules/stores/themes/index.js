@@ -6,7 +6,7 @@ module.exports = async function() {
 	let store = new JsonStore("themes");
 	
 	await bluebird.map(Object.entries(defaultThemes), async function([key, theme]) {
-		if (!await store.load(key)) {
+		if (!await store.load(key) || platform.config.dev) {
 			await store.save(key, theme);
 		}
 	});

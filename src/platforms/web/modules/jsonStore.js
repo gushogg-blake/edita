@@ -15,7 +15,9 @@ module.exports = function(options) {
 		},
 		
 		ls(name) {
-			return localStorage.keys().filter(key => key.startsWith(storageKey(name) + "/"));
+			let prefix = storageKey(name) + "/";
+			
+			return localStorage.keys().filter(key => key.startsWith(prefix)).map(key => key.substr(prefix.length));
 		},
 	};
 }

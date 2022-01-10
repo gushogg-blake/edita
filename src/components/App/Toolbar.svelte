@@ -1,8 +1,15 @@
 <script>
-import {getContext} from "svelte";
+import {getContext, onMount} from "svelte";
 import FileInput from "components/utils/FileInput.svelte";
+import Spacer from "components/utils/Spacer.svelte";
 
 let app = getContext("app");
+
+let {
+	themes,
+	theme,
+	prefs,
+} = base;
 
 function upload({detail: files}) {
 	app.openFilesFromUpload(files);
@@ -19,21 +26,47 @@ function openLanguages(e) {
 		};
 	}));
 }
+
+function onSelectTheme(e) {
+	base.setPref("theme", e.target.value);
+}
+
+function onThemeUpdated() {
+	({
+		themes,
+		theme,
+		prefs,
+	} = base);
+}
+
+onMount(function() {
+	let teardown = [
+		base.on("themeUpdated", onThemeUpdated),
+	];
+	
+	return function() {
+		for (let fn of teardown) {
+			fn();
+		}
+	}
+});
 </script>
 
 <style type="text/scss">
 #main {
+	display: flex;
+	gap: 3px;
 	padding: 3px;
 	background: var(--toolbarBackgroundColor);
-	//background: white;
 }
 
 button {
-	color: #333333;
+	color: var(--buttonColor);
 	border: 0;
 	border-radius: 3px;
 	padding: .3em .7em;
 	outline: none;
+	background: var(--buttonBackgroundColor);
 	
 	&:active {
 		box-shadow: inset 1px 1px 3px #00000025;
@@ -41,7 +74,7 @@ button {
 }
 </style>
 
-<div id="main" on:mousedown={() => app.focusSelectedTabAsync()}>
+<div id="main">
 	<button on:click={() => app.functions._new()}>
 		New
 	</button>
@@ -67,4 +100,10 @@ button {
 	<button on:click={() => app.panes.right.toggle()}>
 		]
 	</button>
+	<Spacer/>
+	<select class="compact" value={prefs.theme} on:change={onSelectTheme}>
+		{#each Object.entries(themes) as [key, _theme]}
+			<option value={key}>{_theme.name}</option>
+		{/each}
+	</select>
 </div>

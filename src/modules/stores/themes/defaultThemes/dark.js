@@ -1,32 +1,50 @@
 module.exports = {
+	name: "Dark",
+	
 	fontFamily: "\"DejaVu Sans Mono\", Menlo, Consolas, monospace",
 	fontSize: 14,
 	
-	cursorColor: "black",
-	lineNumberColor: "#9f9f9f",
-	marginBackground: "#f0f0f0",
+	cursorColor: "#f0f0f0",
 	selectionBackground: "#d0d0d0",
 	hiliteBackground: "#fdee20",
 	astSelectionBackground: "#dfdfdf",
 	astSelectionHiliteBackground: "#f2f2f2",
-	astInsertionHiliteBackground: "#606060",
+	astInsertionHiliteBackground: "#d0d0d0",
+	
+	lineNumberColor: "#e0e0e0",
+	marginBackground: "#505050",
+	
 	foldHeaderBackground: "#f2f2f2",
 	foldHeaderBorder: "#a9a9a9",
 	
-	appBackgroundColor: "#edecea",
-	toolbarBackgroundColor: "#f2f2f0",
-	scrollbarThumbWidth: 8,
-	scrollbarPadding: 3,
-	scrollbarWidth: "calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2)",
-	scrollbarBackgroundColor: "white",
-	scrollbarBorder: "1px solid #bababa",
-	scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackgroundColor)",
-	scrollbarThumbBackground: "#B2B2B2",
-	inputBorder: "1px solid #adaba6",
-	appBorder: "1px solid #afacaa",
-	appFontFamily: "\"Noto Sans\", \"Segoe UI\", \"Helvetica Neue\", sans-serif",
-	appFontSize: 12.5,
-	appColor: "#444444",
+	app: {
+		color: "#d5d5d5",
+		fontFamily: "\"Noto Sans\", \"Segoe UI\", \"Helvetica Neue\", sans-serif",
+		fontSize: 12.5,
+		
+		appBorder: "1px solid #707070",
+		appBackgroundColor: "#303030",
+		
+		buttonColor: "#ffffffee",
+		buttonBackgroundColor: "#ffffff15",
+		tabBackgroundColor: "#ffffff15",
+		tabSelectedBackgroundColor: "#505050",
+		toolbarBackgroundColor: "#404040",
+		
+		inputBorder: "1px solid #adaba6",
+		
+		listItemSelectedBackgroundColor: "rgba(0, 0, 0, 0.1)",
+		listItemExpandContractBackgroundColor: "#ffffff15",
+		listItemExpandContractBorder: "#bbbbbb",
+		
+		scrollbarThumbWidth: 8,
+		scrollbarPadding: 3,
+		scrollbarWidth: "calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2)",
+		scrollbarBackgroundColor: "white",
+		scrollbarBorder: "1px solid #bababa",
+		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackgroundColor)",
+		scrollbarThumbBackground: "#B2B2B2",
+	},
 	
 	langs: {
 		javascript: {

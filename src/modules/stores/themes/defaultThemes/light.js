@@ -1,32 +1,50 @@
 module.exports = {
+	name: "Light",
+	
 	fontFamily: "\"DejaVu Sans Mono\", Menlo, Consolas, monospace",
 	fontSize: 14,
 	
 	cursorColor: "black",
-	lineNumberColor: "#9f9f9f",
-	marginBackground: "#f0f0f0",
 	selectionBackground: "#d0d0d0",
 	hiliteBackground: "#fdee20",
 	astSelectionBackground: "#dfdfdf",
 	astSelectionHiliteBackground: "#f2f2f2",
 	astInsertionHiliteBackground: "#606060",
+	
+	lineNumberColor: "#9f9f9f",
+	marginBackground: "#f0f0f0",
+	
 	foldHeaderBackground: "#f2f2f2",
 	foldHeaderBorder: "#a9a9a9",
 	
-	appBackgroundColor: "#edecea",
-	toolbarBackgroundColor: "#f2f2f0",
-	scrollbarThumbWidth: 8,
-	scrollbarPadding: 3,
-	scrollbarWidth: "calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2)",
-	scrollbarBackgroundColor: "white",
-	scrollbarBorder: "1px solid #bababa",
-	scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackgroundColor)",
-	scrollbarThumbBackground: "#B2B2B2",
-	inputBorder: "1px solid #adaba6",
-	appBorder: "1px solid #afacaa",
-	appFontFamily: "\"Noto Sans\", \"Segoe UI\", \"Helvetica Neue\", sans-serif",
-	appFontSize: 12.5,
-	appColor: "#444444",
+	app: {
+		fontFamily: "\"Noto Sans\", \"Segoe UI\", \"Helvetica Neue\", sans-serif",
+		fontSize: 12.5,
+		color: "#444444",
+		
+		appBorder: "1px solid #afacaa",
+		appBackgroundColor: "#edecea",
+		
+		buttonColor: "#333333",
+		buttonBackgroundColor: "",
+		tabBackgroundColor: "",
+		tabSelectedBackgroundColor: "white",
+		toolbarBackgroundColor: "#f2f2f0",
+		
+		inputBorder: "1px solid #adaba6",
+		
+		listItemSelectedBackgroundColor: "rgba(0, 0, 0, 0.1)",
+		listItemExpandContractBackgroundColor: "white",
+		listItemExpandContractBorder: "#bbbbbb",
+		
+		scrollbarThumbWidth: 8,
+		scrollbarPadding: 3,
+		scrollbarWidth: "calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2)",
+		scrollbarBackgroundColor: "white",
+		scrollbarBorder: "1px solid #bababa",
+		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackgroundColor)",
+		scrollbarThumbBackground: "#B2B2B2",
+	},
 	
 	langs: {
 		javascript: {

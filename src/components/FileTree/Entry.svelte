@@ -117,7 +117,7 @@ onMount(function() {
 }
 
 .selected {
-	background: rgba(0, 0, 0, 0.1);
+	background: var(--listItemSelectedBackgroundColor);
 }
 
 #icon {
@@ -149,10 +149,10 @@ onMount(function() {
 	text-align: center;
 	width: 15px;
 	height: 15px;
-	border: 1px solid #bbbbbb;
+	border: 1px solid var(--listItemExpandContractBorder);
 	border-radius: 1px;
 	padding: 1px 3px;
-	background: white;
+	background: var(--listItemExpandContractBackgroundColor);
 }
 </style>
 

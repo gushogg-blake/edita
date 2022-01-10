@@ -1,7 +1,7 @@
 .treefrog {
-	font-family: var(--appFontFamily);
-	font-size: var(--appFontSize);
-	color: var(--appColor);
+	font-family: var(--fontFamily);
+	font-size: var(--fontSize);
+	color: var(--color);
 	user-select: none;
 	
 	&, div, form, input {
@@ -39,9 +39,5 @@
 		&::-webkit-scrollbar-corner {
 			background: transparent;
 		}
-	}
-	
-	button {
-		
 	}
 }

@@ -157,10 +157,11 @@ onMount(function() {
 	align-items: center;
 	border-radius: $radius $radius 0 0;
 	padding: 6px 12px;
+	background: var(--tabBackgroundColor);
 	
 	&.isSelected {
 		box-shadow: 0 0 3px 0 rgba(0, 0, 0, .2);
-		background: white;
+		background: var(--tabSelectedBackgroundColor);
 	}
 }
 
@@ -182,11 +183,12 @@ onMount(function() {
 }
 
 button {
-	color: #333333;
+	color: var(--buttonColor);
 	border: 0;
 	border-radius: 3px;
 	padding: .3em .7em;
 	outline: none;
+	background: var(--buttonBackgroundColor);
 	
 	&:active {
 		box-shadow: inset 1px 1px 3px #00000025;

@@ -30,6 +30,8 @@ class Platform extends Common {
 			multiPathSeparator: ":",
 		};
 		
+		this.config = {};
+		
 		this.clipboard = clipboard;
 		this.isMainWindow = true;
 		this.path = path;
