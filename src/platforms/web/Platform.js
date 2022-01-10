@@ -37,31 +37,25 @@ class Platform extends Common {
 		this.useFileUploader = true;
 	}
 	
-	async init(options) {
-		options = {
-			config: {},
+	async init(config) {
+		config = {
+			dev: false,
 			resourcePrefix: "",
-			init: null,
 			localStoragePrefix: "treefrog.",
 			fsPrefix: "treefrogFs",
 			lspUrl: null,
 			test: false,
-			...options,
+			...config,
 		};
 		
-		this.options = options;
+		this.config = config;
 		
-		this.config = {
-			dev: false,
-			...options.config,
-		};
-		
-		this.jsonStore = jsonStore(options);
+		this.jsonStore = jsonStore(config.localStoragePrefix);
 		
 		await Promise.all([
-			!options.test && loadCss(options.resourcePrefix + "css/global.css"),
-			!options.test && loadCss(options.resourcePrefix + "js/main.css"),
-			loadScript(options.resourcePrefix + "vendor/tree-sitter/tree-sitter.js"),
+			!config.test && loadCss(config.resourcePrefix + "css/global.css"),
+			!config.test && loadCss(config.resourcePrefix + "js/main.css"),
+			loadScript(config.resourcePrefix + "vendor/tree-sitter/tree-sitter.js"),
 		]);
 		
 		this.fs = this.createFs("files");
@@ -71,17 +65,13 @@ class Platform extends Common {
 		
 		await this.snippets.init();
 		
-		if (options.lspUrl) {
-			this.lsp = lsp(options.lspUrl);
-		}
-		
-		if (options.init) {
-			await options.init();
+		if (config.lspUrl) {
+			this.lsp = lsp(config.lspUrl);
 		}
 	}
 	
 	createFs(key) {
-		let fs = fsWeb(this.options.fsPrefix + "-" + key);
+		let fs = fsWeb(this.config.fsPrefix + "-" + key);
 		
 		return createFs({
 			fs,
@@ -156,8 +146,8 @@ class Platform extends Common {
 		app.openDialogWindow(dialog, dialogOptions, windowOptions);
 	}
 	
-	showMessageBox(app, options) {
-		return app.showMessageBox(options);
+	showMessageBox(app, config) {
+		return app.showMessageBox(config);
 	}
 	
 	showContextMenu(e, app, items, noCancel=false) {
@@ -187,7 +177,7 @@ class Platform extends Common {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load(this.options.resourcePrefix + "vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
+		return TreeSitter.Language.load(this.config.resourcePrefix + "vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
 	}
 	
 	closeWindow() {

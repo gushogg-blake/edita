@@ -1,9 +1,9 @@
 let {removeInPlace} = require("utils/arrayMethods");
 let localStorage = require("platform/modules/localStorage");
 
-module.exports = function(options) {
+module.exports = function(localStoragePrefix) {
 	function storageKey(name, key) {
-		return options.localStoragePrefix + (key ? name + "/" + key : name);
+		return localStoragePrefix + (key ? name + "/" + key : name);
 	}
 	
 	let watchers = {};

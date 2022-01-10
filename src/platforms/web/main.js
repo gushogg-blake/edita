@@ -9,12 +9,18 @@ window.platform = new Platform();
 window.base = new Base();
 
 export default async function(options) {
-	await platform.init(options);
-	await base.init(components);
+	let {
+		config,
+		prefs,
+		init,
+	} = options;
 	
-	if (options.prefs) {
-		base.setPrefs(options.prefs);
-	}
+	await platform.init(config);
+	
+	await base.init(components, {
+		prefs,
+		init,
+	});
 	
 	return {
 		async app(el) {

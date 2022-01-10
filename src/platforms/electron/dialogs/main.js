@@ -1,6 +1,6 @@
 import init from "platform/init";
 
-export default function(App, AppComponent, useBase=true) {
+export default function(App, AppComponent, initLangs=true) {
 	let app;
 	let appComponent;
 	
@@ -29,6 +29,6 @@ export default function(App, AppComponent, useBase=true) {
 		window.app = app;
 	}, {
 		isDialog: true,
-		useBase,
+		initLangs,
 	});
 }

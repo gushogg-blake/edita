@@ -52,8 +52,16 @@ class Base extends Evented {
 		this.DirEntries = DirEntries;
 	}
 	
-	async init(components) {
+	async init(components, options) {
+		options = {
+			initLangs: true,
+			prefs: {},
+			init: null,
+			...options,
+		};
+		
 		this.components = components;
+		this.options = options;
 		
 		await Promise.all([
 			this.initStores(),
@@ -70,6 +78,14 @@ class Base extends Evented {
 		this.stores.themes.on("update", () => this.updateTheme());
 		this.stores.prefs.on("update", () => this.updateTheme());
 		
+		if (options.prefs) {
+			this.setPrefs(options.prefs);
+		}
+		
+		if (options.init) {
+			await options.init();
+		}
+		
 		this.asyncInit();
 	}
 	
@@ -78,6 +94,10 @@ class Base extends Evented {
 	}
 	
 	async initLangs() {
+		if (!this.options.initLangs) {
+			return;
+		}
+		
 		await TreeSitter.init();
 		
 		let langs = [
@@ -115,14 +135,16 @@ class Base extends Evented {
 	async asyncInit() {
 		// pre-init common langs
 		
-		await bluebird.map([
-			"javascript",
-			"html",
-			"css",
-			//"php",
-			//"c",
-			//"cpp",
-		], code => this.initLanguage(this.langs.get(code)));
+		if (this.options.initLangs) {
+			await bluebird.map([
+				"javascript",
+				"html",
+				"css",
+				//"php",
+				//"c",
+				//"cpp",
+			], code => this.initLanguage(this.langs.get(code)));
+		}
 	}
 	
 	/*
