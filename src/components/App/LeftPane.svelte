@@ -23,7 +23,7 @@ function openDirMenu(e) {
 		return;
 	}
 	
-	platform.showContextMenuForElement(dirSelector, rootEntry.node.parents.map(function(node) {
+	platform.showContextMenuForElement(app, dirSelector, rootEntry.node.parents.map(function(node) {
 		return {
 			label: node.name,
 			
@@ -41,7 +41,7 @@ function contextmenu(e) {
 	
 	let {node, path} = rootEntry;
 	
-	platform.showContextMenu(e, [
+	platform.showContextMenu(e, app, [
 		{
 			label: "Find...",
 			

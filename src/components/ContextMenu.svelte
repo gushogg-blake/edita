@@ -12,18 +12,18 @@ function click(item) {
 
 <style type="text/scss">
 #main {
-	border: 1px solid #B4BBC1;
-	background: white;
+	border: var(--contextMenuBorder);
+	background: var(--contextMenuBackgroundColor);
 }
 
 .item {
+	color: var(--contextMenuColor);
 	padding: .5em;
 	
 	&:hover {
-		color: white;
-		background: #71A339;
+		color: var(--contextMenuHoverColor);
+		background: var(--contextMenuHoverBackgroundColor);
 	}
-	
 }
 </style>
 

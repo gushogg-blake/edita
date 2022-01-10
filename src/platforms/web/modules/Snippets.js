@@ -84,7 +84,7 @@ class Snippets extends Evented {
 		this.fire("update", id, snippet);
 	}
 	
-	async delete(e, id) {
+	async delete(id) {
 		let node = await this.getNode(id);
 		
 		if (!node) {

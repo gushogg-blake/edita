@@ -28,6 +28,11 @@ module.exports = {
 		
 		findResultsBackgroundColor: "#ffffff",
 		
+		contextMenuColor: "var(--appColor)",
+		contextMenuBorder: "1px solid #B4BBC1",
+		contextMenuHoverBackgroundColor: "#71A339",
+		contextMenuBackgroundColor: "white",
+		
 		scrollbarThumbWidth: 8,
 		scrollbarPadding: 3,
 		scrollbarWidth: "calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2)",
