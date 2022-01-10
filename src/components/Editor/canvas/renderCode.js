@@ -1,6 +1,6 @@
 module.exports = function(layers, view) {
 	let {
-		font,
+		fontFamily,
 		fontSize,
 		marginBackground,
 		lineNumberColor,
@@ -26,7 +26,7 @@ module.exports = function(layers, view) {
 	
 	let context = layers.code;
 	
-	context.font = fontSize + "px " + font;
+	context.font = fontSize + "px " + fontFamily;
 	context.fillStyle = "black";
 	
 	let leftEdge = marginOffset - scrollPosition.x;

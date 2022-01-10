@@ -465,7 +465,7 @@ async function onWrapChanged() {
 
 function updateMeasurements() {
 	measurementsDiv.style = inlineStyle({
-		fontFamily: base.prefs.font,
+		fontFamily: base.prefs.fontFamily,
 		fontSize: base.prefs.fontSize,
 	});
 	

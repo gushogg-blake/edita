@@ -5,6 +5,12 @@ let migrations = {
 	"1"(prefs) {
 		prefs.astKeymap["c"] = "change";
 	},
+	
+	"2"(prefs) {
+		prefs.fontFamily = prefs.font;
+		
+		delete prefs.font;
+	},
 };
 
 module.exports = function() {
@@ -17,7 +23,7 @@ module.exports = function() {
 	};
 	
 	let defaultPrefs = {
-		font: fonts[os],
+		fontFamily: fonts[os],
 		fontSize: 14,
 		
 		tabWidth: 4,
