@@ -191,7 +191,7 @@ module.exports = function(editor, editorComponent) {
 			};
 		});
 		
-		platform.showContextMenu(e, items, true);
+		platform.showContextMenu(e, editorComponent.app, items, true);
 	}
 	
 	function drawSelection(e) {

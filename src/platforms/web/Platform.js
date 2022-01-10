@@ -78,16 +78,6 @@ class Platform extends Common {
 		if (options.init) {
 			await options.init();
 		}
-		
-		on(document.body, "contextmenu", function(e) {
-			for (let node of parentNodes(e.target)) {
-				if (node.classList.contains("editor")) {
-					e.preventDefault();
-					
-					break;
-				}
-			}
-		});
 	}
 	
 	createFs(key) {
@@ -170,18 +160,18 @@ class Platform extends Common {
 		return app.showMessageBox(options);
 	}
 	
-	showContextMenu(e, items, noCancel=false) {
-		contextMenu(items, {
+	showContextMenu(e, app, items, noCancel=false) {
+		contextMenu(app, items, {
 			x: e.clientX,
 			y: e.clientY,
 		}, noCancel);
 	}
 	
-	showContextMenuForElement(element, items, noCancel=false) {
+	showContextMenuForElement(app, element, items, noCancel=false) {
 		let {x, y, height} = screenOffsets(element);
 		let coords = {x, y: y + height};
 		
-		contextMenu(items, coords, noCancel);
+		contextMenu(app, items, coords, noCancel);
 	}
 	
 	handleIpcMessages(channel, handler) {

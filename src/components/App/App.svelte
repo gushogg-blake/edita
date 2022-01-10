@@ -239,6 +239,7 @@ onMount(function() {
 	on:drop={drop}
 	on:keydown={keydown}
 	on:mousedown={mousedown}
+	on:contextmenu={e => e.preventDefault()}
 	tabindex="0"
 >
 	<div id="toolbar">

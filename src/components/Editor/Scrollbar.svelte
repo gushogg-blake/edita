@@ -140,7 +140,7 @@ onMount(function() {
 	position: absolute;
 	border: var(--scrollbarThumbBorder);
 	border-radius: 8px;
-	background: var(--scrollbarThumbBackground);
+	background: var(--scrollbarThumbBackgroundColor);
 	
 	.vertical & {
 		width: var(--scrollbarWidth);

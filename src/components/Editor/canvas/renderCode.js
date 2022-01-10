@@ -4,6 +4,7 @@ module.exports = function(layers, view) {
 		fontSize,
 		marginBackground,
 		lineNumberColor,
+		defaultColor,
 	} = base.theme.editor;
 	
 	let {
@@ -27,7 +28,7 @@ module.exports = function(layers, view) {
 	let context = layers.code;
 	
 	context.font = fontSize + "px " + fontFamily;
-	context.fillStyle = "black";
+	context.fillStyle = defaultColor;
 	
 	let leftEdge = marginOffset - scrollPosition.x;
 	let rowOffset = -(scrollPosition.y % rowHeight);

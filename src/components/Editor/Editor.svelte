@@ -1,5 +1,5 @@
 <script>
-import {tick, onMount} from "svelte";
+import {tick, onMount, getContext} from "svelte";
 
 import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
@@ -34,6 +34,8 @@ export let lang = null;
 export function setValue(value) {
 	editor.setValue(value);
 }
+
+let app = getContext("app");
 
 let editorMode = editor ? "app" : "textarea";
 
@@ -84,6 +86,10 @@ let normalMouseHandler = normalMouse(editor, {
 });
 
 let astMouseHandler = astMouse(editor, {
+	get app() {
+		return app;
+	},
+	
 	get canvasDiv() {
 		return canvasDiv;
 	},
@@ -634,7 +640,7 @@ canvas {
 
 #scrollbarSpacer {
 	grid-area: spacer;
-	background: #E8E8E8;
+	background: var(--scrollbarSpacerBackgroundColor);
 }
 
 #measurements {

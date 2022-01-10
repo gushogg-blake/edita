@@ -42,7 +42,7 @@ function showContextMenu(e, tab) {
 		return;
 	}
 	
-	platform.showContextMenu(e, getContextMenuItems(tab));
+	platform.showContextMenu(e, app, getContextMenuItems(tab));
 }
 
 function tabIsSelected(tab, selectedTab) {

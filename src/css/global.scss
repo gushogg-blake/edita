@@ -16,6 +16,7 @@
 		color: var(--inputColor);
 		border: var(--inputBorder);
 		border-radius: 3px;
+		outline: none;
 		background: var(--inputBackgroundColor);
 	}
 	
@@ -35,7 +36,7 @@
 			border-radius: 8px;
 			border: var(--scrollbarPadding) solid var(--scrollbarBackgroundColor);
 			background-clip: content-box;
-			background: var(--scrollbarThumbBackground);
+			background: var(--scrollbarThumbBackgroundColor);
 		}
 		
 		&::-webkit-scrollbar-corner {

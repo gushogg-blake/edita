@@ -83,15 +83,14 @@ onMount(function() {
 #breadcrumbs {
 	display: flex;
 	gap: .6em;
-	border-bottom: 1px solid #d0d0d0;
+	border-bottom: var(--appBorder);
 	padding: .5em;
-	background: #eeeeee;
 	
 	.breadcrumb {
 		border-radius: 3px;
 		padding: .35em .7em;
 		box-shadow: 1px 1px 1px 0 #00000020;
-		background: white;
+		//background: white;
 	}
 }
 

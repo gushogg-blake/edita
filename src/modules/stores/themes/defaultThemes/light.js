@@ -34,12 +34,14 @@ module.exports = {
 		scrollbarBackgroundColor: "white",
 		scrollbarBorder: "1px solid #bababa",
 		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackgroundColor)",
-		scrollbarThumbBackground: "#B2B2B2",
+		scrollbarThumbBackgroundColor: "#B2B2B2",
+		scrollbarSpacerBackgroundColor: "#e8e8e8",
 	},
 	
 	editor: {
 		fontFamily: "\"DejaVu Sans Mono\", Menlo, Consolas, monospace",
 		fontSize: 14,
+		defaultColor: "#202020",
 		
 		cursorColor: "black",
 		
