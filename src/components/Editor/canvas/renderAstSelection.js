@@ -11,9 +11,13 @@ module.exports = function(layers, view, isPeeking) {
 		},
 	} = view;
 	
+	let {
+		astSelectionBackground,
+	} = base.theme.editor;
+	
 	let context = layers.hilites;
 	
-	context.fillStyle = base.theme.astSelectionBackground;
+	context.fillStyle = astSelectionBackground;
 	
 	let {startLineIndex, endLineIndex} = astSelection;
 	let startLine = wrappedLines[startLineIndex].line;

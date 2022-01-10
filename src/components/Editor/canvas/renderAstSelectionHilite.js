@@ -14,6 +14,10 @@ module.exports = function(layers, view, isPeeking) {
 		},
 	} = view;
 	
+	let {
+		astSelectionHiliteBackground,
+	} = base.theme.editor;
+	
 	if (!hilite) {
 		return;
 	}
@@ -24,7 +28,7 @@ module.exports = function(layers, view, isPeeking) {
 	
 	let context = layers.hilites;
 	
-	context.fillStyle = base.theme.astSelectionHiliteBackground;
+	context.fillStyle = astSelectionHiliteBackground;
 	
 	let {startLineIndex, endLineIndex} = hilite;
 	let startLine = wrappedLines[startLineIndex].line;

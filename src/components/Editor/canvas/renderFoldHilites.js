@@ -15,6 +15,11 @@ module.exports = function(layers, view) {
 		marginOffset,
 	} = sizes;
 	
+	let {
+		foldHeaderBorder,
+		foldHeaderBackground,
+	} = base.theme.editor;
+	
 	let context;
 	
 	let leftEdge = marginOffset - scrollPosition.x;
@@ -33,14 +38,14 @@ module.exports = function(layers, view) {
 			
 			context.translate(0.5, 0.5);
 			context.lineWidth = 1;
-			context.strokeStyle = base.theme.foldHeaderBorder;
+			context.strokeStyle = foldHeaderBorder;
 			context.strokeRect(x - 1, y, width + 1, rowHeight - 1);
 			
 			context.restore();
 			
 			context = layers.foldHilites;
 			
-			context.fillStyle = base.theme.foldHeaderBackground;
+			context.fillStyle = foldHeaderBackground;
 			context.fillRect(x, y, width, rowHeight);
 		},
 		

@@ -21,13 +21,17 @@ module.exports = function(layers, view, isPeeking) {
 		},
 	} = view;
 	
+	let {
+		astInsertionHiliteBackground,
+	} = base.theme.editor;
+	
 	if (!hilite) {
 		return;
 	}
 	
 	let context = layers.hilites;
 	
-	context.fillStyle = base.theme.astInsertionHiliteBackground;
+	context.fillStyle = astInsertionHiliteBackground;
 	
 	let {colWidth, rowHeight} = measurements;
 	let {startLineIndex, endLineIndex} = hilite;

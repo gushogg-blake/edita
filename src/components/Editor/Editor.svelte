@@ -467,7 +467,7 @@ function updateMeasurements() {
 	let {
 		fontFamily,
 		fontSize,
-	} = base.theme;
+	} = base.theme.editor;
 	
 	measurementsDiv.style = inlineStyle({
 		fontFamily,

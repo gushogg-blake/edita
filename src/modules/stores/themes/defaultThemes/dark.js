@@ -1,22 +1,6 @@
 module.exports = {
 	name: "Dark",
 	
-	fontFamily: "\"DejaVu Sans Mono\", Menlo, Consolas, monospace",
-	fontSize: 14,
-	
-	cursorColor: "#f0f0f0",
-	selectionBackground: "#d0d0d0",
-	hiliteBackground: "#fdee20",
-	astSelectionBackground: "#dfdfdf",
-	astSelectionHiliteBackground: "#f2f2f2",
-	astInsertionHiliteBackground: "#d0d0d0",
-	
-	lineNumberColor: "#e0e0e0",
-	marginBackground: "#505050",
-	
-	foldHeaderBackground: "#f2f2f2",
-	foldHeaderBorder: "#a9a9a9",
-	
 	app: {
 		color: "#d5d5d5",
 		fontFamily: "\"Noto Sans\", \"Segoe UI\", \"Helvetica Neue\", sans-serif",
@@ -44,6 +28,24 @@ module.exports = {
 		scrollbarBorder: "1px solid #bababa",
 		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackgroundColor)",
 		scrollbarThumbBackground: "#B2B2B2",
+	},
+	
+	editor: {
+		fontFamily: "\"DejaVu Sans Mono\", Menlo, Consolas, monospace",
+		fontSize: 14,
+		
+		cursorColor: "#f0f0f0",
+		selectionBackground: "#d0d0d0",
+		hiliteBackground: "#fdee20",
+		astSelectionBackground: "#dfdfdf",
+		astSelectionHiliteBackground: "#f2f2f2",
+		astInsertionHiliteBackground: "#d0d0d0",
+		
+		lineNumberColor: "#e0e0e0",
+		marginBackground: "#505050",
+		
+		foldHeaderBackground: "#f2f2f2",
+		foldHeaderBorder: "#a9a9a9",
 	},
 	
 	langs: {

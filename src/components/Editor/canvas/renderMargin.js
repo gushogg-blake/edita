@@ -4,7 +4,7 @@ module.exports = function(layers, view) {
 		fontSize,
 		marginBackground,
 		lineNumberColor,
-	} = base.theme;
+	} = base.theme.editor;
 	
 	let {
 		sizes,
