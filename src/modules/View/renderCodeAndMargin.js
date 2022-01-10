@@ -92,7 +92,7 @@ class Renderer {
 			({lang, node} = this.nodeWithLang);
 		}
 		
-		let {colors} = base.prefs.langs[lang.code];
+		let colors = base.theme.langs[lang.code];
 		let hiliteClass = lang.getHiliteClass(node);
 		
 		if (!hiliteClass) {

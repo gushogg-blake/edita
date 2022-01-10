@@ -1,4 +1,3 @@
-let checkOs = require("utils/checkOs");
 let JsonStore = require("modules/JsonStore");
 
 let migrations = {
@@ -11,35 +10,33 @@ let migrations = {
 		
 		delete prefs.font;
 	},
+	
+	"3"(prefs) {
+		delete prefs.fontFamily;
+		delete prefs.fontSize;
+		
+		delete prefs.lineNumberColor;
+		delete prefs.marginBackground;
+		delete prefs.selectionBackground;
+		delete prefs.hiliteBackground;
+		delete prefs.astSelectionBackground;
+		delete prefs.astSelectionHiliteBackground;
+		delete prefs.astInsertionHiliteBackground;
+		delete prefs.foldHeaderBackground;
+		delete prefs.foldHeaderBorder;
+		
+		delete prefs.langs;
+		
+		prefs.theme = "dark";
+	},
 };
 
 module.exports = function() {
-	let os = checkOs();
-	
-	let fonts = {
-		linux: "\"DejaVu Sans Mono\", monospace",
-		windows: "Consolas, monospace",
-		mac: "Menlo, monospace",
-	};
-	
 	let defaultPrefs = {
-		fontFamily: fonts[os],
-		fontSize: 14,
-		
 		tabWidth: 4,
 		defaultIndent: "\t",
 		defaultNewline: platform.systemInfo.newline,
 		defaultLangCode: "javascript",
-		
-		lineNumberColor: "#9f9f9f",
-		marginBackground: "#f0f0f0",
-		selectionBackground: "#d0d0d0",
-		hiliteBackground: "#fdee20",
-		astSelectionBackground: "#dfdfdf",
-		astSelectionHiliteBackground: "#f2f2f2",
-		astInsertionHiliteBackground: "#606060",
-		foldHeaderBackground: "#f2f2f2",
-		foldHeaderBorder: "#a9a9a9",
 		
 		wrap: false,
 		
@@ -184,116 +181,12 @@ module.exports = function() {
 		
 		doubleClickSpeed: 400,
 		
-		langs: {
-			javascript: {
-				colors: {
-					keyword: "#aa33aa",
-					id: "#202020",
-					comment: "#7f7f7f",
-					symbol: "#bb22bb",
-					bracket: "#202020",
-					number: "#cc2222",
-					string: "#2233bb",
-					regex: "#cc7030",
-				},
-			},
-			
-			html: {
-				colors: {
-					tag: "#0032ff",
-					attribute: "#871f78",
-					string: "#2233bb",
-					text: "#000000",
-					comment: "#7f7f7f",
-				},
-			},
-			
-			css: {
-				colors: {
-					tagName: "#0032ff",
-					className: "#008b8b",
-					idName: "#8b0000",
-					property: "#333333",
-					attribute: "#871f78",
-					string: "#2233bb",
-					comment: "#7f7f7f",
-					symbol: "#333333",
-					text: "#000000",
-				},
-			},
-			
-			scss: {
-				colors: {
-					tagName: "#0032ff",
-					className: "#008b8b",
-					idName: "#8b0000",
-					property: "#333333",
-					attribute: "#871f78",
-					string: "#2233bb",
-					comment: "#7f7f7f",
-					symbol: "#333333",
-					text: "#000000",
-				},
-			},
-			
-			php: {
-				colors: {
-					phpTag: "maroon",
-					keyword: "#aa33aa",
-					id: "#202020",
-					comment: "#7f7f7f",
-					symbol: "#bb22bb",
-					bracket: "#202020",
-					number: "#cc2222",
-					string: "#2233bb",
-				},
-			},
-			
-			c: {
-				colors: {
-					keyword: "#0032ff",
-					id: "#202020",
-					comment: "#7f7f7f",
-					include: "#7f7f7f",
-					symbol: "#202020",
-					bracket: "#202020",
-					number: "#cc2222",
-					string: "#2233bb",
-					type: "#008b8b",
-				},
-			},
-			
-			cpp: {
-				colors: {
-					keyword: "#0032ff",
-					id: "#202020",
-					comment: "#7f7f7f",
-					include: "#7f7f7f",
-					symbol: "#202020",
-					bracket: "#202020",
-					number: "#cc2222",
-					string: "#2233bb",
-					type: "#008b8b",
-				},
-			},
-			
-			python: {
-				colors: {
-					keyword: "#0032ff",
-					id: "#202020",
-					comment: "#7f7f7f",
-					symbol: "#202020",
-					bracket: "#202020",
-					number: "#cc2222",
-					string: "#2233bb",
-				},
-			},
-		},
-		
 		fileAssociations: {
 			"html": ["*.svelte"],
 			//"plainText": ["*.js"],
 		},
+		
+		theme: "dark",
 		
 		cursorBlinkPeriod: 700,
 		

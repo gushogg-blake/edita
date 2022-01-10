@@ -1,3 +1,4 @@
+let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 
 class JsonStore extends Evented {
@@ -5,10 +6,9 @@ class JsonStore extends Evented {
 		super();
 		
 		this.name = name;
-		
 		this.defaultValue = defaultValue;
-		
 		this.migrations = migrations;
+		
 		this.versions = Object.keys(this.migrations || {}).map(Number).sort((a, b) => a - b);
 		this.version = this.versions.length > 0 ? this.versions[this.versions.length - 1] : -1;
 		
@@ -53,6 +53,17 @@ class JsonStore extends Evented {
 			_version: this.version,
 			value,
 		});
+	}
+	
+	async loadAll() {
+		let keys = await platform.jsonStore.ls(this.name);
+		let all = {};
+		
+		await bluebird.map(keys, async (key) => {
+			all[key] = await this.load(key);
+		});
+		
+		return all;
 	}
 }
 

@@ -10,4 +10,8 @@ module.exports = {
 	set(key, data) {
 		localStorage.setItem(key, JSON.stringify(data));
 	},
+	
+	keys() {
+		return Object.keys(localStorage);
+	},
 };

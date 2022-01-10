@@ -24,7 +24,7 @@ module.exports = function(layers, view, isPeeking) {
 	
 	let context = layers.hilites;
 	
-	context.fillStyle = base.prefs.astSelectionHiliteBackground;
+	context.fillStyle = base.theme.astSelectionHiliteBackground;
 	
 	let {startLineIndex, endLineIndex} = hilite;
 	let startLine = wrappedLines[startLineIndex].line;

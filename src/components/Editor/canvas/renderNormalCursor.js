@@ -19,6 +19,6 @@ module.exports = function(layers, view, windowHasFocus) {
 	
 	let context = layers.code;
 	
-	context.fillStyle = "black";
+	context.fillStyle = base.theme.cursorColor;
 	context.fillRect(x, y, 1, measurements.rowHeight);
 }

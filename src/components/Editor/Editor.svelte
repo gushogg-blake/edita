@@ -464,9 +464,14 @@ async function onWrapChanged() {
 }
 
 function updateMeasurements() {
+	let {
+		fontFamily,
+		fontSize,
+	} = base.theme;
+	
 	measurementsDiv.style = inlineStyle({
-		fontFamily: base.prefs.fontFamily,
-		fontSize: base.prefs.fontSize,
+		fontFamily,
+		fontSize,
 	});
 	
 	measurementsDiv.innerHTML = "A".repeat(10000);
@@ -481,6 +486,11 @@ function toggleHorizontalScrollbar(show) {
 	showingHorizontalScrollbar = show;
 	
 	resizeAsync();
+}
+
+function onThemeUpdated() {
+	updateMeasurements();
+	redraw();
 }
 
 function onFocus() {
@@ -524,6 +534,8 @@ onMount(function() {
 		function() {
 			clearInterval(resizeInterval);
 		},
+		
+		base.on("themeUpdated", onThemeUpdated),
 		
 		view.on("show", resize),
 		view.on("requestResizeAsync", resizeAsync),

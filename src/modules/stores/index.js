@@ -1,9 +1,11 @@
 let JsonStore = require("modules/JsonStore");
 let prefs = require("./prefs");
+let themes = require("./themes");
 
-module.exports = function() {
+module.exports = async function() {
 	return {
 		prefs: prefs(),
+		themes: await themes(),
 		session: new JsonStore("session", {}),
 		findAndReplaceOptions: new JsonStore("findAndReplaceOptions", {}),
 		fileTree: new JsonStore("fileTree", {}),

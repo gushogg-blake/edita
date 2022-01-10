@@ -270,25 +270,6 @@ class App {
 		}
 	}
 	
-	jsonStorageKey(name, key) {
-		return key ? name + "/" + key : name;
-	}
-	
-	async loadJson(name, key) {
-		try {
-			return await fs(config.userDataDir, ...this.jsonStorageKey(name, key).split("/")).withExt(".json").readJson() || null;
-		} catch (e) {
-			return null;
-		}
-	}
-	
-	async saveJson(name, key, data) {
-		let node = fs(config.userDataDir, ...this.jsonStorageKey(name, key).split("/")).withExt(".json");
-		
-		await node.parent.mkdirp();
-		await node.writeJson(data);
-	}
-	
 	mkdirs() {
 		return Promise.all([
 			"snippets",

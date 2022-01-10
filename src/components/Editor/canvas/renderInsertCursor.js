@@ -16,6 +16,6 @@ module.exports = function(layers, view) {
 	
 	let context = layers.hilites;
 	
-	context.fillStyle = "black";
+	context.fillStyle = base.theme.cursorColor;
 	context.fillRect(x, y, 1, measurements.rowHeight);
 }

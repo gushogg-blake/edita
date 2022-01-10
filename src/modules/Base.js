@@ -2,6 +2,8 @@ let bluebird = require("bluebird");
 let get = require("lodash.get");
 let set = require("lodash.set");
 
+let Evented = require("utils/Evented");
+
 let getIndentationDetails = require("modules/utils/getIndentationDetails");
 let guessIndent = require("modules/utils/guessIndent");
 let checkNewlines = require("modules/utils/checkNewlines");
@@ -37,8 +39,10 @@ instances embedded in a web page, so doesn't know anything about the state of
 the UI.
 */
 
-class Base {
+class Base extends Evented {
 	constructor() {
+		super();
+		
 		this.langs = langs;
 		this.treeSitterLanguages = {};
 		this.initialisedLangs = new Set();
@@ -52,15 +56,25 @@ class Base {
 		this.components = components;
 		
 		await Promise.all([
+			this.initStores(),
 			this.initLangs(),
+		]);
+		
+		await Promise.all([
+			this.initPrefs(),
 			this.initThemes(),
 		]);
 		
-		this.stores = stores();
+		this.theme = this.themes[this.prefs.theme];
 		
-		this.prefs = await this.stores.prefs.load();
+		this.stores.themes.on("update", () => this.updateTheme());
+		this.stores.prefs.on("update", () => this.updateTheme());
 		
 		this.asyncInit();
+	}
+	
+	async initStores() {
+		this.stores = await stores();
 	}
 	
 	async initLangs() {
@@ -84,7 +98,18 @@ class Base {
 		}
 	}
 	
+	async initPrefs() {
+		this.prefs = await this.stores.prefs.load();
+	}
+	
 	async initThemes() {
+		this.themes = await this.stores.themes.loadAll();
+	}
+	
+	updateTheme() {
+		this.theme = this.themes[this.prefs.theme];
+		
+		this.fire("updateTheme");
 	}
 	
 	async asyncInit() {
@@ -153,7 +178,7 @@ class Base {
 			defaultIndent,
 			tabWidth,
 			defaultNewline,
-		} = base.prefs;
+		} = this.prefs;
 		
 		let indent = guessIndent(code) || defaultIndent;
 		let lang = this.guessLang(code, url);
@@ -184,7 +209,7 @@ class Base {
 			tabWidth,
 			defaultNewline,
 			defaultLangCode,
-		} = base.prefs;
+		} = this.prefs;
 		
 		if (!lang) {
 			lang = this.langs.get(defaultLangCode);
