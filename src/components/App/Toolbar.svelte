@@ -101,9 +101,11 @@ button {
 		]
 	</button>
 	<Spacer/>
-	<select class="compact" value={prefs.theme} on:change={onSelectTheme}>
-		{#each Object.entries(themes) as [key, _theme]}
-			<option value={key}>{_theme.name}</option>
-		{/each}
-	</select>
+	{#if prefs.showThemeSelector}
+		<select class="compact" value={prefs.theme} on:change={onSelectTheme}>
+			{#each Object.entries(themes) as [key, _theme]}
+				<option value={key}>{_theme.name}</option>
+			{/each}
+		</select>
+	{/if}
 </div>
