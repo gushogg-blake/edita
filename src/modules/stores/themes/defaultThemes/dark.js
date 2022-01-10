@@ -74,9 +74,9 @@ module.exports = {
 		
 		html: {
 			tag: "#268bd2",
-			attribute: "#839496",
+			attribute: "#e8f8fd",
 			string: "#2aa198",
-			text: "#839496",
+			text: "#e8f8fd",
 			comment: "#aed7e5",
 		},
 		
