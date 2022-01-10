@@ -40,11 +40,12 @@ async function upload(e) {
 @import "classes/hideInput";
 
 button {
-	color: #333333;
+	color: var(--buttonColor);
 	border: 0;
 	border-radius: 3px;
 	padding: .3em .7em;
 	outline: none;
+	background: var(--buttonBackgroundColor);
 	
 	&:active {
 		box-shadow: inset 1px 1px 3px #00000025;
