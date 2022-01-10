@@ -27,7 +27,11 @@ let migrations = {
 		
 		delete prefs.langs;
 		
-		prefs.theme = "dark";
+		prefs.theme = "light";
+	},
+	
+	"4"(prefs) {
+		prefs.showThemeSelector = false;
 	},
 };
 
@@ -186,7 +190,7 @@ module.exports = function() {
 			//"plainText": ["*.js"],
 		},
 		
-		theme: "dark",
+		theme: "light",
 		
 		cursorBlinkPeriod: 700,
 		
@@ -206,6 +210,8 @@ module.exports = function() {
 				size: 240,
 			},
 		},
+		
+		showThemeSelector: false,
 	};
 	
 	return new JsonStore("prefs", defaultPrefs, migrations);

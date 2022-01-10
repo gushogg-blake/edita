@@ -12,6 +12,10 @@ export default async function(options) {
 	await platform.init(options);
 	await base.init(components);
 	
+	if (options.prefs) {
+		base.setPrefs(options.prefs);
+	}
+	
 	return {
 		async app(el) {
 			let app = new App();

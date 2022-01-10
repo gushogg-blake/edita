@@ -267,6 +267,12 @@ class Base extends Evented {
 		this.stores.prefs.save(this.prefs);
 	}
 	
+	setPrefs(prefs) {
+		Object.assign(this.prefs, prefs);
+		
+		this.stores.prefs.save(this.prefs);
+	}
+	
 	resetPrefs() {
 		this.prefs = this.stores.prefs.defaultValue;
 		
