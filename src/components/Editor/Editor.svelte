@@ -5,6 +5,8 @@ import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
 import getKeyCombo from "utils/getKeyCombo";
 
+import themeStyle from "components/themeStyle";
+
 import render from "./canvas/render";
 
 import normalMouse from "./normalMouse";
@@ -46,6 +48,10 @@ if (editorMode === "textarea") {
 		editor.document.setLang(base.langs.get(lang));
 	}
 }
+
+let {
+	theme,
+} = base;
 
 let {
 	document,
@@ -495,6 +501,10 @@ function toggleHorizontalScrollbar(show) {
 }
 
 function onThemeUpdated() {
+	({
+		theme,
+	} = base);
+	
 	updateMeasurements();
 	redraw();
 }
@@ -657,6 +667,7 @@ canvas {
 	class="treefrog"
 	class:showingHorizontalScrollbar
 	class:textarea={editorMode === "textarea"}
+	style={editorMode === "textarea" ? themeStyle(theme) : ""}
 	tabindex="0"
 	on:focus={onFocus}
 	on:blur={onBlur}
