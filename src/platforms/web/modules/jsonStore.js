@@ -18,7 +18,7 @@ module.exports = function(localStoragePrefix) {
 			
 			if (watchers[name]) {
 				for (let fn of watchers[name]) {
-					fn(key, data);
+					fn(key, data.value);
 				}
 			}
 		},

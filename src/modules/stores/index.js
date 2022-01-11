@@ -6,7 +6,7 @@ module.exports = async function() {
 	return {
 		prefs: prefs(),
 		themes: await themes(),
-		session: new JsonStore("session", {}),
+		session: new JsonStore("session", null),
 		findAndReplaceOptions: new JsonStore("findAndReplaceOptions", {}),
 		fileTree: new JsonStore("fileTree", {}),
 		perFilePrefs: new JsonStore("perFilePrefs", {}),

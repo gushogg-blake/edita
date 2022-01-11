@@ -125,6 +125,8 @@ class Base extends Evented {
 	updatePrefs(prefs) {
 		this.prefs = prefs;
 		
+		this.fire("prefsUpdated");
+		
 		this.updateTheme();
 	}
 	
@@ -305,8 +307,6 @@ class Base extends Evented {
 		this.prefs = this.stores.prefs.defaultValue;
 		
 		this.stores.prefs.save(this.prefs);
-		
-		this.fire("prefsUpdated");
 	}
 }
 
