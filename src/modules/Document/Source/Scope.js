@@ -401,23 +401,25 @@ module.exports = class Scope {
 	startOffset = 0.
 	*/
 	
-	*_generateNodesOnLine(withLang, lineIndex, startOffset=0) {
+	*_generateNodesOnLine(lineIndex, startOffset, withLang, lang) {
 		if (!this.tree) {
 			return;
 		}
 		
 		for (let node of generateNodesOnLine(this.tree.rootNode, lineIndex, startOffset)) {
-			yield withLang ? {
-				node,
-				lang: this.lang,
-			} : node;
+			if (!lang || this.lang === lang) {
+				yield withLang ? {
+					node,
+					lang: this.lang,
+				} : node;
+			}
 			
 			startOffset = nodeGetters.endPosition(node).column;
 			
 			let scope = this.scopesByNode[node.id];
 			
 			if (scope) {
-				for (let childNode of scope._generateNodesOnLine(withLang, lineIndex, startOffset)) {
+				for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, withLang, lang)) {
 					yield childNode;
 					
 					startOffset = nodeGetters.endPosition(withLang ? childNode.node : childNode).column;
@@ -426,7 +428,7 @@ module.exports = class Scope {
 		}
 		
 		for (let scope of this.scopes) {
-			for (let childNode of scope._generateNodesOnLine(withLang, lineIndex, startOffset)) {
+			for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, withLang, lang)) {
 				yield childNode;
 				
 				startOffset = nodeGetters.endPosition(withLang ? childNode.node : childNode).column;
@@ -434,11 +436,11 @@ module.exports = class Scope {
 		}
 	}
 	
-	generateNodesOnLine(lineIndex, startOffset=0) {
-		return this._generateNodesOnLine(false, lineIndex, startOffset);
+	generateNodesOnLine(lineIndex, lang=null) {
+		return this._generateNodesOnLine(lineIndex, 0, false, lang);
 	}
 	
-	generateNodesOnLineWithLang(lineIndex, startOffset=0) {
-		return this._generateNodesOnLine(true, lineIndex, startOffset);
+	generateNodesOnLineWithLang(lineIndex) {
+		return this._generateNodesOnLine(lineIndex, 0, true, null);
 	}
 }

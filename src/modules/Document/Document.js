@@ -243,24 +243,20 @@ class Document extends BaseDocument {
 		return this.source.langFromCursor(cursor);
 	}
 	
-	getDecoratedLines(startLineIndex, endLineIndex) {
-		return this.source.getDecoratedLines(startLineIndex, endLineIndex);
-	}
-	
 	findFirstNodeToRender(lineIndex) {
 		return this.source.findFirstNodeToRender(lineIndex);
 	}
 	
-	getNodesOnLine(lineIndex) {
-		return [...this.source.generateNodesOnLine(lineIndex)];
+	getNodesOnLine(lineIndex, lang=null) {
+		return [...this.source.generateNodesOnLine(lineIndex, lang)];
+	}
+	
+	generateNodesOnLine(lineIndex, lang=null) {
+		return this.source.generateNodesOnLine(lineIndex, lang);
 	}
 	
 	getNodesOnLineWithLang(lineIndex) {
 		return [...this.source.generateNodesOnLineWithLang(lineIndex)];
-	}
-	
-	generateNodesOnLine(lineIndex) {
-		return this.source.generateNodesOnLine(lineIndex);
 	}
 	
 	generateNodesOnLineWithLang(lineIndex) {

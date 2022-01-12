@@ -100,12 +100,12 @@ module.exports = class {
 		}
 	}
 	
-	*generateNodesOnLine(lineIndex) {
+	*generateNodesOnLine(lineIndex, lang=null) {
 		if (!this.rootScope) {
 			return;
 		}
 		
-		yield* this.rootScope.generateNodesOnLine(lineIndex);
+		yield* this.rootScope.generateNodesOnLine(lineIndex, lang);
 	}
 	
 	*generateNodesOnLineWithLang(lineIndex) {
