@@ -27,7 +27,18 @@ class AstMode extends Evented {
 	}
 	
 	doLangManipulation(manipulation) {
-		this.startMultiStepCommand(new multiStepCommands.LangManipulation(this.editor, manipulation));
+		let {editor} = this;
+		
+		if (manipulation.apply) {
+			this.startMultiStepCommand(new multiStepCommands.LangManipulation(editor, manipulation));
+		} else if (manipulation.setNormalModeSelection) {
+			let {document, astSelection} = this.editor;
+			
+			let normalSelection = manipulation.setNormalModeSelection(document, astSelection);
+			
+			editor.switchToNormalMode();
+			editor.setNormalSelection(normalSelection);
+		}
 	}
 	
 	startMultiStepCommand(command) {

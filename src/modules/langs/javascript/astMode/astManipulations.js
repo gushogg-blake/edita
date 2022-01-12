@@ -1,5 +1,10 @@
 //let indentLines = require("modules/utils/indentLines");
 let AstSelection = require("modules/utils/AstSelection");
+let Selection = require("modules/utils/Selection");
+let Cursor = require("modules/utils/Cursor");
+
+let {s} = Selection;
+let {c} = Cursor;
 
 let lang;
 
@@ -142,6 +147,50 @@ module.exports = {
 		
 		apply(document, selection) {
 			
+		},
+	},
+	
+	changeIfCondition: {
+		code: "changeIfCondition",
+		name: "Change `if` condition",
+		group: "$change",
+		
+		isAvailable(document, selection) {
+			let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			
+			return nodes.some(node => node.type === "if_statement");
+		},
+		
+		setNormalModeSelection(document, selection) {
+			let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			
+			let ifStatement = nodes.find(node => node.type === "if_statement");
+			let parenthesizedExpression = ifStatement.children[1];
+			let {startPosition, endPosition} = parenthesizedExpression;
+			
+			return s(c(startPosition.row, startPosition.column + 1), c(endPosition.row, endPosition.column - 1));
+		},
+	},
+	
+	changeWhileCondition: {
+		code: "changeWhileCondition",
+		name: "Change `while` condition",
+		group: "$change",
+		
+		isAvailable(document, selection) {
+			let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			
+			return nodes.some(node => node.type === "while_statement");
+		},
+		
+		setNormalModeSelection(document, selection) {
+			let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			
+			let whileStatement = nodes.find(node => node.type === "while_statement");
+			let parenthesizedExpression = whileStatement.children[1];
+			let {startPosition, endPosition} = parenthesizedExpression;
+			
+			return s(c(startPosition.row, startPosition.column + 1), c(endPosition.row, endPosition.column - 1));
 		},
 	},
 };
