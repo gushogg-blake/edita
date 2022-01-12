@@ -1,7 +1,15 @@
 //let indentLines = require("modules/utils/indentLines");
 let AstSelection = require("modules/utils/AstSelection");
 
+let lang;
+
 module.exports = {
+	set lang(_lang) {
+		lang = _lang;
+		
+		delete this.lang;
+	},
+	
 	convertVariableAssignmentsToObject: { // TODO support functions as well?
 		code: "convertVariableAssignmentsToObject",
 		name: "Convert to object",

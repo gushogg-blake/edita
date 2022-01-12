@@ -9,6 +9,7 @@ let lang = {
 	name: "JavaScript",
 	defaultExtension: "js",
 	astMode,
+	codeIntel,
 	injections: [],
 	
 	isBlock(node) {
@@ -172,6 +173,7 @@ let lang = {
 	},
 };
 
-lang.codeIntel = codeIntel(lang);
+lang.astMode.lang = lang;
+lang.codeIntel.lang = lang;
 
 module.exports = lang;
