@@ -31,7 +31,7 @@ class JsonStore extends Evented {
 		let newVersions = this.versions.filter(n => n > _version);
 		
 		for (let newVersion of newVersions) {
-			let newValue = this.migrations[newVersion](value);
+			let newValue = this.migrations[newVersion](value, key);
 			
 			if (newValue !== undefined) {
 				value = newValue;

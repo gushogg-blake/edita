@@ -95,6 +95,7 @@ module.exports = {
 			comment: "#aed7e5",
 			symbol: "#839496",
 			color: "#e8f8fd",
+			number: "#e8f8fd",
 			text: "#e8f8fd",
 		},
 		
@@ -108,6 +109,7 @@ module.exports = {
 			comment: "#aed7e5",
 			symbol: "#839496",
 			color: "#e8f8fd",
+			number: "#e8f8fd",
 			text: "#e8f8fd",
 		},
 		
