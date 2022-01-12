@@ -309,6 +309,8 @@ module.exports = {
 			
 			startingRow++;
 		}
+		
+		return startingRow;
 	},
 	
 	lineRowIndexAndOffsetFromCursor(cursor) {
