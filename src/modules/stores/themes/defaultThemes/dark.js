@@ -94,7 +94,7 @@ module.exports = {
 			string: "#2AA198",
 			comment: "#aed7e5",
 			symbol: "#839496",
-			text: "#859900",
+			text: "#e8f8fd",
 		},
 		
 		scss: {
@@ -106,7 +106,7 @@ module.exports = {
 			string: "#2AA198",
 			comment: "#aed7e5",
 			symbol: "#839496",
-			text: "#859900",
+			text: "#e8f8fd",
 		},
 		
 		php: {

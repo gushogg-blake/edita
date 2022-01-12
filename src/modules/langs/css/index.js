@@ -86,6 +86,10 @@ module.exports = {
 			return "number";
 		}
 		
+		if (type === "plain_value") {
+			return "text";
+		}
+		
 		if (type === "comment") {
 			return "comment";
 		}
