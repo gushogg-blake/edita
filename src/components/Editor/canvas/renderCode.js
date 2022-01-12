@@ -37,8 +37,8 @@ module.exports = function(layers, view) {
 	let y = rowHeight + topMargin + rowOffset; // rowHeight added as using textBaseline="bottom"
 	
 	return {
-		setColour(colour) {
-			context.fillStyle = colour;
+		setColor(color) {
+			context.fillStyle = color;
 		},
 		
 		startRow(wrapIndentCols) {

@@ -79,7 +79,7 @@ module.exports = {
 		}
 		
 		if (type === "color_value") {
-			return "colour";
+			return "color";
 		}
 		
 		if (type === "float_value" || type === "integer_value") {

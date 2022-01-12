@@ -79,15 +79,15 @@ class Renderer {
 		return this.nodeLineIndex === this.lineIndex && this.nodeOffset === this.offset;
 	}
 	
-	setStartingColour(lineIndex) {
+	setStartingColor(lineIndex) {
 		let {scope, node} = this.view.document.findFirstNodeToRender(lineIndex);
 		
 		if (node) {
-			this.setColour(scope.lang, node);
+			this.setColor(scope.lang, node);
 		}
 	}
 	
-	setColour(lang=null, node=null) {
+	setColor(lang=null, node=null) {
 		if (!lang) {
 			({lang, node} = this.nodeWithLang);
 		}
@@ -99,7 +99,7 @@ class Renderer {
 			return;
 		}
 		
-		this.renderCode.setColour(colors[hiliteClass]);
+		this.renderCode.setColor(colors[hiliteClass]);
 	}
 	
 	startRow() {
@@ -133,7 +133,7 @@ class Renderer {
 			rowIndexInLine: firstLineRowIndex,
 		} = view.findFirstVisibleLine();
 		
-		this.setStartingColour(firstLineIndex);
+		this.setStartingColor(firstLineIndex);
 		
 		let {height} = sizes;
 		let {rowHeight} = measurements;
@@ -162,7 +162,7 @@ class Renderer {
 			}
 			
 			while (this.nodeIsAtCursor()) {
-				this.setColour();
+				this.setColor();
 				this.nextNode();
 			}
 			
