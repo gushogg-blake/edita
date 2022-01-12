@@ -40,6 +40,10 @@ class JsonStore extends Evented {
 			this.version = newVersion;
 		}
 		
+		if (newVersions.length > 0) {
+			await this.save(key, value);
+		}
+		
 		return value;
 	}
 	
