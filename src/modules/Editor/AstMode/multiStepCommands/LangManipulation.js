@@ -4,10 +4,10 @@ let Command = require("./Command");
 let {s} = AstSelection;
 
 class LangManipulation extends Command {
-	constructor(editor, code) {
+	constructor(editor, manipulation) {
 		super(editor);
 		
-		this.code = code;
+		this.manipulation = manipulation;
 	}
 	
 	start() {
@@ -15,7 +15,7 @@ class LangManipulation extends Command {
 		let {document, view, astSelection} = editor;
 		let {startLineIndex, endLineIndex} = astSelection;
 		
-		let transformedLines = view.lang.astMode.astManipulations[this.code].apply(document, astSelection);
+		let transformedLines = this.manipulation.apply(document, astSelection);
 		
 		let {
 			replacedLines,

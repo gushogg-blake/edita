@@ -26,8 +26,8 @@ class AstMode extends Evented {
 		this.multiStepCommand = null;
 	}
 	
-	doLangManipulation(code) {
-		this.startMultiStepCommand(new multiStepCommands.LangManipulation(this.editor, code));
+	doLangManipulation(manipulation) {
+		this.startMultiStepCommand(new multiStepCommands.LangManipulation(this.editor, manipulation));
 	}
 	
 	startMultiStepCommand(command) {

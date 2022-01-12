@@ -60,30 +60,42 @@ class Editor extends Evented {
 	
 	getAvailableAstManipulations() {
 		let {document, view, astSelection} = this;
-		let {astMode} = view.lang;
+		let astManipulations = view.lang.astMode?.astManipulations;
 		
-		if (!astMode) {
+		if (!astManipulations) {
 			return [];
 		}
 		
-		return Object.values(astMode.astManipulations).filter(function(manipulation) {
+		return Object.values(astManipulations).filter(function(manipulation) {
 			return manipulation.isAvailable(document, astSelection);
 		});
 	}
 	
-	astManipulationIsAvailable(code) {
-		let {document, view, astSelection} = this;
-		let {astMode} = view.lang;
-		
-		return astMode?.astManipulations[code]?.isAvailable(document, astSelection);
-	}
-	
 	doAstManipulation(code) {
-		if (!this.astManipulationIsAvailable(code)) {
+		let {document, view, astSelection} = this;
+		let astManipulations = view.lang.astMode?.astManipulations;
+		
+		if (!astManipulations) {
 			return;
 		}
 		
-		this.astMode.doLangManipulation(code);
+		let manipulation;
+		
+		if (code[0] === "$") {
+			manipulation = Object.values(astManipulations).find(m => m.group === code && m.isAvailable(document, astSelection));
+			
+			if (!manipulation) {
+				return;
+			}
+		} else {
+			manipulation = astManipulations[code];
+			
+			if (!manipulation?.isAvailable(document, astSelection)) {
+				return;
+			}
+		}
+		
+		this.astMode.doLangManipulation(manipulation);
 	}
 	
 	insertSnippet(snippet, replaceWord=null) {
