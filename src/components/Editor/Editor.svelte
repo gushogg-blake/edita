@@ -327,7 +327,7 @@ let prevWidth;
 let prevHeight;
 
 function resize() {
-	if (!canvasDiv) {
+	if (!mounted) {
 		return;
 	}
 	
@@ -475,6 +475,10 @@ async function onWrapChanged() {
 }
 
 function updateMeasurements() {
+	if (!mounted) {
+		return;
+	}
+	
 	let {
 		fontFamily,
 		fontSize,
@@ -527,6 +531,8 @@ async function onEdit() {
 }
 
 onMount(function() {
+	mounted = true;
+	
 	for (let [name, canvas] of Object.entries(canvases)) {
 		contexts[name] = canvas.getContext("2d");
 	}
@@ -580,8 +586,6 @@ onMount(function() {
 			updateCanvas();
 		}),
 	];
-	
-	mounted = true;
 	
 	view.uiMounted();
 	
