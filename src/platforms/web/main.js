@@ -28,7 +28,7 @@ export default async function(options) {
 			
 			await app.init();
 			
-			new AppComponent({
+			let appComponent = new AppComponent({
 				target: el,
 				
 				props: {
@@ -36,7 +36,10 @@ export default async function(options) {
 				},
 			});
 			
-			return app;
+			return {
+				app,
+				appComponent,
+			};
 		},
 		
 		Editor,
