@@ -120,6 +120,7 @@ let _wheelHandler = wheelHandler(editor, {
 function mousedown({detail}) {
 	let {
 		e,
+		isDoubleClick,
 		pickOptionType,
 		enableDrag,
 	} = detail;
@@ -128,19 +129,17 @@ function mousedown({detail}) {
 	
 	if (view.mode === "normal") {
 		normalMouseHandler.mousedown(e, function() {
-			enableDrag(false);
+			enableDrag(isDoubleClick);
 		});
 	} else if (view.mode === "ast") {
 		astMouseHandler.mousedown(e, pickOptionType, function() {
-			// if we're holding the Esc key down to peek AST mode, use synthetic
-			// drag as native will be canceled by the repeated keydown events
-			// (unless another key has been pressed while Esc is down, which
-			// cancels the repeat)
-			
 			enableDrag(
-				modeSwitchKey.isPeeking
-				&& !modeSwitchKey.keyPressedWhilePeeking
-				&& base.prefs.modeSwitchKey === "Escape"
+				isDoubleClick
+				|| (
+					modeSwitchKey.isPeeking
+					&& !modeSwitchKey.keyPressedWhilePeeking
+					&& base.prefs.modeSwitchKey === "Escape"
+				)
 			);
 		});
 	}

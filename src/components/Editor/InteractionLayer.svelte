@@ -145,20 +145,21 @@ function mousedown(e) {
 		fire("dblclick", e);
 		
 		lastMousedownWasDoubleClick = true;
-	} else {
-		fire("mousedown", {
-			e,
-			pickOptionType: selectedPickOption?.type,
-			
-			enableDrag(useSynthetic) {
-				draggable = true;
-				useSyntheticDrag = useSynthetic;
-			},
-		});
+	}
+	
+	fire("mousedown", {
+		e,
+		isDoubleClick: lastMousedownWasDoubleClick,
+		pickOptionType: selectedPickOption?.type,
 		
-		if (useSyntheticDrag) {
-			syntheticDragHandler.mousedown(e);
-		}
+		enableDrag(useSynthetic) {
+			draggable = true;
+			useSyntheticDrag = useSynthetic;
+		},
+	});
+	
+	if (useSyntheticDrag) {
+		syntheticDragHandler.mousedown(e);
 	}
 	
 	lastMousedownTime = time;
