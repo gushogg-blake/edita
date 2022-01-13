@@ -193,4 +193,29 @@ module.exports = {
 			return s(c(startPosition.row, startPosition.column + 1), c(endPosition.row, endPosition.column - 1));
 		},
 	},
+	
+	changeForInitialiser: {
+		code: "changeForInitialiser",
+		name: "Change `for` initialiser",
+		group: "$change",
+		
+		isAvailable(document, selection) {
+			let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			
+			return nodes.some(node => node.type === "for_statement");
+		},
+		
+		setNormalModeSelection(document, selection) {
+			let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			
+			let forStatement = nodes.find(node => node.type === "for_statement");
+			let openingBracket = forStatement.children.find(node => node.type === "(");
+			let closingBracket = forStatement.children.find(node => node.type === ")");
+			
+			return s(
+				c(openingBracket.startPosition.row, openingBracket.startPosition.column + 1),
+				c(closingBracket.startPosition.row, closingBracket.startPosition.column),
+			);
+		},
+	},
 };
