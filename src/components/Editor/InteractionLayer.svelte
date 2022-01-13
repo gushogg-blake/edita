@@ -28,6 +28,7 @@ let lastMousedownTime;
 let lastClickMousedownEvent;
 let lastClickMousedownTime;
 let clickDistanceThreshold = 2;
+let ignoreMouseLeave = false;
 let rowYHint = 0;
 
 let {
@@ -163,6 +164,17 @@ function mousedown(e) {
 	}
 	
 	lastMousedownTime = time;
+	
+	/*
+	opening the context menu causes a mouseleave, so ignore the next one
+	if we've just clicked on the editor
+	*/
+	
+	ignoreMouseLeave = true;
+	
+	setTimeout(function() {
+		ignoreMouseLeave = false;
+	}, 0);
 }
 
 function mousemove(e) {
@@ -218,6 +230,10 @@ function mouseenter(e) {
 }
 
 function mouseleave(e) {
+	if (ignoreMouseLeave) {
+		return;
+	}
+	
 	fire("mouseleave", e);
 }
 

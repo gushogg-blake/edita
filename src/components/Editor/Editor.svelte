@@ -185,10 +185,6 @@ function mouseleave({detail: e}) {
 
 function _mouseup(e) {
 	editor.mouseup();
-	
-	if (view.mode === "ast") {
-		astMouseHandler.updateHilites(e);
-	}
 }
 
 function mouseup({detail: e}) {

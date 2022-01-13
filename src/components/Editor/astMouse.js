@@ -250,7 +250,7 @@ module.exports = function(editor, editorComponent) {
 			view.setAstSelection(selection);
 		}
 		
-		hilite(e);
+		hilite(e, pickOptionType);
 	}
 	
 	function dblclick(e) {
