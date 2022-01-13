@@ -30,8 +30,9 @@ module.exports = {
 		
 		contextMenuColor: "var(--appColor)",
 		contextMenuBorder: "1px solid #B4BBC1",
-		contextMenuHoverBackgroundColor: "#71A339",
 		contextMenuBackgroundColor: "white",
+		contextMenuHoverColor: "white",
+		contextMenuHoverBackgroundColor: "#71A339",
 		
 		scrollbarThumbWidth: 8,
 		scrollbarPadding: 3,

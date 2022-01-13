@@ -18,7 +18,7 @@ function click(item) {
 
 .item {
 	color: var(--contextMenuColor);
-	padding: .5em;
+	padding: .45em .6em;
 	
 	&:hover {
 		color: var(--contextMenuHoverColor);
