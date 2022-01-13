@@ -1,9 +1,7 @@
 let Evented = require("utils/Evented");
-let bindFunctions = require("utils/bindFunctions");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let AstSelection = require("modules/utils/AstSelection");
-let indentLines = require("modules/utils/indentLines");
 let MultiStepCommand = require("./MultiStepCommand");
 
 let {s} = AstSelection;
@@ -50,20 +48,6 @@ class AstMode extends Evented {
 	
 	setClipboard() {
 		this.clipboard = this.editor.document.getAstSelection(this.editor.astSelection);
-	}
-	
-	replaceSelectionWithBlankLine() {
-		let {editor} = this;
-		let {document, astSelection} = editor;
-		
-		let {startLineIndex, endLineIndex} = astSelection;
-		let headerLine = document.lines[startLineIndex];
-		let remove = document.astEdit(astSelection, indentLines([""], document.fileDetails.indentation.string, headerLine.indentLevel));
-		
-		editor.applyAndAddHistoryEntry({
-			edits: [remove],
-			astSelection: s(startLineIndex, startLineIndex + 1),
-		});
 	}
 	
 	pasteFromNormalMode() {
