@@ -33,6 +33,29 @@ let migrations = {
 	"4"(prefs) {
 		prefs.showThemeSelector = false;
 	},
+	
+	"5"(prefs) {
+		prefs.astKeymap["f"] = "toggleMultiline";
+	},
+	
+	"6"(prefs) {
+		delete prefs.astKeymap["c"];
+		delete prefs.astKeymap["f"];
+		delete prefs.astKeymap["w"];
+		delete prefs.astKeymap["u"];
+		
+		prefs.astManipulationKeymap = {
+			common: {
+				"c": "$change",
+				
+				"f": "toggleMultilineOuter",
+				"g": "toggleMultilineInner",
+				
+				"w": "wrap",
+				"u": "unwrap",
+			},
+		};
+	},
 };
 
 module.exports = function() {
@@ -124,27 +147,34 @@ module.exports = function() {
 			"j": "next",
 			"k": "previous",
 			
-			"c": "change",
-			
-			"w": "wrap",
-			"u": "unwrap",
-			
 			"i": "insertAtEnd",
 			"f": "insertAtBeginning",
 			"h": "insertBefore",
 			"l": "insertAfter",
-			
-			//"h": "collapseDown",
-			//"l": "collapseUp",
-			//"e": "expandDown",
-			
-			"a": "selectSelection",
 			
 			"Space": "toggleSpaceBelow",
 			"Shift+Space": "toggleSpaceAbove",
 			
 			"3": "comment",
 			"2": "uncomment",
+			
+			//"h": "collapseDown",
+			//"l": "collapseUp",
+			//"e": "expandDown",
+			
+			"a": "selectSelection",
+		},
+		
+		astManipulationKeymap: {
+			common: {
+				"c": "$change",
+				
+				"f": "toggleMultilineOuter",
+				"g": "toggleMultilineInner",
+				
+				"w": "wrap",
+				"u": "unwrap",
+			},
 		},
 		
 		commonKeymap: {

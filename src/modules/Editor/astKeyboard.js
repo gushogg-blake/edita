@@ -81,18 +81,6 @@ module.exports = {
 		console.log("toggle space below");
 	},
 	
-	change() {
-		this.doAstManipulation("$change");
-	},
-	
-	wrap() {
-		this.astMode.commands.wrap();
-	},
-	
-	unwrap() {
-		this.doAstManipulation("unwrap");
-	},
-	
 	comment() {
 		this.commonKeyboard.toggleComment(true);
 	},

@@ -4,47 +4,26 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let AstSelection = require("modules/utils/AstSelection");
 let indentLines = require("modules/utils/indentLines");
-let findIndentLevel = require("modules/astCommon/utils/findIndentLevel");
-let multiStepCommands = require("./multiStepCommands");
+let MultiStepCommand = require("./MultiStepCommand");
 
 let {s} = AstSelection;
 let {c} = Cursor;
-
-let commands = {
-	wrap() {
-		this.startMultiStepCommand(new multiStepCommands.Wrap(this.editor));
-	},
-};
 
 class AstMode extends Evented {
 	constructor(editor) {
 		super();
 		
 		this.editor = editor;
-		this.commands = bindFunctions(this, commands);
 		this.clipboard = null;
-		this.multiStepCommand = null;
+		this.command = null;
 	}
 	
-	doLangManipulation(manipulation) {
-		let {editor} = this;
-		
-		if (manipulation.apply) {
-			this.startMultiStepCommand(new multiStepCommands.LangManipulation(editor, manipulation));
-		} else if (manipulation.setNormalModeSelection) {
-			let {document, astSelection} = editor;
-			
-			let normalSelection = manipulation.setNormalModeSelection(document, astSelection);
-			
-			editor.switchToNormalMode();
-			editor.setNormalSelection(normalSelection);
-		}
-	}
-	
-	startMultiStepCommand(command) {
+	doAstManipulation(astManipulation) {
 		if (this.multiStepCommand) {
 			this.multiStepCommand.cancel();
 		}
+		
+		let command = new MultiStepCommand(this.editor, astManipulation);
 		
 		this.multiStepCommand = command;
 		

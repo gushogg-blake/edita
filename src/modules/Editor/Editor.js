@@ -1,6 +1,8 @@
 let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
 let {removeInPlace} = require("utils/arrayMethods");
+
+let astCommon = require("modules/astCommon");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
@@ -60,29 +62,29 @@ class Editor extends Evented {
 	
 	getAvailableAstManipulations() {
 		let {document, view, astSelection} = this;
-		let astManipulations = view.lang.astMode?.astManipulations;
 		
-		if (!astManipulations) {
-			return [];
-		}
+		let astManipulations = {
+			...astCommon.astManipulations,
+			...view.lang.astMode?.astManipulations,
+		};
 		
 		return Object.values(astManipulations).filter(function(manipulation) {
-			return manipulation.isAvailable(document, astSelection);
+			return astCommon.astManipulationIsAvailable(manipulation, document, astSelection);
 		});
 	}
 	
 	doAstManipulation(code) {
 		let {document, view, astSelection} = this;
-		let astManipulations = view.lang.astMode?.astManipulations;
 		
-		if (!astManipulations) {
-			return;
-		}
+		let astManipulations = {
+			...astCommon.astManipulations,
+			...view.lang.astMode?.astManipulations,
+		};
 		
 		let manipulation;
 		
 		if (code[0] === "$") {
-			manipulation = Object.values(astManipulations).find(m => m.group === code && m.isAvailable(document, astSelection));
+			manipulation = Object.values(astManipulations).reverse().find(m => m.group === code && astCommon.astManipulationIsAvailable(m, document, astSelection));
 			
 			if (!manipulation) {
 				return;
@@ -90,12 +92,12 @@ class Editor extends Evented {
 		} else {
 			manipulation = astManipulations[code];
 			
-			if (!manipulation?.isAvailable(document, astSelection)) {
+			if (!manipulation || !astCommon.astManipulationIsAvailable(manipulation, document, astSelection)) {
 				return;
 			}
 		}
 		
-		this.astMode.doLangManipulation(manipulation);
+		this.astMode.doAstManipulation(manipulation);
 	}
 	
 	insertSnippet(snippet, replaceWord=null) {
@@ -370,7 +372,10 @@ class Editor extends Evented {
 	}
 	
 	willHandleAstKeydown(keyCombo) {
-		return base.prefs.astKeymap[keyCombo];
+		let {astKeymap, astManipulationKeymap} = base.prefs;
+		let lang = this.document.langFromAstSelection(this.astSelection);
+		
+		return astManipulationKeymap[lang.code]?.[keyCombo] || astManipulationKeymap.common[keyCombo] || astKeymap[keyCombo];
 	}
 	
 	willHandleCommonKeydown(keyCombo) {
@@ -438,13 +443,18 @@ class Editor extends Evented {
 	}
 	
 	astKeydown(keyCombo) {
-		let fnName = base.prefs.astKeymap[keyCombo];
-		
 		let {view} = this;
+		let {astKeymap, astManipulationKeymap} = base.prefs;
+		let lang = this.document.langFromAstSelection(this.astSelection);
+		let astManipulationCode = astManipulationKeymap[lang.code]?.[keyCombo] || astManipulationKeymap.common[keyCombo];
 		
 		view.startBatch();
 		
-		this.astKeyboard[fnName]();
+		if (astManipulationCode) {
+			this.doAstManipulation(astManipulationCode);
+		} else {
+			this.astKeyboard[astKeymap[keyCombo]]();
+		}
 		
 		view.ensureSelectionIsOnScreen();
 		

@@ -15,7 +15,7 @@ module.exports = {
 		delete this.lang;
 	},
 	
-	convertVariableAssignmentsToObject: { // TODO support functions as well?
+	convertVariableAssignmentsToObject: {
 		code: "convertVariableAssignmentsToObject",
 		name: "Convert to object",
 		
@@ -47,7 +47,6 @@ module.exports = {
 		
 		apply(document, selection) {
 			let {lines} = document;
-			let indentStr = document.fileDetails.indentation.string;
 			let {startLineIndex: start, endLineIndex: end} = selection;
 			let {indentLevel: baseIndentLevel} = lines[start];
 			let statements = [];
@@ -129,11 +128,13 @@ module.exports = {
 			
 			let footer = [0, "};@$"];
 			
-			return AstSelection.selectionLinesToStrings([
-				header,
-				...transformedLines,
-				footer,
-			], indentStr, baseIndentLevel);
+			return {
+				replaceSelectionWith: [
+					header,
+					...transformedLines,
+					footer,
+				],
+			};
 		},
 	},
 	
@@ -216,6 +217,21 @@ module.exports = {
 				c(openingBracket.startPosition.row, openingBracket.startPosition.column + 1),
 				c(closingBracket.startPosition.row, closingBracket.startPosition.column),
 			);
+		},
+	},
+	
+	toggleMultilineOuter: {
+		code: "toggleMultilineOuter",
+		name: "Toggle multi-line (outermost node)",
+		
+		isAvailable(document, selection) {
+			return true;
+		},
+		
+		apply(document, selection) {
+			console.log("toggleMultilineOuter");
+			
+			return [];
 		},
 	},
 };
