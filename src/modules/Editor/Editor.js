@@ -143,9 +143,17 @@ class Editor extends Evented {
 		} = snippets.computeExpressions(this.document, snippetSession.positions);
 		
 		if (edits.length > 0) {
+			let selection = this.normalSelection;
+			
+			for (let edit of edits) {
+				if (Selection.isBefore(edit.selection, selection)) {
+					selection = Selection.adjustForEarlierEdit(selection, edit.selection, edit.newSelection);
+				}
+			}
+			
 			this.applyAndMergeWithLastHistoryEntry({
 				edits,
-				normalSelection: this.view.normalSelection,
+				normalSelection: selection,
 				snippetSession: {...this.snippetSession, positions},
 			});
 		}

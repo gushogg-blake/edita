@@ -234,7 +234,7 @@ let api = {
 		let {index, positions} = snippetSession;
 		
 		positions = positions.map(function(position, i) {
-			let {selection} = position;
+			let {selection, placeholder} = position;
 			
 			if (!selection) {
 				return position;
@@ -247,16 +247,24 @@ let api = {
 					newSelection,
 				} = edit;
 				
-				if (i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
-					selection = Selection.expand(selection, newSelection);
-				} else if (Selection.equals(selection, oldSelection)) {
-					selection = newSelection;
-				} else if (Selection.isBefore(oldSelection, selection)) {
-					selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
-				} else if (Selection.isWithin(oldSelection, selection)) {
-					selection = Selection.adjustForEditWithinSelection(selection, oldSelection, newSelection);
-				} else if (Selection.isOverlapping(selection, oldSelection)) {
-					selection = null;
+				if (placeholder.type === "tabstop") {
+					if (i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
+						selection = Selection.expand(selection, newSelection);
+					} else if (Selection.isBefore(oldSelection, selection)) {
+						selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
+					} else if (Selection.isWithin(oldSelection, selection)) {
+						selection = Selection.adjustForEditWithinSelection(selection, oldSelection, newSelection);
+					} else if (Selection.isOverlapping(selection, oldSelection)) {
+						selection = null;
+					}
+				} else {
+					if (Selection.isFull(selection) && Selection.isWithin(oldSelection, selection)) {
+						selection = Selection.adjustForEditWithinSelection(selection, oldSelection, newSelection);
+					} else if (Selection.isBefore(oldSelection, selection) && i > index) {
+						selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
+					} else if (Selection.isOverlapping(selection, oldSelection)) {
+						selection = null;
+					}
 				}
 			}
 			
