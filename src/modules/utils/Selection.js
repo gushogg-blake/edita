@@ -172,22 +172,23 @@ function s(start, end=null) {
 		end: end || start,
 	};
 }
+	
+function equals(a, b) {
+	a = sort(a);
+	b = sort(b);
+	
+	return Cursor.equals(a.start, b.start) && Cursor.equals(a.end, b.end);
+}
 
 let api = {
 	s,
+	equals,
 	sort,
 	isFull,
 	isMultiline,
 	isBefore,
 	isOverlapping,
 	cursorIsWithinSelection,
-	
-	equals(a, b) {
-		a = sort(a);
-		b = sort(b);
-		
-		return Cursor.equals(a.start, b.start) && Cursor.equals(a.end, b.end);
-	},
 	
 	isWithin(a, b) {
 		return api.cursorIsWithinOrNextToSelection(b, a.start) && api.cursorIsWithinOrNextToSelection(b, a.end);

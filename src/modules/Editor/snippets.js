@@ -247,21 +247,21 @@ let api = {
 					newSelection,
 				} = edit;
 				
-				if (placeholder.type === "tabstop") {
-					if (i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
+				if (placeholder.type === "expression") {
+					if (Selection.isBefore(oldSelection, selection)) {
+						if (i > index) {
+							selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
+						}
+					} else if (Selection.equals(selection, oldSelection) || Selection.isOverlapping(selection, oldSelection)) {
+						selection = null;
+					}
+				} else {
+					if (placeholder.type === "tabstop" && i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
 						selection = Selection.expand(selection, newSelection);
 					} else if (Selection.isBefore(oldSelection, selection)) {
 						selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
 					} else if (Selection.isWithin(oldSelection, selection)) {
 						selection = Selection.adjustForEditWithinSelection(selection, oldSelection, newSelection);
-					} else if (Selection.isOverlapping(selection, oldSelection)) {
-						selection = null;
-					}
-				} else {
-					if (Selection.isFull(selection) && Selection.isWithin(oldSelection, selection)) {
-						selection = Selection.adjustForEditWithinSelection(selection, oldSelection, newSelection);
-					} else if (Selection.isBefore(oldSelection, selection) && i > index) {
-						selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
 					} else if (Selection.isOverlapping(selection, oldSelection)) {
 						selection = null;
 					}
