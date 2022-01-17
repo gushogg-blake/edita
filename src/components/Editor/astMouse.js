@@ -43,6 +43,7 @@ module.exports = function(editor, editorComponent) {
 	let drawingSelection = false;
 	let isDraggingOver = false;
 	let mouseIsOver = false;
+	let mouseIsDown = false;
 	
 	function getCanvasCoords(e) {
 		let {
@@ -126,6 +127,8 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function mousedown(e, pickOptionType, enableDrag) {
+		mouseIsDown = true;
+		
 		if (e.button === 0) {
 			mousedownLeft(e, pickOptionType, enableDrag);
 		} else if (e.button === 1) {
@@ -151,6 +154,7 @@ module.exports = function(editor, editorComponent) {
 			drawingSelection = true;
 			
 			on(window, "mousemove", drawSelection);
+			on(window, "mouseup", mouseup);
 			on(window, "mouseup", finishSelection);
 		} else {
 			let selection = getHilite(e, pickOptionType);
@@ -205,7 +209,7 @@ module.exports = function(editor, editorComponent) {
 	function mousemove(e, pickOptionType) {
 		mouseIsOver = true;
 		
-		if (drawingSelection) {
+		if (drawingSelection || mouseIsDown) {
 			return;
 		}
 		
@@ -219,6 +223,8 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function mouseup(e) {
+		mouseIsDown = false;
+		
 		editor.astMouse.setInsertionHilite(null);
 		
 		editorComponent.mouseup(e);
