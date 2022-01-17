@@ -526,6 +526,12 @@ async function onEdit() {
 	}
 }
 
+function onModeSwitch() {
+	if (view.mode === "ast") {
+		astMouseHandler.updateHilites(lastMouseEvent);
+	}
+}
+
 onMount(function() {
 	mounted = true;
 	
@@ -559,6 +565,7 @@ onMount(function() {
 		view.on("updateCanvas", updateCanvas),
 		view.on("updateScrollbars", updateScrollbars),
 		view.on("wrapChanged", onWrapChanged),
+		view.on("modeSwitch", onModeSwitch),
 		
 		view.on("requestFocus", function() {
 			main.focus({
