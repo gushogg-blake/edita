@@ -1,5 +1,5 @@
 let bluebird = require("bluebird");
-let lid = require("../../../../utils/lid");
+let lid = require("../utils/lid");
 let fs = require("../modules/fs");
 
 module.exports = function(app) {
