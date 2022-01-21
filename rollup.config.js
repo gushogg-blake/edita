@@ -163,6 +163,17 @@ if (!platform || platform === "all" || platform === "electron") {
 					},
 				],
 			}),
+			
+			copy({
+				watch: dev && "src/platforms/electron/mainProcess",
+				
+				targets: [
+					{
+						src: "src/platforms/electron/mainProcess",
+						dest: dir,
+					},
+				],
+			}),
 		],
 	}, {
 		input: "src/platforms/electron/dialogs/messageBox/main.js",
