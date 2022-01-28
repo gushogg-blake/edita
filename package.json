@@ -1,7 +1,10 @@
 {
 	"name": "treefrog",
 	"description": "Treefrog editor",
-	"author": "Gus Hogg-Blake",
+	"author": {
+		"name": "Gus Hogg-Blake",
+		"email": "gus@treefrog-editor.com"
+	},
 	"version": "0.16.0",
 	"main": "./build/electron/mainProcess/main.js",
 	"electronVersion": "15.3.0",
@@ -70,6 +73,7 @@
 		"web": "sirv --dev --no-clear --port 5000 build/web-dev",
 		"test": "sirv --dev --no-clear --port 5001 build/test",
 		"package:win": "npm run clean-packages && electron-builder --publish never --win --config electron-builder.json",
+		"package:win:appx": "npm run clean-packages && electron-builder --publish never --win --config electron-builder-appx.json",
 		"package:linux": "npm run clean-packages && electron-builder --publish never --linux --config electron-builder.json",
 		"package:mac": "npm run clean-packages && electron-builder --publish never --mac --config electron-builder.json"
 	}

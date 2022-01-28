@@ -67,6 +67,5 @@
       "Type": "Application",
       "Categories": "Development"
     }
-  },
-  "afterSign": "scripts/notarize.js"
+  }
 }

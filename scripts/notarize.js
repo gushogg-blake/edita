@@ -1,19 +1,28 @@
-require('dotenv').config();
-const { notarize } = require('electron-notarize');
+require("dotenv").config();
+const { notarize } = require("electron-notarize");
 
 exports.default = async function notarizing(context) {
-  const { electronPlatformName, appOutDir } = context;
-  if (electronPlatformName !== 'darwin') {
-    return;
-  }
+	const { electronPlatformName, appOutDir } = context;
+	if (electronPlatformName !== "darwin") {
+		return;
+	}
 
-  const appName = context.packager.appInfo.productFilename;
+	const appName = context.packager.appInfo.productFilename;
 
-  return await notarize({
-    appBundleId: 'com.mockoon.app',
-    appPath: `${appOutDir}/${appName}.app`,
-    appleId: process.env.APPLEID,
-    appleIdPassword: process.env.APPLEIDPASS,
-    ascProvider: process.env.ASCPROVIDER
-  });
+	return await notarize({
+		appBundleId: "com.treefrog-editor.app",
+		appPath: `${appOutDir}/${appName}.app`,
+		appleId: process.env.APPLEID,
+		appleIdPassword: process.env.APPLEIDPASS,
+		ascProvider: process.env.ASCPROVIDER,
+	});
 };
+
+/**
+ * 
+ * Enable notarization: 
+ * add 
+ * 
+ * "afterSign": "scripts/notarize.js" 
+ * at the end of electron-builder.json
+ */

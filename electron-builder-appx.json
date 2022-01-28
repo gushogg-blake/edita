@@ -1,0 +1,21 @@
+{
+	"appId": "com.treefrog-editor.app",
+	"productName": "TreeFrog Editor",
+	"directories": {
+		"output": "packages",
+		"buildResources": "build-res"
+	},
+	"files": ["package.json", "build/**/*", "node_modules"],
+	"win": {
+		"target": [{ "target": "appx" }],
+		"publisherName": "TreeFrog Editor"
+	},
+	"appx": {
+		"publisher": "CN=XXXX",
+		"publisherDisplayName": "TreeFrog Editor",
+		"identityName": "XXXX",
+		"applicationId": "treefrog-editor",
+		"backgroundColor": "#ffffff",
+		"artifactName": "treefrog-editor.${version}.${ext}"
+	}
+}
