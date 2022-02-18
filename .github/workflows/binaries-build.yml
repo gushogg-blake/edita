@@ -1,165 +1,165 @@
 name: Binaries build
 
 on:
-    push:
-        tags:
-            - v*
-        branches:
-            - "binaries-build"
+  push:
+    tags:
+      - v*
+    branches:
+      - "binaries-build"
 
 jobs:
-    build-macos:
-        name: Build macOS binary (dmg)
-        runs-on: macos-latest
-        timeout-minutes: 60
+  build-macos:
+    name: Build macOS binary (dmg)
+    runs-on: macos-latest
+    timeout-minutes: 60
 
-        # env:
-        #   APPLEID: ${{secrets.APPLEID}}
-        #   APPLEIDPASS: ${{secrets.APPLEIDPASS}}
-        #   ASCPROVIDER: ${{secrets.ASCPROVIDER}}
-        #   CSC_LINK: ${{secrets.MACOS_CSC_LINK}}
-        #   CSC_KEY_PASSWORD: ${{secrets.MACOS_CSC_KEY_PASSWORD}}
-        #   USE_HARD_LINKS: false
+    # env:
+    #   APPLEID: ${{secrets.APPLEID}}
+    #   APPLEIDPASS: ${{secrets.APPLEIDPASS}}
+    #   ASCPROVIDER: ${{secrets.ASCPROVIDER}}
+    #   CSC_LINK: ${{secrets.MACOS_CSC_LINK}}
+    #   CSC_KEY_PASSWORD: ${{secrets.MACOS_CSC_KEY_PASSWORD}}
+    #   USE_HARD_LINKS: false
 
-        steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
-              with:
-                  node-version: "14.x"
-            - name: Update NPM to v7
-              run: |
-                  npm install -g npm@7
-            - name: Get version from package.json
-              id: app-version
-              run: |
-                  PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-                  echo "::set-output name=PACKAGE_VERSION::$PACKAGE_VERSION"
-            - name: Build application
-              run: |
-                  npm ci
-                  npm run build
-                  npm run package:mac
-            # - name: Verify notarization
-            #   run: |
-            #       codesign --verify --deep --strict --verbose=2 ./packages/mac/treefrog-editor.app
-            - name: Get universal binary shasum
-              run: |
-                  shasum -a 256 ./packages/treefrog-editor.setup.${{steps.app-version.outputs.PACKAGE_VERSION}}.universal.dmg
-            - name: Upload macOS dmg
-              uses: actions/upload-artifact@v2
-              with:
-                  name: dmg
-                  path: ./packages/treefrog-editor.setup*.dmg
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14.x"
+      - name: Update NPM to v7
+        run: |
+          npm install -g npm@7
+      - name: Get version from package.json
+        id: app-version
+        run: |
+          PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
+          echo "::set-output name=PACKAGE_VERSION::$PACKAGE_VERSION"
+      - name: Build application
+        run: |
+          npm ci
+          npm run build
+          npm run package:mac
+      # - name: Verify notarization
+      #   run: |
+      #     codesign --verify --deep --strict --verbose=2 ./packages/mac/treefrog-editor.app
+      - name: Get universal binary shasum
+        run: |
+          shasum -a 256 ./packages/treefrog-editor.setup.${{steps.app-version.outputs.PACKAGE_VERSION}}.universal.dmg
+      - name: Upload macOS dmg
+        uses: actions/upload-artifact@v2
+        with:
+          name: dmg
+          path: ./packages/treefrog-editor.setup*.dmg
 
-    build-linux:
-        name: Build Linux binaries (deb, rpm, snap, AppImage)
-        runs-on: ubuntu-latest
-        timeout-minutes: 60
-        env:
-            USE_HARD_LINKS: false
+  build-linux:
+    name: Build Linux binaries (deb, rpm, snap, AppImage)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      USE_HARD_LINKS: false
 
-        steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
-              with:
-                  node-version: "14.x"
-            - name: Update NPM to v7
-              run: |
-                  npm install -g npm@7
-            - name: Get version from package.json
-              id: app-version
-              run: |
-                  PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-                  echo "::set-output name=PACKAGE_VERSION::$PACKAGE_VERSION"
-            - name: Build application
-              run: |
-                  npm ci
-                  npm run build
-                  npm run package:linux
-            - name: Upload Linux AppImage
-              uses: actions/upload-artifact@v2
-              with:
-                  name: appimage
-                  path: ./packages/treefrog-editor-${{steps.app-version.outputs.PACKAGE_VERSION}}.AppImage
-            - name: Upload Linux deb
-              uses: actions/upload-artifact@v2
-              with:
-                  name: deb
-                  path: ./packages/treefrog-editor-${{steps.app-version.outputs.PACKAGE_VERSION}}.deb
-            - name: Upload Linux rpm
-              uses: actions/upload-artifact@v2
-              with:
-                  name: rpm
-                  path: ./packages/treefrog-editor-${{steps.app-version.outputs.PACKAGE_VERSION}}.rpm
-            - name: Upload Linux snap
-              uses: actions/upload-artifact@v2
-              with:
-                  name: snap
-                  path: ./packages/treefrog-editor-${{steps.app-version.outputs.PACKAGE_VERSION}}.snap
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14.x"
+      - name: Update NPM to v7
+        run: |
+          npm install -g npm@7
+      - name: Get version from package.json
+        id: app-version
+        run: |
+          PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
+          echo "::set-output name=PACKAGE_VERSION::$PACKAGE_VERSION"
+      - name: Build application
+        run: |
+          npm ci
+          npm run build
+          npm run package:linux
+      - name: Upload Linux AppImage
+        uses: actions/upload-artifact@v2
+        with:
+          name: appimage
+          path: ./packages/treefrog-editor-${{steps.app-version.outputs.PACKAGE_VERSION}}.AppImage
+      - name: Upload Linux deb
+        uses: actions/upload-artifact@v2
+        with:
+          name: deb
+          path: ./packages/treefrog-editor-${{steps.app-version.outputs.PACKAGE_VERSION}}.deb
+      - name: Upload Linux rpm
+        uses: actions/upload-artifact@v2
+        with:
+          name: rpm
+          path: ./packages/treefrog-editor-${{steps.app-version.outputs.PACKAGE_VERSION}}.rpm
+      - name: Upload Linux snap
+        uses: actions/upload-artifact@v2
+        with:
+          name: snap
+          path: ./packages/treefrog-editor-${{steps.app-version.outputs.PACKAGE_VERSION}}.snap
 
-    build-windows:
-        name: Build Windows binary (exe)
-        runs-on: windows-latest
-        timeout-minutes: 60
+  build-windows:
+    name: Build Windows binary (exe)
+    runs-on: windows-latest
+    timeout-minutes: 60
 
-        # env:
-        #     CSC_LINK: ${{secrets.WIN_CSC_LINK}}
-        #     CSC_KEY_PASSWORD: ${{secrets.WIN_CSC_KEY_PASSWORD}}
+    # env:
+    #   CSC_LINK: ${{secrets.WIN_CSC_LINK}}
+    #   CSC_KEY_PASSWORD: ${{secrets.WIN_CSC_KEY_PASSWORD}}
 
-        steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
-              with:
-                  node-version: "14.x"
-            - name: Update NPM to v7
-              run: |
-                  npm install -g npm@7
-            - name: Get version from package.json
-              id: app-version
-              run: |
-                  $PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-                  echo "::set-output name=PACKAGE_VERSION::$PACKAGE_VERSION"
-              shell: pwsh
-            - name: Build application
-              run: |
-                  npm ci
-                  npm run build
-                  npm run package:win
-              shell: pwsh
-            - name: Upload Windows setup exe
-              uses: actions/upload-artifact@v2
-              with:
-                  name: exe
-                  path: ./packages/treefrog-editor.setup.${{steps.app-version.outputs.PACKAGE_VERSION}}.exe
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14.x"
+      - name: Update NPM to v7
+        run: |
+          npm install -g npm@7
+      - name: Get version from package.json
+        id: app-version
+        run: |
+          $PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
+          echo "::set-output name=PACKAGE_VERSION::$PACKAGE_VERSION"
+        shell: pwsh
+      - name: Build application
+        run: |
+          npm ci
+          npm run build
+          npm run package:win
+        shell: pwsh
+      - name: Upload Windows setup exe
+        uses: actions/upload-artifact@v2
+        with:
+          name: exe
+          path: ./packages/treefrog-editor.setup.${{steps.app-version.outputs.PACKAGE_VERSION}}.exe
 
-    # APPX build requires no code signing env vars to work, thus the separated job
-    # build-windows-appx:
-    #     name: Build Windows binary (appx only)
-    #     runs-on: windows-latest
-    #     timeout-minutes: 60
+  # APPX build requires no code signing env vars to work, thus the separated job
+  # build-windows-appx:
+  #   name: Build Windows binary (appx only)
+  #   runs-on: windows-latest
+  #   timeout-minutes: 60
 
-    #     steps:
-    #         - uses: actions/checkout@v2
-    #         - uses: actions/setup-node@v2
-    #           with:
-    #               node-version: "14.x"
-    #         - name: Update NPM to v7
-    #           run: |
-    #               npm install -g npm@7
-    #         - name: Get version from package.json
-    #           id: app-version
-    #           run: |
-    #               $PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-    #               echo "::set-output name=PACKAGE_VERSION::$PACKAGE_VERSION"
-    #           shell: pwsh
-    #         - name: Build application
-    #           run: |
-    #               npm ci
-    #               npm run build
-    #               npm run package:win:appx
-    #           shell: pwsh
-    #         - name: Upload Windows appx
-    #           uses: actions/upload-artifact@v2
-    #           with:
-    #               name: appx
-    #               path: ./packages/treefrog-editor.${{steps.app-version.outputs.PACKAGE_VERSION}}.appx
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: "14.x"
+  #     - name: Update NPM to v7
+  #       run: |
+  #         npm install -g npm@7
+  #     - name: Get version from package.json
+  #       id: app-version
+  #       run: |
+  #         $PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
+  #         echo "::set-output name=PACKAGE_VERSION::$PACKAGE_VERSION"
+  #       shell: pwsh
+  #     - name: Build application
+  #       run: |
+  #         npm ci
+  #         npm run build
+  #         npm run package:win:appx
+  #       shell: pwsh
+  #     - name: Upload Windows appx
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: appx
+  #         path: ./packages/treefrog-editor.${{steps.app-version.outputs.PACKAGE_VERSION}}.appx
