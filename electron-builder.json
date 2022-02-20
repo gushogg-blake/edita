@@ -3,9 +3,9 @@
 	"productName": "TreeFrog Editor",
 	"directories": {
 		"output": "packages",
-		"buildResources": "build-res"
+		"buildResources": "src/platforms/electron/resources"
 	},
-	"files": ["package.json", "build/**/*", "node_modules"],
+	"files": ["package.json", "build/electron/**/*", "node_modules"],
 	"win": {
 		"target": [
 			{
@@ -42,8 +42,8 @@
 		"artifactName": "treefrog-editor.setup.${version}.${arch}.${ext}",
 		"hardenedRuntime": true,
 		"gatekeeperAssess": false,
-		"entitlements": "build-res/entitlements.mac.plist",
-		"entitlementsInherit": "build-res/entitlements.mac.plist"
+		"entitlements": "src/platforms/electron/resources/entitlements.mac.plist",
+		"entitlementsInherit": "src/platforms/electron/resources/entitlements.mac.plist"
 	},
 	"dmg": {
 		"sign": false
@@ -64,7 +64,7 @@
 			}
 		],
 		"category": "Development",
-		"icon": "build-res",
+		"icon": "src/platforms/electron/resources",
 		"artifactName": "treefrog-editor-${version}.${ext}",
 		"desktop": {
 			"Name": "Treefrog Editor",

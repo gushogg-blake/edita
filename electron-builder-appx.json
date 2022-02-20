@@ -3,9 +3,9 @@
 	"productName": "TreeFrog Editor",
 	"directories": {
 		"output": "packages",
-		"buildResources": "build-res"
+		"buildResources": "src/platforms/electron/resources"
 	},
-	"files": ["package.json", "build/**/*", "node_modules"],
+	"files": ["package.json", "build/electron/**/*", "node_modules"],
 	"win": {
 		"target": [{ "target": "appx" }],
 		"publisherName": "TreeFrog Editor"
