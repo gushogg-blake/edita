@@ -110,11 +110,7 @@ let lang = {
 			return "regex";
 		}
 		
-		if (type === "}" && parent?.type === "template_substitution") {
-			return "string";
-		}
-		
-		if ("(){}[]".includes(type) || type === "${") {
+		if ("(){}[]".includes(type) || type === "${" || type === "}" && parent?.type === "template_substitution") {
 			return "bracket";
 		}
 		
@@ -123,6 +119,17 @@ let lang = {
 		}
 		
 		return "symbol";
+	},
+	
+	getHiliteClassAfter(node) {
+		let {
+			type,
+			parent,
+		} = node;
+		
+		if (type === "}" && parent?.type === "template_substitution") {
+			return "string";
+		}
 	},
 	
 	commentLines(document, startLineIndex, endLineIndex) {
