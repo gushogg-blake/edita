@@ -85,13 +85,13 @@ class Document extends BaseDocument {
 		
 		platform.removeBackup(this);
 		
+		this.updateFileDetails();
+		
 		this.fire("save");
 	}
 	
 	async saveAs(url) {
 		this.url = url;
-		
-		this.updateFileDetails();
 		
 		await this.save();
 		
