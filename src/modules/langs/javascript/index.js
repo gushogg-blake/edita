@@ -79,7 +79,6 @@ let lang = {
 		
 		if ([
 			"string",
-			"template_string",
 			"regex",
 		].includes(parent?.type)) {
 			return null;
