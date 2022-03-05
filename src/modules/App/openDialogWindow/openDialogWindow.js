@@ -7,7 +7,8 @@ module.exports = function(app, createDialogComponent) {
 		let toolbar = document.createElement("div");
 		let content = document.createElement("div");
 		
-		app.mainDiv.appendChild(container);
+		app.renderDiv(container);
+		
 		container.appendChild(toolbar);
 		container.appendChild(content);
 		

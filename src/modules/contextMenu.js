@@ -12,7 +12,8 @@ module.exports = function(app, items, coords, noCancel=false) {
 	let overlay = document.createElement("div");
 	let container = document.createElement("div");
 	
-	app.mainDiv.appendChild(overlay);
+	app.renderDiv(overlay);
+	
 	overlay.appendChild(container);
 	
 	container.tabIndex = "1";

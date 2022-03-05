@@ -89,6 +89,10 @@ function onThemeUpdated() {
 	} = base);
 }
 
+function renderDiv(div) {
+	main.appendChild(div);
+}
+
 let paneStyle = {};
 
 $: paneStyle.left = {
@@ -112,9 +116,8 @@ onMount(function() {
 		app.on("hideFindBar", onHideFindBar),
 		app.on("showFindBar", onShowFindBar),
 		app.on("updatePanes", onUpdatePanes),
+		app.on("renderDiv", renderDiv),
 	];
-	
-	app.uiMounted(main);
 	
 	return function() {
 		for (let fn of teardown) {

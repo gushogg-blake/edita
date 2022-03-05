@@ -580,8 +580,8 @@ class App extends Evented {
 		this.hideFindBar();
 	}
 	
-	uiMounted(mainDiv) {
-		this.mainDiv = mainDiv;
+	renderDiv(div) {
+		this.fire("renderDiv", div);
 	}
 	
 	async onCloseWindow(e) {
