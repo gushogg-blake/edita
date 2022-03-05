@@ -33,6 +33,8 @@ let {
 
 let showingFindBar = false;
 
+// ENTRYPOINT global key presses (handler installed on main div below)
+
 function keydown(e) {
 	let {keyCombo} = getKeyCombo(e);
 	

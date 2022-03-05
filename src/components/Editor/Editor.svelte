@@ -286,6 +286,8 @@ function wheel(e) {
 	_wheelHandler.wheel(e);
 }
 
+// ENTRYPOINT key press on the Editor (handler installed on main div below)
+
 async function keydown(e) {
 	if (editorMode === "textarea" && e.key === "Escape") {
 		main.blur();
