@@ -146,6 +146,10 @@ class App extends Evented {
 		this.focusSelectedTabAsync();
 	}
 	
+	focusSelectedTab() {
+		this.selectedTab?.editor.view.requestFocus();
+	}
+	
 	focusSelectedTabAsync() {
 		setTimeout(() => {
 			this.selectedTab?.editor.view.requestFocus();
@@ -319,6 +323,7 @@ class App extends Evented {
 		this.fire("updateTabs");
 		
 		this.selectTab(tab);
+		this.focusSelectedTab();
 		
 		return tab;
 	}
