@@ -530,7 +530,7 @@ async function onEdit() {
 
 function onModeSwitch() {
 	if (view.mode === "ast") {
-		astMouseHandler.updateHilites(lastMouseEvent);
+		//astMouseHandler.updateHilites(lastMouseEvent);
 	}
 }
 
