@@ -190,14 +190,14 @@ class Tab extends Evented {
 	}
 	
 	async setPerFilePrefs(prefs) {
+		if (this.protocol === "new") {
+			return;
+		}
+		
 		await base.stores.perFilePrefs.save(this.perFilePrefsKey, prefs);
 	}
 	
 	async setPerFilePref(pref, value) {
-		if (!this.path) {
-			return;
-		}
-		
 		let prefs = await this.getPerFilePrefs();
 		
 		set(prefs, pref, value);
@@ -206,7 +206,7 @@ class Tab extends Evented {
 	}
 	
 	async getPerFilePrefs() {
-		if (!this.path) {
+		if (this.protocol === "new") {
 			return {};
 		}
 		
