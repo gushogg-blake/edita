@@ -13,4 +13,4 @@ jobs:
       - name: Update diagram
         uses: githubocto/repo-visualizer@main
         with:
-          excluded_paths: "ignore,.github,test,vendor,diagram.svg,electron-builder.json,electron-builder-appx.json,licenses,package.json,package-lock.json,readme.md,rollup.config.js"
+          root_path: "src/"
