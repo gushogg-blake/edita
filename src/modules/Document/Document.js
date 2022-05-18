@@ -91,9 +91,15 @@ class Document extends BaseDocument {
 	}
 	
 	async saveAs(url) {
+		let oldUrl = this.url;
+		
 		this.url = url;
 		
 		await this.save();
+		
+		if (this.url !== oldUrl) {
+			this.fire("urlChanged");
+		}
 		
 		this.setupWatch();
 	}

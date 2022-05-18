@@ -22,6 +22,7 @@ class Tab extends Evented {
 		
 		this.teardownCallbacks = [
 			document.on("save", this.onDocumentSave.bind(this)),
+			document.on("urlChanged", this.onDocumentUrlChanged.bind(this)),
 			view.on("wrapChanged", this.onWrapChanged.bind(this)),
 			app.on("updatePanes", this.onAppUpdatePanes.bind(this)),
 			...this.relayEvents(editor, ["focus", "blur"]),
@@ -29,12 +30,18 @@ class Tab extends Evented {
 	}
 	
 	async init() {
-		let {
-			wrap,
-		} = {
+		this.perFilePrefs = {
 			...defaultPerFilePrefs(),
 			...await this.getPerFilePrefs(),
 		};
+		
+		this.applyPerFilePrefs();
+	}
+	
+	applyPerFilePrefs() {
+		let {
+			wrap,
+		} = this.perFilePrefs;
 		
 		this.editor.view.setWrap(wrap);
 	}
@@ -167,6 +174,10 @@ class Tab extends Evented {
 		this.fire("zoomChange");
 	}
 	
+	async onDocumentUrlChanged() {
+		await this.writePerFilePrefs();
+	}
+	
 	async onWrapChanged(wrap) {
 		await this.setPerFilePref("wrap", wrap);
 	}
@@ -190,19 +201,23 @@ class Tab extends Evented {
 	}
 	
 	async setPerFilePrefs(prefs) {
+		this.perFilePrefs = prefs;
+		
+		await this.writePerFilePrefs();
+	}
+	
+	async writePerFilePrefs() {
 		if (this.protocol === "new") {
 			return;
 		}
 		
-		await base.stores.perFilePrefs.save(this.perFilePrefsKey, prefs);
+		await base.stores.perFilePrefs.save(this.perFilePrefsKey, this.perFilePrefs);
 	}
 	
 	async setPerFilePref(pref, value) {
-		let prefs = await this.getPerFilePrefs();
+		set(this.perFilePrefs, pref, value);
 		
-		set(prefs, pref, value);
-		
-		await this.setPerFilePrefs(prefs);
+		await this.writePerFilePrefs();
 	}
 	
 	async getPerFilePrefs() {

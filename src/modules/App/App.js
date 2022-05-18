@@ -75,7 +75,7 @@ class App extends Evented {
 	}
 	
 	async save(tab) {
-		let {document} = tab.editor;
+		let {document} = tab;
 		
 		if (document.isSaved) {
 			if (document.fileChangedWhileModified) {
