@@ -1,5 +1,7 @@
 import path from "path";
 
+import scss from "@gushogg-blake/rollup-plugin-scss";
+import preprocess from "@gushogg-blake/svelte-preprocess";
 import multi from "@rollup/plugin-multi-entry";
 import livereload from "rollup-plugin-livereload";
 import copy from "rollup-plugin-copy-watch";
@@ -7,11 +9,9 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import alias from "@rollup/plugin-alias";
 import svelte from "rollup-plugin-svelte";
-import scss from "rollup-plugin-scss";
 import cssOnly from "rollup-plugin-css-only";
 import {terser} from "rollup-plugin-terser";
 import _delete from "rollup-plugin-delete";
-import preprocess from "svelte-preprocess";
 import builtins from "rollup-plugin-node-builtins";
 import nodePolyfills from "rollup-plugin-polyfill-node";
 

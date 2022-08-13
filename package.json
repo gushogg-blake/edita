@@ -9,6 +9,8 @@
 	"main": "./build/electron/mainProcess/main.js",
 	"electronVersion": "15.3.0",
 	"dependencies": {
+		"@gushogg-blake/rollup-plugin-scss": "^3.0.0",
+		"@gushogg-blake/svelte-preprocess": "^4.10.7",
 		"bluebird": "^3.7.2",
 		"chokidar": "^3.5.2",
 		"detect-indent": "^7.0.0",
@@ -43,12 +45,11 @@
 		"rollup-plugin-livereload": "^2.0.5",
 		"rollup-plugin-node-builtins": "^2.1.2",
 		"rollup-plugin-polyfill-node": "^0.7.0",
-		"rollup-plugin-scss": "^3.0.0",
 		"rollup-plugin-svelte": "^7.1.0",
 		"rollup-plugin-terser": "^7.0.2",
+		"sass": "^1.54.4",
 		"sirv-cli": "^1.0.14",
-		"svelte": "^3.44.1",
-		"svelte-preprocess": "^4.9.8"
+		"svelte": "^3.44.1"
 	},
 	"scripts": {
 		"clean-packages": "rm -rf ./packages",
