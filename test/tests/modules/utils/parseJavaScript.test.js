@@ -3,8 +3,6 @@ let dedent = require("test/utils/dedent");
 
 let parseJavaScript = require("modules/snippets/parseJavaScript");
 
-console.log(parseJavaScript);
-
 let tests = [
 	[
 		"init",
