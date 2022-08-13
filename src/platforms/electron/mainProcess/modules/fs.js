@@ -1,6 +1,6 @@
 let osPath = require("path");
 let fs = require("fs-extra");
-let minimatch = require("minimatch");
+let minimatch = require("minimatch-browser");
 let glob = require("glob");
 let bluebird = require("bluebird");
 let mkdirp = require("mkdirp");

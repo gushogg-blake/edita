@@ -76,7 +76,6 @@ class Platform extends Common {
 		return createFs({
 			fs,
 			path,
-			minimatch,
 			
 			async mkdirp(path) {
 				let dirs = path.substr(1).split("/").filter(Boolean);

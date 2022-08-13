@@ -1,10 +1,10 @@
+let minimatch = require("minimatch-browser");
 let asyncGenerateArray = require("utils/asyncGenerateArray");
 
 module.exports = function(backends) {
 	let {
 		fs,
 		path: osPath,
-		minimatch,
 	} = backends;
 	
 	function include(options, name, isDir) {

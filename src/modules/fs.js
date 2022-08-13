@@ -1,4 +1,5 @@
 let bluebird = require("bluebird");
+let minimatch = require("minimatch-browser");
 let createWalk = require("modules/walk");
 let {FileIsBinary} = require("modules/errors");
 
@@ -7,7 +8,6 @@ module.exports = function(backends) {
 		fs,
 		open,
 		path: osPath,
-		minimatch,
 		glob,
 		mkdirp,
 		watch,
@@ -18,7 +18,6 @@ module.exports = function(backends) {
 	let walk = createWalk({
 		fs,
 		path: osPath,
-		minimatch,
 	});
 	
 	class Node {
