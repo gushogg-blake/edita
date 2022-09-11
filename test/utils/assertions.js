@@ -1,22 +1,11 @@
 let {assert} = require("chai");
-let normaliseString = require("./normaliseString");
 
 let assertions = {
 	is(a, b) {
-		//if (typeof a === "string") {
-		//	a = normaliseString(a);
-		//	b = normaliseString(b);
-		//}
-		
 		assert.strictEqual(a, b);
 	},
 	
 	isnt(a, b) {
-		//if (typeof a === "string") {
-		//	a = normaliseString(a);
-		//	b = normaliseString(b);
-		//}
-		
 		assert.notStrictEqual(a, b);
 	},
 	
