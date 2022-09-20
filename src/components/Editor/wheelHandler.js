@@ -21,12 +21,14 @@ module.exports = function(editor, editorComponent) {
 		}
 		
 		let scrolled;
+		let {deltaX, deltaY} = e;
 		
 		if (e.shiftKey) {
-			scrolled = view.scrollBy(e.deltaY, 0);
-		} else {
-			scrolled = view.scrollBy(0, e.deltaY);
+			deltaX = deltaY;
+			deltaY = 0;
 		}
+		
+		scrolled = view.scrollBy(deltaX, deltaY);
 		
 		if (scrolled || editorComponent.editorMode === "app") {
 			e.preventDefault();
