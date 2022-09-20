@@ -12,13 +12,11 @@ import svelte from "rollup-plugin-svelte";
 import cssOnly from "rollup-plugin-css-only";
 import {terser} from "rollup-plugin-terser";
 import _delete from "rollup-plugin-delete";
-import builtins from "rollup-plugin-node-builtins";
-import nodePolyfills from "rollup-plugin-polyfill-node";
 
 let prod = !process.env.ROLLUP_WATCH;
 let dev = !prod;
 let root = __dirname;
-let platform = process.env.PLATFORM;
+let platform = process.env.PLATFORM || "all";
 
 function commonPlugins(platform) {
 	return [
@@ -81,12 +79,6 @@ function electronPlugins() {
 				"chokidar",
 			],
 		}),
-		
-		nodePolyfills({
-			include: null,
-		}),
-		
-		builtins(),
 	];
 }
 
@@ -134,7 +126,7 @@ function globalCssBuild(path) {
 
 let builds = [];
 
-if (!platform || platform === "all" || platform === "electron") {
+if (platform === "all" || platform === "electron") {
 	let dir = "build/" + (dev ? "electron-dev" : "electron");
 	
 	addBuilds(globalCssBuild(dir + "/css/global.js"), {
@@ -208,7 +200,7 @@ if (!platform || platform === "all" || platform === "electron") {
 	});
 }
 
-if (!platform || platform === "all" || platform === "web") {
+if (platform === "all" || platform === "web") {
 	let dir = "build/" + (dev ? "web-dev" : "web");
 	
 	addBuilds(globalCssBuild(dir + "/css/global.js"), {
@@ -245,7 +237,7 @@ if (!platform || platform === "all" || platform === "web") {
 	});
 }
 
-if (!platform || platform === "all" || platform === "test") {
+if (platform === "all" || platform === "test") {
 	addBuilds({
 		input: "test/main.js",
 		
