@@ -43,7 +43,7 @@ class Renderer {
 	}
 	
 	/*
-	look for nodes starting from the indent to find the node quicker.  in HTML
+	look for nodes starting from the indent to find the node quicker. in HTML
 	the start of the line will sometimes be within a text node that spans
 	multiple lines, so findFirstNodeOnOrAfterCursor will descend to that node
 	and then have to return the next node
@@ -114,13 +114,8 @@ class Renderer {
 		}
 	}
 	
-	render() {
-		let {
-			view,
-			renderCode,
-			renderMargin,
-			renderFoldHilites,
-		} = this;
+	init() {
+		let {view} = this;
 		
 		let {
 			document,
@@ -133,12 +128,13 @@ class Renderer {
 			rowIndexInLine: firstLineRowIndex,
 		} = view.findFirstVisibleLine();
 		
-		this.setStartingColor(firstLineIndex);
-		
 		let {height} = sizes;
 		let {rowHeight} = measurements;
-		let rowsToRender = Math.ceil(height / rowHeight) + 1;
-		let rowsRendered = 0;
+		
+		this.rowsToRender = Math.ceil(height / rowHeight) + 1;
+		this.rowsRendered = 0;
+		
+		this.setStartingColor(firstLineIndex);
 		
 		this.foldedLineRowGenerator = view.generateLineRowsFolded(firstLineIndex);
 		this.nextFoldedLineRow();
@@ -154,8 +150,40 @@ class Renderer {
 		this.nextNode();
 		
 		this.startRow();
+	}
+	
+	processEndOfLastRun() {
+		for (let [name, arg] of this.endOfLastRunTasks) {
+			this[name](arg);
+		}
+	}
+	
+	calculateCurrentRun() {
+		
+	}
+	
+	render() {
+		let {
+			view,
+			renderCode,
+			renderMargin,
+			renderFoldHilites,
+		} = this;
+		
+		this.init();
+		
+		let run = null;
 		
 		while (true) {
+			if (run) {
+				this.processEndOfLastRun(run);
+			}
+			
+			run = this.calculateCurrentRun();
+			
+			this.processCurrentRun(run);
+			
+			
 			if (this.nodeLineIndex < this.lineIndex) {
 				this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.trimmedCursor);
 				this.nextNode();
