@@ -157,14 +157,6 @@ class Renderer {
 		this.startRow();
 		
 		while (true) {
-			if (run) {
-				this.processEndOfLastRun(run);
-			}
-			
-			run = this.calculateCurrentRun();
-			
-			this.processCurrentRun(run);
-			
 			if (!this.variableWidthPart) {
 				renderCode.endRow();
 				renderMargin.endRow();
@@ -195,6 +187,8 @@ class Renderer {
 				
 				continue;
 			}
+			
+			// render up to the next boundary (node, variable width part, or line row)
 			
 			if (this.variableWidthPart.type === "tab") {
 				renderCode.drawTab(this.variableWidthPart.width);
