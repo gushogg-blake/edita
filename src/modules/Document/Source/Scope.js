@@ -2,8 +2,7 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let next = require("modules/utils/treeSitter/next");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
-let findFirstNodeToRender = require("modules/utils/treeSitter/findFirstNodeToRender");
-let findFirstNodeOnLine = require("modules/utils/treeSitter/findFirstNodeOnLine");
+let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
@@ -219,61 +218,6 @@ module.exports = class Scope {
 		}
 	}
 	
-	findFirstNodeToRender(lineIndex) {
-		if (!this.tree) {
-			return {};
-		}
-		
-		let node = findFirstNodeToRender(this.tree.rootNode, lineIndex);
-		let childScope = this.scopesByNode[node.id];
-		
-		if (childScope && childScope.tree) {
-			return childScope.findFirstNodeToRender(lineIndex);
-		}
-		
-		return {
-			scope: this,
-			range: this.findContainingRange(node),
-			node,
-		};
-	}
-	
-	findFirstNodeOnLine(lineIndex) {
-		if (!this.tree) {
-			return {};
-		}
-		
-		let node = findFirstNodeOnLine(this.tree.rootNode, lineIndex);
-		
-		if (!node) {
-			return {};
-		}
-		
-		return {
-			scope: this,
-			range: this.findContainingRange(node),
-			node,
-		};
-	}
-	
-	findFirstNodeOnOrAfterCursor(cursor) {
-		let node = this.tree && findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
-		
-		if (!node) {
-			if (this.parent) {
-				return this.parent.findFirstNodeOnOrAfterCursor(cursor);
-			} else {
-				return {};
-			}
-		}
-		
-		return {
-			scope: this,
-			range: this.findContainingRange(node),
-			node,
-		};
-	}
-	
 	findContainingRange(node) {
 		for (let range of this.ranges) {
 			if (range.containsNode(node)) {
@@ -326,6 +270,24 @@ module.exports = class Scope {
 		};
 	}
 	
+	getNodeParent(node) {
+		let parent = nodeGetters.parent(node);
+		
+		if (parent) {
+			return {
+				scope: this,
+				range: this.findContainingRange(parent),
+				node: parent,
+			};
+		} else {
+			return this.parent.getInjectionParent(node);
+		}
+	}
+	
+	getInjectionParent(node) {
+		return this.findSmallestNodeAtCursor(treeSitterPointToCursor(node.startPosition));
+	}
+	
 	firstInRange(range) {
 		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, range.selection.start);
 		
@@ -365,6 +327,24 @@ module.exports = class Scope {
 		}
 		
 		return this;
+	}
+	
+	findSmallestNodeAtCursor(cursor) {
+		let node = this.tree && findSmallestNodeAtCursor(this.tree.rootNode, cursor);
+		
+		if (!node) {
+			if (this.parent) {
+				return this.parent.findSmallestNodeAtCursor(cursor);
+			} else {
+				return {};
+			}
+		}
+		
+		return {
+			scope: this,
+			range: this.findContainingRange(node),
+			node,
+		};
 	}
 	
 	/*

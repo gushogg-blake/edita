@@ -249,10 +249,6 @@ class Document extends BaseDocument {
 		return this.source.langFromCursor(cursor);
 	}
 	
-	findFirstNodeToRender(lineIndex) {
-		return this.source.findFirstNodeToRender(lineIndex);
-	}
-	
 	getNodesOnLine(lineIndex, lang=null) {
 		return [...this.source.generateNodesOnLine(lineIndex, lang)];
 	}
@@ -271,6 +267,10 @@ class Document extends BaseDocument {
 	
 	generateNodesFromCursorWithLang(cursor) {
 		return this.source.generateNodesFromCursorWithLang(cursor);
+	}
+	
+	getNodeParent(scope, node) {
+		return this.source.getNodeParent(scope, node);
 	}
 	
 	getHeadersOnLine(lineIndex) {

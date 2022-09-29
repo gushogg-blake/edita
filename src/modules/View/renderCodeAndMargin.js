@@ -79,14 +79,6 @@ class Renderer {
 		return this.nodeLineIndex === this.lineIndex && this.nodeOffset === this.offset;
 	}
 	
-	setStartingColor(lineIndex) {
-		let {scope, node} = this.view.document.findFirstNodeToRender(lineIndex);
-		
-		if (node) {
-			this.setColor(scope.lang, node);
-		}
-	}
-	
 	setColor(lang=null, node=null) {
 		if (!lang) {
 			({lang, node} = this.nodeWithLang);
@@ -114,44 +106,6 @@ class Renderer {
 		}
 	}
 	
-	init() {
-		let {view} = this;
-		
-		let {
-			document,
-			measurements,
-			sizes,
-		} = view;
-		
-		let {
-			lineIndex: firstLineIndex,
-			rowIndexInLine: firstLineRowIndex,
-		} = view.findFirstVisibleLine();
-		
-		let {height} = sizes;
-		let {rowHeight} = measurements;
-		
-		this.rowsToRender = Math.ceil(height / rowHeight) + 1;
-		this.rowsRendered = 0;
-		
-		this.setStartingColor(firstLineIndex);
-		
-		this.foldedLineRowGenerator = view.generateLineRowsFolded(firstLineIndex);
-		this.nextFoldedLineRow();
-		
-		while (this.foldedLineRow?.rowIndexInLine < firstLineRowIndex) {
-			this.nextFoldedLineRow();
-		}
-		
-		this.variableWidthPartGenerator = this.generateVariableWidthParts();
-		this.nextVariableWidthPart();
-		
-		this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.trimmedCursor);
-		this.nextNode();
-		
-		this.startRow();
-	}
-	
 	processEndOfLastRun() {
 		for (let [name, arg] of this.endOfLastRunTasks) {
 			this[name](arg);
@@ -170,9 +124,37 @@ class Renderer {
 			renderFoldHilites,
 		} = this;
 		
-		this.init();
+		let {
+			document,
+			measurements,
+			sizes,
+		} = view;
 		
-		let run = null;
+		let {
+			lineIndex: firstLineIndex,
+			rowIndexInLine: firstLineRowIndex,
+		} = view.findFirstVisibleLine();
+		
+		let {height} = sizes;
+		let {rowHeight} = measurements;
+		
+		this.rowsToRender = Math.ceil(height / rowHeight) + 1;
+		this.rowsRendered = 0;
+		
+		this.foldedLineRowGenerator = view.generateLineRowsFolded(firstLineIndex);
+		this.nextFoldedLineRow();
+		
+		while (this.foldedLineRow?.rowIndexInLine < firstLineRowIndex) {
+			this.nextFoldedLineRow();
+		}
+		
+		this.variableWidthPartGenerator = this.generateVariableWidthParts();
+		this.nextVariableWidthPart();
+		
+		this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.trimmedCursor);
+		this.nextNode();
+		
+		this.startRow();
 		
 		while (true) {
 			if (run) {
@@ -182,17 +164,6 @@ class Renderer {
 			run = this.calculateCurrentRun();
 			
 			this.processCurrentRun(run);
-			
-			
-			if (this.nodeLineIndex < this.lineIndex) {
-				this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.trimmedCursor);
-				this.nextNode();
-			}
-			
-			while (this.nodeIsAtCursor()) {
-				this.setColor();
-				this.nextNode();
-			}
 			
 			if (!this.variableWidthPart) {
 				renderCode.endRow();

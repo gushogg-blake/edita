@@ -67,22 +67,6 @@ module.exports = class {
 		//console.timeEnd("edit");
 	}
 	
-	findFirstNodeToRender(lineIndex) {
-		if (!this.rootScope) {
-			return {};
-		}
-		
-		return this.rootScope.findFirstNodeToRender(lineIndex);
-	}
-	
-	findFirstNodeOnOrAfterCursor(cursor) {
-		if (!this.rootScope) {
-			return {};
-		}
-		
-		return this.scopeFromCursor(cursor).findFirstNodeOnOrAfterCursor(cursor);
-	}
-	
 	*generateNodesFromCursorWithLang(cursor) {
 		if (!this.rootScope) {
 			return;
@@ -114,6 +98,18 @@ module.exports = class {
 		}
 		
 		yield* this.rootScope.generateNodesOnLineWithLang(lineIndex);
+	}
+	
+	getNodeParent(scope, node) {
+		return scope.getNodeParent(node);
+	}
+	
+	findSmallestNodeAtCursor(cursor) {
+		if (!this.rootScope) {
+			return {};
+		}
+		
+		return this.scopeFromCursor(cursor).findSmallestNodeAtCursor(cursor);
 	}
 	
 	getHeadersOnLine(lineIndex) {
