@@ -13,16 +13,18 @@ class Renderer {
 		this.nodeWithLang = null;
 		this.lineIndex = null;
 		this.offset = null;
-		this.offsetInRow = 0;
 	}
 	
 	*generateVariableWidthParts() {
-		this.partOffsetInRow = 0;
+		let offsetInRow = 0;
 		
-		for (let part of this.foldedLineRow.lineRow.variableWidthParts) {
-			yield part;
+		for (let part of this.lineRow.variableWidthParts) {
+			yield {
+				...part,
+				offsetInRow,
+			};
 			
-			this.partOffsetInRow += part.type === "tab" ? 1 : part.string.length;
+			offsetInRow += part.type === "tab" ? 1 : part.string.length;
 		}
 	}
 	
@@ -42,17 +44,6 @@ class Renderer {
 		return c(this.lineIndex, this.offset);
 	}
 	
-	/*
-	look for nodes starting from the indent to find the node quicker. in HTML
-	the start of the line will sometimes be within a text node that spans
-	multiple lines, so findFirstNodeOnOrAfterCursor will descend to that node
-	and then have to return the next node
-	*/
-	
-	get trimmedCursor() {
-		return c(this.lineIndex, this.view.document.lines[this.lineIndex].indentOffset);
-	}
-	
 	get nodeLineIndex() {
 		return this.nodeWithLang && nodeGetters.startPosition(this.nodeWithLang.node).row;
 	}
@@ -61,10 +52,23 @@ class Renderer {
 		return this.nodeWithLang && nodeGetters.startPosition(this.nodeWithLang.node).column;
 	}
 	
+	get offsetInRow() {
+		return this.offset - this.lineRow.startOffset;
+	}
+	
 	nextFoldedLineRow() {
 		this.foldedLineRow = this.foldedLineRowGenerator.next().value;
-		this.lineIndex = this.foldedLineRow?.lineIndex;
-		this.offset = this.lineRow?.startOffset;
+		
+		if (!this.foldedLineRow) {
+			return;
+		}
+		
+		this.variableWidthPart = null;
+		this.variableWidthPartGenerator = this.generateVariableWidthParts();
+		this.nextVariableWidthPart();
+		
+		this.lineIndex = this.foldedLineRow.lineIndex;
+		this.offset = this.lineRow.startOffset;
 	}
 	
 	nextVariableWidthPart() {
@@ -106,16 +110,6 @@ class Renderer {
 		}
 	}
 	
-	processEndOfLastRun() {
-		for (let [name, arg] of this.endOfLastRunTasks) {
-			this[name](arg);
-		}
-	}
-	
-	calculateCurrentRun() {
-		
-	}
-	
 	render() {
 		let {
 			view,
@@ -148,11 +142,10 @@ class Renderer {
 			this.nextFoldedLineRow();
 		}
 		
-		this.variableWidthPartGenerator = this.generateVariableWidthParts();
-		this.nextVariableWidthPart();
-		
-		this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.trimmedCursor);
+		this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.cursor);
 		this.nextNode();
+		
+		// set the color and node stack
 		
 		this.startRow();
 		
@@ -174,30 +167,19 @@ class Renderer {
 					break;
 				}
 				
-				this.variableWidthPartGenerator = this.generateVariableWidthParts();
-				this.nextVariableWidthPart();
-				
-				this.offsetInRow = 0;
-				
-				if (this.rowIndexInLine === 0) {
-					this.offset = 0;
-				}
-				
 				this.startRow();
 				
 				continue;
 			}
 			
-			// render up to the next boundary (node, variable width part, or line row)
-			
 			if (this.variableWidthPart.type === "tab") {
 				renderCode.drawTab(this.variableWidthPart.width);
 				
 				this.offset++;
-				this.offsetInRow++;
 				
 				this.nextVariableWidthPart();
 			} else if (this.variableWidthPart.type === "string") {
+				
 				let {string} = this.variableWidthPart;
 				
 				let nextNodeOffsetInRowOrEnd = (
@@ -213,7 +195,6 @@ class Renderer {
 				renderCode.drawText(string.substring(renderFrom, renderTo));
 				
 				this.offset += length;
-				this.offsetInRow += length;
 				
 				if (renderTo === string.length) {
 					this.nextVariableWidthPart();
