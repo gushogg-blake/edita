@@ -10,9 +10,10 @@ class Renderer {
 		this.renderMargin = renderMargin;
 		this.renderFoldHilites = renderFoldHilites;
 		
-		this.nodeWithLang = null;
 		this.lineIndex = null;
 		this.offset = null;
+		this.variableWidthPart = null;
+		this.nodeWithScope = null;
 	}
 	
 	*generateVariableWidthParts() {
@@ -45,11 +46,11 @@ class Renderer {
 	}
 	
 	get nodeLineIndex() {
-		return this.nodeWithLang && nodeGetters.startPosition(this.nodeWithLang.node).row;
+		return this.nodeWithScope && nodeGetters.startPosition(this.nodeWithScope.node).row;
 	}
 	
 	get nodeOffset() {
-		return this.nodeWithLang && nodeGetters.startPosition(this.nodeWithLang.node).column;
+		return this.nodeWithScope && nodeGetters.startPosition(this.nodeWithScope.node).column;
 	}
 	
 	get offsetInRow() {
@@ -63,7 +64,6 @@ class Renderer {
 			return;
 		}
 		
-		this.variableWidthPart = null;
 		this.variableWidthPartGenerator = this.generateVariableWidthParts();
 		this.nextVariableWidthPart();
 		
@@ -76,7 +76,7 @@ class Renderer {
 	}
 	
 	nextNode() {
-		this.nodeWithLang = this.nodeWithLangGenerator.next().value;
+		this.nodeWithScope = this.nodeWithScopeGenerator.next().value;
 	}
 	
 	nodeIsAtCursor() {
@@ -85,7 +85,7 @@ class Renderer {
 	
 	setColor(lang=null, node=null) {
 		if (!lang) {
-			({lang, node} = this.nodeWithLang);
+			({lang, node} = this.nodeWithScope);
 		}
 		
 		let colors = base.theme.langs[lang.code];
@@ -142,10 +142,17 @@ class Renderer {
 			this.nextFoldedLineRow();
 		}
 		
-		this.nodeWithLangGenerator = document.generateNodesFromCursorWithLang(this.cursor);
+		this.nodeWithScopeGenerator = document.generateNodesFromCursorWithLang(this.cursor);
 		this.nextNode();
 		
-		// set the color and node stack
+		let nodeStack = [];
+		let nodeWithScope = this.nodeWithScope;
+		
+		while (nodeWithScope) {
+			nodeStack.unshift(nodeWithScope);
+			
+			nodeWithScope = nodeWithScope.scope.getNodeParent(nodeWithScope.node);
+		}
 		
 		this.startRow();
 		

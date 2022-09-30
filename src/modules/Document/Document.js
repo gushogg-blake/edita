@@ -257,20 +257,12 @@ class Document extends BaseDocument {
 		return this.source.generateNodesOnLine(lineIndex, lang);
 	}
 	
-	getNodesOnLineWithLang(lineIndex) {
-		return [...this.source.generateNodesOnLineWithLang(lineIndex)];
+	generateNodesOnLineWithScope(lineIndex) {
+		return this.source.generateNodesOnLineWithScope(lineIndex);
 	}
 	
-	generateNodesOnLineWithLang(lineIndex) {
-		return this.source.generateNodesOnLineWithLang(lineIndex);
-	}
-	
-	generateNodesFromCursorWithLang(cursor) {
-		return this.source.generateNodesFromCursorWithLang(cursor);
-	}
-	
-	getNodeParent(scope, node) {
-		return this.source.getNodeParent(scope, node);
+	generateNodesFromCursorWithScope(cursor) {
+		return this.source.generateNodesFromCursorWithScope(cursor);
 	}
 	
 	getHeadersOnLine(lineIndex) {

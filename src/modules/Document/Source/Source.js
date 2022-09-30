@@ -67,20 +67,20 @@ module.exports = class {
 		//console.timeEnd("edit");
 	}
 	
-	*generateNodesFromCursorWithLang(cursor) {
+	*generateNodesFromCursorWithScope(cursor) {
 		if (!this.rootScope) {
 			return;
 		}
 		
-		let {scope, range, node} = this.findFirstNodeOnOrAfterCursor(cursor);
+		let {scope, range, node} = this.findFirstNodeOnOrAfterCursor(cursor) || {};
 		
 		while (node) {
 			yield {
 				node,
-				lang: scope.lang,
+				scope,
 			};
 			
-			({scope, range, node} = scope.next(node, range));
+			({scope, range, node} = scope.next(node, range) || {});
 		}
 	}
 	
@@ -92,21 +92,17 @@ module.exports = class {
 		yield* this.rootScope.generateNodesOnLine(lineIndex, lang);
 	}
 	
-	*generateNodesOnLineWithLang(lineIndex) {
+	*generateNodesOnLineWithScope(lineIndex) {
 		if (!this.rootScope) {
 			return;
 		}
 		
-		yield* this.rootScope.generateNodesOnLineWithLang(lineIndex);
-	}
-	
-	getNodeParent(scope, node) {
-		return scope.getNodeParent(node);
+		yield* this.rootScope.generateNodesOnLineWithScope(lineIndex);
 	}
 	
 	findSmallestNodeAtCursor(cursor) {
 		if (!this.rootScope) {
-			return {};
+			return null;
 		}
 		
 		return this.scopeFromCursor(cursor).findSmallestNodeAtCursor(cursor);
@@ -117,12 +113,12 @@ module.exports = class {
 			return [];
 		}
 		
-		let nodesWithLang = [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
+		let nodesWithScope = [...this.rootScope.generateNodesOnLineWithScope(lineIndex)];
 		
-		return nodesWithLang.map(function({lang, node}) {
+		return nodesWithScope.map(function({scope, node}) {
 			return {
 				header: node,
-				footer: lang.getFooter(node),
+				footer: scope.lang.getFooter(node),
 			};
 		}).filter(r => r.footer);
 	}
@@ -132,11 +128,11 @@ module.exports = class {
 			return [];
 		}
 		
-		let nodesWithLang = [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
+		let nodesWithScope = [...this.rootScope.generateNodesOnLineWithScope(lineIndex)];
 		
-		return nodesWithLang.map(function({lang, node}) {
+		return nodesWithScope.map(function({scope, node}) {
 			return {
-				header: lang.getHeader(node),
+				header: scope.lang.getHeader(node),
 				footer: node,
 			};
 		}).filter(r => r.header);

@@ -270,19 +270,34 @@ module.exports = class Scope {
 		};
 	}
 	
+	/*
+	given a node in this scope, get its parent node and scope. for example:
+	
+	<script>
+		let a = 123;
+	</script>
+	
+	For the root node in the javascript scope, the parent is the raw_text node
+	in the script tag in the html scope.
+	*/
+	
 	getNodeParent(node) {
 		let parent = nodeGetters.parent(node);
 		
 		if (parent) {
 			return {
 				scope: this,
-				range: this.findContainingRange(parent),
+				//range: this.findContainingRange(parent),
 				node: parent,
 			};
 		} else {
 			return this.parent.getInjectionParent(node);
 		}
 	}
+	
+	/*
+	helper function for the above
+	*/
 	
 	getInjectionParent(node) {
 		return this.findSmallestNodeAtCursor(treeSitterPointToCursor(node.startPosition));
@@ -336,7 +351,7 @@ module.exports = class Scope {
 			if (this.parent) {
 				return this.parent.findSmallestNodeAtCursor(cursor);
 			} else {
-				return {};
+				return null;
 			}
 		}
 		
@@ -381,7 +396,7 @@ module.exports = class Scope {
 	startOffset = 0.
 	*/
 	
-	*_generateNodesOnLine(lineIndex, startOffset, withLang, lang) {
+	*_generateNodesOnLine(lineIndex, startOffset, withScope, lang) {
 		if (!this.tree) {
 			return;
 		}
@@ -390,7 +405,7 @@ module.exports = class Scope {
 			if (!lang || this.lang === lang) {
 				yield withLang ? {
 					node,
-					lang: this.lang,
+					scope: this,
 				} : node;
 			}
 			
@@ -399,19 +414,19 @@ module.exports = class Scope {
 			let scope = this.scopesByNode[node.id];
 			
 			if (scope) {
-				for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, withLang, lang)) {
+				for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, withScope, lang)) {
 					yield childNode;
 					
-					startOffset = nodeGetters.endPosition(withLang ? childNode.node : childNode).column;
+					startOffset = nodeGetters.endPosition(withScope ? childNode.node : childNode).column;
 				}
 			}
 		}
 		
 		for (let scope of this.scopes) {
-			for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, withLang, lang)) {
+			for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, withScope, lang)) {
 				yield childNode;
 				
-				startOffset = nodeGetters.endPosition(withLang ? childNode.node : childNode).column;
+				startOffset = nodeGetters.endPosition(withScope ? childNode.node : childNode).column;
 			}
 		}
 	}
@@ -420,7 +435,7 @@ module.exports = class Scope {
 		return this._generateNodesOnLine(lineIndex, 0, false, lang);
 	}
 	
-	generateNodesOnLineWithLang(lineIndex) {
+	generateNodesOnLineWithScope(lineIndex) {
 		return this._generateNodesOnLine(lineIndex, 0, true, null);
 	}
 }
