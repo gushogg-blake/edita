@@ -83,11 +83,9 @@ class Renderer {
 		return this.nodeLineIndex === this.lineIndex && this.nodeOffset === this.offset;
 	}
 	
-	setColor(lang=null, node=null) {
-		if (!lang) {
-			({lang, node} = this.nodeWithScope);
-		}
-		
+	setColor() {
+		let {scope, node} = this.nodeWithScope;
+		let {lang} = scope;
 		let colors = base.theme.langs[lang.code];
 		let hiliteClass = lang.getHiliteClass(node);
 		
@@ -145,6 +143,8 @@ class Renderer {
 		this.nodeWithScopeGenerator = document.generateNodesFromCursorWithLang(this.cursor);
 		this.nextNode();
 		
+		this.setColor();
+		
 		let nodeStack = [];
 		let nodeWithScope = this.nodeWithScope;
 		
@@ -185,27 +185,30 @@ class Renderer {
 				this.offset++;
 				
 				this.nextVariableWidthPart();
-			} else if (this.variableWidthPart.type === "string") {
 				
-				let {string} = this.variableWidthPart;
-				
-				let nextNodeOffsetInRowOrEnd = (
-					this.nodeLineIndex === this.lineIndex
-					? this.nodeOffset - this.lineRow.startOffset
-					: this.lineRow.string.length
-				);
-				
-				let renderFrom = this.offsetInRow - this.partOffsetInRow;
-				let renderTo = Math.min(string.length, nextNodeOffsetInRowOrEnd - this.partOffsetInRow);
-				let length = renderTo - renderFrom;
-				
-				renderCode.drawText(string.substring(renderFrom, renderTo));
-				
-				this.offset += length;
-				
-				if (renderTo === string.length) {
-					this.nextVariableWidthPart();
-				}
+				continue;
+			}
+			
+			let {string} = this.variableWidthPart;
+			
+			//let 
+			
+			let nextNodeOffsetInRowOrEnd = (
+				this.nodeLineIndex === this.lineIndex
+				? this.nodeOffset - this.lineRow.startOffset
+				: this.lineRow.string.length
+			);
+			
+			let renderFrom = this.offsetInRow - this.partOffsetInRow;
+			let renderTo = Math.min(string.length, nextNodeOffsetInRowOrEnd - this.partOffsetInRow);
+			let length = renderTo - renderFrom;
+			
+			renderCode.drawText(string.substring(renderFrom, renderTo));
+			
+			this.offset += length;
+			
+			if (renderTo === string.length) {
+				this.nextVariableWidthPart();
 			}
 		}
 	}
