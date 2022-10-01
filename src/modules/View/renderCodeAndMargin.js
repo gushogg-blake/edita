@@ -1,4 +1,5 @@
 let Cursor = require("modules/utils/Cursor");
+let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 
 let {c} = Cursor;
@@ -13,7 +14,7 @@ class Renderer {
 		this.lineIndex = null;
 		this.offset = null;
 		this.variableWidthPart = null;
-		this.nodeWithScope = null;
+		this.nodeStack = [];
 	}
 	
 	*generateVariableWidthParts() {
@@ -73,10 +74,6 @@ class Renderer {
 	
 	nextVariableWidthPart() {
 		this.variableWidthPart = this.variableWidthPartGenerator.next().value;
-	}
-	
-	nextNode() {
-		this.nodeWithScope = this.nodeWithScopeGenerator.next().value;
 	}
 	
 	nodeIsAtCursor() {
@@ -140,19 +137,23 @@ class Renderer {
 			this.nextFoldedLineRow();
 		}
 		
-		this.nodeWithScopeGenerator = document.generateNodesFromCursorWithLang(this.cursor);
-		this.nextNode();
+		this.nodeWithScopeGenerator = document.generateNodesFromCursorWithScope(this.cursor);
+		this.nextNodeWithScopeGenerator = document.generateNodesAfterCursorWithScope();
 		
-		this.setColor();
-		
-		let nodeStack = [];
-		let nodeWithScope = this.nodeWithScope;
+		let nodesBeforeCursor = [];
+		let nodeWithScope = this.nodeWithScopeGenerator.next().value;
 		
 		while (nodeWithScope) {
-			nodeStack.unshift(nodeWithScope);
+			let {scope, node} = nodeWithScope;
 			
-			nodeWithScope = nodeWithScope.scope.getNodeParent(nodeWithScope.node);
+			if (Cursor.isBefore(treeSitterPointToCursor(node.startPosition), this.cursor)) {
+				nodesBeforeCursor.unshift(nodeWithScope);
+			}
+			
+			nodeWithScope = scope.getNodeParent(node);
 		}
+		
+		this.setColor();
 		
 		this.startRow();
 		

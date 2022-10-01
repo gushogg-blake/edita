@@ -265,6 +265,10 @@ class Document extends BaseDocument {
 		return this.source.generateNodesFromCursorWithScope(cursor);
 	}
 	
+	generateNodesAfterCursorWithScope(cursor) {
+		return this.source.generateNodesAfterCursorWithScope(cursor);
+	}
+	
 	getHeadersOnLine(lineIndex) {
 		return this.source.getHeadersOnLine(lineIndex);
 	}

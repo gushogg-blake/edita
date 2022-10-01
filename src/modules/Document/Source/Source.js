@@ -67,12 +67,31 @@ module.exports = class {
 		//console.timeEnd("edit");
 	}
 	
+	
+	
 	*generateNodesFromCursorWithScope(cursor) {
 		if (!this.rootScope) {
 			return;
 		}
 		
 		let {scope, range, node} = this.findFirstNodeOnOrAfterCursor(cursor) || {};
+		
+		while (node) {
+			yield {
+				node,
+				scope,
+			};
+			
+			({scope, range, node} = scope.next(node, range) || {});
+		}
+	}
+	
+	*generateNodesAfterCursorWithScope(cursor) {
+		if (!this.rootScope) {
+			return;
+		}
+		
+		let {scope, range, node} = this.findFirstNodeAfterCursor(cursor) || {};
 		
 		while (node) {
 			yield {
@@ -100,7 +119,15 @@ module.exports = class {
 		yield* this.rootScope.generateNodesOnLineWithScope(lineIndex);
 	}
 	
-	findSmallestNodeAtCursor(cursor) {
+	findFirstNodeOnOrAfterCursor(cursor) {
+		if (!this.rootScope) {
+			return null;
+		}
+		
+		return this.scopeFromCursor(cursor).findSmallestNodeAtCursor(cursor);
+	}
+	
+	findFirstNodeAfterCursor(cursor) {
 		if (!this.rootScope) {
 			return null;
 		}

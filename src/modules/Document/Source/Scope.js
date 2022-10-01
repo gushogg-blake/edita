@@ -4,9 +4,11 @@ let next = require("modules/utils/treeSitter/next");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
+let findFirstNodeAfterCursor = require("modules/utils/treeSitter/findFirstNodeAfterCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 let Range = require("./Range");
+let NodeWithScope = require("./NodeWithScope");
 
 let {s} = Selection;
 
@@ -226,7 +228,12 @@ module.exports = class Scope {
 		}
 	}
 	
-	next(node, range) {
+	/*
+	given a nodeWithScope in this scope, get the next nodeWithScope
+	*/
+	
+	nextNodeWithScope(nodeWithScope) {
+		let {node, range} = nodeWithScope;
 		let childScopeAndRange = this.scopeAndRangeByNode[node.id];
 		
 		if (childScopeAndRange) {
@@ -255,11 +262,7 @@ module.exports = class Scope {
 			if (this.parent) {
 				return this.parent.nextAfterRange(range);
 			} else {
-				return {
-					scope: this,
-					range: null,
-					node: null,
-				};
+				return null;
 			}
 		}
 		
@@ -271,7 +274,7 @@ module.exports = class Scope {
 	}
 	
 	/*
-	given a node in this scope, get its parent node and scope. for example:
+	given a nodeWithScope in this scope, get its parent. for example:
 	
 	<script>
 		let a = 123;
@@ -281,15 +284,12 @@ module.exports = class Scope {
 	in the script tag in the html scope.
 	*/
 	
-	getNodeParent(node) {
+	parentNodeWithScope(nodeWithScope) {
+		let {node} = nodeWithScope;
 		let parent = nodeGetters.parent(node);
 		
 		if (parent) {
-			return {
-				scope: this,
-				//range: this.findContainingRange(parent),
-				node: parent,
-			};
+			return new NodeWithScope(this, this.findContainingRange(parent), parent);
 		} else {
 			return this.parent.getInjectionParent(node);
 		}
@@ -306,22 +306,14 @@ module.exports = class Scope {
 	firstInRange(range) {
 		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, range.selection.start);
 		
-		return {
-			scope: this,
-			range,
-			node,
-		};
+		return new NodeWithScope(this, range, node);
 	}
 	
 	nextAfterRange(prevRange) {
 		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, prevRange.selection.end);
 		let range = node && this.findContainingRange(node);
 		
-		return {
-			scope: this,
-			range,
-			node,
-		};
+		return new NodeWithScope(this, range, node);
 	}
 	
 	langFromCursor(cursor) {
@@ -344,7 +336,7 @@ module.exports = class Scope {
 		return this;
 	}
 	
-	findSmallestNodeAtCursor(cursor) {
+	findFirstNodeOnOrAfterCursor(cursor) {
 		let node = this.tree && findSmallestNodeAtCursor(this.tree.rootNode, cursor);
 		
 		if (!node) {
@@ -403,7 +395,7 @@ module.exports = class Scope {
 		
 		for (let node of generateNodesOnLine(this.tree.rootNode, lineIndex, startOffset)) {
 			if (!lang || this.lang === lang) {
-				yield withLang ? {
+				yield withScope ? {
 					node,
 					scope: this,
 				} : node;
