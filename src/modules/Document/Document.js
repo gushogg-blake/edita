@@ -245,8 +245,24 @@ class Document extends BaseDocument {
 		return this.source.scopeFromCursor(cursor);
 	}
 	
+	scopeFromCharCursor(cursor) {
+		return this.source.scopeFromCharCursor(cursor);
+	}
+	
 	langFromCursor(cursor) {
 		return this.source.langFromCursor(cursor);
+	}
+	
+	findFirstNodeOnOrAfterCursor(cursor) {
+		return this.source.findFirstNodeOnOrAfterCursor(cursor);
+	}
+	
+	findFirstNodeAfterCursor(cursor) {
+		return this.source.findFirstNodeAfterCursor(cursor);
+	}
+	
+	findSmallestNodeAtCursor(cursor) {
+		return this.source.findSmallestNodeAtCursor(cursor);
 	}
 	
 	getNodesOnLine(lineIndex, lang=null) {
@@ -257,16 +273,8 @@ class Document extends BaseDocument {
 		return this.source.generateNodesOnLine(lineIndex, lang);
 	}
 	
-	generateNodesOnLineWithScope(lineIndex) {
-		return this.source.generateNodesOnLineWithScope(lineIndex);
-	}
-	
-	generateNodesFromCursorWithScope(cursor) {
-		return this.source.generateNodesFromCursorWithScope(cursor);
-	}
-	
-	generateNodesAfterCursorWithScope(cursor) {
-		return this.source.generateNodesAfterCursorWithScope(cursor);
+	generateNodesWithScopeOnLine(lineIndex) {
+		return this.source.generateNodesWithScopeOnLine(lineIndex);
 	}
 	
 	getHeadersOnLine(lineIndex) {

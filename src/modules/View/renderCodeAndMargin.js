@@ -11,7 +11,6 @@ class Renderer {
 		this.renderMargin = renderMargin;
 		this.renderFoldHilites = renderFoldHilites;
 		
-		this.lineIndex = null;
 		this.offset = null;
 		this.variableWidthPart = null;
 		this.nodeStack = [];
@@ -28,6 +27,10 @@ class Renderer {
 			
 			offsetInRow += part.type === "tab" ? 1 : part.string.length;
 		}
+	}
+	
+	get lineIndex() {
+		return this.foldedLineRow?.lineIndex;
 	}
 	
 	get rowIndexInLine() {
@@ -68,7 +71,6 @@ class Renderer {
 		this.variableWidthPartGenerator = this.generateVariableWidthParts();
 		this.nextVariableWidthPart();
 		
-		this.lineIndex = this.foldedLineRow.lineIndex;
 		this.offset = this.lineRow.startOffset;
 	}
 	
@@ -137,8 +139,8 @@ class Renderer {
 			this.nextFoldedLineRow();
 		}
 		
-		this.nodeWithScopeGenerator = document.generateNodesFromCursorWithScope(this.cursor);
-		this.nextNodeWithScopeGenerator = document.generateNodesAfterCursorWithScope();
+		this.nodeWithScopeGenerator = document.generateNodesWithScopeFromCursor(this.cursor);
+		this.nextNodeWithScopeGenerator = document.generateNodesWithScopeAfterCursor();
 		
 		let nodesBeforeCursor = [];
 		let nodeWithScope = this.nodeWithScopeGenerator.next().value;

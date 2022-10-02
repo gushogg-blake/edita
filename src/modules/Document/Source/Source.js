@@ -67,42 +67,6 @@ module.exports = class {
 		//console.timeEnd("edit");
 	}
 	
-	
-	
-	*generateNodesFromCursorWithScope(cursor) {
-		if (!this.rootScope) {
-			return;
-		}
-		
-		let {scope, range, node} = this.findFirstNodeOnOrAfterCursor(cursor) || {};
-		
-		while (node) {
-			yield {
-				node,
-				scope,
-			};
-			
-			({scope, range, node} = scope.next(node, range) || {});
-		}
-	}
-	
-	*generateNodesAfterCursorWithScope(cursor) {
-		if (!this.rootScope) {
-			return;
-		}
-		
-		let {scope, range, node} = this.findFirstNodeAfterCursor(cursor) || {};
-		
-		while (node) {
-			yield {
-				node,
-				scope,
-			};
-			
-			({scope, range, node} = scope.next(node, range) || {});
-		}
-	}
-	
 	*generateNodesOnLine(lineIndex, lang=null) {
 		if (!this.rootScope) {
 			return;
@@ -111,28 +75,32 @@ module.exports = class {
 		yield* this.rootScope.generateNodesOnLine(lineIndex, lang);
 	}
 	
-	*generateNodesOnLineWithScope(lineIndex) {
+	*generateNodesWithScopeOnLine(lineIndex) {
 		if (!this.rootScope) {
 			return;
 		}
 		
-		yield* this.rootScope.generateNodesOnLineWithScope(lineIndex);
+		yield* this.rootScope.generateNodesWithScopeOnLine(lineIndex);
+	}
+	
+	_findNodeWithScope(cursor, method) {
+		if (!this.rootScope) {
+			return null;
+		}
+		
+		return this.scopeFromCharCursor(cursor)[method](cursor);
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
-		if (!this.rootScope) {
-			return null;
-		}
-		
-		return this.scopeFromCursor(cursor).findSmallestNodeAtCursor(cursor);
+		return this._findNodeWithScope(cursor, "findFirstNodeOnOrAfterCursor");
 	}
 	
 	findFirstNodeAfterCursor(cursor) {
-		if (!this.rootScope) {
-			return null;
-		}
-		
-		return this.scopeFromCursor(cursor).findSmallestNodeAtCursor(cursor);
+		return this._findNodeWithScope(cursor, "findFirstNodeAfterCursor");
+	}
+	
+	findSmallestNodeAtCursor(cursor) {
+		return this._findNodeWithScope(cursor, "findSmallestNodeAtCursor");
 	}
 	
 	getHeadersOnLine(lineIndex) {
@@ -140,7 +108,7 @@ module.exports = class {
 			return [];
 		}
 		
-		let nodesWithScope = [...this.rootScope.generateNodesOnLineWithScope(lineIndex)];
+		let nodesWithScope = [...this.rootScope.generateNodesWithScopeOnLine(lineIndex)];
 		
 		return nodesWithScope.map(function({scope, node}) {
 			return {
@@ -155,7 +123,7 @@ module.exports = class {
 			return [];
 		}
 		
-		let nodesWithScope = [...this.rootScope.generateNodesOnLineWithScope(lineIndex)];
+		let nodesWithScope = [...this.rootScope.generateNodesWithScopeOnLine(lineIndex)];
 		
 		return nodesWithScope.map(function({scope, node}) {
 			return {
@@ -197,6 +165,10 @@ module.exports = class {
 	
 	scopeFromCursor(cursor) {
 		return this.rootScope?.scopeFromCursor(cursor);
+	}
+	
+	scopeFromCharCursor(cursor) {
+		return this.rootScope?.scopeFromCharCursor(cursor);
 	}
 	
 	langFromCursor(cursor) {

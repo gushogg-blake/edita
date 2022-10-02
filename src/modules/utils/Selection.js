@@ -33,14 +33,22 @@ function isBefore(a, b) {
 	return Cursor.isBefore(end, start) || Cursor.equals(end, start);
 }
 
-function cursorIsWithinSelection(selection, cursor) {
+/*
+char mode is more permissive - it returns true for the selection's
+start cursor, whereas otherwise the cursor has to be fully within
+the selection
+*/
+
+function _cursorIsWithinSelection(selection, cursor, _char) {
 	let {start, end} = sort(selection);
 	let {lineIndex, offset} = cursor;
+	
+	let isBeforeStart = _char ? offset < start.offset : offset <= start.offset;
 	
 	if (
 		lineIndex < start.lineIndex
 		|| lineIndex > end.lineIndex
-		|| lineIndex === start.lineIndex && offset <= start.offset
+		|| lineIndex === start.lineIndex && isBeforeStart
 		|| lineIndex === end.lineIndex && offset >= end.offset
 	) {
 		return false;
@@ -49,7 +57,11 @@ function cursorIsWithinSelection(selection, cursor) {
 	return true;
 }
 
-function isOverlapping(a, b) {
+function cursorIsWithinSelection(selection, cursor) {
+	return _cursorIsWithinSelection(selection, cursor, false);
+}
+
+function isPartiallyOverlapping(a, b) {
 	return (
 		cursorIsWithinSelection(a, b.start)
 		|| cursorIsWithinSelection(a, b.end)
@@ -89,7 +101,7 @@ function addOrSubtractEarlierSelection(selection, adjustment, sign) {
 	
 	if (
 		sign === 1 && cursorIsWithinSelection(selection, adjustment.start)
-		|| sign === -1 && isOverlapping(selection, adjustment)
+		|| sign === -1 && isPartiallyOverlapping(selection, adjustment)
 	) {
 		return null;
 	}
@@ -187,7 +199,7 @@ let api = {
 	isFull,
 	isMultiline,
 	isBefore,
-	isOverlapping,
+	isPartiallyOverlapping,
 	cursorIsWithinSelection,
 	
 	isWithin(a, b) {
@@ -195,19 +207,7 @@ let api = {
 	},
 	
 	charIsWithinSelection(selection, charCursor) {
-		let {start, end} = sort(selection);
-		let {lineIndex, offset} = charCursor;
-		
-		if (
-			lineIndex < start.lineIndex
-			|| lineIndex > end.lineIndex
-			|| lineIndex === start.lineIndex && offset < start.offset
-			|| lineIndex === end.lineIndex && offset >= end.offset
-		) {
-			return false;
-		}
-		
-		return true;
+		return _cursorIsWithinSelection(selection, charCursor, true);
 	},
 	
 	cursorIsNextToSelection(selection, cursor) {
@@ -267,7 +267,7 @@ let api = {
 			return newSelection;
 		} else if (api.isWithin(oldSelection, selection)) {
 			return api.adjustForEditWithinSelection(selection, oldSelection, newSelection);
-		} else if (isOverlapping(selection, oldSelection)) {
+		} else if (isPartiallyOverlapping(selection, oldSelection)) {
 			return null;
 		} else {
 			return selection;

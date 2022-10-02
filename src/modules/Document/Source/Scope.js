@@ -5,6 +5,7 @@ let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitt
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let findFirstNodeAfterCursor = require("modules/utils/treeSitter/findFirstNodeAfterCursor");
+let findSmallestNodeAtCursor = require("modules/utils/treeSitter/findSmallestNodeAtCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 let Range = require("./Range");
@@ -266,11 +267,7 @@ module.exports = class Scope {
 			}
 		}
 		
-		return {
-			scope: this,
-			range,
-			node: nextNode,
-		};
+		return new NodeWithScope(this, range, nextNode);
 	}
 	
 	/*
@@ -320,8 +317,10 @@ module.exports = class Scope {
 		return this.scopeFromCursor(cursor)?.lang;
 	}
 	
-	scopeFromCursor(cursor) {
-		if (!this.ranges.some(range => Selection.cursorIsWithinOrNextToSelection(range.selection, cursor))) {
+	_scopeFromCursor(cursor, _char) {
+		let fn = _char ? Selection.charIsWithinSelection : Selection.cursorIsWithinOrNextToSelection;
+		
+		if (!this.ranges.some(range => fn(range.selection, cursor))) {
 			return null;
 		}
 		
@@ -334,6 +333,50 @@ module.exports = class Scope {
 		}
 		
 		return this;
+	}
+	
+	scopeFromCursor(cursor) {
+		return this._scopeFromCursor(cursor, false);
+	}
+	
+	scopeFromCharCursor(cursor) {
+		return this._scopeFromCursor(cursor, true);
+	}
+	
+	findFirstNodeOnOrAfterCursor(cursor) {
+		let node = this.tree && findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
+		
+		if (!node) {
+			if (this.parent) {
+				return this.parent.findSmallestNodeAtCursor(cursor);
+			} else {
+				return null;
+			}
+		}
+		
+		return {
+			scope: this,
+			range: this.findContainingRange(node),
+			node,
+		};
+	}
+	
+	findFirstNodeAfterCursor(cursor) {
+		let node = this.tree && findSmallestNodeAtCursor(this.tree.rootNode, cursor);
+		
+		if (!node) {
+			if (this.parent) {
+				return this.parent.findSmallestNodeAtCursor(cursor);
+			} else {
+				return null;
+			}
+		}
+		
+		return {
+			scope: this,
+			range: this.findContainingRange(node),
+			node,
+		};
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
@@ -427,7 +470,7 @@ module.exports = class Scope {
 		return this._generateNodesOnLine(lineIndex, 0, false, lang);
 	}
 	
-	generateNodesOnLineWithScope(lineIndex) {
+	generateNodesWithScopeOnLine(lineIndex) {
 		return this._generateNodesOnLine(lineIndex, 0, true, null);
 	}
 }

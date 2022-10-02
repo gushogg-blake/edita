@@ -144,7 +144,7 @@ let api = {
 	down(document, selection) {
 		let {startLineIndex} = selection;
 		
-		for (let {scope, node} of document.generateNodesOnLineWithScope(startLineIndex)) {
+		for (let {scope, node} of document.generateNodesWithScopeOnLine(startLineIndex)) {
 			let {lang} = scope;
 			let footer = lang.getFooter(node);
 			

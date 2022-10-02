@@ -252,7 +252,7 @@ let api = {
 						if (i > index) {
 							selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
 						}
-					} else if (Selection.equals(selection, oldSelection) || Selection.isOverlapping(selection, oldSelection)) {
+					} else if (Selection.equals(selection, oldSelection) || Selection.isPartiallyOverlapping(selection, oldSelection)) {
 						selection = null;
 					}
 				} else {
@@ -262,7 +262,7 @@ let api = {
 						selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
 					} else if (Selection.isWithin(oldSelection, selection)) {
 						selection = Selection.adjustForEditWithinSelection(selection, oldSelection, newSelection);
-					} else if (Selection.isOverlapping(selection, oldSelection)) {
+					} else if (Selection.isPartiallyOverlapping(selection, oldSelection)) {
 						selection = null;
 					}
 				}
