@@ -83,24 +83,24 @@ module.exports = class {
 		yield* this.rootScope.generateNodesWithScopeOnLine(lineIndex);
 	}
 	
-	_findNodeWithScope(cursor, method) {
+	_findNodeWithRange(cursor, method) {
 		if (!this.rootScope) {
 			return null;
 		}
 		
-		return this.scopeFromCharCursor(cursor)[method](cursor);
+		return this.rangeFromCharCursor(cursor)[method](cursor);
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
-		return this._findNodeWithScope(cursor, "findFirstNodeOnOrAfterCursor");
+		return this._findNodeWithRange(cursor, "findFirstNodeOnOrAfterCursor");
 	}
 	
 	findFirstNodeAfterCursor(cursor) {
-		return this._findNodeWithScope(cursor, "findFirstNodeAfterCursor");
+		return this._findNodeWithRange(cursor, "findFirstNodeAfterCursor");
 	}
 	
 	findSmallestNodeAtCursor(cursor) {
-		return this._findNodeWithScope(cursor, "findSmallestNodeAtCursor");
+		return this._findNodeWithRange(cursor, "findSmallestNodeAtCursor");
 	}
 	
 	getHeadersOnLine(lineIndex) {
@@ -167,8 +167,8 @@ module.exports = class {
 		return this.rootScope?.scopeFromCursor(cursor);
 	}
 	
-	scopeFromCharCursor(cursor) {
-		return this.rootScope?.scopeFromCharCursor(cursor);
+	rangeFromCharCursor(cursor) {
+		return this.rootScope?.rangeFromCharCursor(cursor);
 	}
 	
 	langFromCursor(cursor) {

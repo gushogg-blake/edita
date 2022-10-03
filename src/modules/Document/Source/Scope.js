@@ -350,7 +350,7 @@ module.exports = class Scope {
 		return this._scopeFromCursor(cursor, false);
 	}
 	
-	scopeFromCharCursor(cursor) {
+	rangeFromCharCursor(cursor) {
 		return this._scopeFromCursor(cursor, true);
 	}
 	
@@ -433,17 +433,17 @@ module.exports = class Scope {
 	startOffset = 0.
 	*/
 	
-	*_generateNodesOnLine(lineIndex, startOffset, withScope, lang) {
+	*_generateNodesOnLine(lineIndex, startOffset, lang) {
 		if (!this.tree) {
 			return;
 		}
 		
 		for (let node of generateNodesOnLine(this.tree.rootNode, lineIndex, startOffset)) {
 			if (!lang || this.lang === lang) {
-				yield withScope ? {
+				yield {
 					node,
 					scope: this,
-				} : node;
+				};
 			}
 			
 			startOffset = nodeGetters.endPosition(node).column;
@@ -451,10 +451,10 @@ module.exports = class Scope {
 			let scope = this.scopesByNode[node.id];
 			
 			if (scope) {
-				for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, withScope, lang)) {
+				for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, lang)) {
 					yield childNode;
 					
-					startOffset = nodeGetters.endPosition(withScope ? childNode.node : childNode).column;
+					startOffset = nodeGetters.endPosition(childNode.node).column;
 				}
 			}
 		}
@@ -463,13 +463,13 @@ module.exports = class Scope {
 			for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, withScope, lang)) {
 				yield childNode;
 				
-				startOffset = nodeGetters.endPosition(withScope ? childNode.node : childNode).column;
+				startOffset = nodeGetters.endPosition(childNode.node).column;
 			}
 		}
 	}
 	
 	generateNodesOnLine(lineIndex, lang=null) {
-		return this._generateNodesOnLine(lineIndex, 0, false, lang);
+		return this._generateNodesOnLine(lineIndex, 0, lang);
 	}
 	
 	generateNodesWithScopeOnLine(lineIndex) {
