@@ -139,8 +139,8 @@ class Renderer {
 			this.nextFoldedLineRow();
 		}
 		
-		this.nodeWithScopeGenerator = document.generateNodesWithScopeFromCursor(this.cursor);
-		this.nextNodeWithScopeGenerator = document.generateNodesWithScopeAfterCursor();
+		this.nodeWithScope = document.findSmallestNodeAtCursor(this.cursor);
+		this.nextNodeWithScope = document.findFirstNodeAfterCursor(this.cursor);
 		
 		let nodesBeforeCursor = [];
 		let nodeWithScope = this.nodeWithScopeGenerator.next().value;

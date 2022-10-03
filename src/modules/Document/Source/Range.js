@@ -21,6 +21,8 @@ class Range {
 		this.selection = selection;
 	}
 	
+	
+	
 	containsNode(node) {
 		return Selection.isWithin(selectionFromNode(node), this.selection);
 	}

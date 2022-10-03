@@ -18,8 +18,8 @@ module.exports = class Scope {
 		this.parent = parent;
 		this.lang = lang;
 		this.code = code;
-		this.ranges = ranges;
-		this.treeSitterRanges = ranges.map(Range.toTreeSitterRange);
+		
+		this.setRanges(ranges);
 		
 		this.tree = null;
 		
@@ -27,7 +27,18 @@ module.exports = class Scope {
 		this.scopesByNode = {};
 		this.scopeAndRangeByNode = {};
 		
+		this.setRangeScopePointers();
+		
 		this.parse();
+	}
+	
+	setRanges(ranges) {
+		this.ranges = ranges;
+		this.treeSitterRanges = ranges.map(Range.toTreeSitterRange);
+		
+		for (let range of ranges) {
+			range.scope = this;
+		}
 	}
 	
 	parse() {
@@ -62,8 +73,8 @@ module.exports = class Scope {
 		} = edit;
 		
 		this.code = code;
-		this.ranges = newRanges;
-		this.treeSitterRanges = this.ranges.map(Range.toTreeSitterRange);
+		
+		this.setRanges(newRanges);
 		
 		if (!this.tree) {
 			return this.parse();
@@ -111,7 +122,7 @@ module.exports = class Scope {
 					
 					return Cursor.equals(start, existingSelectionEdited.start);
 				});
-			}, (existingScope, ranges) => {
+			}, function(existingScope, ranges) {
 				existingScope.edit(edit, index, ranges, code);
 			});
 		}
@@ -347,26 +358,17 @@ module.exports = class Scope {
 		let node = this.tree && findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
 		
 		if (!node) {
-			if (this.parent) {
-				return this.parent.findSmallestNodeAtCursor(cursor);
-			} else {
-				return null;
-			}
+			return this.parent?.findFirstNodeAfterCursor(cursor);
 		}
 		
-		return {
-			scope: this,
-			range: this.findContainingRange(node),
-			node,
-		};
+		return new NodeWithScope(this, this.findContainingRange(node), node);
 	}
 	
 	findFirstNodeAfterCursor(cursor) {
-		let node = this.tree && findSmallestNodeAtCursor(this.tree.rootNode, cursor);
+		let node = this.tree && findFirstNodeAfterCursor(this.tree.rootNode, cursor);
 		
 		if (!node) {
-			if (this.parent) {
-				return this.parent.findSmallestNodeAtCursor(cursor);
+			return this.parent?.findFirstNodeAfterCursor(cursor);
 			} else {
 				return null;
 			}
