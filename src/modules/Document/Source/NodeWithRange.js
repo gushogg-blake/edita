@@ -4,12 +4,16 @@ class NodeWithRange {
 		this.node = node;
 	}
 	
+	get scope() {
+		return this.range.scope;
+	}
+	
 	next() {
-		return this.range.nextNodeWithRange(this);
+		return this.scope.nextNodeWithRange(this);
 	}
 	
 	parent() {
-		return this.range.parentNodeWithRange(this);
+		return this.scope.parentNodeWithRange(this);
 	}
 }
 

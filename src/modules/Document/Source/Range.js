@@ -13,6 +13,13 @@ function selectionFromNode(node) {
 	return s(c(startPosition.row, startPosition.column), c(endPosition.row, endPosition.column));
 }
 
+/*
+Note - all Ranges have a .scope property. This is set by the owner
+Scope after the Range is created because the injection logic creates
+Ranges before creating the associated Scopes (so the Scope can't be
+passed in the constructor).
+*/
+
 class Range {
 	constructor(node, startIndex, endIndex, selection) {
 		this.node = node;
@@ -20,8 +27,6 @@ class Range {
 		this.endIndex = endIndex;
 		this.selection = selection;
 	}
-	
-	
 	
 	get lang() {
 		return this.scope.lang;

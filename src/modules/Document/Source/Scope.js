@@ -258,31 +258,15 @@ module.exports = class Scope {
 		if (childScopeAndRange) {
 			let {scope, range} = childScopeAndRange;
 			
-			if (!scope.tree) {
-				return this.nextAfterRange(range);
+			if (scope.tree) {
+				return scope.firstInRange(range);
 			}
-			
-			return scope.firstInRange(range);
 		}
 		
 		let nextNode = next(node);
 		
-		while (nextNode && !range.containsNode(nextNode)) {
-			if (!range.containsNodeStart(nextNode)) {
-				nextNode = null;
-				
-				break;
-			}
-			
-			nextNode = next(nextNode);
-		}
-		
-		if (!nextNode) {
-			if (this.parent) {
-				return this.parent.nextAfterRange(range);
-			} else {
-				return null;
-			}
+		if (!nextNode || !range.containsNodeStart(nextNode)) {
+			return this.parent.nextAfterRange(range);
 		}
 		
 		return new NodeWithRange(range, nextNode);
@@ -320,6 +304,17 @@ module.exports = class Scope {
 	
 	firstInRange(range) {
 		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, range.selection.start);
+		let childScopeAndRange = this.scopeAndRangeByNode[node.id];
+		
+		if (childScopeAndRange) {
+			let {scope, range} = childScopeAndRange;
+			
+			if (!scope.tree) {
+				return this.nextAfterRange(range);
+			}
+			
+			return scope.firstInRange(range);
+		}
 		
 		return new NodeWithRange(range, node);
 	}
