@@ -9,12 +9,13 @@ let findSmallestNodeAtCursor = require("modules/utils/treeSitter/findSmallestNod
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 let Range = require("./Range");
-let NodeWithScope = require("./NodeWithScope");
+let NodeWithRange = require("./NodeWithRange");
 
 let {s} = Selection;
 
 module.exports = class Scope {
-	constructor(parent, lang, code, ranges) {
+	constructor(parent, lang, code, ranges, noParse=false) {
+		this.noParse = noParse;
 		this.parent = parent;
 		this.lang = lang;
 		this.code = code;
@@ -42,6 +43,10 @@ module.exports = class Scope {
 	}
 	
 	parse() {
+		if (this.noParse || this.lang.code === "plainText") {
+			return;
+		}
+		
 		//console.time("parse (" + this.lang.code + ")");
 		
 		try {
@@ -77,7 +82,9 @@ module.exports = class Scope {
 		this.setRanges(newRanges);
 		
 		if (!this.tree) {
-			return this.parse();
+			this.parse();
+			
+			return;
 		}
 		
 		let existingScopes = this.scopes;
@@ -241,11 +248,11 @@ module.exports = class Scope {
 	}
 	
 	/*
-	given a nodeWithScope in this scope, get the next nodeWithScope
+	given a nodeWithRange in this scope, get the next nodeWithRange
 	*/
 	
-	nextNodeWithScope(nodeWithScope) {
-		let {node, range} = nodeWithScope;
+	nextNodeWithRange(nodeWithRange) {
+		let {node, range} = nodeWithRange;
 		let childScopeAndRange = this.scopeAndRangeByNode[node.id];
 		
 		if (childScopeAndRange) {
@@ -278,11 +285,11 @@ module.exports = class Scope {
 			}
 		}
 		
-		return new NodeWithScope(this, range, nextNode);
+		return new NodeWithRange(range, nextNode);
 	}
 	
 	/*
-	given a nodeWithScope in this scope, get its parent. for example:
+	given a nodeWithRange in this scope, get its parent. for example:
 	
 	<script>
 		let a = 123;
@@ -292,12 +299,12 @@ module.exports = class Scope {
 	in the script tag in the html scope.
 	*/
 	
-	parentNodeWithScope(nodeWithScope) {
-		let {node} = nodeWithScope;
+	parentNodeWithRange(nodeWithRange) {
+		let {node} = nodeWithRange;
 		let parent = nodeGetters.parent(node);
 		
 		if (parent) {
-			return new NodeWithScope(this, this.findContainingRange(parent), parent);
+			return new NodeWithRange(this.findContainingRange(parent), parent);
 		} else {
 			return this.parent.getInjectionParent(node);
 		}
@@ -314,21 +321,21 @@ module.exports = class Scope {
 	firstInRange(range) {
 		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, range.selection.start);
 		
-		return new NodeWithScope(this, range, node);
+		return new NodeWithRange(range, node);
 	}
 	
 	nextAfterRange(prevRange) {
 		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, prevRange.selection.end);
 		let range = node && this.findContainingRange(node);
 		
-		return new NodeWithScope(this, range, node);
+		return new NodeWithRange(range, node);
 	}
 	
 	langFromCursor(cursor) {
-		return this.scopeFromCursor(cursor)?.lang;
+		return this.rangeFromCursor(cursor).lang;
 	}
 	
-	_scopeFromCursor(cursor, _char) {
+	_rangeFromCursor(cursor, _char) {
 		let fn = _char ? Selection.charIsWithinSelection : Selection.cursorIsWithinOrNextToSelection;
 		
 		if (!this.ranges.some(range => fn(range.selection, cursor))) {
@@ -336,7 +343,7 @@ module.exports = class Scope {
 		}
 		
 		for (let scope of this.scopes) {
-			let scopeFromChild = scope.scopeFromCursor(cursor);
+			let scopeFromChild = scope.rangeFromCursor(cursor);
 			
 			if (scopeFromChild) {
 				return scopeFromChild;
@@ -346,12 +353,12 @@ module.exports = class Scope {
 		return this;
 	}
 	
-	scopeFromCursor(cursor) {
-		return this._scopeFromCursor(cursor, false);
+	rangeFromCursor(cursor) {
+		return this._rangeFromCursor(cursor, false);
 	}
 	
 	rangeFromCharCursor(cursor) {
-		return this._scopeFromCursor(cursor, true);
+		return this._rangeFromCursor(cursor, true);
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
@@ -361,7 +368,7 @@ module.exports = class Scope {
 			return this.parent?.findFirstNodeAfterCursor(cursor);
 		}
 		
-		return new NodeWithScope(this, this.findContainingRange(node), node);
+		return new NodeWithRange(this.findContainingRange(node), node);
 	}
 	
 	findFirstNodeAfterCursor(cursor) {

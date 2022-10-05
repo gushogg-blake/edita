@@ -38,11 +38,7 @@ module.exports = class {
 	parse() {
 		this.createLines();
 		
-		if (!this.noParse && this.lang.code !== "plainText") {
-			this.rootScope = new Scope(null, this.lang, this.string, [this.getContainingRange()]);
-		} else {
-			this.rootScope = null;
-		}
+		this.rootScope = new Scope(null, this.lang, this.string, [this.getContainingRange()], this.noParse);
 	}
 	
 	edit(edit) {
@@ -60,34 +56,20 @@ module.exports = class {
 		
 		this.createLines();
 		
-		if (this.rootScope) {
-			this.rootScope.edit(edit, index, [this.getContainingRange()], this.string);
-		}
+		this.rootScope.edit(edit, index, [this.getContainingRange()], this.string);
 		
 		//console.timeEnd("edit");
 	}
 	
 	*generateNodesOnLine(lineIndex, lang=null) {
-		if (!this.rootScope) {
-			return;
-		}
-		
 		yield* this.rootScope.generateNodesOnLine(lineIndex, lang);
 	}
 	
 	*generateNodesWithScopeOnLine(lineIndex) {
-		if (!this.rootScope) {
-			return;
-		}
-		
 		yield* this.rootScope.generateNodesWithScopeOnLine(lineIndex);
 	}
 	
 	_findNodeWithRange(cursor, method) {
-		if (!this.rootScope) {
-			return null;
-		}
-		
 		return this.rangeFromCharCursor(cursor)[method](cursor);
 	}
 	
@@ -104,10 +86,6 @@ module.exports = class {
 	}
 	
 	getHeadersOnLine(lineIndex) {
-		if (!this.rootScope) {
-			return [];
-		}
-		
 		let nodesWithScope = [...this.rootScope.generateNodesWithScopeOnLine(lineIndex)];
 		
 		return nodesWithScope.map(function({scope, node}) {
@@ -119,10 +97,6 @@ module.exports = class {
 	}
 	
 	getFootersOnLine(lineIndex) {
-		if (!this.rootScope) {
-			return [];
-		}
-		
 		let nodesWithScope = [...this.rootScope.generateNodesWithScopeOnLine(lineIndex)];
 		
 		return nodesWithScope.map(function({scope, node}) {
@@ -163,16 +137,16 @@ module.exports = class {
 		}
 	}
 	
-	scopeFromCursor(cursor) {
-		return this.rootScope?.scopeFromCursor(cursor);
+	rangeFromCursor(cursor) {
+		return this.rootScope.rangeFromCursor(cursor);
 	}
 	
 	rangeFromCharCursor(cursor) {
-		return this.rootScope?.rangeFromCharCursor(cursor);
+		return this.rootScope.rangeFromCharCursor(cursor);
 	}
 	
 	langFromCursor(cursor) {
-		return this.rootScope?.langFromCursor(cursor) || this.lang;
+		return this.rootScope.langFromCursor(cursor) || this.lang;
 	}
 	
 	cursorAtEnd() {

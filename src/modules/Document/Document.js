@@ -241,12 +241,12 @@ class Document extends BaseDocument {
 		return this.langFromCursor(c(startLineIndex, line.indentOffset));
 	}
 	
-	scopeFromCursor(cursor) {
-		return this.source.scopeFromCursor(cursor);
+	rangeFromCursor(cursor) {
+		return this.source.rangeFromCursor(cursor);
 	}
 	
-	scopeFromCharCursor(cursor) {
-		return this.source.scopeFromCharCursor(cursor);
+	rangeFromCharCursor(cursor) {
+		return this.source.rangeFromCharCursor(cursor);
 	}
 	
 	langFromCursor(cursor) {

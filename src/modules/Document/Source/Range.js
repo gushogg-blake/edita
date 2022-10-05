@@ -23,6 +23,10 @@ class Range {
 	
 	
 	
+	get lang() {
+		return this.scope.lang;
+	}
+	
 	containsNode(node) {
 		return Selection.isWithin(selectionFromNode(node), this.selection);
 	}

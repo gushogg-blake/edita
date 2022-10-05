@@ -17,12 +17,7 @@ class LspClient extends Evented {
 	}
 	
 	async getCompletions(document, cursor) {
-		let scope = document.scopeFromCursor(cursor);
-		
-		if (!scope) {
-			return [];
-		}
-		
+		let {scope} = document.rangeFromCursor(cursor);
 		let {project} = document;
 		let langCode = scope.lang.code;
 		let code = maskOtherRegions(document, scope);

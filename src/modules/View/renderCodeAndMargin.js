@@ -50,11 +50,11 @@ class Renderer {
 	}
 	
 	get nodeLineIndex() {
-		return this.nodeWithScope && nodeGetters.startPosition(this.nodeWithScope.node).row;
+		return this.nodeWithRange && nodeGetters.startPosition(this.nodeWithRange.node).row;
 	}
 	
 	get nodeOffset() {
-		return this.nodeWithScope && nodeGetters.startPosition(this.nodeWithScope.node).column;
+		return this.nodeWithRange && nodeGetters.startPosition(this.nodeWithRange.node).column;
 	}
 	
 	get offsetInRow() {
@@ -83,7 +83,7 @@ class Renderer {
 	}
 	
 	setColor() {
-		let {scope, node} = this.nodeWithScope;
+		let {scope, node} = this.nodeWithRange;
 		let {lang} = scope;
 		let colors = base.theme.langs[lang.code];
 		let hiliteClass = lang.getHiliteClass(node);
@@ -139,20 +139,20 @@ class Renderer {
 			this.nextFoldedLineRow();
 		}
 		
-		this.nodeWithScope = document.findSmallestNodeAtCursor(this.cursor);
-		this.nextNodeWithScope = document.findFirstNodeAfterCursor(this.cursor);
+		this.nodeWithRange = document.findSmallestNodeAtCursor(this.cursor);
+		this.nextNodeWithRange = document.findFirstNodeAfterCursor(this.cursor);
 		
 		let nodesBeforeCursor = [];
-		let nodeWithScope = this.nodeWithScopeGenerator.next().value;
+		let nodeWithRange = this.nodeWithScopeGenerator.next().value;
 		
-		while (nodeWithScope) {
-			let {scope, node} = nodeWithScope;
+		while (nodeWithRange) {
+			let {scope, node} = nodeWithRange;
 			
 			if (Cursor.isBefore(treeSitterPointToCursor(node.startPosition), this.cursor)) {
-				nodesBeforeCursor.unshift(nodeWithScope);
+				nodesBeforeCursor.unshift(nodeWithRange);
 			}
 			
-			nodeWithScope = scope.getNodeParent(node);
+			nodeWithRange = scope.getNodeParent(node);
 		}
 		
 		this.setColor();
