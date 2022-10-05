@@ -146,7 +146,7 @@ module.exports = class {
 	}
 	
 	langFromCursor(cursor) {
-		return this.rootScope.langFromCursor(cursor) || this.lang;
+		return this.rootScope.langFromCursor(cursor);
 	}
 	
 	cursorAtEnd() {

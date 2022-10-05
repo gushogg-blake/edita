@@ -336,21 +336,21 @@ module.exports = class Scope {
 	}
 	
 	_rangeFromCursor(cursor, _char) {
-		let fn = _char ? Selection.charIsWithinSelection : Selection.cursorIsWithinOrNextToSelection;
+		let range = this.ranges.find(range => _char ? range.containsCharCursor(cursor) : range.containsCursor(cursor));
 		
-		if (!this.ranges.some(range => fn(range.selection, cursor))) {
+		if (!range) {
 			return null;
 		}
 		
 		for (let scope of this.scopes) {
-			let scopeFromChild = scope.rangeFromCursor(cursor);
+			let rangeFromChild = scope.rangeFromCursor(cursor);
 			
-			if (scopeFromChild) {
-				return scopeFromChild;
+			if (rangeFromChild) {
+				return rangeFromChild;
 			}
 		}
 		
-		return this;
+		return range;
 	}
 	
 	rangeFromCursor(cursor) {
@@ -480,6 +480,6 @@ module.exports = class Scope {
 	}
 	
 	generateNodesWithScopeOnLine(lineIndex) {
-		return this._generateNodesOnLine(lineIndex, 0, true, null);
+		return this._generateNodesOnLine(lineIndex, 0, null);
 	}
 }

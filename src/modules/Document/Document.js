@@ -269,14 +269,6 @@ class Document extends BaseDocument {
 		return [...this.source.generateNodesOnLine(lineIndex, lang)];
 	}
 	
-	generateNodesOnLine(lineIndex, lang=null) {
-		return this.source.generateNodesOnLine(lineIndex, lang);
-	}
-	
-	generateNodesWithScopeOnLine(lineIndex) {
-		return this.source.generateNodesWithScopeOnLine(lineIndex);
-	}
-	
 	getHeadersOnLine(lineIndex) {
 		return this.source.getHeadersOnLine(lineIndex);
 	}

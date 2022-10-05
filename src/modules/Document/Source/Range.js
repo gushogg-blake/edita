@@ -27,6 +27,14 @@ class Range {
 		return this.scope.lang;
 	}
 	
+	containsCursor(cursor) {
+		return Selection.cursorIsWithinOrNextToSelection(this.selection, cursor);
+	}
+	
+	containsCharCursor(cursor) {
+		return Selection.charIsWithinSelection(this.selection, cursor);
+	}
+	
 	containsNode(node) {
 		return Selection.isWithin(selectionFromNode(node), this.selection);
 	}

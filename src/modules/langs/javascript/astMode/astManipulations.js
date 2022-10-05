@@ -25,11 +25,12 @@ module.exports = {
 			
 			for (let i = startLineIndex; i < endLineIndex; i++) {
 				let line = lines[i];
-				let nodes = document.getNodesOnLine(i);
 				
 				if (line.trimmed.length === 0) {
 					continue;
 				}
+				
+				let nodes = document.getNodesOnLine(i);
 				
 				if (
 					nodes.length < 4
@@ -53,7 +54,6 @@ module.exports = {
 			
 			for (let i = start; i < end; i++) {
 				let line = lines[i];
-				let nodes = document.getNodesOnLine(i);
 				
 				if (line.trimmed.length === 0) {
 					statements.push({
@@ -62,6 +62,8 @@ module.exports = {
 					
 					continue;
 				}
+				
+				let nodes = document.getNodesOnLine(i);
 				
 				let [node] = nodes;
 				let endLineIndex = node.endPosition.row;
