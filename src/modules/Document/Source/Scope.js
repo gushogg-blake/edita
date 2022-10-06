@@ -25,10 +25,9 @@ module.exports = class Scope {
 		this.tree = null;
 		
 		this.scopes = [];
-		this.scopesByNode = {};
+		this.scopeByNode = {};
 		this.scopeAndRangeByNode = {};
-		
-		this.setRangeScopePointers();
+		this.injectionNodeByChildRange = new WeakMap();
 		
 		this.parse();
 	}
@@ -137,7 +136,7 @@ module.exports = class Scope {
 	
 	processInjections(findExistingScope=null, editExistingScope=null) {
 		this.scopes = [];
-		this.scopesByNode = {};
+		this.scopeByNode = {};
 		this.scopeAndRangeByNode = {};
 		
 		if (!this.tree) {
@@ -189,17 +188,15 @@ module.exports = class Scope {
 				this.scopes.push(scope);
 				
 				for (let node of nodes) {
-					this.scopesByNode[node.id] = scope;
+					this.scopeByNode[node.id] = scope;
 				}
 				
 				for (let i = 0; i < nodes.length; i++) {
 					let node = nodes[i];
 					let range = ranges[i];
 					
-					this.scopeAndRangeByNode[node.id] = {
-						scope,
-						range,
-					};
+					this.scopeAndRangeByNode[node.id] = {scope, range};
+					this.injectionNodeByChildRange.set(range, node);
 				}
 			} else {
 				for (let match of matches) {
@@ -228,31 +225,32 @@ module.exports = class Scope {
 					}
 					
 					this.scopes.push(scope);
-					this.scopesByNode[node.id] = scope;
-					
-					this.scopeAndRangeByNode[node.id] = {
-						scope,
-						range,
-					};
+					this.scopeByNode[node.id] = scope;
+					this.scopeAndRangeByNode[node.id] = {scope, range};
+					this.injectionNodeByChildRange.set(range, node);
 				}
 			}
 		}
 	}
 	
-	findContainingRange(node) {
+	findRangeContainingStart(node) {
 		for (let range of this.ranges) {
-			if (range.containsNode(node)) {
+			if (range.containsNodeStart(node)) {
 				return range;
 			}
 		}
 	}
 	
 	/*
-	helper function for the above
+	get the NodeWithRange in this scope whose node is the parent of the child
+	range, ie. the injection point. for a range in a javascript scope within
+	an html file, this will be the raw_text node inside the <script> tag.
 	*/
 	
-	getInjectionParent(node) {
-		return this.findSmallestNodeAtCursor(treeSitterPointToCursor(node.startPosition));
+	getInjectionParent(childRange) {
+		let node = this.injectionNodeByChildRange(childRange);
+		
+		return new NodeWithRange(this.findRangeContainingStart(node), node);
 	}
 	
 	firstInRange(range) {
@@ -274,7 +272,7 @@ module.exports = class Scope {
 	
 	nextAfterRange(prevRange) {
 		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, prevRange.selection.end);
-		let range = node && this.findContainingRange(node);
+		let range = node && this.findRangeContainingStart(node);
 		
 		return new NodeWithRange(range, node);
 	}
@@ -316,7 +314,7 @@ module.exports = class Scope {
 			return this.parent?.findFirstNodeAfterCursor(cursor);
 		}
 		
-		return new NodeWithRange(this.findContainingRange(node), node);
+		return new NodeWithRange(this.findRangeContainingStart(node), node);
 	}
 	
 	findFirstNodeAfterCursor(cursor) {
@@ -331,7 +329,7 @@ module.exports = class Scope {
 		
 		return {
 			scope: this,
-			range: this.findContainingRange(node),
+			range: this.findRangeContainingStart(node),
 			node,
 		};
 	}
@@ -349,7 +347,7 @@ module.exports = class Scope {
 		
 		return {
 			scope: this,
-			range: this.findContainingRange(node),
+			range: this.findRangeContainingStart(node),
 			node,
 		};
 	}
@@ -403,7 +401,7 @@ module.exports = class Scope {
 			
 			startOffset = nodeGetters.endPosition(node).column;
 			
-			let scope = this.scopesByNode[node.id];
+			let scope = this.scopeByNode[node.id];
 			
 			if (scope) {
 				for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, lang)) {

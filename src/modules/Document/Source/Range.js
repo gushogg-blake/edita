@@ -1,3 +1,4 @@
+let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 
@@ -5,10 +6,7 @@ let {s} = Selection;
 let {c} = Cursor;
 
 function selectionFromNode(node) {
-	let {
-		startPosition,
-		endPosition,
-	} = node;
+	let {startPosition, endPosition} = node;
 	
 	return s(c(startPosition.row, startPosition.column), c(endPosition.row, endPosition.column));
 }
@@ -40,12 +38,8 @@ class Range {
 		return Selection.charIsWithinSelection(this.selection, cursor);
 	}
 	
-	containsNode(node) {
-		return Selection.isWithin(selectionFromNode(node), this.selection);
-	}
-	
 	containsNodeStart(node) {
-		return Selection.charIsWithinSelection(this.selection, selectionFromNode(node).start);
+		return Selection.charIsWithinSelection(this.selection, treeSitterPointToCursor(node.startPosition));
 	}
 	
 	toTreeSitterRange() {

@@ -9,11 +9,11 @@ class NodeWithRange {
 	}
 	
 	next() {
-		return this.scope.nextNodeWithRange(this);
+		return this.scope.source.nextNodeWithRange(this);
 	}
 	
 	parent() {
-		return this.scope.parentNodeWithRange(this);
+		return this.scope.source.parentNodeWithRange(this);
 	}
 }
 

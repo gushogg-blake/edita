@@ -69,10 +69,6 @@ module.exports = class {
 		yield* this.rootScope.generateNodesWithScopeOnLine(lineIndex);
 	}
 	
-	_findNodeWithRange(cursor, method) {
-		return this.rangeFromCharCursor(cursor)[method](cursor);
-	}
-	
 	findFirstNodeOnOrAfterCursor(cursor) {
 		let {scope} = this.rangeFromCharCursor(cursor);
 		let node = scope.findFirstNodeOnOrAfterCursor(cursor);
@@ -91,7 +87,7 @@ module.exports = class {
 			return null;
 		}
 		
-		return new NodeWithRange(scope.findContainingRange(node), node);
+		return new NodeWithRange(scope.findRangeContainingStart(node), node);
 	}
 	
 	findFirstNodeAfterCursor(cursor) {
@@ -139,14 +135,15 @@ module.exports = class {
 	*/
 	
 	parentNodeWithRange(nodeWithRange) {
-		let {node} = nodeWithRange;
+		let {scope, range, node} = nodeWithRange;
 		let parent = nodeGetters.parent(node);
+		let containingRange = parent && scope.findRangeContainingStart(parent);
 		
-		if (parent) {
-			return new NodeWithRange(this.findContainingRange(parent), parent);
-		} else {
-			return this.parent.getInjectionParent(node);
+		if (!parent || containingRange !== range) {
+			return scope.parent?.getInjectionParent(range);
 		}
+		
+		return new NodeWithRange(containingRange, parent);
 	}
 	
 	getHeadersOnLine(lineIndex) {
