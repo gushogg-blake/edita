@@ -1,9 +1,9 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-
 let Scope = require("./Scope");
 let Range = require("./Range");
 let Line = require("./Line");
+let NodeWithRange = require("./NodeWithRange");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -38,7 +38,7 @@ module.exports = class {
 	parse() {
 		this.createLines();
 		
-		this.rootScope = new Scope(null, this.lang, this.string, [this.getContainingRange()], this.noParse);
+		this.rootScope = new Scope(this, null, this.lang, this.string, [this.getContainingRange()]);
 	}
 	
 	edit(edit) {
@@ -74,7 +74,24 @@ module.exports = class {
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
-		return this._findNodeWithRange(cursor, "findFirstNodeOnOrAfterCursor");
+		let {scope} = this.rangeFromCharCursor(cursor);
+		let node = scope.findFirstNodeOnOrAfterCursor(cursor);
+		
+		while (!node) {
+			scope = scope.parent;
+			
+			if (!scope) {
+				break;
+			}
+			
+			node = scope.findFirstNodeOnOrAfterCursor(cursor);
+		}
+		
+		if (!node) {
+			return null;
+		}
+		
+		return new NodeWithRange(scope.findContainingRange(node), node);
 	}
 	
 	findFirstNodeAfterCursor(cursor) {
@@ -83,6 +100,53 @@ module.exports = class {
 	
 	findSmallestNodeAtCursor(cursor) {
 		return this._findNodeWithRange(cursor, "findSmallestNodeAtCursor");
+	}
+	
+	/*
+	given a NodeWithRange, get the next NodeWithRange in the document
+	*/
+	
+	nextNodeWithRange(nodeWithRange) {
+		let {scope, range, node} = nodeWithRange;
+		let childScopeAndRange = scope.scopeAndRangeByNode[node.id];
+		
+		if (childScopeAndRange) {
+			let {scope, range} = childScopeAndRange;
+			
+			if (scope.tree) {
+				return scope.firstInRange(range);
+			}
+		}
+		
+		let nextNode = next(node);
+		
+		if (!nextNode || !range.containsNodeStart(nextNode)) {
+			return scope.parent?.nextAfterRange(range);
+		}
+		
+		return new NodeWithRange(range, nextNode);
+	}
+	
+	/*
+	given a nodeWithRange in this scope, get its parent. for example:
+	
+	<script>
+		let a = 123;
+	</script>
+	
+	For the root node in the javascript scope, the parent is the raw_text node
+	in the script tag in the html scope.
+	*/
+	
+	parentNodeWithRange(nodeWithRange) {
+		let {node} = nodeWithRange;
+		let parent = nodeGetters.parent(node);
+		
+		if (parent) {
+			return new NodeWithRange(this.findContainingRange(parent), parent);
+		} else {
+			return this.parent.getInjectionParent(node);
+		}
 	}
 	
 	getHeadersOnLine(lineIndex) {

@@ -14,8 +14,8 @@ let NodeWithRange = require("./NodeWithRange");
 let {s} = Selection;
 
 module.exports = class Scope {
-	constructor(parent, lang, code, ranges, noParse=false) {
-		this.noParse = noParse;
+	constructor(source, parent, lang, code, ranges) {
+		this.source = source;
 		this.parent = parent;
 		this.lang = lang;
 		this.code = code;
@@ -43,7 +43,7 @@ module.exports = class Scope {
 	}
 	
 	parse() {
-		if (this.noParse || this.lang.code === "plainText") {
+		if (this.source.noParse || this.lang.code === "plainText") {
 			return;
 		}
 		
@@ -183,7 +183,7 @@ module.exports = class Scope {
 					
 					scope = existingScope;
 				} else {
-					scope = new Scope(this, injectionLang, this.code, ranges);
+					scope = new Scope(this.source, this, injectionLang, this.code, ranges);
 				}
 				
 				this.scopes.push(scope);
@@ -224,7 +224,7 @@ module.exports = class Scope {
 						
 						scope = existingScope;
 					} else {
-						scope = new Scope(this, injectionLang, this.code, [range]);
+						scope = new Scope(this.source, this, injectionLang, this.code, [range]);
 					}
 					
 					this.scopes.push(scope);
@@ -244,53 +244,6 @@ module.exports = class Scope {
 			if (range.containsNode(node)) {
 				return range;
 			}
-		}
-	}
-	
-	/*
-	given a nodeWithRange in this scope, get the next nodeWithRange
-	*/
-	
-	nextNodeWithRange(nodeWithRange) {
-		let {node, range} = nodeWithRange;
-		let childScopeAndRange = this.scopeAndRangeByNode[node.id];
-		
-		if (childScopeAndRange) {
-			let {scope, range} = childScopeAndRange;
-			
-			if (scope.tree) {
-				return scope.firstInRange(range);
-			}
-		}
-		
-		let nextNode = next(node);
-		
-		if (!nextNode || !range.containsNodeStart(nextNode)) {
-			return this.parent.nextAfterRange(range);
-		}
-		
-		return new NodeWithRange(range, nextNode);
-	}
-	
-	/*
-	given a nodeWithRange in this scope, get its parent. for example:
-	
-	<script>
-		let a = 123;
-	</script>
-	
-	For the root node in the javascript scope, the parent is the raw_text node
-	in the script tag in the html scope.
-	*/
-	
-	parentNodeWithRange(nodeWithRange) {
-		let {node} = nodeWithRange;
-		let parent = nodeGetters.parent(node);
-		
-		if (parent) {
-			return new NodeWithRange(this.findContainingRange(parent), parent);
-		} else {
-			return this.parent.getInjectionParent(node);
 		}
 	}
 	
