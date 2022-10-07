@@ -380,7 +380,7 @@ module.exports = class Scope {
 		}
 		
 		for (let scope of this.scopes) {
-			for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, withScope, lang)) {
+			for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, lang)) {
 				yield childNode;
 				
 				startOffset = nodeGetters.endPosition(childNode.node).column;

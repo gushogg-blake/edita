@@ -70,6 +70,10 @@ module.exports = class {
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
+		if (Cursor.equals(cursor, this.cursorAtEnd())) {
+			return null;
+		}
+		
 		let {scope} = this.rangeFromCharCursor(cursor);
 		let node = scope.findFirstNodeOnOrAfterCursor(cursor);
 		
@@ -91,11 +95,53 @@ module.exports = class {
 	}
 	
 	findFirstNodeAfterCursor(cursor) {
+		if (Cursor.equals(cursor, this.cursorAtEnd())) {
+			return null;
+		}
 		
+		let {scope} = this.rangeFromCharCursor(cursor);
+		let node = scope.findFirstNodeAfterCursor(cursor);
+		
+		while (!node) {
+			scope = scope.parent;
+			
+			if (!scope) {
+				break;
+			}
+			
+			node = scope.findFirstNodeAfterCursor(cursor);
+		}
+		
+		if (!node) {
+			return null;
+		}
+		
+		return new NodeWithRange(scope.findRangeContainingStart(node), node);
 	}
 	
-	findSmallestNodeAtCursor(cursor) {
+	findSmallestNodeAtCharCursor(cursor) {
+		if (Cursor.equals(cursor, this.cursorAtEnd())) {
+			return null;
+		}
 		
+		let {scope} = this.rangeFromCharCursor(cursor);
+		let node = scope.findSmallestNodeAtCharCursor(cursor);
+		
+		while (!node) {
+			scope = scope.parent;
+			
+			if (!scope) {
+				break;
+			}
+			
+			node = scope.findSmallestNodeAtCharCursor(cursor);
+		}
+		
+		if (!node) {
+			return null;
+		}
+		
+		return new NodeWithRange(scope.findRangeContainingStart(node), node);
 	}
 	
 	/*
