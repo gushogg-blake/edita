@@ -1,23 +1,20 @@
 let middle = require("utils/middle");
+let compareNodeAndCharCursor = require("./compareNodeAndCharCursor");
 let nodeGetters = require("./nodeGetters");
 
-function compare(node, cursor) {
-	let {lineIndex, offset} = cursor;
-	let start = nodeGetters.startPosition(node);
-	let end = nodeGetters.endPosition(node);
-	
-	if (lineIndex < start.row || lineIndex === start.row && offset < start.column) {
-		return "cursorBeforeNode";
-	}
-	
-	if (lineIndex > end.row || lineIndex === end.row && offset >= end.column) {
-		return "cursorAfterNode";
-	}
-	
-	return "nodeContainsCursor";
-}
+/*
+given a node and a cursor, find the smallest node within the given node
+(or the node itself) that the cursor is either directly before or within
+
+if the cursor is not directly before or within the given node, null is
+returned.
+*/
 
 module.exports = function(node, cursor) {
+	if (compareNodeAndCharCursor(node, cursor) !== "nodeContainsCursor") {
+		return null;
+	}
+	
 	let smallestNode = node;
 	let children = nodeGetters.children(smallestNode);
 	let startIndex = 0;
@@ -30,7 +27,7 @@ module.exports = function(node, cursor) {
 		
 		let index = middle(startIndex, endIndex);
 		let child = children[index];
-		let cmp = compare(child, cursor);
+		let cmp = compareNodeAndCharCursor(child, cursor);
 		
 		if (cmp === "nodeContainsCursor") {
 			smallestNode = child;

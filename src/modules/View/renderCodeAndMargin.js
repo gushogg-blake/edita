@@ -139,7 +139,7 @@ class Renderer {
 			this.nextFoldedLineRow();
 		}
 		
-		this.nodeWithRange = document.findSmallestNodeAtCursor(this.cursor);
+		this.nodeWithRange = document.findSmallestNodeAtCharCursor(this.cursor);
 		this.nextNodeWithRange = document.findFirstNodeAfterCursor(this.cursor);
 		
 		let nodesBeforeCursor = [];

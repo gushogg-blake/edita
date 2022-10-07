@@ -5,7 +5,7 @@ let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitt
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let findFirstNodeAfterCursor = require("modules/utils/treeSitter/findFirstNodeAfterCursor");
-let findSmallestNodeAtCursor = require("modules/utils/treeSitter/findSmallestNodeAtCursor");
+let findSmallestNodeAtCharCursor = require("modules/utils/treeSitter/findSmallestNodeAtCharCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 let Range = require("./Range");
@@ -289,7 +289,7 @@ module.exports = class Scope {
 		}
 		
 		for (let scope of this.scopes) {
-			let rangeFromChild = scope.rangeFromCursor(cursor);
+			let rangeFromChild = scope._rangeFromCursor(cursor, _char);
 			
 			if (rangeFromChild) {
 				return rangeFromChild;
@@ -308,48 +308,15 @@ module.exports = class Scope {
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
-		let node = this.tree && findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
-		
-		if (!node) {
-			return this.parent?.findFirstNodeAfterCursor(cursor);
-		}
-		
-		return new NodeWithRange(this.findRangeContainingStart(node), node);
+		return this.tree && findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
 	}
 	
 	findFirstNodeAfterCursor(cursor) {
-		let node = this.tree && findFirstNodeAfterCursor(this.tree.rootNode, cursor);
-		
-		if (!node) {
-			return this.parent?.findFirstNodeAfterCursor(cursor);
-			} else {
-				return null;
-			}
-		}
-		
-		return {
-			scope: this,
-			range: this.findRangeContainingStart(node),
-			node,
-		};
+		return this.tree && findFirstNodeAfterCursor(this.tree.rootNode, cursor);
 	}
 	
-	findFirstNodeOnOrAfterCursor(cursor) {
-		let node = this.tree && findSmallestNodeAtCursor(this.tree.rootNode, cursor);
-		
-		if (!node) {
-			if (this.parent) {
-				return this.parent.findSmallestNodeAtCursor(cursor);
-			} else {
-				return null;
-			}
-		}
-		
-		return {
-			scope: this,
-			range: this.findRangeContainingStart(node),
-			node,
-		};
+	findSmallestNodeAtCharCursor(cursor) {
+		return this.tree && findSmallestNodeAtCharCursor(this.tree.rootNode, cursor);
 	}
 	
 	/*

@@ -91,11 +91,11 @@ module.exports = class {
 	}
 	
 	findFirstNodeAfterCursor(cursor) {
-		return this._findNodeWithRange(cursor, "findFirstNodeAfterCursor");
+		
 	}
 	
 	findSmallestNodeAtCursor(cursor) {
-		return this._findNodeWithRange(cursor, "findSmallestNodeAtCursor");
+		
 	}
 	
 	/*

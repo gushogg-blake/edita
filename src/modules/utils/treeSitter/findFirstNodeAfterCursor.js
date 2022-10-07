@@ -3,12 +3,6 @@ let next = require("./next");
 let nodeGetters = require("./nodeGetters");
 let compareNodeAndCharCursor = require("./compareNodeAndCharCursor");
 
-function isOn(node, cursor) {
-	let {row, column} = nodeGetters.startPosition(node);
-	
-	return row === cursor.lineIndex && column === cursor.offset;
-}
-
 function isAfter(node, cursor) {
 	return compareNodeAndCharCursor(node, cursor) === "cursorBeforeNode";
 }
@@ -22,8 +16,14 @@ function endsAfter(node, cursor) {
 	);
 }
 
+/*
+given a node and a cursor, find the first node within the given node
+(or the node itself) that starts after the cursor, ie. there is a gap
+of at least one char between the cursor and the start of the node.
+*/
+
 module.exports = function(node, cursor) {
-	if (isOn(node, cursor) || isAfter(node, cursor)) {
+	if (isAfter(node, cursor)) {
 		return node;
 	}
 	
@@ -40,10 +40,6 @@ module.exports = function(node, cursor) {
 		
 		let index = middle(startIndex, endIndex);
 		let child = children[index];
-		
-		if (isOn(child, cursor)) {
-			return child;
-		}
 		
 		if (isAfter(child, cursor)) {
 			first = child;
@@ -67,12 +63,23 @@ module.exports = function(node, cursor) {
 	}
 	
 	/*
-	the cursor might be within a node that doesn't have children, in which case
-	the first node on or after the cursor will be the next node
+	we might have landed on a node that doesn't have any children after
+	the cursor, in which case we go next until the node is after the
+	cursor
 	*/
 	
 	if (foundContainingNode && !first) {
-		return next(node);
+		let n = next(node);
+		
+		while (n) {
+			if (isAfter(n, cursor)) {
+				first = n;
+				
+				break;
+			}
+			
+			n = next(n);
+		}
 	}
 	
 	return first;

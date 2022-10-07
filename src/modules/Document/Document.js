@@ -261,8 +261,8 @@ class Document extends BaseDocument {
 		return this.source.findFirstNodeAfterCursor(cursor);
 	}
 	
-	findSmallestNodeAtCursor(cursor) {
-		return this.source.findSmallestNodeAtCursor(cursor);
+	findSmallestNodeAtCharCursor(cursor) {
+		return this.source.findSmallestNodeAtCharCursor(cursor);
 	}
 	
 	getNodesOnLine(lineIndex, lang=null) {
