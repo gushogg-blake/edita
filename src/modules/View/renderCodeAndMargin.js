@@ -83,6 +83,10 @@ class Renderer {
 	}
 	
 	setColor() {
+		if (!this.nodeWithRange) {
+			return;
+		}
+		
 		let {scope, node} = this.nodeWithRange;
 		let {lang} = scope;
 		let colors = base.theme.langs[lang.code];
@@ -129,8 +133,8 @@ class Renderer {
 		let {height} = sizes;
 		let {rowHeight} = measurements;
 		
-		this.rowsToRender = Math.ceil(height / rowHeight) + 1;
-		this.rowsRendered = 0;
+		let rowsToRender = Math.ceil(height / rowHeight) + 1;
+		let rowsRendered = 0;
 		
 		this.foldedLineRowGenerator = view.generateLineRowsFolded(firstLineIndex);
 		this.nextFoldedLineRow();
@@ -143,17 +147,17 @@ class Renderer {
 		this.nextNodeWithRange = document.findFirstNodeAfterCursor(this.cursor);
 		
 		let nodesBeforeCursor = [];
-		let nodeWithRange = this.nodeWithScopeGenerator.next().value;
+		let nodeWithRange = this.nodeWithRange;
 		
 		while (nodeWithRange) {
-			let {scope, node} = nodeWithRange;
-			
-			if (Cursor.isBefore(treeSitterPointToCursor(node.startPosition), this.cursor)) {
+			if (Cursor.isBefore(treeSitterPointToCursor(nodeWithRange.node.startPosition), this.cursor)) {
 				nodesBeforeCursor.unshift(nodeWithRange);
 			}
 			
-			nodeWithRange = scope.getNodeParent(node);
+			nodeWithRange = nodeWithRange.parent();
 		}
+		
+		this.nodeStack = nodesBeforeCursor;
 		
 		this.setColor();
 		
