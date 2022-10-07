@@ -362,7 +362,7 @@ module.exports = class Scope {
 			if (!lang || this.lang === lang) {
 				yield {
 					node,
-					scope: this,
+					lang: this.lang,
 				};
 			}
 			
@@ -388,11 +388,13 @@ module.exports = class Scope {
 		}
 	}
 	
-	generateNodesOnLine(lineIndex, lang=null) {
-		return this._generateNodesOnLine(lineIndex, 0, lang);
+	*generateNodesOnLine(lineIndex, lang=null) {
+		for (let {node} of this._generateNodesOnLine(lineIndex, 0, lang)) {
+			yield node;
+		}
 	}
 	
-	generateNodesWithScopeOnLine(lineIndex) {
-		return this._generateNodesOnLine(lineIndex, 0, null);
+	generateNodesOnLineWithLang(lineIndex, lang=null) {
+		return this._generateNodesOnLine(lineIndex, 0, lang);
 	}
 }

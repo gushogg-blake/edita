@@ -1,5 +1,6 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
+let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 let Scope = require("./Scope");
 let Range = require("./Range");
 let Line = require("./Line");
@@ -61,12 +62,12 @@ module.exports = class {
 		//console.timeEnd("edit");
 	}
 	
-	*generateNodesOnLine(lineIndex, lang=null) {
-		yield* this.rootScope.generateNodesOnLine(lineIndex, lang);
+	generateNodesOnLine(lineIndex, lang=null) {
+		return this.rootScope.generateNodesOnLine(lineIndex, lang);
 	}
 	
-	*generateNodesWithScopeOnLine(lineIndex) {
-		yield* this.rootScope.generateNodesWithScopeOnLine(lineIndex);
+	generateNodesOnLineWithLang(lineIndex, lang=null) {
+		return this.rootScope.generateNodesOnLineWithLang(lineIndex, lang);
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
@@ -193,22 +194,22 @@ module.exports = class {
 	}
 	
 	getHeadersOnLine(lineIndex) {
-		let nodesWithScope = [...this.rootScope.generateNodesWithScopeOnLine(lineIndex)];
+		let nodesWithLang = [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
 		
-		return nodesWithScope.map(function({scope, node}) {
+		return nodesWithLang.map(function({node, lang}) {
 			return {
 				header: node,
-				footer: scope.lang.getFooter(node),
+				footer: lang.getFooter(node),
 			};
 		}).filter(r => r.footer);
 	}
 	
 	getFootersOnLine(lineIndex) {
-		let nodesWithScope = [...this.rootScope.generateNodesWithScopeOnLine(lineIndex)];
+		let nodesWithLang = [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
 		
-		return nodesWithScope.map(function({scope, node}) {
+		return nodesWithLang.map(function({node, lang}) {
 			return {
-				header: scope.lang.getHeader(node),
+				header: lang.getHeader(node),
 				footer: node,
 			};
 		}).filter(r => r.header);

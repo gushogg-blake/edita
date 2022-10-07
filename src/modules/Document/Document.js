@@ -265,6 +265,10 @@ class Document extends BaseDocument {
 		return this.source.findSmallestNodeAtCharCursor(cursor);
 	}
 	
+	generateNodesOnLineWithLang(lineIndex, lang=null) {
+		return this.source.generateNodesOnLineWithLang(lineIndex, lang);
+	}
+	
 	getNodesOnLine(lineIndex, lang=null) {
 		return [...this.source.generateNodesOnLine(lineIndex, lang)];
 	}
