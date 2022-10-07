@@ -17,15 +17,15 @@ class Renderer {
 	}
 	
 	*generateVariableWidthParts() {
-		let offsetInRow = 0;
+		let offset = this.lineRow.startOffset;
 		
 		for (let part of this.lineRow.variableWidthParts) {
 			yield {
 				...part,
-				offsetInRow,
+				offset,
 			};
 			
-			offsetInRow += part.type === "tab" ? 1 : part.string.length;
+			offset += part.type === "tab" ? 1 : part.string.length;
 		}
 	}
 	
@@ -196,25 +196,28 @@ class Renderer {
 				continue;
 			}
 			
-			let {string} = this.variableWidthPart;
+			let currentNodeEnd = Infinity;
 			
-			//let 
+			if (this.nodeWithRange && this.nodeWithRange.node.startPosition.row === this.lineIndex) {
+				currentNodeEnd = this.nodeWithRange.node.startPosition.column;
+			}
 			
-			let nextNodeOffsetInRowOrEnd = (
-				this.nodeLineIndex === this.lineIndex
-				? this.nodeOffset - this.lineRow.startOffset
-				: this.lineRow.string.length
-			);
+			let nextNodeStart = Infinity;
 			
-			let renderFrom = this.offsetInRow - this.partOffsetInRow;
-			let renderTo = Math.min(string.length, nextNodeOffsetInRowOrEnd - this.partOffsetInRow);
-			let length = renderTo - renderFrom;
+			if (this.nextNodeWithRange && this.nextNodeWithRange.node.startPosition.row === this.lineIndex) {
+				nextNodeStart = this.nextNodeWithRange.node.startPosition.column;
+			}
 			
-			renderCode.drawText(string.substring(renderFrom, renderTo));
+			let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
+			
+			let renderTo = Math.min(currentNodeEnd, nextNodeStart, partEnd);
+			let length = renderTo - this.offset;
+			
+			renderCode.drawText(this.variableWidthPart.string.substring(this.offset - this.variableWidthPart.offset, renderTo - this.variableWidthPart.offset));
 			
 			this.offset += length;
 			
-			if (renderTo === string.length) {
+			if (renderTo === partEnd) {
 				this.nextVariableWidthPart();
 			}
 		}
