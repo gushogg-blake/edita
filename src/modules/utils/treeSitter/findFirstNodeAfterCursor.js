@@ -17,9 +17,10 @@ function endsAfter(node, cursor) {
 }
 
 /*
-given a node and a cursor, find the first node within the given node
-(or the node itself) that starts after the cursor, ie. there is a gap
-of at least one char between the cursor and the start of the node.
+given a node and a cursor, find the first node within or after the
+given node (or the node itself) that starts after the cursor, ie.
+there is a gap of at least one char between the cursor and the
+start of the node.
 */
 
 module.exports = function(node, cursor) {
