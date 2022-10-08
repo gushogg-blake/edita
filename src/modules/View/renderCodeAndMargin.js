@@ -49,17 +49,13 @@ class Renderer {
 		return c(this.lineIndex, this.offset);
 	}
 	
-	get nodeLineIndex() {
-		return this.nodeWithRange && nodeGetters.startPosition(this.nodeWithRange.node).row;
-	}
+	//get nodeLineIndex() {
+	//	return this.nodeWithRange && nodeGetters.startPosition(this.nodeWithRange.node).row;
+	//}
 	
-	get nodeOffset() {
-		return this.nodeWithRange && nodeGetters.startPosition(this.nodeWithRange.node).column;
-	}
-	
-	get offsetInRow() {
-		return this.offset - this.lineRow.startOffset;
-	}
+	//get nodeOffset() {
+	//	return this.nodeWithRange && nodeGetters.startPosition(this.nodeWithRange.node).column;
+	//}
 	
 	nextFoldedLineRow() {
 		this.foldedLineRow = this.foldedLineRowGenerator.next().value;
@@ -78,9 +74,41 @@ class Renderer {
 		this.variableWidthPart = this.variableWidthPartGenerator.next().value;
 	}
 	
-	nodeIsAtCursor() {
-		return this.nodeLineIndex === this.lineIndex && this.nodeOffset === this.offset;
+	get nodeWithRange() {
+		return this.nodeStack[this.nodeStack.length - 1] || null;
 	}
+	
+	initNodeStack() {
+		this.nodeStack = this.document.findSmallestNodeAtCharCursor(this.cursor)?.stack() || [];
+		this.nodeWithRangeNext = this.nodeWithRange?.next();
+	}
+	
+	nextNode() {
+		let next = this.nodeWithRangeNext;
+		
+		if (!next) {
+			this.nodeStack = [];
+			
+			return;
+		}
+		
+		while (true) {
+			let n = next.next();
+			
+			if (n && Cursor.equals(treeSitterPointToCursor(n.node.startPosition), treeSitterPointToCursor(next.node.startPosition)) {
+				next = n;
+			} else {
+				break;
+			}
+		}
+		
+		this.nodeStack = next.stack();
+		this.nodeWithRangeNext = this.nodeWithRange.next();
+	}
+	
+	//nodeIsAtCursor() {
+	//	return this.nodeLineIndex === this.lineIndex && this.nodeOffset === this.offset;
+	//}
 	
 	setColor() {
 		if (!this.nodeWithRange) {
@@ -143,21 +171,7 @@ class Renderer {
 			this.nextFoldedLineRow();
 		}
 		
-		this.nodeWithRange = document.findSmallestNodeAtCharCursor(this.cursor);
-		this.nextNodeWithRange = document.findFirstNodeAfterCursor(this.cursor);
-		
-		let nodesBeforeCursor = [];
-		let nodeWithRange = this.nodeWithRange;
-		
-		while (nodeWithRange) {
-			if (Cursor.isBefore(treeSitterPointToCursor(nodeWithRange.node.startPosition), this.cursor)) {
-				nodesBeforeCursor.unshift(nodeWithRange);
-			}
-			
-			nodeWithRange = nodeWithRange.parent();
-		}
-		
-		this.nodeStack = nodesBeforeCursor;
+		this.initNode();
 		
 		this.setColor();
 		
@@ -216,6 +230,8 @@ class Renderer {
 			renderCode.drawText(this.variableWidthPart.string.substring(this.offset - this.variableWidthPart.offset, renderTo - this.variableWidthPart.offset));
 			
 			this.offset += length;
+			
+			
 			
 			if (renderTo === partEnd) {
 				this.nextVariableWidthPart();

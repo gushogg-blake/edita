@@ -15,6 +15,19 @@ class NodeWithRange {
 	parent() {
 		return this.scope.source.parentNodeWithRange(this);
 	}
+	
+	stack() {
+		let node = this;
+		let stack = [];
+		
+		while (node) {
+			stack.unshift(node);
+			
+			node = node.parent();
+		}
+		
+		return stack;
+	}
 }
 
 module.exports = NodeWithRange;
