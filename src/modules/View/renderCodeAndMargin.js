@@ -14,6 +14,7 @@ class Renderer {
 		this.offset = null;
 		this.variableWidthPart = null;
 		this.nodeStack = [];
+		this.nextNodeStartCursor = null;
 	}
 	
 	*generateVariableWidthParts() {
@@ -49,6 +50,14 @@ class Renderer {
 		return c(this.lineIndex, this.offset);
 	}
 	
+	get nodeStartCursor() {
+		return treeSitterPointToCursor(nodeGetters.startPosition(this.nodeWithRange.node));
+	}
+	
+	get nodeEndCursor() {
+		return treeSitterPointToCursor(nodeGetters.endPosition(this.nodeWithRange.node));
+	}
+	
 	//get nodeLineIndex() {
 	//	return this.nodeWithRange && nodeGetters.startPosition(this.nodeWithRange.node).row;
 	//}
@@ -78,9 +87,23 @@ class Renderer {
 		return this.nodeStack[this.nodeStack.length - 1] || null;
 	}
 	
+	/*
+	initialising and maintaining the current and next node
+	
+	- on initialisation we get the smallest node at the cursor, so it won't have
+	any children that start at the same cursor. then we get the next node, which
+	will be after the cursor but could have children at the same cursor
+	
+	- to go to the next node we take the current next node and go to its smallest
+	descendant that starts at the same cursor, set the node stack - which is where
+	the current node comes from - to its stack, then set the next node to the
+	current node's next.
+	
+	this way the current node
+	*/
+	
 	initNodeStack() {
 		this.nodeStack = this.document.findSmallestNodeAtCharCursor(this.cursor)?.stack() || [];
-		this.nodeWithRangeNext = this.nodeWithRange?.next();
 	}
 	
 	nextNode() {
@@ -103,7 +126,12 @@ class Renderer {
 		}
 		
 		this.nodeStack = next.stack();
-		this.nodeWithRangeNext = this.nodeWithRange.next();
+	}
+	
+	setNextNodeStartCursor() {
+		let next = this.nodeWithRange?.next();
+		
+		this.nextNodeStartCursor = next && treeSitterPointToCursor(next.startPosition);
 	}
 	
 	//nodeIsAtCursor() {
@@ -171,11 +199,13 @@ class Renderer {
 			this.nextFoldedLineRow();
 		}
 		
-		this.initNode();
+		this.initNodeStack();
 		
 		this.setColor();
 		
 		this.startRow();
+		
+		this.setNextNodeStartCursor();
 		
 		while (true) {
 			if (!this.variableWidthPart) {
@@ -212,14 +242,14 @@ class Renderer {
 			
 			let currentNodeEnd = Infinity;
 			
-			if (this.nodeWithRange && this.nodeWithRange.node.startPosition.row === this.lineIndex) {
-				currentNodeEnd = this.nodeWithRange.node.startPosition.column;
+			if (this.nodeWithRange && this.nodeEndCursor.lineIndex === this.lineIndex) {
+				currentNodeEnd = this.nodeEndCursor.offset;
 			}
 			
 			let nextNodeStart = Infinity;
 			
-			if (this.nextNodeWithRange && this.nextNodeWithRange.node.startPosition.row === this.lineIndex) {
-				nextNodeStart = this.nextNodeWithRange.node.startPosition.column;
+			if (this.nextNodeStartCursor && this.nextNodeStartCursor.lineIndex === this.lineIndex) {
+				nextNodeStart = this.nextNodeStartCursor.offset;
 			}
 			
 			let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
@@ -231,7 +261,32 @@ class Renderer {
 			
 			this.offset += length;
 			
+			let leftNode = false;
+			let enteredNode = false;
 			
+			while (this.nodeWithRange && Cursor.equals(this.cursor, this.nodeEndCursor)) {
+				this.nodeStack.pop();
+				this.setColor();
+				
+				leftNode = true;
+			}
+			
+			if (leftNode) {
+				let next = null;
+				let n = this.nodeWithRange?.next();
+				
+				while (n && Cursor.equals(this.cursor, treeSitterPointToCursor(nodeGetters.startPosition(n))) {
+					next = n;
+					
+					enteredNode = true;
+					
+					n = n.next();
+				}
+			}
+			
+			if (enteredNode) {
+				this.nodeStack = next.stack();
+			}
 			
 			if (renderTo === partEnd) {
 				this.nextVariableWidthPart();
