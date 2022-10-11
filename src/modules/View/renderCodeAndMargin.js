@@ -30,6 +30,10 @@ class Renderer {
 		}
 	}
 	
+	get document() {
+		return this.view.document;
+	}
+	
 	get lineIndex() {
 		return this.foldedLineRow?.lineIndex;
 	}
@@ -118,7 +122,7 @@ class Renderer {
 		while (true) {
 			let n = next.next();
 			
-			if (n && Cursor.equals(treeSitterPointToCursor(n.node.startPosition), treeSitterPointToCursor(next.node.startPosition)) {
+			if (n && Cursor.equals(treeSitterPointToCursor(nodeGetters.startPosition(n.node)), treeSitterPointToCursor(nodeGetters.startPosition(next.node)))) {
 				next = n;
 			} else {
 				break;
@@ -131,7 +135,7 @@ class Renderer {
 	setNextNodeStartCursor() {
 		let next = this.nodeWithRange?.next();
 		
-		this.nextNodeStartCursor = next && treeSitterPointToCursor(next.startPosition);
+		this.nextNodeStartCursor = next && treeSitterPointToCursor(nodeGetters.startPosition(next.node));
 	}
 	
 	//nodeIsAtCursor() {
@@ -207,6 +211,10 @@ class Renderer {
 		
 		this.setNextNodeStartCursor();
 		
+		let iterations = 0;
+		
+		debugger;
+		
 		while (true) {
 			if (!this.variableWidthPart) {
 				renderCode.endRow();
@@ -264,6 +272,20 @@ class Renderer {
 			let leftNode = false;
 			let enteredNode = false;
 			
+			let next = this.nodeWithRange?.next();
+			
+			if (next && Cursor.equals(this.cursor, treeSitterPointToCursor(nodeGetters.startPosition(next.node)))) {
+				enteredNode = true;
+			}
+			
+			let n = next.next();
+			
+			while (n && Cursor.equals(this.cursor, treeSitterPointToCursor(nodeGetters.startPosition(n.node)))) {
+				next = n;
+				
+				n = n.next();
+			}
+			
 			while (this.nodeWithRange && Cursor.equals(this.cursor, this.nodeEndCursor)) {
 				this.nodeStack.pop();
 				this.setColor();
@@ -271,25 +293,21 @@ class Renderer {
 				leftNode = true;
 			}
 			
-			if (leftNode) {
-				let next = null;
-				let n = this.nodeWithRange?.next();
-				
-				while (n && Cursor.equals(this.cursor, treeSitterPointToCursor(nodeGetters.startPosition(n))) {
-					next = n;
-					
-					enteredNode = true;
-					
-					n = n.next();
-				}
-			}
-			
-			if (enteredNode) {
+			if (enteredNode || leftNode) {
 				this.nodeStack = next.stack();
+				this.setNextNodeStartCursor();
 			}
 			
 			if (renderTo === partEnd) {
 				this.nextVariableWidthPart();
+			}
+			
+			iterations++;
+			
+			if (iterations === 1000) {
+				console.log("infinite");
+				
+				break;
 			}
 		}
 	}

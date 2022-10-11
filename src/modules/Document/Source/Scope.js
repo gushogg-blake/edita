@@ -1,6 +1,5 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let next = require("modules/utils/treeSitter/next");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
