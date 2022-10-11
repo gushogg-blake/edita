@@ -217,7 +217,43 @@ class Renderer {
 		//debugger;
 		
 		while (true) {
-			if (!this.variableWidthPart) {
+			let leftNode = false;
+			let enteredNode = false;
+			
+			let currentNodeEnd = Infinity;
+			
+			if (this.nodeWithRange && this.nodeEndCursor.lineIndex === this.lineIndex) {
+				currentNodeEnd = this.nodeEndCursor.offset;
+			}
+			
+			let nextNodeStart = Infinity;
+			
+			if (this.nextNodeStartCursor && this.nextNodeStartCursor.lineIndex === this.lineIndex) {
+				nextNodeStart = this.nextNodeStartCursor.offset;
+			}
+			
+			if (this.variableWidthPart) {
+				if (this.variableWidthPart.type === "string") {
+					let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
+					
+					let renderTo = Math.min(currentNodeEnd, nextNodeStart, partEnd);
+					let length = renderTo - this.offset;
+					
+					renderCode.drawText(this.variableWidthPart.string.substring(this.offset - this.variableWidthPart.offset, renderTo - this.variableWidthPart.offset));
+					
+					this.offset += length;
+					
+					if (renderTo === partEnd) {
+						this.nextVariableWidthPart();
+					}
+				} else {
+					renderCode.drawTab(this.variableWidthPart.width);
+					
+					this.offset++;
+					
+					this.nextVariableWidthPart();
+				}
+			} else {
 				renderCode.endRow();
 				renderMargin.endRow();
 				renderFoldHilites.endRow();
@@ -235,22 +271,17 @@ class Renderer {
 				}
 				
 				this.startRow();
-				
-				continue;
 			}
 			
-			if (this.variableWidthPart.type === "tab") {
-				renderCode.drawTab(this.variableWidthPart.width);
+			while (this.nodeWithRange && Cursor.equals(this.cursor, this.nodeEndCursor)) {
+				this.nodeStack.pop();
 				
-				this.offset++;
-				
-				this.nextVariableWidthPart();
-				
-				continue;
+				leftNode = true;
 			}
 			
-			let leftNode = false;
-			let enteredNode = false;
+			if (leftNode) {
+				this.setColor();
+			}
 			
 			let next = this.nextNodeToEnter;
 			
@@ -268,44 +299,11 @@ class Renderer {
 				}
 			}
 			
-			if (!enteredNode) {
-				while (this.nodeWithRange && Cursor.equals(this.cursor, this.nodeEndCursor)) {
-					this.nodeStack.pop();
-					this.setColor();
-					
-					leftNode = true;
-				}
-			}
-			
 			if (enteredNode) {
 				this.nodeStack = next.stack();
 				
+				this.setColor();
 				this.setNextNodeToEnter();
-			}
-			
-			let currentNodeEnd = Infinity;
-			
-			if (this.nodeWithRange && this.nodeEndCursor.lineIndex === this.lineIndex) {
-				currentNodeEnd = this.nodeEndCursor.offset;
-			}
-			
-			let nextNodeStart = Infinity;
-			
-			if (this.nextNodeStartCursor && this.nextNodeStartCursor.lineIndex === this.lineIndex) {
-				nextNodeStart = this.nextNodeStartCursor.offset;
-			}
-			
-			let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
-			
-			let renderTo = Math.min(currentNodeEnd, nextNodeStart, partEnd);
-			let length = renderTo - this.offset;
-			
-			renderCode.drawText(this.variableWidthPart.string.substring(this.offset - this.variableWidthPart.offset, renderTo - this.variableWidthPart.offset));
-			
-			this.offset += length;
-			
-			if (renderTo === partEnd) {
-				this.nextVariableWidthPart();
 			}
 			
 			iterations++;
