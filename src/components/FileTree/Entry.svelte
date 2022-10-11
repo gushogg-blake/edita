@@ -101,7 +101,7 @@ onMount(function() {
 });
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 @import "mixins/ellipsis";
 
 #main {

@@ -10,7 +10,7 @@ function click(item) {
 }
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 #main {
 	border: var(--contextMenuBorder);
 	background: var(--contextMenuBackgroundColor);

@@ -102,7 +102,7 @@ onMount(function() {
 });
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 #main {
 	display: grid;
 	grid-template-rows: auto 1fr auto auto;

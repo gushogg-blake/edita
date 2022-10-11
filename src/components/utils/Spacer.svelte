@@ -2,7 +2,7 @@
 
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 #main {
 	flex-grow: 1;
 }

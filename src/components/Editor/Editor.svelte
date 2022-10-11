@@ -604,7 +604,7 @@ onMount(function() {
 
 <svelte:window on:resize={resize}/>
 
-<style type="text/scss">
+<style lang="scss">
 @import "mixins/abs-sticky";
 @import "classes/hide";
 

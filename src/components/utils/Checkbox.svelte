@@ -6,7 +6,7 @@ export let checked;
 export let label;
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 label {
 	white-space: nowrap;
 	display: inline-flex;

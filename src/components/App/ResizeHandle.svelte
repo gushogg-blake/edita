@@ -49,7 +49,7 @@ function mouseup(e) {
 }
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 #main {
 	--size: 4px;
 	

@@ -40,7 +40,7 @@ onMount(function() {
 });
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 @import "classes/hide";
 @import "mixins/abs-sticky";
 @import "mixins/ellipsis";

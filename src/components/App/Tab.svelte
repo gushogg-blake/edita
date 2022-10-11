@@ -72,7 +72,7 @@ onMount(function() {
 });
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 @import "classes/hide";
 
 #main, #editor, #files {

@@ -251,7 +251,7 @@ onMount(function() {
 });
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 #main {
 	display: grid;
 	grid-template-columns: 1fr 90px;

@@ -137,7 +137,7 @@ onMount(function() {
 });
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 #main {
 	white-space: nowrap;
 	padding: 1px 3px 0;

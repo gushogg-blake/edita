@@ -52,7 +52,7 @@ onMount(function() {
 });
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 #main {
 	display: flex;
 	gap: 3px;

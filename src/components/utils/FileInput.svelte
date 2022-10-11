@@ -36,7 +36,7 @@ async function upload(e) {
 }
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 @import "classes/hideInput";
 </style>
 

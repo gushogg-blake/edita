@@ -64,7 +64,7 @@ onMount(function() {
 });
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 @import "mixins/abs-sticky";
 
 #main {
