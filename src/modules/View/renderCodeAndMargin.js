@@ -11,10 +11,11 @@ class Renderer {
 		this.renderMargin = renderMargin;
 		this.renderFoldHilites = renderFoldHilites;
 		
+		this.foldedLineRow = null;
 		this.offset = null;
 		this.variableWidthPart = null;
 		this.nodeStack = [];
-		this.nextNodeStartCursor = null;
+		this.nextNodeToEnter = null;
 	}
 	
 	*generateVariableWidthParts() {
@@ -132,15 +133,15 @@ class Renderer {
 		this.nodeStack = next.stack();
 	}
 	
-	setNextNodeStartCursor() {
-		let next = this.nodeWithRange?.next();
-		
-		this.nextNodeStartCursor = next && treeSitterPointToCursor(nodeGetters.startPosition(next.node));
+	setNextNodeToEnter() {
+		this.nextNodeToEnter = this.nodeWithRange?.next();
 	}
 	
-	//nodeIsAtCursor() {
-	//	return this.nodeLineIndex === this.lineIndex && this.nodeOffset === this.offset;
-	//}
+	get nextNodeStartCursor() {
+		let next = this.nextNodeToEnter;
+		
+		return next && treeSitterPointToCursor(nodeGetters.startPosition(next.node));
+	}
 	
 	setColor() {
 		if (!this.nodeWithRange) {
@@ -209,11 +210,11 @@ class Renderer {
 		
 		this.startRow();
 		
-		this.setNextNodeStartCursor();
+		this.setNextNodeToEnter();
 		
 		let iterations = 0;
 		
-		debugger;
+		//debugger;
 		
 		while (true) {
 			if (!this.variableWidthPart) {
@@ -248,6 +249,40 @@ class Renderer {
 				continue;
 			}
 			
+			let leftNode = false;
+			let enteredNode = false;
+			
+			let next = this.nextNodeToEnter;
+			
+			if (next && Cursor.equals(this.cursor, this.nextNodeStartCursor)) {
+				enteredNode = true;
+			}
+			
+			if (enteredNode) {
+				let n = next.next();
+				
+				while (n && Cursor.equals(this.cursor, treeSitterPointToCursor(nodeGetters.startPosition(n.node)))) {
+					next = n;
+					
+					n = n.next();
+				}
+			}
+			
+			if (!enteredNode) {
+				while (this.nodeWithRange && Cursor.equals(this.cursor, this.nodeEndCursor)) {
+					this.nodeStack.pop();
+					this.setColor();
+					
+					leftNode = true;
+				}
+			}
+			
+			if (enteredNode) {
+				this.nodeStack = next.stack();
+				
+				this.setNextNodeToEnter();
+			}
+			
 			let currentNodeEnd = Infinity;
 			
 			if (this.nodeWithRange && this.nodeEndCursor.lineIndex === this.lineIndex) {
@@ -268,35 +303,6 @@ class Renderer {
 			renderCode.drawText(this.variableWidthPart.string.substring(this.offset - this.variableWidthPart.offset, renderTo - this.variableWidthPart.offset));
 			
 			this.offset += length;
-			
-			let leftNode = false;
-			let enteredNode = false;
-			
-			let next = this.nodeWithRange?.next();
-			
-			if (next && Cursor.equals(this.cursor, treeSitterPointToCursor(nodeGetters.startPosition(next.node)))) {
-				enteredNode = true;
-			}
-			
-			let n = next.next();
-			
-			while (n && Cursor.equals(this.cursor, treeSitterPointToCursor(nodeGetters.startPosition(n.node)))) {
-				next = n;
-				
-				n = n.next();
-			}
-			
-			while (this.nodeWithRange && Cursor.equals(this.cursor, this.nodeEndCursor)) {
-				this.nodeStack.pop();
-				this.setColor();
-				
-				leftNode = true;
-			}
-			
-			if (enteredNode || leftNode) {
-				this.nodeStack = next.stack();
-				this.setNextNodeStartCursor();
-			}
 			
 			if (renderTo === partEnd) {
 				this.nextVariableWidthPart();

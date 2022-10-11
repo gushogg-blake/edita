@@ -247,7 +247,7 @@ module.exports = class Scope {
 	*/
 	
 	getInjectionParent(childRange) {
-		let node = this.injectionNodeByChildRange(childRange);
+		let node = this.injectionNodeByChildRange.get(childRange);
 		
 		return new NodeWithRange(this.findRangeContainingStart(node), node);
 	}
