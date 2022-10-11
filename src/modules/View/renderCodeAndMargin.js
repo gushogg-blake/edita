@@ -111,28 +111,6 @@ class Renderer {
 		this.nodeStack = this.document.findSmallestNodeAtCharCursor(this.cursor)?.stack() || [];
 	}
 	
-	nextNode() {
-		let next = this.nodeWithRangeNext;
-		
-		if (!next) {
-			this.nodeStack = [];
-			
-			return;
-		}
-		
-		while (true) {
-			let n = next.next();
-			
-			if (n && Cursor.equals(treeSitterPointToCursor(nodeGetters.startPosition(n.node)), treeSitterPointToCursor(nodeGetters.startPosition(next.node)))) {
-				next = n;
-			} else {
-				break;
-			}
-		}
-		
-		this.nodeStack = next.stack();
-	}
-	
 	setNextNodeToEnter() {
 		this.nextNodeToEnter = this.nodeWithRange?.next();
 	}
@@ -211,10 +189,6 @@ class Renderer {
 		this.startRow();
 		
 		this.setNextNodeToEnter();
-		
-		let iterations = 0;
-		
-		//debugger;
 		
 		while (true) {
 			let leftNode = false;
@@ -304,14 +278,6 @@ class Renderer {
 				
 				this.setColor();
 				this.setNextNodeToEnter();
-			}
-			
-			iterations++;
-			
-			if (iterations === 1000) {
-				console.log("infinite");
-				
-				break;
 			}
 		}
 	}
