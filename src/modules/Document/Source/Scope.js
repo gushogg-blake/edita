@@ -285,9 +285,12 @@ module.exports = class Scope {
 	
 	nextAfterRange(prevRange) {
 		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, prevRange.selection.end);
-		let range = node && this.findRangeContainingStart(node);
 		
-		return new NodeWithRange(range, node);
+		if (!node) {
+			return null;
+		}
+		
+		return new NodeWithRange(this.findRangeContainingStart(node), node);
 	}
 	
 	langFromCursor(cursor) {
