@@ -121,19 +121,27 @@ class Renderer {
 		return next && treeSitterPointToCursor(nodeGetters.startPosition(next.node));
 	}
 	
-	setColor(nodeWithRange=this.nodeWithRange) {
-		if (!nodeWithRange) {
+	setColor() {
+		if (!this.nodeWithRange) {
 			return;
 		}
 		
-		let {scope, node} = nodeWithRange;
+		let {scope, node} = this.nodeWithRange;
 		let {lang} = scope;
 		let colors = base.theme.langs[lang.code];
 		let hiliteClass = lang.getHiliteClass(node);
 		
-		if (!hiliteClass) {
-			this.setColor(nodeWithRange.parent());
+		while (!hiliteClass) {
+			node = nodeGetters.parent(node);
 			
+			if (!node) {
+				break;
+			}
+			
+			hiliteClass = lang.getHiliteClass(node);
+		}
+		
+		if (!hiliteClass) {
 			return;
 		}
 		
