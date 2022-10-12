@@ -152,13 +152,13 @@ module.exports = class {
 	
 	nextNodeWithRange(nodeWithRange) {
 		let {scope, range, node} = nodeWithRange;
-		let childScopeAndRange = scope.scopeAndRangeByNode[node.id];
+		let childScopeAndRanges = scope.scopeAndRangesByNode[node.id];
 		
-		if (childScopeAndRange) {
-			let {scope, range} = childScopeAndRange;
+		if (childScopeAndRanges) {
+			let {scope, ranges} = childScopeAndRanges;
 			
 			if (scope.tree) {
-				return scope.firstInRange(range);
+				return scope.firstInRange(ranges[0]);
 			}
 		}
 		
@@ -217,7 +217,7 @@ module.exports = class {
 	}
 	
 	getContainingRange() {
-		return new Range(null, 0, this.string.length, s(c(0, 0), this.cursorAtEnd()));
+		return new Range(0, this.string.length, s(c(0, 0), this.cursorAtEnd()));
 	}
 	
 	indexFromCursor(cursor) {

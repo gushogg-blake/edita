@@ -178,6 +178,13 @@ function addOrSubtractSelection(selection, adjustment, sign) {
 	}
 }
 
+function intersection(a, b) {
+	let start = Cursor.max(a.start, b.start);
+	let end = Cursor.min(a.end, b.end);
+	
+	return start && end ? s(start, end) : null;
+}
+
 function s(start, end=null) {
 	return {
 		start,
@@ -201,6 +208,11 @@ let api = {
 	isBefore,
 	isPartiallyOverlapping,
 	cursorIsWithinSelection,
+	intersection,
+	
+	//isOverlapping(a, b) {
+	//	return isPartiallyOverlapping(a, b) || equals(a, b);
+	//},
 	
 	isWithin(a, b) {
 		return api.cursorIsWithinOrNextToSelection(b, a.start) && api.cursorIsWithinOrNextToSelection(b, a.end);
