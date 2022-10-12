@@ -112,7 +112,7 @@ class Renderer {
 	}
 	
 	setNextNodeToEnter() {
-		this.nextNodeToEnter = this.nodeWithRange?.next();
+		this.nextNodeToEnter = this.nodeWithRange?.nextAfterCharCursor(this.cursor);
 	}
 	
 	get nextNodeStartCursor() {
