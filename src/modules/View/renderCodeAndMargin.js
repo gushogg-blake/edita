@@ -4,31 +4,64 @@ let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 
 let {c} = Cursor;
 
-class Renderer {
-	constructor(view, renderCode, renderMargin, renderFoldHilites) {
+function *generateVariableWidthParts(lineRow) {
+	let offset = lineRow.startOffset;
+	
+	for (let part of lineRow.variableWidthParts) {
+		yield {...part, offset};
+		
+		offset += part.type === "tab" ? 1 : part.string.length;
+	}
+}
+
+function getFoldedLineRowsToRender(view) {
+	let {sizes, measurements} = view;
+	let foldedLineRows = [];
+	let rowsToRender = Math.ceil(sizes.height / measurements.rowHeight) + 1;
+	
+	let {
+		lineIndex: firstLineIndex,
+		rowIndexInLine: firstLineRowIndex,
+	} = view.findFirstVisibleLine();
+	
+	let foldedLineRowGenerator = view.generateLineRowsFolded(firstLineIndex);
+	let foldedLineRow = foldedLineRowGenerator.next().value;
+	
+	while (foldedLineRow?.rowIndexInLine < firstLineRowIndex) {
+		foldedLineRow = foldedLineRowGenerator.next().value;
+	}
+	
+	while (foldedLineRow && foldedLineRows.length < rowsToRender) {
+		foldedLineRows.push(foldedLineRow);
+		
+		foldedLineRow = foldedLineRowGenerator.next().value;
+	}
+	
+	return foldedLineRows;
+}
+
+/*
+if (this.foldedLineRow.isFoldHeader) {
+	this.renderFoldHilites.drawHilite(this.line.indentCols, this.line.width - this.line.indentCols);
+}
+
+if (this.rowIndexInLine === 0) {
+	this.renderMargin.drawLineNumber(this.lineIndex);
+}
+*/
+
+class CodeRenderer {
+	constructor(scope, view, foldedLineRows, renderCode) {
+		this.scope = scope;
 		this.view = view;
+		this.foldedLineRows = foldedLineRows;
 		this.renderCode = renderCode;
-		this.renderMargin = renderMargin;
-		this.renderFoldHilites = renderFoldHilites;
 		
 		this.foldedLineRow = null;
 		this.offset = null;
 		this.variableWidthPart = null;
 		this.nodeStack = [];
 		this.nextNodeToEnter = null;
-	}
-	
-	*generateVariableWidthParts() {
-		let offset = this.lineRow.startOffset;
-		
-		for (let part of this.lineRow.variableWidthParts) {
-			yield {
-				...part,
-				offset,
-			};
-			
-			offset += part.type === "tab" ? 1 : part.string.length;
-		}
 	}
 	
 	get document() {
@@ -55,6 +88,10 @@ class Renderer {
 		return c(this.lineIndex, this.offset);
 	}
 	
+	get nodeWithRange() {
+		return this.nodeStack[this.nodeStack.length - 1] || null;
+	}
+	
 	get nodeStartCursor() {
 		return treeSitterPointToCursor(nodeGetters.startPosition(this.nodeWithRange.node));
 	}
@@ -63,13 +100,11 @@ class Renderer {
 		return treeSitterPointToCursor(nodeGetters.endPosition(this.nodeWithRange.node));
 	}
 	
-	//get nodeLineIndex() {
-	//	return this.nodeWithRange && nodeGetters.startPosition(this.nodeWithRange.node).row;
-	//}
-	
-	//get nodeOffset() {
-	//	return this.nodeWithRange && nodeGetters.startPosition(this.nodeWithRange.node).column;
-	//}
+	get nextNodeStartCursor() {
+		let next = this.nextNodeToEnter;
+		
+		return next && treeSitterPointToCursor(nodeGetters.startPosition(next.node));
+	}
 	
 	nextFoldedLineRow() {
 		this.foldedLineRow = this.foldedLineRowGenerator.next().value;
@@ -78,7 +113,7 @@ class Renderer {
 			return;
 		}
 		
-		this.variableWidthPartGenerator = this.generateVariableWidthParts();
+		this.variableWidthPartGenerator = generateVariableWidthParts(this.lineRow);
 		this.nextVariableWidthPart();
 		
 		this.offset = this.lineRow.startOffset;
@@ -88,37 +123,12 @@ class Renderer {
 		this.variableWidthPart = this.variableWidthPartGenerator.next().value;
 	}
 	
-	get nodeWithRange() {
-		return this.nodeStack[this.nodeStack.length - 1] || null;
-	}
-	
-	/*
-	initialising and maintaining the current and next node
-	
-	- on initialisation we get the smallest node at the cursor, so it won't have
-	any children that start at the same cursor. then we get the next node, which
-	will be after the cursor but could have children at the same cursor
-	
-	- to go to the next node we take the current next node and go to its smallest
-	descendant that starts at the same cursor, set the node stack - which is where
-	the current node comes from - to its stack, then set the next node to the
-	current node's next.
-	
-	this way the current node
-	*/
-	
 	initNodeStack() {
-		this.nodeStack = this.document.findSmallestNodeAtCharCursor(this.cursor)?.stack() || [];
+		this.nodeStack = this.document.findSmallestNodeAtCharCursor(this.cursor)?.lineage() || [];
 	}
 	
 	setNextNodeToEnter() {
 		this.nextNodeToEnter = this.nodeWithRange?.nextAfterCharCursor(this.cursor);
-	}
-	
-	get nextNodeStartCursor() {
-		let next = this.nextNodeToEnter;
-		
-		return next && treeSitterPointToCursor(nodeGetters.startPosition(next.node));
 	}
 	
 	setColor() {
@@ -150,18 +160,11 @@ class Renderer {
 	
 	startRow() {
 		this.renderCode.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
-		
-		if (this.foldedLineRow.isFoldHeader) {
-			this.renderFoldHilites.drawHilite(this.line.indentCols, this.line.width - this.line.indentCols);
-		}
-		
-		if (this.rowIndexInLine === 0) {
-			this.renderMargin.drawLineNumber(this.lineIndex);
-		}
 	}
 	
-	render() {
+	render(source) {
 		let {
+			document,
 			view,
 			renderCode,
 			renderMargin,
@@ -169,7 +172,21 @@ class Renderer {
 		} = this;
 		
 		let {
+			measurements,
+			sizes,
+		} = view;
+	}
+	
+	render1() {
+		let {
 			document,
+			view,
+			renderCode,
+			renderMargin,
+			renderFoldHilites,
+		} = this;
+		
+		let {
 			measurements,
 			sizes,
 		} = view;
@@ -284,7 +301,7 @@ class Renderer {
 			}
 			
 			if (enteredNode) {
-				this.nodeStack = next.stack();
+				this.nodeStack = next.lineage();
 				
 				this.setColor();
 				this.setNextNodeToEnter();
@@ -293,7 +310,22 @@ class Renderer {
 	}
 }
 
-module.exports = function(...args) {
+function renderMargin(view, canvas) {
+	
+}
+
+function renderFoldHilites(view, canvas) {
+	
+}
+
+module.exports = function(view, canvas) {
+	renderMargin(view, canvas);
+	renderFoldHilites(view, canvas);
+	
+	let foldedLineRows = getFoldedLineRowsToRender(view);
+	
+	// for each scope, create a code renderer
+	
 	let renderer = new Renderer(...args);
 	
 	renderer.render();

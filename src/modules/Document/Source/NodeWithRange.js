@@ -58,7 +58,7 @@ class NodeWithRange {
 		return this.scope.source.parentNodeWithRange(this);
 	}
 	
-	stack() {
+	lineage() {
 		let node = this;
 		let stack = [];
 		

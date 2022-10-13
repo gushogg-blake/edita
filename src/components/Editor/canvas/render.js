@@ -47,11 +47,14 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		renderAstInsertionHilite(layers, view, isPeekingAstMode);
 	}
 	
-	let codeRenderer = renderCode(layers, view);
-	let marginRenderer = renderMargin(layers, view);
-	let foldHiliteRenderer = renderFoldHilites(layers, view);
-	
-	view.renderCodeAndMargin(codeRenderer, marginRenderer, foldHiliteRenderer);
+	view.renderCodeAndMargin({
+		createCodeRenderer() {
+			return renderCode(layers, view);
+		},
+		
+		marginRenderer: renderMargin(layers, view),
+		foldHiliteRenderer: renderFoldHilites(layers, view),
+	});
 	
 	if (base.getPref("dev.timing.render")) {
 		console.timeEnd("render");

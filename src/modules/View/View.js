@@ -92,8 +92,8 @@ class View extends Evented {
 		];
 	}
 	
-	renderCodeAndMargin(...args) {
-		return renderCodeAndMargin(this, ...args);
+	renderCodeAndMargin(canvas) {
+		return renderCodeAndMargin(this, canvas);
 	}
 	
 	updateWrappedLines() {
