@@ -36,16 +36,16 @@ module.exports = function(layers, view) {
 	let y = rowHeight + topMargin + rowOffset; // rowHeight added as using textBaseline="bottom"
 	
 	return {
-		endRow() {
-			y += rowHeight;
-		},
-		
 		drawLineNumber(lineIndex) {
 			let lineNumber = String(lineIndex + 1);
 			let x = marginWidth - marginStyle.paddingRight - lineNumber.length * colWidth;
 			
 			context.fillStyle = lineNumberColor;
 			context.fillText(lineNumber, x, y);
+		},
+		
+		endRow() {
+			y += rowHeight;
 		},
 	};
 }

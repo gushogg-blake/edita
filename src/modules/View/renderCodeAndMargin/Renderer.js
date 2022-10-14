@@ -1,4 +1,5 @@
 let generatorFromArray = require("utils/generatorFromArray");
+let CodeRenderer = require("./CodeRenderer");
 
 function getFoldedLineRowsToRender(view) {
 	let {sizes, measurements} = view;
@@ -26,16 +27,6 @@ function getFoldedLineRowsToRender(view) {
 	return foldedLineRows;
 }
 
-/*
-if (this.foldedLineRow.isFoldHeader) {
-	this.renderFoldHilites.drawHilite(this.line.indentCols, this.line.width - this.line.indentCols);
-}
-
-if (this.rowIndexInLine === 0) {
-	this.renderMargin.drawLineNumber(this.lineIndex);
-}
-*/
-
 class Renderer {
 	constructor(view, canvas) {
 		this.view = view;
@@ -48,19 +39,34 @@ class Renderer {
 		return generatorFromArray(this.foldedLineRows);
 	}
 	
-	renderMargin(view, canvas) {
+	renderMargin() {
+		let {renderMargin} = this.canvas;
 		
+		for (let foldedLineRow of this.foldedLineRows) {
+			renderMargin.drawLineNumber(foldedLineRow.lineIndex);
+			renderFoldHilites.endRow();
+		}
 	}
 	
-	renderFoldHilites(view, canvas) {
+	renderFoldHilites() {
+		let {renderFoldHilites} = this.canvas;
 		
+		for (let foldedLineRow of this.foldedLineRows) {
+			if (foldedLineRow.isFoldHeader) {
+				let {line} = foldedLineRow;
+				
+				renderFoldHilites.drawHilite(line.indentCols, line.width - line.indentCols);
+			}
+			
+			renderFoldHilites.endRow();
+		}
 	}
 	
 	render() {
 		this.renderMargin();
 		this.renderFoldHilites();
 		
-		
+		let visibleRanges = 
 	}
 }
 

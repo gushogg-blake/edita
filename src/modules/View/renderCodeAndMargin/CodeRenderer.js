@@ -15,16 +15,18 @@ function *generateVariableWidthParts(lineRow) {
 }
 
 class CodeRenderer {
-	constructor(renderer, scope, view) {
+	constructor(renderer, scope, ranges) {
 		this.renderer = renderer;
 		this.scope = scope;
-		this.view = view;
+		this.ranges = ranges;
+		this.view = renderer.view;
 		this.document = view.document;
 		//this.foldedLineRows = renderer.foldedLineRows;
 		this.canvas = renderer.canvas;
 		
 		this.foldedLineRowGenerator = renderer.generateFoldedLineRows();
 		
+		this.rangeIndex = null;
 		this.foldedLineRow = null;
 		this.offset = null;
 		this.variableWidthPart = null;
