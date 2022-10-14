@@ -1,6 +1,7 @@
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
+let getLineage = require("modules/utils/treeSitter/getLineage");
 
 let {c} = Cursor;
 
@@ -20,9 +21,9 @@ class CodeRenderer {
 		this.scope = scope;
 		this.ranges = ranges;
 		this.view = renderer.view;
-		this.document = view.document;
+		this.document = this.view.document;
+		this.canvasCodeRenderer = renderer.canvas.getCodeRenderer();
 		//this.foldedLineRows = renderer.foldedLineRows;
-		this.canvas = renderer.canvas;
 		
 		this.foldedLineRowGenerator = renderer.generateFoldedLineRows();
 		
@@ -90,32 +91,19 @@ class CodeRenderer {
 	}
 	
 	initNodeStack() {
-		this.nodeStack = this.document.findSmallestNodeAtCharCursor(this.cursor)?.lineage() || [];
-	}
-	
-	setNextNodeToEnter() {
-		this.nextNodeToEnter = this.nodeWithRange?.nextAfterCharCursor(this.cursor);
+		let node = this.scope.findSmallestNodeAtCharCursor(this.cursor);
+		
+		this.nodeStack = node ? getLineage(node) : [];
 	}
 	
 	setColor() {
-		if (!this.nodeWithRange) {
+		if (!this.node) {
 			return;
 		}
 		
-		let {scope, node} = this.nodeWithRange;
-		let {lang} = scope;
+		let {lang} = this.scope;
 		let colors = base.theme.langs[lang.code];
 		let hiliteClass = lang.getHiliteClass(node);
-		
-		while (!hiliteClass) {
-			node = nodeGetters.parent(node);
-			
-			if (!node) {
-				break;
-			}
-			
-			hiliteClass = lang.getHiliteClass(node);
-		}
 		
 		if (!hiliteClass) {
 			return;
@@ -125,33 +113,14 @@ class CodeRenderer {
 	}
 	
 	startRow() {
-		this.renderCode.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
+		this.canvasCodeRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
 	}
 	
 	render(source) {
-		let {
-			document,
-			view,
-			renderCode,
-			renderMargin,
-			renderFoldHilites,
-		} = this;
 		
-		let {
-			measurements,
-			sizes,
-		} = view;
 	}
 	
 	render1() {
-		let {
-			document,
-			view,
-			renderCode,
-			renderMargin,
-			renderFoldHilites,
-		} = this;
-		
 		this.nextFoldedLineRow();
 		
 		this.initNodeStack();

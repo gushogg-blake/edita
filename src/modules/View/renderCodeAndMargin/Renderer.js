@@ -85,7 +85,11 @@ class Renderer {
 			c(lastRow.lineIndex, lastRow.lineRow.startOffset + lastRow.lineRow.string.length),
 		));
 		
-		console.log(visibleScopes);
+		for (let {scope, ranges} of visibleScopes) {
+			let codeRenderer = new CodeRenderer(this, scope, ranges);
+			
+			codeRenderer.render();
+		}
 	}
 }
 
