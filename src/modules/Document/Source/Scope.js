@@ -248,6 +248,29 @@ module.exports = class Scope {
 		}
 	}
 	
+	getVisibleScopes(startLineIndex, endLineIndex) {
+		let ranges = this.ranges.filter(function(range) {
+			let {start, end} = range.selection;
+			
+			return start.lineIndex < endLineIndex && end.lineIndex >= startLineIndex;
+		});
+		
+		if (ranges.length === 0) {
+			return [];
+		}
+		
+		return [
+			{
+				scope: this,
+				ranges,
+			},
+			
+			...this.scopes.reduce(function(scopes, scope) {
+				return [...scopes, ...scope.getVisibleScopes(startLineIndex, endLineIndex)];
+			}, []),
+		];
+	}
+	
 	/*
 	get ranges describing a node, taking into account our ranges.
 	

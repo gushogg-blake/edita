@@ -40,25 +40,25 @@ class Renderer {
 	}
 	
 	renderMargin() {
-		let {renderMargin} = this.canvas;
+		let {marginRenderer} = this.canvas;
 		
 		for (let foldedLineRow of this.foldedLineRows) {
-			renderMargin.drawLineNumber(foldedLineRow.lineIndex);
-			renderFoldHilites.endRow();
+			marginRenderer.drawLineNumber(foldedLineRow.lineIndex);
+			marginRenderer.endRow();
 		}
 	}
 	
 	renderFoldHilites() {
-		let {renderFoldHilites} = this.canvas;
+		let {foldHiliteRenderer} = this.canvas;
 		
 		for (let foldedLineRow of this.foldedLineRows) {
 			if (foldedLineRow.isFoldHeader) {
 				let {line} = foldedLineRow;
 				
-				renderFoldHilites.drawHilite(line.indentCols, line.width - line.indentCols);
+				foldHiliteRenderer.drawHilite(line.indentCols, line.width - line.indentCols);
 			}
 			
-			renderFoldHilites.endRow();
+			foldHiliteRenderer.endRow();
 		}
 	}
 	
@@ -66,7 +66,9 @@ class Renderer {
 		this.renderMargin();
 		this.renderFoldHilites();
 		
-		let visibleRanges = 
+		let visibleScopes = this.document.getVisibleScopes();
+		
+		console.log(visibleScopes);
 	}
 }
 

@@ -63,6 +63,10 @@ module.exports = class {
 		//console.timeEnd("edit");
 	}
 	
+	getVisibleScopes(startLineIndex, endLineIndex) {
+		return this.rootScope.getVisibleScopes(startLineIndex, endLineIndex);
+	}
+	
 	generateNodesOnLine(lineIndex, lang=null) {
 		return this.rootScope.generateNodesOnLine(lineIndex, lang);
 	}
