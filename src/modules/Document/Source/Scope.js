@@ -248,11 +248,9 @@ module.exports = class Scope {
 		}
 	}
 	
-	getVisibleScopes(startLineIndex, endLineIndex) {
+	getVisibleScopes(selection) {
 		let ranges = this.ranges.filter(function(range) {
-			let {start, end} = range.selection;
-			
-			return start.lineIndex < endLineIndex && end.lineIndex >= startLineIndex;
+			return Selection.isOverlapping(selection, range.selection);
 		});
 		
 		if (ranges.length === 0) {
@@ -266,7 +264,7 @@ module.exports = class Scope {
 			},
 			
 			...this.scopes.reduce(function(scopes, scope) {
-				return [...scopes, ...scope.getVisibleScopes(startLineIndex, endLineIndex)];
+				return [...scopes, ...scope.getVisibleScopes(selection)];
 			}, []),
 		];
 	}

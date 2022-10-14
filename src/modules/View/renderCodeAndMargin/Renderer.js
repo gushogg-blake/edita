@@ -1,5 +1,10 @@
 let generatorFromArray = require("utils/generatorFromArray");
+let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/utils/Selection");
 let CodeRenderer = require("./CodeRenderer");
+
+let {s} = Selection;
+let {c} = Cursor;
 
 function getFoldedLineRowsToRender(view) {
 	let {sizes, measurements} = view;
@@ -63,10 +68,22 @@ class Renderer {
 	}
 	
 	render() {
+		let {foldedLineRows} = this;
+		
+		if (foldedLineRows.length === 0) {
+			return;
+		}
+		
 		this.renderMargin();
 		this.renderFoldHilites();
 		
-		let visibleScopes = this.document.getVisibleScopes();
+		let firstRow = foldedLineRows[0];
+		let lastRow = foldedLineRows[foldedLineRows.length - 1];
+		
+		let visibleScopes = this.document.getVisibleScopes(s(
+			c(firstRow.lineIndex, firstRow.lineRow.startOffset),
+			c(lastRow.lineIndex, lastRow.lineRow.startOffset + lastRow.lineRow.string.length),
+		));
 		
 		console.log(visibleScopes);
 	}

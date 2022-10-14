@@ -210,9 +210,9 @@ let api = {
 	cursorIsWithinSelection,
 	intersection,
 	
-	//isOverlapping(a, b) {
-	//	return isPartiallyOverlapping(a, b) || equals(a, b);
-	//},
+	isOverlapping(a, b) {
+		return isPartiallyOverlapping(a, b) || equals(a, b);
+	},
 	
 	isWithin(a, b) {
 		return api.cursorIsWithinOrNextToSelection(b, a.start) && api.cursorIsWithinOrNextToSelection(b, a.end);

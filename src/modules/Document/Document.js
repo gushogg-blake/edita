@@ -241,8 +241,8 @@ class Document extends BaseDocument {
 		return this.langFromCursor(c(startLineIndex, line.indentOffset));
 	}
 	
-	getVisibleScopes(startLineIndex, endLineIndex) {
-		return this.source.getVisibleScopes(startLineIndex, endLineIndex);
+	getVisibleScopes(selection) {
+		return this.source.getVisibleScopes(selection);
 	}
 	
 	rangeFromCursor(cursor) {
