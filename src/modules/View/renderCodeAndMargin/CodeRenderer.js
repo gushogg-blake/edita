@@ -35,6 +35,16 @@ class CodeRenderer {
 		this.nextNodeToEnter = null;
 	}
 	
+	get range() {
+		let range = this.ranges[this.rangeIndex];
+		
+		return range?.containsCharCursor(this.cursor) ? range : null;
+	}
+	
+	get nextRangeToEnter() {
+		return this.range ? this.ranges[this.rangeIndex + 1] || null : this.ranges[this.rangeIndex];
+	}
+	
 	get lineIndex() {
 		return this.foldedLineRow?.lineIndex;
 	}
@@ -94,6 +104,24 @@ class CodeRenderer {
 		let node = this.scope.findSmallestNodeAtCharCursor(this.cursor);
 		
 		this.nodeStack = node ? getLineage(node) : [];
+		this.nextNodeToEnter = node ? next(node) : this.scope.findFirstNodeInRange(this.ranges[0]);
+	}
+	
+	//setNextNodeToEnter() {
+	//}
+	
+	nextNode() {
+		if (this.node) {
+			
+		} else {
+			this.nodeStack = this.nextNodeToEnter ? getLineage(this.nextNodeToEnter) : [];
+		}
+		
+		this.nextNodeToEnter = this.node && next(this.node);
+	}
+	
+	nextRange() {
+		this.rangeIndex++;
 	}
 	
 	setColor() {
