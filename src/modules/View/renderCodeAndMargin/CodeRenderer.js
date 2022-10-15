@@ -105,17 +105,49 @@ class CodeRenderer {
 		
 		this.nodeStack = node ? getLineage(node) : [];
 		this.nextNodeToEnter = node ? next(node) : this.scope.findFirstNodeInRange(this.ranges[0]);
+		
+		for (let i = this.nodeStack.length - 1; i >= 0; i--) {
+			let node = this.nodeStack[i];
+			
+			if (this.setColor(node)) {
+				break;
+			}
+		}
 	}
 	
 	//setNextNodeToEnter() {
 	//}
 	
-	nextNode() {
-		if (this.node) {
-			
-		} else {
+	_nextNode() {
+		if (!this.node) {
 			this.nodeStack = this.nextNodeToEnter ? getLineage(this.nextNodeToEnter) : [];
+			
+			return;
 		}
+		
+		let firstChild = nodeGetters.firstChild(this.node);
+		
+		if (firstChild) {
+			this.nodeStack.push(firstChild);
+			
+			return;
+		}
+		
+		while (this.node) {
+			let nextSibling = nodeGetters.nextSibling(this.node);
+			
+			this.nodeStack.pop();
+			
+			if (nextSibling) {
+				this.nodeStack.push(nextSibling);
+				
+				break;
+			}
+		}
+	}
+	
+	nextNode() {
+		this._nextNode();
 		
 		this.nextNodeToEnter = this.node && next(this.node);
 	}
@@ -124,9 +156,9 @@ class CodeRenderer {
 		this.rangeIndex++;
 	}
 	
-	setColor() {
-		if (!this.node) {
-			return;
+	setColor(node=this.node) {
+		if (!node) {
+			return false;
 		}
 		
 		let {lang} = this.scope;
@@ -134,10 +166,12 @@ class CodeRenderer {
 		let hiliteClass = lang.getHiliteClass(node);
 		
 		if (!hiliteClass) {
-			return;
+			return false;
 		}
 		
 		this.renderCode.setColor(colors[hiliteClass]);
+		
+		return true;
 	}
 	
 	startRow() {
@@ -145,20 +179,11 @@ class CodeRenderer {
 	}
 	
 	render() {
-		this.nextFoldedLineRow();
-		
 		this.initNodeStack();
-		
-		this.setColor();
-		
+		this.nextFoldedLineRow();
 		this.startRow();
 		
-		this.setNextNodeToEnter();
-		
 		while (true) {
-			let leftNode = false;
-			let enteredNode = false;
-			
 			let currentNodeEnd = Infinity;
 			
 			if (this.node && this.nodeEndCursor.lineIndex === this.lineIndex) {
@@ -216,38 +241,10 @@ class CodeRenderer {
 				this.startRow();
 			}
 			
-			while (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
+			if (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
 				this.nodeStack.pop();
-				
-				leftNode = true;
 			}
 			
-			if (leftNode) {
-				this.setColor();
-			}
-			
-			let next = this.nextNodeToEnter;
-			
-			if (next && Cursor.equals(this.cursor, this.nextNodeStartCursor)) {
-				enteredNode = true;
-			}
-			
-			if (enteredNode) {
-				let n = next.next();
-				
-				while (n && Cursor.equals(this.cursor, treeSitterPointToCursor(nodeGetters.startPosition(n.node)))) {
-					next = n;
-					
-					n = n.next();
-				}
-			}
-			
-			if (enteredNode) {
-				this.nodeStack = next.lineage();
-				
-				this.setColor();
-				this.setNextNodeToEnter();
-			}
 		}
 	}
 }
