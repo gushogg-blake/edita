@@ -5,7 +5,6 @@ let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 let Scope = require("./Scope");
 let Range = require("./Range");
 let Line = require("./Line");
-let NodeWithRange = require("./NodeWithRange");
 
 let {s} = Selection;
 let {c} = Cursor;

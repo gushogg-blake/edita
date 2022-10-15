@@ -7,7 +7,6 @@ let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine"
 let selectionFromNode = require("modules/utils/treeSitter/selectionFromNode");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 let Range = require("./Range");
-let NodeWithRange = require("./NodeWithRange");
 
 let {s} = Selection;
 

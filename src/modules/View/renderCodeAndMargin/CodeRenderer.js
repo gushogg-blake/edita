@@ -2,6 +2,7 @@ let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 let getLineage = require("modules/utils/treeSitter/getLineage");
+let next = require("modules/utils/treeSitter/next");
 
 let {c} = Cursor;
 
@@ -22,7 +23,7 @@ class CodeRenderer {
 		this.ranges = ranges;
 		this.view = renderer.view;
 		this.document = this.view.document;
-		this.canvasCodeRenderer = renderer.canvas.getCodeRenderer();
+		this.canvasCodeRenderer = renderer.canvas.createCodeRenderer();
 		//this.foldedLineRows = renderer.foldedLineRows;
 		
 		this.foldedLineRowGenerator = renderer.generateFoldedLineRows();
@@ -115,9 +116,6 @@ class CodeRenderer {
 		}
 	}
 	
-	//setNextNodeToEnter() {
-	//}
-	
 	_nextNode() {
 		if (!this.node) {
 			this.nodeStack = this.nextNodeToEnter ? getLineage(this.nextNodeToEnter) : [];
@@ -169,7 +167,7 @@ class CodeRenderer {
 			return false;
 		}
 		
-		this.renderCode.setColor(colors[hiliteClass]);
+		this.canvasCodeRenderer.setColor(colors[hiliteClass]);
 		
 		return true;
 	}
@@ -178,44 +176,50 @@ class CodeRenderer {
 		this.canvasCodeRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
 	}
 	
+	getCurrentRangeEnd() {
+		return this.range?.selection.end.lineIndex === this.lineIndex ? this.range.selection.end.offset : Infinity;
+	}
+	
+	getNextRangeStart() {
+		return this.nextRangeToEnter?.selection.start.lineIndex === this.lineIndex ? this.nextRangeToEnter.selection.start.offset : Infinity;
+	}
+	
+	getCurrentNodeEnd() {
+		return this.nodeEndCursor?.lineIndex === this.lineIndex ? this.nodeEndCursor.offset : Infinity;
+	}
+	
+	getNextNodeStart() {
+		return this.nextNodeStartCursor?.lineIndex === this.lineIndex ? this.nextNodeStartCursor.offset : Infinity;
+	}
+	
 	render() {
-		this.initNodeStack();
 		this.nextFoldedLineRow();
 		this.startRow();
+		this.initNodeStack();
+		
+		let iterations = 0;
 		
 		while (true) {
-			let currentNodeEnd = Infinity;
-			
-			if (this.node && this.nodeEndCursor.lineIndex === this.lineIndex) {
-				currentNodeEnd = this.nodeEndCursor.offset;
+			if (iterations === 2000) {
+				console.log("infinite");
+				
+				break;
 			}
 			
-			let nextNodeStart = Infinity;
-			
-			if (this.nextNodeStartCursor && this.nextNodeStartCursor.lineIndex === this.lineIndex) {
-				nextNodeStart = this.nextNodeStartCursor.offset;
-			}
-			
-			let nextRangeStart = Infinity;
-			
-			if (this.nextRangeToEnter?.selection.start.lineIndex === this.lineIndex) {
-				nextRangeStart = this.nextRangeToEnter.selection.start.offset;
-			}
-			
-			let currentRangeEnd = Infinity;
-			
-			if (this.range?.selection.end.lineIndex === this.lineIndex) {
-				currentRangeEnd = this.range.selection.end.offset;
-			}
+			iterations++;
 			
 			if (this.variableWidthPart) {
 				if (this.variableWidthPart.type === "string") {
+					let currentNodeEnd = this.getCurrentNodeEnd();
+					let nextNodeStart = this.getNextNodeStart();
+					let currentRangeEnd = this.getCurrentRangeEnd();
+					let nextRangeStart = this.getNextRangeStart();
 					let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
 					
-					let renderTo = Math.min(currentNodeEnd, nextNodeStart, partEnd);
+					let renderTo = Math.min(currentRangeEnd, nextRangeStart, currentNodeEnd, nextNodeStart, partEnd);
 					let length = renderTo - this.offset;
 					
-					renderCode.drawText(this.variableWidthPart.string.substring(this.offset - this.variableWidthPart.offset, renderTo - this.variableWidthPart.offset));
+					this.canvasCodeRenderer.drawText(this.variableWidthPart.string.substring(this.offset - this.variableWidthPart.offset, renderTo - this.variableWidthPart.offset));
 					
 					this.offset += length;
 					
@@ -223,7 +227,7 @@ class CodeRenderer {
 						this.nextVariableWidthPart();
 					}
 				} else {
-					renderCode.drawTab(this.variableWidthPart.width);
+					this.canvasCodeRenderer.drawTab(this.variableWidthPart.width);
 					
 					this.offset++;
 					
@@ -243,8 +247,13 @@ class CodeRenderer {
 			
 			if (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
 				this.nodeStack.pop();
+			} else if (this.nextNodeStartCursor && Cursor.equals(this.cursor, this.nextNodeStartCursor)) {
+				this.nextNode();
 			}
 			
+			if (this.range && Cursor.equals(this.cursor, this.range.selection.end)) {
+				this.nextRange();
+			}
 		}
 	}
 }
