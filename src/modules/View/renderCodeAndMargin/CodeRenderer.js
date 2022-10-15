@@ -60,11 +60,11 @@ class CodeRenderer {
 	}
 	
 	get nodeStartCursor() {
-		return treeSitterPointToCursor(nodeGetters.startPosition(this.nodeWithRange.node));
+		return treeSitterPointToCursor(nodeGetters.startPosition(this.node));
 	}
 	
 	get nodeEndCursor() {
-		return treeSitterPointToCursor(nodeGetters.endPosition(this.nodeWithRange.node));
+		return treeSitterPointToCursor(nodeGetters.endPosition(this.node));
 	}
 	
 	get nextNodeStartCursor() {
@@ -116,11 +116,7 @@ class CodeRenderer {
 		this.canvasCodeRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
 	}
 	
-	render(source) {
-		
-	}
-	
-	render1() {
+	render() {
 		this.nextFoldedLineRow();
 		
 		this.initNodeStack();
@@ -137,7 +133,7 @@ class CodeRenderer {
 			
 			let currentNodeEnd = Infinity;
 			
-			if (this.nodeWithRange && this.nodeEndCursor.lineIndex === this.lineIndex) {
+			if (this.node && this.nodeEndCursor.lineIndex === this.lineIndex) {
 				currentNodeEnd = this.nodeEndCursor.offset;
 			}
 			
@@ -145,6 +141,18 @@ class CodeRenderer {
 			
 			if (this.nextNodeStartCursor && this.nextNodeStartCursor.lineIndex === this.lineIndex) {
 				nextNodeStart = this.nextNodeStartCursor.offset;
+			}
+			
+			let nextRangeStart = Infinity;
+			
+			if (this.nextRangeToEnter?.selection.start.lineIndex === this.lineIndex) {
+				nextRangeStart = this.nextRangeToEnter.selection.start.offset;
+			}
+			
+			let currentRangeEnd = Infinity;
+			
+			if (this.range?.selection.end.lineIndex === this.lineIndex) {
+				currentRangeEnd = this.range.selection.end.offset;
 			}
 			
 			if (this.variableWidthPart) {
@@ -169,15 +177,7 @@ class CodeRenderer {
 					this.nextVariableWidthPart();
 				}
 			} else {
-				renderCode.endRow();
-				renderMargin.endRow();
-				renderFoldHilites.endRow();
-				
-				rowsRendered++;
-				
-				if (rowsRendered === rowsToRender) {
-					break;
-				}
+				this.canvasCodeRenderer.endRow();
 				
 				this.nextFoldedLineRow();
 				
@@ -188,7 +188,7 @@ class CodeRenderer {
 				this.startRow();
 			}
 			
-			while (this.nodeWithRange && Cursor.equals(this.cursor, this.nodeEndCursor)) {
+			while (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
 				this.nodeStack.pop();
 				
 				leftNode = true;
