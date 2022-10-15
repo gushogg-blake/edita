@@ -58,32 +58,6 @@ let api = {
 		return null;
 	}),
 	
-	previousSibling: cachedNodeFunction(function(node) {
-		let parent = api.parent(node);
-		
-		if (!parent) {
-			return null;
-		}
-		
-		let foundNode = false;
-		
-		let children = api.children(parent);
-		
-		for (let i = children.length - 1; i >= 0; i--) {
-			let child = children[i];
-			
-			if (foundNode && api.text(child).length > 0) {
-				return child;
-			}
-			
-			if (child.id === node.id) {
-				foundNode = true;
-			}
-		}
-		
-		return null;
-	}),
-	
 	get(node, ...fields) {
 		let result = {};
 		
