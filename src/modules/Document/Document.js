@@ -249,24 +249,8 @@ class Document extends BaseDocument {
 		return this.source.rangeFromCursor(cursor);
 	}
 	
-	rangeFromCharCursor(cursor) {
-		return this.source.rangeFromCharCursor(cursor);
-	}
-	
 	langFromCursor(cursor) {
 		return this.source.langFromCursor(cursor);
-	}
-	
-	findFirstNodeOnOrAfterCursor(cursor) {
-		return this.source.findFirstNodeOnOrAfterCursor(cursor);
-	}
-	
-	findFirstNodeAfterCursor(cursor) {
-		return this.source.findFirstNodeAfterCursor(cursor);
-	}
-	
-	findSmallestNodeAtCharCursor(cursor) {
-		return this.source.findSmallestNodeAtCharCursor(cursor);
 	}
 	
 	generateNodesOnLineWithLang(lineIndex, lang=null) {

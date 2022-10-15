@@ -2,8 +2,6 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
-let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
-let findFirstNodeAfterCursor = require("modules/utils/treeSitter/findFirstNodeAfterCursor");
 let findSmallestNodeAtCharCursor = require("modules/utils/treeSitter/findSmallestNodeAtCharCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let selectionFromNode = require("modules/utils/treeSitter/selectionFromNode");
@@ -298,79 +296,6 @@ module.exports = class Scope {
 		return ranges;
 	}
 	
-	findRangeContainingStart(node) {
-		for (let range of this.ranges) {
-			if (range.containsNodeStart(node)) {
-				return range;
-			}
-		}
-	}
-	
-	/*
-	get the NodeWithRange in this scope whose node is the parent of the child
-	range, ie. the injection point. for a range in a javascript scope within
-	an html file, this will be the raw_text node inside the <script> tag.
-	*/
-	
-	getInjectionParent(childRange) {
-		let node = this.injectionNodeByChildRange.get(childRange);
-		
-		return new NodeWithRange(this.findRangeContainingStart(node), node);
-	}
-	
-	firstInRange(range) {
-		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, range.selection.start);
-		let childScopeAndRanges = this.scopeAndRangesByNode[node.id];
-		
-		if (childScopeAndRanges) {
-			let {scope, ranges} = childScopeAndRanges;
-			
-			if (!scope.tree) {
-				return this.nextAfterRange(ranges[ranges.length - 1]);
-			}
-			
-			return scope.firstInRange(ranges[0]);
-		}
-		
-		return new NodeWithRange(range, node);
-	}
-	
-	/*
-	get first node after the given range
-	
-	if we have holes, the parent scope could have an earlier node
-	*/
-	
-	nextAfterRange(range) {
-		let node = findFirstNodeOnOrAfterCursor(this.tree.rootNode, range.selection.end);
-		let nextAfterRangeInParent = this.parent?.nextAfterRange(range) || null;
-		
-		if (!node) {
-			if (nextAfterRangeInParent) {
-				let {scope, node} = nextAfterRangeInParent;
-				
-				return new NodeWithRange(scope.findRangeContainingStart(node), node);
-			} else {
-				return null;
-			}
-		}
-		
-		if (!nextAfterRangeInParent) {
-			return new NodeWithRange(this.findRangeContainingStart(node), node);
-		}
-		
-		let parentStart = selectionFromNode(nextAfterRangeInParent.node).start;
-		let ourStart = selectionFromNode(node).start;
-		
-		if (Cursor.isBefore(parentStart, ourStart)) {
-			let {scope, node} = nextAfterRangeInParent;
-			
-			return new NodeWithRange(scope.findRangeContainingStart(node), node);
-		} else {
-			return new NodeWithRange(this.findRangeContainingStart(node), node);
-		}
-	}
-	
 	langFromCursor(cursor) {
 		return this.rangeFromCursor(cursor).lang;
 	}
@@ -399,14 +324,6 @@ module.exports = class Scope {
 	
 	rangeFromCharCursor(cursor) {
 		return this._rangeFromCursor(cursor, true);
-	}
-	
-	findFirstNodeOnOrAfterCursor(cursor) {
-		return this.tree && findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
-	}
-	
-	findFirstNodeAfterCursor(cursor) {
-		return this.tree && findFirstNodeAfterCursor(this.tree.rootNode, cursor);
 	}
 	
 	findSmallestNodeAtCharCursor(cursor) {
