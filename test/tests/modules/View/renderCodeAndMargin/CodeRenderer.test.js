@@ -42,5 +42,7 @@ describe("CodeRenderer", function() {
 		is(codeRenderer.cursor.lineIndex, 0);
 		
 		codeRenderer.step();
+		
+		console.log(codeRenderer);
 	});
 });
