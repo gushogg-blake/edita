@@ -266,15 +266,21 @@ module.exports = class Scope {
 			return [];
 		}
 		
+		let children = this.scopes.reduce(function(scopes, scope) {
+			return [...scopes, ...scope.getVisibleScopes(selection)];
+		}, []);
+		
 		return [
 			{
 				scope: this,
 				ranges,
+				
+				injectionRanges: children.reduce(function(ranges, child) {
+					return [...ranges, ...child.ranges];
+				}, []),
 			},
 			
-			...this.scopes.reduce(function(scopes, scope) {
-				return [...scopes, ...scope.getVisibleScopes(selection)];
-			}, []),
+			...children,
 		];
 	}
 	

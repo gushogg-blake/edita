@@ -1,3 +1,4 @@
+let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
@@ -175,14 +176,16 @@ class CodeRenderer {
 			if (this.variableWidthPart.type === "string") {
 				let currentNodeEnd = this.getCurrentNodeEnd();
 				let nextNodeStart = this.getNextNodeStart();
-				let currentRangeEnd = this.getCurrentRangeEnd();
-				let nextRangeStart = this.getNextRangeStart();
+				let currentRangeSelectionEnd = this.getCurrentRangeSelectionEnd();
+				let nextRangeSelectionStart = this.getNextRangeSelectionStart();
 				let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
 				
-				let renderTo = Math.min(currentRangeEnd, nextRangeStart, currentNodeEnd, nextNodeStart, partEnd);
+				let renderTo = Math.min(currentRangeSelectionEnd, nextRangeSelectionStart, currentNodeEnd, nextNodeStart, partEnd);
 				let length = renderTo - this.offset;
 				
-				this.canvasCodeRenderer.drawText(this.variableWidthPart.string.substring(this.offset - this.variableWidthPart.offset, renderTo - this.variableWidthPart.offset));
+				let {string, offset} = this.variableWidthPart;
+				
+				this.canvasCodeRenderer.drawText(string.substring(this.offset - offset, renderTo - offset), !this.rangeSelection);
 				
 				this.offset += length;
 				

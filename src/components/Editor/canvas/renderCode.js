@@ -53,8 +53,10 @@ module.exports = function(layers, view) {
 			x += width * colWidth;
 		},
 		
-		drawText(string) {
-			context.fillText(string, x, y);
+		drawText(string, skipDraw=false) {
+			if (!skipDraw) {
+				context.fillText(string, x, y);
+			}
 			
 			x += string.length * colWidth;
 		},
