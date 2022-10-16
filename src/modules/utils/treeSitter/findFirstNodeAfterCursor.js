@@ -70,7 +70,7 @@ module.exports = function(node, cursor) {
 	*/
 	
 	if (foundContainingNode && !first) {
-		let n = next(node);
+		let n = next(nodeGetters.lastChild(node) || node);
 		
 		while (n) {
 			if (isAfter(n, cursor)) {
