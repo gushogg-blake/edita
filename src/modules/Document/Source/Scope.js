@@ -3,6 +3,7 @@ let Cursor = require("modules/utils/Cursor");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let findSmallestNodeAtCharCursor = require("modules/utils/treeSitter/findSmallestNodeAtCharCursor");
+let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let selectionFromNode = require("modules/utils/treeSitter/selectionFromNode");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
@@ -338,6 +339,10 @@ module.exports = class Scope {
 	
 	findSmallestNodeAtCharCursor(cursor) {
 		return this.tree && findSmallestNodeAtCharCursor(this.tree.rootNode, cursor);
+	}
+	
+	findFirstNodeOnOrAfterCursor(cursor) {
+		return this.tree && findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
 	}
 	
 	/*

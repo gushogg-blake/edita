@@ -110,7 +110,7 @@ class CodeRenderer {
 		let node = this.scope.findSmallestNodeAtCharCursor(this.cursor);
 		
 		this.nodeStack = node ? getLineage(node) : [];
-		this.nextNodeToEnter = node ? next(node) : this.scope.findSmallestNodeAtCharCursor(this.ranges[0].selection.start);
+		this.nextNodeToEnter = this.scope.findFirstNodeOnOrAfterCursor(this.cursor);
 		
 		this.setColor();
 	}
@@ -208,10 +208,14 @@ class CodeRenderer {
 			this.startRow();
 		}
 		
+		while (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
+			this.nodeStack.pop();
+		}
+		
+		this.setColor();
+		
 		if (this.nextNodeStartCursor && Cursor.equals(this.cursor, this.nextNodeStartCursor)) {
 			this.nextNode();
-		} else if (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
-			this.nodeStack.pop();
 		}
 		
 		if (this.range && Cursor.equals(this.cursor, this.range.selection.end)) {
