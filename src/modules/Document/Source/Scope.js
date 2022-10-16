@@ -37,6 +37,21 @@ module.exports = class Scope {
 		}
 	}
 	
+	createTreeSitterParser() {
+		let parser = new TreeSitter();
+		let treeSitterLanguage = base.getTreeSitterLanguage(this.lang.code);
+		
+		if (!treeSitterLanguage) {
+			// langs must be pre-initialised with base.initLanguage.
+			
+			throw "tree-sitter language not initialised";
+		}
+		
+		parser.setLanguage(treeSitterLanguage);
+		
+		return parser;
+	}
+	
 	parse() {
 		if (this.source.noParse || this.lang.code === "plainText") {
 			return;
@@ -45,9 +60,7 @@ module.exports = class Scope {
 		//console.time("parse (" + this.lang.code + ")");
 		
 		try {
-			let parser = new TreeSitter();
-			
-			parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
+			let parser = this.createTreeSitterParser();
 			
 			this.tree = parser.parse(this.code, null, {
 				includedRanges: this.treeSitterRanges,
@@ -92,9 +105,7 @@ module.exports = class Scope {
 		let existingScopes = this.scopes;
 		
 		try {
-			let parser = new TreeSitter();
-			
-			parser.setLanguage(base.getTreeSitterLanguage(this.lang.code));
+			let parser = this.createTreeSitterParser();
 			
 			this.tree.edit({
 				startPosition: cursorToTreeSitterPoint(selection.start),
