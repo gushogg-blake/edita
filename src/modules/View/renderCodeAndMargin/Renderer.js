@@ -67,25 +67,25 @@ class Renderer {
 		}
 	}
 	
-	render() {
-		let {foldedLineRows} = this;
+	getVisibleScopes() {
+		let firstRow = this.foldedLineRows[0];
+		let lastRow = this.foldedLineRows[this.foldedLineRows.length - 1];
 		
-		if (foldedLineRows.length === 0) {
+		return this.document.getVisibleScopes(s(
+			c(firstRow.lineIndex, firstRow.lineRow.startOffset),
+			c(lastRow.lineIndex, lastRow.lineRow.startOffset + lastRow.lineRow.string.length),
+		));
+	}
+	
+	render() {
+		if (this.foldedLineRows.length === 0) {
 			return;
 		}
 		
 		this.renderMargin();
 		this.renderFoldHilites();
 		
-		let firstRow = foldedLineRows[0];
-		let lastRow = foldedLineRows[foldedLineRows.length - 1];
-		
-		let visibleScopes = this.document.getVisibleScopes(s(
-			c(firstRow.lineIndex, firstRow.lineRow.startOffset),
-			c(lastRow.lineIndex, lastRow.lineRow.startOffset + lastRow.lineRow.string.length),
-		));
-		
-		for (let {scope, ranges} of visibleScopes) {
+		for (let {scope, ranges} of this.getVisibleScopes()) {
 			let codeRenderer = new CodeRenderer(this, scope, ranges);
 			
 			codeRenderer.render();

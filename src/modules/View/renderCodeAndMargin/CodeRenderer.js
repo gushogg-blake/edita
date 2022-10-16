@@ -34,6 +34,10 @@ class CodeRenderer {
 		this.variableWidthPart = null;
 		this.nodeStack = [];
 		this.nextNodeToEnter = null;
+		
+		this.nextFoldedLineRow();
+		this.startRow();
+		this.initNodeStack();
 	}
 	
 	get range() {
@@ -71,11 +75,11 @@ class CodeRenderer {
 	}
 	
 	get nodeStartCursor() {
-		return treeSitterPointToCursor(nodeGetters.startPosition(this.node));
+		return this.node && treeSitterPointToCursor(nodeGetters.startPosition(this.node));
 	}
 	
 	get nodeEndCursor() {
-		return treeSitterPointToCursor(nodeGetters.endPosition(this.node));
+		return this.node && treeSitterPointToCursor(nodeGetters.endPosition(this.node));
 	}
 	
 	get nextNodeStartCursor() {
@@ -105,7 +109,7 @@ class CodeRenderer {
 		let node = this.scope.findSmallestNodeAtCharCursor(this.cursor);
 		
 		this.nodeStack = node ? getLineage(node) : [];
-		this.nextNodeToEnter = node ? next(node) : this.scope.findFirstNodeInRange(this.ranges[0]);
+		this.nextNodeToEnter = node ? next(node) : this.scope.findSmallestNodeAtCharCursor(this.ranges[0].selection.start);
 		
 		for (let i = this.nodeStack.length - 1; i >= 0; i--) {
 			let node = this.nodeStack[i];
@@ -192,14 +196,61 @@ class CodeRenderer {
 		return this.nextNodeStartCursor?.lineIndex === this.lineIndex ? this.nextNodeStartCursor.offset : Infinity;
 	}
 	
-	render() {
-		this.nextFoldedLineRow();
-		this.startRow();
-		this.initNodeStack();
+	step() {
+		if (this.variableWidthPart) {
+			if (this.variableWidthPart.type === "string") {
+				let currentNodeEnd = this.getCurrentNodeEnd();
+				let nextNodeStart = this.getNextNodeStart();
+				let currentRangeEnd = this.getCurrentRangeEnd();
+				let nextRangeStart = this.getNextRangeStart();
+				let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
+				
+				let renderTo = Math.min(currentRangeEnd, nextRangeStart, currentNodeEnd, nextNodeStart, partEnd);
+				let length = renderTo - this.offset;
+				
+				this.canvasCodeRenderer.drawText(this.variableWidthPart.string.substring(this.offset - this.variableWidthPart.offset, renderTo - this.variableWidthPart.offset));
+				
+				this.offset += length;
+				
+				if (renderTo === partEnd) {
+					this.nextVariableWidthPart();
+				}
+			} else {
+				this.canvasCodeRenderer.drawTab(this.variableWidthPart.width);
+				
+				this.offset++;
+				
+				this.nextVariableWidthPart();
+			}
+		} else {
+			this.canvasCodeRenderer.endRow();
+			
+			this.nextFoldedLineRow();
+			
+			if (!this.foldedLineRow) {
+				return true;
+			}
+			
+			this.startRow();
+		}
 		
+		if (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
+			this.nodeStack.pop();
+		} else if (this.nextNodeStartCursor && Cursor.equals(this.cursor, this.nextNodeStartCursor)) {
+			this.nextNode();
+		}
+		
+		if (this.range && Cursor.equals(this.cursor, this.range.selection.end)) {
+			this.nextRange();
+		}
+		
+		return false;
+	}
+	
+	render() {
 		let iterations = 0;
 		
-		while (true) {
+		while (!this.step()) {
 			if (iterations === 2000) {
 				console.log("infinite");
 				
@@ -207,53 +258,6 @@ class CodeRenderer {
 			}
 			
 			iterations++;
-			
-			if (this.variableWidthPart) {
-				if (this.variableWidthPart.type === "string") {
-					let currentNodeEnd = this.getCurrentNodeEnd();
-					let nextNodeStart = this.getNextNodeStart();
-					let currentRangeEnd = this.getCurrentRangeEnd();
-					let nextRangeStart = this.getNextRangeStart();
-					let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
-					
-					let renderTo = Math.min(currentRangeEnd, nextRangeStart, currentNodeEnd, nextNodeStart, partEnd);
-					let length = renderTo - this.offset;
-					
-					this.canvasCodeRenderer.drawText(this.variableWidthPart.string.substring(this.offset - this.variableWidthPart.offset, renderTo - this.variableWidthPart.offset));
-					
-					this.offset += length;
-					
-					if (renderTo === partEnd) {
-						this.nextVariableWidthPart();
-					}
-				} else {
-					this.canvasCodeRenderer.drawTab(this.variableWidthPart.width);
-					
-					this.offset++;
-					
-					this.nextVariableWidthPart();
-				}
-			} else {
-				this.canvasCodeRenderer.endRow();
-				
-				this.nextFoldedLineRow();
-				
-				if (!this.foldedLineRow) {
-					break;
-				}
-				
-				this.startRow();
-			}
-			
-			if (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
-				this.nodeStack.pop();
-			} else if (this.nextNodeStartCursor && Cursor.equals(this.cursor, this.nextNodeStartCursor)) {
-				this.nextNode();
-			}
-			
-			if (this.range && Cursor.equals(this.cursor, this.range.selection.end)) {
-				this.nextRange();
-			}
 		}
 	}
 }

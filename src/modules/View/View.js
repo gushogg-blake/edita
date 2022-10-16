@@ -75,8 +75,8 @@ class View extends Evented {
 		};
 		
 		this.measurements = {
-			rowHeight: 0,
-			colWidth: 0,
+			rowHeight: 20,
+			colWidth: 8,
 		};
 		
 		this.updateSizes(800, 600);
