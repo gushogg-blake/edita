@@ -2,10 +2,17 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
+let compareNodeAndCharCursor = require("modules/utils/treeSitter/compareNodeAndCharCursor");
 let getLineage = require("modules/utils/treeSitter/getLineage");
 let next = require("modules/utils/treeSitter/next");
 
 let {c} = Cursor;
+
+function isOnOrAfter(node, cursor) {
+	let {row, column} = nodeGetters.startPosition(node);
+	
+	return row === cursor.lineIndex && column === cursor.offset || compareNodeAndCharCursor(node, cursor) === "cursorBeforeNode";
+}
 
 function *generateVariableWidthParts(lineRow) {
 	let offset = lineRow.startOffset;
@@ -126,7 +133,7 @@ class CodeRenderer {
 		let node = this.scope.findSmallestNodeAtCharCursor(this.cursor);
 		
 		this.nodeStack = node ? getLineage(node) : [];
-		this.nextNodeToEnter = this.scope.findFirstNodeOnOrAfterCursor(this.cursor);
+		this.nextNodeToEnter = node && isOnOrAfter(node, this.cursor) ? next(this.node) : this.scope.findFirstNodeOnOrAfterCursor(this.cursor);
 		
 		this.setColor();
 	}

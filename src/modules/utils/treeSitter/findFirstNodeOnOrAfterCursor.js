@@ -67,12 +67,23 @@ module.exports = function(node, cursor) {
 	}
 	
 	/*
-	the cursor might be within a node that doesn't have children, in which case
-	the first node on or after the cursor will be the next node
+	we might have landed on a node that doesn't have any children on or
+	after the cursor, in which case we go next until the node is on or
+	after the cursor
 	*/
 	
 	if (foundContainingNode && !first) {
-		return next(node);
+		let n = next(node);
+		
+		while (n) {
+			if (isOn(n, cursor) || isAfter(n, cursor)) {
+				first = n;
+				
+				break;
+			}
+			
+			n = next(n);
+		}
 	}
 	
 	return first;
