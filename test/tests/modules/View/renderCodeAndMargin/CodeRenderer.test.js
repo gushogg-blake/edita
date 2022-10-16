@@ -9,20 +9,35 @@ let CodeRenderer = require("modules/View/renderCodeAndMargin/CodeRenderer");
 function init(lang, code) {
 	let document = new Document(dedent(code), URL._new("a." + lang));
 	let view = new View(document);
+	let string = "";
 	
 	let renderer = new Renderer(view, {
 		createCodeRenderer() {
 			return {
 				setColor() {},
-				drawText() {},
-				drawTab() {},
 				startRow() {},
-				endRow() {},
+				
+				drawText(str) {
+					string += str;
+				},
+				
+				drawTab() {
+					string += "\t";
+				},
+				
+				endRow() {
+					string += "\n";
+				},
 			};
 		},
 	});
 	
-	return {document, view, renderer};
+	return {
+		document,
+		view,
+		renderer,
+		getString: () => string,
+	};
 }
 
 function state(codeRenderer, props) {
@@ -31,7 +46,7 @@ function state(codeRenderer, props) {
 
 describe("CodeRenderer", function() {
 	it("stepping", function() {
-		let {document, view, renderer} = init("html", `
+		let {document, view, renderer, getString} = init("html", `
 			<div></div>
 		`);
 		
@@ -43,6 +58,11 @@ describe("CodeRenderer", function() {
 		
 		codeRenderer.step();
 		
-		console.log(codeRenderer);
+		let string = getString();
+		console.log(string + "|" + document.string.substr(string.length));
+		console.log(codeRenderer.node?.type);
+		console.log(codeRenderer.cursor.lineIndex + ", " + codeRenderer.cursor.offset);
+		
+		codeRenderer.step();
 	});
 });

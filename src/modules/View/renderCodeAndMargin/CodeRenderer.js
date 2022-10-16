@@ -33,6 +33,7 @@ class CodeRenderer {
 		this.offset = null;
 		this.variableWidthPart = null;
 		this.nodeStack = [];
+		this.childIndexes = [];
 		this.nextNodeToEnter = null;
 		
 		this.nextFoldedLineRow();
@@ -111,58 +112,21 @@ class CodeRenderer {
 		this.nodeStack = node ? getLineage(node) : [];
 		this.nextNodeToEnter = node ? next(node) : this.scope.findSmallestNodeAtCharCursor(this.ranges[0].selection.start);
 		
-		for (let i = this.nodeStack.length - 1; i >= 0; i--) {
-			let node = this.nodeStack[i];
-			
-			if (this.setColor(node)) {
-				break;
-			}
-		}
-	}
-	
-	_nextNode() {
-		if (!this.node) {
-			this.nodeStack = this.nextNodeToEnter ? getLineage(this.nextNodeToEnter) : [];
-			
-			return;
-		}
-		
-		let firstChild = nodeGetters.firstChild(this.node);
-		
-		if (firstChild) {
-			this.nodeStack.push(firstChild);
-			
-			return;
-		}
-		
-		while (this.node) {
-			let nextSibling = nodeGetters.nextSibling(this.node);
-			
-			this.nodeStack.pop();
-			
-			if (nextSibling) {
-				this.nodeStack.push(nextSibling);
-				
-				break;
-			}
-		}
+		this.setColor();
 	}
 	
 	nextNode() {
-		this._nextNode();
-		
+		this.nodeStack = this.nextNodeToEnter ? getLineage(this.nextNodeToEnter) : [];
 		this.nextNodeToEnter = this.node && next(this.node);
+		
+		this.setColor();
 	}
 	
 	nextRange() {
 		this.rangeIndex++;
 	}
 	
-	setColor(node=this.node) {
-		if (!node) {
-			return false;
-		}
-		
+	_setColor(node) {
 		let {lang} = this.scope;
 		let colors = base.theme.langs[lang.code];
 		let hiliteClass = lang.getHiliteClass(node);
@@ -174,6 +138,16 @@ class CodeRenderer {
 		this.canvasCodeRenderer.setColor(colors[hiliteClass]);
 		
 		return true;
+	}
+	
+	setColor() {
+		for (let i = this.nodeStack.length - 1; i >= 0; i--) {
+			let node = this.nodeStack[i];
+			
+			if (this._setColor(node)) {
+				break;
+			}
+		}
 	}
 	
 	startRow() {
@@ -234,10 +208,10 @@ class CodeRenderer {
 			this.startRow();
 		}
 		
-		if (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
-			this.nodeStack.pop();
-		} else if (this.nextNodeStartCursor && Cursor.equals(this.cursor, this.nextNodeStartCursor)) {
+		if (this.nextNodeStartCursor && Cursor.equals(this.cursor, this.nextNodeStartCursor)) {
 			this.nextNode();
+		} else if (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
+			this.nodeStack.pop();
 		}
 		
 		if (this.range && Cursor.equals(this.cursor, this.range.selection.end)) {
