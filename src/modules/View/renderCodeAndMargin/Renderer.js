@@ -85,8 +85,8 @@ class Renderer {
 		this.renderMargin();
 		this.renderFoldHilites();
 		
-		for (let {scope, ranges} of this.getVisibleScopes()) {
-			let codeRenderer = new CodeRenderer(this, scope, ranges);
+		for (let {scope, ranges, injectionRanges} of this.getVisibleScopes()) {
+			let codeRenderer = new CodeRenderer(this, scope, ranges, injectionRanges);
 			
 			codeRenderer.render();
 		}

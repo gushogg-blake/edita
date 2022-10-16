@@ -18,10 +18,11 @@ function *generateVariableWidthParts(lineRow) {
 }
 
 class CodeRenderer {
-	constructor(renderer, scope, ranges) {
+	constructor(renderer, scope, ranges, injectionRanges) {
 		this.renderer = renderer;
 		this.scope = scope;
 		this.ranges = ranges;
+		this.injectionRanges = injectionRanges;
 		this.view = renderer.view;
 		this.document = this.view.document;
 		this.canvasCodeRenderer = renderer.canvas.createCodeRenderer();
@@ -29,12 +30,12 @@ class CodeRenderer {
 		
 		this.foldedLineRowGenerator = renderer.generateFoldedLineRows();
 		
-		this.rangeIndex = null;
+		this.rangeIndex = 0;
+		this.injectionRangeIndex = 0;
 		this.foldedLineRow = null;
 		this.offset = null;
 		this.variableWidthPart = null;
 		this.nodeStack = [];
-		this.childIndexes = [];
 		this.nextNodeToEnter = null;
 		
 		this.nextFoldedLineRow();
@@ -43,13 +44,19 @@ class CodeRenderer {
 	}
 	
 	get range() {
-		let range = this.ranges[this.rangeIndex];
-		
-		return range?.containsCharCursor(this.cursor) ? range : null;
+		return this.ranges[this.rangeIndex];
+	}
+	
+	get injectionRange() {
+		return this.injectionRanges[this.injectionRangeIndex] || null;
 	}
 	
 	get nextRangeToEnter() {
-		return this.range ? this.ranges[this.rangeIndex + 1] || null : this.ranges[this.rangeIndex];
+		return this.inRange() ? this.ranges[this.rangeIndex + 1] || null : this.ranges[this.rangeIndex];
+	}
+	
+	get nextInjectionRangeToEnter() {
+		return this.inInjectionRange() ? this.injectionRanges[this.injectionRangeIndex + 1] || null : this.injectionRanges[this.injectionRangeIndex] || null;
 	}
 	
 	get lineIndex() {
@@ -90,6 +97,14 @@ class CodeRenderer {
 		return next && treeSitterPointToCursor(nodeGetters.startPosition(next));
 	}
 	
+	inRange() {
+		return this.range?.containsCharCursor(this.cursor);
+	}
+	
+	inInjectionRange() {
+		return this.injectionRange?.containsCharCursor(this.cursor);
+	}
+	
 	nextFoldedLineRow() {
 		this.foldedLineRow = this.foldedLineRowGenerator.next().value;
 		
@@ -125,6 +140,10 @@ class CodeRenderer {
 	
 	nextRange() {
 		this.rangeIndex++;
+	}
+	
+	nextInjectionRange() {
+		this.injectionRangeIndex++;
 	}
 	
 	_setColor(node) {
@@ -171,21 +190,40 @@ class CodeRenderer {
 		return this.nextNodeStartCursor?.lineIndex === this.lineIndex ? this.nextNodeStartCursor.offset : Infinity;
 	}
 	
+	getNextInjectionRangeStart() {
+		return this.nextInjectionRangeToEnter?.selection.start.lineIndex === this.lineIndex ? this.nextInjectionRangeToEnter.selection.start.offset : Infinity;
+	}
+	
+	getCurrentInjectionRangeEnd() {
+		return this.inInjectionRange() && this.injectionRange.selection.end.lineIndex === this.lineIndex ? this.injectionRange.selection.end.offset : Infinity;
+	}
+	
 	step() {
 		if (this.variableWidthPart) {
 			if (this.variableWidthPart.type === "string") {
 				let currentNodeEnd = this.getCurrentNodeEnd();
 				let nextNodeStart = this.getNextNodeStart();
-				let currentRangeSelectionEnd = this.getCurrentRangeSelectionEnd();
-				let nextRangeSelectionStart = this.getNextRangeSelectionStart();
+				let currentRangeEnd = this.getCurrentRangeEnd();
+				let nextRangeStart = this.getNextRangeStart();
+				let currentInjectionRangeEnd = this.getCurrentRangeEnd();
+				let nextInjectionRangeStart = this.getNextInjectionRangeStart();
 				let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
 				
-				let renderTo = Math.min(currentRangeSelectionEnd, nextRangeSelectionStart, currentNodeEnd, nextNodeStart, partEnd);
+				let renderTo = Math.min(
+					currentRangeEnd,
+					nextRangeStart,
+					currentNodeEnd,
+					nextNodeStart,
+					currentInjectionRangeEnd,
+					nextInjectionRangeStart,
+					partEnd,
+				);
+				
 				let length = renderTo - this.offset;
 				
 				let {string, offset} = this.variableWidthPart;
 				
-				this.canvasCodeRenderer.drawText(string.substring(this.offset - offset, renderTo - offset), !this.rangeSelection);
+				this.canvasCodeRenderer.drawText(string.substring(this.offset - offset, renderTo - offset), !this.inRange() || this.inInjectionRange());
 				
 				this.offset += length;
 				
@@ -223,6 +261,10 @@ class CodeRenderer {
 		
 		if (this.range && Cursor.equals(this.cursor, this.range.selection.end)) {
 			this.nextRange();
+		}
+		
+		if (this.injectionRange && Cursor.equals(this.cursor, this.injectionRange.selection.end)) {
+			this.nextInjectionRange();
 		}
 		
 		return false;
