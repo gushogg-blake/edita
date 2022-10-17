@@ -269,17 +269,7 @@ class CodeRenderer {
 	}
 	
 	render() {
-		let iterations = 0;
-		
-		while (!this.step()) {
-			if (iterations === 2000) {
-				console.log("infinite");
-				
-				break;
-			}
-			
-			iterations++;
-		}
+		while (!this.step());
 	}
 }
 
