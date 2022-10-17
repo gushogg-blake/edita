@@ -7,7 +7,7 @@ module.exports = {
 	name: "HTML",
 	astMode,
 	codeIntel,
-	possibleInjections: ["javascript", "css"],
+	possibleInjections: ["javascript", "css", "scss", "sass"],
 	defaultExtension: "html",
 	
 	injections: [

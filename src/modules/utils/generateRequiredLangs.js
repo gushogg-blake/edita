@@ -8,7 +8,11 @@ function *generateRequiredLangs(lang, seen=[]) {
 	seen.push(lang);
 	
 	for (let code of lang.possibleInjections || []) {
-		yield* generateRequiredLangs(base.langs.get(code), seen);
+		let lang = base.langs.get(code);
+		
+		if (lang) {
+			yield* generateRequiredLangs(lang, seen);
+		}
 	}
 }
 
