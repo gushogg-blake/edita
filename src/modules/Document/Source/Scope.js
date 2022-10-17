@@ -5,8 +5,7 @@ let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointT
 let findSmallestNodeAtCharCursor = require("modules/utils/treeSitter/findSmallestNodeAtCharCursor");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
-let selectionFromNode = require("modules/utils/treeSitter/selectionFromNode");
-let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
+let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 let Range = require("./Range");
 
 let {s} = Selection;
@@ -297,7 +296,7 @@ module.exports = class Scope {
 	
 	rangesFromNode(node) {
 		let ranges = [];
-		let nodeSelection = selectionFromNode(node);
+		let nodeSelection = nodeUtils.selection(node);
 		
 		for (let parentRange of this.ranges) {
 			let selection = Selection.intersection(nodeSelection, parentRange.selection);
@@ -398,7 +397,7 @@ module.exports = class Scope {
 				};
 			}
 			
-			startOffset = nodeGetters.endPosition(node).column;
+			startOffset = nodeUtils.endPosition(node).column;
 			
 			let {scope} = this.scopeAndRangesByNode[node.id] || {};
 			
@@ -406,7 +405,7 @@ module.exports = class Scope {
 				for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, lang)) {
 					yield childNode;
 					
-					startOffset = nodeGetters.endPosition(childNode.node).column;
+					startOffset = nodeUtils.endPosition(childNode.node).column;
 				}
 			}
 		}
@@ -415,7 +414,7 @@ module.exports = class Scope {
 			for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, lang)) {
 				yield childNode;
 				
-				startOffset = nodeGetters.endPosition(childNode.node).column;
+				startOffset = nodeUtils.endPosition(childNode.node).column;
 			}
 		}
 	}

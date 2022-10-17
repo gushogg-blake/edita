@@ -71,11 +71,9 @@ let lang = {
 		return null;
 	},
 	
-	getHiliteClass(node) {
-		let {
-			type,
-			parent,
-		} = node;
+	getHiliteClass(node, nodeUtils) {
+		let {type} = node;
+		let parent = nodeUtils.parent(node);
 		
 		if ([
 			"string",
@@ -110,7 +108,7 @@ let lang = {
 			return "regex";
 		}
 		
-		if ("(){}[]".includes(type) || type === "${" || type === "}" && parent?.type === "template_substitution") {
+		if ("(){}[]".includes(type) || type === "${") {
 			return "bracket";
 		}
 		
@@ -119,17 +117,6 @@ let lang = {
 		}
 		
 		return "symbol";
-	},
-	
-	getHiliteClassAfter(node) {
-		let {
-			type,
-			parent,
-		} = node;
-		
-		if (type === "}" && parent?.type === "template_substitution") {
-			return "string";
-		}
 	},
 	
 	commentLines(document, startLineIndex, endLineIndex) {

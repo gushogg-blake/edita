@@ -1,7 +1,5 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let next = require("modules/utils/treeSitter/next");
-let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
 let Scope = require("./Scope");
 let Range = require("./Range");
 let Line = require("./Line");

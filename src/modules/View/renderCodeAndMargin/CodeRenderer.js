@@ -1,18 +1,9 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
-let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
-let compareNodeAndCharCursor = require("modules/utils/treeSitter/compareNodeAndCharCursor");
-let getLineage = require("modules/utils/treeSitter/getLineage");
-let next = require("modules/utils/treeSitter/next");
+let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 
 let {c} = Cursor;
-
-function isOnOrAfter(node, cursor) {
-	let {row, column} = nodeGetters.startPosition(node);
-	
-	return row === cursor.lineIndex && column === cursor.offset || compareNodeAndCharCursor(node, cursor) === "cursorBeforeNode";
-}
 
 function *generateVariableWidthParts(lineRow) {
 	let offset = lineRow.startOffset;
@@ -91,17 +82,17 @@ class CodeRenderer {
 	}
 	
 	get nodeStartCursor() {
-		return this.node && treeSitterPointToCursor(nodeGetters.startPosition(this.node));
+		return this.node && treeSitterPointToCursor(nodeUtils.startPosition(this.node));
 	}
 	
 	get nodeEndCursor() {
-		return this.node && treeSitterPointToCursor(nodeGetters.endPosition(this.node));
+		return this.node && treeSitterPointToCursor(nodeUtils.endPosition(this.node));
 	}
 	
 	get nextNodeStartCursor() {
 		let next = this.nextNodeToEnter;
 		
-		return next && treeSitterPointToCursor(nodeGetters.startPosition(next));
+		return next && treeSitterPointToCursor(nodeUtils.startPosition(next));
 	}
 	
 	inRange() {
@@ -132,15 +123,15 @@ class CodeRenderer {
 	initNodeStack() {
 		let node = this.scope.findSmallestNodeAtCharCursor(this.cursor);
 		
-		this.nodeStack = node ? getLineage(node) : [];
-		this.nextNodeToEnter = node && isOnOrAfter(node, this.cursor) ? next(this.node) : this.scope.findFirstNodeOnOrAfterCursor(this.cursor);
+		this.nodeStack = node ? nodeUtils.lineage(node) : [];
+		this.nextNodeToEnter = node && nodeUtils.isOnOrAfter(node, this.cursor) ? nodeUtils.next(this.node) : this.scope.findFirstNodeOnOrAfterCursor(this.cursor);
 		
 		this.setColor();
 	}
 	
 	nextNode() {
-		this.nodeStack = this.nextNodeToEnter ? getLineage(this.nextNodeToEnter) : [];
-		this.nextNodeToEnter = this.node && next(this.node);
+		this.nodeStack = this.nextNodeToEnter ? nodeUtils.lineage(this.nextNodeToEnter) : [];
+		this.nextNodeToEnter = this.node && nodeUtils.next(this.node);
 		
 		this.setColor();
 	}
@@ -156,7 +147,7 @@ class CodeRenderer {
 	_setColor(node) {
 		let {lang} = this.scope;
 		let colors = base.theme.langs[lang.code];
-		let hiliteClass = lang.getHiliteClass(node);
+		let hiliteClass = lang.getHiliteClass(node, nodeUtils);
 		
 		if (!hiliteClass) {
 			return false;

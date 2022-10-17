@@ -1,20 +1,18 @@
 let middle = require("utils/middle");
-let next = require("./next");
-let nodeGetters = require("./nodeGetters");
-let compareNodeAndCharCursor = require("./compareNodeAndCharCursor");
+let nodeUtils = require("./nodeUtils");
 
 function isOn(node, cursor) {
-	let {row, column} = nodeGetters.startPosition(node);
+	let {row, column} = nodeUtils.startPosition(node);
 	
 	return row === cursor.lineIndex && column === cursor.offset;
 }
 
 function isAfter(node, cursor) {
-	return compareNodeAndCharCursor(node, cursor) === "cursorBeforeNode";
+	return nodeUtils.compareCharCursor(node, cursor) === "cursorBeforeNode";
 }
 
 function endsAfter(node, cursor) {
-	let {row, column} = nodeGetters.endPosition(node);
+	let {row, column} = nodeUtils.endPosition(node);
 	
 	return (
 		row > cursor.lineIndex
@@ -27,7 +25,7 @@ module.exports = function(node, cursor) {
 		return node;
 	}
 	
-	let children = nodeGetters.children(node);
+	let children = nodeUtils.children(node);
 	let startIndex = 0;
 	let endIndex = children.length;
 	let first = null;
@@ -52,9 +50,9 @@ module.exports = function(node, cursor) {
 			continue;
 		}
 		
-		if (endsAfter(child, cursor) && nodeGetters.children(child).length > 0) {
+		if (endsAfter(child, cursor) && nodeUtils.children(child).length > 0) {
 			node = child;
-			children = nodeGetters.children(node);
+			children = nodeUtils.children(node);
 			startIndex = 0;
 			endIndex = children.length;
 			foundContainingNode = true;
@@ -73,7 +71,7 @@ module.exports = function(node, cursor) {
 	*/
 	
 	if (foundContainingNode && !first) {
-		let n = next(nodeGetters.lastChild(node) || node);
+		let n = nodeUtils.next(nodeUtils.lastChild(node) || node);
 		
 		while (n) {
 			if (isOn(n, cursor) || isAfter(n, cursor)) {
@@ -82,7 +80,7 @@ module.exports = function(node, cursor) {
 				break;
 			}
 			
-			n = next(n);
+			n = nodeUtils.next(n);
 		}
 	}
 	

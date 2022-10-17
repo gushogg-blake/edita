@@ -23,7 +23,7 @@ let api = {
 	}),
 	
 	lastChild: cachedNodeFunction(function(node) {
-		let {children} = node;
+		let children = api.children(node);
 		
 		for (let i = children.length - 1; i >= 0; i--) {
 			let child = children[i];
@@ -37,7 +37,7 @@ let api = {
 	}),
 	
 	nextSibling: cachedNodeFunction(function(node) {
-		let {parent} = node;
+		let parent = api.parent(node);
 		
 		if (!parent) {
 			return null;

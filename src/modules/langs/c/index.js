@@ -46,7 +46,7 @@ module.exports = {
 		return null;
 	},
 	
-	getHiliteClass(node) {
+	getHiliteClass(node, nodeUtils) {
 		let {
 			type,
 			parent,

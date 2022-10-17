@@ -1,20 +1,5 @@
 let middle = require("utils/middle");
-let next = require("./next");
-let nodeGetters = require("./nodeGetters");
-let compareNodeAndCharCursor = require("./compareNodeAndCharCursor");
-
-function isAfter(node, cursor) {
-	return compareNodeAndCharCursor(node, cursor) === "cursorBeforeNode";
-}
-
-function endsAfter(node, cursor) {
-	let {row, column} = nodeGetters.endPosition(node);
-	
-	return (
-		row > cursor.lineIndex
-		|| row === cursor.lineIndex && column > cursor.offset
-	);
-}
+let nodeUtils = require("./nodeUtils");
 
 /*
 given a node and a cursor, find the first node within or after the
@@ -24,11 +9,11 @@ start of the node.
 */
 
 module.exports = function(node, cursor) {
-	if (isAfter(node, cursor)) {
+	if (nodeUtils.isAfter(node, cursor)) {
 		return node;
 	}
 	
-	let children = nodeGetters.children(node);
+	let children = nodeUtils.children(node);
 	let startIndex = 0;
 	let endIndex = children.length;
 	let first = null;
@@ -42,16 +27,16 @@ module.exports = function(node, cursor) {
 		let index = middle(startIndex, endIndex);
 		let child = children[index];
 		
-		if (isAfter(child, cursor)) {
+		if (nodeUtils.isAfter(child, cursor)) {
 			first = child;
 			endIndex = index;
 			
 			continue;
 		}
 		
-		if (endsAfter(child, cursor) && nodeGetters.children(child).length > 0) {
+		if (nodeUtils.endsAfter(child, cursor) && nodeUtils.children(child).length > 0) {
 			node = child;
-			children = nodeGetters.children(node);
+			children = nodeUtils.children(node);
 			startIndex = 0;
 			endIndex = children.length;
 			foundContainingNode = true;
@@ -70,16 +55,16 @@ module.exports = function(node, cursor) {
 	*/
 	
 	if (foundContainingNode && !first) {
-		let n = next(nodeGetters.lastChild(node) || node);
+		let n = nodeUtils.next(nodeUtils.lastChild(node) || node);
 		
 		while (n) {
-			if (isAfter(n, cursor)) {
+			if (nodeUtils.isAfter(n, cursor)) {
 				first = n;
 				
 				break;
 			}
 			
-			n = next(n);
+			n = nodeUtils.next(n);
 		}
 	}
 	
