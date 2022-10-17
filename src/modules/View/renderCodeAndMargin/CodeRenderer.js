@@ -247,11 +247,17 @@ class CodeRenderer {
 			this.startRow();
 		}
 		
+		let leftNode = false;
+		
 		while (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
 			this.nodeStack.pop();
+			
+			leftNode = true;
 		}
 		
-		this.setColor();
+		if (leftNode) {
+			this.setColor();
+		}
 		
 		if (this.nextNodeStartCursor && Cursor.equals(this.cursor, this.nextNodeStartCursor)) {
 			this.nextNode();
