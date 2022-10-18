@@ -65,13 +65,6 @@ module.exports = class Scope {
 			this.tree = parser.parse(this.code, null, {
 				includedRanges: this.treeSitterRanges,
 			});
-			
-			// trees with ERROR nodes can be broken, e.g. with incorrect
-			// parent/child/sibling pointers, so count as a failed parse
-			
-			if (this.tree.rootNode.hasError()) {
-				this.tree = null;
-			}
 		} catch (e) {
 			this.tree = null;
 			
@@ -119,13 +112,6 @@ module.exports = class Scope {
 			this.tree = parser.parse(this.code, this.tree, {
 				includedRanges: this.treeSitterRanges,
 			});
-			
-			// trees with ERROR nodes can be broken, e.g. with incorrect
-			// parent/child/sibling pointers, so count as a failed parse
-			
-			if (this.tree.rootNode.hasError()) {
-				this.tree = null;
-			}
 		} catch (e) {
 			this.tree = null;
 			
