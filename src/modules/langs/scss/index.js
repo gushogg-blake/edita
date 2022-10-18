@@ -45,10 +45,8 @@ module.exports = {
 	},
 	
 	getHiliteClass(node, nodeUtils) {
-		let {
-			type,
-			parent,
-		} = node;
+		let {type} = node;
+		let parent = nodeUtils.parent(node);
 		
 		if ([
 			"string_value",
