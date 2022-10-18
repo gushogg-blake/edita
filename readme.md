@@ -12,7 +12,7 @@ The main code for Treefrog is in [src/modules](./src/modules). These constitute 
 
 The UI is written in Svelte and is in [src/components](./src/components). The app is decoupled from the UI and can run without it, with the UI being added later (all communication to the UI that's initiated by the app is done by events, and the UI can render an app in any initial state).
 
-This project uses the [ENTRYPOINT](https://gist.github.com/gushogg-blake/247b1bf2ed46b035d1c8a2c1e776b607) convention -- comments that start with `// ENTRYPOINT` indicate top-level entry points such as the main function and event handlers.
+This project uses the [ENTRYPOINT](https://gitlab.com/-/snippets/2431100) convention -- comments that start with `// ENTRYPOINT` indicate top-level entry points such as the main function and event handlers.
 
 Non-obvious mechanisms
 ---
