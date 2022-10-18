@@ -157,6 +157,7 @@ if (platform === "all" || platform === "electron") {
 			}),
 			
 			copy({
+				copyOnce: true,
 				watch: dev && "src/platforms/electron/mainProcess",
 				
 				targets: [
