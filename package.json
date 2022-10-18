@@ -52,7 +52,7 @@
 	"scripts": {
 		"clean-packages": "rm -rf ./packages",
 		"start": "cross-env ELECTRON_IS_DEV=0 electron .",
-		"electron": "NODE_ENV=development electron . --inspect",
+		"electron": "NODE_ENV=development electron build/electron-dev/mainProcess/main.js --inspect",
 		"build": "rollup -c",
 		"autobuild": "rollup -cw",
 		"build-electron": "PLATFORM=electron rollup -c",
