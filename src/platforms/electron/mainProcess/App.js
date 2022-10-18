@@ -23,6 +23,7 @@ class App {
 		
 		this.appWindows = [];
 		this.mainWindow = null;
+		this.lastFocusedWindow = null;
 		
 		this.closeWithoutConfirming = new WeakSet();
 		this.dialogOpeners = new WeakMap();
@@ -99,6 +100,7 @@ class App {
 			});
 			
 			this.mainWindow = this.createAppWindow();
+			this.lastFocusedWindow = this.mainWindow;
 			
 			electronApp.on("window-all-closed", () => {
 				electronApp.quit();
@@ -109,7 +111,7 @@ class App {
 			let files = yargs(hideBin(argv)).argv._.map(p => path.resolve(dir, p));
 			
 			if (files.length > 0) {
-				ipcMain.sendToRenderer(this.mainWindow, "open", files);
+				ipcMain.sendToRenderer(this.lastFocusedWindow, "open", files);
 			} else {
 				this.createAppWindow();
 			}
@@ -122,7 +124,7 @@ class App {
 		let winState = windowStateKeeper();
 		
 		let browserWindow = new BrowserWindow({
-			x: winState.x - 3, // DEV
+			x: winState.x - 3, // hack for https://github.com/electron/electron/issues/10388
 			y: winState.y,
 			width: winState.width,
 			height: winState.height,
@@ -161,9 +163,17 @@ class App {
 				this.mainWindow = this.appWindows[0] || null;
 			}
 			
+			if (this.lastFocusedWindow === browserWindow) {
+				this.lastFocusedWindow = this.mainWindow;
+			}
+			
 			for (let dialogWindow of this.getDialogs(browserWindow)) {
 				dialogWindow.close();
 			}
+		});
+		
+		browserWindow.on("focus", () => {
+			this.lastFocusedWindow = browserWindow;
 		});
 		
 		this.dialogsByAppWindowAndName.set(browserWindow, {
