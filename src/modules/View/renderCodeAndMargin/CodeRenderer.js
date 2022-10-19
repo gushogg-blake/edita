@@ -133,7 +133,7 @@ class CodeRenderer {
 		this.nodeStack = [{
 			node: null,
 			color: null,
-			nextChild: node ? null : this.scope.tree.rootNode,
+			nextChild: node ? null : this.scope.tree?.rootNode || null,
 		}];
 		
 		for (let node of lineage) {
