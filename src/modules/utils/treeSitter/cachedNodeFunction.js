@@ -5,7 +5,7 @@ node getters (node.parent etc) are slow, so keep the results in a cache
 */
 
 class NodeResultCache {
-	constructor(size=300) {
+	constructor(size=1000) {
 		this.size = size;
 		this.cacheByTree = new WeakMap();
 	}
