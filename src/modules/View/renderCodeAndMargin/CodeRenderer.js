@@ -1,7 +1,7 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
-let findFirstNodeAfterCursor = require("modules/utils/treeSitter/findFirstNodeAfterCursor");
+let findFirstChildAfterCursor = require("modules/utils/treeSitter/findFirstChildAfterCursor");
 let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 
 let {c} = Cursor;
@@ -138,7 +138,7 @@ class CodeRenderer {
 		
 		for (let node of lineage) {
 			let color = this.getColor(node) || currentColor;
-			let nextChild = findFirstNodeAfterCursor(node, this.cursor) || null;
+			let nextChild = findFirstChildAfterCursor(node, this.cursor) || null;
 			
 			this.nodeStack.push({
 				node,
@@ -307,15 +307,7 @@ class CodeRenderer {
 	}
 	
 	render() {
-		let i = 0;
-		
-		while (!this.step() && i < 2000) {
-			i++;
-		};
-		
-		if (i === 2000) {
-			console.log("infinite");
-		}
+		while (!this.step());
 	}
 }
 
