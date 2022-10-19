@@ -48,7 +48,10 @@ class Renderer {
 		let {marginRenderer} = this.canvas;
 		
 		for (let foldedLineRow of this.foldedLineRows) {
-			marginRenderer.drawLineNumber(foldedLineRow.lineIndex);
+			if (foldedLineRow.lineRow.startOffset === 0) {
+				marginRenderer.drawLineNumber(foldedLineRow.lineIndex);
+			}
+			
 			marginRenderer.endRow();
 		}
 	}
