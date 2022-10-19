@@ -283,7 +283,7 @@ class BaseDocument extends Evented {
 		let left = stringToCursor.match(/\w+$/)?.[0] || "";
 		let right = stringFromCursor.match(/^\w+/)?.[0] || "";
 		
-		return [left, right];
+		return {left, right};
 	}
 	
 	getLongestLineWidth() {

@@ -7,14 +7,12 @@ let {s} = Selection;
 let {c} = Cursor;
 
 function findCompletions(code, wordAtCursor, index, extraWords=[]) {
-	let [left, right] = wordAtCursor;
+	let {left, right} = wordAtCursor;
 	let re;
 	
-	if (left && right) {
-		re = new RegExp(`\\b${left}\\w+${right}\\b`, "gi");
-	} else if (left) {
+	if (left) {
 		re = new RegExp(`\\b${left}\\w+`, "gi");
-	} else if (right) {
+	} else {
 		re = new RegExp(`\\w+${right}\\b`, "gi");
 	}
 	
@@ -33,7 +31,7 @@ class WordCompletion {
 		this.editor = editor;
 	}
 	
-	applyCompletion(selection, word) {
+	applyCompletion(selection, word, originalWord) {
 		let {editor} = this;
 		let {document} = editor;
 		
@@ -53,17 +51,15 @@ class WordCompletion {
 		editor.updateSnippetExpressions();
 	}
 	
-	completeWord() {
-		if (this.editor.view.Selection.isFull()) {
-			return;
-		}
-		
-		this.inWordComplete = true;
-		
+	_completeWord() {
 		let {editor} = this;
 		let {document, view, normalSelection} = editor;
 		let cursor = Selection.sort(normalSelection).start;
 		let {lineIndex, offset} = cursor;
+		
+		if (view.Selection.isFull()) {
+			return;
+		}
 		
 		if (this.session) {
 			let {
@@ -84,12 +80,12 @@ class WordCompletion {
 			let nextWord;
 			
 			if (newIndex === -1) {
-				nextWord = originalWord;
+				nextWord = originalWord.left + originalWord.right;
 			} else {
 				nextWord = words[newIndex];
 			}
 			
-			this.applyCompletion(selection, nextWord);
+			this.applyCompletion(selection, nextWord, originalWord);
 			
 			this.session = {
 				...this.session,
@@ -99,18 +95,15 @@ class WordCompletion {
 			};
 		} else {
 			let wordAtCursor = document.wordAtCursor(cursor);
-			let [left, right] = wordAtCursor;
+			let {left, right} = wordAtCursor;
 			
-			if (!left || right) { // TODO left only for now
-				this.inWordComplete = false;
-				
+			if (!left && !right) {
 				return;
 			}
 			
-			if (!left && !right) {
-				this.inWordComplete = false;
-				
-				return;
+			if (left && right) { // assume we want to complete the left side if there are chars to the right as well
+				right = "";
+				wordAtCursor = {left, right};
 			}
 			
 			let {path} = document;
@@ -119,21 +112,29 @@ class WordCompletion {
 			
 			let words = findCompletions(document.string, wordAtCursor, index, extraWords);
 			
-			if (words.length > 0) {
-				let currentWord = words[0];
-				let selection = s(c(lineIndex, offset - left.length), cursor);
-				
-				this.applyCompletion(selection, currentWord);
-				
-				this.session = {
-					originalWord: left, //
-					currentWord,
-					selection: s(selection.start, c(lineIndex, selection.start.offset + currentWord.length)),
-					words,
-					index: 0,
-				};
+			if (words.length === 0) {
+				return;
 			}
+			
+			let currentWord = words[0];
+			let selection = s(c(lineIndex, offset - left.length), c(lineIndex, offset + right.length));
+			
+			this.applyCompletion(selection, currentWord, wordAtCursor);
+			
+			this.session = {
+				originalWord: wordAtCursor,
+				currentWord,
+				selection: s(selection.start, c(lineIndex, offset + currentWord.length)),
+				words,
+				index: 0,
+			};
 		}
+	}
+	
+	completeWord() {
+		this.inWordComplete = true;
+		
+		this._completeWord();
 		
 		this.inWordComplete = false;
 	}

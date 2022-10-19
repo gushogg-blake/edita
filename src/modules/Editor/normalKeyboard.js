@@ -354,7 +354,7 @@ module.exports = {
 		let snippet = null;
 		
 		if (!this.view.Selection.isFull()) {
-			let [left] = this.document.wordAtCursor(start);
+			let {left} = this.document.wordAtCursor(start);
 			
 			if (left) {
 				snippet = platform.snippets.findByLangAndName(this.document.langFromCursor(start), left);
