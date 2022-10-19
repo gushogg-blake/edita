@@ -1,6 +1,5 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let findWordCompletions = require("modules/utils/findWordCompletions");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -443,101 +442,7 @@ module.exports = {
 	},
 	
 	completeWord() {
-		if (this.view.Selection.isFull()) {
-			return;
-		}
-		
-		this.inWordComplete = true;
-		
-		let {normalSelection} = this;
-		let cursor = Selection.sort(normalSelection).start;
-		let {lineIndex, offset} = cursor;
-		
-		if (this.completeWordSession) {
-			let {
-				words,
-				index,
-				selection,
-				originalWord,
-			} = this.completeWordSession;
-			
-			let {lineIndex, offset} = selection.start;
-			
-			let newIndex = index + 1;
-			
-			if (newIndex === words.length) {
-				newIndex = -1;
-			}
-			
-			let nextWord;
-			
-			if (newIndex === -1) {
-				nextWord = originalWord;
-			} else {
-				nextWord = words[newIndex];
-			}
-			
-			let {
-				edit,
-				newSelection,
-			} = this.document.replaceSelection(selection, nextWord);
-			
-			let edits = [edit];
-			
-			this.applyAndAddHistoryEntry({
-				edits,
-				normalSelection: newSelection,
-				snippetSession: this.adjustSnippetSession(edits),
-			});
-			
-			this.updateSnippetExpressions();
-			
-			this.completeWordSession = {
-				...this.completeWordSession,
-				currentWord: nextWord,
-				selection: s(selection.start, c(lineIndex, offset + nextWord.length)),
-				index: newIndex,
-			};
-		} else {
-			let wordAtCursor = this.document.wordAtCursor(cursor);
-			
-			if (wordAtCursor) {
-				let {path} = this.document;
-				let index = this.document.indexFromCursor(cursor);
-				let extraWords = [path && platform.fs(path).basename].filter(Boolean);
-				let words = findWordCompletions(this.document.string, wordAtCursor, index, extraWords);
-				
-				if (words.length > 0) {
-					let currentWord = words[0];
-					let selection = s(c(lineIndex, offset - wordAtCursor.length), cursor);
-					
-					let {
-						edit,
-						newSelection,
-					} = this.document.replaceSelection(selection, currentWord);
-					
-					let edits = [edit];
-					
-					this.applyAndAddHistoryEntry({
-						edits,
-						normalSelection: newSelection,
-						snippetSession: this.adjustSnippetSession(edits),
-					});
-					
-					this.updateSnippetExpressions();
-					
-					this.completeWordSession = {
-						originalWord: wordAtCursor,
-						currentWord,
-						selection: s(selection.start, c(lineIndex, selection.start.offset + currentWord.length)),
-						words,
-						index: 0,
-					};
-				}
-			}
-		}
-		
-		this.inWordComplete = false;
+		this.wordCompletion.completeWord();
 	},
 	
 	cut() {

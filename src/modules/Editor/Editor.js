@@ -14,6 +14,7 @@ let normalKeyboard = require("./normalKeyboard");
 let astMouse = require("./astMouse");
 let astKeyboard = require("./astKeyboard");
 let commonKeyboard = require("./commonKeyboard");
+let WordCompletion = require("./WordCompletion");
 let commonWheel = require("./commonWheel");
 let modeSwitchKey = require("./modeSwitchKey");
 let snippets = require("./snippets");
@@ -38,6 +39,8 @@ class Editor extends Evented {
 		this.astKeyboard = bindFunctions(this, astKeyboard);
 		this.commonKeyboard = bindFunctions(this, commonKeyboard);
 		this.commonWheel = bindFunctions(this, commonWheel);
+		
+		this.wordCompletion = new WordCompletion(this);
 		
 		this.modeSwitchKey = modeSwitchKey(this);
 		
@@ -515,11 +518,7 @@ class Editor extends Evented {
 	setNormalSelection(selection) {
 		this.view.setNormalSelection(selection);
 		
-		// clear word completion session (word completion changes the selection,
-		// so only clear it if something else changed the selection)
-		if (!this.inWordComplete) {
-			this.completeWordSession = null;
-		}
+		this.wordCompletion.selectionChanged();
 		
 		//console.log(this.document.lines[selection.start.lineIndex]);
 		console.log(this.document.getNodesOnLine(selection.start.lineIndex));
