@@ -1,10 +1,10 @@
 function split(str) {
 	if (str.indexOf("-") !== -1) {
-		return str.split("-");
+		return str.toLowerCase().split("-");
 	} else if (str.indexOf("_") !== -1) {
-		return str.split("_");
+		return str.toLowerCase().split("_");
 	} else {
-		return str.replace(/([A-Z])/g, (_, ch) => "-" + ch.toLowerCase()).split("-").filter(Boolean);
+		return str.replace(/([A-Z])/g, (_, ch) => "-" + ch).toLowerCase().split("-").filter(Boolean);
 	}
 }
 
@@ -43,5 +43,9 @@ module.exports = {
 
 	snake(str) {
 		return snake(split(str));
+	},
+	
+	constant(str) {
+		return snake(split(str)).toUpperCase();
 	},
 };

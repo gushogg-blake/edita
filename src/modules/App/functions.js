@@ -102,14 +102,14 @@ module.exports = {
 	},
 	
 	toggleLeftPane() {
-		this.togglePane("left");
+		this.panes.left.toggle();
 	},
 	
 	toggleRightPane() {
-		this.togglePane("right");
+		this.panes.right.toggle();
 	},
 		
 	toggleBottomPane() {
-		this.togglePane("bottom");
+		this.panes.bottom.toggle();
 	},
 };

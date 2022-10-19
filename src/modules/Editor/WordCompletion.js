@@ -1,5 +1,6 @@
 let regexMatches = require("utils/regexMatches");
 let unique = require("utils/array/unique");
+let convertCase = require("utils/convertCase");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 
@@ -24,6 +25,22 @@ function findCompletions(code, wordAtCursor, index, extraWords=[]) {
 	let afterInstances = regexMatches(after, re);
 	
 	return unique([...beforeInstances, ...extraInstances, ...afterInstances]);
+}
+
+function getCaseType(word) {
+	if (word.match(/^[a-z]/)) {
+		return word.substr(1).includes("_") ? "snake" : "camel";
+	} else if (word.match(/^[A-Z]{2,}/)) {
+		return "constant";
+	} else if (word.match(/^[A-Z][a-z]/)) {
+		return "title";
+	} else {
+		return null;
+	}
+}
+
+function _convertCase(word, caseType) {
+	return caseType ? convertCase[caseType](word) : word;
 }
 
 class WordCompletion {
@@ -67,6 +84,7 @@ class WordCompletion {
 				index,
 				selection,
 				originalWord,
+				caseType,
 			} = this.session;
 			
 			let {lineIndex, offset} = selection.start;
@@ -82,7 +100,7 @@ class WordCompletion {
 			if (newIndex === -1) {
 				nextWord = originalWord.left + originalWord.right;
 			} else {
-				nextWord = words[newIndex];
+				nextWord = _convertCase(words[newIndex], caseType);
 			}
 			
 			this.applyCompletion(selection, nextWord, originalWord);
@@ -116,7 +134,8 @@ class WordCompletion {
 				return;
 			}
 			
-			let currentWord = words[0];
+			let caseType = getCaseType(left + right);
+			let currentWord = _convertCase(words[0], caseType);
 			let selection = s(c(lineIndex, offset - left.length), c(lineIndex, offset + right.length));
 			
 			this.applyCompletion(selection, currentWord, wordAtCursor);
@@ -127,6 +146,7 @@ class WordCompletion {
 				selection: s(selection.start, c(lineIndex, offset + currentWord.length)),
 				words,
 				index: 0,
+				caseType,
 			};
 		}
 	}
