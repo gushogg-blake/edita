@@ -1,6 +1,7 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
+let findFirstNodeAfterCursor = require("modules/utils/treeSitter/findFirstNodeAfterCursor");
 let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 
 let {c} = Cursor;
@@ -24,7 +25,6 @@ class CodeRenderer {
 		this.view = renderer.view;
 		this.document = this.view.document;
 		this.canvasCodeRenderer = renderer.canvas.createCodeRenderer();
-		//this.foldedLineRows = renderer.foldedLineRows;
 		
 		this.foldedLineRowGenerator = renderer.generateFoldedLineRows();
 		
@@ -33,9 +33,7 @@ class CodeRenderer {
 		this.foldedLineRow = null;
 		this.offset = null;
 		this.variableWidthPart = null;
-		this.nodeStack = [];
-		this.cursorNodeStackIndex = null;
-		this.nextNodeToEnter = null;
+		this.nodeStack = null;
 		
 		this.nextFoldedLineRow();
 		this.startRow();
@@ -86,20 +84,8 @@ class CodeRenderer {
 		return this._node?.node || null;
 	}
 	
-	get nodeSiblings() {
-		return this._node?.siblings || null;
-	}
-	
-	get nodeIndex() {
-		return this._node?.index || null;
-	}
-	
 	get nodeColor() {
-		return this.nodeStack[this.cursorNodeStackIndex]?.color || null;
-	}
-	
-	get nodeStartCursor() {
-		return this.node && treeSitterPointToCursor(nodeUtils.startPosition(this.node));
+		return this._node?.color || null;
 	}
 	
 	get nodeEndCursor() {
@@ -144,18 +130,18 @@ class CodeRenderer {
 		let currentColor = null;
 		let currentParent = null;
 		
-		this.nodeStack = [];
+		this.nodeStack = [{
+			node: null,
+			color: null,
+			nextChild: node ? null : this.scope.tree.rootNode,
+		}];
 		
 		for (let node of lineage) {
 			let color = this.getColor(node) || currentColor;
-			//let siblings = currentParent ? nodeUtils.children(currentParent) : null;
-			//let index = siblings ? siblings.findIndex(n => n.id === node.id) : null;
-			let nextChild = nodeUtils.children(node).find(n => nodeUtils.isAfter(node, this.cursor)) || null;
+			let nextChild = findFirstNodeAfterCursor(node, this.cursor) || null;
 			
 			this.nodeStack.push({
 				node,
-				//siblings,
-				//index,
 				nextChild,
 				color,
 			});
@@ -168,57 +154,42 @@ class CodeRenderer {
 	}
 	
 	nextNode() {
-		if (!this._node) {
-			return;
-		}
-		
-		if () {
+		if (this.atNodeEnd()) {
+			let next = nodeUtils.nextSibling(this.node);
 			
+			this.nodeStack.pop();
+			
+			this._node.nextChild = next;
+		} else if (this.atNextChildStart()) {
+			let currentColor = this.nodeColor;
+			let node = this._node.nextChild;
+			let nextChild = nodeUtils.firstChild(node);
+			let color = this.getColor(node) || currentColor;
+			
+			this.nodeStack.push({
+				node,
+				nextChild,
+				color,
+			});
 		}
 		
-		let {siblings, index, nextChild} = this._node;
+		this.setColor();
 		
-		if (index === siblings.length - 1) {
-			this.popNode();
+		if (this.atNodeBoundary()) {
 			this.nextNode();
-			
-			return;
 		}
-		
-		let node = siblings[index];
-		let color = this.getColor(node) || this.nodeStack[;
-		let nextChild = nodeUtils.firstChild(node);
-		
-		this.nodeStack.push({
-			node,
-			nextChild,
-			color,
-		});
-		
-		this.setColor();
 	}
 	
-	popNode() {
-		this.nodeStack.pop();
-		
-		this.cursorNodeStackIndex--;
-		
-		this.setColor();
+	atNodeEnd() {
+		return this.node && Cursor.equals(this.cursor, this.nodeEndCursor);
 	}
 	
-	atNodeStart() {
-		return this.node && Cursor.equals(this.cursor, this.nodeStartCursor);
+	atNextChildStart() {
+		return this.nextChildStartCursor && Cursor.equals(this.cursor, this.nextChildStartCursor);
 	}
-	
-	atNodeEnd() {}
-}
 	
 	atNodeBoundary() {
-		return (
-			this.atNodeStart()
-			|| 
-			|| this.nextChildStartCursor && Cursor.equals(this.cursor, this.nextChildStartCursor)
-		);
+		return this.atNodeEnd() || this.atNextChildStart();
 	}
 	
 	nextRange() {
@@ -253,10 +224,6 @@ class CodeRenderer {
 		return this.nextRangeToEnter?.selection.start.lineIndex === this.lineIndex ? this.nextRangeToEnter.selection.start.offset : Infinity;
 	}
 	
-	getCurrentNodeStart() {
-		return this.nodeStartCursor?.lineIndex === this.lineIndex ? this.nodeStartCursor.offset : Infinity;
-	}
-	
 	getCurrentNodeEnd() {
 		return this.nodeEndCursor?.lineIndex === this.lineIndex ? this.nodeEndCursor.offset : Infinity;
 	}
@@ -276,7 +243,6 @@ class CodeRenderer {
 	step() {
 		if (this.variableWidthPart) {
 			if (this.variableWidthPart.type === "string") {
-				let currentNodeStart = this.getCurrentNodeStart();
 				let currentNodeEnd = this.getCurrentNodeEnd();
 				let nextChildStart = this.getNextChildStart();
 				let currentRangeEnd = this.getCurrentRangeEnd();
@@ -288,7 +254,6 @@ class CodeRenderer {
 				let renderTo = Math.min(
 					currentRangeEnd,
 					nextRangeStart,
-					currentNodeStart,
 					currentNodeEnd,
 					nextChildStart,
 					currentInjectionRangeEnd,
