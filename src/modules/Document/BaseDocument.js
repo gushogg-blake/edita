@@ -281,10 +281,13 @@ class BaseDocument extends Evented {
 		}
 		
 		let line = this.lines[lineIndex];
-		let stringToCursor = line.string.substr(0, offset).split("").reverse().join("");
-		let match = stringToCursor.match(/^(\w+)/);
+		let stringToCursor = line.string.substr(0, offset);
+		let stringFromCursor = line.string.substr(offset);
 		
-		return match?.[0].split("").reverse().join("") || null;
+		let left = stringToCursor.match(/\w+$/)?.[0] || "";
+		let right = stringFromCursor.match(/^\w+/)?.[0] || "";
+		
+		return [left, right];
 	}
 	
 	getLongestLineWidth() {

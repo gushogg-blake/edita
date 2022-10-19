@@ -1,9 +1,32 @@
+let regexMatches = require("utils/regexMatches");
+let unique = require("utils/array/unique");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let findWordCompletions = require("modules/utils/findWordCompletions");
 
 let {s} = Selection;
 let {c} = Cursor;
+
+function findCompletions(code, wordAtCursor, index, extraWords=[]) {
+	let [left, right] = wordAtCursor;
+	let re;
+	
+	if (left && right) {
+		re = new RegExp(`\\b${left}\\w+${right}\\b`, "gi");
+	} else if (left) {
+		re = new RegExp(`\\b${left}\\w+`, "gi");
+	} else if (right) {
+		re = new RegExp(`\\w+${right}\\b`, "gi");
+	}
+	
+	let before = code.substr(0, index);
+	let after = code.substr(index);
+	
+	let beforeInstances = regexMatches(before, re).reverse();
+	let extraInstances = regexMatches(extraWords.join(","), re);
+	let afterInstances = regexMatches(after, re);
+	
+	return unique([...beforeInstances, ...extraInstances, ...afterInstances]);
+}
 
 class WordCompletion {
 	constructor(editor) {
@@ -76,27 +99,39 @@ class WordCompletion {
 			};
 		} else {
 			let wordAtCursor = document.wordAtCursor(cursor);
+			let [left, right] = wordAtCursor;
 			
-			if (wordAtCursor) {
-				let {path} = document;
-				let index = document.indexFromCursor(cursor);
-				let extraWords = [path && platform.fs(path).basename].filter(Boolean);
-				let words = findWordCompletions(document.string, wordAtCursor, index, extraWords);
+			if (!left || right) { // TODO left only for now
+				this.inWordComplete = false;
 				
-				if (words.length > 0) {
-					let currentWord = words[0];
-					let selection = s(c(lineIndex, offset - wordAtCursor.length), cursor);
-					
-					this.applyCompletion(selection, currentWord);
-					
-					this.session = {
-						originalWord: wordAtCursor,
-						currentWord,
-						selection: s(selection.start, c(lineIndex, selection.start.offset + currentWord.length)),
-						words,
-						index: 0,
-					};
-				}
+				return;
+			}
+			
+			if (!left && !right) {
+				this.inWordComplete = false;
+				
+				return;
+			}
+			
+			let {path} = document;
+			let index = document.indexFromCursor(cursor);
+			let extraWords = [path && platform.fs(path).basename].filter(Boolean);
+			
+			let words = findCompletions(document.string, wordAtCursor, index, extraWords);
+			
+			if (words.length > 0) {
+				let currentWord = words[0];
+				let selection = s(c(lineIndex, offset - left.length), cursor);
+				
+				this.applyCompletion(selection, currentWord);
+				
+				this.session = {
+					originalWord: left, //
+					currentWord,
+					selection: s(selection.start, c(lineIndex, selection.start.offset + currentWord.length)),
+					words,
+					index: 0,
+				};
 			}
 		}
 		

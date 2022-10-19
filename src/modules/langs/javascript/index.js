@@ -96,7 +96,7 @@ let lang = {
 			return "comment";
 		}
 		
-		if (type === "string" || type === "template_string" || type === "`") {
+		if (["string", "template_string", "`", "escape_sequence"].includes(type)) {
 			return "string";
 		}
 		

@@ -354,10 +354,10 @@ module.exports = {
 		let snippet = null;
 		
 		if (!this.view.Selection.isFull()) {
-			let wordAtCursor = this.document.wordAtCursor(start);
+			let [left] = this.document.wordAtCursor(start);
 			
-			if (wordAtCursor) {
-				snippet = platform.snippets.findByLangAndName(this.document.langFromCursor(start), wordAtCursor);
+			if (left) {
+				snippet = platform.snippets.findByLangAndName(this.document.langFromCursor(start), left);
 			}
 		}
 		
