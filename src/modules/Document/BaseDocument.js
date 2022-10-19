@@ -276,10 +276,6 @@ class BaseDocument extends Evented {
 	wordAtCursor(cursor) {
 		let {lineIndex, offset} = cursor;
 		
-		if (offset === 0) {
-			return null;
-		}
-		
 		let line = this.lines[lineIndex];
 		let stringToCursor = line.string.substr(0, offset);
 		let stringFromCursor = line.string.substr(offset);

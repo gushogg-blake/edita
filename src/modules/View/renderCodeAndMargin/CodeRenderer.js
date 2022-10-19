@@ -34,6 +34,7 @@ class CodeRenderer {
 		this.offset = null;
 		this.variableWidthPart = null;
 		this.nodeStack = [];
+		this.cursorNodeStackIndex = null;
 		this.nextNodeToEnter = null;
 		
 		this.nextFoldedLineRow();
@@ -77,8 +78,24 @@ class CodeRenderer {
 		return c(this.lineIndex, this.offset);
 	}
 	
-	get node() {
+	get _node() {
 		return this.nodeStack[this.nodeStack.length - 1] || null;
+	}
+	
+	get node() {
+		return this._node?.node || null;
+	}
+	
+	get nodeSiblings() {
+		return this._node?.siblings || null;
+	}
+	
+	get nodeIndex() {
+		return this._node?.index || null;
+	}
+	
+	get nodeColor() {
+		return this.nodeStack[this.cursorNodeStackIndex]?.color || null;
 	}
 	
 	get nodeStartCursor() {
@@ -89,10 +106,10 @@ class CodeRenderer {
 		return this.node && treeSitterPointToCursor(nodeUtils.endPosition(this.node));
 	}
 	
-	get nextNodeStartCursor() {
-		let next = this.nextNodeToEnter;
+	get nextChildStartCursor() {
+		let nextChild = this._node?.nextChild || null;
 		
-		return next && treeSitterPointToCursor(nodeUtils.startPosition(next));
+		return nextChild && treeSitterPointToCursor(nodeUtils.startPosition(nextChild));
 	}
 	
 	inRange() {
@@ -122,18 +139,86 @@ class CodeRenderer {
 	
 	initNodeStack() {
 		let node = this.scope.findSmallestNodeAtCharCursor(this.cursor);
+		let lineage = node ? nodeUtils.lineage(node) : [];
 		
-		this.nodeStack = node ? nodeUtils.lineage(node) : [];
-		this.nextNodeToEnter = node && nodeUtils.isOnOrAfter(node, this.cursor) ? nodeUtils.next(this.node) : this.scope.findFirstNodeOnOrAfterCursor(this.cursor);
+		let currentColor = null;
+		let currentParent = null;
+		
+		this.nodeStack = [];
+		
+		for (let node of lineage) {
+			let color = this.getColor(node) || currentColor;
+			//let siblings = currentParent ? nodeUtils.children(currentParent) : null;
+			//let index = siblings ? siblings.findIndex(n => n.id === node.id) : null;
+			let nextChild = nodeUtils.children(node).find(n => nodeUtils.isAfter(node, this.cursor)) || null;
+			
+			this.nodeStack.push({
+				node,
+				//siblings,
+				//index,
+				nextChild,
+				color,
+			});
+			
+			currentColor = color;
+			currentParent = node;
+		}
 		
 		this.setColor();
 	}
 	
 	nextNode() {
-		this.nodeStack = this.nextNodeToEnter ? nodeUtils.lineage(this.nextNodeToEnter) : [];
-		this.nextNodeToEnter = this.node && nodeUtils.next(this.node);
+		if (!this._node) {
+			return;
+		}
+		
+		if () {
+			
+		}
+		
+		let {siblings, index, nextChild} = this._node;
+		
+		if (index === siblings.length - 1) {
+			this.popNode();
+			this.nextNode();
+			
+			return;
+		}
+		
+		let node = siblings[index];
+		let color = this.getColor(node) || this.nodeStack[;
+		let nextChild = nodeUtils.firstChild(node);
+		
+		this.nodeStack.push({
+			node,
+			nextChild,
+			color,
+		});
 		
 		this.setColor();
+	}
+	
+	popNode() {
+		this.nodeStack.pop();
+		
+		this.cursorNodeStackIndex--;
+		
+		this.setColor();
+	}
+	
+	atNodeStart() {
+		return this.node && Cursor.equals(this.cursor, this.nodeStartCursor);
+	}
+	
+	atNodeEnd() {}
+}
+	
+	atNodeBoundary() {
+		return (
+			this.atNodeStart()
+			|| 
+			|| this.nextChildStartCursor && Cursor.equals(this.cursor, this.nextChildStartCursor)
+		);
 	}
 	
 	nextRange() {
@@ -144,28 +229,16 @@ class CodeRenderer {
 		this.injectionRangeIndex++;
 	}
 	
-	_setColor(node) {
+	setColor() {
+		this.canvasCodeRenderer.setColor(this.nodeColor);
+	}
+	
+	getColor(node) {
 		let {lang} = this.scope;
 		let colors = base.theme.langs[lang.code];
 		let hiliteClass = lang.getHiliteClass(node, nodeUtils);
 		
-		if (!hiliteClass) {
-			return false;
-		}
-		
-		this.canvasCodeRenderer.setColor(colors[hiliteClass]);
-		
-		return true;
-	}
-	
-	setColor() {
-		for (let i = this.nodeStack.length - 1; i >= 0; i--) {
-			let node = this.nodeStack[i];
-			
-			if (this._setColor(node)) {
-				break;
-			}
-		}
+		return hiliteClass ? colors[hiliteClass] : null;
 	}
 	
 	startRow() {
@@ -180,12 +253,16 @@ class CodeRenderer {
 		return this.nextRangeToEnter?.selection.start.lineIndex === this.lineIndex ? this.nextRangeToEnter.selection.start.offset : Infinity;
 	}
 	
+	getCurrentNodeStart() {
+		return this.nodeStartCursor?.lineIndex === this.lineIndex ? this.nodeStartCursor.offset : Infinity;
+	}
+	
 	getCurrentNodeEnd() {
 		return this.nodeEndCursor?.lineIndex === this.lineIndex ? this.nodeEndCursor.offset : Infinity;
 	}
 	
-	getNextNodeStart() {
-		return this.nextNodeStartCursor?.lineIndex === this.lineIndex ? this.nextNodeStartCursor.offset : Infinity;
+	getNextChildStart() {
+		return this.nextChildStartCursor?.lineIndex === this.lineIndex ? this.nextChildStartCursor.offset : Infinity;
 	}
 	
 	getNextInjectionRangeStart() {
@@ -199,8 +276,9 @@ class CodeRenderer {
 	step() {
 		if (this.variableWidthPart) {
 			if (this.variableWidthPart.type === "string") {
+				let currentNodeStart = this.getCurrentNodeStart();
 				let currentNodeEnd = this.getCurrentNodeEnd();
-				let nextNodeStart = this.getNextNodeStart();
+				let nextChildStart = this.getNextChildStart();
 				let currentRangeEnd = this.getCurrentRangeEnd();
 				let nextRangeStart = this.getNextRangeStart();
 				let currentInjectionRangeEnd = this.getCurrentRangeEnd();
@@ -210,8 +288,9 @@ class CodeRenderer {
 				let renderTo = Math.min(
 					currentRangeEnd,
 					nextRangeStart,
+					currentNodeStart,
 					currentNodeEnd,
-					nextNodeStart,
+					nextChildStart,
 					currentInjectionRangeEnd,
 					nextInjectionRangeStart,
 					partEnd,
@@ -247,19 +326,7 @@ class CodeRenderer {
 			this.startRow();
 		}
 		
-		let leftNode = false;
-		
-		while (this.node && Cursor.equals(this.cursor, this.nodeEndCursor)) {
-			this.nodeStack.pop();
-			
-			leftNode = true;
-		}
-		
-		if (leftNode) {
-			this.setColor();
-		}
-		
-		if (this.nextNodeStartCursor && Cursor.equals(this.cursor, this.nextNodeStartCursor)) {
+		if (this.atNodeBoundary()) {
 			this.nextNode();
 		}
 		
@@ -275,7 +342,15 @@ class CodeRenderer {
 	}
 	
 	render() {
-		while (!this.step());
+		let i = 0;
+		
+		while (!this.step() && i < 2000) {
+			i++;
+		};
+		
+		if (i === 2000) {
+			console.log("infinite");
+		}
 	}
 }
 
