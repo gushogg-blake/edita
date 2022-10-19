@@ -36,17 +36,11 @@ class Node {
 	}
 	
 	child(...paths) {
-		let node = this;
-		
-		for (let path of paths) {
-			node = node.rel(path);
-		}
-		
-		return node;
+		return this.rel(...paths);
 	}
 	
-	rel(path) {
-		return new Node(osPath.resolve(this.path, path.toString()));
+	rel(...paths) {
+		return new Node(osPath.resolve(this.path, ...paths));
 	}
 	
 	sibling(...paths) {

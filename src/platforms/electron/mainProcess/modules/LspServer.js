@@ -4,7 +4,7 @@ let spawn = require("../utils/spawn");
 let promiseWithMethods = require("../utils/promiseWithMethods");
 let fs = require("./fs");
 
-let nodeModules = fs(__dirname, "..", "..", "..", "..", "..", "node_modules");
+let nodeModules = fs(__dirname, "..", "..", "..", "..", "node_modules");
 
 let cmds = {
 	javascript: [
