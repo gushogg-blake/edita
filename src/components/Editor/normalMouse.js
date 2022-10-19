@@ -64,11 +64,13 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function drawSelection(e) {
-		let cursor = getCursor(e, view, editorComponent.canvasDiv);
-		
-		editor.normalMouse.drawSelection({
-			start: view.normalSelection.start,
-			end: cursor,
+		requestAnimationFrame(function() {
+			let cursor = getCursor(e, view, editorComponent.canvasDiv);
+			
+			editor.normalMouse.drawSelection({
+				start: view.normalSelection.start,
+				end: cursor,
+			});
 		});
 	}
 	
