@@ -9,6 +9,7 @@ let {c} = Cursor;
 
 function findCompletions(code, wordAtCursor, index, extraWords=[]) {
 	let {left, right} = wordAtCursor;
+	let caseTypes = getPossibleCaseTypes(left || right);
 	let re;
 	
 	if (left) {
@@ -24,23 +25,49 @@ function findCompletions(code, wordAtCursor, index, extraWords=[]) {
 	let extraInstances = regexMatches(extraWords.join(","), re);
 	let afterInstances = regexMatches(after, re);
 	
-	return unique([...beforeInstances, ...extraInstances, ...afterInstances]);
-}
-
-function getCaseType(word) {
-	if (word.match(/^[a-z]/)) {
-		return word.substr(1).includes("_") ? "snake" : "camel";
-	} else if (word.match(/^[A-Z]{2,}/)) {
-		return "constant";
-	} else if (word.match(/^[A-Z][a-z]/)) {
-		return "title";
-	} else {
-		return null;
+	let words = [];
+	
+	for (let word of [...beforeInstances, ...extraInstances, ...afterInstances]) {
+		let matchCaseTypes = getPossibleCaseTypes(word);
+		let caseTypesOverlap = matchCaseTypes.some(caseType => caseTypes.includes(caseType));
+		
+		for (let caseType of caseTypes) {
+			words.push({
+				word: convertCase[caseType](word),
+				caseTypesOverlap,
+			});
+		}
 	}
+	
+	let sortedWords = words.sort(function(a, b) {
+		if (a.caseTypesOverlap && !b.caseTypesOverlap) {
+			return -1;
+		} else if (b.caseTypesOverlap && !a.caseTypesOverlap) {
+			return 1;
+		} else {
+			return 0;
+		}
+	});
+	
+	return unique(sortedWords.map(w => w.word));
 }
 
-function _convertCase(word, caseType) {
-	return caseType ? convertCase[caseType](word) : word;
+function getPossibleCaseTypes(word) {
+	if (word.match(/^[a-z]/)) {
+		if (word.substr(1).includes("_")) {
+			return ["snake"];
+		} else if (word.match(/[A-Z]/)) {
+			return ["camel"];
+		} else {
+			return ["snake", "camel"];
+		}
+	} else if (word.match(/^[A-Z]{2,}/)) {
+		return ["constant"];
+	} else if (word.match(/^[A-Z][a-z]/)) {
+		return ["title"];
+	} else { // single uppercase char
+		return ["constant", "title"];
+	}
 }
 
 class WordCompletion {
@@ -84,7 +111,6 @@ class WordCompletion {
 				index,
 				selection,
 				originalWord,
-				caseType,
 			} = this.session;
 			
 			let {lineIndex, offset} = selection.start;
@@ -100,7 +126,7 @@ class WordCompletion {
 			if (newIndex === -1) {
 				nextWord = originalWord.left + originalWord.right;
 			} else {
-				nextWord = _convertCase(words[newIndex], caseType);
+				nextWord = words[newIndex];
 			}
 			
 			this.applyCompletion(selection, nextWord, originalWord);
@@ -134,8 +160,7 @@ class WordCompletion {
 				return;
 			}
 			
-			let caseType = getCaseType(left + right);
-			let currentWord = _convertCase(words[0], caseType);
+			let currentWord = words[0];
 			let selection = s(c(lineIndex, offset - left.length), c(lineIndex, offset + right.length));
 			
 			this.applyCompletion(selection, currentWord, wordAtCursor);
@@ -146,7 +171,6 @@ class WordCompletion {
 				selection: s(selection.start, c(lineIndex, offset + currentWord.length)),
 				words,
 				index: 0,
-				caseType,
 			};
 		}
 	}

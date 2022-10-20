@@ -3,8 +3,16 @@ function split(str) {
 		return str.toLowerCase().split("-");
 	} else if (str.indexOf("_") !== -1) {
 		return str.toLowerCase().split("_");
+	} else if (str.match(/[A-Z][a-z]/)) {
+		let words = str.replace(/[A-Z]/g, (ch) => "-" + ch).toLowerCase().split("-");
+		
+		if (words[0] === "") {
+			words.shift();
+		}
+		
+		return words;
 	} else {
-		return str.replace(/([A-Z])/g, (_, ch) => "-" + ch).toLowerCase().split("-").filter(Boolean);
+		return [str];
 	}
 }
 
