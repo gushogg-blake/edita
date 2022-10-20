@@ -9,11 +9,11 @@ let cmds = {
 		let nodeModules = app.rootDir.child("node_modules");
 		
 		return [
-			"node", 
+			"node",
 			"--inspect=127.0.0.1:6000",
-			nodeModules.child("typescript-language-server", "lib", "cli.js").path, 
-			"--stdio", 
-			"--log-level=4", 
+			nodeModules.child("typescript-language-server", "lib", "cli.js").path,
+			"--stdio",
+			"--log-level=4",
 			"--tsserver-path=" + nodeModules.child("typescript/lib/tsserver.js").path,
 			//"--tsserver-log-file=/home/gus/logs.txt",
 		];
