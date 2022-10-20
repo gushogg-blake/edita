@@ -88,7 +88,7 @@ module.exports = {
 			return "text";
 		}
 		
-		if (type === "comment") {
+		if (type === "comment" || type === "single_line_comment") {
 			return "comment";
 		}
 		
