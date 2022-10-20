@@ -1,59 +1,39 @@
 function split(str) {
 	if (str.indexOf("-") !== -1) {
-		return str.toLowerCase().split("-");
+		return str.split("-");
 	} else if (str.indexOf("_") !== -1) {
-		return str.toLowerCase().split("_");
+		return str.split("_");
 	} else if (str.match(/[A-Z][a-z]/)) {
-		let words = str.replace(/[A-Z]/g, (ch) => "-" + ch).toLowerCase().split("-");
-		
-		if (words[0] === "") {
-			words.shift();
-		}
-		
-		return words;
+		return str.replace(/[A-Z]/g, (ch) => "-" + ch).split("-").filter(Boolean);
 	} else {
 		return [str];
 	}
 }
 
-function capitalise(str) {
-	return str[0].toUpperCase() + str.substr(1);
-}
-
-function camel(words) {
-	return words[0] + words.slice(1).map(capitalise).join("");
-}
-
-function title(words) {
-	return words.map(capitalise).join("");
-}
-
-function kebab(words) {
-	return words.join("-");
-}
-
-function snake(words) {
-	return words.join("_");
+function capitalise(word) {
+	return word[0].toUpperCase() + word.substr(1).toLowerCase();
 }
 
 module.exports = {
 	camel(str) {
-		return camel(split(str));
+		let words = split(str);
+		
+		return words[0].toLowerCase() + words.slice(1).map(capitalise).join("");
 	},
 	
 	title(str) {
-		return title(split(str));
+		return split(str).map(capitalise).join("");
 	},
 
 	kebab(str) {
-		return kebab(split(str));
+		return split(str).join("-").toLowerCase();
 	},
 
 	snake(str) {
-		return snake(split(str));
+		return split(str).join("_").toLowerCase();
 	},
 	
 	constant(str) {
-		return snake(split(str)).toUpperCase();
+		return split(str).join("_").toUpperCase();
 	},
 };
