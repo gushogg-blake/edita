@@ -32,20 +32,29 @@ function findCompletions(code, wordAtCursor, index, extraWords=[]) {
 		let caseTypesOverlap = matchCaseTypes.some(caseType => caseTypes.includes(caseType));
 		
 		for (let caseType of caseTypes) {
+			let converted = convertCase[caseType](word);
+			
 			words.push({
-				word: convertCase[caseType](word),
+				word: converted,
 				caseTypesOverlap,
+				isOriginal: word === converted,
 			});
 		}
 	}
 	
 	let sortedWords = words.sort(function(a, b) {
-		if (a.caseTypesOverlap && !b.caseTypesOverlap) {
+		if (a.isOriginal && !b.isOriginal) {
 			return -1;
-		} else if (b.caseTypesOverlap && !a.caseTypesOverlap) {
+		} else if (b.isOriginal && !a.isOriginal) {
 			return 1;
 		} else {
-			return 0;
+			if (a.caseTypesOverlap && !b.caseTypesOverlap) {
+				return -1;
+			} else if (b.caseTypesOverlap && !a.caseTypesOverlap) {
+				return 1;
+			} else {
+				return 0;
+			}
 		}
 	});
 	
@@ -54,7 +63,7 @@ function findCompletions(code, wordAtCursor, index, extraWords=[]) {
 
 function getPossibleCaseTypes(word) {
 	if (word.match(/^[a-z]/)) {
-		if (word.substr(1).includes("_")) {
+		if (word.includes("_")) {
 			return ["snake"];
 		} else if (word.match(/[A-Z]/)) {
 			return ["camel"];
@@ -168,7 +177,7 @@ class WordCompletion {
 			this.session = {
 				originalWord: wordAtCursor,
 				currentWord,
-				selection: s(selection.start, c(lineIndex, offset + currentWord.length)),
+				selection: s(selection.start, c(lineIndex, selection.start.offset + currentWord.length)),
 				words,
 				index: 0,
 			};
