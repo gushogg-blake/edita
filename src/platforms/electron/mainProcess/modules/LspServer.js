@@ -17,6 +17,8 @@ let cmds = {
 	],
 };
 
+let REQUEST_TIMEOUT = 5000;
+
 class LspServer extends Evented {
 	constructor(id, langCode) {
 		super();
@@ -69,6 +71,13 @@ class LspServer extends Evented {
 		let promise = promiseWithMethods();
 		
 		this.requestPromises[id] = promise;
+		
+		setTimeout(() => {
+			delete this.requestPromises[id];
+			
+			console.error("Request timed out:");
+			console.log(method, params);
+		}, REQUEST_TIMEOUT);
 		
 		return promise;
 	}
@@ -129,6 +138,8 @@ class LspServer extends Evented {
 				let {id, error, result} = message;
 				
 				this.requestPromises[id].resolve({error, result});
+				
+				delete this.requestPromises[id];
 			} else {
 				let {method, params} = message;
 				
