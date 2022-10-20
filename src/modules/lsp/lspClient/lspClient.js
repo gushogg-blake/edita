@@ -21,49 +21,49 @@ class LspClient extends Evented {
 		let {project} = document;
 		let langCode = scope.lang.code;
 		let code = maskOtherRegions(document, scope);
-		let uri = URL.virtual(document.path).toString();
+		//let uri = URL.virtual(document.path).toString();
 		let {lspContext} = project || base;
 		
-		//let uri = document.url.toString();
+		let uri = URL.file(document.path).toString();
 		
-		await lspContext.notify(langCode, "textDocument/didOpen", {
-			textDocument: {
-				uri,
-				languageId: langCode,
-				version: 1,
-				text: code,
-			},
-		});
-		
-		//await sleep(1000);
-		
-		let {error, result} = await lspContext.request(langCode, "textDocument/completion", {
-			textDocument: {
-				uri,
-			},
+		try {
+			await lspContext.notify(langCode, "textDocument/didOpen", {
+				textDocument: {
+					uri,
+					languageId: langCode,
+					version: 1,
+					text: code,
+				},
+			});
 			
-			position: cursorToLspPosition(cursor),
-		});
-		
-		if (error) {
-			console.error(error);
+			//await sleep(1000);
+			
+			let result = await lspContext.request(langCode, "textDocument/completion", {
+				textDocument: {
+					uri,
+				},
+				
+				position: cursorToLspPosition(cursor),
+			});
+			
+			let {items, isIncomplete} = result;
+			
+			let completions = items.slice(0, 20).map(function(completion) {
+				return completion;
+			});
+			
+			await lspContext.notify(langCode, "textDocument/didClose", {
+				textDocument: {
+					uri,
+				},
+			});
+			
+			return completions;
+		} catch (e) {
+			console.error(e);
 			
 			return [];
 		}
-		
-		let {items, isIncomplete} = result;
-		
-		let completions = items.slice(0, 20).map(function(completion) {
-			return completion;
-		});
-		
-		await lspContext.notify(langCode, "textDocument/didClose", {
-			textDocument: {
-				uri,
-			},
-		});
-		
-		return completions;
 	}
 }
 

@@ -4,25 +4,29 @@ let spawn = require("../utils/spawn");
 let promiseWithMethods = require("../utils/promiseWithMethods");
 let fs = require("./fs");
 
-let nodeModules = fs(__dirname, "..", "..", "..", "..", "node_modules");
-
 let cmds = {
-	javascript: [
-		"node", 
-		nodeModules.child("typescript-language-server", "lib", "cli.js").path, 
-		"--stdio", 
-		"--log-level=4", 
-		"--tsserver-path=" + nodeModules.child("typescript/lib/tsserver.js").path,
-		//"--tsserver-log-file=/home/gus/logs.txt",
-	],
+	javascript(app) {
+		let nodeModules = app.rootDir.child("node_modules");
+		
+		return [
+			"node", 
+			"--inspect=127.0.0.1:6000",
+			nodeModules.child("typescript-language-server", "lib", "cli.js").path, 
+			"--stdio", 
+			"--log-level=4", 
+			"--tsserver-path=" + nodeModules.child("typescript/lib/tsserver.js").path,
+			//"--tsserver-log-file=/home/gus/logs.txt",
+		];
+	},
 };
 
 let REQUEST_TIMEOUT = 5000;
 
 class LspServer extends Evented {
-	constructor(id, langCode) {
+	constructor(app, id, langCode) {
 		super();
 		
+		this.app = app;
 		this.id = id;
 		this.langCode = langCode;
 		this.requestPromises = {};
@@ -31,7 +35,7 @@ class LspServer extends Evented {
 	}
 	
 	async init(capabilities, initOptions, workspaceFolders) {
-		let [cmd, ...args] = cmds[this.langCode];
+		let [cmd, ...args] = cmds[this.langCode](this.app);
 		
 		this.process = await spawn(cmd, args);
 		
@@ -75,8 +79,11 @@ class LspServer extends Evented {
 		setTimeout(() => {
 			delete this.requestPromises[id];
 			
-			console.error("Request timed out:");
-			console.log(method, params);
+			promise.reject({
+				error: "Request timed out",
+				method,
+				params,
+			});
 		}, REQUEST_TIMEOUT);
 		
 		return promise;
@@ -137,7 +144,11 @@ class LspServer extends Evented {
 			if (message.id) {
 				let {id, error, result} = message;
 				
-				this.requestPromises[id].resolve({error, result});
+				if (error) {
+					this.requestPromises[id].reject(error);
+				} else {
+					this.requestPromises[id].resolve(result);
+				}
 				
 				delete this.requestPromises[id];
 			} else {

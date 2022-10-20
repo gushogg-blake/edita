@@ -1,14 +1,25 @@
 class LspContext {
 	constructor() {
+		this.createServerPromises = {};
 		this.serversByLangCode = {};
 	}
 	
 	async createServerForLangCode(langCode) {
-		let server = await platform.lsp.createServer(langCode, null, []);
+		if (this.createServerPromises[langCode]) {
+			return await this.createServerPromises[langCode];
+		}
+		
+		let promise = platform.lsp.createServer(langCode, null, []);
+		
+		this.createServerPromises[langCode] = promise;
+		
+		let server = await promise;
 		
 		server.on("exit", () => delete this.serversByLangCode[langCode]);
 		
 		this.serversByLangCode[langCode] = server;
+		
+		delete this.createServerPromises[langCode];
 	}
 	
 	async request(langCode, method, params) {
