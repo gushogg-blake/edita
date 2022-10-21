@@ -84,9 +84,7 @@ class Node {
 			parent = parent.path;
 		}
 		
-		parent = parent.replace(/\/$/, "");
-		
-		return this.path.indexOf(parent) === 0 && this.path.length > parent.length;
+		return this.parents.some(n => n.path === parent);
 	}
 	
 	match(pattern) {

@@ -74,6 +74,10 @@ class App extends Evented {
 		]);
 	}
 	
+	findWorkspaceForUrl(url) {
+		
+	}
+	
 	async save(tab) {
 		let {document} = tab;
 		
@@ -357,6 +361,7 @@ class App extends Evented {
 	
 	createDocument(code, url, fileDetails) {
 		let document = new Document(code, url, {
+			workspace: this.findWorkspaceForUrl(url) || base.defaultWorkspace,
 			fileDetails,
 		});
 		

@@ -56,6 +56,10 @@ class Workspace {
 		},
 	});
 	*/
+	
+	ownsUrl(url) {
+		return this.dirs.some(dir => platform.fs(url.path).isDescendantOf(dir));
+	}
 }
 
 module.exports = Workspace;
