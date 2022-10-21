@@ -1,4 +1,4 @@
-let {ipcRenderer} = require("electron");
+let ipcRenderer = require("platform/modules/ipcRenderer");
 
 /*
 note - these methods are sync, but code should treat platform.clipboard

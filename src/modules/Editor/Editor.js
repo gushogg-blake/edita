@@ -6,7 +6,6 @@ let astCommon = require("modules/astCommon");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let lspClient = require("modules/lsp/lspClient");
 
 let AstMode = require("./AstMode");
 let normalMouse = require("./normalMouse");
@@ -180,7 +179,9 @@ class Editor extends Evented {
 		}
 		
 		let cursor = Selection.sort(this.normalSelection).start;
-		let completions = await lspClient.getCompletions(this.document, cursor);
+		let {document} = this;
+		let {workspace} = document;
+		let completions = await workspace.lspClient.getCompletions(document, cursor);
 		
 		console.log(completions);
 		

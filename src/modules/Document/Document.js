@@ -5,6 +5,7 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let protocol = require("modules/protocol");
 let findAndReplace = require("modules/findAndReplace");
+let URL = require("modules/URL");
 
 let BaseDocument = require("./BaseDocument");
 let Source = require("./Source");
@@ -17,21 +18,19 @@ class Document extends BaseDocument {
 		super();
 		
 		options = {
-			project: null,
-			fileDetails: null,
+			workspace: base.defaultWorkspace,
+			fileDetails: base.getFileDetails(code, url),
 			noParse: false,
 			...options,
 		};
 		
 		this.url = url;
-		this.project = options.project;
-		this.fileDetails = options.fileDetails || base.getFileDetails(code, url);
+		this.fileDetails = options.fileDetails;
+		this.workspace = options.workspace;
 		
 		this.source = new Source(code, options.noParse);
 		
 		this.source.init(this.fileDetails);
-		
-		this.project?.registerDocument(this);
 		
 		this.throttledBackup = throttle(() => {
 			platform.backup(this);
@@ -71,6 +70,13 @@ class Document extends BaseDocument {
 	
 	get isSaved() {
 		return ["file"].includes(this.protocol);
+	}
+	
+	// some LSP servers only accept file:// URLs
+	// (and LSP calls them URIs)
+	
+	get lspUri() {
+		return URL.file(this.path).toString();
 	}
 	
 	async save() {

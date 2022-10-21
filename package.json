@@ -9,8 +9,6 @@
 	"main": "./build/electron/mainProcess/main.js",
 	"electronVersion": "15.3.0",
 	"dependencies": {
-		"@gushogg-blake/rollup-plugin-scss": "^3.0.0",
-		"@gushogg-blake/svelte-preprocess": "^4.10.7",
 		"bluebird": "^3.7.2",
 		"chokidar": "^3.5.2",
 		"detect-indent": "^7.0.0",
@@ -22,17 +20,17 @@
 		"lodash.set": "^4.3.2",
 		"minimatch-browser": "^1.0.0",
 		"mkdirp": "^1.0.4",
-		"path-browserify": "^1.0.1",
 		"typescript": "^4.8.4",
 		"typescript-language-server": "^2.0.1",
 		"yargs": "^17.2.1"
 	},
 	"devDependencies": {
+		"@gushogg-blake/rollup-plugin-scss": "^3.0.0",
+		"@gushogg-blake/svelte-preprocess": "^4.10.7",
 		"@rollup/plugin-alias": "^3.1.8",
 		"@rollup/plugin-commonjs": "^21.0.1",
 		"@rollup/plugin-multi-entry": "^4.1.0",
 		"@rollup/plugin-node-resolve": "^13.0.6",
-		"autoprefixer": "^10.4.0",
 		"chai": "^4.3.4",
 		"cross-env": "^7.0.3",
 		"electron": "^15.3.0",

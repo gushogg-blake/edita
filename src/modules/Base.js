@@ -11,10 +11,9 @@ let checkNewlines = require("modules/utils/checkNewlines");
 let Document = require("modules/Document");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
-
 let DirEntries = require("modules/DirEntries");
 let langs = require("modules/langs");
-let LspContext = require("modules/lsp/LspContext");
+let Workspace = require("modules/Workspace");
 let stores = require("modules/stores");
 
 let javascript = require("modules/langs/javascript");
@@ -47,7 +46,7 @@ class Base extends Evented {
 		this.treeSitterLanguages = {};
 		this.initialisedLangs = new Set();
 		
-		this.lspContext = new LspContext();
+		this.defaultWorkspace = new Workspace([platform.systemInfo.homeDir]);
 		
 		this.DirEntries = DirEntries;
 	}

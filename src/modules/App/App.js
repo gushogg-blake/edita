@@ -5,6 +5,7 @@ let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
 let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
 let promiseWithMethods = require("utils/promiseWithMethods");
+let nextName = require("utils/nextName");
 
 let URL = require("modules/URL");
 let protocol = require("modules/protocol");
@@ -12,7 +13,7 @@ let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
-let Project = require("modules/Project");
+let Workspace = require("modules/Workspace");
 let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let FileTree = require("./FileTree");
@@ -42,9 +43,6 @@ class App extends Evented {
 		this.selectedTab = null;
 		this.closedTabs = [];
 		this.lastSelectedPath = null;
-		this.newFileCountsByLangCode = {};
-		
-		this.openProjects = [];
 		
 		this.functions = bindFunctions(this, functions);
 		
@@ -308,15 +306,13 @@ class App extends Evented {
 		
 		({lang} = fileDetails);
 		
-		if (!this.newFileCountsByLangCode[lang.code]) {
-			this.newFileCountsByLangCode[lang.code] = 0;
-		}
-		
 		let {defaultExtension} = lang;
-		let name = lang.name + "-" + (++this.newFileCountsByLangCode[lang.code]) + (defaultExtension ? "." + defaultExtension : "");
-		let dir = this.selectedProject?.dirs[0] || null;
+		let extension = defaultExtension ? "." + defaultExtension : "";
+		let name = nextName(n => lang.name + "-" + n + extension, name => !this.tabs.some(tab => tab.path.includes(name)));
+		let dir = this.selectedWorkspace.dirs[0];
+		let path = platform.fs(dir).child(name);
 		
-		let tab = await this.createTab("", URL._new("/" + name), fileDetails);
+		let tab = await this.createTab("", URL._new(path), fileDetails);
 		
 		this.tabs.push(tab);
 		
@@ -359,7 +355,6 @@ class App extends Evented {
 	
 	createDocument(code, url, fileDetails) {
 		let document = new Document(code, url, {
-			//project: this.selectedProject,
 			fileDetails,
 		});
 		
@@ -481,10 +476,6 @@ class App extends Evented {
 		} else {
 			this.initialNewFileTab = await this.newFile();
 		}
-	}
-	
-	get selectedProject() {
-		return this.selectedTab?.document.project;
 	}
 	
 	async saveSession() {

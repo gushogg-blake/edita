@@ -41,10 +41,6 @@ class URL {
 		return new URL("new://" + pathToUrl(path));
 	}
 	
-	static virtual(path) {
-		return new URL("virtual://" + pathToUrl(path) + "-" + lid());
-	}
-	
 	toString() {
 		return this.url;
 	}
