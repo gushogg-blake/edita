@@ -44,6 +44,8 @@ class App extends Evented {
 		this.closedTabs = [];
 		this.lastSelectedPath = null;
 		
+		this.selectedWorkspace = base.defaultWorkspace;
+		
 		this.functions = bindFunctions(this, functions);
 		
 		this.openDialogWindow = openDialogWindow(this);
@@ -310,7 +312,7 @@ class App extends Evented {
 		let extension = defaultExtension ? "." + defaultExtension : "";
 		let name = nextName(n => lang.name + "-" + n + extension, name => !this.tabs.some(tab => tab.path.includes(name)));
 		let dir = this.selectedWorkspace.dirs[0];
-		let path = platform.fs(dir).child(name);
+		let path = platform.fs(dir).child(name).path;
 		
 		let tab = await this.createTab("", URL._new(path), fileDetails);
 		
