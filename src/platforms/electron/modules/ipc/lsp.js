@@ -1,4 +1,4 @@
-let Evented = require("utils/Evented");
+let LspServer = require("platforms/common/modules/LspServer");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 
 let servers = {};
@@ -13,23 +13,6 @@ ipcRenderer.on("lspServerExit", function(e, serverId) {
 	delete servers[serverId];
 });
 
-class Server extends Evented {
-	constructor(id, serverCapabilities) {
-		super();
-		
-		this.id = id;
-		this.serverCapabilities = serverCapabilities;
-	}
-	
-	request(method, params) {
-		return ipcRenderer.invoke("lsp", "request", this.id, method, params);
-	}
-	
-	notify(method, params) {
-		ipcRenderer.invoke("lsp", "notify", this.id, method, params);
-	}
-}
-
 module.exports = {
 	async createServer(langCode, options) {
 		let {
@@ -37,7 +20,15 @@ module.exports = {
 			serverCapabilities,
 		} = await ipcRenderer.invoke("lsp", "createServer", langCode, options);
 		
-		let server = new Server(id, serverCapabilities);
+		let server = new LspServer({
+			request(method, params) {
+				return ipcRenderer.invoke("lsp", "request", id, method, params);
+			},
+			
+			notify(method, params) {
+				ipcRenderer.invoke("lsp", "notify", id, method, params);
+			},
+		}, serverCapabilities);
 		
 		servers[id] = server;
 		
