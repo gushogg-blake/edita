@@ -13,7 +13,7 @@ module.exports = async function(paths) {
 			});
 		} catch (e) {
 			if (e instanceof FileIsBinary) {
-				console.info("Skipping binary file " + path);
+				console.info("Skipping binary file: " + path);
 			} else {
 				console.error(e);
 			}

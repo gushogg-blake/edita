@@ -1,4 +1,5 @@
 let URL = require("modules/URL");
+let {FileIsBinary} = require("modules/errors");
 let getPaths = require("./getPaths");
 let getFindAndReplaceOptions = require("./getFindAndReplaceOptions");
 
@@ -54,7 +55,19 @@ class Session {
 		}
 		
 		if (!app.urlIsOpen(url)) {
-			await app.openFile(url);
+			try {
+				await app.openFile(url);
+			} catch (e) {
+				if (e instanceof FileIsBinary) {
+					console.info("Skipping binary file: " + url.path);
+				} else {
+					console.error(e);
+				}
+				
+				this.nextUrl();
+				
+				return;
+			}
 			
 			this.openedTabs.add(this.tab);
 		}
