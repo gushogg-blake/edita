@@ -34,7 +34,7 @@ class LspServer extends Evented {
 		this.buffer = Buffer.alloc(0);
 	}
 	
-	async init(capabilities, initOptions, workspaceFolders) {
+	async init(options) {
 		let [cmd, ...args] = cmds[this.langCode](this.app);
 		
 		this.process = await spawn(cmd, args);
@@ -48,9 +48,7 @@ class LspServer extends Evented {
 			capabilities: serverCapabilities,
 		} = await this.request("initialize", {
 			processId: process.pid,
-			capabilities,
-			initializationOptions: initOptions,
-			workspaceFolders,
+			...options,
 		});
 		
 		return serverCapabilities;

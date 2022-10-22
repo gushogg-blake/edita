@@ -4,7 +4,7 @@ let clipboard = require("./clipboard");
 let jsonStore = require("./jsonStore");
 let contextMenu = require("./contextMenu");
 let Snippets = require("./Snippets");
-let lspServer = require("./lspServer");
+let lsp = require("./lsp");
 
 module.exports = {
 	init: ipcRenderer.sendSync("init", "init"),
@@ -13,7 +13,7 @@ module.exports = {
 	clipboard,
 	jsonStore,
 	contextMenu,
-	lspServer,
+	lsp,
 	snippets: new Snippets(),
 	
 	openDialogWindow(name, dialogOptions) {

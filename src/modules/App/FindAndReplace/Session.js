@@ -64,7 +64,7 @@ class Session {
 					console.error(e);
 				}
 				
-				this.nextUrl();
+				await this.nextUrl();
 				
 				return;
 			}

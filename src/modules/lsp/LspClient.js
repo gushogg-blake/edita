@@ -2,17 +2,17 @@ let Evented = require("utils/Evented");
 let cursorToLspPosition = require("modules/utils/lsp/cursorToLspPosition");
 
 class LspClient extends Evented {
-	constructor(workspace) {
+	constructor(project) {
 		super();
 		
-		this.workspace = workspace;
+		this.project = project;
 	}
 	
 	async getCompletions(document, cursor) {
 		let {lang} = document.rangeFromCursor(cursor).scope;
 		
 		try {
-			let server = await this.workspace.getServer(lang);
+			let server = await this.project.getServer(lang);
 			
 			let result = await server.request("textDocument/completion", {
 				textDocument: {

@@ -13,7 +13,7 @@ let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
-let Workspace = require("modules/Workspace");
+let Project = require("modules/Project");
 let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let FileTree = require("./FileTree");
@@ -44,7 +44,7 @@ class App extends Evented {
 		this.closedTabs = [];
 		this.lastSelectedPath = null;
 		
-		this.selectedWorkspace = base.defaultWorkspace;
+		this.selectedProject = base.defaultProject;
 		
 		this.functions = bindFunctions(this, functions);
 		
@@ -74,7 +74,7 @@ class App extends Evented {
 		]);
 	}
 	
-	findWorkspaceForUrl(url) {
+	findProjectForUrl(url) {
 		
 	}
 	
@@ -315,7 +315,7 @@ class App extends Evented {
 		let {defaultExtension} = lang;
 		let extension = defaultExtension ? "." + defaultExtension : "";
 		let name = nextName(n => lang.name + "-" + n + extension, name => !this.tabs.some(tab => tab.path.includes(name)));
-		let dir = this.selectedWorkspace.dirs[0];
+		let dir = this.selectedProject.dirs[0];
 		let path = platform.fs(dir).child(name).path;
 		
 		let tab = await this.createTab("", URL._new(path), fileDetails);
@@ -361,7 +361,7 @@ class App extends Evented {
 	
 	createDocument(code, url, fileDetails) {
 		let document = new Document(code, url, {
-			workspace: this.findWorkspaceForUrl(url) || base.defaultWorkspace,
+			project: this.findProjectForUrl(url) || base.defaultProject,
 			fileDetails,
 		});
 		

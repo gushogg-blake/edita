@@ -15,14 +15,14 @@ module.exports = function(app) {
 	}
 	
 	return {
-		async create(e, langCode, capabilities, initOptions, workspaceFolders) {
+		async createServer(e, langCode, options) {
 			let id = lid();
 			let server = new LspServer(app, id, langCode);
 			
 			server.on("notification", (notification) => sendNotification(id, notification));
 			server.on("exit", () => remove(id));
 			
-			let serverCapabilities = await server.init(capabilities, initOptions, workspaceFolders);
+			let serverCapabilities = await server.init(options);
 			
 			servers[id] = server;
 			

@@ -18,7 +18,7 @@ class Document extends BaseDocument {
 		super();
 		
 		options = {
-			workspace: base.defaultWorkspace,
+			project: base.defaultProject,
 			fileDetails: base.getFileDetails(code, url),
 			noParse: false,
 			...options,
@@ -26,7 +26,7 @@ class Document extends BaseDocument {
 		
 		this.url = url;
 		this.fileDetails = options.fileDetails;
-		this.workspace = options.workspace;
+		this.project = options.project;
 		
 		this.source = new Source(code, options.noParse);
 		

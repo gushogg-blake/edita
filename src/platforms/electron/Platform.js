@@ -11,7 +11,6 @@ let Common = require("platforms/common/Platform");
 let fs = require("platform/modules/fs");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 let ipc = require("platform/modules/ipc");
-let lsp = require("platform/modules/lsp");
 
 class Platform extends Common {
 	constructor() {
@@ -32,6 +31,7 @@ class Platform extends Common {
 		this.clipboard = ipc.clipboard;
 		this.snippets = ipc.snippets;
 		this.jsonStore = ipc.jsonStore;
+		this.lsp = ipc.lsp;
 		this.path = path;
 		this.fs = fs;
 		
@@ -67,8 +67,6 @@ class Platform extends Common {
 		ipcRenderer.on("dialogClosed", () => {
 			this.fire("dialogClosed");
 		});
-		
-		this.lsp = lsp(this.lspConfig);
 	}
 	
 	async init() {
