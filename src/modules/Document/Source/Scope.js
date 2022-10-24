@@ -232,10 +232,15 @@ module.exports = class Scope {
 		}
 	}
 	
+	/*
+	NOTE this filters child ranges twice and will be slow for
+	documents with many ranges. solution would be to treat
+	ranges more like nodes - find visible ones in O(log n) and
+	possibly link them with .children and/or sibling pointers
+	*/
+	
 	getVisibleScopes(selection) {
-		let ranges = this.ranges.filter(function(range) {
-			return Selection.isOverlapping(selection, range.selection);
-		});
+		let ranges = this.ranges.filter(range => Selection.isOverlapping(selection, range.selection));
 		
 		if (ranges.length === 0) {
 			return [];
@@ -251,7 +256,7 @@ module.exports = class Scope {
 				ranges,
 				
 				injectionRanges: this.scopes.reduce(function(ranges, scope) {
-					return [...ranges, ...scope.ranges];
+					return [...ranges, ...scope.ranges.filter(range => Selection.isOverlapping(selection, range.selection))];
 				}, []),
 			},
 			
