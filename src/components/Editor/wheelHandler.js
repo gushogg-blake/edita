@@ -30,7 +30,7 @@ module.exports = function(editor, editorComponent) {
 		
 		scrolled = view.scrollBy(deltaX, deltaY);
 		
-		if (scrolled || editorComponent.editorMode === "app") {
+		if (scrolled) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
