@@ -36,16 +36,6 @@ module.exports = class Scope {
 		}
 	}
 	
-	//linkRanges() {
-	//	for (let range of this.ranges) {
-	//		range.children = this.scopes.reduce((childRanges, scope) => {
-	//			return [...childRanges, ...scope.ranges.filter((childRange) => {
-	//				return this.rangeFromCharCursor(childRange.selection.start) === range;
-	//			})];
-	//		}, []);
-	//	}
-	//}
-	
 	createTreeSitterParser() {
 		let parser = new TreeSitter();
 		let treeSitterLanguage = base.getTreeSitterLanguage(this.lang.code);
@@ -240,8 +230,6 @@ module.exports = class Scope {
 				}
 			}
 		}
-		
-		//this.linkRanges();
 	}
 	
 	getVisibleScopes(selection) {
