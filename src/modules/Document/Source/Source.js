@@ -124,16 +124,34 @@ module.exports = class {
 		}
 	}
 	
+	_rangeFromCursor(cursor, _char, scope=this.rootScope) {
+		let range = _char ? scope.rangeFromCharCursor(cursor) : scope.rangeFromCursor(cursor);
+		
+		if (!range) {
+			return null;
+		}
+		
+		for (let childScope of scope.scopes) {
+			let rangeFromChild = this._rangeFromCursor(cursor, _char, childScope);
+			
+			if (rangeFromChild) {
+				return rangeFromChild;
+			}
+		}
+		
+		return range;
+	}
+	
 	rangeFromCursor(cursor) {
-		return this.rootScope.rangeFromCursor(cursor);
+		return this._rangeFromCursor(cursor, false);
 	}
 	
 	rangeFromCharCursor(cursor) {
-		return this.rootScope.rangeFromCharCursor(cursor);
+		return this._rangeFromCursor(cursor, true);
 	}
 	
 	langFromCursor(cursor) {
-		return this.rootScope.langFromCursor(cursor);
+		return this.rangeFromCursor(cursor).lang;
 	}
 	
 	cursorAtEnd() {

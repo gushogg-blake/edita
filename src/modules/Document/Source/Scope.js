@@ -17,13 +17,12 @@ module.exports = class Scope {
 		this.lang = lang;
 		this.code = code;
 		
-		this.setRanges(ranges);
-		
 		this.tree = null;
 		
+		this.setRanges(ranges);
+		
 		this.scopes = [];
-		this.scopeAndRangesByNode = {};
-		this.injectionNodeByChildRange = new WeakMap();
+		this.scopesByNode = {};
 		
 		this.parse();
 	}
@@ -34,6 +33,16 @@ module.exports = class Scope {
 		
 		for (let range of ranges) {
 			range.scope = this;
+		}
+	}
+	
+	linkRanges() {
+		for (let range of this.ranges) {
+			range.children = this.scopes.reduce((childRanges, scope) => {
+				return [...childRanges, ...scope.ranges.filter((childRange) => {
+					return this.rangeFromCharCursor(childRange.selection.start) === range;
+				})];
+			}, []);
 		}
 	}
 	
@@ -143,8 +152,7 @@ module.exports = class Scope {
 	
 	processInjections(findExistingScope=null, editExistingScope=null) {
 		this.scopes = [];
-		this.scopeByNode = {};
-		this.scopeAndRangesByNode = {};
+		this.scopesByNode = {};
 		
 		if (!this.tree) {
 			return;
@@ -199,11 +207,7 @@ module.exports = class Scope {
 					let node = nodes[i];
 					let ranges = nodeRanges[i];
 					
-					this.scopeAndRangesByNode[node.id] = {scope, ranges};
-					
-					for (let range of ranges) {
-						this.injectionNodeByChildRange.set(range, node);
-					}
+					this.scopesByNode[node.id] = scope;
 				}
 			} else {
 				for (let match of matches) {
@@ -232,14 +236,12 @@ module.exports = class Scope {
 					}
 					
 					this.scopes.push(scope);
-					this.scopeAndRangesByNode[node.id] = {scope, ranges};
-					
-					for (let range of ranges) {
-						this.injectionNodeByChildRange.set(range, node);
-					}
+					this.scopesByNode[node.id] = scope;
 				}
 			}
 		}
+		
+		this.linkRanges();
 	}
 	
 	getVisibleScopes(selection) {
@@ -298,26 +300,8 @@ module.exports = class Scope {
 		return ranges;
 	}
 	
-	langFromCursor(cursor) {
-		return this.rangeFromCursor(cursor).lang;
-	}
-	
 	_rangeFromCursor(cursor, _char) {
-		let range = this.ranges.find(range => _char ? range.containsCharCursor(cursor) : range.containsCursor(cursor));
-		
-		if (!range) {
-			return null;
-		}
-		
-		for (let scope of this.scopes) {
-			let rangeFromChild = scope._rangeFromCursor(cursor, _char);
-			
-			if (rangeFromChild) {
-				return rangeFromChild;
-			}
-		}
-		
-		return range;
+		return this.ranges.find(range => _char ? range.containsCharCursor(cursor) : range.containsCursor(cursor));
 	}
 	
 	rangeFromCursor(cursor) {
@@ -385,7 +369,7 @@ module.exports = class Scope {
 			
 			startOffset = nodeUtils.endPosition(node).column;
 			
-			let {scope} = this.scopeAndRangesByNode[node.id] || {};
+			let scope = this.scopesByNode[node.id];
 			
 			if (scope) {
 				for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, lang)) {

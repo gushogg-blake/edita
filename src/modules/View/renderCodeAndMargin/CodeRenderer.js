@@ -307,7 +307,15 @@ class CodeRenderer {
 	}
 	
 	render() {
-		while (!this.step());
+		let i = 0;
+		
+		while (!this.step()) {
+			if (++i === 2000) {
+				console.log("infinite");
+				
+				break;
+			}
+		}
 	}
 }
 
