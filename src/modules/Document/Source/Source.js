@@ -31,6 +31,10 @@ module.exports = class {
 			this.lines.push(new Line(lineString, fileDetails, lineStartIndex));
 			
 			lineStartIndex += lineString.length + fileDetails.newline.length;
+			
+			if (lineString.length > base.prefs.maxLineLengthForParsing) {
+				this.noParse = true;
+			}
 		}
 	}
 	

@@ -264,8 +264,13 @@ class CodeRenderer {
 				let length = renderTo - this.offset;
 				
 				let {string, offset} = this.variableWidthPart;
+				let substring = string.substring(this.offset - offset, renderTo - offset);
 				
-				this.canvasCodeRenderer.drawText(string.substring(this.offset - offset, renderTo - offset), !this.inRange() || this.inInjectionRange());
+				if (!this.inRange() || this.inInjectionRange()) {
+					this.canvasCodeRenderer.skipText(substring);
+				} else {
+					this.canvasCodeRenderer.drawText(substring);
+				}
 				
 				this.offset += length;
 				
@@ -310,10 +315,10 @@ class CodeRenderer {
 		let i = 0;
 		
 		while (!this.step()) {
-			if (++i === 2000) {
-				console.log("infinite");
-				
-				break;
+			if (++i === 10000) {
+				//console.log("infinite");
+				//
+				//break;
 			}
 		}
 	}

@@ -19,7 +19,7 @@ module.exports = function(layers, view) {
 	} = measurements;
 	
 	let {
-		codeWidth,
+		width,
 		topMargin,
 		marginWidth,
 		marginOffset,
@@ -53,11 +53,20 @@ module.exports = function(layers, view) {
 			x += width * colWidth;
 		},
 		
-		drawText(string, skipDraw=false) {
-			if (!skipDraw) {
-				context.fillText(string, x, y);
-			}
+		drawText(string) {
+			let offToLeft = Math.max(0, marginWidth - x);
+			let charsOffToLeft = Math.floor(offToLeft / colWidth);
+			let maxLength = Math.ceil(width / colWidth);
+			let trimmed = string.substr(charsOffToLeft);
 			
+			x += charsOffToLeft * colWidth;
+			
+			context.fillText(trimmed.substr(0, maxLength), x, y);
+			
+			x += trimmed.length * colWidth;
+		},
+		
+		skipText(string) {
 			x += string.length * colWidth;
 		},
 	};

@@ -56,6 +56,10 @@ let migrations = {
 			},
 		};
 	},
+	
+	"7"(prefs) {
+		prefs.maxLineLengthForParsing = 300;
+	},
 };
 
 module.exports = function() {
@@ -66,6 +70,8 @@ module.exports = function() {
 		defaultLangCode: "javascript",
 		
 		wrap: false,
+		
+		maxLineLengthForParsing: 300,
 		
 		modeSwitchKey: "Escape",
 		minHoldTime: 200,
