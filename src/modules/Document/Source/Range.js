@@ -6,6 +6,9 @@ Note - all Ranges have a .scope property. This is set by the owner
 Scope after the Range is created because the injection logic creates
 Ranges before creating the associated Scopes (so the Scope can't be
 passed in the constructor).
+
+Ranges also have a .children property containing all the ranges in
+child scopes that are in this range - this is set by Scope.linkRanges.
 */
 
 class Range {

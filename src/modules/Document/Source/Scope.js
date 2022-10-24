@@ -36,15 +36,15 @@ module.exports = class Scope {
 		}
 	}
 	
-	linkRanges() {
-		for (let range of this.ranges) {
-			range.children = this.scopes.reduce((childRanges, scope) => {
-				return [...childRanges, ...scope.ranges.filter((childRange) => {
-					return this.rangeFromCharCursor(childRange.selection.start) === range;
-				})];
-			}, []);
-		}
-	}
+	//linkRanges() {
+	//	for (let range of this.ranges) {
+	//		range.children = this.scopes.reduce((childRanges, scope) => {
+	//			return [...childRanges, ...scope.ranges.filter((childRange) => {
+	//				return this.rangeFromCharCursor(childRange.selection.start) === range;
+	//			})];
+	//		}, []);
+	//	}
+	//}
 	
 	createTreeSitterParser() {
 		let parser = new TreeSitter();
@@ -241,7 +241,7 @@ module.exports = class Scope {
 			}
 		}
 		
-		this.linkRanges();
+		//this.linkRanges();
 	}
 	
 	getVisibleScopes(selection) {
@@ -262,8 +262,8 @@ module.exports = class Scope {
 				scope: this,
 				ranges,
 				
-				injectionRanges: children.reduce(function(ranges, child) {
-					return [...ranges, ...child.ranges];
+				injectionRanges: this.scopes.reduce(function(ranges, scope) {
+					return [...ranges, ...scope.ranges];
 				}, []),
 			},
 			
