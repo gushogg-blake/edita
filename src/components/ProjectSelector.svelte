@@ -35,16 +35,27 @@ function bodyMousedown(e) {
 	close();
 }
 
+function bodyKeydown(e) {
+	if (e.key === "Escape") {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		close();
+	}
+}
+
 function close() {
 	showingSelector = false;
 	
 	off(document.body, "mousedown", bodyMousedown);
+	off(document.body, "keydown", bodyKeydown);
 }
 
 function open() {
 	showingSelector = true;
 	
 	on(document.body, "mousedown", bodyMousedown);
+	on(document.body, "keydown", bodyKeydown);
 }
 
 onMount(function() {
@@ -75,9 +86,16 @@ onMount(function() {
 	padding: 4px 5px;
 	//background: linear-gradient(white 0%, black 100%);
 	
-	&:hover {
+	&:hover, &.showingSelector {
 		border: 1px solid #c3c0bf;
+	}
+	
+	&:not(.showingSelector):hover {
 		background: linear-gradient(#f9f9f9 0%, #f1f0ed 100%);
+	}
+	
+	&.showingSelector {
+		background: linear-gradient(#f1f0ed 0%, #f9f9f9 100%);
 	}
 }
 
@@ -96,8 +114,8 @@ onMount(function() {
 </style>
 
 <div id="main" bind:this={main}>
-	<div id="button" on:mousedown={toggle}>
-		{selectedProject === projects.defaultProject ? "(No project selected)" : selectedProject.name}
+	<div id="button" on:mousedown={toggle} class:showingSelector>
+		{selectedProject === base.defaultProject ? "Default project (~)" : selectedProject.name}
 	</div>
 	<div id="selectorWrapper">
 		<div id="selector" class:hide={!showingSelector}>
