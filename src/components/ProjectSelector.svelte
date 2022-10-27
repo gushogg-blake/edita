@@ -14,13 +14,13 @@ function onUpdate() {
 }
 
 function onSelect() {
-	({selectedProject} = projects);
+	({selectedProject} = app);
 }
 
 onMount(function() {
 	let teardown = [
 		projects.on("update", onUpdate),
-		projects.on("select", onSelect),
+		app.on("selectProject", onSelect),
 	];
 	
 	return function() {

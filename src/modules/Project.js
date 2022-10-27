@@ -3,7 +3,7 @@ let LspClient = require("modules/lsp/LspClient");
 
 class Project {
 	constructor(dirs, config, isSaved) {
-		this.dirs = dirs;
+		this.dirs = dirs.map(dir => platform.fs(dir));
 		this.config = config;
 		this.isSaved = isSaved;
 		

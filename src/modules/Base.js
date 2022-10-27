@@ -47,9 +47,12 @@ class Base extends Evented {
 		this.initialisedLangs = new Set();
 		
 		this.projects = new Projects();
-		this.defaultProject = this.projects.defaultProject;
 		
 		this.DirEntries = DirEntries;
+	}
+	
+	get defaultProject() {
+		return this.projects.defaultProject;
 	}
 	
 	async init(components, options) {
