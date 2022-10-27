@@ -108,7 +108,7 @@ onMount(async function() {
 }
 
 #top {
-	padding: 3px;
+	//padding: 3px;
 }
 
 #dirSelector {
@@ -140,6 +140,7 @@ onMount(async function() {
 			id="dirSelector"
 			on:mousedown={openDirMenu}
 			on:contextmenu={contextmenu}
+			title={rootEntry.node.path}
 		>
 			{rootEntry.node.name}
 		</div>
