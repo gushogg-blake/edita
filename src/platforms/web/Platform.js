@@ -5,7 +5,6 @@ let path = require("vendor/path-browser");
 let fsWeb = require("vendor/fs-web");
 
 let screenOffsets = require("utils/dom/screenOffsets");
-let parentNodes = require("utils/dom/parentNodes");
 let {on} = require("utils/dom/domEvents");
 let loadScript = require("utils/dom/loadScript");
 let loadCss = require("utils/dom/loadCss");

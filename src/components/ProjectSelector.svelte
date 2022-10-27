@@ -1,20 +1,50 @@
 <script>
 import {onMount, getContext} from "svelte";
+import {on, off} from "utils/dom/domEvents";
+import lineage from "utils/dom/lineage";
 
 let app = getContext("app");
 
-let {projects} = base;
-let {selectedProject} = app;
-let {all: allProjects} = projects;
+let {projects, selectedProject} = app;
+let {all: list} = projects;
 
 let showingSelector = false;
+let main;
 
 function onUpdate() {
-	({all: allProjects} = projects);
+	({all: list} = projects);
 }
 
 function onSelect() {
 	({selectedProject} = app);
+}
+
+function toggle() {
+	if (showingSelector) {
+		close();
+	} else {
+		open();
+	}
+}
+
+function bodyMousedown(e) {
+	if (lineage(e.target).includes(main)) {
+		return;
+	}
+	
+	close();
+}
+
+function close() {
+	showingSelector = false;
+	
+	off(document.body, "mousedown", bodyMousedown);
+}
+
+function open() {
+	showingSelector = true;
+	
+	on(document.body, "mousedown", bodyMousedown);
 }
 
 onMount(function() {
@@ -50,13 +80,30 @@ onMount(function() {
 		background: linear-gradient(#f9f9f9 0%, #f1f0ed 100%);
 	}
 }
+
+#selectorWrapper {
+	position: relative;
+}
+
+#selector {
+	position: absolute;
+	max-height: 400px;
+	border: var(--contextMenuBorder);
+	border-radius: 2px;
+	padding: 4px 5px;
+	background: var(--contextMenuBackgroundColor);
+}
 </style>
 
-<div id="main">
-	<div id="button">
+<div id="main" bind:this={main}>
+	<div id="button" on:mousedown={toggle}>
 		{selectedProject === projects.defaultProject ? "(No project selected)" : selectedProject.name}
 	</div>
-	<div id="selector" class:hide={!showingSelector}>
-		
+	<div id="selectorWrapper">
+		<div id="selector" class:hide={!showingSelector}>
+			{#each list as project}
+				
+			{/each}
+		</div>
 	</div>
 </div>

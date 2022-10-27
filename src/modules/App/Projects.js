@@ -8,7 +8,6 @@ class Projects extends Evented {
 		
 		this.app = app;
 		this.projects = [];
-		this.defaultProject = new Project([platform.systemInfo.homeDir], {}, false);
 	}
 	
 	get all() {
@@ -16,7 +15,7 @@ class Projects extends Evented {
 	}
 	
 	async init() {
-		this.projects = (await base.stores.projects.load()).map(Project.fromJson);
+		this.projects = (await base.stores.projects.load()).map(Projects.fromJson);
 	}
 	
 	findProjectForUrl(url) {

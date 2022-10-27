@@ -8,12 +8,12 @@ let getIndentationDetails = require("modules/utils/getIndentationDetails");
 let guessIndent = require("modules/utils/guessIndent");
 let checkNewlines = require("modules/utils/checkNewlines");
 
+let Project = require("modules/Project");
 let Document = require("modules/Document");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
 let DirEntries = require("modules/DirEntries");
 let langs = require("modules/langs");
-let Projects = require("modules/Projects");
 let stores = require("modules/stores");
 
 let javascript = require("modules/langs/javascript");
@@ -46,13 +46,9 @@ class Base extends Evented {
 		this.treeSitterLanguages = {};
 		this.initialisedLangs = new Set();
 		
-		this.projects = new Projects();
+		this.defaultProject = new Project([platform.systemInfo.homeDir], {}, false);
 		
 		this.DirEntries = DirEntries;
-	}
-	
-	get defaultProject() {
-		return this.projects.defaultProject;
 	}
 	
 	async init(components, options) {
