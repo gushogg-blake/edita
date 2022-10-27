@@ -13,7 +13,7 @@ let Editor = require("modules/Editor");
 let View = require("modules/View");
 let DirEntries = require("modules/DirEntries");
 let langs = require("modules/langs");
-let Project = require("modules/Project");
+let Projects = require("modules/Projects");
 let stores = require("modules/stores");
 
 let javascript = require("modules/langs/javascript");
@@ -46,7 +46,8 @@ class Base extends Evented {
 		this.treeSitterLanguages = {};
 		this.initialisedLangs = new Set();
 		
-		this.defaultProject = new Project([platform.systemInfo.homeDir]);
+		this.projects = new Projects();
+		this.defaultProject = this.projects.defaultProject;
 		
 		this.DirEntries = DirEntries;
 	}

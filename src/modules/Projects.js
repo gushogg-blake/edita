@@ -2,12 +2,13 @@ let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 let Project = require("modules/Project");
 
-module.exports = class extends Evented {
+class Projects extends Evented {
 	constructor(app) {
 		super();
 		
 		this.app = app;
 		this.projects = [];
+		this.defaultProject = new Project([platform.systemInfo.homeDir], {}, false);
 	}
 	
 	get all() {
@@ -17,4 +18,14 @@ module.exports = class extends Evented {
 	async init() {
 		this.projects = (await base.stores.projects.load()).map(Project.fromJson);
 	}
+	
+	findProjectForUrl(url) {
+		return this.projects.find(project => project.ownsUrl(url));
+	}
+	
+	static fromJson(details) {
+		
+	}
 }
+
+module.exports = Projects;

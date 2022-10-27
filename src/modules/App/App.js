@@ -13,10 +13,8 @@ let Document = require("modules/Document");
 let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
-//let Project = require("modules/Project");
 let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
-let Projects = require("./Projects");
 let FileTree = require("./FileTree");
 let Pane = require("./Pane");
 let BottomPane = require("./BottomPane");
@@ -45,7 +43,6 @@ class App extends Evented {
 		this.closedTabs = [];
 		this.lastSelectedPath = null;
 		
-		this.projects = new Projects(this);
 		this.selectedProject = base.defaultProject;
 		
 		this.functions = bindFunctions(this, functions);
@@ -72,13 +69,8 @@ class App extends Evented {
 	async init() {
 		await Promise.all([
 			this.loadSessionAndFilesToOpenOnStartup(),
-			this.projects.init(),
 			this.fileTree.init(),
 		]);
-	}
-	
-	findProjectForUrl(url) {
-		return this.projects.all.find(project => project.ownsUrl(url));
 	}
 	
 	async save(tab) {
@@ -364,7 +356,7 @@ class App extends Evented {
 	
 	createDocument(code, url, fileDetails) {
 		let document = new Document(code, url, {
-			project: this.findProjectForUrl(url) || base.defaultProject,
+			project: base.projects.findProjectForUrl(url) || base.defaultProject,
 			fileDetails,
 		});
 		

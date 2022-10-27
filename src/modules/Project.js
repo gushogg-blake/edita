@@ -2,8 +2,10 @@ let maskOtherRegions = require("modules/utils/lsp/maskOtherRegions");
 let LspClient = require("modules/lsp/LspClient");
 
 class Project {
-	constructor(dirs) {
+	constructor(dirs, config, isSaved) {
 		this.dirs = dirs;
+		this.config = config;
+		this.isSaved = isSaved;
 		
 		this.lspServers = {};
 		this.lspServerPromises = {};
@@ -64,10 +66,6 @@ class Project {
 	
 	ownsUrl(url) {
 		return this.dirs.some(dir => platform.fs(url.path).isDescendantOf(dir));
-	}
-	
-	static fromJson(details) {
-		return Object.assign(new Project(), details);
 	}
 }
 

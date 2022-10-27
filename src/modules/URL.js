@@ -33,6 +33,10 @@ class URL {
 		return this.url.substr(0, this.url.indexOf(":"));
 	}
 	
+	get isNew() {
+		return this.protocol === "new";
+	}
+	
 	static file(path) {
 		return new URL("file://" + pathToUrl(path));
 	}
