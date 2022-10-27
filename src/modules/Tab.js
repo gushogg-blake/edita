@@ -207,7 +207,7 @@ class Tab extends Evented {
 	}
 	
 	async writePerFilePrefs() {
-		if (this.protocol === "new") {
+		if (this.url.isNew) {
 			return;
 		}
 		
@@ -221,7 +221,7 @@ class Tab extends Evented {
 	}
 	
 	async getPerFilePrefs() {
-		if (this.protocol === "new") {
+		if (this.url.isNew) {
 			return {};
 		}
 		
