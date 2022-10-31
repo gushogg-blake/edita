@@ -18,7 +18,7 @@ class Document extends BaseDocument {
 		super();
 		
 		options = {
-			project: base.defaultProject,
+			project: null,
 			fileDetails: base.getFileDetails(code, url),
 			noParse: false,
 			...options,

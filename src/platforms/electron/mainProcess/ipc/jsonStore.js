@@ -2,7 +2,13 @@ let fs = require("../modules/fs");
 
 module.exports = function(app) {
 	function jsonStorageKey(name, key) {
-		return key ? name + "/" + key : name;
+		let path = [encodeURIComponent(name)];
+		
+		if (key) {
+			path.push(encodeURIComponent(key));
+		}
+		
+		return path;
 	}
 	
 	let {userDataDir} = app.config;
@@ -10,7 +16,7 @@ module.exports = function(app) {
 	return {
 		async load(e, name, key) {
 			try {
-				return await fs(userDataDir, ...jsonStorageKey(name, key).split("/")).withExt(".json").readJson() || null;
+				return await fs(userDataDir, ...jsonStorageKey(name, key)).withExt(".json").readJson() || null;
 			} catch (e) {
 				return null;
 			}
@@ -19,7 +25,7 @@ module.exports = function(app) {
 		async save(e, name, key, data) {
 			data = JSON.parse(data);
 			
-			let node = fs(userDataDir, ...jsonStorageKey(name, key).split("/")).withExt(".json");
+			let node = fs(userDataDir, ...jsonStorageKey(name, key)).withExt(".json");
 			
 			await node.parent.mkdirp();
 			await node.writeJson(data);
@@ -29,7 +35,7 @@ module.exports = function(app) {
 		
 		async ls(e, name) {
 			try {
-				return (await fs(userDataDir, name).ls()).map(node => node.basename);
+				return (await fs(userDataDir, encodeURIComponent(name)).ls()).map(node => decodeURIComponent(node.basename));
 			} catch (e) {
 				return [];
 			}

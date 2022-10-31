@@ -45,7 +45,7 @@ class App extends Evented {
 		this.lastSelectedPath = null;
 		
 		this.projects = new Projects(this);
-		this.selectedProject = base.defaultProject;
+		this.selectedProject = null;
 		
 		this.functions = bindFunctions(this, functions);
 		
@@ -322,7 +322,7 @@ class App extends Evented {
 		let {defaultExtension} = lang;
 		let extension = defaultExtension ? "." + defaultExtension : "";
 		let name = nextName(n => lang.name + "-" + n + extension, name => !this.tabs.some(tab => tab.path.includes(name)));
-		let dir = this.selectedProject.dirs[0];
+		let dir = this.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
 		let path = platform.fs(dir).child(name).path;
 		
 		let tab = await this.createTab("", URL._new(path), fileDetails);
@@ -368,7 +368,7 @@ class App extends Evented {
 	
 	createDocument(code, url, fileDetails) {
 		let document = new Document(code, url, {
-			project: this.findProjectForUrl(url) || base.defaultProject,
+			project: this.findProjectForUrl(url),
 			fileDetails,
 		});
 		

@@ -46,8 +46,6 @@ class Base extends Evented {
 		this.treeSitterLanguages = {};
 		this.initialisedLangs = new Set();
 		
-		this.defaultProject = new Project([platform.systemInfo.homeDir], {}, false);
-		
 		this.DirEntries = DirEntries;
 	}
 	

@@ -14,7 +14,7 @@ class Project {
 	
 	createLspServer(langCode) {
 		let promise = platform.createLspServer(langCode, {
-			workspaceFolders: this.dirs,
+			workspaceFolders: this.dirs.map(dir => dir.path),
 		});
 		
 		promise.then((server) => {
@@ -66,6 +66,24 @@ class Project {
 	
 	ownsUrl(url) {
 		return this.dirs.some(dir => platform.fs(url.path).isDescendantOf(dir));
+	}
+	
+	get key() {
+		return [...this.dirs].sort().join("+");
+	}
+	
+	async save() {
+		await base.stores.projects.save(this.key, this.toJSON());
+	}
+	
+	toJSON() {
+		let {dirs, config} = this;
+		
+		return {dirs, config};
+	}
+	
+	static fromJson({dirs, config}) {
+		return new Project(dirs, config, true);
 	}
 }
 

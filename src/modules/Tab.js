@@ -58,6 +58,10 @@ class Tab extends Evented {
 		return this.document.path;
 	}
 	
+	get project() {
+		return this.document.project;
+	}
+	
 	get isSaved() {
 		return this.document.isSaved;
 	}

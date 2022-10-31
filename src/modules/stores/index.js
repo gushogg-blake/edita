@@ -10,6 +10,6 @@ module.exports = async function() {
 		findAndReplaceOptions: new JsonStore("findAndReplaceOptions", {}),
 		fileTree: new JsonStore("fileTree", {}),
 		perFilePrefs: new JsonStore("perFilePrefs", {}),
-		projects: new JsonStore("projects", []),
+		projects: new JsonStore("projects", null),
 	};
 }

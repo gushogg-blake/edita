@@ -115,7 +115,7 @@ onMount(function() {
 
 <div id="main" bind:this={main}>
 	<div id="button" on:mousedown={toggle} class:showingSelector>
-		{selectedProject === base.defaultProject ? "Default project (~)" : selectedProject.name}
+		{selectedProject?.name || "Project"}
 	</div>
 	<div id="selectorWrapper">
 		<div id="selector" class:hide={!showingSelector}>

@@ -1,5 +1,6 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
+let unique = require("utils/array/unique");
 let Project = require("modules/Project");
 
 class Projects extends Evented {
@@ -7,23 +8,29 @@ class Projects extends Evented {
 		super();
 		
 		this.app = app;
-		this.projects = [];
+		this.savedProjects = [];
 	}
 	
 	get all() {
-		return this.projects;
+		return unique([
+			...this.openProjects,
+			...this.savedProjects,
+		]);
+	}
+	
+	get openProjects() {
+		return unique(this.app.tabs.map(tab => tab.project).filter(Boolean));
 	}
 	
 	async init() {
-		this.projects = (await base.stores.projects.load()).map(Projects.fromJson);
+		let byKey = await base.stores.projects.loadAll();
+		let json = Object.values(byKey);
+		
+		this.savedProjects = json.map(Project.fromJson);
 	}
 	
 	findProjectForUrl(url) {
-		return this.projects.find(project => project.ownsUrl(url));
-	}
-	
-	static fromJson(details) {
-		
+		return this.all.find(project => project.ownsUrl(url));
 	}
 }
 

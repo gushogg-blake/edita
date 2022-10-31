@@ -3,7 +3,13 @@ let localStorage = require("platform/modules/localStorage");
 
 module.exports = function(localStoragePrefix) {
 	function storageKey(name, key) {
-		return localStoragePrefix + (key ? name + "/" + key : name);
+		let parts = [encodeURIComponent(name)];
+		
+		if (key) {
+			parts.push(encodeURIComponent(key));
+		}
+		
+		return localStoragePrefix + parts.join("/");
 	}
 	
 	let watchers = {};
@@ -26,7 +32,7 @@ module.exports = function(localStoragePrefix) {
 		ls(name) {
 			let prefix = storageKey(name) + "/";
 			
-			return localStorage.keys().filter(key => key.startsWith(prefix)).map(key => key.substr(prefix.length));
+			return localStorage.keys().filter(key => key.startsWith(prefix)).map(key => decodeURIComponent(key.substr(prefix.length)));
 		},
 		
 		watch(name, fn) {
