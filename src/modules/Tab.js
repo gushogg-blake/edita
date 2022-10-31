@@ -200,10 +200,6 @@ class Tab extends Evented {
 		this.fire("updateDirListing");
 	}
 	
-	get perFilePrefsKey() {
-		return encodeURIComponent(this.path);
-	}
-	
 	async setPerFilePrefs(prefs) {
 		this.perFilePrefs = prefs;
 		
@@ -215,7 +211,7 @@ class Tab extends Evented {
 			return;
 		}
 		
-		await base.stores.perFilePrefs.save(this.perFilePrefsKey, this.perFilePrefs);
+		await base.stores.perFilePrefs.save(this.path, this.perFilePrefs);
 	}
 	
 	async setPerFilePref(pref, value) {
@@ -229,7 +225,7 @@ class Tab extends Evented {
 			return {};
 		}
 		
-		return await base.stores.perFilePrefs.load(this.perFilePrefsKey);
+		return await base.stores.perFilePrefs.load(this.path);
 	}
 	
 	saveState() {
