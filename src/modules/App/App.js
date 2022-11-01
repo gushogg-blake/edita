@@ -230,10 +230,6 @@ class App extends Evented {
 		this.closeTab(tab);
 	}
 	
-	findProjectForUrl(url) {
-		return this.projects.all.find(project => project.ownsUrl(url));
-	}
-	
 	selectProject(project) {
 		this.selectProject = project;
 		
@@ -338,6 +334,10 @@ class App extends Evented {
 	}
 	
 	async createTab(code, url, fileDetails=null) {
+		if (base.getPref("dev.timing.misc")) {
+			console.time("createTab");
+		}
+		
 		if (!fileDetails) {
 			fileDetails = base.getFileDetails(code, url);
 		}
@@ -350,7 +350,11 @@ class App extends Evented {
 		
 		await bluebird.map([...generateRequiredLangs(fileDetails.lang)], lang => base.initLanguage(lang));
 		
-		let document = this.createDocument(code, url, fileDetails);
+		let document = this.createDocument(code, url, {
+			project: await this.projects.findOrCreateProjectForUrl(url),
+			fileDetails,
+		});
+		
 		let view = new View(document);
 		let editor = new Editor(document, view);
 		let tab = new Tab(this, editor);
@@ -363,14 +367,15 @@ class App extends Evented {
 		
 		tab.on("focus", this.onTabFocus.bind(this));
 		
+		if (base.getPref("dev.timing.misc")) {
+			console.timeEnd("createTab");
+		}
+		
 		return tab;
 	}
 	
-	createDocument(code, url, fileDetails) {
-		let document = new Document(code, url, {
-			project: this.findProjectForUrl(url),
-			fileDetails,
-		});
+	createDocument(code, url, options) {
+		let document = new Document(code, url, options);
 		
 		for (let event of ["edit", "undo", "redo", "save", "fileChanged"]) {
 			document.on(event, (...args) => {
