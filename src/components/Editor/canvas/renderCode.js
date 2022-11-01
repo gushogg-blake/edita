@@ -55,7 +55,7 @@ module.exports = function(layers, view) {
 		
 		drawText(string) {
 			let offToLeft = Math.max(0, marginWidth - x);
-			let charsOffToLeft = Math.floor(offToLeft / colWidth);
+			let charsOffToLeft = Math.min(string.length, Math.floor(offToLeft / colWidth));
 			let maxLength = Math.ceil(width / colWidth);
 			let trimmed = string.substr(charsOffToLeft);
 			
