@@ -156,7 +156,7 @@ onMount(function() {
 }
 
 .pane {
-	overflow: hidden;
+	//overflow: hidden;
 }
 
 #leftContainer {
@@ -191,7 +191,7 @@ onMount(function() {
 .tab {
 	@include abs-sticky;
 	
-	z-index: 0;
+	z-index: -1;
 	display: grid;
 	grid-template-rows: 1fr;
 	grid-template-columns: 1fr;
@@ -199,7 +199,7 @@ onMount(function() {
 	contain: strict;
 	
 	&.selected {
-		z-index: 1;
+		z-index: auto;
 	}
 }
 

@@ -637,7 +637,7 @@ onMount(function() {
 .layer {
 	@include abs-sticky;
 	
-	z-index: 1;
+	//z-index: 1;
 }
 
 canvas {

@@ -105,18 +105,33 @@ onMount(function() {
 }
 
 #selectorWrapper {
-	position: relative;
+	position: absolute;
+	z-index: 1;
 }
 
 #selector {
 	position: absolute;
-	z-index: 1;
 	top: 0;
+	display: flex;
 	max-height: 400px;
 	border: var(--contextMenuBorder);
 	border-radius: 2px;
-	padding: 4px 5px;
 	background: var(--contextMenuBackgroundColor);
+}
+
+#list {
+}
+
+#details {
+	padding: 4px 5px;
+}
+
+.project {
+	padding: 4px 5px;
+	
+	&:hover {
+		background: var(--contextMenuHoverBackgroundColor);
+	}
 }
 </style>
 
@@ -126,11 +141,16 @@ onMount(function() {
 	</div>
 	<div id="selectorWrapper">
 		<div id="selector" class:hide={!showingSelector}>
-			{#each list as project}
-				<div class="project">
-					{getDisplayName(project)}
-				</div>
-			{/each}
+			<div id="list">
+				{#each list as project}
+					<div class="project">
+						{getDisplayName(project)}
+					</div>
+				{/each}
+			</div>
+			<div id="details">
+				details
+			</div>
 		</div>
 	</div>
 </div>
