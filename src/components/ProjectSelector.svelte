@@ -116,6 +116,7 @@ onMount(function() {
 	max-height: 400px;
 	border: var(--contextMenuBorder);
 	border-radius: 2px;
+	overflow: hidden;
 	background: var(--contextMenuBackgroundColor);
 }
 
@@ -130,6 +131,7 @@ onMount(function() {
 	padding: 4px 5px;
 	
 	&:hover {
+		color: var(--contextMenuHoverColor);
 		background: var(--contextMenuHoverBackgroundColor);
 	}
 }
