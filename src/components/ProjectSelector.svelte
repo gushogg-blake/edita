@@ -2,6 +2,7 @@
 import {onMount, getContext} from "svelte";
 import {on, off} from "utils/dom/domEvents";
 import lineage from "utils/dom/lineage";
+import replaceHomeDirWithTilde from "utils/replaceHomeDirWithTilde";
 
 let app = getContext("app");
 
@@ -58,6 +59,10 @@ function open() {
 	on(document.body, "keydown", bodyKeydown);
 }
 
+function getDisplayName(project) {
+	return project.config.name || project.dirs.map(dir => replaceHomeDirWithTilde(dir.path)).join(", ");
+}
+
 onMount(function() {
 	let teardown = [
 		projects.on("update", onUpdate),
@@ -105,6 +110,8 @@ onMount(function() {
 
 #selector {
 	position: absolute;
+	z-index: 1;
+	top: 0;
 	max-height: 400px;
 	border: var(--contextMenuBorder);
 	border-radius: 2px;
@@ -120,7 +127,9 @@ onMount(function() {
 	<div id="selectorWrapper">
 		<div id="selector" class:hide={!showingSelector}>
 			{#each list as project}
-				
+				<div class="project">
+					{getDisplayName(project)}
+				</div>
 			{/each}
 		</div>
 	</div>

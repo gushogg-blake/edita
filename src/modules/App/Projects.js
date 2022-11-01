@@ -1,6 +1,7 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 let unique = require("utils/array/unique");
+let {removeInPlace} = require("utils/arrayMethods");
 let Project = require("modules/Project");
 
 let projectRootFiles = [
@@ -17,6 +18,8 @@ let projectRootFiles = [
 	"cmakelists.txt",
 	"makefile",
 	"composer.json",
+	"rakefile",
+	"gemfile",
 ];
 
 class Projects extends Evented {
@@ -25,13 +28,14 @@ class Projects extends Evented {
 		
 		this.app = app;
 		this.savedProjects = [];
+		this.inferredProjects = [];
+		
+		app.on("newTab", this.onNewTab.bind(this));
+		app.on("closeTab", this.onCloseTab.bind(this));
 	}
 	
 	get all() {
-		return unique([
-			...this.openProjects,
-			...this.savedProjects,
-		]);
+		return [...this.savedProjects, ...this.inferredProjects];
 	}
 	
 	get openProjects() {
@@ -45,8 +49,12 @@ class Projects extends Evented {
 		this.savedProjects = json.map(Project.fromJson);
 	}
 	
+	findProjectForUrl(url) {
+		return this.all.find(project => project.ownsUrl(url));
+	}
+	
 	async findOrCreateProjectForUrl(url) {
-		let project = this.all.find(project => project.ownsUrl(url));
+		let project = this.findProjectForUrl(url);
 		
 		if (project) {
 			return project;
@@ -61,6 +69,14 @@ class Projects extends Evented {
 			};
 		});
 		
+		// check again, as a tab might have opened while we were fetching the dirs
+		
+		project = this.findProjectForUrl(url);
+		
+		if (project) {
+			return project;
+		}
+		
 		dirs.reverse();
 		
 		let projectRoot = dirs.find(dir => dir.isProjectRoot);
@@ -69,7 +85,25 @@ class Projects extends Evented {
 			return null;
 		}
 		
-		return new Project([projectRoot.dir.path], {}, false);
+		project = new Project([projectRoot.dir.path], {}, false);
+		
+		this.inferredProjects.push(project);
+		
+		return project;
+	}
+	
+	onNewTab(tab) {
+		this.fire("update");
+	}
+	
+	onCloseTab(tab) {
+		let {project} = tab;
+		
+		if (project && !this.openProjects.includes(project)) {
+			removeInPlace(this.inferredProjects, project);
+		}
+		
+		this.fire("update");
 	}
 }
 

@@ -1,6 +1,6 @@
 let bluebird = require("bluebird");
 
-let {remove, moveInPlace} = require("utils/arrayMethods");
+let {removeInPlace, moveInPlace} = require("utils/arrayMethods");
 let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
 let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
@@ -142,7 +142,7 @@ class App extends Evented {
 		
 		this.bottomPane.clippingsEditor.setLang(tab.editor.document.lang);
 		
-		this.fire("selectTab");
+		this.fire("selectTab", tab);
 		
 		this.focusSelectedTabAsync();
 	}
@@ -197,7 +197,7 @@ class App extends Evented {
 		
 		tab.teardown();
 		
-		this.tabs = remove(this.tabs, tab);
+		removeInPlace(this.tabs, tab);
 		
 		if (tab.isSaved && !noSave) {
 			this.closedTabs.unshift(tab.saveState());
@@ -208,6 +208,7 @@ class App extends Evented {
 		}
 		
 		this.fire("updateTabs");
+		this.fire("closeTab", tab);
 		
 		if (selectNext) {
 			this.selectTab(selectNext);
@@ -289,6 +290,7 @@ class App extends Evented {
 		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
 		
 		this.fire("updateTabs");
+		this.fire("newTab", tab);
 		
 		this.selectTab(tab);
 		
@@ -326,6 +328,7 @@ class App extends Evented {
 		this.tabs.push(tab);
 		
 		this.fire("updateTabs");
+		this.fire("newTab", tab);
 		
 		this.selectTab(tab);
 		this.focusSelectedTab();
