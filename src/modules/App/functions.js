@@ -80,7 +80,7 @@ module.exports = {
 	},
 	
 	async closeAllTabs() {
-		for (let tab of this.tabs) {
+		for (let tab of [...this.tabs]) {
 			await this.closeTab(tab);
 		}
 	},
