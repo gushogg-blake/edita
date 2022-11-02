@@ -27,6 +27,10 @@ async function mousedownTab(e, tab) {
 	fire("select", tab);
 }
 
+function dblclickTab(e, tab) {
+	fire("dblclick", tab);
+}
+
 function closeTab(tab) {
 	fire("close", tab);
 }
@@ -200,6 +204,7 @@ onMount(function() {
 			class="tabButton"
 			class:isSelected={tabIsSelected(tab, selectedTab)}
 			on:mousedown={(e) => mousedownTab(e, tab)}
+			on:dblclick={(e) => dblclickTab(e, tab)}
 			on:auxclick={(e) => auxclickTab(e, tab)}
 			on:contextmenu={(e) => showContextMenu(e, tab)}
 			draggable={reorderable}

@@ -42,7 +42,7 @@ class App extends Evented {
 		this.tabs = [];
 		this.selectedTab = null;
 		this.closedTabs = [];
-		this.lastSelectedPath = null;
+		this.lastSelectedSavedUrl = null;
 		
 		this.projects = new Projects(this);
 		this.selectedProject = null;
@@ -55,6 +55,8 @@ class App extends Evented {
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
 			...Object.values(this.panes).map(pane => pane.on("show hide resize", () => this.fire("updatePanes"))),
+			this.on("selectTab", this.onSelectTab.bind(this)),
+			this.on("document.save", this.onDocumentSave.bind(this)),
 		];
 		
 		platform.handleIpcMessages("findAndReplace", this.findAndReplace);
@@ -75,6 +77,29 @@ class App extends Evented {
 		]);
 	}
 	
+	getCurrentDir(_default=null) {
+		let lastSelectedPath = this.lastSelectedSavedUrl && platform.fs(this.lastSelectedSavedUrl.path).parent.path;
+		let projectDir = this.selectedProject?.dirs[0].path;
+		
+		if (!this.lastSelectedSavedUrl && !this.selectedProject) {
+			return _default;
+		}
+		
+		if (!this.lastSelectedSavedUrl) {
+			return projectDir;
+		}
+		
+		if (!this.selectedProject) {
+			return lastSelectedPath;
+		}
+		
+		if (this.selectedProject.ownsUrl(this.lastSelectedSavedUrl)) {
+			return lastSelectedPath;
+		} else {
+			return projectDir;
+		}
+	}
+	
 	async save(tab) {
 		let {document} = tab;
 		
@@ -87,11 +112,7 @@ class App extends Evented {
 			
 			await document.save();
 		} else {
-			let dir = platform.systemInfo.homeDir;
-			
-			if (this.lastSelectedPath) {
-				dir = platform.fs(this.lastSelectedPath).parent.path;
-			}
+			let dir = this.getCurrentDir(platform.systemInfo.homeDir);
 			
 			let path = await platform.saveAs({
 				defaultPath: platform.fs(dir, platform.fs(document.path).name).path,
@@ -99,10 +120,6 @@ class App extends Evented {
 			
 			if (path) {
 				await document.saveAs(URL.file(path));
-				
-				if (this.selectedTab === tab) {
-					this.lastSelectedPath = path;
-				}
 			}
 		}
 	}
@@ -135,10 +152,6 @@ class App extends Evented {
 		tab.editor.view.show();
 		
 		this.updateTitle();
-		
-		if (tab.isSaved) {
-			this.lastSelectedPath = tab.path;
-		}
 		
 		this.bottomPane.clippingsEditor.setLang(tab.editor.document.lang);
 		
@@ -592,6 +605,19 @@ class App extends Evented {
 		}
 		
 		delete this.messageBoxPromise;
+	}
+	
+	onSelectTab(tab) {
+		console.log("select", tab.url);
+		if (tab.isSaved) {
+			this.lastSelectedSavedUrl = tab.url;
+		}
+	}
+	
+	onDocumentSave(document) {
+		if (document === this.selectedTab.document) {
+			this.lastSelectedSavedUrl = document.url;
+		}
 	}
 	
 	onTabFocus() {

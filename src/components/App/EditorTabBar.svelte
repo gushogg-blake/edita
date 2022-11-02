@@ -20,6 +20,12 @@ function select({detail: tab}) {
 	app.selectTab(tab);
 }
 
+function dblclick({detail: tab}) {
+	if (tab.project) {
+		app.selectProject(tab.project);
+	}
+}
+
 function close({detail: tab}) {
 	app.closeTab(tab);
 }
@@ -84,4 +90,5 @@ onMount(function() {
 	on:select={select}
 	on:close={close}
 	on:reorder={reorder}
+	on:dblclick={dblclick}
 />

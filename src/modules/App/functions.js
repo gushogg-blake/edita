@@ -2,11 +2,7 @@ let bluebird = require("bluebird");
 
 module.exports = {
 	async open() {
-		let dir = null;
-		
-		if (this.lastSelectedPath) {
-			dir = platform.path.resolve(this.lastSelectedPath, "..");
-		}
+		let dir = this.getCurrentDir();
 		
 		let files = await bluebird.map(platform.open(dir), async function(path) {
 			return {

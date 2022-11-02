@@ -9,6 +9,7 @@ let app = getContext("app");
 let {projects, selectedProject} = app;
 let {all: list} = projects;
 
+let viewingProject = selectedProject;
 let showingSelector = false;
 let quickSelectMode;
 let main;
@@ -44,11 +45,21 @@ function projectMouseup(project) {
 }
 
 function projectClick(project) {
+	viewProject(project);
+}
+
+function projectDblclick(project) {
 	selectProject(project);
+	
+	close();
 }
 
 function selectProject(project) {
 	app.selectProject(project);
+}
+
+function viewProject(project) {
+	viewingProject = project;
 }
 
 function bodyMousedown(e) {
@@ -77,6 +88,7 @@ function close() {
 
 function open() {
 	showingSelector = true;
+	viewingProject = selectedProject;
 	
 	on(document.body, "mousedown", bodyMousedown);
 	on(document.body, "keydown", bodyKeydown);
@@ -184,6 +196,7 @@ onMount(function() {
 						class="project"
 						on:mouseup={() => projectMouseup(project)}
 						on:click={() => projectClick(project)}
+						on:dblclick={() => projectDblclick(project)}
 					>
 						{getLabel(project)}
 					</div>
@@ -191,7 +204,9 @@ onMount(function() {
 			</div>
 			{#if !quickSelectMode}
 				<div id="details">
-					details
+					{#if viewingProject}
+						{getFullName(viewingProject)} details
+					{/if}
 				</div>
 			{/if}
 		</div>
