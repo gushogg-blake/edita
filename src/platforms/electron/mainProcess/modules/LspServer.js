@@ -101,6 +101,8 @@ class LspServer extends Evented {
 	}
 	
 	close() {
+		//this.closed = true;
+		
 		this.process.kill();
 	}
 	
@@ -160,10 +162,16 @@ class LspServer extends Evented {
 	
 	onError(data) {
 		console.error(data.toString());
+		
+		this.fire("error", data.toString());
 	}
 	
-	onExit(code) {
-		this.fire("exit", code);
+	onExit() {
+		if (this.closed) {
+			this.fire("close");
+		} else {
+			this.fire("stop");
+		}
 	}
 }
 

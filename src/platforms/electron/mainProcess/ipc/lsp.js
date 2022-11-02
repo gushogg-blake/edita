@@ -8,12 +8,26 @@ module.exports = function(app) {
 		app.sendToRenderers("lspNotification", key, notification);
 	}
 	
+	function stop(key, server) {
+		remove(key, server);
+		
+		app.sendToRenderers("lspServerStop", key);
+	}
+	
+	function onClose(key, server) {
+		remove(key, server);
+		
+		app.sendToRenderers("lspServerClose", key);
+	}
+	
+	function onError(key, error) {
+		app.sendToRenderers("lspServerError", key, error);
+	}
+	
 	function remove(key, server) {
 		if (servers[key] === server) {
 			delete servers[key];
 		}
-		
-		app.sendToRenderers("lspServerExit", key);
 	}
 	
 	return {
@@ -29,7 +43,9 @@ module.exports = function(app) {
 			servers[key] = server;
 			
 			server.on("notification", (notification) => sendNotification(key, notification));
-			server.on("exit", () => remove(key, server));
+			server.on("stop", () => onStop(key, server));
+			server.on("close", () => onClose(key, server));
+			server.on("error", (error) => onError(key, error));
 			
 			let serverCapabilities = await server.init(options);
 			
