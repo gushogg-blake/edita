@@ -10,6 +10,7 @@ let {projects, selectedProject} = app;
 let {all: list} = projects;
 
 let showingSelector = false;
+let quickSelectMode;
 let main;
 
 function onUpdate() {
@@ -20,12 +21,34 @@ function onSelect() {
 	({selectedProject} = app);
 }
 
-function toggle() {
+function buttonMousedown() {
 	if (showingSelector) {
 		close();
 	} else {
+		quickSelectMode = true;
+		
 		open();
 	}
+}
+
+function buttonClick() {
+	quickSelectMode = false;
+}
+
+function projectMouseup(project) {
+	if (quickSelectMode) {
+		selectProject(project);
+		
+		close();
+	}
+}
+
+function projectClick(project) {
+	selectProject(project);
+}
+
+function selectProject(project) {
+	app.selectProject(project);
 }
 
 function bodyMousedown(e) {
@@ -59,7 +82,11 @@ function open() {
 	on(document.body, "keydown", bodyKeydown);
 }
 
-function getDisplayName(project) {
+function getLabel(project) {
+	return project.config.name || project.dirs.map(dir => dir.name).join(", ");
+}
+
+function getFullName(project) {
 	return project.config.name || project.dirs.map(dir => replaceHomeDirWithTilde(dir.path)).join(", ");
 }
 
@@ -121,9 +148,11 @@ onMount(function() {
 }
 
 #list {
+	width: 180px;
 }
 
 #details {
+	width: 320px;
 	padding: 4px 5px;
 }
 
@@ -138,21 +167,33 @@ onMount(function() {
 </style>
 
 <div id="main" bind:this={main}>
-	<div id="button" on:mousedown={toggle} class:showingSelector>
-		{selectedProject?.name || "Project"}
+	<div
+		id="button"
+		on:mousedown={buttonMousedown}
+		on:click={buttonClick}
+		class:showingSelector
+		title={selectedProject ? getFullName(selectedProject) : ""}
+	>
+		{selectedProject ? getLabel(selectedProject) : "Project"}
 	</div>
 	<div id="selectorWrapper">
 		<div id="selector" class:hide={!showingSelector}>
 			<div id="list">
 				{#each list as project}
-					<div class="project">
-						{getDisplayName(project)}
+					<div
+						class="project"
+						on:mouseup={() => projectMouseup(project)}
+						on:click={() => projectClick(project)}
+					>
+						{getLabel(project)}
 					</div>
 				{/each}
 			</div>
-			<div id="details">
-				details
-			</div>
+			{#if !quickSelectMode}
+				<div id="details">
+					details
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>

@@ -232,9 +232,9 @@ class App extends Evented {
 	}
 	
 	selectProject(project) {
-		this.selectProject = project;
+		this.selectedProject = project;
 		
-		this.fire("selectProject");
+		this.fire("selectProject", project);
 	}
 	
 	urlIsOpen(url) {
