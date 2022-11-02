@@ -608,9 +608,12 @@ class App extends Evented {
 	}
 	
 	onSelectTab(tab) {
-		console.log("select", tab.url);
 		if (tab.isSaved) {
 			this.lastSelectedSavedUrl = tab.url;
+		}
+		
+		if (tab.project && !this.selectedProject) {
+			this.selectProject(tab.project);
 		}
 	}
 	
