@@ -4,27 +4,23 @@ let ipcRenderer = require("platform/modules/ipcRenderer");
 let servers = {};
 
 ipcRenderer.on("lspNotification", function(e, key, notification) {
-	servers[key]?.fire("notificationReceived", notification);
+	servers[key]?.onNotificationReceived(notification);
 });
 
 ipcRenderer.on("lspServerStop", function(e, key) {
-	servers[key]?.fire("stop");
-});
-
-ipcRenderer.on("lspServerRestart", function(e, key) {
-	servers[key]?.fire("restart");
+	servers[key]?.onStop();
 });
 
 ipcRenderer.on("lspServerClose", function(e, key) {
-	servers[key]?.fire("close");
+	servers[key]?.onClose();
 	
 	delete servers[key];
 });
 
 module.exports = {
 	async createServer(projectKey, langCode, options) {
-		let server = new LspServer({
-			start() {
+		let server = new LspServer(options, {
+			start(options) {
 				return ipcRenderer.invoke("lsp", "createServer", projectKey, langCode, options);
 			},
 			
