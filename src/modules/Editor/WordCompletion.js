@@ -1,4 +1,5 @@
 let regexMatches = require("utils/regexMatches");
+let regexMatch = require("utils/regexMatch");
 let unique = require("utils/array/unique");
 let convertCase = require("utils/convertCase");
 let Selection = require("modules/utils/Selection");
@@ -62,6 +63,10 @@ function findCompletions(code, wordAtCursor, index, extraWords=[]) {
 }
 
 function getPossibleCaseTypes(word) {
+	let prefix = regexMatch(word, /^[_\W]+/);
+	
+	word = word.substr(prefix.length);
+	
 	if (word.match(/^[a-z]/)) {
 		if (word.includes("_")) {
 			return ["snake"];
