@@ -3,34 +3,47 @@ let ipcRenderer = require("platform/modules/ipcRenderer");
 
 let servers = {};
 
-ipcRenderer.on("lspNotification", function(e, serverId, notification) {
-	servers[serverId]?.fire("notificationReceived", notification);
+ipcRenderer.on("lspNotification", function(e, key, notification) {
+	servers[key]?.fire("notificationReceived", notification);
 });
 
-ipcRenderer.on("lspServerExit", function(e, serverId) {
-	servers[serverId]?.fire("exit");
+ipcRenderer.on("lspServerStop", function(e, key) {
+	servers[key]?.fire("stop");
+});
+
+ipcRenderer.on("lspServerRestart", function(e, key) {
+	servers[key]?.fire("restart");
+});
+
+ipcRenderer.on("lspServerClose", function(e, key) {
+	servers[key]?.fire("close");
 	
-	delete servers[serverId];
+	delete servers[key];
 });
 
 module.exports = {
-	async createServer(langCode, options) {
-		let {
-			id,
-			serverCapabilities,
-		} = await ipcRenderer.invoke("lsp", "createServer", langCode, options);
-		
+	async createServer(projectKey, langCode, options) {
 		let server = new LspServer({
+			start() {
+				return ipcRenderer.invoke("lsp", "createServer", projectKey, langCode, options);
+			},
+			
 			request(method, params) {
-				return ipcRenderer.invoke("lsp", "request", id, method, params);
+				return ipcRenderer.invoke("lsp", "request", key, method, params);
 			},
 			
 			notify(method, params) {
-				ipcRenderer.invoke("lsp", "notify", id, method, params);
+				ipcRenderer.invoke("lsp", "notify", key, method, params);
 			},
-		}, serverCapabilities);
+			
+			close() {
+				return ipcRenderer.invoke("lsp", "close", key);
+			},
+		});
 		
-		servers[id] = server;
+		let key = await server.start();
+		
+		servers[key] = server;
 		
 		return server;
 	},

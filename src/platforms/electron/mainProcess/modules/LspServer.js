@@ -23,11 +23,10 @@ let cmds = {
 let REQUEST_TIMEOUT = 5000;
 
 class LspServer extends Evented {
-	constructor(app, id, langCode) {
+	constructor(app, langCode) {
 		super();
 		
 		this.app = app;
-		this.id = id;
 		this.langCode = langCode;
 		this.requestPromises = {};
 		

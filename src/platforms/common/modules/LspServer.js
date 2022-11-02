@@ -1,11 +1,14 @@
 let Evented = require("utils/Evented");
 
 class LspServer extends Evented {
-	constructor(backend, serverCapabilities) {
+	constructor(backend) {
 		super();
 		
 		this._backend = backend;
 		this.serverCapabilities = serverCapabilities;
+	}
+	
+	start() {
 	}
 	
 	request(method, params) {
@@ -14,6 +17,10 @@ class LspServer extends Evented {
 	
 	notify(method, params) {
 		this._backend.notify(method, params);
+	}
+	
+	close() {
+		return this._backen
 	}
 }
 

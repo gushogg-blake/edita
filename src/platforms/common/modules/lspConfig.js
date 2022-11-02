@@ -2,11 +2,11 @@ let capabilities = {
 	javascript: {},
 };
 
-let initOptions = {
+let initializationOptions = {
 	javascript: {},
 };
 
 module.exports = {
 	capabilities,
-	initOptions,
+	initializationOptions,
 };

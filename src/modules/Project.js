@@ -13,7 +13,7 @@ class Project {
 	}
 	
 	createLspServer(langCode) {
-		let promise = platform.createLspServer(langCode, {
+		let promise = platform.createLspServer(this.key, langCode, {
 			workspaceFolders: this.dirs.map(dir => dir.path),
 		});
 		
@@ -69,7 +69,7 @@ class Project {
 	}
 	
 	get key() {
-		return [...this.dirs].sort().join("+");
+		return [...this.dirs].map(dir => dir.path).sort().join("+");
 	}
 	
 	async save() {

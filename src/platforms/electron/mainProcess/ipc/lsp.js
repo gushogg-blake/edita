@@ -4,40 +4,47 @@ let LspServer = require("../modules/LspServer");
 module.exports = function(app) {
 	let servers = {};
 	
-	function sendNotification(serverId, notification) {
-		app.sendToRenderers("lspNotification", serverId, notification);
+	function sendNotification(key, notification) {
+		app.sendToRenderers("lspNotification", key, notification);
 	}
 	
-	function remove(serverId) {
-		delete servers[serverId];
+	function remove(key, server) {
+		if (servers[key] === server) {
+			delete servers[key];
+		}
 		
-		app.sendToRenderers("lspServerExit", serverId);
+		app.sendToRenderers("lspServerExit", key);
 	}
 	
 	return {
-		async createServer(e, langCode, options) {
-			let id = lid();
-			let server = new LspServer(app, id, langCode);
+		async createServer(e, projectKey, langCode, options) {
+			let key = langCode + ":" + projectKey;
 			
-			server.on("notification", (notification) => sendNotification(id, notification));
-			server.on("exit", () => remove(id));
+			if (servers[key]) {
+				servers[key].close();
+			}
+			
+			let server = new LspServer(app, langCode);
+			
+			servers[key] = server;
+			
+			server.on("notification", (notification) => sendNotification(key, notification));
+			server.on("exit", () => remove(key, server));
 			
 			let serverCapabilities = await server.init(options);
 			
-			servers[id] = server;
-			
 			return {
-				id,
+				key,
 				serverCapabilities,
 			};
 		},
 		
-		request(e, serverId, method, params) {
-			return servers[serverId].request(method, params);
+		request(e, key, method, params) {
+			return servers[key].request(method, params);
 		},
 		
-		notify(e, serverId, method, params) {
-			servers[serverId].notify(method, params);
+		notify(e, key, method, params) {
+			servers[key].notify(method, params);
 		},
 	};
 }
