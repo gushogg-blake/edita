@@ -101,7 +101,7 @@ class LspServer extends Evented {
 	}
 	
 	close() {
-		//this.closed = true;
+		this.closed = true;
 		
 		this.process.kill();
 	}
