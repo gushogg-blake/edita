@@ -163,6 +163,8 @@ class LspServer extends Evented {
 			return;
 		}
 		
+		this.ready = false;
+		
 		await sleep(2000);
 		
 		this.start();
