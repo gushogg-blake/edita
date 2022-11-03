@@ -12,7 +12,7 @@ class LspClient extends Evented {
 		let {lang} = document.rangeFromCursor(cursor).scope;
 		
 		try {
-			let server = await this.project.getLspServer(lang.code);
+			let server = this.project.getLspServer(lang.code);
 			
 			let result = await server.request("textDocument/completion", {
 				textDocument: {

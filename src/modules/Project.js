@@ -8,40 +8,35 @@ class Project {
 		this.isSaved = isSaved;
 		
 		this.lspServers = {};
-		this.lspServerPromises = {};
 		this.lspClient = new LspClient(this);
 	}
 	
-	createLspServer(langCode) {
-		let promise = platform.createLspServer(this.key, langCode, {
+	serverKey(langCode) {
+		return langCode + ":" + this.key;
+	}
+	
+	startLspServer(langCode) {
+		let server = platform.createLspServer(this.serverKey(langCode), langCode, {
 			workspaceFolders: this.dirs.map(dir => dir.path),
 		});
 		
-		promise.then((server) => {
-			this.lspServers[langCode] = server;
-			
-			server.on("exit", () => {
-				delete this.lspServers[langCode];
-				
-				// TODO re-create
-			});
-		});
+		server.start();
 		
-		promise.finally(() => delete this.lspServerPromises[langCode]);
-		
-		this.lspServerPromises[langCode] = promise;
+		this.lspServers[langCode] = server;
 	}
 	
-	async getLspServer(langCode) {
+	getLspServer(langCode) {
 		if (!this.lspServers[langCode]) {
-			if (!this.lspServerPromises[langCode]) {
-				this.createLspServer(langCode);
-			}
-			
-			await this.lspServerPromises[langCode];
+			this.startLspServer(langCode);
 		}
 		
 		return this.lspServers[langCode];
+	}
+	
+	closeLspServer(langCode) {
+		delete this.lspServers[langCode];
+		
+		return platform.lsp.closeServer(this.serverKey(langCode));
 	}
 	
 	/*

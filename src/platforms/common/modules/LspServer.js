@@ -9,11 +9,9 @@ class LspServer extends Evented {
 	}
 	
 	async start() {
-		let {key, serverCapabilities} = await this.backend.start(this.options);
+		let serverCapabilities = await this.backend.start(this.options);
 		
 		this.serverCapabilities = serverCapabilities;
-		
-		return key;
 	}
 	
 	request(method, params) {
@@ -24,33 +22,8 @@ class LspServer extends Evented {
 		this.backend.notify(method, params);
 	}
 	
-	close() {
-		return this.backend.close();
-	}
-	
 	onNotificationReceived(notification) {
-		this.fire("", notification);
-	}
-	
-	/*
-	server stopped unexpectedly - handlers can call the passed function to
-	restart with current options.
-	*/
-	
-	onStop() {
-		this.fire("stop", (options) => {
-			this.options = options;
-			
-			return this.start();
-		});
-	}
-	
-	/*
-	server intentionally closed, e.g. after closing all files in a project
-	*/
-	
-	onClose() {
-		this.fire("close");
+		this.fire("notificationReceived", notification);
 	}
 }
 

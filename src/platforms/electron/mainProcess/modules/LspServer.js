@@ -1,6 +1,7 @@
 let Evented = require("../utils/Evented");
 let lid = require("../utils/lid");
 let spawn = require("../utils/spawn");
+let sleep = require("../utils/sleep");
 let promiseWithMethods = require("../utils/promiseWithMethods");
 let fs = require("./fs");
 
@@ -23,17 +24,18 @@ let cmds = {
 let REQUEST_TIMEOUT = 5000;
 
 class LspServer extends Evented {
-	constructor(app, langCode) {
+	constructor(app, langCode, options) {
 		super();
 		
 		this.app = app;
 		this.langCode = langCode;
+		this.options = options;
 		this.requestPromises = {};
 		
 		this.buffer = Buffer.alloc(0);
 	}
 	
-	async init(options) {
+	async start() {
 		let [cmd, ...args] = cmds[this.langCode](this.app);
 		
 		this.process = await spawn(cmd, args);
@@ -47,7 +49,7 @@ class LspServer extends Evented {
 			capabilities: serverCapabilities,
 		} = await this.request("initialize", {
 			processId: process.pid,
-			...options,
+			...this.options,
 		});
 		
 		return serverCapabilities;
@@ -166,12 +168,16 @@ class LspServer extends Evented {
 		this.fire("error", data.toString());
 	}
 	
-	onExit() {
+	async onExit() {
 		if (this.closed) {
 			this.fire("close");
-		} else {
-			this.fire("stop");
+			
+			return;
 		}
+		
+		await sleep(2000);
+		
+		this.start();
 	}
 }
 

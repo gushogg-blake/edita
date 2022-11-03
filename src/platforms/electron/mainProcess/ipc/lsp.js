@@ -8,20 +8,12 @@ module.exports = function(app) {
 		app.sendToRenderers("lspNotification", key, notification);
 	}
 	
-	function stop(key, server) {
-		remove(key, server);
-		
-		app.sendToRenderers("lspServerStop", key);
+	function onError(key, error) {
+		app.sendToRenderers("lspServerError", key, error);
 	}
 	
 	function onClose(key, server) {
 		remove(key, server);
-		
-		app.sendToRenderers("lspServerClose", key);
-	}
-	
-	function onError(key, error) {
-		app.sendToRenderers("lspServerError", key, error);
 	}
 	
 	function remove(key, server) {
@@ -31,28 +23,20 @@ module.exports = function(app) {
 	}
 	
 	return {
-		async createServer(e, projectKey, langCode, options) {
-			let key = langCode + ":" + projectKey;
-			
+		async start(e, key, langCode, options) {
 			if (servers[key]) {
 				servers[key].close();
 			}
 			
-			let server = new LspServer(app, langCode);
+			let server = new LspServer(app, langCode, options);
 			
 			servers[key] = server;
 			
 			server.on("notification", (notification) => sendNotification(key, notification));
-			server.on("stop", () => onStop(key, server));
 			server.on("close", () => onClose(key, server));
 			server.on("error", (error) => onError(key, error));
 			
-			let serverCapabilities = await server.init(options);
-			
-			return {
-				key,
-				serverCapabilities,
-			};
+			return await server.start();
 		},
 		
 		request(e, key, method, params) {
@@ -61,6 +45,10 @@ module.exports = function(app) {
 		
 		notify(e, key, method, params) {
 			servers[key].notify(method, params);
+		},
+		
+		close(e, key) {
+			servers[key].close();
 		},
 	};
 }
