@@ -12,20 +12,46 @@ module.exports = function(app) {
 		app.sendToRenderers("lspServerError", key, error);
 	}
 	
-	function onClose(key, server) {
-		remove(key, server);
+	/*
+	calls to LSP servers are kept in a buffer here so we can queue up calls
+	for servers that aren't ready as well as ones that haven't even been
+	created yet
+	*/
+	
+	let buffers = {};
+	
+	function bufferedCall(key, fn) {
+		return new Promise(function(resolve, reject) {
+			if (!buffers[key]) {
+				buffers[key] = [];
+			}
+			
+			buffers[key].push(async function(server) {
+				try {
+					resolve(await fn(server));
+				} catch (e) {
+					reject(e);
+				}
+			});
+			
+			checkBuffer(key);
+		});
 	}
 	
-	function remove(key, server) {
-		if (servers[key] === server) {
-			delete servers[key];
+	function checkBuffer(key) {
+		if (servers[key]?.ready) {
+			let fn;
+			
+			while (fn = buffers[key].shift()) {
+				fn(servers[key]);
+			}
 		}
 	}
 	
 	return {
 		async start(e, key, langCode, options) {
 			if (servers[key]) {
-				servers[key].close();
+				return servers[key].serverCapabilities;
 			}
 			
 			let server = new LspServer(app, langCode, options);
@@ -33,22 +59,27 @@ module.exports = function(app) {
 			servers[key] = server;
 			
 			server.on("notification", (notification) => sendNotification(key, notification));
-			server.on("close", () => onClose(key, server));
 			server.on("error", (error) => onError(key, error));
+			server.on("start", () => checkBuffer(key));
 			
-			return await server.start();
+			await server.start();
+			
+			return server.serverCapabilities;
 		},
 		
 		request(e, key, method, params) {
-			return servers[key].request(method, params);
+			return bufferedCall(key, server => server.request(method, params));
 		},
 		
 		notify(e, key, method, params) {
-			servers[key].notify(method, params);
+			return bufferedCall(key, server => server.notify(method, params));
 		},
 		
 		close(e, key) {
-			servers[key].close();
+			servers[key]?.close();
+			
+			delete servers[key];
+			delete buffers[key];
 		},
 	};
 }

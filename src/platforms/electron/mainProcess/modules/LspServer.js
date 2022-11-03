@@ -32,7 +32,9 @@ class LspServer extends Evented {
 		this.options = options;
 		this.requestPromises = {};
 		
-		this.buffer = Buffer.alloc(0);
+		this.ready = false;
+		
+		this.responseBuffer = Buffer.alloc(0);
 	}
 	
 	async start() {
@@ -52,7 +54,10 @@ class LspServer extends Evented {
 			...this.options,
 		});
 		
-		return serverCapabilities;
+		this.serverCapabilities = serverCapabilities;
+		this.ready = true;
+		
+		this.fire("start");
 	}
 	
 	request(method, params) {
@@ -66,8 +71,6 @@ class LspServer extends Evented {
 		});
 		
 		let message = "Content-Length: " + json.length + "\r\n\r\n" + json;
-		
-		//console.log(message);
 		
 		this.process.stdin.write(message);
 		
@@ -97,8 +100,6 @@ class LspServer extends Evented {
 		
 		let message = "Content-Length: " + json.length + "\r\n\r\n" + json;
 		
-		//console.log(message);
-		
 		this.process.stdin.write(message);
 	}
 	
@@ -110,16 +111,16 @@ class LspServer extends Evented {
 	
 	onData(data) {
 		try {
-			let {buffer} = this;
+			let {responseBuffer} = this;
 			
-			this.buffer = Buffer.alloc(buffer.length + data.length);
-			this.buffer.set(buffer);
-			this.buffer.set(data, buffer.length);
+			this.responseBuffer = Buffer.alloc(responseBuffer.length + data.length);
+			this.responseBuffer.set(responseBuffer);
+			this.responseBuffer.set(data, responseBuffer.length);
 			
 			let split = -1;
 			
-			for (let i = 0; i < this.buffer.length; i++) {
-				if (this.buffer.subarray(i, i + 4).toString() === "\r\n\r\n") {
+			for (let i = 0; i < this.responseBuffer.length; i++) {
+				if (this.responseBuffer.subarray(i, i + 4).toString() === "\r\n\r\n") {
 					split = i + 4;
 					
 					break;
@@ -130,15 +131,15 @@ class LspServer extends Evented {
 				return;
 			}
 			
-			let headers = this.buffer.subarray(0, split).toString();
+			let headers = this.responseBuffer.subarray(0, split).toString();
 			let length = Number(headers.match(/Content-Length: (\d+)/)[1]);
-			let rest = this.buffer.subarray(split, split + length);
+			let rest = this.responseBuffer.subarray(split, split + length);
 			
 			if (rest.length < length) {
 				return;
 			}
 			
-			this.buffer = Buffer.from(this.buffer.subarray(split + length));
+			this.responseBuffer = Buffer.from(this.responseBuffer.subarray(split + length));
 			
 			let message = JSON.parse(rest.toString());
 			
@@ -170,10 +171,10 @@ class LspServer extends Evented {
 	
 	async onExit() {
 		if (this.closed) {
-			this.fire("close");
-			
 			return;
 		}
+		
+		this.ready = false;
 		
 		await sleep(2000);
 		
