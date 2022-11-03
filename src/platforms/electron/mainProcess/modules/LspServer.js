@@ -170,11 +170,11 @@ class LspServer extends Evented {
 	}
 	
 	async onExit() {
+		this.ready = false;
+		
 		if (this.closed) {
 			return;
 		}
-		
-		this.ready = false;
 		
 		await sleep(2000);
 		

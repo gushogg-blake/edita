@@ -11,12 +11,12 @@ class Project {
 		this.lspClient = new LspClient(this);
 	}
 	
-	serverKey(langCode) {
+	lspServerKey(langCode) {
 		return langCode + ":" + this.key;
 	}
 	
 	startLspServer(langCode) {
-		let server = platform.createLspServer(this.serverKey(langCode), langCode, {
+		let server = platform.startLspServer(this.lspServerKey(langCode), langCode, {
 			workspaceFolders: this.dirs.map(dir => dir.path),
 		});
 		
@@ -36,7 +36,7 @@ class Project {
 	closeLspServer(langCode) {
 		delete this.lspServers[langCode];
 		
-		return platform.lsp.closeServer(this.serverKey(langCode));
+		return platform.lsp.close(this.lspServerKey(langCode));
 	}
 	
 	/*

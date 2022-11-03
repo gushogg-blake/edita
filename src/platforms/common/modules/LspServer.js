@@ -9,9 +9,7 @@ class LspServer extends Evented {
 	}
 	
 	async start() {
-		let serverCapabilities = await this.backend.start(this.options);
-		
-		this.serverCapabilities = serverCapabilities;
+		this.serverCapabilities = await this.backend.start(this.options);
 	}
 	
 	request(method, params) {
@@ -19,7 +17,7 @@ class LspServer extends Evented {
 	}
 	
 	notify(method, params) {
-		this.backend.notify(method, params);
+		return this.backend.notify(method, params);
 	}
 	
 	onNotificationReceived(notification) {

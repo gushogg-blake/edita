@@ -10,7 +10,7 @@ class Platform extends Evented {
 		return confirm(message);
 	}
 	
-	createLspServer(key, langCode, options) {
+	startLspServer(key, langCode, options) {
 		let capabilities = lspConfig.capabilities[langCode];
 		
 		options = {
@@ -23,7 +23,7 @@ class Platform extends Evented {
 			},
 		};
 		
-		return this.lsp.createServer(key, langCode, options);
+		return this.lsp.start(key, langCode, options);
 	}
 }
 

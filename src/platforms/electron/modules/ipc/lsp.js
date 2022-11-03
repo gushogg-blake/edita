@@ -8,7 +8,7 @@ ipcRenderer.on("lspNotification", function(e, key, notification) {
 });
 
 module.exports = {
-	createServer(key, langCode, options) {
+	start(key, langCode, options) {
 		let server = new LspServer(options, {
 			start(options) {
 				return ipcRenderer.invoke("lsp", "start", key, langCode, options);
@@ -19,7 +19,7 @@ module.exports = {
 			},
 			
 			notify(method, params) {
-				ipcRenderer.invoke("lsp", "notify", key, method, params);
+				return ipcRenderer.invoke("lsp", "notify", key, method, params);
 			},
 		});
 		
@@ -28,7 +28,7 @@ module.exports = {
 		return server;
 	},
 	
-	closeServer(key) {
+	close(key) {
 		return ipcRenderer.invoke("lsp", "close", key);
 	},
 };
