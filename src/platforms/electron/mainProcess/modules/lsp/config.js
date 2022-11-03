@@ -1,5 +1,5 @@
 module.exports = {
-	javascript(app) {
+	typescript(app) {
 		let nodeModules = app.rootDir.child("node_modules");
 		
 		return {
