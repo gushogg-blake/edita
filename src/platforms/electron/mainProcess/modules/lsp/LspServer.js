@@ -1,35 +1,20 @@
-let Evented = require("../utils/Evented");
-let lid = require("../utils/lid");
-let spawn = require("../utils/spawn");
-let sleep = require("../utils/sleep");
-let promiseWithMethods = require("../utils/promiseWithMethods");
-let fs = require("./fs");
-
-let cmds = {
-	javascript(app) {
-		let nodeModules = app.rootDir.child("node_modules");
-		
-		return [
-			"node",
-			"--inspect=127.0.0.1:6000",
-			nodeModules.child("typescript-language-server", "lib", "cli.js").path,
-			"--stdio",
-			"--log-level=4",
-			"--tsserver-path=" + nodeModules.child("typescript/lib/tsserver.js").path,
-			//"--tsserver-log-file=/home/gus/logs.txt",
-		];
-	},
-};
+let Evented = require("../../utils/Evented");
+let lid = require("../../utils/lid");
+let spawn = require("../../utils/spawn");
+let sleep = require("../../utils/sleep");
+let promiseWithMethods = require("../../utils/promiseWithMethods");
+let fs = require("../fs");
+let lspConfig = require("./config");
 
 let REQUEST_TIMEOUT = 5000;
 
 class LspServer extends Evented {
-	constructor(app, langCode, options) {
+	constructor(app, langCode, initializeParams) {
 		super();
 		
 		this.app = app;
 		this.langCode = langCode;
-		this.options = options;
+		this.initializeParams = initializeParams;
 		this.requestPromises = {};
 		
 		this.ready = false;
@@ -38,7 +23,8 @@ class LspServer extends Evented {
 	}
 	
 	async start() {
-		let [cmd, ...args] = cmds[this.langCode](this.app);
+		let config = lspConfig[this.langCode](this.app);
+		let [cmd, ...args] = config.command;
 		
 		this.process = await spawn(cmd, args);
 		
@@ -47,14 +33,16 @@ class LspServer extends Evented {
 		
 		this.process.on("exit", this.onExit.bind(this));
 		
-		let {
-			capabilities: serverCapabilities,
-		} = await this.request("initialize", {
+		let initializeParams = {
 			processId: process.pid,
-			...this.options,
-		});
+			...this.initializeParams,
+		};
 		
-		this.serverCapabilities = serverCapabilities;
+		config.setInitializeParams(initializeParams);
+		
+		let {capabilities} = await this.request("initialize", initializeParams);
+		
+		this.serverCapabilities = capabilities;
 		this.ready = true;
 		
 		this.fire("start");

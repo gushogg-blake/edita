@@ -1,5 +1,5 @@
 let lid = require("../utils/lid");
-let LspServer = require("../modules/LspServer");
+let LspServer = require("../modules/lsp/LspServer");
 
 module.exports = function(app) {
 	let servers = {};
@@ -49,12 +49,12 @@ module.exports = function(app) {
 	}
 	
 	return {
-		async start(e, key, langCode, options) {
+		async start(e, key, langCode, initializeParams) {
 			if (servers[key]) {
 				return servers[key].serverCapabilities;
 			}
 			
-			let server = new LspServer(app, langCode, options);
+			let server = new LspServer(app, langCode, initializeParams);
 			
 			servers[key] = server;
 			

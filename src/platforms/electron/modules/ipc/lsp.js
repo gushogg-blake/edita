@@ -1,5 +1,6 @@
 let LspServer = require("platforms/common/modules/LspServer");
 let ipcRenderer = require("platform/modules/ipcRenderer");
+let baseInitializeParams = require("modules/lsp/baseInitializeParams");
 
 let servers = {};
 
@@ -8,10 +9,21 @@ ipcRenderer.on("lspNotification", function(e, key, notification) {
 });
 
 module.exports = {
-	start(key, langCode, options) {
-		let server = new LspServer(options, {
-			start(options) {
-				return ipcRenderer.invoke("lsp", "start", key, langCode, options);
+	start(key, langCode, initializeParams) {
+		initializeParams = {
+			...baseInitializeParams.common,
+			...baseInitializeParams.perLang[langCode],
+			...initializeParams,
+			
+			initializationOptions: {
+				...baseInitializeParams.perLang[langCode]?.initializationOptions,
+				...initializeParams.initializationOptions,
+			},
+		};
+		
+		let server = new LspServer(initializeParams, {
+			start(initializeParams) {
+				return ipcRenderer.invoke("lsp", "start", key, langCode, initializeParams);
 			},
 			
 			request(method, params) {

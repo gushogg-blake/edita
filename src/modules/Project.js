@@ -16,7 +16,7 @@ class Project {
 	}
 	
 	startLspServer(langCode) {
-		let server = platform.startLspServer(this.lspServerKey(langCode), langCode, {
+		let server = platform.lsp.start(this.lspServerKey(langCode), langCode, {
 			workspaceFolders: this.dirs.map(dir => dir.path),
 		});
 		

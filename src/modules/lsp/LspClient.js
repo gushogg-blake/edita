@@ -1,5 +1,6 @@
 let Evented = require("utils/Evented");
 let cursorToLspPosition = require("modules/utils/lsp/cursorToLspPosition");
+let normaliseLangCode = require("modules/lsp/normaliseLangCode");
 
 class LspClient extends Evented {
 	constructor(project) {
@@ -12,7 +13,7 @@ class LspClient extends Evented {
 		let {lang} = document.rangeFromCursor(cursor).scope;
 		
 		try {
-			let server = this.project.getLspServer(lang.code);
+			let server = this.project.getLspServer(normaliseLangCode(lang.code));
 			
 			let result = await server.request("textDocument/completion", {
 				textDocument: {
