@@ -1,4 +1,4 @@
-let LspServer = require("platforms/common/modules/LspServer");
+let LspServer = require("modules/lsp/LspServer");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 let baseInitializeParams = require("modules/lsp/baseInitializeParams");
 

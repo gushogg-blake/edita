@@ -58,6 +58,8 @@ class LspServer extends Evented {
 		
 		let message = "Content-Length: " + json.length + "\r\n\r\n" + json;
 		
+		console.log("sending " + message);
+		
 		this.process.stdin.write(message);
 		
 		let promise = promiseWithMethods();
@@ -85,6 +87,8 @@ class LspServer extends Evented {
 		});
 		
 		let message = "Content-Length: " + json.length + "\r\n\r\n" + json;
+		
+		console.log("sending " + message);
 		
 		this.process.stdin.write(message);
 	}
@@ -129,6 +133,8 @@ class LspServer extends Evented {
 			this.responseBuffer = Buffer.from(this.responseBuffer.subarray(split + length));
 			
 			let message = JSON.parse(rest.toString());
+			
+			console.log("received", message);
 			
 			if (message.id) {
 				let {id, error, result} = message;

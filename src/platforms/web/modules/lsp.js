@@ -1,4 +1,4 @@
-let LspServer = require("platforms/common/modules/LspServer");
+let LspServer = require("modules/lsp/LspServer");
 let webSocket = require("platform/modules/webSocket");
 
 module.exports = function(url) {

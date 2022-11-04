@@ -70,6 +70,7 @@ class LspClient extends Evented {
 	
 	registerScope(scope) {
 		let uri = this.createUriForScope(scope);
+		let {lang} = scope;
 		
 		this.scopesByUri.set(uri, scope);
 		this.urisByScope.set(scope, uri);
@@ -84,7 +85,7 @@ class LspClient extends Evented {
 				version: 1,
 				text: code,
 			},
-		});
+		}).catch(e => console.error(e));
 	}
 	
 	unregisterScope(scope) {
@@ -97,7 +98,7 @@ class LspClient extends Evented {
 			textDocument: {
 				uri,
 			},
-		});
+		}).catch(e => console.error(e));
 		
 		this.scopesByUri.delete(uri);
 		this.urisByScope.delete(scope);

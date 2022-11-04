@@ -22,6 +22,8 @@ class Project {
 		
 		server.start().catch(e => console.error(e));
 		
+		server.on("notification", this.onLspNotification.bind(this, server));
+		
 		this.lspServers[langCode] = server;
 	}
 	
@@ -41,6 +43,15 @@ class Project {
 		delete this.lspServers[langCode];
 		
 		return platform.lsp.close(this.lspServerKey(langCode));
+	}
+	
+	onLspNotification(server, notification) {
+		console.log(server, notification);
+		
+		this.fire("lspNotification", {
+			server,
+			notification,
+		});
 	}
 	
 	tabCreated(tab) {

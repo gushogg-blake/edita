@@ -48,7 +48,16 @@ module.exports = async function(app) {
 	
 	let watchMain = chokidar.watch(__dirname);
 	
+	// don't reload on the first build
+	let times = 10;
+	
 	watchMain.on("change", debounce(function() {
+		times++;
+		
+		if (times === 1) {
+			return;
+		}
+		
 		let child = spawn("npm", ["run", "electron"], {
 			detached: true,
 			stdio: "inherit",
