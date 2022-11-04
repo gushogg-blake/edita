@@ -101,58 +101,64 @@ class LspServer extends Evented {
 	}
 	
 	onData(data) {
-		try {
-			let {responseBuffer} = this;
-			
-			this.responseBuffer = Buffer.alloc(responseBuffer.length + data.length);
-			this.responseBuffer.set(responseBuffer);
-			this.responseBuffer.set(data, responseBuffer.length);
-			
-			let split = -1;
-			
-			for (let i = 0; i < this.responseBuffer.length; i++) {
-				if (this.responseBuffer.subarray(i, i + 4).toString() === "\r\n\r\n") {
-					split = i + 4;
-					
-					break;
-				}
-			}
-			
-			if (split === -1) {
-				return;
-			}
-			
-			let headers = this.responseBuffer.subarray(0, split).toString();
-			let length = Number(headers.match(/Content-Length: (\d+)/)[1]);
-			let rest = this.responseBuffer.subarray(split, split + length);
-			
-			if (rest.length < length) {
-				return;
-			}
-			
-			this.responseBuffer = Buffer.from(this.responseBuffer.subarray(split + length));
-			
-			let message = JSON.parse(rest.toString());
-			
-			console.log("received", message);
-			
-			if (message.id) {
-				let {id, error, result} = message;
+		let {responseBuffer} = this;
+		
+		this.responseBuffer = Buffer.alloc(responseBuffer.length + data.length);
+		this.responseBuffer.set(responseBuffer);
+		this.responseBuffer.set(data, responseBuffer.length);
+		
+		this.checkResponseBuffer();
+	}
+	
+	checkResponseBuffer() {
+		let split = -1;
+		
+		for (let i = 0; i < this.responseBuffer.length; i++) {
+			if (this.responseBuffer.subarray(i, i + 4).toString() === "\r\n\r\n") {
+				split = i + 4;
 				
-				if (error) {
-					this.requestPromises[id].reject(error);
-				} else {
-					this.requestPromises[id].resolve(result);
-				}
-				
-				delete this.requestPromises[id];
+				break;
+			}
+		}
+		
+		if (split === -1) {
+			return;
+		}
+		
+		let headers = this.responseBuffer.subarray(0, split).toString();
+		let length = Number(headers.match(/Content-Length: (\d+)/)[1]);
+		let rest = this.responseBuffer.subarray(split, split + length);
+		
+		console.log("length", rest.length, length);
+		
+		if (rest.length < length) {
+			return;
+		}
+		
+		this.responseBuffer = Buffer.from(this.responseBuffer.subarray(split + length));
+		
+		let message = JSON.parse(rest.toString());
+		
+		console.log("received", message);
+		
+		if (message.id) {
+			let {id, error, result} = message;
+			
+			if (error) {
+				this.requestPromises[id].reject(error);
 			} else {
-				let {method, params} = message;
-				
-				this.fire("notification", {method, params});
+				this.requestPromises[id].resolve(result);
 			}
-		} catch (e) {
-			console.error(e);
+			
+			delete this.requestPromises[id];
+		} else {
+			let {method, params} = message;
+			
+			this.fire("notification", {method, params});
+		}
+		
+		if (this.responseBuffer.length > 0) {
+			this.checkResponseBuffer();
 		}
 	}
 	
