@@ -59,6 +59,14 @@ class Project {
 	});
 	*/
 	
+	tabCreated(tab) {
+		this.lspClient.registerDocument(tab.document);
+	}
+	
+	tabClosed(tab) {
+		this.lspClient.unregisterDocument(tab.document);
+	}
+	
 	ownsUrl(url) {
 		return this.dirs.some(dir => platform.fs(url.path).isDescendantOf(dir));
 	}

@@ -30,8 +30,8 @@ class Projects extends Evented {
 		this.savedProjects = [];
 		this.inferredProjects = [];
 		
-		app.on("newTab", this.onNewTab.bind(this));
-		app.on("closeTab", this.onCloseTab.bind(this));
+		app.on("tabCreated", this.onTabCreated.bind(this));
+		app.on("tabClosed", this.onTabClosed.bind(this));
 	}
 	
 	get all() {
@@ -92,16 +92,20 @@ class Projects extends Evented {
 		return project;
 	}
 	
-	onNewTab(tab) {
+	onTabCreated(tab) {
+		tab.project?.tabCreated(tab);
+		
 		this.fire("update");
 	}
 	
-	onCloseTab(tab) {
+	onTabClosed(tab) {
 		let {project} = tab;
 		
 		if (project && !this.openProjects.includes(project)) {
 			removeInPlace(this.inferredProjects, project);
 		}
+		
+		project?.tabClosed(tab);
 		
 		this.fire("update");
 	}

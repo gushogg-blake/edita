@@ -221,7 +221,7 @@ class App extends Evented {
 		}
 		
 		this.fire("updateTabs");
-		this.fire("closeTab", tab);
+		this.fire("tabClosed", tab);
 		
 		if (selectNext) {
 			this.selectTab(selectNext);
@@ -303,7 +303,6 @@ class App extends Evented {
 		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
 		
 		this.fire("updateTabs");
-		this.fire("newTab", tab);
 		
 		this.selectTab(tab);
 		
@@ -341,7 +340,6 @@ class App extends Evented {
 		this.tabs.push(tab);
 		
 		this.fire("updateTabs");
-		this.fire("newTab", tab);
 		
 		this.selectTab(tab);
 		this.focusSelectedTab();
@@ -382,6 +380,8 @@ class App extends Evented {
 		await tab.init();
 		
 		tab.on("focus", this.onTabFocus.bind(this));
+		
+		this.fire("tabCreated", tab);
 		
 		if (base.getPref("dev.timing.misc")) {
 			console.timeEnd("createTab");
