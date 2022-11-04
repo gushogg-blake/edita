@@ -46,29 +46,24 @@ module.exports = async function(app) {
 		return watcher;
 	});
 	
-	let watchMain = chokidar.watch(__dirname);
+	let watchMain = chokidar.watch(__dirname, {
+		ignoreInitial: true,
+	});
 	
-	// don't reload on the first build
-	let times = 10;
-	
-	watchMain.on("change", debounce(function() {
-		times++;
-		
-		if (times === 1) {
-			return;
-		}
-		
-		let child = spawn("npm", ["run", "electron"], {
-			detached: true,
-			stdio: "inherit",
-		});
-		
-		child.unref();
-		
-		closeWatchers();
-		
-		app.forceQuit();
-	}, 300));
+	setTimeout(function() {
+		watchMain.on("change", debounce(function() {
+			let child = spawn("npm", ["run", "electron"], {
+				detached: true,
+				stdio: "inherit",
+			});
+			
+			child.unref();
+			
+			closeWatchers();
+			
+			app.forceQuit();
+		}, 300));
+	}, 8000);
 	
 	function closeWatchers() {
 		[watchMain, watchRenderer, ...watchDialogs].forEach(w => w.close());
