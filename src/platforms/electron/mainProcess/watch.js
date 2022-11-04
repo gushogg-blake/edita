@@ -14,15 +14,17 @@ function debounce(fn, delay) {
 	}
 }
 
+let watchOptions = {
+	ignoreInitial: true,
+};
+
 module.exports = async function(app) {
 	let {buildDir} = app;
 	
 	let watchRenderer = chokidar.watch([
 		"js/main.js",
 		"css/global.css",
-	].map(path => buildDir.child(path).path), {
-		ignoreInitial: true,
-	});
+	].map(path => buildDir.child(path).path), watchOptions);
 	
 	watchRenderer.on("change", function() {
 		app.appWindows.forEach(browserWindow => browserWindow.reload());
@@ -33,7 +35,7 @@ module.exports = async function(app) {
 			"dialogs/" + name + ".html",
 			"js/dialogs/" + name,
 			"css/global.css",
-		].map(file => buildDir.child(file).path));
+		].map(file => buildDir.child(file).path), watchOptions);
 		
 		watcher.on("change", function() {
 			for (let appWindow of app.appWindows) {
@@ -46,9 +48,7 @@ module.exports = async function(app) {
 		return watcher;
 	});
 	
-	let watchMain = chokidar.watch(__dirname, {
-		ignoreInitial: true,
-	});
+	let watchMain = chokidar.watch(__dirname, watchOptions);
 	
 	setTimeout(function() {
 		watchMain.on("change", debounce(function() {
