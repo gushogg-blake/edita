@@ -129,8 +129,6 @@ class LspServer extends Evented {
 		let length = Number(headers.match(/Content-Length: (\d+)/)[1]);
 		let rest = this.responseBuffer.subarray(split, split + length);
 		
-		console.log("length", rest.length, length);
-		
 		if (rest.length < length) {
 			return;
 		}

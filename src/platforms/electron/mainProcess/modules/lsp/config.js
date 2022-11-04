@@ -8,7 +8,6 @@ module.exports = {
 			return {
 				command: [
 					"node",
-					"--inspect=6000",
 					nodeModules.child("typescript-language-server", "lib", "cli.js").path,
 					"--stdio",
 					"--log-level=4",
@@ -21,6 +20,7 @@ module.exports = {
 						tsserver: {
 							path: nodeModules.child("typescript/lib/tsserver.js").path,
 							logVerbosity: "verbose",
+							//trace: "verbose",
 						},
 					};
 				},
