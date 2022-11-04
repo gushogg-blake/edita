@@ -54,7 +54,7 @@ class LspClient extends Evented {
 		this.scopesByDocument.set(document, new Set(scopes));
 		
 		for (let scope of scopes) {
-			this.registerScope(scope);
+			this.registerScope(document, scope);
 		}
 		
 		document.on("edit fileDetailsChanged", this.updateScopes.bind(this, document));
@@ -68,7 +68,7 @@ class LspClient extends Evented {
 		this.scopesByDocument.delete(document);
 	}
 	
-	registerScope(scope) {
+	registerScope(document, scope) {
 		let uri = this.createUriForScope(scope);
 		let {lang} = scope;
 		
@@ -116,7 +116,7 @@ class LspClient extends Evented {
 		
 		for (let scope of newScopes) {
 			if (!oldScopes.has(scope)) {
-				this.registerScope(scope);
+				this.registerScope(document, scope);
 			}
 		}
 		
