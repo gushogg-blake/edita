@@ -1,8 +1,11 @@
+let Evented = require("utils/Evented");
 let normaliseLangCode = require("modules/lsp/utils/normaliseLangCode");
 let LspClient = require("modules/lsp/LspClient");
 
-class Project {
+class Project extends Evented {
 	constructor(dirs, config, isSaved) {
+		super();
+		
 		this.dirs = dirs.map(dir => platform.fs(dir));
 		this.config = config;
 		this.isSaved = isSaved;

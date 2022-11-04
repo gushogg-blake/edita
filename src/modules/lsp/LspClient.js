@@ -15,6 +15,7 @@ class LspClient extends Evented {
 	}
 	
 	createUriForScope(document, scope) {
+		console.log(document, scope);
 		return URL.file(document.path).toString() + "#" + lid();
 	}
 	
@@ -69,7 +70,7 @@ class LspClient extends Evented {
 	}
 	
 	registerScope(document, scope) {
-		let uri = this.createUriForScope(scope);
+		let uri = this.createUriForScope(document, scope);
 		let {lang} = scope;
 		
 		this.scopesByUri.set(uri, scope);
