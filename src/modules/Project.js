@@ -49,8 +49,6 @@ class Project extends Evented {
 	}
 	
 	onLspNotification(server, notification) {
-		console.log(server, notification);
-		
 		this.fire("lspNotification", {
 			server,
 			notification,

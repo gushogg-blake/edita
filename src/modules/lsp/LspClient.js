@@ -15,7 +15,6 @@ class LspClient extends Evented {
 	}
 	
 	createUriForScope(document, scope) {
-		console.log(document, scope);
 		return URL.file(document.path).toString() + "#" + lid();
 	}
 	
