@@ -1,4 +1,4 @@
-let maskOtherRegions = require("modules/utils/lsp/maskOtherRegions");
+let normaliseLangCode = require("modules/lsp/utils/normaliseLangCode");
 let LspClient = require("modules/lsp/LspClient");
 
 class Project {
@@ -26,6 +26,8 @@ class Project {
 	}
 	
 	getLspServer(langCode) {
+		langCode = normaliseLangCode(langCode);
+		
 		if (!this.lspServers[langCode]) {
 			this.startLspServer(langCode);
 		}
@@ -34,30 +36,12 @@ class Project {
 	}
 	
 	closeLspServer(langCode) {
+		langCode = normaliseLangCode(langCode);
+		
 		delete this.lspServers[langCode];
 		
 		return platform.lsp.close(this.lspServerKey(langCode));
 	}
-	
-	/*
-	
-	let code = maskOtherRegions(document, scope);
-	
-	await server.notify("textDocument/didOpen", {
-		textDocument: {
-			uri,
-			languageId: lang.code,
-			version: 1,
-			text: code,
-		},
-	});
-		
-	await server.notify("textDocument/didClose", {
-		textDocument: {
-			uri,
-		},
-	});
-	*/
 	
 	tabCreated(tab) {
 		this.lspClient.registerDocument(tab.document);

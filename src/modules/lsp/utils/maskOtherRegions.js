@@ -3,9 +3,9 @@ replace everything outside the scope with spaces to use language servers
 with embedded languages
 */
 
-module.exports = function(document, scope) {
+module.exports = function(scope) {
 	let str = "";
-	let code = document.string;
+	let {code} = scope;
 	let prevRangeEnd = 0;
 	
 	for (let {startIndex, endIndex} of scope.ranges) {

@@ -5,7 +5,6 @@ let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let protocol = require("modules/protocol");
 let findAndReplace = require("modules/findAndReplace");
-let URL = require("modules/URL");
 
 let BaseDocument = require("./BaseDocument");
 let Source = require("./Source");
@@ -72,11 +71,8 @@ class Document extends BaseDocument {
 		return ["file"].includes(this.protocol);
 	}
 	
-	// some LSP servers only accept file:// URLs
-	// (and LSP calls them URIs)
-	
-	get lspUri() {
-		return URL.file(this.path).toString();
+	get scopes() {
+		return this.source.scopes;
 	}
 	
 	async save() {

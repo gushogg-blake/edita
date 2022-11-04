@@ -160,6 +160,17 @@ module.exports = class {
 		return this.rangeFromCursor(cursor).lang;
 	}
 	
+	getScopes(parent) {
+		return [
+			...parent.scopes,
+			...parent.scopes.reduce((scopes, scope) => [...scopes, ...this.getScopes(scope)], []),
+		];
+	}
+	
+	get scopes() {
+		return [this.rootScope, ...this.getScopes(this.rootScope)];
+	}
+	
 	cursorAtEnd() {
 		return c(this.lines.length - 1, this.lines[this.lines.length - 1].string.length);
 	}
