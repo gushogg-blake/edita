@@ -20,7 +20,7 @@ class Project {
 			workspaceFolders: this.dirs.map(dir => dir.path),
 		});
 		
-		server.start();
+		server.start().catch(e => console.error(e));
 		
 		this.lspServers[langCode] = server;
 	}

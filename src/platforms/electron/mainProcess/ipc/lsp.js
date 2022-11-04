@@ -1,5 +1,7 @@
 let lid = require("../utils/lid");
+let {removeInPlace} = require("../utils/arrayMethods");
 let LspServer = require("../modules/lsp/LspServer");
+let config = require("../modules/lsp/config");
 
 module.exports = function(app) {
 	let servers = {};
@@ -26,13 +28,27 @@ module.exports = function(app) {
 				buffers[key] = [];
 			}
 			
-			buffers[key].push(async function(server) {
+			let started = false;
+			
+			let run = async function(server) {
+				started = true;
+				
 				try {
 					resolve(await fn(server));
 				} catch (e) {
 					reject(e);
 				}
-			});
+			}
+			
+			buffers[key].push(run);
+			
+			setTimeout(function() {
+				if (!started) {
+					removeInPlace(buffers[key], run);
+					
+					reject(new Error("Request timed out - no active server"));
+				}
+			}, config.requestTimeout);
 			
 			checkBuffer(key);
 		});

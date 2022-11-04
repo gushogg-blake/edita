@@ -4,9 +4,7 @@ let spawn = require("../../utils/spawn");
 let sleep = require("../../utils/sleep");
 let promiseWithMethods = require("../../utils/promiseWithMethods");
 let fs = require("../fs");
-let lspConfig = require("./config");
-
-let REQUEST_TIMEOUT = 5000;
+let config = require("./config");
 
 class LspServer extends Evented {
 	constructor(app, langCode, initializeParams) {
@@ -23,8 +21,8 @@ class LspServer extends Evented {
 	}
 	
 	async start() {
-		let config = lspConfig[this.langCode](this.app);
-		let [cmd, ...args] = config.command;
+		let {command, setInitializeParams} = config.perLang[this.langCode](this.app);
+		let [cmd, ...args] = command;
 		
 		this.process = await spawn(cmd, args);
 		
@@ -38,7 +36,7 @@ class LspServer extends Evented {
 			...this.initializeParams,
 		};
 		
-		config.setInitializeParams(initializeParams);
+		setInitializeParams(initializeParams);
 		
 		let {capabilities} = await this.request("initialize", initializeParams);
 		
@@ -74,7 +72,7 @@ class LspServer extends Evented {
 				method,
 				params,
 			});
-		}, REQUEST_TIMEOUT);
+		}, config.requestTimeout);
 		
 		return promise;
 	}
