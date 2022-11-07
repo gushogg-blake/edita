@@ -68,12 +68,12 @@ onMount(function() {
 	<button on:mousedown={openLanguages}>
 		Lang
 	</button>
-	{#if platform.supports.openFromFilesystem}
+	{#if platform.isWeb}
+		<FileInput multiple on:upload={upload}/>
+	{:else}
 		<button on:click={() => app.functions.open()}>
 			Open
 		</button>
-	{:else}
-		<FileInput multiple on:upload={upload}/>
 	{/if}
 	<button on:click={() => app.functions.save()}>
 		Save

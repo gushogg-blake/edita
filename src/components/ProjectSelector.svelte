@@ -235,13 +235,15 @@ onMount(function() {
 						{getLabel(project)}
 					</div>
 				{/each}
-				<div
-					class="project"
-					on:mouseup={newProjectMouseup}
-					on:click={newProjectClick}
-				>
-					New project
-				</div>
+				{#if platform.chooseDir}
+					<div
+						class="project"
+						on:mouseup={newProjectMouseup}
+						on:click={newProjectClick}
+					>
+						New project
+					</div>
+				{/if}
 			</div>
 			{#if !quickSelectMode}
 				<div id="details">

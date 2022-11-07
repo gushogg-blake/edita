@@ -22,6 +22,8 @@ class Platform extends Common {
 	constructor() {
 		super();
 		
+		this.isWeb = true;
+		
 		this.systemInfo = {
 			newline: "\n",
 			homeDir: "/",
@@ -32,11 +34,6 @@ class Platform extends Common {
 		this.clipboard = clipboard;
 		this.isMainWindow = true;
 		this.path = path;
-		
-		Object.assign(this.supports, {
-			openFromFilesystem: false,
-			projects: false,
-		});
 	}
 	
 	async init(config) {

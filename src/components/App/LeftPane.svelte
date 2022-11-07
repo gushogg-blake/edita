@@ -12,11 +12,9 @@ import ProjectSelector from "components/ProjectSelector.svelte";
 </style>
 
 <div id="main">
-	{#if platform.supports.projects}
-		<div>
-			<ProjectSelector/>
-		</div>
-	{/if}
+	<div>
+		<ProjectSelector/>
+	</div>
 	<div>
 		<FileExplorer/>
 	</div>

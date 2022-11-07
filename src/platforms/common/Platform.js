@@ -4,10 +4,7 @@ class Platform extends Evented {
 	constructor() {
 		super();
 		
-		this.supports = {
-			openFromFilesystem: true,
-			projects: true,
-		};
+		this.isWeb = false;
 	}
 	
 	confirm(message) {
