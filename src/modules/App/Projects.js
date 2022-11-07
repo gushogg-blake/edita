@@ -27,6 +27,7 @@ class Projects extends Evented {
 		super();
 		
 		this.app = app;
+		this.selectedProject = null;
 		this.savedProjects = [];
 		this.inferredProjects = [];
 		
@@ -47,6 +48,12 @@ class Projects extends Evented {
 		let json = Object.values(byKey);
 		
 		this.savedProjects = json.map(Project.fromJson);
+	}
+	
+	select(project) {
+		this.selectedProject = project;
+		
+		this.fire("select");
 	}
 	
 	findProjectForUrl(url) {

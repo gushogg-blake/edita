@@ -45,7 +45,6 @@ class App extends Evented {
 		this.lastSelectedSavedUrl = null;
 		
 		this.projects = new Projects(this);
-		this.selectedProject = null;
 		
 		this.functions = bindFunctions(this, functions);
 		
@@ -77,6 +76,10 @@ class App extends Evented {
 			this.loadSessionAndFilesToOpenOnStartup(),
 			this.fileTree.init(),
 		]);
+	}
+	
+	get selectedProject() {
+		return this.projects.selectedProject;
 	}
 	
 	getCurrentDir(_default=null) {
@@ -244,12 +247,6 @@ class App extends Evented {
 		await protocol(tab.url).delete();
 		
 		this.closeTab(tab);
-	}
-	
-	selectProject(project) {
-		this.selectedProject = project;
-		
-		this.fire("selectProject", project);
 	}
 	
 	urlIsOpen(url) {
@@ -470,6 +467,10 @@ class App extends Evented {
 			if (session) {
 				tabsToOpen = session.tabs;
 				fileToSelect = session.selectedTabUrl;
+				
+				if (session.projectKey) {
+					this.projects.
+				}
 			}
 			
 			window.addEventListener("beforeunload", () => {

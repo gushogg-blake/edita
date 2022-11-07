@@ -6,8 +6,8 @@ import replaceHomeDirWithTilde from "utils/replaceHomeDirWithTilde";
 
 let app = getContext("app");
 
-let {projects, selectedProject} = app;
-let {all: list} = projects;
+let {projects} = app;
+let {all: list, selectedProject} = projects;
 
 let viewingProject = selectedProject;
 let showingSelector = false;
@@ -19,7 +19,7 @@ function onUpdate() {
 }
 
 function onSelect() {
-	({selectedProject} = app);
+	({selectedProject} = projects);
 }
 
 function buttonMousedown() {
@@ -91,7 +91,7 @@ async function newProject() {
 }
 
 function selectProject(project) {
-	app.selectProject(project);
+	projects.select(project);
 }
 
 function viewProject(project) {
@@ -141,7 +141,7 @@ function getFullName(project) {
 onMount(function() {
 	let teardown = [
 		projects.on("update", onUpdate),
-		app.on("selectProject", onSelect),
+		projects.on("select", onSelect),
 	];
 	
 	return function() {
