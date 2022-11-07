@@ -41,9 +41,7 @@ function projectMouseup(project) {
 		return;
 	}
 	
-	selectProject(project);
-	
-	close();
+	selectAndClose(project);
 }
 
 function projectClick(project) {
@@ -51,6 +49,10 @@ function projectClick(project) {
 }
 
 function projectDblclick(project) {
+	selectAndClose(project);
+}
+
+function selectAndClose(project) {
 	selectProject(project);
 	
 	close();
@@ -198,8 +200,18 @@ onMount(function() {
 }
 
 #details {
+	display: grid;
+	grid-template-rows: 1fr auto;
 	width: 320px;
-	padding: 4px 5px;
+	border-left: var(--contextMenuBorder);
+	
+	> div {
+		padding: 4px 5px;
+	}
+}
+
+#actions {
+	border-top: var(--contextMenuBorder);
 }
 
 .project {
@@ -247,9 +259,14 @@ onMount(function() {
 			</div>
 			{#if !quickSelectMode}
 				<div id="details">
-					{#if viewingProject}
-						{getFullName(viewingProject)} details
-					{/if}
+					<div>
+						{#if viewingProject}
+							{getFullName(viewingProject)}
+						{/if}
+					</div>
+					<div id="actions">
+						<button on:click={() => selectAndClose(viewingProject)}>Select</button>
+					</div>
 				</div>
 			{/if}
 		</div>

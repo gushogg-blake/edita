@@ -103,6 +103,8 @@ class Projects extends Evented {
 		
 		this.savedProjects.push(project);
 		
+		this.fire("update");
+		
 		return project;
 	}
 	
