@@ -35,8 +35,6 @@ class Platform extends Common {
 		this.path = path;
 		this.fs = fs;
 		
-		this.useFileUploader = false;
-		
 		ipcRenderer.on("closeWindow", () => {
 			let defaultPrevented = false;
 			
@@ -73,7 +71,7 @@ class Platform extends Common {
 		await this.snippets.init();
 	}
 	
-	async open(dir=null) {
+	async _open(dir, type) {
 		let defaultPath = dir || os.homedir();
 		
 		let {
@@ -83,7 +81,7 @@ class Platform extends Common {
 			defaultPath,
 			
 			properties: [
-				"openFile",
+				type,
 				"multiSelections",
 			],
 		});
@@ -93,6 +91,14 @@ class Platform extends Common {
 		}
 		
 		return filePaths;
+	}
+	
+	open(dir=null) {
+		return this._open(dir, "openFile");
+	}
+	
+	chooseDir(startDir=null) {
+		return this._open(startDir, "openDirectory");
 	}
 	
 	async saveAs(options) {

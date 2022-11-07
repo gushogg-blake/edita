@@ -33,7 +33,10 @@ class Platform extends Common {
 		this.isMainWindow = true;
 		this.path = path;
 		
-		this.useFileUploader = true;
+		Object.assign(this.supports, {
+			openFromFilesystem: false,
+			projects: false,
+		});
 	}
 	
 	async init(config) {

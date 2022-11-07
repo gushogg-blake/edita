@@ -4,6 +4,8 @@ import init from "./init";
 
 // ENTRYPOINT main (renderer) process for Electron
 
+console.time("init");
+
 init(async function() {
 	let app = new App();
 	
@@ -16,6 +18,8 @@ init(async function() {
 			app,
 		},
 	});
+	
+	console.timeEnd("init");
 	
 	// DEV:
 	

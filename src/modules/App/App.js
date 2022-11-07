@@ -71,6 +71,8 @@ class App extends Evented {
 	}
 	
 	async init() {
+		await this.projects.init();
+		
 		await Promise.all([
 			this.loadSessionAndFilesToOpenOnStartup(),
 			this.fileTree.init(),

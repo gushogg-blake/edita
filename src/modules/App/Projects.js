@@ -92,6 +92,20 @@ class Projects extends Evented {
 		return project;
 	}
 	
+	async createFromDirs(dirs) {
+		let project = new Project(dirs, {}, true);
+		
+		if (this.all.some(p => p.key === project.key)) {
+			throw "Project already exists";
+		}
+		
+		await project.save();
+		
+		this.savedProjects.push(project);
+		
+		return project;
+	}
+	
 	onTabCreated(tab) {
 		tab.project?.tabCreated(tab);
 		

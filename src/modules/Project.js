@@ -6,7 +6,7 @@ class Project extends Evented {
 	constructor(dirs, config, isSaved) {
 		super();
 		
-		this.dirs = dirs.map(dir => platform.fs(dir));
+		this.dirs = dirs;
 		this.config = config;
 		this.isSaved = isSaved;
 		
@@ -20,7 +20,7 @@ class Project extends Evented {
 	
 	startLspServer(langCode) {
 		let server = platform.lsp.start(this.lspServerKey(langCode), langCode, {
-			workspaceFolders: this.dirs.map(dir => dir.path),
+			workspaceFolders: this.dirs,
 		});
 		
 		server.start().catch(e => console.error(e));
@@ -68,7 +68,7 @@ class Project extends Evented {
 	}
 	
 	get key() {
-		return [...this.dirs].map(dir => dir.path).sort().join("+");
+		return [...this.dirs].sort().join("+");
 	}
 	
 	async save() {

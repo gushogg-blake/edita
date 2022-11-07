@@ -37,11 +37,13 @@ function buttonClick() {
 }
 
 function projectMouseup(project) {
-	if (quickSelectMode) {
-		selectProject(project);
-		
-		close();
+	if (!quickSelectMode) {
+		return;
 	}
+	
+	selectProject(project);
+	
+	close();
 }
 
 function projectClick(project) {
@@ -52,6 +54,38 @@ function projectDblclick(project) {
 	selectProject(project);
 	
 	close();
+}
+
+function newProjectClick() {
+	newProject();
+	
+	close();
+}
+
+function newProjectMouseup() {
+	if (!quickSelectMode) {
+		return;
+	}
+	
+	newProject();
+	
+	close();
+}
+
+async function newProject() {
+	let dirs = await platform.chooseDir();
+	
+	if (dirs.length === 0) {
+		return;
+	}
+	
+	try {
+		let project = await projects.createFromDirs(dirs);
+		
+		selectProject(project);
+	} catch (e) {
+		alert(e.message);
+	}
 }
 
 function selectProject(project) {
@@ -95,11 +129,11 @@ function open() {
 }
 
 function getLabel(project) {
-	return project.config.name || project.dirs.map(dir => dir.name).join(", ");
+	return project.config.name || project.dirs.map(dir => platform.fs(dir).name).join(", ");
 }
 
 function getFullName(project) {
-	return project.config.name || project.dirs.map(dir => replaceHomeDirWithTilde(dir.path)).join(", ");
+	return project.config.name || project.dirs.map(dir => replaceHomeDirWithTilde(dir)).join(", ");
 }
 
 onMount(function() {
@@ -201,6 +235,13 @@ onMount(function() {
 						{getLabel(project)}
 					</div>
 				{/each}
+				<div
+					class="project"
+					on:mouseup={newProjectMouseup}
+					on:click={newProjectClick}
+				>
+					New project
+				</div>
 			</div>
 			{#if !quickSelectMode}
 				<div id="details">
