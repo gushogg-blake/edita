@@ -257,12 +257,10 @@ onMount(function() {
 					</div>
 				{/if}
 			</div>
-			{#if !quickSelectMode}
+			{#if !quickSelectMode && viewingProject}
 				<div id="details">
 					<div>
-						{#if viewingProject}
-							{getFullName(viewingProject)}
-						{/if}
+						{getFullName(viewingProject)}
 					</div>
 					<div id="actions">
 						<button on:click={() => selectAndClose(viewingProject)}>Select</button>
