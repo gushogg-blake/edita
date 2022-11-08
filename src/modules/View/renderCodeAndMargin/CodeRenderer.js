@@ -1,41 +1,26 @@
-let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let findFirstChildAfterCursor = require("modules/utils/treeSitter/findFirstChildAfterCursor");
 let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
+let LineRowRenderer = require("./LineRowRenderer");
 
-let {c} = Cursor;
-
-function *generateVariableWidthParts(lineRow) {
-	let offset = lineRow.startOffset;
-	
-	for (let part of lineRow.variableWidthParts) {
-		yield {...part, offset};
-		
-		offset += part.type === "tab" ? 1 : part.string.length;
-	}
-}
-
-class CodeRenderer {
+class CodeRenderer extends LineRowRenderer {
 	constructor(renderer, scope, ranges, injectionRanges) {
-		this.renderer = renderer;
+		super(renderer);
+		
 		this.scope = scope;
 		this.ranges = ranges;
 		this.injectionRanges = injectionRanges;
-		this.view = renderer.view;
-		this.document = this.view.document;
+		
 		this.canvasCodeRenderer = renderer.canvas.createCodeRenderer();
 		
 		this.rangeIndex = 0;
 		this.injectionRangeIndex = 0;
-		this.foldedLineRow = null;
-		this.offset = null;
-		this.variableWidthPart = null;
 		this.nodeStack = null;
 	}
 	
 	init(row) {
-		this.startRow(row);
+		super.init(row);
 		
 		this.initNodeStack();
 	}
@@ -49,31 +34,19 @@ class CodeRenderer {
 	}
 	
 	get nextRangeToEnter() {
-		return this.inRange() ? this.ranges[this.rangeIndex + 1] || null : this.ranges[this.rangeIndex];
+		return (
+			this.inRange()
+			? this.ranges[this.rangeIndex + 1] || null
+			: this.ranges[this.rangeIndex]
+		);
 	}
 	
 	get nextInjectionRangeToEnter() {
-		return this.inInjectionRange() ? this.injectionRanges[this.injectionRangeIndex + 1] || null : this.injectionRanges[this.injectionRangeIndex] || null;
-	}
-	
-	get lineIndex() {
-		return this.foldedLineRow?.lineIndex;
-	}
-	
-	get rowIndexInLine() {
-		return this.foldedLineRow?.rowIndexInLine;
-	}
-	
-	get line() {
-		return this.foldedLineRow?.line;
-	}
-	
-	get lineRow() {
-		return this.foldedLineRow?.lineRow;
-	}
-	
-	get cursor() {
-		return c(this.lineIndex, this.offset);
+		return (
+			this.inInjectionRange()
+			? this.injectionRanges[this.injectionRangeIndex + 1] || null
+			: this.injectionRanges[this.injectionRangeIndex] || null
+		);
 	}
 	
 	get _node() {
@@ -104,10 +77,6 @@ class CodeRenderer {
 	
 	inInjectionRange() {
 		return this.injectionRange?.containsCharCursor(this.cursor);
-	}
-	
-	nextVariableWidthPart() {
-		this.variableWidthPart = this.variableWidthPartGenerator.next().value;
 	}
 	
 	initNodeStack() {
@@ -167,16 +136,28 @@ class CodeRenderer {
 		}
 	}
 	
+	atCursor(cursor) {
+		return cursor && Cursor.equals(this.cursor, cursor);
+	}
+	
 	atNodeEnd() {
-		return this.node && Cursor.equals(this.cursor, this.nodeEndCursor);
+		return this.atCursor(this.nodeEndCursor);
 	}
 	
 	atNextChildStart() {
-		return this.nextChildStartCursor && Cursor.equals(this.cursor, this.nextChildStartCursor);
+		return this.atCursor(this.nextChildStartCursor);
 	}
 	
 	atNodeBoundary() {
 		return this.atNodeEnd() || this.atNextChildStart();
+	}
+	
+	atRangeEnd() {
+		return this.atCursor(this.range?.selection.end);
+	}
+	
+	atInjectionRangeEnd() {
+		return this.atCursor(this.injectionRange?.selection.end);
 	}
 	
 	nextRange() {
@@ -200,42 +181,43 @@ class CodeRenderer {
 	}
 	
 	startRow(row) {
-		this.foldedLineRow = row;
-		
-		this.variableWidthPartGenerator = generateVariableWidthParts(this.lineRow);
-		this.nextVariableWidthPart();
-		
-		this.offset = this.lineRow.startOffset;
+		super.startRow(row);
 		
 		this.canvasCodeRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
 	}
 	
 	endRow() {
+		super.endRow();
+		
 		this.canvasCodeRenderer.endRow();
 	}
 	
+	_offsetOrInfinity(cursor) {
+		return cursor?.lineIndex === this.lineIndex ? cursor.offset : Infinity;
+	}
+	
 	getCurrentRangeEnd() {
-		return this.range?.selection.end.lineIndex === this.lineIndex ? this.range.selection.end.offset : Infinity;
+		return this._offsetOrInfinity(this.range?.selection.end);
 	}
 	
 	getNextRangeStart() {
-		return this.nextRangeToEnter?.selection.start.lineIndex === this.lineIndex ? this.nextRangeToEnter.selection.start.offset : Infinity;
+		return this._offsetOrInfinity(this.nextRangeToEnter?.selection.start);
 	}
 	
 	getCurrentNodeEnd() {
-		return this.nodeEndCursor?.lineIndex === this.lineIndex ? this.nodeEndCursor.offset : Infinity;
+		return this._offsetOrInfinity(this.nodeEndCursor);
 	}
 	
 	getNextChildStart() {
-		return this.nextChildStartCursor?.lineIndex === this.lineIndex ? this.nextChildStartCursor.offset : Infinity;
+		return this._offsetOrInfinity(this.nextChildStartCursor);
 	}
 	
 	getNextInjectionRangeStart() {
-		return this.nextInjectionRangeToEnter?.selection.start.lineIndex === this.lineIndex ? this.nextInjectionRangeToEnter.selection.start.offset : Infinity;
+		return this._offsetOrInfinity(this.nextInjectionRangeToEnter?.selection.start);
 	}
 	
 	getCurrentInjectionRangeEnd() {
-		return this.inInjectionRange() && this.injectionRange.selection.end.lineIndex === this.lineIndex ? this.injectionRange.selection.end.offset : Infinity;
+		return this._offsetOrInfinity(this.injectionRange?.selection.end);
 	}
 	
 	step() {
@@ -292,11 +274,11 @@ class CodeRenderer {
 			this.nextNode();
 		}
 		
-		if (this.range && Cursor.equals(this.cursor, this.range.selection.end)) {
+		if (this.atRangeEnd()) {
 			this.nextRange();
 		}
 		
-		if (this.injectionRange && Cursor.equals(this.cursor, this.injectionRange.selection.end)) {
+		if (this.atInjectionRangeEnd()) {
 			this.nextInjectionRange();
 		}
 		

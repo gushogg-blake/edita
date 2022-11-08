@@ -45,6 +45,10 @@ class LineRowRenderer {
 		this.startRow(row);
 	}
 	
+	nextVariableWidthPart() {
+		this.variableWidthPart = this.variableWidthPartGenerator.next().value;
+	}
+	
 	startRow(row) {
 		this.foldedLineRow = row;
 		
@@ -63,4 +67,4 @@ class LineRowRenderer {
 	}
 }
 
-module.exports = CodeRenderer;
+module.exports = LineRowRenderer;

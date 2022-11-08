@@ -1,6 +1,8 @@
 let generatorFromArray = require("utils/generatorFromArray");
 let Cursor = require("modules/utils/Cursor");
 let Selection = require("modules/utils/Selection");
+let FoldHiliteRenderer = require("./FoldHiliteRenderer");
+let MarginRenderer = require("./MarginRenderer");
 let CodeRenderer = require("./CodeRenderer");
 
 let {s} = Selection;
@@ -34,40 +36,10 @@ function getFoldedLineRowsToRender(view) {
 
 class Renderer {
 	constructor(view, canvas) {
-		this.view = view;
+		//this.view = view;
 		this.canvas = canvas;
 		this.document = view.document;
 		this.foldedLineRows = getFoldedLineRowsToRender(view);
-	}
-	
-	generateFoldedLineRows() {
-		return generatorFromArray(this.foldedLineRows);
-	}
-	
-	renderMargin() {
-		let {marginRenderer} = this.canvas;
-		
-		for (let foldedLineRow of this.foldedLineRows) {
-			if (foldedLineRow.lineRow.startOffset === 0) {
-				marginRenderer.drawLineNumber(foldedLineRow.lineIndex);
-			}
-			
-			marginRenderer.endRow();
-		}
-	}
-	
-	renderFoldHilites() {
-		let {foldHiliteRenderer} = this.canvas;
-		
-		for (let foldedLineRow of this.foldedLineRows) {
-			if (foldedLineRow.isFoldHeader) {
-				let {line} = foldedLineRow;
-				
-				foldHiliteRenderer.drawHilite(line.indentCols, line.width - line.indentCols);
-			}
-			
-			foldHiliteRenderer.endRow();
-		}
 	}
 	
 	getVisibleScopes() {
@@ -86,22 +58,23 @@ class Renderer {
 		}
 		
 		let renderers = [
-			//new FoldHiliteRenderer(this),
-			//new MarginRenderer(this),
+			new FoldHiliteRenderer(this),
+			new MarginRenderer(this),
 		];
 		
-		this.renderMargin();
-		this.renderFoldHilites();
-		
 		for (let {scope, ranges, injectionRanges} of this.getVisibleScopes()) {
-			let codeRenderer = new CodeRenderer(this, scope, ranges, injectionRanges);
-			
-			codeRenderer.init(this.foldedLineRows[0]);
+			renderers.push(new CodeRenderer(this, scope, ranges, injectionRanges));
+		}
+		
+		for (let renderer of renderers) {
+			renderer.init(this.foldedLineRows[0]);
 			
 			for (let foldedLineRow of this.foldedLineRows) {
-				codeRenderer.startRow(foldedLineRow);
-				codeRenderer.renderRow();
-				codeRenderer.endRow();
+				renderer.startRow(foldedLineRow);
+				
+				renderer.renderRow();
+				
+				renderer.endRow();
 			}
 		}
 	}
