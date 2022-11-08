@@ -52,6 +52,21 @@ class Renderer {
 	}
 	
 	render() {
+		/*
+		if (mode === "normal") {
+			renderCurrentLineHilite(layers, view, windowHasFocus);
+			renderNormalSelection(layers, view);
+			renderNormalCursor(layers, view, windowHasFocus);
+			renderInsertCursor(layers, view);
+		}
+		
+		if (mode === "ast") {
+			renderAstSelection(layers, view, isPeekingAstMode);
+			renderAstSelectionHilite(layers, view, isPeekingAstMode);
+			renderAstInsertionHilite(layers, view, isPeekingAstMode);
+		}
+		*/
+		
 		if (this.foldedLineRows.length === 0) {
 			return;
 		}

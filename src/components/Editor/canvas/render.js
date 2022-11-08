@@ -16,10 +16,6 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		height,
 	} = view.sizes;
 	
-	let {
-		mode,
-	} = view;
-	
 	if (base.getPref("dev.timing.render")) {
 		console.time("render");
 	}
@@ -32,28 +28,21 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	
 	layers.background.fillRect(0, 0, width, height);
 	
-	renderNormalHilites(layers, view);
-	
-	if (mode === "normal") {
-		renderCurrentLineHilite(layers, view, windowHasFocus);
-		renderNormalSelection(layers, view);
-		renderNormalCursor(layers, view, windowHasFocus);
-		renderInsertCursor(layers, view);
-	}
-	
-	if (mode === "ast") {
-		renderAstSelection(layers, view, isPeekingAstMode);
-		renderAstSelectionHilite(layers, view, isPeekingAstMode);
-		renderAstInsertionHilite(layers, view, isPeekingAstMode);
-	}
-	
-	view.renderCodeAndMargin({
-		createCodeRenderer() {
-			return renderCode(layers, view);
-		},
-		
-		marginRenderer: renderMargin(layers, view),
-		foldHiliteRenderer: renderFoldHilites(layers, view),
+	view.render({
+		isPeekingAstMode,
+		windowHasFocus,
+	}, {
+		normalHilites: renderNormalHilites(layers, view),
+		currentLineHilite: renderCurrentLineHilite(layers, view),
+		normalSelection: renderNormalSelection(layers, view),
+		normalCursor: renderNormalCursor(layers, view),
+		insertCursor: renderInsertCursor(layers, view),
+		astSelection: renderAstSelection(layers, view),
+		astSelectionHilite: renderAstSelectionHilite(layers, view),
+		astInsertionHilite: renderAstInsertionHilite(layers, view),
+		code: () => renderCode(layers, view),
+		margin: renderMargin(layers, view),
+		foldHilites: renderFoldHilites(layers, view),
 	});
 	
 	if (base.getPref("dev.timing.render")) {
