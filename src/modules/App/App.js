@@ -469,7 +469,7 @@ class App extends Evented {
 				fileToSelect = session.selectedTabUrl;
 				
 				if (session.projectKey) {
-					this.projects.
+					//this.projects.
 				}
 			}
 			
@@ -616,7 +616,7 @@ class App extends Evented {
 		}
 		
 		if (tab.project && !this.selectedProject) {
-			this.selectProject(tab.project);
+			this.projects.select(tab.project);
 		}
 	}
 	

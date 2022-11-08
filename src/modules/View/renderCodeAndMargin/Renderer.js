@@ -85,13 +85,24 @@ class Renderer {
 			return;
 		}
 		
+		let renderers = [
+			//new FoldHiliteRenderer(this),
+			//new MarginRenderer(this),
+		];
+		
 		this.renderMargin();
 		this.renderFoldHilites();
 		
 		for (let {scope, ranges, injectionRanges} of this.getVisibleScopes()) {
 			let codeRenderer = new CodeRenderer(this, scope, ranges, injectionRanges);
 			
-			codeRenderer.render();
+			codeRenderer.init(this.foldedLineRows[0]);
+			
+			for (let foldedLineRow of this.foldedLineRows) {
+				codeRenderer.startRow(foldedLineRow);
+				codeRenderer.renderRow();
+				codeRenderer.endRow();
+			}
 		}
 	}
 }

@@ -26,17 +26,17 @@ class CodeRenderer {
 		this.document = this.view.document;
 		this.canvasCodeRenderer = renderer.canvas.createCodeRenderer();
 		
-		this.foldedLineRowGenerator = renderer.generateFoldedLineRows();
-		
 		this.rangeIndex = 0;
 		this.injectionRangeIndex = 0;
 		this.foldedLineRow = null;
 		this.offset = null;
 		this.variableWidthPart = null;
 		this.nodeStack = null;
+	}
+	
+	init(row) {
+		this.startRow(row);
 		
-		this.nextFoldedLineRow();
-		this.startRow();
 		this.initNodeStack();
 	}
 	
@@ -104,19 +104,6 @@ class CodeRenderer {
 	
 	inInjectionRange() {
 		return this.injectionRange?.containsCharCursor(this.cursor);
-	}
-	
-	nextFoldedLineRow() {
-		this.foldedLineRow = this.foldedLineRowGenerator.next().value;
-		
-		if (!this.foldedLineRow) {
-			return;
-		}
-		
-		this.variableWidthPartGenerator = generateVariableWidthParts(this.lineRow);
-		this.nextVariableWidthPart();
-		
-		this.offset = this.lineRow.startOffset;
 	}
 	
 	nextVariableWidthPart() {
@@ -212,8 +199,19 @@ class CodeRenderer {
 		return hiliteClass ? colors[hiliteClass] : null;
 	}
 	
-	startRow() {
+	startRow(row) {
+		this.foldedLineRow = row;
+		
+		this.variableWidthPartGenerator = generateVariableWidthParts(this.lineRow);
+		this.nextVariableWidthPart();
+		
+		this.offset = this.lineRow.startOffset;
+		
 		this.canvasCodeRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
+	}
+	
+	endRow() {
+		this.canvasCodeRenderer.endRow();
 	}
 	
 	getCurrentRangeEnd() {
@@ -241,6 +239,8 @@ class CodeRenderer {
 	}
 	
 	step() {
+		let done = false;
+		
 		if (this.variableWidthPart) {
 			if (this.variableWidthPart.type === "string") {
 				let currentNodeEnd = this.getCurrentNodeEnd();
@@ -285,15 +285,7 @@ class CodeRenderer {
 				this.nextVariableWidthPart();
 			}
 		} else {
-			this.canvasCodeRenderer.endRow();
-			
-			this.nextFoldedLineRow();
-			
-			if (!this.foldedLineRow) {
-				return true;
-			}
-			
-			this.startRow();
+			done = true;
 		}
 		
 		if (this.atNodeBoundary()) {
@@ -308,10 +300,10 @@ class CodeRenderer {
 			this.nextInjectionRange();
 		}
 		
-		return false;
+		return done;
 	}
 	
-	render() {
+	renderRow() {
 		let i = 0;
 		
 		while (!this.step()) {
