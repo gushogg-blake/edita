@@ -1,7 +1,6 @@
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
-let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let findSmallestNodeAtCharCursor = require("modules/utils/treeSitter/findSmallestNodeAtCharCursor");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
@@ -69,10 +68,6 @@ module.exports = class Scope {
 				includedRanges: this.treeSitterRanges,
 			});
 			
-			let treeSitterLanguage = base.getTreeSitterLanguage(this.lang.code);
-			
-			console.time("error checking");
-			
 			/*
 			ERROR nodes can be incorrectly linked, which can cause infinite loops in
 			rendering. try to detect issues like this and throw a parse error instead.
@@ -83,7 +78,7 @@ module.exports = class Scope {
 			for (let error of errors) {
 				let {node} = error.captures[0];
 				
-				if (!node.parent || node.parent.equals(node)) {
+				if (!node.parent || node.parent.equals(node)) { // obviously, a node shouldn't be its own parent
 					let msg = "ERROR node incorrectly linked or root node is ERROR";
 					
 					console.log(msg, node);
@@ -91,8 +86,6 @@ module.exports = class Scope {
 					throw msg;
 				}
 			}
-			
-			console.timeEnd("error checking");
 		} catch (e) {
 			this.tree = null;
 			
@@ -134,22 +127,57 @@ module.exports = class Scope {
 			newEndIndex: index + replaceWith.length,
 		});
 			
-		this.parse(this.tree, function(injectionLang, firstRange) {
-			let {start} = firstRange.selection;
+		this.parse(this.tree, function(injectionLang, ranges) {
+			/*
+			if there's an existing scope for the lang with the same ranges
+			(adjusted for the edit), we can edit it. e.g. if we have an html
+			document with a <script> tag and we make some edits above, below,
+			or within it, and the resulting html document still has a
+			javascript injection at the same place, then structure has remained
+			the same and we can apply the edit to the inner javascript scope.
+			
+			if the edit changes the structure so that the injection doesn't have
+			the same ranges, we don't treat it as the "same" injection and we
+			create another one, even though some of the code in it may still be
+			the same and it might be "the same script tag" from the author's
+			point of view.
+			
+			this used to be a less strict check where as long as the start of
+			the first range was the same we would keep the injection, but this
+			caused issues with inner scopes not getting updated properly, for example:
+			
+			<script>
+			let a = `
+			${<? foreach($a as $b):  ?> 123 <? endforeach; }
+			`;
+			</script>
+			
+			adding the closing ?> to fix the tag with endforeach; and then adding
+			some text to the end of the javascript template string, the text at
+			the end wouldn't be highlighted as a string.
+			*/
 			
 			return existingScopes.find(function(scope) {
 				if (scope.lang !== injectionLang) {
 					return false;
 				}
 				
-				let existingStart = scope.ranges[0].selection.start;
-				let existingSelectionEdited = Selection.edit(s(existingStart), selection, newSelection);
-				
-				if (!existingSelectionEdited) {
+				if (scope.ranges.length !== ranges.length) {
 					return false;
 				}
 				
-				return Cursor.equals(start, existingSelectionEdited.start);
+				for (let i = 0; i < scope.ranges.length; i++) {
+					let existingRange = scope.ranges[i];
+					let range = ranges[i];
+					
+					let existingSelectionEdited = Selection.edit(existingRange.selection, selection, newSelection);
+					
+					if (!existingSelectionEdited || !Selection.equals(existingSelectionEdited, range.selection)) {
+						return false;
+					}
+				}
+				
+				return true;
 			});
 		}, function(existingScope, ranges) {
 			existingScope.edit(edit, index, ranges, code);
@@ -196,7 +224,7 @@ module.exports = class Scope {
 				let scope;
 				
 				if (findExistingScope) {
-					existingScope = findExistingScope(injectionLang, ranges[0]);
+					existingScope = findExistingScope(injectionLang, ranges);
 				}
 				
 				if (existingScope) {
@@ -230,7 +258,7 @@ module.exports = class Scope {
 					let scope;
 					
 					if (findExistingScope) {
-						existingScope = findExistingScope(injectionLang, ranges[0]);
+						existingScope = findExistingScope(injectionLang, ranges);
 					}
 					
 					if (existingScope) {
