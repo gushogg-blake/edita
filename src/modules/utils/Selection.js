@@ -182,7 +182,7 @@ function intersection(a, b) {
 	let start = Cursor.max(a.start, b.start);
 	let end = Cursor.min(a.end, b.end);
 	
-	return start && end ? s(start, end) : null;
+	return Cursor.isBefore(start, end) ? s(start, end) : null;
 }
 
 function s(start, end=null) {
