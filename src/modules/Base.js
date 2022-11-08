@@ -274,6 +274,10 @@ class Base extends Evented {
 			};
 		});
 		
+		lang.queries = {
+			error: treeSitterLanguage.query("(ERROR) @error"),
+		};
+		
 		this.initialisedLangs.add(lang);
 	}
 	

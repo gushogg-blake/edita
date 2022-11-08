@@ -51,7 +51,7 @@ module.exports = class Scope {
 		return parser;
 	}
 	
-	parse() {
+	parse(editedTree=null, findExistingScope=null, editExistingScope=null) {
 		if (
 			this.source.noParse
 			|| this.lang.code === "plainText"
@@ -60,24 +60,49 @@ module.exports = class Scope {
 			return;
 		}
 		
-		//console.time("parse (" + this.lang.code + ")");
+		console.time("parse (" + this.lang.code + ")");
 		
 		try {
 			let parser = this.createTreeSitterParser();
 			
-			this.tree = parser.parse(this.code, null, {
+			this.tree = parser.parse(this.code, editedTree, {
 				includedRanges: this.treeSitterRanges,
 			});
+			
+			let treeSitterLanguage = base.getTreeSitterLanguage(this.lang.code);
+			
+			console.time("error checking");
+			
+			/*
+			ERROR nodes can be incorrectly linked, which can cause infinite loops in
+			rendering. try to detect issues like this and throw a parse error instead.
+			*/
+			
+			let errors = this.lang.queries.error.matches(this.tree.rootNode);
+			
+			for (let error of errors) {
+				let {node} = error.captures[0];
+				
+				if (!node.parent || node.parent.equals(node)) {
+					let msg = "ERROR node incorrectly linked or root node is ERROR";
+					
+					console.log(msg, node);
+					
+					throw msg;
+				}
+			}
+			
+			console.timeEnd("error checking");
 		} catch (e) {
 			this.tree = null;
 			
-			//console.error("Parse error");
-			//console.error(e);
+			console.error("Parse error");
+			console.error(e);
 		} finally {
-			this.processInjections();
+			this.processInjections(findExistingScope, editExistingScope);
 		}
 		
-		//console.timeEnd("parse (" + this.lang.code + ")");
+		console.timeEnd("parse (" + this.lang.code + ")");
 	}
 	
 	edit(edit, index, newRanges, code) {
@@ -100,51 +125,38 @@ module.exports = class Scope {
 		
 		let existingScopes = this.scopes;
 		
-		try {
-			let parser = this.createTreeSitterParser();
+		this.tree.edit({
+			startPosition: cursorToTreeSitterPoint(selection.start),
+			startIndex: index,
+			oldEndPosition: cursorToTreeSitterPoint(selection.end),
+			oldEndIndex: index + string.length,
+			newEndPosition: cursorToTreeSitterPoint(newSelection.end),
+			newEndIndex: index + replaceWith.length,
+		});
 			
-			this.tree.edit({
-				startPosition: cursorToTreeSitterPoint(selection.start),
-				startIndex: index,
-				oldEndPosition: cursorToTreeSitterPoint(selection.end),
-				oldEndIndex: index + string.length,
-				newEndPosition: cursorToTreeSitterPoint(newSelection.end),
-				newEndIndex: index + replaceWith.length,
-			});
+		this.parse(this.tree, function(injectionLang, firstRange) {
+			let {start} = firstRange.selection;
 			
-			this.tree = parser.parse(this.code, this.tree, {
-				includedRanges: this.treeSitterRanges,
-			});
-		} catch (e) {
-			this.tree = null;
-			
-			//console.error("Parse error");
-			//console.error(e);
-		} finally {
-			this.processInjections(function(injectionLang, firstRange) {
-				let {start} = firstRange.selection;
+			return existingScopes.find(function(scope) {
+				if (scope.lang !== injectionLang) {
+					return false;
+				}
 				
-				return existingScopes.find(function(scope) {
-					if (scope.lang !== injectionLang) {
-						return false;
-					}
-					
-					let existingStart = scope.ranges[0].selection.start;
-					let existingSelectionEdited = Selection.edit(s(existingStart), selection, newSelection);
-					
-					if (!existingSelectionEdited) {
-						return false;
-					}
-					
-					return Cursor.equals(start, existingSelectionEdited.start);
-				});
-			}, function(existingScope, ranges) {
-				existingScope.edit(edit, index, ranges, code);
+				let existingStart = scope.ranges[0].selection.start;
+				let existingSelectionEdited = Selection.edit(s(existingStart), selection, newSelection);
+				
+				if (!existingSelectionEdited) {
+					return false;
+				}
+				
+				return Cursor.equals(start, existingSelectionEdited.start);
 			});
-		}
+		}, function(existingScope, ranges) {
+			existingScope.edit(edit, index, ranges, code);
+		});
 	}
 	
-	processInjections(findExistingScope=null, editExistingScope=null) {
+	processInjections(findExistingScope, editExistingScope) {
 		this.scopes = [];
 		this.scopesByNode = {};
 		
