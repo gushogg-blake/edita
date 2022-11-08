@@ -1,4 +1,3 @@
-let generatorFromArray = require("utils/generatorFromArray");
 let Cursor = require("modules/utils/Cursor");
 let Selection = require("modules/utils/Selection");
 let FoldHiliteRenderer = require("./FoldHiliteRenderer");
