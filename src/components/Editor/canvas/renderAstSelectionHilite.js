@@ -1,28 +1,27 @@
-let AstSelection = require("modules/utils/AstSelection");
-
 module.exports = function(layers, view, isPeeking) {
-	let {
-		wrappedLines,
-		astSelectionHilite: hilite,
-		astSelection: selection,
-		document,
-		sizes: {
-			width,
-		},
-		measurements: {
-			rowHeight,
-		},
-	} = view;
-	
 	let {
 		astSelectionHiliteBackground,
 	} = base.theme.editor;
 	
-	if (!hilite) {
-		return;
-	}
+	let {
+		sizes,
+		measurements,
+		scrollPosition,
+	} = view;
 	
-	if (!isPeeking && AstSelection.equals(hilite, selection)) {
+	let {
+		colWidth,
+		rowHeight,
+	} = measurements;
+	
+	let {
+		width,
+		topMargin,
+		marginWidth,
+		marginOffset,
+	} = sizes;
+	
+	if (!hilite) {
 		return;
 	}
 	
@@ -30,21 +29,39 @@ module.exports = function(layers, view, isPeeking) {
 	
 	context.fillStyle = astSelectionHiliteBackground;
 	
-	let {startLineIndex, endLineIndex} = hilite;
-	let startLine = wrappedLines[startLineIndex].line;
-	let startRow = view.getLineStartingRow(startLineIndex);
-	let height = (view.getLineRangeTotalHeight(startLineIndex, endLineIndex)) * rowHeight;
+	//let leftEdge = marginOffset - scrollPosition.x;
+	let rowOffset = -(scrollPosition.y % rowHeight);
 	
-	let [x, y] = view.screenCoordsFromRowCol(
-		startRow,
-		startLine.indentLevel * document.fileDetails.indentation.colsPerIndent,
-	);
+	//let x;
+	let y = topMargin + rowOffset;
 	
-	x = Math.max(0, x);
+	let startY;
+	let endY;
 	
-	if (height === 0) {
-		context.fillRect(0, y, width, 2);
-	} else {
-		context.fillRect(0, y, width, height);
-	}
+	return {
+		setStartLine(line) {
+			//x = Math.max(0, leftEdge + line.indentCols * colWidth);
+			startY = y;
+		},
+		
+		setEndLine
+		
+		startRow() {
+		},
+		
+		endRow() {
+		},
+		
+		draw(onlyIfPeeking) { // AstSelection.equals(hilite, selection)
+			if (onlyIfPeeking && !isPeeking) {
+				return;
+			}
+			
+			if (height === 0) {
+				context.fillRect(0, y, width, 2);
+			} else {
+				context.fillRect(0, y, width, height);
+			}
+		},
+	};
 }

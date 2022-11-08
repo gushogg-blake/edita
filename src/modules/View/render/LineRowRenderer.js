@@ -65,6 +65,10 @@ class LineRowRenderer {
 	renderRow() {
 		
 	}
+	
+	flush() {
+		
+	}
 }
 
 module.exports = LineRowRenderer;

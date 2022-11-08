@@ -1,5 +1,6 @@
 let Cursor = require("modules/utils/Cursor");
 let Selection = require("modules/utils/Selection");
+let AstSelectionHiliteRenderer = require("./AstSelectionHiliteRenderer");
 let FoldHiliteRenderer = require("./FoldHiliteRenderer");
 let MarginRenderer = require("./MarginRenderer");
 let CodeRenderer = require("./CodeRenderer");
@@ -35,7 +36,8 @@ function getFoldedLineRowsToRender(view) {
 
 class Renderer {
 	constructor(view, canvas) {
-		//this.view = view;
+		this.view = view;
+		this.state = state;
 		this.canvas = canvas;
 		this.document = view.document;
 		this.foldedLineRows = getFoldedLineRowsToRender(view);
@@ -52,7 +54,13 @@ class Renderer {
 	}
 	
 	render() {
-		/*
+		let {mode} = this.view;
+		
+		let renderers = [
+			new FoldHiliteRenderer(this),
+			new MarginRenderer(this),
+		];
+		
 		if (mode === "normal") {
 			renderCurrentLineHilite(layers, view, windowHasFocus);
 			renderNormalSelection(layers, view);
@@ -61,20 +69,21 @@ class Renderer {
 		}
 		
 		if (mode === "ast") {
+			renderers.push(
+				new AstSelectionRenderer(this),
+				new AstSelectionHiliteRenderer(this),
+				new AstInsertionHiliteRenderer(this),
+			);
+			
 			renderAstSelection(layers, view, isPeekingAstMode);
 			renderAstSelectionHilite(layers, view, isPeekingAstMode);
 			renderAstInsertionHilite(layers, view, isPeekingAstMode);
 		}
-		*/
 		
-		if (this.foldedLineRows.length === 0) {
-			return;
-		}
-		
-		let renderers = [
+		renderers.push(
 			new FoldHiliteRenderer(this),
 			new MarginRenderer(this),
-		];
+		);
 		
 		for (let {scope, ranges, injectionRanges} of this.getVisibleScopes()) {
 			renderers.push(new CodeRenderer(this, scope, ranges, injectionRanges));
@@ -90,6 +99,8 @@ class Renderer {
 				
 				renderer.endRow();
 			}
+			
+			renderer.flush();
 		}
 	}
 }

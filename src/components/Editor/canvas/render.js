@@ -29,17 +29,14 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	layers.background.fillRect(0, 0, width, height);
 	
 	view.render({
-		isPeekingAstMode,
-		windowHasFocus,
-	}, {
 		normalHilites: renderNormalHilites(layers, view),
-		currentLineHilite: renderCurrentLineHilite(layers, view),
+		currentLineHilite: renderCurrentLineHilite(layers, view, windowHasFocus),
 		normalSelection: renderNormalSelection(layers, view),
-		normalCursor: renderNormalCursor(layers, view),
+		normalCursor: renderNormalCursor(layers, view, windowHasFocus),
 		insertCursor: renderInsertCursor(layers, view),
-		astSelection: renderAstSelection(layers, view),
-		astSelectionHilite: renderAstSelectionHilite(layers, view),
-		astInsertionHilite: renderAstInsertionHilite(layers, view),
+		astSelection: renderAstSelection(layers, view, isPeekingAstMode),
+		astSelectionHilite: renderAstSelectionHilite(layers, view, isPeekingAstMode),
+		astInsertionHilite: renderAstInsertionHilite(layers, view, isPeekingAstMode),
 		code: () => renderCode(layers, view),
 		margin: renderMargin(layers, view),
 		foldHilites: renderFoldHilites(layers, view),

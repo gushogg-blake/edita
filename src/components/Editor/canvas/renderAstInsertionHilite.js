@@ -11,7 +11,7 @@
 let lineWidth = 2;
 let lineLength = 35;
 
-module.exports = function(layers, view, isPeeking) {
+module.exports = function(layers, view) {
 	let {
 		wrappedLines,
 		astInsertionHilite: hilite,

@@ -285,20 +285,6 @@ module.exports = {
 		return null;
 	},
 	
-	getLineRangeTotalHeight(startLineIndex, endLineIndex) {
-		let height = 0;
-		
-		for (let foldedLineRow of this.generateLineRowsFolded(startLineIndex)) {
-			if (foldedLineRow.lineIndex >= endLineIndex) {
-				break;
-			}
-			
-			height++;
-		}
-		
-		return height;
-	},
-	
 	getLineStartingRow(lineIndex) {
 		let startingRow = 0;
 		
