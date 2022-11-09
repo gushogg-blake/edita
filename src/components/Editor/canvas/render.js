@@ -4,9 +4,9 @@ let renderNormalSelection = require("./renderNormalSelection");
 let renderAstSelection = require("./renderAstSelection");
 let renderAstSelectionHilite = require("./renderAstSelectionHilite");
 let renderAstInsertionHilite = require("./renderAstInsertionHilite");
-let renderCode = require("./renderCode");
 let renderMargin = require("./renderMargin");
 let renderFoldHilites = require("./renderFoldHilites");
+let renderCode = require("./renderCode");
 let renderNormalCursor = require("./renderNormalCursor");
 let renderInsertCursor = require("./renderInsertCursor");
 
@@ -29,14 +29,14 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		currentLineHilite: renderCurrentLineHilite(layers, view, windowHasFocus),
 		normalHilites: renderNormalHilites(layers, view),
 		normalSelection: renderNormalSelection(layers, view),
-		normalCursor: renderNormalCursor(layers, view, windowHasFocus),
-		insertCursor: renderInsertCursor(layers, view),
 		astSelection: renderAstSelection(layers, view, isPeekingAstMode),
 		astSelectionHilite: renderAstSelectionHilite(layers, view, isPeekingAstMode),
 		astInsertionHilite: renderAstInsertionHilite(layers, view, isPeekingAstMode),
-		code: () => renderCode(layers, view),
 		margin: renderMargin(layers, view),
 		foldHilites: renderFoldHilites(layers, view),
+		code: () => renderCode(layers, view),
+		normalCursor: renderNormalCursor(layers, view, windowHasFocus),
+		insertCursor: renderInsertCursor(layers, view),
 	});
 	
 	if (base.getPref("dev.timing.render")) {

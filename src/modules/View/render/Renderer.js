@@ -4,14 +4,14 @@ let Selection = require("modules/utils/Selection");
 let CurrentLineHiliteRenderer = require("./CurrentLineHiliteRenderer");
 let NormalHiliteRenderer = require("./NormalHiliteRenderer");
 let NormalSelectionRenderer = require("./NormalSelectionRenderer");
-let NormalCursorRenderer = require("./NormalCursorRenderer");
-let InsertCursorRenderer = require("./InsertCursorRenderer");
 let AstSelectionRenderer = require("./AstSelectionRenderer");
 let AstSelectionHiliteRenderer = require("./AstSelectionHiliteRenderer");
 let AstInsertionHiliteRenderer = require("./AstInsertionHiliteRenderer");
 let MarginRenderer = require("./MarginRenderer");
 let FoldHiliteRenderer = require("./FoldHiliteRenderer");
 let CodeRenderer = require("./CodeRenderer");
+let NormalCursorRenderer = require("./NormalCursorRenderer");
+let InsertCursorRenderer = require("./InsertCursorRenderer");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -62,43 +62,28 @@ class Renderer {
 	
 	render() {
 		let {mode} = this.view;
+		let normal = mode === "normal";
+		let ast = mode === "ast";
 		
-		let renderers = [];
-		
-		if (mode === "normal") {
-			renderers.push(
-				new CurrentLineHiliteRenderer(this),
-			);
-		}
-		
-		renderers.push(
+		let renderers = [
+			normal && new CurrentLineHiliteRenderer(this),
 			new NormalHiliteRenderer(this),
-		);
-		
-		if (mode === "normal") {
-			renderers.push(
-				new NormalSelectionRenderer(this),
-				new NormalCursorRenderer(this),
-				new InsertCursorRenderer(this),
-			);
-		}
-		
-		if (mode === "ast") {
-			renderers.push(
-				new AstSelectionRenderer(this),
-				new AstSelectionHiliteRenderer(this),
-				new AstInsertionHiliteRenderer(this),
-			);
-		}
-		
-		renderers.push(
-			new MarginRenderer(this),
+			normal && new NormalSelectionRenderer(this),
+			
+			ast && new AstSelectionRenderer(this),
+			ast && new AstSelectionHiliteRenderer(this),
+			ast && new AstInsertionHiliteRenderer(this),
+			
 			new FoldHiliteRenderer(this),
-		);
-		
-		for (let {scope, ranges, injectionRanges} of this.getVisibleScopes()) {
-			renderers.push(new CodeRenderer(this, scope, ranges, injectionRanges));
-		}
+			new MarginRenderer(this),
+			
+			...this.getVisibleScopes().map(({scope, ranges, injectionRanges}) => {
+				return new CodeRenderer(this, scope, ranges, injectionRanges)
+			}),
+			
+			normal && new NormalCursorRenderer(this),
+			normal && new InsertCursorRenderer(this),
+		].filter(Boolean);
 		
 		for (let renderer of renderers) {
 			renderer.init(this.foldedLineRows[0]);
