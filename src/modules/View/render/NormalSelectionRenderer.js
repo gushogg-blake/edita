@@ -10,8 +10,4 @@ module.exports = class extends LineRowRenderer {
 	renderRow() {
 		
 	}
-	
-	endRow() {
-		this.canvasRenderer.endRow();
-	}
 }

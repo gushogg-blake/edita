@@ -62,7 +62,9 @@ module.exports = class {
 	}
 	
 	endRow() {
-		
+		if (this.canvasRenderer.endRow) {
+			this.canvasRenderer.endRow();
+		}
 	}
 	
 	renderRow() {

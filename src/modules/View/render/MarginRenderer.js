@@ -12,8 +12,4 @@ module.exports = class extends LineRowRenderer {
 			this.canvasRenderer.drawLineNumber(this.lineIndex);
 		}
 	}
-	
-	endRow() {
-		this.canvasRenderer.endRow();
-	}
 }

@@ -14,8 +14,4 @@ module.exports = class extends LineRowRenderer {
 			this.renderFoldHilites.drawHilite(line.indentCols, line.width - line.indentCols);
 		}
 	}
-	
-	endRow() {
-		this.canvasRenderer.endRow();
-	}
 }

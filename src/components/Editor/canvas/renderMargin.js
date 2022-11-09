@@ -1,16 +1,16 @@
 module.exports = function(layers, view) {
 	let {
+		sizes: {height, marginWidth, topMargin, marginStyle},
+		measurements: {colWidth, rowHeight},
+		scrollPosition,
+	} = view;
+	
+	let {
 		fontFamily,
 		fontSize,
 		marginBackground,
 		lineNumberColor,
 	} = base.theme.editor;
-	
-	let {
-		sizes: {height, marginWidth, topMargin, marginStyle},
-		measurements: {colWidth, rowHeight},
-		scrollPosition,
-	} = view;
 	
 	let context = layers.margin;
 	

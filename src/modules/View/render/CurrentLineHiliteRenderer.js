@@ -4,14 +4,10 @@ module.exports = class extends LineRowRenderer {
 	constructor(renderer) {
 		super(renderer);
 		
-		this.canvasRenderer = this.renderer.canvasRenderers.foldHilites;
+		this.canvasRenderer = this.renderer.canvasRenderers.currentLineHilite;
 	}
 	
 	renderRow() {
 		
-	}
-	
-	endRow() {
-		this.canvasRenderer.endRow();
 	}
 }

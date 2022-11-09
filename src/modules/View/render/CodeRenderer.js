@@ -186,12 +186,6 @@ module.exports = class extends LineRowRenderer {
 		this.canvasRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
 	}
 	
-	endRow() {
-		super.endRow();
-		
-		this.canvasRenderer.endRow();
-	}
-	
 	_offsetOrInfinity(cursor) {
 		return cursor?.lineIndex === this.lineIndex ? cursor.offset : Infinity;
 	}

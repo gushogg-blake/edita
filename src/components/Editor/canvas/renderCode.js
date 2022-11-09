@@ -1,15 +1,15 @@
 module.exports = function(layers, view) {
 	let {
-		fontFamily,
-		fontSize,
-		defaultColor,
-	} = base.theme.editor;
-	
-	let {
 		sizes: {width, topMargin, marginWidth, marginOffset},
 		measurements: {colWidth, rowHeight},
 		scrollPosition,
 	} = view;
+	
+	let {
+		fontFamily,
+		fontSize,
+		defaultColor,
+	} = base.theme.editor;
 	
 	let context = layers.code;
 	

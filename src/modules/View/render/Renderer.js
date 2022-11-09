@@ -1,8 +1,8 @@
 let Cursor = require("modules/utils/Cursor");
 let Selection = require("modules/utils/Selection");
 
-let NormalHiliteRenderer = require("./NormalHiliteRenderer");
 let CurrentLineHiliteRenderer = require("./CurrentLineHiliteRenderer");
+let NormalHiliteRenderer = require("./NormalHiliteRenderer");
 let NormalSelectionRenderer = require("./NormalSelectionRenderer");
 let NormalCursorRenderer = require("./NormalCursorRenderer");
 let InsertCursorRenderer = require("./InsertCursorRenderer");
@@ -63,13 +63,20 @@ class Renderer {
 	render() {
 		let {mode} = this.view;
 		
-		let renderers = [
-			new NormalHiliteRenderer(this),
-		];
+		let renderers = [];
 		
 		if (mode === "normal") {
 			renderers.push(
 				new CurrentLineHiliteRenderer(this),
+			);
+		}
+		
+		renderers.push(
+			new NormalHiliteRenderer(this),
+		);
+		
+		if (mode === "normal") {
+			renderers.push(
 				new NormalSelectionRenderer(this),
 				new NormalCursorRenderer(this),
 				new InsertCursorRenderer(this),
