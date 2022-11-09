@@ -3,7 +3,6 @@ let lid = require("../../utils/lid");
 let spawn = require("../../utils/spawn");
 let sleep = require("../../utils/sleep");
 let promiseWithMethods = require("../../utils/promiseWithMethods");
-let fs = require("../fs");
 let config = require("./config");
 
 class LspServer extends Evented {

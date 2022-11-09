@@ -156,7 +156,6 @@ onMount(function() {
 }
 
 .pane {
-	//overflow: hidden;
 }
 
 #leftContainer {
@@ -168,6 +167,7 @@ onMount(function() {
 #left {
 	height: 100%;
 	border-right: var(--appBorder);
+	overflow: hidden;
 }
 
 #tabBarContainer {
