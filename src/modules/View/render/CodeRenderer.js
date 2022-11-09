@@ -4,7 +4,7 @@ let findFirstChildAfterCursor = require("modules/utils/treeSitter/findFirstChild
 let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 let LineRowRenderer = require("./LineRowRenderer");
 
-class CodeRenderer extends LineRowRenderer {
+module.exports = class extends LineRowRenderer {
 	constructor(renderer, scope, ranges, injectionRanges) {
 		super(renderer);
 		
@@ -12,7 +12,7 @@ class CodeRenderer extends LineRowRenderer {
 		this.ranges = ranges;
 		this.injectionRanges = injectionRanges;
 		
-		this.canvasCodeRenderer = renderer.canvas.createCodeRenderer();
+		this.renderCode = renderer.canvas.code();
 		
 		this.rangeIndex = 0;
 		this.injectionRangeIndex = 0;
@@ -169,7 +169,7 @@ class CodeRenderer extends LineRowRenderer {
 	}
 	
 	setColor() {
-		this.canvasCodeRenderer.setColor(this.nodeColor);
+		this.renderCode.setColor(this.nodeColor);
 	}
 	
 	getColor(node) {
@@ -183,13 +183,13 @@ class CodeRenderer extends LineRowRenderer {
 	startRow(row) {
 		super.startRow(row);
 		
-		this.canvasCodeRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
+		this.renderCode.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
 	}
 	
 	endRow() {
 		super.endRow();
 		
-		this.canvasCodeRenderer.endRow();
+		this.renderCode.endRow();
 	}
 	
 	_offsetOrInfinity(cursor) {
@@ -249,9 +249,9 @@ class CodeRenderer extends LineRowRenderer {
 				let substring = string.substring(this.offset - offset, renderTo - offset);
 				
 				if (!this.inRange() || this.inInjectionRange()) {
-					this.canvasCodeRenderer.skipText(substring);
+					this.renderCode.skipText(substring);
 				} else {
-					this.canvasCodeRenderer.drawText(substring);
+					this.renderCode.drawText(substring);
 				}
 				
 				this.offset += length;
@@ -260,7 +260,7 @@ class CodeRenderer extends LineRowRenderer {
 					this.nextVariableWidthPart();
 				}
 			} else {
-				this.canvasCodeRenderer.drawTab(this.variableWidthPart.width);
+				this.renderCode.drawTab(this.variableWidthPart.width);
 				
 				this.offset++;
 				
@@ -299,5 +299,3 @@ class CodeRenderer extends LineRowRenderer {
 		}
 	}
 }
-
-module.exports = CodeRenderer;

@@ -21,10 +21,6 @@ module.exports = function(layers, view, isPeeking) {
 		marginOffset,
 	} = sizes;
 	
-	if (!hilite) {
-		return;
-	}
-	
 	let context = layers.hilites;
 	
 	context.fillStyle = astSelectionHiliteBackground;
@@ -44,7 +40,8 @@ module.exports = function(layers, view, isPeeking) {
 			startY = y;
 		},
 		
-		setEndLine
+		setEndLine() {
+		},
 		
 		startRow() {
 		},

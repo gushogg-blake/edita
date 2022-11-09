@@ -4,16 +4,14 @@ module.exports = class extends LineRowRenderer {
 	constructor(renderer) {
 		super(renderer);
 		
-		this.renderMargin = this.renderer.canvas.margin;
+		this.renderFoldHilites = renderer.canvas.foldHilites;
 	}
 	
 	renderRow() {
-		if (this.lineRow.startOffset === 0) {
-			this.renderMargin.drawLineNumber(this.lineIndex);
-		}
+		
 	}
 	
 	endRow() {
-		this.renderMargin.endRow();
+		this.renderFoldHilites.endRow();
 	}
 }

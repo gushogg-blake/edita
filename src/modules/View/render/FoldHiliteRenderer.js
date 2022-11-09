@@ -1,23 +1,21 @@
 let LineRowRenderer = require("./LineRowRenderer");
 
-class FoldHiliteRenderer extends LineRowRenderer {
+module.exports = class extends LineRowRenderer {
 	constructor(renderer) {
 		super(renderer);
 		
-		this.foldHiliteRenderer = renderer.canvas.foldHiliteRenderer;
+		this.renderFoldHilites = renderer.canvas.foldHilites;
 	}
 	
 	renderRow() {
 		if (this.foldedLineRow.isFoldHeader) {
 			let {line} = this;
 			
-			this.foldHiliteRenderer.drawHilite(line.indentCols, line.width - line.indentCols);
+			this.renderFoldHilites.drawHilite(line.indentCols, line.width - line.indentCols);
 		}
 	}
 	
 	endRow() {
-		this.foldHiliteRenderer.endRow();
+		this.renderFoldHilites.endRow();
 	}
 }
-
-module.exports = FoldHiliteRenderer;

@@ -12,7 +12,7 @@ function *generateVariableWidthParts(lineRow) {
 	}
 }
 
-class LineRowRenderer {
+module.exports = class {
 	constructor(renderer) {
 		this.renderer = renderer;
 		
@@ -70,5 +70,3 @@ class LineRowRenderer {
 		
 	}
 }
-
-module.exports = LineRowRenderer;

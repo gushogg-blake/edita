@@ -1,36 +1,64 @@
 module.exports = function(layers, view, isPeeking) {
 	let {
-		wrappedLines,
-		astSelection,
-		document,
-		sizes: {
-			width,
-		},
-		measurements: {
-			rowHeight,
-		},
+		astSelectionBackground,
+	} = base.theme.editor;
+	
+	let {
+		sizes,
+		measurements,
+		scrollPosition,
 	} = view;
 	
 	let {
-		astSelectionBackground,
-	} = base.theme.editor;
+		colWidth,
+		rowHeight,
+	} = measurements;
+	
+	let {
+		width,
+		topMargin,
+		marginWidth,
+		marginOffset,
+	} = sizes;
 	
 	let context = layers.hilites;
 	
 	context.fillStyle = astSelectionBackground;
 	
-	let {startLineIndex, endLineIndex} = astSelection;
-	let startLine = wrappedLines[startLineIndex].line;
-	let startRow = view.getLineStartingRow(startLineIndex);
-	let height = (view.getLineRangeTotalHeight(startLineIndex, endLineIndex)) * rowHeight;
+	//let leftEdge = marginOffset - scrollPosition.x;
+	let rowOffset = -(scrollPosition.y % rowHeight);
 	
-	let [x, y] = view.screenCoordsFromRowCol(startRow, startLine.indentLevel * document.fileDetails.indentation.colsPerIndent);
+	//let x;
+	let y = topMargin + rowOffset;
 	
-	x = Math.max(0, x);
+	let startY;
+	let endY;
 	
-	if (height === 0) {
-		context.fillRect(0, y, width, 2);
-	} else {
-		context.fillRect(0, y, width, height);
-	}
+	return {
+		setStartLine(line) {
+			//x = Math.max(0, leftEdge + line.indentCols * colWidth);
+			startY = y;
+		},
+		
+		setEndLine() {
+		},
+		
+		startRow() {
+		},
+		
+		endRow() {
+		},
+		
+		draw(onlyIfPeeking) { // AstSelection.equals(hilite, selection)
+			if (onlyIfPeeking && !isPeeking) {
+				return;
+			}
+			
+			if (height === 0) {
+				context.fillRect(0, y, width, 2);
+			} else {
+				context.fillRect(0, y, width, height);
+			}
+		},
+	};
 }

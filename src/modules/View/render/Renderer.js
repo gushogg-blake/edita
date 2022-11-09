@@ -1,8 +1,16 @@
 let Cursor = require("modules/utils/Cursor");
 let Selection = require("modules/utils/Selection");
+
+let NormalHiliteRenderer = require("./NormalHiliteRenderer");
+let CurrentLineHiliteRenderer = require("./CurrentLineHiliteRenderer");
+let NormalSelectionRenderer = require("./NormalSelectionRenderer");
+let NormalCursorRenderer = require("./NormalCursorRenderer");
+let InsertCursorRenderer = require("./InsertCursorRenderer");
+let AstSelectionRenderer = require("./AstSelectionRenderer");
 let AstSelectionHiliteRenderer = require("./AstSelectionHiliteRenderer");
-let FoldHiliteRenderer = require("./FoldHiliteRenderer");
+let AstInsertionHiliteRenderer = require("./AstInsertionHiliteRenderer");
 let MarginRenderer = require("./MarginRenderer");
+let FoldHiliteRenderer = require("./FoldHiliteRenderer");
 let CodeRenderer = require("./CodeRenderer");
 
 let {s} = Selection;
@@ -37,7 +45,6 @@ function getFoldedLineRowsToRender(view) {
 class Renderer {
 	constructor(view, canvas) {
 		this.view = view;
-		this.state = state;
 		this.canvas = canvas;
 		this.document = view.document;
 		this.foldedLineRows = getFoldedLineRowsToRender(view);
@@ -57,15 +64,16 @@ class Renderer {
 		let {mode} = this.view;
 		
 		let renderers = [
-			new FoldHiliteRenderer(this),
-			new MarginRenderer(this),
+			new NormalHiliteRenderer(this),
 		];
 		
 		if (mode === "normal") {
-			renderCurrentLineHilite(layers, view, windowHasFocus);
-			renderNormalSelection(layers, view);
-			renderNormalCursor(layers, view, windowHasFocus);
-			renderInsertCursor(layers, view);
+			renderers.push(
+				new CurrentLineHiliteRenderer(this),
+				new NormalSelectionRenderer(this),
+				new NormalCursorRenderer(this),
+				new InsertCursorRenderer(this),
+			);
 		}
 		
 		if (mode === "ast") {
@@ -74,15 +82,11 @@ class Renderer {
 				new AstSelectionHiliteRenderer(this),
 				new AstInsertionHiliteRenderer(this),
 			);
-			
-			renderAstSelection(layers, view, isPeekingAstMode);
-			renderAstSelectionHilite(layers, view, isPeekingAstMode);
-			renderAstInsertionHilite(layers, view, isPeekingAstMode);
 		}
 		
 		renderers.push(
-			new FoldHiliteRenderer(this),
 			new MarginRenderer(this),
+			new FoldHiliteRenderer(this),
 		);
 		
 		for (let {scope, ranges, injectionRanges} of this.getVisibleScopes()) {
