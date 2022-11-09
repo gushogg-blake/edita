@@ -46,7 +46,7 @@ module.exports = function(app, createDialogComponent) {
 			border: "1px solid gray",
 			borderRadius: 2,
 		    boxShadow: "0 2px 6px -3px #00000040",
-			background: "var(--appBackgroundColor)",
+			background: "var(--appBackground)",
 			visibility: "hidden",
 		});
 		

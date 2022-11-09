@@ -1,15 +1,38 @@
 module.exports = function(layers, view) {
 	let {
-		normalSelection,
+		sizes: {topMargin, marginWidth, marginOffset},
+		measurements: {colWidth, rowHeight},
+		scrollPosition,
 	} = view;
 	
 	let context = layers.hilites;
 	
-	context.fillStyle = base.theme.editor.selectionBackground;
+	//let leftEdge = marginOffset - scrollPosition.x;
+	let rowOffset = -(scrollPosition.y % rowHeight);
 	
-	let regions = view.calculateNormalSelectionRegions(normalSelection);
+	//let x;
+	let y = topMargin + rowOffset;
 	
-	for (let [x, y, width, height] of regions) {
-		context.fillRect(x, y, width, height);
-	}
+	let startY;
+	let endY;
+	
+	return {
+		init() {
+			context.fillStyle = base.theme.editor.selectionBackground;
+		},
+		
+		startRow() {
+		},
+		
+		endRow() {
+		},
+		
+		skipText(cols) {
+			
+		},
+		
+		draw() {
+			context.fillRect(x, y, width, height);
+		},
+	};
 }

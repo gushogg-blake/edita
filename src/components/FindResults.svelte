@@ -49,13 +49,13 @@ onMount(function() {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
-	background: var(--findResultsBackgroundColor);
+	background: var(--findResultsBackground);
 }
 
 #nav {
 	border-bottom: var(--appBorder);
 	padding: 3px;
-	background: var(--appBackgroundColor);
+	background: var(--appBackground);
 }
 
 #results {

@@ -1,3 +1,30 @@
 module.exports = function(layers, view, windowHasFocus) {
+	let {
+		sizes: {width, topMargin, marginWidth, marginOffset},
+		measurements: {colWidth, rowHeight},
+		scrollPosition,
+	} = view;
 	
+	let context = layers.hilites;
+	
+	//let leftEdge = marginOffset - scrollPosition.x;
+	let rowOffset = -(scrollPosition.y % rowHeight);
+	
+	//let x;
+	let y = topMargin + rowOffset;
+	
+	let startY;
+	let endY;
+	
+	return {
+		init() {
+			//context.fillStyle = base.theme.editor.currentLineHiliteBackground;
+		},
+		
+		startRow() {
+		},
+		
+		endRow() {
+		},
+	};
 }

@@ -426,8 +426,9 @@ class Editor extends Evented {
 		let fnName = base.prefs.normalKeymap[keyCombo];
 		let flags;
 		let str;
+		let isPaste = ["paste", "pasteAndIndent"].includes(fnName);
 		
-		if (fnName === "paste") {
+		if (isPaste) {
 			// read clipboard before startBatch to keep startBatch/endBatch pairs sync
 			str = await platform.clipboard.read();
 		}
@@ -435,8 +436,8 @@ class Editor extends Evented {
 		view.startBatch();
 		
 		if (fnName) {
-			if (fnName === "paste") {
-				flags = this.normalKeyboard.paste(str);
+			if (isPaste) {
+				flags = this.normalKeyboard[fnName](str);
 			} else {
 				flags = this.normalKeyboard[fnName]();
 			}

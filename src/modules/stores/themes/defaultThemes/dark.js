@@ -7,41 +7,41 @@ module.exports = {
 		fontSize: 12.5,
 		
 		appBorder: "1px solid #707070",
-		appBackgroundColor: "#303030",
+		appBackground: "#303030",
 		
 		buttonColor: "#ffffffee",
-		buttonBackgroundColor: "#ffffff15",
-		tabBackgroundColor: "transparent",
-		tabSelectedBackgroundColor: "#505050",
-		toolbarBackgroundColor: "#404040",
+		buttonBackground: "#ffffff15",
+		tabBackground: "transparent",
+		tabSelectedBackground: "#505050",
+		toolbarBackground: "#404040",
 		
 		inputColor: "var(--appColor)",
 		inputBorder: "1px solid #adaba6",
-		inputBackgroundColor: "#ffffff10",
+		inputBackground: "#ffffff10",
 		
-		listItemSelectedBackgroundColor: "rgba(0, 0, 0, 0.1)",
-		listItemExpandContractBackgroundColor: "#ffffff15",
+		listItemSelectedBackground: "rgba(0, 0, 0, 0.1)",
+		listItemExpandContractBackground: "#ffffff15",
 		listItemExpandContractBorder: "#858585",
 		
-		dirEntryFolderBackgroundColor: "#9fcaef",
-		dirEntryFileBackgroundColor: "#fbfbfbe8",
+		dirEntryFolderBackground: "#9fcaef",
+		dirEntryFileBackground: "#fbfbfbe8",
 		
-		findResultsBackgroundColor: "#505050",
+		findResultsBackground: "#505050",
 		
 		contextMenuColor: "var(--appColor)",
 		contextMenuBorder: "1px solid #7f868d",
-		contextMenuBackgroundColor: "var(--appBackgroundColor)",
+		contextMenuBackground: "var(--appBackground)",
 		contextMenuHoverColor: "white",
-		contextMenuHoverBackgroundColor: "#ffffff20",
+		contextMenuHoverBackground: "#ffffff20",
 		
 		scrollbarThumbWidth: 8,
 		scrollbarPadding: 3,
 		scrollbarWidth: "calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2)",
-		scrollbarBackgroundColor: "#505050",
+		scrollbarBackground: "#505050",
 		scrollbarBorder: "var(--appBorder)",
-		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackgroundColor)",
-		scrollbarThumbBackgroundColor: "#909090",
-		scrollbarSpacerBackgroundColor: "#606060",
+		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackground)",
+		scrollbarThumbBackground: "#909090",
+		scrollbarSpacerBackground: "#606060",
 	},
 	
 	editor: {

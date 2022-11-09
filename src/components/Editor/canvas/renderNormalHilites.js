@@ -1,17 +1,34 @@
 module.exports = function(layers, view) {
 	let {
-		normalHilites,
+		sizes: {topMargin, marginWidth, marginOffset},
+		measurements: {colWidth, rowHeight},
+		scrollPosition,
 	} = view;
 	
 	let context = layers.hilites;
 	
-	context.fillStyle = base.theme.editor.hiliteBackground;
+	//let leftEdge = marginOffset - scrollPosition.x;
+	let rowOffset = -(scrollPosition.y % rowHeight);
 	
-	for (let selection of normalHilites) {
-		let regions = view.calculateNormalSelectionRegions(selection);
+	//let x;
+	let y = topMargin + rowOffset;
+	
+	let startY;
+	let endY;
+	
+	return {
+		init() {
+			context.fillStyle = base.theme.editor.hiliteBackground;
+		},
 		
-		for (let [x, y, width, height] of regions) {
+		startRow() {
+		},
+		
+		endRow() {
+		},
+		
+		draw() {
 			context.fillRect(x, y, width, height);
-		}
-	}
+		},
+	};
 }

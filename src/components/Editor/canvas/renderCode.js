@@ -2,33 +2,16 @@ module.exports = function(layers, view) {
 	let {
 		fontFamily,
 		fontSize,
-		marginBackground,
-		lineNumberColor,
 		defaultColor,
 	} = base.theme.editor;
 	
 	let {
-		sizes,
-		measurements,
+		sizes: {width, topMargin, marginWidth, marginOffset},
+		measurements: {colWidth, rowHeight},
 		scrollPosition,
 	} = view;
 	
-	let {
-		colWidth,
-		rowHeight,
-	} = measurements;
-	
-	let {
-		width,
-		topMargin,
-		marginWidth,
-		marginOffset,
-	} = sizes;
-	
 	let context = layers.code;
-	
-	context.font = fontSize + "px " + fontFamily;
-	context.fillStyle = defaultColor;
 	
 	let leftEdge = marginOffset - scrollPosition.x;
 	let rowOffset = -(scrollPosition.y % rowHeight);
@@ -37,6 +20,11 @@ module.exports = function(layers, view) {
 	let y = rowHeight + topMargin + rowOffset; // rowHeight added as using textBaseline="bottom"
 	
 	return {
+		init() {
+			context.font = fontSize + "px " + fontFamily;
+			context.fillStyle = defaultColor;
+		},
+		
 		setColor(color) {
 			context.fillStyle = color;
 		},

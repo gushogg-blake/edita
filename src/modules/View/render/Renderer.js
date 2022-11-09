@@ -43,9 +43,9 @@ function getFoldedLineRowsToRender(view) {
 }
 
 class Renderer {
-	constructor(view, canvas) {
+	constructor(view, canvasRenderers) {
 		this.view = view;
-		this.canvas = canvas;
+		this.canvasRenderers = canvasRenderers;
 		this.document = view.document;
 		this.foldedLineRows = getFoldedLineRowsToRender(view);
 	}

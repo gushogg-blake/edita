@@ -123,7 +123,7 @@ onMount(async function() {
 #scroll {
 	@include abs-sticky;
 	
-	--scrollbarBackgroundColor: var(--appBackgroundColor);
+	--scrollbarBackground: var(--appBackground);
 	
 	overflow: auto;
 	

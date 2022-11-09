@@ -1,19 +1,9 @@
 module.exports = function(layers, view) {
 	let {
-		sizes,
-		measurements,
+		sizes: {topMargin, marginOffset},
+		measurements: {colWidth, rowHeight},
 		scrollPosition,
 	} = view;
-	
-	let {
-		colWidth,
-		rowHeight,
-	} = measurements;
-	
-	let {
-		topMargin,
-		marginOffset,
-	} = sizes;
 	
 	let {
 		foldHeaderBorder,

@@ -1,29 +1,11 @@
 module.exports = function(layers, view, isPeeking) {
 	let {
-		astSelectionBackground,
-	} = base.theme.editor;
-	
-	let {
-		sizes,
-		measurements,
+		sizes: {width, topMargin, marginWidth, marginOffset},
+		measurements: {colWidth, rowHeight},
 		scrollPosition,
 	} = view;
 	
-	let {
-		colWidth,
-		rowHeight,
-	} = measurements;
-	
-	let {
-		width,
-		topMargin,
-		marginWidth,
-		marginOffset,
-	} = sizes;
-	
 	let context = layers.hilites;
-	
-	context.fillStyle = astSelectionBackground;
 	
 	//let leftEdge = marginOffset - scrollPosition.x;
 	let rowOffset = -(scrollPosition.y % rowHeight);
@@ -35,6 +17,10 @@ module.exports = function(layers, view, isPeeking) {
 	let endY;
 	
 	return {
+		init() {
+			context.fillStyle = base.theme.editor.astSelectionBackground;
+		},
+		
 		setStartLine(line) {
 			//x = Math.max(0, leftEdge + line.indentCols * colWidth);
 			startY = y;

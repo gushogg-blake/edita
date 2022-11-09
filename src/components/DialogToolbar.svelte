@@ -12,7 +12,7 @@ let fire = createEventDispatcher();
 	justify-content: space-between;
 	align-items: center;
 	padding: 3px;
-	background: var(--toolbarBackgroundColor);
+	background: var(--toolbarBackground);
 }
 
 #title {

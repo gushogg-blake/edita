@@ -146,7 +146,7 @@ onMount(function() {
 	height: 100%;
 	outline: none;
 	cursor: default;
-	background: var(--appBackgroundColor);
+	background: var(--appBackground);
 }
 
 #toolbar {
@@ -195,7 +195,7 @@ onMount(function() {
 	display: grid;
 	grid-template-rows: 1fr;
 	grid-template-columns: 1fr;
-	background: var(--appBackgroundColor);
+	background: var(--appBackground);
 	contain: strict;
 	
 	&.selected {

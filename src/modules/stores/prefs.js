@@ -60,6 +60,10 @@ let migrations = {
 	"7"(prefs) {
 		prefs.maxLineLengthForParsing = 300;
 	},
+	
+	"8"(prefs) {
+		prefs.normalKeymap[""] = "pasteAndIndent";
+	},
 };
 
 module.exports = function() {
@@ -128,6 +132,7 @@ module.exports = function() {
 			"Ctrl+C": "copy",
 			"Ctrl+V": "paste",
 			"Ctrl+A": "selectAll",
+			"Ctrl+Shift+V": "pasteAndIndent",
 			
 			"Ctrl+Space": "completeWord",
 			

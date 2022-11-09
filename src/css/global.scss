@@ -3,7 +3,7 @@
 	font-size: var(--fontSize);
 	color: var(--color);
 	user-select: none;
-	background: var(--appBackgroundColor);
+	background: var(--appBackground);
 	
 	&, div, form, input {
 		box-sizing: border-box;
@@ -18,7 +18,7 @@
 		border: var(--inputBorder);
 		border-radius: 3px;
 		outline: none;
-		background: var(--inputBackgroundColor);
+		background: var(--inputBackground);
 	}
 	
 	button {
@@ -27,7 +27,7 @@
 		border-radius: 3px;
 		padding: .3em .7em;
 		outline: none;
-		background: var(--buttonBackgroundColor);
+		background: var(--buttonBackground);
 		
 		&:active {
 			box-shadow: inset 1px 1px 3px #00000025;
@@ -48,9 +48,9 @@
 			min-width: 40px;
 			min-height: 40px;
 			border-radius: 8px;
-			border: var(--scrollbarPadding) solid var(--scrollbarBackgroundColor);
+			border: var(--scrollbarPadding) solid var(--scrollbarBackground);
 			background-clip: content-box;
-			background: var(--scrollbarThumbBackgroundColor);
+			background: var(--scrollbarThumbBackground);
 		}
 		
 		&::-webkit-scrollbar-corner {

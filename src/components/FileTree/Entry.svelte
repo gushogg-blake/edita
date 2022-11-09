@@ -117,7 +117,7 @@ onMount(function() {
 }
 
 .selected {
-	background: var(--listItemSelectedBackgroundColor);
+	background: var(--listItemSelectedBackground);
 }
 
 #icon {
@@ -128,11 +128,11 @@ onMount(function() {
 }
 
 .dirIcon {
-	background: var(--dirEntryFolderBackgroundColor);
+	background: var(--dirEntryFolderBackground);
 }
 
 .fileIcon {
-	background: var(--dirEntryFileBackgroundColor);
+	background: var(--dirEntryFileBackground);
 }
 
 #name {
@@ -152,7 +152,7 @@ onMount(function() {
 	border: 1px solid var(--listItemExpandContractBorder);
 	border-radius: 1px;
 	padding: 1px 3px;
-	background: var(--listItemExpandContractBackgroundColor);
+	background: var(--listItemExpandContractBackground);
 }
 </style>
 

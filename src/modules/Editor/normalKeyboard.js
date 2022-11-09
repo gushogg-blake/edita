@@ -506,6 +506,10 @@ module.exports = {
 		this.clearBatchState();
 	},
 	
+	pasteAndIndent(str) {
+		//let {indentLevel} = this.document.lines[this.view.normalSelection.start.lineIndex];
+	},
+	
 	insert(key) {
 		let newBatchState = this.view.Selection.isFull() ? null : "typing";
 		

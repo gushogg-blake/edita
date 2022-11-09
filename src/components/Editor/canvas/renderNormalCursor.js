@@ -1,24 +1,34 @@
 module.exports = function(layers, view, windowHasFocus) {
 	let {
-		normalSelection,
-		insertCursor,
-		measurements,
-		focused,
-		cursorBlinkOn,
+		sizes: {topMargin, marginWidth, marginOffset},
+		measurements: {colWidth, rowHeight},
+		scrollPosition,
 	} = view;
-	
-	if (!cursorBlinkOn || !focused || !windowHasFocus || insertCursor) {
-		return;
-	}
-	
-	let [x, y] = view.screenCoordsFromCursor(normalSelection.end);
-	
-	if (x < view.sizes.marginWidth) {
-		return;
-	}
 	
 	let context = layers.code;
 	
-	context.fillStyle = base.theme.editor.cursorColor;
-	context.fillRect(x, y, 1, measurements.rowHeight);
+	//let leftEdge = marginOffset - scrollPosition.x;
+	let rowOffset = -(scrollPosition.y % rowHeight);
+	
+	//let x;
+	let y = topMargin + rowOffset;
+	
+	let startY;
+	let endY;
+	
+	return {
+		init() {
+			context.fillStyle = base.theme.editor.cursorColor;
+		},
+		
+		startRow() {
+		},
+		
+		endRow() {
+		},
+		
+		draw() {
+			context.fillRect(x, y, 1, rowHeight);
+		},
+	};
 }

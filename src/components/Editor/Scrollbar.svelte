@@ -110,7 +110,7 @@ onMount(function() {
 
 <style lang="scss">
 #main {
-	background: var(--scrollbarBackgroundColor);
+	background: var(--scrollbarBackground);
 	
 	&.vertical {
 		height: 100%;
@@ -140,7 +140,7 @@ onMount(function() {
 	position: absolute;
 	border: var(--scrollbarThumbBorder);
 	border-radius: 8px;
-	background: var(--scrollbarThumbBackgroundColor);
+	background: var(--scrollbarThumbBackground);
 	
 	.vertical & {
 		width: var(--scrollbarWidth);

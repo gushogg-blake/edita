@@ -57,7 +57,7 @@ onMount(function() {
 	display: flex;
 	gap: 3px;
 	padding: 3px;
-	background: var(--toolbarBackgroundColor);
+	background: var(--toolbarBackground);
 }
 </style>
 

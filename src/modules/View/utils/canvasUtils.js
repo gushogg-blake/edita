@@ -1,5 +1,5 @@
 let Selection = require("modules/utils/Selection");
-let expandTabs = require("modules/utils/string/expandTabs");
+let expandTabs = require("modules/utils/expandTabs");
 
 module.exports = {
 	calculateNormalSelectionRegions(selection) {

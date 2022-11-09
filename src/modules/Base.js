@@ -36,6 +36,8 @@ the init() method.
 this can be shared between multiple instances of the UI, e.g. with multiple
 instances embedded in a web page, so doesn't know anything about the state of
 the UI.
+
+lifespan: global singleton created on startup; never destroyed.
 */
 
 class Base extends Evented {

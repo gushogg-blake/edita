@@ -1,21 +1,34 @@
 module.exports = function(layers, view) {
 	let {
-		insertCursor,
-		measurements,
+		sizes: {topMargin, marginWidth, marginOffset},
+		measurements: {colWidth, rowHeight},
+		scrollPosition,
 	} = view;
-	
-	if (!insertCursor) {
-		return;
-	}
-	
-	let [x, y] = view.screenCoordsFromCursor(insertCursor);
-	
-	if (x < view.sizes.marginOffset) {
-		return;
-	}
 	
 	let context = layers.hilites;
 	
-	context.fillStyle = base.theme.editor.cursorColor;
-	context.fillRect(x, y, 1, measurements.rowHeight);
+	//let leftEdge = marginOffset - scrollPosition.x;
+	let rowOffset = -(scrollPosition.y % rowHeight);
+	
+	//let x;
+	let y = topMargin + rowOffset;
+	
+	let startY;
+	let endY;
+	
+	return {
+		init() {
+			context.fillStyle = base.theme.editor.cursorColor;
+		},
+		
+		startRow() {
+		},
+		
+		endRow() {
+		},
+		
+		draw() {
+			context.fillRect(x, y, 1, rowHeight);
+		},
+	};
 }

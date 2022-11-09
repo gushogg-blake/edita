@@ -658,7 +658,7 @@ canvas {
 
 #scrollbarSpacer {
 	grid-area: spacer;
-	background: var(--scrollbarSpacerBackgroundColor);
+	background: var(--scrollbarSpacerBackground);
 }
 
 #measurements {

@@ -129,11 +129,11 @@ onMount(function() {
 }
 
 .dirIcon {
-	background: var(--dirEntryFolderBackgroundColor);
+	background: var(--dirEntryFolderBackground);
 }
 
 .fileIcon {
-	background: var(--dirEntryFileBackgroundColor);
+	background: var(--dirEntryFileBackground);
 }
 </style>
 

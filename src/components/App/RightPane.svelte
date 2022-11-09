@@ -86,7 +86,7 @@ onMount(function() {
 #scroll {
 	@include abs-sticky;
 	
-	--scrollbarBackgroundColor: var(--appBackgroundColor);
+	--scrollbarBackground: var(--appBackground);
 	
 	overflow: auto;
 	
@@ -125,11 +125,11 @@ onMount(function() {
 }
 
 .dirIcon {
-	background: var(--dirEntryFolderBackgroundColor);
+	background: var(--dirEntryFolderBackground);
 }
 
 .fileIcon {
-	background: var(--dirEntryFileBackgroundColor);
+	background: var(--dirEntryFileBackground);
 }
 </style>
 

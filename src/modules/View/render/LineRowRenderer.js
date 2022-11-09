@@ -15,7 +15,6 @@ function *generateVariableWidthParts(lineRow) {
 module.exports = class {
 	constructor(renderer) {
 		this.renderer = renderer;
-		
 		this.foldedLineRow = null;
 		this.offset = null;
 		this.variableWidthPart = null;
@@ -42,6 +41,10 @@ module.exports = class {
 	}
 	
 	init(row) {
+		if (this.canvasRenderer.init) {
+			this.canvasRenderer.init();
+		}
+		
 		this.startRow(row);
 	}
 	

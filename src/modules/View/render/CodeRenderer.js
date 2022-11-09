@@ -12,7 +12,7 @@ module.exports = class extends LineRowRenderer {
 		this.ranges = ranges;
 		this.injectionRanges = injectionRanges;
 		
-		this.renderCode = renderer.canvas.code();
+		this.canvasRenderer = this.renderer.canvasRenderers.code();
 		
 		this.rangeIndex = 0;
 		this.injectionRangeIndex = 0;
@@ -169,7 +169,7 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	setColor() {
-		this.renderCode.setColor(this.nodeColor);
+		this.canvasRenderer.setColor(this.nodeColor);
 	}
 	
 	getColor(node) {
@@ -183,13 +183,13 @@ module.exports = class extends LineRowRenderer {
 	startRow(row) {
 		super.startRow(row);
 		
-		this.renderCode.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
+		this.canvasRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
 	}
 	
 	endRow() {
 		super.endRow();
 		
-		this.renderCode.endRow();
+		this.canvasRenderer.endRow();
 	}
 	
 	_offsetOrInfinity(cursor) {
@@ -249,9 +249,9 @@ module.exports = class extends LineRowRenderer {
 				let substring = string.substring(this.offset - offset, renderTo - offset);
 				
 				if (!this.inRange() || this.inInjectionRange()) {
-					this.renderCode.skipText(substring);
+					this.canvasRenderer.skipText(substring);
 				} else {
-					this.renderCode.drawText(substring);
+					this.canvasRenderer.drawText(substring);
 				}
 				
 				this.offset += length;
@@ -260,7 +260,7 @@ module.exports = class extends LineRowRenderer {
 					this.nextVariableWidthPart();
 				}
 			} else {
-				this.renderCode.drawTab(this.variableWidthPart.width);
+				this.canvasRenderer.drawTab(this.variableWidthPart.width);
 				
 				this.offset++;
 				

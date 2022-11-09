@@ -13,7 +13,7 @@ function click(item) {
 <style lang="scss">
 #main {
 	border: var(--contextMenuBorder);
-	background: var(--contextMenuBackgroundColor);
+	background: var(--contextMenuBackground);
 }
 
 .item {
@@ -22,7 +22,7 @@ function click(item) {
 	
 	&:hover {
 		color: var(--contextMenuHoverColor);
-		background: var(--contextMenuHoverBackgroundColor);
+		background: var(--contextMenuHoverBackground);
 	}
 }
 </style>

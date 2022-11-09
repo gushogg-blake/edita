@@ -192,7 +192,7 @@ onMount(function() {
 	border: var(--contextMenuBorder);
 	border-radius: 2px;
 	overflow: hidden;
-	background: var(--contextMenuBackgroundColor);
+	background: var(--contextMenuBackground);
 }
 
 #list {
@@ -219,7 +219,7 @@ onMount(function() {
 	
 	&:hover {
 		color: var(--contextMenuHoverColor);
-		background: var(--contextMenuHoverBackgroundColor);
+		background: var(--contextMenuHoverBackground);
 	}
 }
 </style>

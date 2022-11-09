@@ -7,41 +7,41 @@ module.exports = {
 		color: "#444444",
 		
 		appBorder: "1px solid #afacaa",
-		appBackgroundColor: "#edecea",
+		appBackground: "#edecea",
 		
 		buttonColor: "#333333",
-		buttonBackgroundColor: "#efefef",
-		tabBackgroundColor: "transparent",
-		tabSelectedBackgroundColor: "white",
-		toolbarBackgroundColor: "#f2f2f0",
+		buttonBackground: "#efefef",
+		tabBackground: "transparent",
+		tabSelectedBackground: "white",
+		toolbarBackground: "#f2f2f0",
 		
 		inputColor: "#444444",
 		inputBorder: "1px solid #adaba6",
-		inputBackgroundColor: "white",
+		inputBackground: "white",
 		
-		listItemSelectedBackgroundColor: "rgba(0, 0, 0, 0.1)",
-		listItemExpandContractBackgroundColor: "white",
+		listItemSelectedBackground: "rgba(0, 0, 0, 0.1)",
+		listItemExpandContractBackground: "white",
 		listItemExpandContractBorder: "#bbbbbb",
 		
-		dirEntryFolderBackgroundColor: "#b9d7f1",
-		dirEntryFileBackgroundColor: "#fbfbfb",
+		dirEntryFolderBackground: "#b9d7f1",
+		dirEntryFileBackground: "#fbfbfb",
 		
-		findResultsBackgroundColor: "#ffffff",
+		findResultsBackground: "#ffffff",
 		
 		contextMenuColor: "var(--appColor)",
 		contextMenuBorder: "1px solid #B4BBC1",
-		contextMenuBackgroundColor: "white",
+		contextMenuBackground: "white",
 		contextMenuHoverColor: "white",
-		contextMenuHoverBackgroundColor: "#71A339",
+		contextMenuHoverBackground: "#71A339",
 		
 		scrollbarThumbWidth: 8,
 		scrollbarPadding: 3,
 		scrollbarWidth: "calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2)",
-		scrollbarBackgroundColor: "white",
+		scrollbarBackground: "white",
 		scrollbarBorder: "1px solid #bababa",
-		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackgroundColor)",
-		scrollbarThumbBackgroundColor: "#B2B2B2",
-		scrollbarSpacerBackgroundColor: "#e8e8e8",
+		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackground)",
+		scrollbarThumbBackground: "#B2B2B2",
+		scrollbarSpacerBackground: "#e8e8e8",
 	},
 	
 	editor: {

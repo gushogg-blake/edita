@@ -1,4 +1,4 @@
-let expandTabs = require("modules/utils/string/expandTabs");
+let expandTabs = require("modules/utils/expandTabs");
 let getIndentLevel = require("modules/utils/getIndentLevel");
 
 class Line {
