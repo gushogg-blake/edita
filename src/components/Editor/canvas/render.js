@@ -26,17 +26,20 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	layers.background.fillRect(0, 0, width, height);
 	
 	view.render({
-		currentLineHilite: renderCurrentLineHilite(layers, view, windowHasFocus),
+		currentLineHilite: renderCurrentLineHilite(layers, view),
 		normalHilites: renderNormalHilites(layers, view),
 		normalSelection: renderNormalSelection(layers, view),
-		astSelection: renderAstSelection(layers, view, isPeekingAstMode),
-		astSelectionHilite: renderAstSelectionHilite(layers, view, isPeekingAstMode),
-		astInsertionHilite: renderAstInsertionHilite(layers, view, isPeekingAstMode),
+		astSelection: renderAstSelection(layers, view),
+		astSelectionHilite: renderAstSelectionHilite(layers, view),
+		astInsertionHilite: renderAstInsertionHilite(layers, view),
 		margin: renderMargin(layers, view),
 		foldHilites: renderFoldHilites(layers, view),
 		code: () => renderCode(layers, view),
-		normalCursor: renderNormalCursor(layers, view, windowHasFocus),
+		normalCursor: renderNormalCursor(layers, view),
 		insertCursor: renderInsertCursor(layers, view),
+	}, {
+		isPeekingAstMode,
+		windowHasFocus,
 	});
 	
 	if (base.getPref("dev.timing.render")) {

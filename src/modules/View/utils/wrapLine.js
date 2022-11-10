@@ -104,6 +104,7 @@ class LineWrapper {
 		lineRow.variableWidthParts.push({
 			type: "string",
 			string,
+			width: string.length,
 		});
 		
 		this.currentlyAvailableCols -= string.length;

@@ -25,12 +25,14 @@ class Line {
 				variableWidthParts.push({
 					type: "string",
 					string: str,
+					width: str.length,
 				});
 			}
 			
 			if (i < splitByTabs.length - 1) {
 				variableWidthParts.push({
 					type: "tab",
+					string: "\t",
 					width: tabWidth - str.length % tabWidth,
 				});
 			}

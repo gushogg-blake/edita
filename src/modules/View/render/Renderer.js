@@ -43,9 +43,10 @@ function getFoldedLineRowsToRender(view) {
 }
 
 class Renderer {
-	constructor(view, canvasRenderers) {
+	constructor(view, canvasRenderers, uiState) {
 		this.view = view;
 		this.canvasRenderers = canvasRenderers;
+		this.uiState = uiState;
 		this.document = view.document;
 		this.foldedLineRows = getFoldedLineRowsToRender(view);
 	}
@@ -61,9 +62,20 @@ class Renderer {
 	}
 	
 	render() {
-		let {mode} = this.view;
+		let {
+			mode,
+			insertCursor,
+			cursorBlinkOn,
+			focused,
+		} = this.view;
+		
+		let {windowHasFocus} = this.uiState;
+		
 		let normal = mode === "normal";
 		let ast = mode === "ast";
+		
+		let renderNormalCursor = normal && cursorBlinkOn && focused && !insertCursor && windowHasFocus;
+		let renderInsertCursor = normal && insertCursor;
 		
 		let renderers = [
 			normal && new CurrentLineHiliteRenderer(this),
@@ -81,8 +93,8 @@ class Renderer {
 				return new CodeRenderer(this, scope, ranges, injectionRanges)
 			}),
 			
-			normal && new NormalCursorRenderer(this),
-			normal && new InsertCursorRenderer(this),
+			renderNormalCursor && new NormalCursorRenderer(this),
+			renderInsertCursor && new InsertCursorRenderer(this),
 		].filter(Boolean);
 		
 		for (let renderer of renderers) {

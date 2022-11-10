@@ -180,12 +180,6 @@ module.exports = class extends LineRowRenderer {
 		return hiliteClass ? colors[hiliteClass] : null;
 	}
 	
-	startRow(row) {
-		super.startRow(row);
-		
-		this.canvasRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
-	}
-	
 	_offsetOrInfinity(cursor) {
 		return cursor?.lineIndex === this.lineIndex ? cursor.offset : Infinity;
 	}

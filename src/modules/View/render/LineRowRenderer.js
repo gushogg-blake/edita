@@ -59,6 +59,10 @@ module.exports = class {
 		this.nextVariableWidthPart();
 		
 		this.offset = this.lineRow.startOffset;
+		
+		if (this.canvasRenderer.startRow) {
+			this.canvasRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
+		}
 	}
 	
 	endRow() {

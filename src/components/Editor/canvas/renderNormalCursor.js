@@ -7,11 +7,12 @@ module.exports = function(layers, view, windowHasFocus) {
 	
 	let context = layers.code;
 	
-	//let leftEdge = marginOffset - scrollPosition.x;
+	let leftEdge = marginOffset - scrollPosition.x;
 	let rowOffset = -(scrollPosition.y % rowHeight);
 	
-	//let x;
+	let x;
 	let y = topMargin + rowOffset;
+	let col;
 	
 	let startY;
 	let endY;
@@ -21,14 +22,21 @@ module.exports = function(layers, view, windowHasFocus) {
 			context.fillStyle = base.theme.editor.cursorColor;
 		},
 		
-		startRow() {
+		startRow(wrapIndentCols) {
+			x = leftEdge;
+			col = wrapIndentCols;
 		},
 		
 		endRow() {
+			y += rowHeight;
+		},
+		
+		skipText(cols) {
+			col += cols;
 		},
 		
 		draw() {
-			context.fillRect(x, y, 1, rowHeight);
+			context.fillRect(Math.round(x + col * colWidth), y, 1, rowHeight);
 		},
 	};
 }

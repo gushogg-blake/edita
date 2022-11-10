@@ -9,7 +9,7 @@ let SelectionUtils = require("./utils/Selection");
 let AstSelectionUtils = require("./utils/AstSelection");
 let wrapLine = require("./utils/wrapLine");
 let canvasUtils = require("./utils/canvasUtils");
-let render = require("./render");
+let Renderer = require("./render/Renderer");
 
 let {s: a} = AstSelection;
 let {c} = Cursor;
@@ -92,8 +92,10 @@ class View extends Evented {
 		];
 	}
 	
-	render(canvas) {
-		return render(this, canvas);
+	render(canvas, uiState) {
+		let renderer = new Renderer(this, canvas, uiState);
+		
+		renderer.render();
 	}
 	
 	updateWrappedLines() {
