@@ -1,4 +1,4 @@
-module.exports = function(layers, view, isPeeking) {
+module.exports = function(layers, view) {
 	let {
 		sizes: {width, topMargin, marginWidth, marginOffset},
 		measurements: {colWidth, rowHeight},
@@ -35,11 +35,7 @@ module.exports = function(layers, view, isPeeking) {
 		endRow() {
 		},
 		
-		draw(onlyIfPeeking) { // AstSelection.equals(hilite, selection)
-			if (onlyIfPeeking && !isPeeking) {
-				return;
-			}
-			
+		draw() {
 			if (height === 0) {
 				context.fillRect(0, y, width, 2);
 			} else {

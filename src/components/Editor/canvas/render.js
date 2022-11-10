@@ -8,7 +8,6 @@ let renderMargin = require("./renderMargin");
 let renderFoldHilites = require("./renderFoldHilites");
 let renderCode = require("./renderCode");
 let renderNormalCursor = require("./renderNormalCursor");
-let renderInsertCursor = require("./renderInsertCursor");
 
 module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	let {width, height} = view.sizes;
@@ -36,7 +35,6 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		foldHilites: renderFoldHilites(layers, view),
 		code: () => renderCode(layers, view),
 		normalCursor: renderNormalCursor(layers, view),
-		insertCursor: renderInsertCursor(layers, view),
 	}, {
 		isPeekingAstMode,
 		windowHasFocus,

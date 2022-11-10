@@ -1,4 +1,4 @@
-module.exports = function(layers, view, windowHasFocus) {
+module.exports = function(layers, view) {
 	let {
 		sizes: {topMargin, marginWidth, marginOffset},
 		measurements: {colWidth, rowHeight},

@@ -1,34 +1,15 @@
 let LineRowRenderer = require("./LineRowRenderer");
 
-/*
-let {
-	normalSelection,
-	insertCursor,
-	measurements,
-	focused,
-	cursorBlinkOn,
-} = view;
-
-if (!cursorBlinkOn || !focused || !windowHasFocus || insertCursor) {
-	return;
-}
-
-let [x, y] = view.screenCoordsFromCursor(normalSelection.end);
-
-if (x < view.sizes.marginWidth) {
-	return;
-}
-*/
-
 module.exports = class extends LineRowRenderer {
-	constructor(renderer) {
+	constructor(renderer, cursor) {
 		super(renderer);
 		
+		this.cursorToRender = cursor;
 		this.canvasRenderer = this.renderer.canvasRenderers.normalCursor;
 	}
 	
 	renderRow() {
-		let {lineIndex, offset} = this.renderer.view.normalSelection.end;
+		let {lineIndex, offset} = this.cursorToRender;
 		let {lineRow} = this;
 		let {lineRows} = this.foldedLineRow.wrappedLine;
 		let offsetInRow = offset - lineRow.startOffset;
@@ -62,7 +43,6 @@ module.exports = class extends LineRowRenderer {
 				
 				this.nextVariableWidthPart();
 			}
-			
 		}
 	}
 }

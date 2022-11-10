@@ -11,7 +11,6 @@ let MarginRenderer = require("./MarginRenderer");
 let FoldHiliteRenderer = require("./FoldHiliteRenderer");
 let CodeRenderer = require("./CodeRenderer");
 let NormalCursorRenderer = require("./NormalCursorRenderer");
-let InsertCursorRenderer = require("./InsertCursorRenderer");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -65,6 +64,7 @@ class Renderer {
 		let {
 			mode,
 			insertCursor,
+			normalSelection,
 			cursorBlinkOn,
 			focused,
 		} = this.view;
@@ -93,8 +93,8 @@ class Renderer {
 				return new CodeRenderer(this, scope, ranges, injectionRanges)
 			}),
 			
-			renderNormalCursor && new NormalCursorRenderer(this),
-			renderInsertCursor && new InsertCursorRenderer(this),
+			renderNormalCursor && new NormalCursorRenderer(this, normalSelection.end),
+			renderInsertCursor && new NormalCursorRenderer(this, insertCursor),
 		].filter(Boolean);
 		
 		for (let renderer of renderers) {
