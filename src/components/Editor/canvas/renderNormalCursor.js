@@ -10,12 +10,8 @@ module.exports = function(layers, view) {
 	let leftEdge = marginOffset - scrollPosition.x;
 	let rowOffset = -(scrollPosition.y % rowHeight);
 	
-	let x;
 	let y = topMargin + rowOffset;
 	let col;
-	
-	let startY;
-	let endY;
 	
 	return {
 		init() {
@@ -23,7 +19,6 @@ module.exports = function(layers, view) {
 		},
 		
 		startRow(wrapIndentCols) {
-			x = leftEdge;
 			col = wrapIndentCols;
 		},
 		
@@ -36,7 +31,7 @@ module.exports = function(layers, view) {
 		},
 		
 		draw() {
-			context.fillRect(Math.round(x + col * colWidth), y, 1, rowHeight);
+			context.fillRect(Math.round(leftEdge + col * colWidth), y, 1, rowHeight);
 		},
 	};
 }

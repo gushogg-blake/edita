@@ -136,10 +136,6 @@ module.exports = class extends LineRowRenderer {
 		}
 	}
 	
-	atCursor(cursor) {
-		return cursor && Cursor.equals(this.cursor, cursor);
-	}
-	
 	atNodeEnd() {
 		return this.atCursor(this.nodeEndCursor);
 	}
@@ -178,10 +174,6 @@ module.exports = class extends LineRowRenderer {
 		let hiliteClass = lang.getHiliteClass(node, nodeUtils);
 		
 		return hiliteClass ? colors[hiliteClass] : null;
-	}
-	
-	_offsetOrInfinity(cursor) {
-		return cursor?.lineIndex === this.lineIndex ? cursor.offset : Infinity;
 	}
 	
 	getCurrentRangeEnd() {

@@ -52,6 +52,14 @@ module.exports = class {
 		this.variableWidthPart = this.variableWidthPartGenerator.next().value;
 	}
 	
+	atCursor(cursor) {
+		return cursor && Cursor.equals(this.cursor, cursor);
+	}
+	
+	_offsetOrInfinity(cursor) {
+		return cursor?.lineIndex === this.lineIndex ? cursor.offset : Infinity;
+	}
+	
 	startRow(row) {
 		this.foldedLineRow = row;
 		

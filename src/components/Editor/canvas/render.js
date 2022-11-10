@@ -1,6 +1,5 @@
 let renderCurrentLineHilite = require("./renderCurrentLineHilite");
-let renderNormalHilites = require("./renderNormalHilites");
-let renderNormalSelection = require("./renderNormalSelection");
+let renderNormalSelections = require("./renderNormalSelections");
 let renderAstSelection = require("./renderAstSelection");
 let renderAstSelectionHilite = require("./renderAstSelectionHilite");
 let renderAstInsertionHilite = require("./renderAstInsertionHilite");
@@ -26,8 +25,8 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	
 	view.render({
 		currentLineHilite: renderCurrentLineHilite(layers, view),
-		normalHilites: renderNormalHilites(layers, view),
-		normalSelection: renderNormalSelection(layers, view),
+		normalHilites: renderNormalSelections(layers, view, base.theme.editor.hiliteBackground),
+		normalSelection: renderNormalSelections(layers, view, base.theme.editor.selectionBackground),
 		astSelection: renderAstSelection(layers, view),
 		astSelectionHilite: renderAstSelectionHilite(layers, view),
 		astInsertionHilite: renderAstInsertionHilite(layers, view),

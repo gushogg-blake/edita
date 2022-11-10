@@ -2,7 +2,6 @@ let Cursor = require("modules/utils/Cursor");
 let Selection = require("modules/utils/Selection");
 
 let CurrentLineHiliteRenderer = require("./CurrentLineHiliteRenderer");
-let NormalHiliteRenderer = require("./NormalHiliteRenderer");
 let NormalSelectionRenderer = require("./NormalSelectionRenderer");
 let AstSelectionRenderer = require("./AstSelectionRenderer");
 let AstSelectionHiliteRenderer = require("./AstSelectionHiliteRenderer");
@@ -47,17 +46,20 @@ class Renderer {
 		this.canvasRenderers = canvasRenderers;
 		this.uiState = uiState;
 		this.document = view.document;
+		
 		this.foldedLineRows = getFoldedLineRowsToRender(view);
-	}
-	
-	getVisibleScopes() {
+		
 		let firstRow = this.foldedLineRows[0];
 		let lastRow = this.foldedLineRows[this.foldedLineRows.length - 1];
 		
-		return this.document.getVisibleScopes(s(
+		this.visibleSelection = s(
 			c(firstRow.lineIndex, firstRow.lineRow.startOffset),
 			c(lastRow.lineIndex, lastRow.lineRow.startOffset + lastRow.lineRow.string.length),
-		));
+		);
+	}
+	
+	getVisibleScopes() {
+		return this.document.getVisibleScopes(this.visibleSelection);
 	}
 	
 	render() {
@@ -65,6 +67,7 @@ class Renderer {
 			mode,
 			insertCursor,
 			normalSelection,
+			normalHilites,
 			cursorBlinkOn,
 			focused,
 		} = this.view;
@@ -79,8 +82,8 @@ class Renderer {
 		
 		let renderers = [
 			normal && new CurrentLineHiliteRenderer(this),
-			new NormalHiliteRenderer(this),
-			normal && new NormalSelectionRenderer(this),
+			new NormalSelectionRenderer(this, normalHilites, this.canvasRenderers.normalHilites),
+			normal && new NormalSelectionRenderer(this, [Selection.sort(normalSelection)], this.canvasRenderers.normalSelection),
 			
 			ast && new AstSelectionRenderer(this),
 			ast && new AstSelectionHiliteRenderer(this),
