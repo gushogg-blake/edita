@@ -79,11 +79,12 @@ class Renderer {
 		
 		let renderNormalCursor = normal && cursorBlinkOn && focused && !insertCursor && windowHasFocus;
 		let renderInsertCursor = normal && insertCursor;
+		let renderNormalSelection = normal && this.view.Selection.isFull();
 		
 		let renderers = [
 			normal && new CurrentLineHiliteRenderer(this),
 			//new NormalSelectionRenderer(this, normalHilites, this.canvasRenderers.normalHilites),
-			normal && new NormalSelectionRenderer(this, [Selection.sort(normalSelection)], this.canvasRenderers.normalSelection),
+			renderNormalSelection && new NormalSelectionRenderer(this, [Selection.sort(normalSelection)], this.canvasRenderers.normalSelection),
 			
 			ast && new AstSelectionRenderer(this),
 			ast && new AstSelectionHiliteRenderer(this),
