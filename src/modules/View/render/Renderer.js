@@ -83,7 +83,7 @@ class Renderer {
 		
 		let renderers = [
 			normal && new CurrentLineHiliteRenderer(this),
-			//new NormalSelectionRenderer(this, normalHilites, this.canvasRenderers.normalHilites),
+			new NormalSelectionRenderer(this, normalHilites, this.canvasRenderers.normalHilites),
 			renderNormalSelection && new NormalSelectionRenderer(this, [Selection.sort(normalSelection)], this.canvasRenderers.normalSelection),
 			
 			ast && new AstSelectionRenderer(this),
