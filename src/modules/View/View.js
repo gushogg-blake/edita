@@ -32,7 +32,7 @@ class View extends Evented {
 		
 		this.mode = "normal";
 		
-		this.normalSelection = s(c(0, 0));
+		this.normalSelection = s(c(2, 7), c(3, 10));
 		
 		// for remembering the "intended" col when moving a cursor up/down to a line
 		// that doesn't have as many cols as the cursor

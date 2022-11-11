@@ -36,26 +36,30 @@ module.exports = class extends LineRowRenderer {
 		this.canvasRenderer = canvasRenderer;
 		
 		this.selectionIndex = null;
+		this.inSelection = false;
 	}
 	
 	get selection() {
 		return this.selectionIndex !== null ? this.selections[this.selectionIndex] : null;
 	}
 	
-	get inSelection() {
-		return this.selection && Selection.charIsWithinSelection(this.selection, this.cursor);
-	}
-	
 	get nextSelectionStartCursor() {
 		return this.selectionIndex !== null && this.selections[this.selectionIndex + 1]?.start;
 	}
 	
-	init() {
+	init(row) {
+		super.init(row);
+		
 		this.selectionIndex = findFirstVisibleSelectionIndex(this.renderer.visibleSelection, this.selections);
+		this.inSelection = this.selection && Selection.charIsWithinSelection(this.selection, this.cursor);
 		
 		if (this.inSelection) {
 			this.canvasRenderer.enterSelection();
 		}
+	}
+	
+	endRow() {
+		this.canvasRenderer.endRow(this.rowIndexInLine === this.foldedLineRow.wrappedLine.lineRows.length - 1);
 	}
 	
 	nextSelection() {
@@ -71,11 +75,11 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	getCurrentSelectionStart() {
-		return this._offsetOrInfinity(this.selection?.start);
+		return this._offsetOrInfinity(!this.inSelection && this.selection?.start);
 	}
 	
 	getCurrentSelectionEnd() {
-		return this._offsetOrInfinity(this.selection?.end);
+		return this._offsetOrInfinity(this.inSelection && this.selection.end);
 	}
 	
 	getNextSelectionStart() {
@@ -84,6 +88,12 @@ module.exports = class extends LineRowRenderer {
 	
 	step() {
 		let done = false;
+		
+		if (this.atSelectionStart()) {
+			this.inSelection = true;
+			
+			this.canvasRenderer.enterSelection();
+		}
 		
 		if (this.variableWidthPart) {
 			if (this.variableWidthPart.type === "string") {
@@ -119,14 +129,12 @@ module.exports = class extends LineRowRenderer {
 			done = true;
 		}
 		
-		if (this.atSelectionEnd()) {
+		if (this.inSelection && this.atSelectionEnd()) {
+			this.inSelection = false;
+			
 			this.canvasRenderer.leaveSelection();
 			
 			this.nextSelection();
-		}
-		
-		if (this.atSelectionStart()) {
-			this.canvasRenderer.enterSelection();
 		}
 		
 		return done;

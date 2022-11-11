@@ -10,9 +10,9 @@ class BottomPane extends Pane {
 		this.app = app;
 		
 		this.findResults = new FindResults(app);
-		this.clippingsEditor = app.createEditor();
+		//this.clippingsEditor = app.createEditor();
 		
-		this.clippingsEditor.view.setWrap(true);
+		//this.clippingsEditor.view.setWrap(true);
 		
 		this.tabs = [
 			{
@@ -41,11 +41,11 @@ class BottomPane extends Pane {
 	selectTab(tab) {
 		this.selectedTab = tab;
 		
-		if (tab === this.tabsById.clippings) {
-			this.clippingsEditor.focusAsync();
-		}
-		
-		this.updateClippingsEditorVisibility();
+		//if (tab === this.tabsById.clippings) {
+		//	this.clippingsEditor.focusAsync();
+		//}
+		//
+		//this.updateClippingsEditorVisibility();
 		
 		this.fire("selectTab");
 	}
@@ -71,11 +71,11 @@ class BottomPane extends Pane {
 	}
 	
 	updateClippingsEditorVisibility() {
-		if (this.visible && this.selectedTab === this.tabsById.clippings) {
-			this.clippingsEditor.view.show();
-		} else {
-			this.clippingsEditor.view.hide();
-		}
+		//if (this.visible && this.selectedTab === this.tabsById.clippings) {
+		//	this.clippingsEditor.view.show();
+		//} else {
+		//	this.clippingsEditor.view.hide();
+		//}
 	}
 }
 

@@ -17,7 +17,7 @@ module.exports = function(layers, view, style) {
 	
 	function draw() {
 		let x = leftEdge + startCol * colWidth;
-		let width = col - startCol * colWidth;
+		let width = (col - startCol) * colWidth;
 		
 		context.fillRect(x, y, width, rowHeight);
 	}
@@ -27,8 +27,12 @@ module.exports = function(layers, view, style) {
 			context.fillStyle = style;
 		},
 		
-		startRow() {
-			startCol = 0;
+		startRow(wrapIndentCols) {
+			col = wrapIndentCols;
+			
+			if (inSelection) {
+				startCol = col;
+			}
 		},
 		
 		endRow(isLastRow) {
