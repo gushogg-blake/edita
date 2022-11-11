@@ -87,46 +87,40 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	step() {
-		let done = false;
+		if (this.variableWidthPart.type === "string") {
+			let currentSelectionStart = this.getCurrentSelectionStart();
+			let currentSelectionEnd = this.getCurrentSelectionEnd();
+			let nextSelectionStart = this.getNextSelectionStart();
+			let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
+			
+			let renderTo = Math.min(
+				currentSelectionStart,
+				currentSelectionEnd,
+				nextSelectionStart,
+				partEnd,
+			);
+			
+			let length = renderTo - this.offset;
+			
+			this.canvasRenderer.advance(length);
+			
+			this.offset += length;
+			
+			if (renderTo === partEnd) {
+				this.nextVariableWidthPart();
+			}
+		} else {
+			this.canvasRenderer.advance(this.variableWidthPart.width);
+			
+			this.offset++;
+			
+			this.nextVariableWidthPart();
+		}
 		
 		if (this.atSelectionStart()) {
 			this.inSelection = true;
 			
 			this.canvasRenderer.enterSelection();
-		}
-		
-		if (this.variableWidthPart) {
-			if (this.variableWidthPart.type === "string") {
-				let currentSelectionStart = this.getCurrentSelectionStart();
-				let currentSelectionEnd = this.getCurrentSelectionEnd();
-				let nextSelectionStart = this.getNextSelectionStart();
-				let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
-				
-				let renderTo = Math.min(
-					currentSelectionStart,
-					currentSelectionEnd,
-					nextSelectionStart,
-					partEnd,
-				);
-				
-				let length = renderTo - this.offset;
-				
-				this.canvasRenderer.advance(length);
-				
-				this.offset += length;
-				
-				if (renderTo === partEnd) {
-					this.nextVariableWidthPart();
-				}
-			} else {
-				this.canvasRenderer.advance(this.variableWidthPart.width);
-				
-				this.offset++;
-				
-				this.nextVariableWidthPart();
-			}
-		} else {
-			done = true;
 		}
 		
 		if (this.inSelection && this.atSelectionEnd()) {
@@ -136,21 +130,21 @@ module.exports = class extends LineRowRenderer {
 			
 			this.nextSelection();
 		}
-		
-		return done;
 	}
 	
 	renderRow() {
-		//let i = 0;
+		let i = 0;
 		
-		while (!this.step()) {
-			//if (++i === 1000) {
-			//	console.log("infinite");
-			//}
-			//
-			//if (i === 1010) {
-			//	break;
-			//}
+		while (this.variableWidthPart) {
+			this.step();
+			
+			if (++i === 1000) {
+				console.log("infinite");
+			}
+			
+			if (i === 1010) {
+				break;
+			}
 		}
 	}
 }

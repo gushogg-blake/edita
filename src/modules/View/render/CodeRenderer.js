@@ -201,53 +201,47 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	step() {
-		let done = false;
-		
-		if (this.variableWidthPart) {
-			if (this.variableWidthPart.type === "string") {
-				let currentNodeEnd = this.getCurrentNodeEnd();
-				let nextChildStart = this.getNextChildStart();
-				let currentRangeEnd = this.getCurrentRangeEnd();
-				let nextRangeStart = this.getNextRangeStart();
-				let currentInjectionRangeEnd = this.getCurrentRangeEnd();
-				let nextInjectionRangeStart = this.getNextInjectionRangeStart();
-				let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
-				
-				let renderTo = Math.min(
-					currentRangeEnd,
-					nextRangeStart,
-					currentNodeEnd,
-					nextChildStart,
-					currentInjectionRangeEnd,
-					nextInjectionRangeStart,
-					partEnd,
-				);
-				
-				let length = renderTo - this.offset;
-				
-				let {string, offset} = this.variableWidthPart;
-				let substring = string.substring(this.offset - offset, renderTo - offset);
-				
-				if (!this.inRange() || this.inInjectionRange()) {
-					this.canvasRenderer.skipText(substring);
-				} else {
-					this.canvasRenderer.drawText(substring);
-				}
-				
-				this.offset += length;
-				
-				if (renderTo === partEnd) {
-					this.nextVariableWidthPart();
-				}
+		if (this.variableWidthPart.type === "string") {
+			let currentNodeEnd = this.getCurrentNodeEnd();
+			let nextChildStart = this.getNextChildStart();
+			let currentRangeEnd = this.getCurrentRangeEnd();
+			let nextRangeStart = this.getNextRangeStart();
+			let currentInjectionRangeEnd = this.getCurrentRangeEnd();
+			let nextInjectionRangeStart = this.getNextInjectionRangeStart();
+			let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
+			
+			let renderTo = Math.min(
+				currentRangeEnd,
+				nextRangeStart,
+				currentNodeEnd,
+				nextChildStart,
+				currentInjectionRangeEnd,
+				nextInjectionRangeStart,
+				partEnd,
+			);
+			
+			let length = renderTo - this.offset;
+			
+			let {string, offset} = this.variableWidthPart;
+			let substring = string.substring(this.offset - offset, renderTo - offset);
+			
+			if (!this.inRange() || this.inInjectionRange()) {
+				this.canvasRenderer.skipText(substring);
 			} else {
-				this.canvasRenderer.drawTab(this.variableWidthPart.width);
-				
-				this.offset++;
-				
+				this.canvasRenderer.drawText(substring);
+			}
+			
+			this.offset += length;
+			
+			if (renderTo === partEnd) {
 				this.nextVariableWidthPart();
 			}
 		} else {
-			done = true;
+			this.canvasRenderer.drawTab(this.variableWidthPart.width);
+			
+			this.offset++;
+			
+			this.nextVariableWidthPart();
 		}
 		
 		if (this.atNodeBoundary()) {
@@ -261,21 +255,21 @@ module.exports = class extends LineRowRenderer {
 		if (this.atInjectionRangeEnd()) {
 			this.nextInjectionRange();
 		}
-		
-		return done;
 	}
 	
 	renderRow() {
 		let i = 0;
 		
-		while (!this.step()) {
-			//if (++i === 1000) {
-			//	console.log("infinite");
-			//}
-			//
-			//if (i === 1010) {
-			//	break;
-			//}
+		while (this.variableWidthPart) {
+			this.step();
+			
+			if (++i === 1000) {
+				console.log("infinite");
+			}
+			
+			if (i === 1010) {
+				break;
+			}
 		}
 	}
 }

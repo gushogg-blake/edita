@@ -21,7 +21,12 @@ class Line {
 		for (let i = 0; i < splitByTabs.length; i++) {
 			let str = splitByTabs[i];
 			
-			if (str) {
+			/*
+			always have at least one empty string so that an empty line
+			has a single empty variable-width part
+			*/
+			
+			if (str || i === 0) {
 				variableWidthParts.push({
 					type: "string",
 					string: str,
