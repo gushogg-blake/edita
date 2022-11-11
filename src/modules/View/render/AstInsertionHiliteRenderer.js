@@ -31,7 +31,7 @@ module.exports = class extends LineRowRenderer {
 	constructor(renderer) {
 		super(renderer);
 		
-		this.canvasRenderer = renderer.canvas.astInsertionHilite;
+		this.canvasRenderer = this.renderer.canvasRenderers.astInsertionHilite;
 	}
 	
 	renderRow() {
