@@ -297,7 +297,7 @@ class View extends Evented {
 		
 		let {
 			measurements: {colWidth, rowHeight},
-			sizes: {codeWidth},
+			sizes: {codeWidth, topMargin},
 		} = this;
 		
 		if (x !== 0 && !this.wrap) {
@@ -318,7 +318,7 @@ class View extends Evented {
 			let newY = this.scrollPosition.y + y;
 			
 			newY = Math.max(0, newY);
-			newY = Math.min(newY, (this.countLineRowsFolded() - 1) * rowHeight);
+			newY = Math.min(newY, topMargin + (this.countLineRowsFolded() - 1) * rowHeight);
 			
 			scrolled = newY !== this.scrollPosition.y;
 			
