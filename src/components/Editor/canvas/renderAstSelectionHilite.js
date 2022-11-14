@@ -1,17 +1,12 @@
-module.exports = function(layers, view) {
+module.exports = function(layers, view, offsets) {
 	let {
-		sizes: {width, topMargin, marginWidth, marginOffset},
-		measurements: {colWidth, rowHeight},
-		scrollPosition,
+		sizes: {width},
+		measurements: {rowHeight},
 	} = view;
 	
 	let context = layers.hilites;
 	
-	//let leftEdge = marginOffset - scrollPosition.x;
-	let rowOffset = -(scrollPosition.y % rowHeight);
-	
-	//let x;
-	let y = topMargin + rowOffset;
+	let y = offsets.rowOffset;
 	
 	let startY;
 	let endY;
@@ -33,6 +28,7 @@ module.exports = function(layers, view) {
 		},
 		
 		endRow() {
+			y += rowHeight;
 		},
 		
 		draw() {

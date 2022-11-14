@@ -21,19 +21,23 @@ module.exports = class {
 	}
 	
 	get lineIndex() {
-		return this.foldedLineRow?.lineIndex;
+		return this.foldedLineRow.lineIndex;
 	}
 	
 	get rowIndexInLine() {
-		return this.foldedLineRow?.rowIndexInLine;
+		return this.foldedLineRow.rowIndexInLine;
 	}
 	
 	get line() {
-		return this.foldedLineRow?.line;
+		return this.foldedLineRow.line;
 	}
 	
 	get lineRow() {
-		return this.foldedLineRow?.lineRow;
+		return this.foldedLineRow.lineRow;
+	}
+	
+	get isLastRow() {
+		return this.rowIndexInLine === this.foldedLineRow.wrappedLine.lineRows.length - 1;
 	}
 	
 	get cursor() {

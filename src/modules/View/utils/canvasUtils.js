@@ -169,7 +169,8 @@ module.exports = {
 	
 	findFirstVisibleLine() {
 		let {rowHeight} = this.measurements;
-		let scrollRow = Math.floor(this.scrollPosition.y / rowHeight);
+		let scrollY = Math.max(0, this.scrollPosition.y - this.topMargin);
+		let scrollRow = Math.floor(scrollY / rowHeight);
 		let rowIndex = 0;
 		
 		for (let {lineIndex, wrappedLine} of this.generateWrappedLinesFolded()) {

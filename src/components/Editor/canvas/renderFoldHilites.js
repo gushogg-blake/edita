@@ -1,8 +1,6 @@
-module.exports = function(layers, view) {
+module.exports = function(layers, view, offsets) {
 	let {
-		sizes: {topMargin, marginOffset},
 		measurements: {colWidth, rowHeight},
-		scrollPosition,
 	} = view;
 	
 	let {
@@ -12,10 +10,7 @@ module.exports = function(layers, view) {
 	
 	let context;
 	
-	let leftEdge = marginOffset - scrollPosition.x;
-	let rowOffset = -(scrollPosition.y % rowHeight);
-	
-	let y = topMargin + rowOffset;
+	let y = offsets.rowOffset;
 	
 	return {
 		drawHilite(indentCols, lineWidth) {

@@ -38,10 +38,7 @@ let {
 	pickOptions,
 	completions,
 	scrollPosition,
-	measurements: {
-		rowHeight,
-		colWidth,
-	},
+	measurements: {rowHeight, colWidth},
 	sizes,
 } = view;
 

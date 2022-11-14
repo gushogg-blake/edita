@@ -1,16 +1,13 @@
-module.exports = function(layers, view) {
+module.exports = function(layers, view, offsets) {
 	let {
-		sizes: {topMargin, marginWidth, marginOffset},
 		measurements: {colWidth, rowHeight},
-		scrollPosition,
 	} = view;
 	
 	let context = layers.code;
 	
-	let leftEdge = marginOffset - scrollPosition.x;
-	let rowOffset = -(scrollPosition.y % rowHeight);
+	let {leftEdge, rowOffset} = offsets;
 	
-	let y = topMargin + rowOffset;
+	let y = rowOffset;
 	let col;
 	
 	return {

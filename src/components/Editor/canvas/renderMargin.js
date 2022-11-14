@@ -1,8 +1,7 @@
-module.exports = function(layers, view) {
+module.exports = function(layers, view, offsets) {
 	let {
-		sizes: {height, marginWidth, topMargin, marginStyle},
+		sizes: {height, marginWidth, marginStyle},
 		measurements: {colWidth, rowHeight},
-		scrollPosition,
 	} = view;
 	
 	let {
@@ -14,8 +13,7 @@ module.exports = function(layers, view) {
 	
 	let context = layers.margin;
 	
-	let rowOffset = -(scrollPosition.y % rowHeight);
-	let y = rowHeight + topMargin + rowOffset; // rowHeight added as using textBaseline="bottom"
+	let y = offsets.rowOffset + rowHeight; // rowHeight added as using textBaseline="bottom"
 	
 	return {
 		init() {

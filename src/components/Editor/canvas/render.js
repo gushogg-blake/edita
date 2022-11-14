@@ -9,7 +9,11 @@ let renderCode = require("./renderCode");
 let renderNormalCursor = require("./renderNormalCursor");
 
 module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
-	let {width, height} = view.sizes;
+	let {
+		sizes: {width, height, topMargin, marginOffset},
+		measurements: {rowHeight},
+		scrollPosition,
+	} = view;
 	
 	if (base.getPref("dev.timing.render")) {
 		console.time("render");
@@ -23,17 +27,22 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	
 	layers.background.fillRect(0, 0, width, height);
 	
+	let offsets = {
+		leftEdge: marginOffset - scrollPosition.x,
+		rowOffset: -((scrollPosition.y - topMargin) % rowHeight),
+	};
+	
 	view.render({
-		currentLineHilite: renderCurrentLineHilite(layers, view),
-		normalHilites: renderNormalSelections(layers, view, base.theme.editor.hiliteBackground),
-		normalSelection: renderNormalSelections(layers, view, base.theme.editor.selectionBackground),
-		astSelection: renderAstSelection(layers, view),
-		astSelectionHilite: renderAstSelectionHilite(layers, view),
-		astInsertionHilite: renderAstInsertionHilite(layers, view),
-		margin: renderMargin(layers, view),
-		foldHilites: renderFoldHilites(layers, view),
-		code: () => renderCode(layers, view),
-		normalCursor: renderNormalCursor(layers, view),
+		currentLineHilite: renderCurrentLineHilite(layers, view, offsets),
+		normalHilites: renderNormalSelections(layers, view, base.theme.editor.hiliteBackground, offsets),
+		normalSelection: renderNormalSelections(layers, view, base.theme.editor.selectionBackground, offsets),
+		astSelection: renderAstSelection(layers, view, offsets),
+		astSelectionHilite: renderAstSelectionHilite(layers, view, offsets),
+		astInsertionHilite: renderAstInsertionHilite(layers, view, offsets),
+		margin: renderMargin(layers, view, offsets),
+		foldHilites: renderFoldHilites(layers, view, offsets),
+		code: () => renderCode(layers, view, offsets),
+		normalCursor: renderNormalCursor(layers, view, offsets),
 	}, {
 		isPeekingAstMode,
 		windowHasFocus,

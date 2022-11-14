@@ -1,16 +1,14 @@
-module.exports = function(layers, view, style) {
+module.exports = function(layers, view, style, offsets) {
 	let {
-		sizes: {topMargin, marginWidth, marginOffset},
 		measurements: {colWidth, rowHeight},
 		scrollPosition,
 	} = view;
 	
 	let context = layers.hilites;
 	
-	let leftEdge = marginOffset - scrollPosition.x;
-	let rowOffset = -(scrollPosition.y % rowHeight);
+	let {leftEdge, rowOffset} = offsets;
 	
-	let y = topMargin + rowOffset;
+	let y = rowOffset;
 	let col;
 	let startCol;
 	let inSelection = false;

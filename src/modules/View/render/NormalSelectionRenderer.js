@@ -59,7 +59,7 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	endRow() {
-		this.canvasRenderer.endRow(this.rowIndexInLine === this.foldedLineRow.wrappedLine.lineRows.length - 1);
+		this.canvasRenderer.endRow(this.isLastRow);
 	}
 	
 	nextSelection() {

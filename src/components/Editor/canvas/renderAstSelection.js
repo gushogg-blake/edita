@@ -1,18 +1,12 @@
-module.exports = function(layers, view) {
+module.exports = function(layers, view, offsets) {
 	let {
-		sizes: {width, topMargin, marginWidth, marginOffset},
-		measurements: {colWidth, rowHeight},
-		scrollPosition,
+		sizes: {width},
+		measurements: {rowHeight},
 	} = view;
 	
 	let context = layers.hilites;
 	
-	//let leftEdge = marginOffset - scrollPosition.x;
-	let rowOffset = -(scrollPosition.y % rowHeight);
-	
-	//let x;
-	let y = topMargin + rowOffset;
-	
+	let y = offsets.rowOffset;
 	let startY;
 	let endY;
 	
@@ -22,24 +16,27 @@ module.exports = function(layers, view) {
 		},
 		
 		setStartLine(line) {
-			//x = Math.max(0, leftEdge + line.indentCols * colWidth);
 			startY = y;
 		},
 		
 		setEndLine() {
+			endY = y;
 		},
 		
 		startRow() {
 		},
 		
 		endRow() {
+			y += rowHeight;
 		},
 		
 		draw() {
+			let height = endY - startY;
+			
 			if (height === 0) {
-				context.fillRect(0, y, width, 2);
+				context.fillRect(0, startY, width, 2);
 			} else {
-				context.fillRect(0, y, width, height);
+				context.fillRect(0, startY, width, height);
 			}
 		},
 	};
