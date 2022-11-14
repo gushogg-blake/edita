@@ -292,22 +292,43 @@ class View extends Evented {
 		this.redraw();
 	}
 	
+	getScrollHeight() {
+		let {
+			measurements: {rowHeight},
+			sizes: {topMargin, height},
+		} = this;
+		
+		return topMargin + (this.countLineRowsFolded() - 1) * rowHeight + height;
+	}
+	
+	getVerticalScrollMax() {
+		return this.getScrollHeight() - this.sizes.height;
+	}
+	
+	getScrollWidth() {
+		let {
+			document,
+			measurements: {colWidth},
+			sizes: {codeWidth: width},
+		} = this;
+		
+		let longestLineWidth = document.getLongestLineWidth();
+		
+		return longestLineWidth * colWidth + width;
+	}
+	
+	getHorizontalScrollMax() {
+		return this.getScrollWidth() - this.sizes.codeWidth;
+	}
+	
 	scrollBy(x, y) {
 		let scrolled = false;
 		
-		let {
-			measurements: {colWidth, rowHeight},
-			sizes: {codeWidth, topMargin},
-		} = this;
-		
 		if (x !== 0 && !this.wrap) {
-			let longestLineWidth = this.document.getLongestLineWidth();
-			let scrollWidth = longestLineWidth * colWidth + codeWidth;
-			let scrollMax = scrollWidth - codeWidth;
 			let newX = Math.round(this.scrollPosition.x + x);
 			
 			newX = Math.max(0, newX);
-			newX = Math.min(newX, scrollMax);
+			newX = Math.min(newX, this.getHorizontalScrollMax());
 			
 			this.scrollPosition.x = newX;
 			
@@ -318,7 +339,7 @@ class View extends Evented {
 			let newY = this.scrollPosition.y + y;
 			
 			newY = Math.max(0, newY);
-			newY = Math.min(newY, topMargin + (this.countLineRowsFolded() - 1) * rowHeight);
+			newY = Math.min(newY, this.getVerticalScrollMax());
 			
 			scrolled = newY !== this.scrollPosition.y;
 			

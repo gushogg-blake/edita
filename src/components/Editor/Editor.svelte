@@ -395,13 +395,10 @@ function redraw() {
 function updateVerticalScrollbar() {
 	let {
 		scrollPosition,
-		measurements: {rowHeight},
-		sizes: {height, topMargin},
+		sizes: {height},
 	} = view;
 	
-	let rows = view.countLineRowsFolded();
-	
-	let scrollHeight = topMargin + (rows - 1) * rowHeight + height;
+	let scrollHeight = view.getScrollHeight();
 	let scrollTop = scrollPosition.y;
 	let scrollMax = scrollHeight - height;
 	let position = scrollTop / scrollMax;
@@ -416,13 +413,10 @@ function updateHorizontalScrollbar() {
 	
 	let {
 		scrollPosition,
-		measurements: {colWidth},
 		sizes: {codeWidth: width},
 	} = view;
 	
-	let longestLineWidth = document.getLongestLineWidth();
-	
-	let scrollWidth = longestLineWidth * colWidth + width;
+	let scrollWidth = view.getScrollWidth();
 	let scrollMax = scrollWidth - width;
 	let scrollLeft = scrollPosition.x;
 	let position = scrollLeft / scrollMax;
@@ -431,11 +425,9 @@ function updateHorizontalScrollbar() {
 }
 
 function verticalScroll({detail: position}) {
-	let {rowHeight} = view.measurements;
-	let {height, topMargin} = view.sizes;
+	let {height} = view.sizes;
 	
-	let rows = view.countLineRowsFolded();
-	let scrollHeight = topMargin + (rows - 1) * rowHeight + height;
+	let scrollHeight = view.getScrollHeight();
 	let scrollMax = scrollHeight - height;
 	
 	let scrollTop = Math.round(scrollMax * position);
@@ -444,11 +436,9 @@ function verticalScroll({detail: position}) {
 }
 
 function horizontalScroll({detail: position}) {
-	let {colWidth} = view.measurements;
 	let {width} = view.sizes;
 	
-	let longestLineWidth = document.getLongestLineWidth();
-	let scrollWidth = longestLineWidth * colWidth + width;
+	let scrollWidth = view.getScrollWidth();
 	let scrollMax = scrollWidth - width;
 	
 	let scrollLeft = Math.round(scrollMax * position);
