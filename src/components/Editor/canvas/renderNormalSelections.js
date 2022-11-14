@@ -1,20 +1,17 @@
 module.exports = function(layers, view, style, offsets) {
 	let {
 		measurements: {colWidth, rowHeight},
-		scrollPosition,
 	} = view;
 	
 	let context = layers.hilites;
 	
-	let {leftEdge, rowOffset} = offsets;
-	
-	let y = rowOffset;
+	let y = offsets.rowOffset;
 	let col;
 	let startCol;
 	let inSelection = false;
 	
 	function draw() {
-		let x = leftEdge + startCol * colWidth;
+		let x = offsets.leftEdge + startCol * colWidth;
 		let width = (col - startCol) * colWidth;
 		
 		context.fillRect(x, y, width, rowHeight);
