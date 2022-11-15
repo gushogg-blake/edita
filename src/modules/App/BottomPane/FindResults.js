@@ -12,8 +12,8 @@ class FindResults extends Evented {
 		this.index = null;
 	}
 	
-	add(options, results) {
-		this.pages.unshift({options, results});
+	add(action, options, results) {
+		this.pages.unshift({action, options, results});
 		
 		if (this.pages.length > maxPages) {
 			this.pages.pop();
@@ -65,7 +65,9 @@ class FindResults extends Evented {
 	}
 	
 	rerun() {
+		let {action, options} = this.currentPage;
 		
+		this.app.findAndReplace[action](options);
 	}
 	
 	edit() {

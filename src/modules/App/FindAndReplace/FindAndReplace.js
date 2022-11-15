@@ -5,7 +5,27 @@ let getFindAndReplaceOptions = require("./getFindAndReplaceOptions");
 let getDocuments = require("./getDocuments");
 let Session = require("./Session");
 
-function showResults(action, options) {
+let methods = {
+	findAll: {
+		currentDocument: "findAllInCurrentDocument",
+		selectedText: "findAllInSelectedText",
+		openFiles: "findAllInOpenFiles",
+		files: "findAllInFiles",
+	},
+	
+	replaceAll: {
+		currentDocument: "replaceAllInCurrentDocument",
+		selectedText: "replaceAllInSelectedText",
+		openFiles: "replaceAllInOpenFiles",
+		files: "replaceAllInFiles",
+	},
+};
+
+function getMethod(action, options) {
+	return methods[action][options.searchIn];
+}
+
+function shouldShowResults(action, options) {
 	return options.showResults || [].includes(action);
 }
 
@@ -115,48 +135,18 @@ class FindAndReplace {
 		return allResults;
 	}
 	
-	findAll(options) {
-		let {searchIn} = options;
-		
-		if (searchIn !== "files" && !this.app.selectedTab) {
-			return [];
-		}
-		
-		if (searchIn === "currentDocument") {
-			return this.findAllInCurrentDocument(options);
-		} else if (searchIn === "selectedText") {
-			return this.findAllInSelectedText(options);
-		} else if (searchIn === "openFiles") {
-			return this.findAllInOpenFiles(options);
-		} else if (searchIn === "files") {
-			return this.findAllInFiles(options);
-		}
-	}
-	
-	replaceAll(options) {
-		let {searchIn} = options;
-		
-		if (searchIn !== "files" && !this.app.selectedTab) {
-			return [];
-		}
-		
-		if (searchIn === "currentDocument") {
-			return this.replaceAllInCurrentDocument(options);
-		} else if (searchIn === "selectedText") {
-			return this.replaceAllInSelectedText(options);
-		} else if (searchIn === "openFiles") {
-			return this.replaceAllInOpenFiles(options);
-		} else if (searchIn === "files") {
-			return this.replaceAllInFiles(options);
-		}
-	}
-	
 	async run(action, options) {
-		let results = await this[action](options);
+		if (options.searchIn !== "files" && !this.app.selectedTab) {
+			return [];
+		}
 		
-		if (results.length > 0 && showResults(action, options)) {
+		let results = await this[getMethod(action, options)](options);
+		
+		if (results.length > 0 && shouldShowResults(action, options)) {
 			this.app.bottomPane.showFindResults(action, options, results);
 		}
+		
+		return results;
 	}
 	
 	async ensureSession(options) {

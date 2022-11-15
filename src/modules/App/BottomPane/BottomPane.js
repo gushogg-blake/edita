@@ -50,8 +50,8 @@ class BottomPane extends Pane {
 		this.fire("selectTab");
 	}
 	
-	showFindResults(options, results) {
-		this.findResults.add(options, results);
+	showFindResults(action, options, results) {
+		this.findResults.add(action, options, results);
 		
 		this.selectTab(this.tabsById.findResults);
 		
