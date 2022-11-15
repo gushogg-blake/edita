@@ -134,9 +134,9 @@ function action(fn) {
 
 let functions = {
 	async findAll() {
-		let result = await findAndReplace.findAll(options);
+		let results = await findAndReplace.findAll(options);
 		
-		if (!result) {
+		if (results.length === 0) {
 			await setMessage("No occurrences found");
 		}
 		
@@ -144,9 +144,9 @@ let functions = {
 	},
 	
 	async replaceAll() {
-		let result = await findAndReplace.replaceAll(options);
+		let results = await findAndReplace.replaceAll(options);
 		
-		if (!result) {
+		if (results.length === 0) {
 			await setMessage("No occurrences found");
 		}
 		

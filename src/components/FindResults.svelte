@@ -101,18 +101,18 @@ onMount(function() {
 <div id="main">
 	{#if pages.length > 0}
 		<div id="nav">
-			<button disabled={index === pages.length - 1} on:click={() => findResults.back()}>
-				&lt;
-			</button>
-			<button disabled={index === 0} on:click={() => findResults.forward()}>
-				&gt;
-			</button>
-			&nbsp;
 			<select class="compact" value={index} on:change={(e) => findResults.goToPage(Number(e.target.value))}>
 				{#each pages as {options, results}, i}
 					<option value={i}>{options.search} ({results.length} results)</option>
 				{/each}
 			</select>
+			&nbsp;
+			<button on:click={() => findResults.rerun()}>
+				Rerun
+			</button>
+			<button on:click={() => findResults.edit()}>
+				Edit & rerun
+			</button>
 		</div>
 	{/if}
 	{#each pages as {results}, i}

@@ -24,25 +24,25 @@ class FindResults extends Evented {
 		this.fire("resultsAdded");
 	}
 	
-	forward() {
-		if (this.index === null || this.index === 0) {
-			return;
-		}
-		
-		this.index--;
-		
-		this.fire("nav");
-	}
-	
-	back() {
-		if (this.index === null || this.index === this.pages.length - 1) {
-			return;
-		}
-		
-		this.index++;
-		
-		this.fire("nav");
-	}
+	//forward() {
+	//	if (this.index === null || this.index === 0) {
+	//		return;
+	//	}
+	//	
+	//	this.index--;
+	//	
+	//	this.fire("nav");
+	//}
+	//
+	//back() {
+	//	if (this.index === null || this.index === this.pages.length - 1) {
+	//		return;
+	//	}
+	//	
+	//	this.index++;
+	//	
+	//	this.fire("nav");
+	//}
 	
 	goToPage(index) {
 		this.index = index;
@@ -62,6 +62,14 @@ class FindResults extends Evented {
 	
 	get currentPage() {
 		return this.index !== null ? this.pages[this.index] : null;
+	}
+	
+	rerun() {
+		
+	}
+	
+	edit() {
+		this.app.showFindDialog(this.currentPage.options);
 	}
 }
 

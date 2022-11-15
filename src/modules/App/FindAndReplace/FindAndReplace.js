@@ -5,6 +5,10 @@ let getFindAndReplaceOptions = require("./getFindAndReplaceOptions");
 let getDocuments = require("./getDocuments");
 let Session = require("./Session");
 
+function showResults(action, options) {
+	return options.showResults || [].includes(action);
+}
+
 class FindAndReplace {
 	constructor(app) {
 		this.app = app;
@@ -20,27 +24,11 @@ class FindAndReplace {
 	}
 	
 	findAllInCurrentDocument(options) {
-		let results = this.app.selectedTab.editor.api.findAll(getFindAndReplaceOptions(options));
-		
-		if (results.length > 0) {
-			this.app.bottomPane.showFindResults(options, results);
-			
-			return true;
-		} else {
-			return false;
-		}
+		return this.app.selectedTab.editor.api.findAll(getFindAndReplaceOptions(options));
 	}
 	
 	findAllInSelectedText(options) {
-		let results = this.app.selectedTab.editor.api.findAllInSelectedText(getFindAndReplaceOptions(options));
-		
-		if (results.length > 0) {
-			this.app.bottomPane.showFindResults(options, results);
-			
-			return true;
-		} else {
-			return false;
-		}
+		return this.app.selectedTab.editor.api.findAllInSelectedText(getFindAndReplaceOptions(options));
 	}
 	
 	findAllInOpenFiles(options) {
@@ -50,13 +38,7 @@ class FindAndReplace {
 			results = [...results, ...tab.editor.api.findAll(getFindAndReplaceOptions(options))];
 		}
 		
-		if (results.length > 0) {
-			this.app.bottomPane.showFindResults(options, results);
-			
-			return true;
-		} else {
-			return false;
-		}
+		return results;
 	}
 	
 	async findAllInFiles(options) {
@@ -78,41 +60,15 @@ class FindAndReplace {
 			allResults = [...allResults, ...tab.editor.api.findAll(findAndReplaceOptions)];
 		}
 		
-		if (allResults.length > 0) {
-			app.bottomPane.showFindResults(options, allResults);
-			
-			return true;
-		} else {
-			return false;
-		}
+		return allResults;
 	}
 	
 	replaceAllInCurrentDocument(options) {
-		let results = this.app.selectedTab.editor.api.replaceAll(getFindAndReplaceOptions(options));
-		
-		if (results.length > 0) {
-			if (options.showResults) {
-				this.app.bottomPane.showFindResults(options, results);
-			}
-			
-			return true;
-		} else {
-			return false;
-		}
+		return this.app.selectedTab.editor.api.replaceAll(getFindAndReplaceOptions(options));
 	}
 	
 	replaceAllInSelectedText(options) {
-		let results = this.app.selectedTab.editor.api.replaceAllInSelectedText(getFindAndReplaceOptions(options));
-		
-		if (results.length > 0) {
-			if (options.showResults) {
-				this.app.bottomPane.showFindResults(options, results);
-			}
-			
-			return true;
-		} else {
-			return false;
-		}
+		return this.app.selectedTab.editor.api.replaceAllInSelectedText(getFindAndReplaceOptions(options));
 	}
 	
 	replaceAllInOpenFiles(options) {
@@ -122,15 +78,7 @@ class FindAndReplace {
 			results = [...results, ...tab.editor.api.replaceAll(getFindAndReplaceOptions(options))];
 		}
 		
-		if (results.length > 0) {
-			if (options.showResults) {
-				this.app.bottomPane.showFindResults(options, results);
-			}
-			
-			return true;
-		} else {
-			return false;
-		}
+		return results;
 	}
 	
 	async replaceAllInFiles(options) {
@@ -164,20 +112,14 @@ class FindAndReplace {
 			}
 		}
 		
-		if (allResults.length > 0) {
-			app.bottomPane.showFindResults(options, allResults);
-			
-			return true;
-		} else {
-			return false;
-		}
+		return allResults;
 	}
 	
 	findAll(options) {
 		let {searchIn} = options;
 		
 		if (searchIn !== "files" && !this.app.selectedTab) {
-			return false;
+			return [];
 		}
 		
 		if (searchIn === "currentDocument") {
@@ -195,7 +137,7 @@ class FindAndReplace {
 		let {searchIn} = options;
 		
 		if (searchIn !== "files" && !this.app.selectedTab) {
-			return false;
+			return [];
 		}
 		
 		if (searchIn === "currentDocument") {
@@ -206,6 +148,14 @@ class FindAndReplace {
 			return this.replaceAllInOpenFiles(options);
 		} else if (searchIn === "files") {
 			return this.replaceAllInFiles(options);
+		}
+	}
+	
+	async run(action, options) {
+		let results = await this[action](options);
+		
+		if (results.length > 0 && showResults(action, options)) {
+			this.app.bottomPane.showFindResults(action, options, results);
 		}
 	}
 	
