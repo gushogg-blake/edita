@@ -158,7 +158,7 @@ class App extends Evented {
 		
 		this.updateTitle();
 		
-		//this.bottomPane.clippingsEditor.setLang(tab.editor.document.lang);
+		this.bottomPane.clippingsEditor.setLang(tab.editor.document.lang);
 		
 		this.fire("selectTab", tab);
 		
