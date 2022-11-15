@@ -15,7 +15,7 @@ module.exports = class extends LineRowRenderer {
 		let {startLineIndex, endLineIndex} = this.selection;
 		let lineIndex = lineBelow ? lineBelow.lineIndex : lineAbove.lineIndex + 1;
 		
-		if (lineIndex >= startLineIndex && !this.hasStartLine) {
+		if (lineIndex >= startLineIndex && lineIndex <= endLineIndex && !this.hasStartLine) {
 			this.canvasRenderer.setStartLine();
 			
 			this.hasStartLine = true;
