@@ -1,40 +1,28 @@
 let LineRowRenderer = require("./LineRowRenderer");
 
-/*
-if (!hilite) {
-	return;
-}
-
-let {colWidth, rowHeight} = measurements;
-let {startLineIndex, endLineIndex} = hilite;
-
-if (startLineIndex === wrappedLines.length) {
-	let startRow = view.getLineStartingRow(startLineIndex - 1) + 1;
-	
-	let [x, y] = view.screenCoordsFromRowCol(startRow, 0);
-	
-	context.fillRect(x, y, lineLength, lineWidth);
-	
-	return;
-}
-
-let startLine = wrappedLines[startLineIndex].line;
-let lineAbove = startLineIndex === 0 ? null : wrappedLines[startLineIndex - 1].line;
-let startRow = view.getLineStartingRow(startLineIndex);
-let height = (view.getLineRangeTotalHeight(startLineIndex, endLineIndex)) * rowHeight;
-let indentLevel = lineAbove ? Math.max(startLine.indentLevel, lineAbove.indentLevel) : startLine.indentLevel;
-
-let [x, y] = view.screenCoordsFromRowCol(startRow, indentLevel * fileDetails.indentation.colsPerIndent);
-*/
-
 module.exports = class extends LineRowRenderer {
 	constructor(renderer) {
 		super(renderer);
 		
 		this.canvasRenderer = this.renderer.canvasRenderers.astInsertionHilite;
+		this.hilite = this.renderer.view.astInsertionHilite;
 	}
 	
-	renderRow() {
+	renderBetweenLines(lineAbove, lineBelow, rowsAboveCurrent, rowsBelowCurrent) {
+		let {startLineIndex, endLineIndex} = this.hilite;
+		let lineIndex = lineBelow ? lineBelow.lineIndex : lineAbove.lineIndex + 1;
 		
+		//console.log(lineBelow, lineAbove);
+		//console.log(lineIndex);
+		
+		if (lineIndex === startLineIndex) {
+			let indentCols = Math.max(lineAbove?.indentCols || 0, lineBelow?.indentCols || 0);
+			
+			this.canvasRenderer.setStartLine(indentCols, rowsAboveCurrent);
+		}
+		
+		if (lineIndex === endLineIndex) {
+			this.canvasRenderer.setEndLine(rowsBelowCurrent);
+		}
 	}
 }

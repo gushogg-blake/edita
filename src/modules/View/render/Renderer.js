@@ -56,6 +56,9 @@ class Renderer {
 			c(firstRow.lineIndex, firstRow.lineRow.startOffset),
 			c(lastRow.lineIndex, lastRow.lineRow.startOffset + lastRow.lineRow.string.length),
 		);
+		
+		this.firstRow = firstRow;
+		this.lastRow = lastRow;
 	}
 	
 	getVisibleScopes() {
@@ -71,6 +74,7 @@ class Renderer {
 			cursorBlinkOn,
 			astSelection,
 			astSelectionHilite,
+			astInsertionHilite,
 			focused,
 		} = this.view;
 		
@@ -83,6 +87,7 @@ class Renderer {
 		let renderInsertCursor = normal && insertCursor;
 		let renderNormalSelection = normal && this.view.Selection.isFull();
 		let renderAstSelectionHilite = ast && astSelectionHilite && (isPeekingAstMode || !AstSelection.equals(astSelection, astSelectionHilite));
+		let renderAstInsertionHilite = ast && astInsertionHilite;
 		
 		let renderers = [
 			normal && new CurrentLineHiliteRenderer(this),
@@ -91,7 +96,7 @@ class Renderer {
 			
 			ast && new AstSelectionRenderer(this, astSelection, this.canvasRenderers.astSelection),
 			renderAstSelectionHilite && new AstSelectionRenderer(this, astSelectionHilite, this.canvasRenderers.astSelectionHilite),
-			ast && new AstInsertionHiliteRenderer(this),
+			renderAstInsertionHilite && new AstInsertionHiliteRenderer(this),
 			
 			new FoldHiliteRenderer(this),
 			new MarginRenderer(this),
@@ -104,8 +109,14 @@ class Renderer {
 			renderInsertCursor && new NormalCursorRenderer(this, insertCursor),
 		].filter(Boolean);
 		
+		let {firstRow, lastRow} = this;
+		
 		for (let renderer of renderers) {
-			renderer.init(this.foldedLineRows[0]);
+			renderer.init(firstRow);
+			
+			let lineAbove = this.document.lines[firstRow.lineIndex - 1] || null;
+			
+			renderer.renderBetweenLines(lineAbove, firstRow.line, firstRow.rowIndexInLine, 0);
 			
 			for (let foldedLineRow of this.foldedLineRows) {
 				renderer.startRow(foldedLineRow);
@@ -113,6 +124,18 @@ class Renderer {
 				renderer.renderRow();
 				
 				renderer.endRow();
+				
+				if (foldedLineRow.rowIndexInLine === foldedLineRow.wrappedLine.lineRows.length - 1) {
+					let lineBelow = this.document.lines[foldedLineRow.lineIndex + 1] || null;
+					
+					renderer.renderBetweenLines(foldedLineRow.line, lineBelow, 0, 0);
+				}
+			}
+			
+			if (lastRow.rowIndexInLine !== lastRow.wrappedLine.lineRows.length - 1) {
+				let lineBelow = this.document.lines[lastRow.lineIndex + 1] || null;
+				
+				renderer.renderBetweenLines(lastRow.line, lineBelow, 0, lastRow.wrappedLine.lineRows.length - 1 - lastRow.rowIndexInLine);
 			}
 			
 			renderer.flush();

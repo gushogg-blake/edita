@@ -15,15 +15,12 @@ module.exports = function(layers, view, offsets, style) {
 			context.fillStyle = style;
 		},
 		
-		setStartLine(line) {
+		setStartLine() {
 			startY = y;
 		},
 		
 		setEndLine() {
 			endY = y;
-		},
-		
-		startRow() {
 		},
 		
 		endRow() {

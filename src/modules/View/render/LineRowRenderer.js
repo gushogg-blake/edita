@@ -36,8 +36,16 @@ module.exports = class {
 		return this.foldedLineRow.lineRow;
 	}
 	
+	get lineRows() {
+		return this.foldedLineRow.wrappedLine.lineRows;
+	}
+	
 	get isLastRow() {
-		return this.rowIndexInLine === this.foldedLineRow.wrappedLine.lineRows.length - 1;
+		return this.rowIndexInLine === this.lineRows.length - 1;
+	}
+	
+	get isFirstRow() {
+		return this.rowIndexInLine === 0;
 	}
 	
 	get cursor() {
@@ -64,6 +72,9 @@ module.exports = class {
 		return cursor?.lineIndex === this.lineIndex ? cursor.offset : Infinity;
 	}
 	
+	renderBetweenLines(lineAbove, lineBelow, rowsAboveCurrent, rowsBelowCurrent) {
+	}
+	
 	startRow(row) {
 		this.foldedLineRow = row;
 		
@@ -73,7 +84,7 @@ module.exports = class {
 		this.offset = this.lineRow.startOffset;
 		
 		if (this.canvasRenderer.startRow) {
-			this.canvasRenderer.startRow(this.rowIndexInLine === 0 ? 0 : this.line.indentCols);
+			this.canvasRenderer.startRow(this.isFirstRow ? 0 : this.line.indentCols);
 		}
 	}
 	

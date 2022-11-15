@@ -29,8 +29,10 @@ module.exports = class {
 		
 		this.maxLineLength = 0;
 		
-		for (let lineString of lineStrings) {
-			this.lines.push(new Line(lineString, fileDetails, lineStartIndex));
+		for (let i = 0; i < lineStrings.length; i++) {
+			let lineString = lineStrings[i];
+			
+			this.lines.push(new Line(lineString, fileDetails, lineStartIndex, i));
 			
 			lineStartIndex += lineString.length + fileDetails.newline.length;
 			

@@ -2,7 +2,7 @@ let expandTabs = require("modules/utils/expandTabs");
 let getIndentLevel = require("modules/utils/getIndentLevel");
 
 class Line {
-	constructor(string, fileDetails, startIndex) {
+	constructor(string, fileDetails, startIndex, lineIndex) {
 		let {
 			level: indentLevel,
 			cols: indentCols,
@@ -44,6 +44,7 @@ class Line {
 		}
 		
 		Object.assign(this, {
+			lineIndex,
 			startIndex,
 			string,
 			trimmed: string.trimLeft(),
