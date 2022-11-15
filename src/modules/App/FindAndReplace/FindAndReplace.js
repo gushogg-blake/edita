@@ -44,11 +44,11 @@ class FindAndReplace {
 	}
 	
 	findAllInCurrentDocument(options) {
-		return this.app.selectedTab.editor.api.findAll(getFindAndReplaceOptions(options));
+		return this.app.selectedTab?.editor.api.findAll(getFindAndReplaceOptions(options)) || [];
 	}
 	
 	findAllInSelectedText(options) {
-		return this.app.selectedTab.editor.api.findAllInSelectedText(getFindAndReplaceOptions(options));
+		return this.app.selectedTab?.editor.api.findAllInSelectedText(getFindAndReplaceOptions(options)) || [];
 	}
 	
 	findAllInOpenFiles(options) {
@@ -84,11 +84,11 @@ class FindAndReplace {
 	}
 	
 	replaceAllInCurrentDocument(options) {
-		return this.app.selectedTab.editor.api.replaceAll(getFindAndReplaceOptions(options));
+		return this.app.selectedTab?.editor.api.replaceAll(getFindAndReplaceOptions(options)) || [];
 	}
 	
 	replaceAllInSelectedText(options) {
-		return this.app.selectedTab.editor.api.replaceAllInSelectedText(getFindAndReplaceOptions(options));
+		return this.app.selectedTab?.editor.api.replaceAllInSelectedText(getFindAndReplaceOptions(options)) || [];
 	}
 	
 	replaceAllInOpenFiles(options) {
@@ -144,10 +144,6 @@ class FindAndReplace {
 	}
 		
 	async run(action, options) {
-		if (options.searchIn !== "files" && !this.app.selectedTab) {
-			return [];
-		}
-		
 		let results = await this[getMethod(action, options)](options);
 		
 		if (results.length > 0 && shouldShowResults(action, options)) {
