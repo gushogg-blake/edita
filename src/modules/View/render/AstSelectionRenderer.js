@@ -1,12 +1,12 @@
 let LineRowRenderer = require("./LineRowRenderer");
 
 module.exports = class extends LineRowRenderer {
-	constructor(renderer) {
+	constructor(renderer, selection, canvasRenderer) {
 		super(renderer);
 		
-		this.canvasRenderer = this.renderer.canvasRenderers.astSelection;
+		this.canvasRenderer = canvasRenderer;
+		this.selection = selection;
 		
-		this.selection = this.renderer.view.astSelection;
 		this.hasStartLine = false;
 		this.hasEndLine = false;
 	}

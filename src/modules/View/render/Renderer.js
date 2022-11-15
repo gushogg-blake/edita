@@ -1,10 +1,10 @@
 let Cursor = require("modules/utils/Cursor");
 let Selection = require("modules/utils/Selection");
+let AstSelection = require("modules/utils/AstSelection");
 
 let CurrentLineHiliteRenderer = require("./CurrentLineHiliteRenderer");
 let NormalSelectionRenderer = require("./NormalSelectionRenderer");
 let AstSelectionRenderer = require("./AstSelectionRenderer");
-let AstSelectionHiliteRenderer = require("./AstSelectionHiliteRenderer");
 let AstInsertionHiliteRenderer = require("./AstInsertionHiliteRenderer");
 let MarginRenderer = require("./MarginRenderer");
 let FoldHiliteRenderer = require("./FoldHiliteRenderer");
@@ -69,10 +69,12 @@ class Renderer {
 			normalSelection,
 			normalHilites,
 			cursorBlinkOn,
+			astSelection,
+			astSelectionHilite,
 			focused,
 		} = this.view;
 		
-		let {windowHasFocus} = this.uiState;
+		let {windowHasFocus, isPeekingAstMode} = this.uiState;
 		
 		let normal = mode === "normal";
 		let ast = mode === "ast";
@@ -80,14 +82,15 @@ class Renderer {
 		let renderNormalCursor = normal && cursorBlinkOn && focused && !insertCursor && windowHasFocus;
 		let renderInsertCursor = normal && insertCursor;
 		let renderNormalSelection = normal && this.view.Selection.isFull();
+		let renderAstSelectionHilite = ast && astSelectionHilite && (isPeekingAstMode || !AstSelection.equals(astSelection, astSelectionHilite));
 		
 		let renderers = [
 			normal && new CurrentLineHiliteRenderer(this),
 			new NormalSelectionRenderer(this, normalHilites, this.canvasRenderers.normalHilites),
 			renderNormalSelection && new NormalSelectionRenderer(this, [Selection.sort(normalSelection)], this.canvasRenderers.normalSelection),
 			
-			ast && new AstSelectionRenderer(this),
-			ast && new AstSelectionHiliteRenderer(this),
+			ast && new AstSelectionRenderer(this, astSelection, this.canvasRenderers.astSelection),
+			renderAstSelectionHilite && new AstSelectionRenderer(this, astSelectionHilite, this.canvasRenderers.astSelectionHilite),
 			ast && new AstInsertionHiliteRenderer(this),
 			
 			new FoldHiliteRenderer(this),

@@ -1,4 +1,4 @@
-module.exports = function(layers, view, style, offsets) {
+module.exports = function(layers, view, offsets, style) {
 	let {
 		measurements: {colWidth, rowHeight},
 	} = view;

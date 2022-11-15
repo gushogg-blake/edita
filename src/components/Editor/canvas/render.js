@@ -1,7 +1,6 @@
 let renderCurrentLineHilite = require("./renderCurrentLineHilite");
 let renderNormalSelections = require("./renderNormalSelections");
 let renderAstSelection = require("./renderAstSelection");
-let renderAstSelectionHilite = require("./renderAstSelectionHilite");
 let renderAstInsertionHilite = require("./renderAstInsertionHilite");
 let renderMargin = require("./renderMargin");
 let renderFoldHilites = require("./renderFoldHilites");
@@ -14,6 +13,8 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 		measurements: {rowHeight},
 		scrollPosition,
 	} = view;
+	
+	let start = performance.now();
 	
 	if (base.getPref("dev.timing.render")) {
 		console.time("render");
@@ -34,10 +35,10 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	
 	view.render({
 		currentLineHilite: renderCurrentLineHilite(layers, view, offsets),
-		normalHilites: renderNormalSelections(layers, view, base.theme.editor.hiliteBackground, offsets),
-		normalSelection: renderNormalSelections(layers, view, base.theme.editor.selectionBackground, offsets),
-		astSelection: renderAstSelection(layers, view, offsets),
-		astSelectionHilite: renderAstSelectionHilite(layers, view, offsets),
+		normalHilites: renderNormalSelections(layers, view, offsets, base.theme.editor.hiliteBackground),
+		normalSelection: renderNormalSelections(layers, view, offsets, base.theme.editor.selectionBackground),
+		astSelection: renderAstSelection(layers, view, offsets, base.theme.editor.astSelectionBackground),
+		astSelectionHilite: renderAstSelection(layers, view, offsets, base.theme.editor.astSelectionHiliteBackground),
 		astInsertionHilite: renderAstInsertionHilite(layers, view, offsets),
 		margin: renderMargin(layers, view, offsets),
 		foldHilites: renderFoldHilites(layers, view, offsets),
@@ -50,5 +51,10 @@ module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
 	
 	if (base.getPref("dev.timing.render")) {
 		console.timeEnd("render");
+		
+		let ms = performance.now() - start;
+		let fps = 1000 / ms;
+		
+		//console.log("fps: " + Math.floor(fps));
 	}
 }

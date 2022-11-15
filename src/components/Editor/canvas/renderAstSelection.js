@@ -1,4 +1,4 @@
-module.exports = function(layers, view, offsets) {
+module.exports = function(layers, view, offsets, style) {
 	let {
 		sizes: {width},
 		measurements: {rowHeight},
@@ -12,7 +12,7 @@ module.exports = function(layers, view, offsets) {
 	
 	return {
 		init() {
-			context.fillStyle = base.theme.editor.astSelectionBackground;
+			context.fillStyle = style;
 		},
 		
 		setStartLine(line) {
