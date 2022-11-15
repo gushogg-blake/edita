@@ -12,9 +12,6 @@ module.exports = class extends LineRowRenderer {
 		let {startLineIndex, endLineIndex} = this.hilite;
 		let lineIndex = lineBelow ? lineBelow.lineIndex : lineAbove.lineIndex + 1;
 		
-		//console.log(lineBelow, lineAbove);
-		//console.log(lineIndex);
-		
 		if (lineIndex === startLineIndex) {
 			let indentCols = Math.max(lineAbove?.indentCols || 0, lineBelow?.indentCols || 0);
 			

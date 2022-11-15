@@ -11,18 +11,17 @@ module.exports = class extends LineRowRenderer {
 		this.hasEndLine = false;
 	}
 	
-	renderRow() {
-		if (this.selection.endLineIndex < this.lineIndex) {
-			return;
-		}
+	renderBetweenLines(lineAbove, lineBelow, rowsAboveCurrent, rowsBelowCurrent) {
+		let {startLineIndex, endLineIndex} = this.selection;
+		let lineIndex = lineBelow ? lineBelow.lineIndex : lineAbove.lineIndex + 1;
 		
-		if (this.lineIndex >= this.selection.startLineIndex && !this.hasStartLine) {
+		if (lineIndex >= startLineIndex && !this.hasStartLine) {
 			this.canvasRenderer.setStartLine();
 			
 			this.hasStartLine = true;
 		}
 		
-		if (this.lineIndex === this.selection.endLineIndex) {
+		if (lineIndex === endLineIndex) {
 			this.canvasRenderer.setEndLine();
 			
 			this.hasEndLine = true;
