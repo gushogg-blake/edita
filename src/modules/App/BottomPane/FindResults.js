@@ -71,7 +71,7 @@ class FindResults extends Evented {
 	}
 	
 	edit() {
-		this.app.showFindDialog(this.currentPage.options);
+		this.app.showFindAndReplace(this.currentPage.options);
 	}
 }
 

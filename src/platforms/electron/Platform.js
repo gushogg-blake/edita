@@ -185,11 +185,11 @@ class Platform extends Common {
 		return ipcRenderer.invoke("callOpener", "call", channel, method, ...args);
 	}
 	
-	handleIpcMessages(channel, handler) {
-		return ipcRenderer.handle(channel, function(e, method, ...args) {
-			return handler[method](...args);
-		});
-	}
+	//handleIpcMessages(channel, handler) {
+	//	return ipcRenderer.handle(channel, function(e, method, ...args) {
+	//		return handler[method](...args);
+	//	});
+	//}
 	
 	get isWindows() {
 		return process.platform === "win32";

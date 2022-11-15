@@ -162,9 +162,9 @@ class Platform extends Common {
 		contextMenu(app, items, coords, noCancel);
 	}
 	
-	handleIpcMessages(channel, handler) {
-		// noop
-	}
+	//handleIpcMessages(channel, handler) {
+	//	// noop
+	//}
 	
 	get isWindows() {
 		return false;

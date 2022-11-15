@@ -37,7 +37,7 @@ module.exports = {
 	},
 	
 	findInOpenFiles() {
-		this.showFindDialog({
+		this.showFindAndReplace({
 			replace: false,
 			searchIn: "openFiles",
 		});
@@ -50,14 +50,14 @@ module.exports = {
 		
 		let {editor} = this.selectedTab;
 		
-		this.showFindDialog({
+		this.showFindAndReplace({
 			replace: true,
 			searchIn: editor.view.Selection.isMultiline() ? "selectedText" : "currentDocument",
 		});
 	},
 	
 	replaceInOpenFiles() {
-		this.showFindDialog({
+		this.showFindAndReplace({
 			replace: true,
 			searchIn: "openFiles",
 		});

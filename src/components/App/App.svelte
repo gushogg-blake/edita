@@ -15,6 +15,8 @@ import BottomPane from "./BottomPane.svelte";
 import ResizeHandle from "./ResizeHandle.svelte";
 import FindBar from "./FindBar.svelte";
 
+import FindAndReplace from "components/FindAndReplace.svelte";
+
 export let app;
 
 let main;
@@ -32,6 +34,8 @@ let {
 } = app;
 
 let showingFindBar = false;
+let showingFindAndReplace = app.showingFindAndReplace;
+let findAndReplaceOptions;
 
 // ENTRYPOINT global key presses (handler installed on main div below)
 
@@ -79,6 +83,19 @@ function onHideFindBar() {
 	showingFindBar = false;
 }
 
+function onShowFindAndReplace(options) {
+	showingFindAndReplace = true;
+	findAndReplaceOptions = options;
+}
+
+function onHideFindAndReplace() {
+	showingFindAndReplace = false;
+}
+
+function onFindAndReplaceDone() {
+	app.hideFindAndReplace();
+}
+
 function onUpdatePanes() {
 	({
 		panes,
@@ -117,6 +134,8 @@ onMount(function() {
 		app.on("selectTab", onSelectTab),
 		app.on("hideFindBar", onHideFindBar),
 		app.on("showFindBar", onShowFindBar),
+		app.on("showFindAndReplace", onShowFindAndReplace),
+		app.on("hideFindAndReplace", onHideFindAndReplace),
 		app.on("updatePanes", onUpdatePanes),
 		app.on("renderDiv", renderDiv),
 	];
@@ -131,6 +150,7 @@ onMount(function() {
 
 <style lang="scss">
 @import "mixins/abs-sticky";
+@import "classes/hide";
 
 #main {
 	display: grid;
@@ -158,13 +178,13 @@ onMount(function() {
 .pane {
 }
 
-#leftContainer {
+#leftPaneContainer {
 	position: relative;
 	grid-area: left;
 	min-width: 0;
 }
 
-#left {
+#leftPane {
 	height: 100%;
 	border-right: var(--appBorder);
 	overflow: hidden;
@@ -212,24 +232,31 @@ onMount(function() {
 	border-top: var(--appBorder);
 }
 
-#rightContainer {
+#rightPaneContainer {
 	position: relative;
 	grid-area: right;
 	min-width: 0;
 }
 
-#right {
+#rightPane {
 	height: 100%;
 	border-left: var(--appBorder);
 }
 
-#bottomContainer {
-	position: relative;
+#bottom {
 	grid-area: bottom;
 	min-width: 0;
 }
 
-#bottom {
+#findAndReplace {
+	border-top: var(--appBorder);
+}
+
+#bottomPaneContainer {
+	position: relative;
+}
+
+#bottomPane {
 	border-top: var(--appBorder);
 	height: 100%;
 }
@@ -251,15 +278,14 @@ onMount(function() {
 		<Toolbar/>
 	</div>
 	<div
-		id="leftContainer"
-		class="pane"
+		id="leftPaneContainer"
 		style={inlineStyle(paneStyle.left)}
 	>
-		<div id="left">
+		<div id="leftPane">
 			<LeftPane/>
 		</div>
 		<ResizeHandle
-			position="left"
+			position="right"
 			getSize={() => panes.left.size}
 			on:resize={({detail: size}) => app.panes.left.resize(size)}
 			on:end={({detail: size}) => app.panes.left.resizeAndSave(size)}
@@ -287,33 +313,42 @@ onMount(function() {
 		{/if}
 	</div>
 	<div
-		id="rightContainer"
-		class="pane"
+		id="rightPaneContainer"
 		style={inlineStyle(paneStyle.right)}
 	>
-		<div id="right">
+		<div id="rightPane">
 			<RightPane/>
 		</div>
 		<ResizeHandle
-			position="right"
+			position="left"
 			getSize={() => panes.right.size}
 			on:resize={({detail: size}) => app.panes.right.resize(size)}
 			on:end={({detail: size}) => app.panes.right.resizeAndSave(size)}
 		/>
 	</div>
-	<div
-		id="bottomContainer"
-		class="pane"
-		style={inlineStyle(paneStyle.bottom)}
-	>
-		<div id="bottom">
-			<BottomPane/>
+	<div id="bottom">
+		{#if showingFindAndReplace}
+			<div id="findAndReplace">
+				<FindAndReplace
+					options={findAndReplaceOptions}
+					on:done={onFindAndReplaceDone}
+				/>
+			</div>
+		{/if}
+		<div
+			id="bottomPaneContainer"
+			class="pane"
+			style={inlineStyle(paneStyle.bottom)}
+		>
+			<div id="bottomPane">
+				<BottomPane/>
+			</div>
+			<ResizeHandle
+				position="top"
+				getSize={() => panes.bottom.size}
+				on:resize={({detail: size}) => app.panes.bottom.resize(size)}
+				on:end={({detail: size}) => app.panes.bottom.resizeAndSave(size)}
+			/>
 		</div>
-		<ResizeHandle
-			position="bottom"
-			getSize={() => panes.bottom.size}
-			on:resize={({detail: size}) => app.panes.bottom.resize(size)}
-			on:end={({detail: size}) => app.panes.bottom.resizeAndSave(size)}
-		/>
 	</div>
 </div>

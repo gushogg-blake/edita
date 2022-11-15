@@ -43,36 +43,6 @@ module.exports = {
 		snippetEditor.$on("cancel", close);
 	},
 	
-	findAndReplace(el, dialogOptions, close) {
-		let options = {
-			replace: false,
-			searchIn: "currentDocument",
-			search: "",
-			replaceWith: "",
-			regex: false,
-			caseMode: "caseSensitive",
-			word: false,
-			multiline: false,
-			paths: [],
-			searchInSubDirs: true,
-			includePatterns: [],
-			excludePatterns: [],
-			showResults: false,
-			...dialogOptions,
-		};
-		
-		let findAndReplace = new base.components.FindAndReplace({
-			target: el,
-			
-			props: {
-				options,
-				findAndReplace: this.findAndReplace,
-			},
-		});
-		
-		findAndReplace.$on("done", close);
-	},
-	
 	messageBox(el, dialogOptions, close) {
 		let responded = false;
 		

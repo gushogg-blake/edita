@@ -135,6 +135,14 @@ class FindAndReplace {
 		return allResults;
 	}
 	
+	findAll(options) {
+		return this.run("findAll", options);
+	}
+	
+	replaceAll(options) {
+		return this.run("replaceAll", options);
+	}
+		
 	async run(action, options) {
 		if (options.searchIn !== "files" && !this.app.selectedTab) {
 			return [];

@@ -13,10 +13,10 @@ let eventKey = {
 };
 
 let reverseKey = {
-	left: 1,
-	right: -1,
-	top: 1,
-	bottom: -1,
+	left: -1,
+	right: 1,
+	top: -1,
+	bottom: 1,
 };
 
 let orientation = position === "left" || position === "right" ? "horizontal" : "vertical";
@@ -70,19 +70,19 @@ function mouseup(e) {
 	}
 	
 	&.left {
-		right: 0;
-	}
-	
-	&.right {
 		left: 0;
 	}
 	
+	&.right {
+		right: 0;
+	}
+	
 	&.top {
-		bottom: 0;
+		top: 0;
 	}
 	
 	&.bottom {
-		top: 0;
+		bottom: 0;
 	}
 }
 </style>

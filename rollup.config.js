@@ -188,16 +188,6 @@ if (platform === "all" || platform === "electron") {
 		},
 		
 		plugins: electronPlugins(),
-	}, {
-		input: "src/platforms/electron/dialogs/findAndReplace/main.js",
-		
-		output: {
-			sourcemap: true,
-			format: "iife",
-			file: dir + "/js/dialogs/findAndReplace/main.js",
-		},
-		
-		plugins: electronPlugins(),
 	});
 }
 

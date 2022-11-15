@@ -1,14 +1,17 @@
 <script>
-import {onMount, tick, createEventDispatcher} from "svelte";
+import {onMount, tick, getContext, createEventDispatcher} from "svelte";
 import mapObject from "utils/mapObject";
 import autoFocusAsync from "components/actions/autoFocusAsync";
 import Accel from "components/utils/Accel.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 
 export let options;
-export let findAndReplace;
 
 let fire = createEventDispatcher();
+
+let app = getContext("app");
+
+let {findAndReplace} = app;
 
 let {
 	multiPathSeparator,
@@ -198,8 +201,6 @@ let actions = mapObject(functions, action);
 
 function submit(e) {
 	e.preventDefault();
-	
-	
 }
 
 function setMessage(str) {

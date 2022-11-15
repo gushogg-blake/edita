@@ -39,6 +39,8 @@ class App extends Evented {
 		
 		this.findAndReplace = new FindAndReplace(this);
 		
+		this.showingFindAndReplace = false;
+		
 		this.tabs = [];
 		this.selectedTab = null;
 		this.closedTabs = [];
@@ -57,8 +59,6 @@ class App extends Evented {
 			this.on("selectTab", this.onSelectTab.bind(this)),
 			this.on("document.save", this.onDocumentSave.bind(this)),
 		];
-		
-		platform.handleIpcMessages("findAndReplace", this.findAndReplace);
 		
 		// DEV
 		setInterval(() => {
@@ -528,7 +528,7 @@ class App extends Evented {
 	}
 	
 	findInFiles(paths) {
-		this.showFindDialog({
+		this.showFindAndReplace({
 			replace: false,
 			searchIn: "files",
 			paths,
@@ -536,14 +536,14 @@ class App extends Evented {
 	}
 	
 	replaceInFiles(paths) {
-		this.showFindDialog({
+		this.showFindAndReplace({
 			replace: true,
 			searchIn: "files",
 			paths,
 		});
 	}
 	
-	async showFindDialog(options) {
+	async showFindAndReplace(options) {
 		let search = "";
 		
 		if (this.selectedTab) {
@@ -556,16 +556,31 @@ class App extends Evented {
 			}
 		}
 		
-		platform.openDialogWindow(this, "findAndReplace", {
+		this.showingFindAndReplace = true;
+		
+		this.fire("showFindAndReplace", {
+			replace: false,
+			searchIn: "currentDocument",
+			replaceWith: "",
+			regex: false,
+			caseMode: "caseSensitive",
+			word: false,
+			multiline: false,
+			paths: [],
+			searchInSubDirs: true,
+			includePatterns: [],
+			excludePatterns: [],
+			showResults: false,
 			...await this.findAndReplace.loadOptions(),
 			search,
 			...options,
-		}, {
-			title: "Find",
-			width: 640,
-			height: 300,
-			fitContents: true,
 		});
+	}
+	
+	hideFindAndReplace() {
+		this.showingFindAndReplace = false;
+		
+		this.fire("hideFindAndReplace");
 	}
 	
 	newSnippet(details={}) {
