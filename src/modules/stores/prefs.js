@@ -64,6 +64,16 @@ let migrations = {
 	"8"(prefs) {
 		prefs.normalKeymap[""] = "pasteAndIndent";
 	},
+	
+	"9"(prefs) {
+		prefs.normalKeymap["Ctrl+Shift+Space"] = "completeWordPrevious";
+	},
+	
+	"10"(prefs) {
+		delete prefs.normalKeymap[""];
+		
+		prefs.normalKeymap["Ctrl+Shift+V"] = "pasteAndIndent";
+	},
 };
 
 module.exports = function() {
@@ -135,6 +145,7 @@ module.exports = function() {
 			"Ctrl+Shift+V": "pasteAndIndent",
 			
 			"Ctrl+Space": "completeWord",
+			"Ctrl+Shift+Space": "completeWordPrevious",
 			
 			"Alt+I": "insertAstClipboard",
 			"Alt+O": "cursorAfterSnippet",

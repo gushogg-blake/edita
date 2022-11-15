@@ -445,6 +445,10 @@ module.exports = {
 		this.wordCompletion.completeWord();
 	},
 	
+	completeWordPrevious() {
+		this.wordCompletion.previous();
+	},
+	
 	cut() {
 		// TODO line if not full selection
 		if (!this.view.Selection.isFull()) {

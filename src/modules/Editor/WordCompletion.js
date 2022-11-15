@@ -109,90 +109,104 @@ class WordCompletion {
 		editor.updateSnippetExpressions();
 	}
 	
-	_completeWord() {
+	nav(dir) {
+		let {
+			words,
+			index,
+			selection,
+			originalWord,
+		} = this.session;
+		
+		let {lineIndex, offset} = selection.start;
+		
+		let newIndex = index + dir;
+		
+		if (newIndex === words.length) {
+			newIndex = -1;
+		} else if (newIndex === -2) {
+			newIndex = words.length - 1;
+		}
+		
+		let nextWord;
+		
+		if (newIndex === -1) {
+			nextWord = originalWord.left + originalWord.right;
+		} else {
+			nextWord = words[newIndex];
+		}
+		
+		this.applyCompletion(selection, nextWord, originalWord);
+		
+		this.session = {
+			...this.session,
+			currentWord: nextWord,
+			selection: s(selection.start, c(lineIndex, offset + nextWord.length)),
+			index: newIndex,
+		};
+	}
+	
+	init() {
 		let {editor} = this;
-		let {document, view, normalSelection} = editor;
+		let {document, normalSelection} = editor;
 		let cursor = Selection.sort(normalSelection).start;
 		let {lineIndex, offset} = cursor;
 		
-		if (view.Selection.isFull()) {
+		let wordAtCursor = document.wordAtCursor(cursor);
+		let {left, right} = wordAtCursor;
+		
+		if (!left && !right) {
 			return;
 		}
 		
-		if (this.session) {
-			let {
-				words,
-				index,
-				selection,
-				originalWord,
-			} = this.session;
-			
-			let {lineIndex, offset} = selection.start;
-			
-			let newIndex = index + 1;
-			
-			if (newIndex === words.length) {
-				newIndex = -1;
-			}
-			
-			let nextWord;
-			
-			if (newIndex === -1) {
-				nextWord = originalWord.left + originalWord.right;
-			} else {
-				nextWord = words[newIndex];
-			}
-			
-			this.applyCompletion(selection, nextWord, originalWord);
-			
-			this.session = {
-				...this.session,
-				currentWord: nextWord,
-				selection: s(selection.start, c(lineIndex, offset + nextWord.length)),
-				index: newIndex,
-			};
-		} else {
-			let wordAtCursor = document.wordAtCursor(cursor);
-			let {left, right} = wordAtCursor;
-			
-			if (!left && !right) {
-				return;
-			}
-			
-			if (left && right) { // assume we want to complete the left side if there are chars to the right as well
-				right = "";
-				wordAtCursor = {left, right};
-			}
-			
-			let {path} = document;
-			let index = document.indexFromCursor(cursor);
-			let extraWords = [path && platform.fs(path).basename].filter(Boolean);
-			
-			let words = findCompletions(document.string, wordAtCursor, index, extraWords);
-			
-			if (words.length === 0) {
-				return;
-			}
-			
-			let currentWord = words[0];
-			let selection = s(c(lineIndex, offset - left.length), c(lineIndex, offset + right.length));
-			
-			this.applyCompletion(selection, currentWord, wordAtCursor);
-			
-			this.session = {
-				originalWord: wordAtCursor,
-				currentWord,
-				selection: s(selection.start, c(lineIndex, selection.start.offset + currentWord.length)),
-				words,
-				index: 0,
-			};
+		if (left && right) { // assume we want to complete the left side if there are chars to the right as well
+			right = "";
+			wordAtCursor = {left, right};
 		}
+		
+		let {path} = document;
+		let index = document.indexFromCursor(cursor);
+		let extraWords = [path && platform.fs(path).basename].filter(Boolean);
+		
+		let words = findCompletions(document.string, wordAtCursor, index, extraWords);
+		
+		if (words.length === 0) {
+			return;
+		}
+		
+		let currentWord = words[0];
+		let selection = s(c(lineIndex, offset - left.length), c(lineIndex, offset + right.length));
+		
+		this.applyCompletion(selection, currentWord, wordAtCursor);
+		
+		this.session = {
+			originalWord: wordAtCursor,
+			currentWord,
+			selection: s(selection.start, c(lineIndex, selection.start.offset + currentWord.length)),
+			words,
+			index: 0,
+		};
 	}
 	
 	completeWord() {
 		this.inWordComplete = true;
 		
-		this._completeWord();
+		if (this.session) {
+			this.nav(1);
+		} else {
+			this.init();
+		}
+		
+		this.inWordComplete = false;
+	}
+	
+	previous() {
+		if (!this.session) {
+			return;
+		}
+		
+		this.inWordComplete = true;
+		
+		this.nav(-1);
 		
 		this.inWordComplete = false;
 	}
