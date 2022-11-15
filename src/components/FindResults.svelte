@@ -111,7 +111,7 @@ onMount(function() {
 				Rerun
 			</button>
 			<button on:click={() => findResults.edit()}>
-				Edit & rerun
+				Edit
 			</button>
 		</div>
 	{/if}
