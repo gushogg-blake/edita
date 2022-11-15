@@ -143,7 +143,7 @@ let functions = {
 			await setMessage("No occurrences found");
 		}
 		
-		fire("done", result);
+		fire("done", results);
 	},
 	
 	async replaceAll() {
@@ -153,7 +153,7 @@ let functions = {
 			await setMessage("No occurrences found");
 		}
 		
-		fire("done", result);
+		fire("done", results);
 	},
 	
 	async findNext() {

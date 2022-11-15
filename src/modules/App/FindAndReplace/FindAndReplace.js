@@ -26,7 +26,7 @@ function getMethod(action, options) {
 }
 
 function shouldShowResults(action, options) {
-	return options.showResults || [].includes(action);
+	return options.showResults || ["findAll", "replaceAll"].includes(action);
 }
 
 class FindAndReplace {
