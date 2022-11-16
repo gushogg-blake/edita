@@ -265,6 +265,11 @@ onMount(function() {
 	background: var(--inputBackground);
 }
 
+.historyEntry {
+	border-bottom: var(--inputBorder);
+	padding: 3px 5px;
+}
+
 #inputs {
 	display: grid;
 	grid-template-columns: auto 1fr;
@@ -402,24 +407,24 @@ onMount(function() {
 	</div>
 	<div id="actions">
 		{#if formOptions.replace}
-			<button on:click={actions.findNext}>
+			<button on:click={actions.findNext} disabled={!formOptions.search}>
 				<Accel label="%Find next"/>
 			</button>
-			<button on:click={actions.replace}>
+			<button on:click={actions.replace} disabled={!formOptions.search}>
 				<Accel label="Re%place"/>
 			</button>
-			<button on:click={actions.replaceAll}>
+			<button on:click={actions.replaceAll} disabled={!formOptions.search}>
 				<Accel label="Replace %all"/>
 			</button>
 			<Checkbox bind:value={formOptions.showResults} label="Sh%ow results"/>
 		{:else}
-			<button on:click={actions.findPrevious}>
+			<button on:click={actions.findPrevious} disabled={!formOptions.search}>
 				<Accel label="Find pre%vious"/>
 			</button>
-			<button on:click={actions.findNext}>
+			<button on:click={actions.findNext} disabled={!formOptions.search}>
 				<Accel label="%Find next"/>
 			</button>
-			<button on:click={actions.findAll}>
+			<button on:click={actions.findAll} disabled={!formOptions.search}>
 				<Accel label="Find %all"/>
 			</button>
 		{/if}
