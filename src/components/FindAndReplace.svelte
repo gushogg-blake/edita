@@ -338,6 +338,7 @@ onMount(function() {
 	on:submit={submit}
 	on:keydown={keydown}
 	autocomplete="off"
+	tabindex="0"
 >
 	<button type="submit" class="hide"></button>
 	<div class="inputs">
@@ -436,7 +437,7 @@ onMount(function() {
 		{/if}
 		<Spacer/>
 		<button on:click={actions.cancel}>
-			<Accel label="Cancel (Esc)"/>
+			<Accel label="Clo%se (Esc)"/>
 		</button>
 	</div>
 </form>
