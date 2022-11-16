@@ -13,8 +13,8 @@ module.exports = {
 		buttonBorder: "var(--inputBorder)",
 		buttonBackground: "#ffffff15",
 		buttonColorDisabled: "#ffffffaa",
-		buttonBorderDisabled: "var(--inputBorder)",
-		buttonBackgroundDisabled: "#ffffff80",
+		buttonBorderDisabled: "1px solid #626262",
+		buttonBackgroundDisabled: "#ffffff05",
 		
 		
 		tabBackground: "transparent",
@@ -22,7 +22,7 @@ module.exports = {
 		toolbarBackground: "#404040",
 		
 		inputColor: "var(--appColor)",
-		inputBorder: "1px solid #adaba6",
+		inputBorder: "1px solid #8b8a89",
 		inputBackground: "#ffffff10",
 		
 		listItemSelectedBackground: "rgba(0, 0, 0, 0.1)",
