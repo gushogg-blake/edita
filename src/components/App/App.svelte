@@ -22,9 +22,7 @@ let main;
 
 setContext("app", app);
 
-let {
-	theme,
-} = base;
+let {theme} = base;
 
 let {
 	tabs,
@@ -81,15 +79,11 @@ function onHideFindBar() {
 }
 
 function onUpdatePanes() {
-	({
-		panes,
-	} = app);
+	({panes} = app);
 }
 
 function onThemeUpdated() {
-	({
-		theme,
-	} = base);
+	({theme} = base);
 }
 
 function renderDiv(div) {
@@ -154,9 +148,6 @@ onMount(function() {
 	grid-area: toolbar;
 	min-width: 0;
 	border-bottom: var(--appBorder);
-}
-
-.pane {
 }
 
 #leftPaneContainer {
@@ -307,7 +298,6 @@ onMount(function() {
 		<FindAndReplace/>
 		<div
 			id="bottomPaneContainer"
-			class="pane"
 			style={inlineStyle(paneStyle.bottom)}
 		>
 			<div id="bottomPane">

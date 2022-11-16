@@ -17,18 +17,14 @@ let fire = createEventDispatcher();
 let app = getContext("app");
 
 let {findAndReplace} = app;
-
 let {multiPathSeparator} = platform.systemInfo;
 
 let main;
 let searchInput;
-
 let session = null;
 let optionsChangedSinceLastInit = false;
-
 let mounted = false;
 let isMounted = () => mounted;
-
 let loading = false;
 
 createSession();
@@ -52,44 +48,36 @@ function optionsChanged() {
 	optionsChangedSinceLastInit = true;
 }
 
-let {
-	replace,
-	searchIn,
-	search,
-	replaceWith,
-	regex,
-	caseMode,
-	word,
-	multiline,
-	paths,
-	searchInSubDirs,
-	includePatterns,
-	excludePatterns,
-	showResults,
-} = initOptions;
+function getFormOptions(options) {
+	let {caseMode, paths, includePatterns, excludePatterns} = options;
+	
+	return {
+		...options,
+		smartCase: caseMode === "smart",
+		matchCase: caseMode === "caseSensitive",
+		paths: paths.join(multiPathSeparator),
+		includePatterns: includePatterns.join(multiPathSeparator),
+		excludePatterns: excludePatterns.join(multiPathSeparator),
+	};
+}
 
-let smartCase = caseMode === "smart";
-let matchCase = caseMode === "caseSensitive";
+function getOptions(formOptions) {
+	let {smartCase, matchCase, paths, includePatterns, excludePatterns} = formOptions;
+	
+	return {
+		...formOptions,
+		caseMode: smartCase ? "smart" : matchCase ? "caseSensitive" : "caseInsensitive",
+		paths: paths.split(multiPathSeparator).filter(Boolean),
+		includePatterns: includePatterns.split(multiPathSeparator).filter(Boolean),
+		excludePatterns: excludePatterns.split(multiPathSeparator).filter(Boolean),
+	};
+}
 
-paths = paths.join(multiPathSeparator);
-includePatterns = includePatterns.join(multiPathSeparator);
-excludePatterns = excludePatterns.join(multiPathSeparator);
+let formOptions = getFormOptions(initOptions);
 
-$: options = {
-	replace,
-	searchIn,
-	search,
-	replaceWith,
-	regex,
-	caseMode: smartCase ? "smart" : matchCase ? "caseSensitive" : "caseInsensitive",
-	word,
-	multiline,
-	paths: paths ? paths.split(multiPathSeparator) : [],
-	searchInSubDirs,
-	includePatterns: includePatterns ? includePatterns.split(multiPathSeparator) : [],
-	excludePatterns: excludePatterns ? excludePatterns.split(multiPathSeparator) : [],
-	showResults,
-};
+$: options = getOptions(formOptions);
+
+$: optionsChanged(options);
 
 $: if (isMounted()) {
 	let {
@@ -110,8 +98,6 @@ $: if (isMounted()) {
 		excludePatterns,
 	});
 }
-
-$: optionsChanged(options);
 
 function init() {
 	if (optionsChangedSinceLastInit) {
@@ -233,6 +219,10 @@ function setMessage(str) {
 	session.message = str;
 }
 
+function applyHistoryEntry(options) {
+	formOptions = getFormOptions(options);
+}
+
 async function endSession(counts) {
 	let message;
 	
@@ -263,12 +253,19 @@ onMount(function() {
 
 #main {
 	display: grid;
-	grid-template-columns: 1fr auto;
+	grid-template-columns: auto 1fr auto;
 	gap: 1em;
 	padding: 8px 12px;
 }
 
-.inputs {
+#history {
+	width: 150px;
+	border: var(--inputBorder);
+	border-radius: 3px;
+	background: var(--inputBackground);
+}
+
+#inputs {
 	display: grid;
 	grid-template-columns: auto 1fr;
 	grid-auto-rows: min-content;
@@ -309,7 +306,7 @@ onMount(function() {
 	height: 1em;
 }
 
-.actions {
+#actions {
 	display: flex;
 	flex-direction: column;
 	gap: .3em;
@@ -325,14 +322,21 @@ onMount(function() {
 	tabindex="0"
 >
 	<button type="submit" class="hide"></button>
-	<div class="inputs">
+	<div id="history">
+		{#each history as {options}}
+			<div class="historyEntry" on:click={() => applyHistoryEntry(options)}>
+				{options.search}
+			</div>
+		{/each}
+	</div>
+	<div id="inputs">
 		<label for="find">
 			<Accel label="Fi%nd"/>
 		</label>
 		<div class="input">
 			<input
 				bind:this={searchInput}
-				bind:value={search}
+				bind:value={formOptions.search}
 				id="find"
 				accesskey="n"
 				use:autoFocusAsync
@@ -342,17 +346,17 @@ onMount(function() {
 			<Accel label="Rep%lace with"/>
 		</label>
 		<div class="input">
-			<input bind:value={replaceWith} id="replaceWith" accesskey="l">
+			<input bind:value={formOptions.replaceWith} id="replaceWith" accesskey="l">
 		</div>
 		<div class="input checkboxes">
-			<Checkbox bind:checked={regex} label="Rege%x"/>
-			<!--<Checkbox bind:checked={smartCase} label="%Smart case"/>-->
-			{#if !smartCase}
-				<Checkbox bind:checked={matchCase} label="Match %case"/>
+			<Checkbox bind:checked={formOptions.regex} label="Rege%x"/>
+			<!--<Checkbox bind:checked={formOptions.smartCase} label="%Smart case"/>-->
+			{#if !formOptions.smartCase}
+				<Checkbox bind:checked={formOptions.matchCase} label="Match %case"/>
 			{/if}
-			<Checkbox bind:checked={word} label="%Word"/>
-			<!--<Checkbox bind:checked={multiline} label="Mul%tiline"/>-->
-			<Checkbox bind:checked={replace} label="%Replace"/>
+			<Checkbox bind:checked={formOptions.word} label="%Word"/>
+			<!--<Checkbox bind:checked={formOptions.multiline} label="Mul%tiline"/>-->
+			<Checkbox bind:checked={formOptions.replace} label="%Replace"/>
 		</div>
 		{#if session.message}
 			<div id="message">
@@ -365,39 +369,39 @@ onMount(function() {
 			<Accel label="Search %in"/>
 		</label>
 		<div class="input">
-			<select bind:value={searchIn} id="searchIn" accesskey="i">
+			<select bind:value={formOptions.searchIn} id="searchIn" accesskey="i">
 				<option value="currentDocument">Current document</option>
 				<option value="selectedText">Selected text</option>
 				<option value="openFiles">Open files</option>
 				<option value="files">Files</option>
 			</select>
 		</div>
-		{#if searchIn === "files"}
+		{#if formOptions.searchIn === "files"}
 			<label for="paths">
 				<Accel label="%Paths"/>
 			</label>
 			<div class="input">
-				<input bind:value={paths} id="paths" accesskey="p">
+				<input bind:value={formOptions.paths} id="paths" accesskey="p">
 			</div>
 			<div class="input checkboxes">
-				<Checkbox bind:checked={searchInSubDirs} label="Search in su%b directories"/>
+				<Checkbox bind:checked={formOptions.searchInSubDirs} label="Search in su%b directories"/>
 			</div>
 			<label for="include">
 				<Accel label="Incl%ude"/>
 			</label>
 			<div class="input">
-				<input bind:value={includePatterns} id="include" accesskey="u">
+				<input bind:value={formOptions.includePatterns} id="include" accesskey="u">
 			</div>
 			<label for="exclude">
 				<Accel label="%Exclude"/>
 			</label>
 			<div class="input">
-				<input bind:value={excludePatterns} id="exclude" accesskey="e">
+				<input bind:value={formOptions.excludePatterns} id="exclude" accesskey="e">
 			</div>
 		{/if}
 	</div>
-	<div class="actions">
-		{#if replace}
+	<div id="actions">
+		{#if formOptions.replace}
 			<button on:click={actions.findNext}>
 				<Accel label="%Find next"/>
 			</button>
@@ -407,7 +411,7 @@ onMount(function() {
 			<button on:click={actions.replaceAll}>
 				<Accel label="Replace %all"/>
 			</button>
-			<Checkbox bind:value={showResults} label="Sh%ow results"/>
+			<Checkbox bind:value={formOptions.showResults} label="Sh%ow results"/>
 		{:else}
 			<button on:click={actions.findPrevious}>
 				<Accel label="Find pre%vious"/>

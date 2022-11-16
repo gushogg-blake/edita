@@ -75,6 +75,8 @@ class App extends Evented {
 			this.fileTree.init(),
 			this.findAndReplace.init(),
 		]);
+		
+		setTimeout(() => this.showFindAndReplace(), 10); // DEV
 	}
 	
 	get selectedProject() {

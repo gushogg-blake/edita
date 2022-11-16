@@ -182,6 +182,8 @@ class FindAndReplace extends Evented {
 			this.app.bottomPane.showFindResults(action, options, results);
 		}
 		
+		await this.addOptionsToHistory(options);
+		
 		return results;
 	}
 	
