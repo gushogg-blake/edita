@@ -23,7 +23,7 @@
 	
 	button {
 		color: var(--buttonColor);
-		border: 0;
+		border: var(--inputBorder);
 		border-radius: 3px;
 		padding: .3em .7em;
 		outline: none;

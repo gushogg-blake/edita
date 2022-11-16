@@ -185,6 +185,11 @@ onMount(function() {
 		background: #323232;
 	}
 }
+
+button {
+	border: 0;
+	background: transparent;
+}
 </style>
 
 <div

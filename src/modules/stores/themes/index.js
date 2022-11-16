@@ -66,6 +66,14 @@ let migrations = {
 		delete theme.app.scrollbarThumbBackgroundColor;
 		delete theme.app.scrollbarSpacerBackgroundColor;
 	},
+	
+	"3"(theme, key) {
+		if (key !== "light") {
+			return;
+		}
+		
+		theme.app.buttonBackground = "#fbf9f6";
+	},
 };
 
 module.exports = async function() {

@@ -1,7 +1,3 @@
-<script>
-
-</script>
-
 <style lang="scss">
 #main {
 	flex-grow: 1;

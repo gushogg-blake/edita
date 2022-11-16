@@ -1,6 +1,13 @@
 let getKeyCombo = require("utils/getKeyCombo");
 
-module.exports = function(e, noAlt=false) {
+module.exports = function(e, options) {
+	options = {
+		noAlt: false,
+		el: document.body,
+		...options,
+	};
+	
+	let {el, noAlt} = options;
 	let {keyCombo} = getKeyCombo(e);
 	let key = null;
 	let match = keyCombo.match(/^Alt\+(\w)$/);
@@ -15,9 +22,7 @@ module.exports = function(e, noAlt=false) {
 		return false;
 	}
 	
-	let buttons = [...document.body.querySelectorAll("button")];
-	
-	for (let button of buttons) {
+	for (let button of el.querySelectorAll("button")) {
 		if (button.innerHTML.toLowerCase().includes("<u>" + key + "</u>")) {
 			button.click();
 			

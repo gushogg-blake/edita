@@ -59,6 +59,11 @@ onMount(function() {
 	padding: 3px;
 	background: var(--toolbarBackground);
 }
+
+button {
+	border: 0;
+	background: transparent;
+}
 </style>
 
 <div id="main">

@@ -28,7 +28,7 @@ let keymap = {
 };
 
 function keydown(e) {
-	if (clickButtonFromAccel(e, true)) {
+	if (clickButtonFromAccel(e, {noAlt: true})) {
 		return;
 	}
 	

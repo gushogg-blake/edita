@@ -39,7 +39,7 @@ class App extends Evented {
 		
 		this.findAndReplace = new FindAndReplace(this);
 		
-		this.showingFindAndReplace = false;
+		this.showingFindAndReplace = true;
 		
 		this.tabs = [];
 		this.selectedTab = null;

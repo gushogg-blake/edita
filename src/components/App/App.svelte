@@ -41,6 +41,7 @@ let findAndReplaceOptions;
 
 function keydown(e) {
 	let {keyCombo} = getKeyCombo(e);
+	console.log(keyCombo);
 	
 	if (base.prefs.globalKeymap[keyCombo]) {
 		e.preventDefault();
@@ -93,6 +94,10 @@ function onHideFindAndReplace() {
 }
 
 function onFindAndReplaceDone() {
+	app.hideFindAndReplace();
+}
+
+function onFindAndReplaceCancel() {
 	app.hideFindAndReplace();
 }
 
@@ -332,6 +337,7 @@ onMount(function() {
 				<FindAndReplace
 					options={findAndReplaceOptions}
 					on:done={onFindAndReplaceDone}
+					on:cancel={onFindAndReplaceCancel}
 				/>
 			</div>
 		{/if}

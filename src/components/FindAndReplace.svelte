@@ -1,11 +1,28 @@
 <script>
 import {onMount, tick, getContext, createEventDispatcher} from "svelte";
 import mapObject from "utils/mapObject";
+import getKeyCombo from "utils/getKeyCombo";
+import clickButtonFromAccel from "utils/dom/clickButtonFromAccel";
 import autoFocusAsync from "components/actions/autoFocusAsync";
+import Spacer from "components/utils/Spacer.svelte";
 import Accel from "components/utils/Accel.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 
-export let options;
+export let options = {
+	search: "",
+	replace: false,
+	searchIn: "files",
+	replaceWith: "",
+	regex: false,
+	caseMode: "caseSensitive",
+	word: false,
+	multiline: false,
+	paths: [],
+	searchInSubDirs: true,
+	includePatterns: [],
+	excludePatterns: [],
+	showResults: false,
+};
 
 let fire = createEventDispatcher();
 
@@ -127,7 +144,7 @@ function action(fn) {
 		loading = true;
 		
 		await init();
-		await setMessage(null);
+		setMessage(null);
 		
 		await fn();
 		
@@ -140,7 +157,7 @@ let functions = {
 		let results = await findAndReplace.findAll(options);
 		
 		if (results.length === 0) {
-			await setMessage("No occurrences found");
+			setMessage("No occurrences found");
 		}
 		
 		fire("done", results);
@@ -150,7 +167,7 @@ let functions = {
 		let results = await findAndReplace.replaceAll(options);
 		
 		if (results.length === 0) {
-			await setMessage("No occurrences found");
+			setMessage("No occurrences found");
 		}
 		
 		fire("done", results);
@@ -195,18 +212,43 @@ let functions = {
 		await findAndReplace.replace(options);
 		await functions.findNext();
 	},
+	
+	cancel() {
+		fire("cancel");
+	},
 };
 
 let actions = mapObject(functions, action);
+
+let keymap = {
+	"Enter": "findNext",
+	"Esc": "cancel",
+};
+
+function keydown(e) {
+	if (clickButtonFromAccel(e, {el: main})) {
+		return;
+	}
+	
+	let fnName = keymap[getKeyCombo(e).keyCombo];
+	
+	if (fnName) {
+		e.stopPropagation();
+		
+		actions[fnName]();
+	}
+}
 
 function submit(e) {
 	e.preventDefault();
 }
 
+function cancel() {
+	fire("done");
+}
+
 function setMessage(str) {
-	return resize(function() {
-		session.message = str;
-	});
+	session.message = str;
 }
 
 async function endSession(counts) {
@@ -222,21 +264,7 @@ async function endSession(counts) {
 		}
 	}
 	
-	await setMessage(message);
-}
-
-async function updateSize() {
-	await tick();
-	
-	fire("resize", main.offsetHeight);
-}
-
-$: updateSize(options);
-
-async function resize(fn) {
-	fn();
-	
-	await updateSize();
+	setMessage(message);
 }
 
 onMount(function() {
@@ -244,18 +272,20 @@ onMount(function() {
 	
 	init().then(() => loading = false);
 	
-	updateSize();
-	
-	searchInput.select();
+	setTimeout(function() {
+		searchInput.select();
+	}, 0);
 	
 	mounted = true;
 });
 </script>
 
 <style lang="scss">
+@import "classes/hide";
+
 #main {
 	display: grid;
-	grid-template-columns: 1fr 90px;
+	grid-template-columns: 1fr auto;
 	gap: 1em;
 	padding: 8px 12px;
 }
@@ -302,17 +332,20 @@ onMount(function() {
 }
 
 .actions {
-	display: grid;
-	grid-auto-rows: min-content;
+	display: flex;
+	flex-direction: column;
 	gap: .3em;
-}
-
-button {
-	white-space: nowrap;
 }
 </style>
 
-<form bind:this={main} id="main" on:submit={submit} autocomplete="off">
+<form
+	bind:this={main}
+	id="main"
+	on:submit={submit}
+	on:keydown={keydown}
+	autocomplete="off"
+>
+	<button type="submit" class="hide"></button>
 	<div class="inputs">
 		<label for="find">
 			<Accel label="Fi%nd"/>
@@ -386,26 +419,30 @@ button {
 	</div>
 	<div class="actions">
 		{#if replace}
-			<button type="submit" on:click={actions.findNext}>
+			<button on:click={actions.findNext}>
 				<Accel label="%Find next"/>
 			</button>
-			<button type="button" on:click={actions.replace}>
+			<button on:click={actions.replace}>
 				<Accel label="Re%place"/>
 			</button>
-			<button type="button" on:click={actions.replaceAll}>
+			<button on:click={actions.replaceAll}>
 				<Accel label="Replace %all"/>
 			</button>
 			<Checkbox bind:value={showResults} label="Sh%ow results"/>
 		{:else}
-			<button type="button" on:click={actions.findPrevious}>
+			<button on:click={actions.findPrevious}>
 				<Accel label="Find pre%vious"/>
 			</button>
-			<button type="submit" on:click={actions.findNext}>
+			<button on:click={actions.findNext}>
 				<Accel label="%Find next"/>
 			</button>
-			<button type="button" on:click={actions.findAll}>
+			<button on:click={actions.findAll}>
 				<Accel label="Find %all"/>
 			</button>
 		{/if}
+		<Spacer/>
+		<button on:click={cancel}>
+			<Accel label="Cancel (Esc)"/>
+		</button>
 	</div>
 </form>
