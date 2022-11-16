@@ -1,4 +1,6 @@
 let bluebird = require("bluebird");
+let fastStableStringify = require("fast-stable-stringify");
+let Evented = require("utils/Evented");
 let findAndReplace = require("modules/findAndReplace");
 let getPaths = require("./getPaths");
 let getFindAndReplaceOptions = require("./getFindAndReplaceOptions");
@@ -29,13 +31,43 @@ function shouldShowResults(action, options) {
 	return options.showResults || ["findAll", "replaceAll"].includes(action);
 }
 
-class FindAndReplace {
+let maxHistoryEntries = 100;
+
+class FindAndReplace extends Evented {
 	constructor(app) {
+		super();
+		
 		this.app = app;
 		this.session = null;
+		
+		this.defaultOptions = {
+			search: "",
+			replace: false,
+			searchIn: "files",
+			replaceWith: "",
+			regex: false,
+			caseMode: "caseSensitive",
+			word: false,
+			multiline: false,
+			paths: [],
+			searchInSubDirs: true,
+			includePatterns: [],
+			excludePatterns: [],
+			showResults: false,
+		};
+		
+		this.savedOptions = null;
+		this.history = [];
 	}
 	
-	init() {
+	async init() {
+		await Promise.all([
+			this.loadOptions(),
+			this.loadHistory(),
+		]);
+	}
+	
+	reset() {
 		this.session = null;
 	}
 	
@@ -160,7 +192,10 @@ class FindAndReplace {
 		
 		this.session = new Session(this.app, options);
 		
-		await this.session.init();
+		await Promise.all([
+			this.session.init(),
+			this.addOptionsToHistory(options),
+		]);
 	}
 	
 	async findNext(options) {
@@ -207,12 +242,41 @@ class FindAndReplace {
 		this.session.replace();
 	}
 	
-	loadOptions() {
-		return base.stores.findAndReplaceOptions.load();
+	async loadOptions() {
+		this.savedOptions = await base.stores.findAndReplaceOptions.load();
 	}
 	
 	saveOptions(options) {
 		return base.stores.findAndReplaceOptions.save(options);
+	}
+	
+	async loadHistory() {
+		this.history = await base.stores.findAndReplaceHistory.load();
+	}
+	
+	async addOptionsToHistory(options) {
+		// re-load in case history has been changed in another window
+		await this.loadHistory();
+		
+		let key = fastStableStringify(options);
+		let index = this.history.findIndex(entry => entry.key === key);
+		
+		if (index !== -1) {
+			this.history.splice(index, 1);
+		}
+		
+		this.history.unshift({
+			key,
+			options,
+		});
+		
+		while (this.history.length > maxHistoryEntries) {
+			this.history.pop();
+		}
+		
+		await base.stores.findAndReplaceHistory.save(this.history);
+		
+		this.fire("historyUpdated");
 	}
 }
 

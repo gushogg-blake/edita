@@ -14,8 +14,7 @@ import RightPane from "./RightPane.svelte";
 import BottomPane from "./BottomPane.svelte";
 import ResizeHandle from "./ResizeHandle.svelte";
 import FindBar from "./FindBar.svelte";
-
-import FindAndReplace from "components/FindAndReplace.svelte";
+import FindAndReplace from "./FindAndReplace.svelte";
 
 export let app;
 
@@ -34,14 +33,11 @@ let {
 } = app;
 
 let showingFindBar = false;
-let showingFindAndReplace = app.showingFindAndReplace;
-let findAndReplaceOptions;
 
 // ENTRYPOINT global key presses (handler installed on main div below)
 
 function keydown(e) {
 	let {keyCombo} = getKeyCombo(e);
-	console.log(keyCombo);
 	
 	if (base.prefs.globalKeymap[keyCombo]) {
 		e.preventDefault();
@@ -84,29 +80,6 @@ function onHideFindBar() {
 	showingFindBar = false;
 }
 
-async function onShowFindAndReplace(options) {
-	showingFindAndReplace = false;
-	
-	await tick();
-	
-	showingFindAndReplace = true;
-	findAndReplaceOptions = options;
-}
-
-function onHideFindAndReplace() {
-	showingFindAndReplace = false;
-}
-
-function onFindAndReplaceDone(results) {
-	if (results.length > 0) {
-		app.hideFindAndReplace();
-	}
-}
-
-function onFindAndReplaceCancel() {
-	app.hideFindAndReplace();
-}
-
 function onUpdatePanes() {
 	({
 		panes,
@@ -145,8 +118,6 @@ onMount(function() {
 		app.on("selectTab", onSelectTab),
 		app.on("hideFindBar", onHideFindBar),
 		app.on("showFindBar", onShowFindBar),
-		app.on("showFindAndReplace", onShowFindAndReplace),
-		app.on("hideFindAndReplace", onHideFindAndReplace),
 		app.on("updatePanes", onUpdatePanes),
 		app.on("renderDiv", renderDiv),
 	];
@@ -161,7 +132,6 @@ onMount(function() {
 
 <style lang="scss">
 @import "mixins/abs-sticky";
-@import "classes/hide";
 
 #main {
 	display: grid;
@@ -259,10 +229,6 @@ onMount(function() {
 	min-width: 0;
 }
 
-#findAndReplace {
-	border-top: var(--appBorder);
-}
-
 #bottomPaneContainer {
 	position: relative;
 }
@@ -338,15 +304,7 @@ onMount(function() {
 		/>
 	</div>
 	<div id="bottom">
-		{#if showingFindAndReplace}
-			<div id="findAndReplace">
-				<FindAndReplace
-					options={findAndReplaceOptions}
-					on:done={onFindAndReplaceDone}
-					on:cancel={onFindAndReplaceCancel}
-				/>
-			</div>
-		{/if}
+		<FindAndReplace/>
 		<div
 			id="bottomPaneContainer"
 			class="pane"

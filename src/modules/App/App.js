@@ -39,8 +39,6 @@ class App extends Evented {
 		
 		this.findAndReplace = new FindAndReplace(this);
 		
-		this.showingFindAndReplace = true;
-		
 		this.tabs = [];
 		this.selectedTab = null;
 		this.closedTabs = [];
@@ -75,6 +73,7 @@ class App extends Evented {
 		await Promise.all([
 			this.loadSessionAndFilesToOpenOnStartup(),
 			this.fileTree.init(),
+			this.findAndReplace.init(),
 		]);
 	}
 	
@@ -543,7 +542,7 @@ class App extends Evented {
 		});
 	}
 	
-	async showFindAndReplace(options) {
+	showFindAndReplace(options) {
 		let search = "";
 		
 		if (this.selectedTab) {
@@ -556,30 +555,15 @@ class App extends Evented {
 			}
 		}
 		
-		this.showingFindAndReplace = true;
-		
 		this.fire("showFindAndReplace", {
-			replace: false,
-			searchIn: "currentDocument",
-			replaceWith: "",
-			regex: false,
-			caseMode: "caseSensitive",
-			word: false,
-			multiline: false,
-			paths: [],
-			searchInSubDirs: true,
-			includePatterns: [],
-			excludePatterns: [],
-			showResults: false,
-			...await this.findAndReplace.loadOptions(),
+			...this.findAndReplace.defaultOptions,
+			...this.findAndReplace.savedOptions,
 			search,
 			...options,
 		});
 	}
 	
 	hideFindAndReplace() {
-		this.showingFindAndReplace = false;
-		
 		this.fire("hideFindAndReplace");
 	}
 	

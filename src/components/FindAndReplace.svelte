@@ -8,21 +8,9 @@ import Spacer from "components/utils/Spacer.svelte";
 import Accel from "components/utils/Accel.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 
-export let options = {
-	search: "",
-	replace: false,
-	searchIn: "files",
-	replaceWith: "",
-	regex: false,
-	caseMode: "caseSensitive",
-	word: false,
-	multiline: false,
-	paths: [],
-	searchInSubDirs: true,
-	includePatterns: [],
-	excludePatterns: [],
-	showResults: false,
-};
+let initOptions;
+export {initOptions as options};
+export let history;
 
 let fire = createEventDispatcher();
 
@@ -30,9 +18,7 @@ let app = getContext("app");
 
 let {findAndReplace} = app;
 
-let {
-	multiPathSeparator,
-} = platform.systemInfo;
+let {multiPathSeparator} = platform.systemInfo;
 
 let main;
 let searchInput;
@@ -80,7 +66,7 @@ let {
 	includePatterns,
 	excludePatterns,
 	showResults,
-} = options;
+} = initOptions;
 
 let smartCase = caseMode === "smart";
 let matchCase = caseMode === "caseSensitive";
@@ -127,9 +113,9 @@ $: if (isMounted()) {
 
 $: optionsChanged(options);
 
-async function init() {
+function init() {
 	if (optionsChangedSinceLastInit) {
-		await findAndReplace.init();
+		findAndReplace.reset();
 		
 		optionsChangedSinceLastInit = false;
 	}
@@ -143,7 +129,7 @@ function action(fn) {
 		
 		loading = true;
 		
-		await init();
+		init();
 		setMessage(null);
 		
 		await fn();
@@ -213,8 +199,8 @@ let functions = {
 		await functions.findNext();
 	},
 	
-	cancel() {
-		fire("cancel");
+	close() {
+		fire("close");
 	},
 };
 
@@ -222,7 +208,7 @@ let actions = mapObject(functions, action);
 
 let keymap = {
 	"Enter": "findNext",
-	"Escape": "cancel",
+	"Escape": "close",
 };
 
 function keydown(e) {
@@ -264,9 +250,7 @@ async function endSession(counts) {
 }
 
 onMount(function() {
-	loading = true;
-	
-	init().then(() => loading = false);
+	init();
 	
 	searchInput.select();
 	
@@ -436,7 +420,7 @@ onMount(function() {
 			</button>
 		{/if}
 		<Spacer/>
-		<button on:click={actions.cancel}>
+		<button on:click={actions.close}>
 			<Accel label="Clo%se (Esc)"/>
 		</button>
 	</div>
