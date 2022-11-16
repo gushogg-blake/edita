@@ -1,5 +1,5 @@
 <script>
-import {onMount, setContext} from "svelte";
+import {onMount, setContext, tick} from "svelte";
 
 import getKeyCombo from "utils/getKeyCombo";
 import inlineStyle from "utils/dom/inlineStyle";
@@ -84,7 +84,11 @@ function onHideFindBar() {
 	showingFindBar = false;
 }
 
-function onShowFindAndReplace(options) {
+async function onShowFindAndReplace(options) {
+	showingFindAndReplace = false;
+	
+	await tick();
+	
 	showingFindAndReplace = true;
 	findAndReplaceOptions = options;
 }
@@ -93,8 +97,10 @@ function onHideFindAndReplace() {
 	showingFindAndReplace = false;
 }
 
-function onFindAndReplaceDone() {
-	app.hideFindAndReplace();
+function onFindAndReplaceDone(results) {
+	if (results.length > 0) {
+		app.hideFindAndReplace();
+	}
 }
 
 function onFindAndReplaceCancel() {

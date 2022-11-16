@@ -222,7 +222,7 @@ let actions = mapObject(functions, action);
 
 let keymap = {
 	"Enter": "findNext",
-	"Esc": "cancel",
+	"Escape": "cancel",
 };
 
 function keydown(e) {
@@ -241,10 +241,6 @@ function keydown(e) {
 
 function submit(e) {
 	e.preventDefault();
-}
-
-function cancel() {
-	fire("done");
 }
 
 function setMessage(str) {
@@ -272,9 +268,7 @@ onMount(function() {
 	
 	init().then(() => loading = false);
 	
-	setTimeout(function() {
-		searchInput.select();
-	}, 0);
+	searchInput.select();
 	
 	mounted = true;
 });
@@ -441,7 +435,7 @@ onMount(function() {
 			</button>
 		{/if}
 		<Spacer/>
-		<button on:click={cancel}>
+		<button on:click={actions.cancel}>
 			<Accel label="Cancel (Esc)"/>
 		</button>
 	</div>
