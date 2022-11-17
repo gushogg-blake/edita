@@ -306,19 +306,31 @@ onMount(function() {
 		white-space: nowrap;
 		grid-column: 1 / 2;
 	}
+}
+
+.input {
+	grid-column: 2 / 3;
 	
 	input, select {
 		width: 100%;
 	}
 }
 
-.input {
+.inputs, .checkboxes {
 	grid-column: 2 / 3;
+	display: flex;
+}
+
+.inputs {
+	gap: .5em;
 }
 
 .checkboxes {
-	display: flex;
 	gap: 1em;
+}
+
+#searchIn {
+	flex-grow: 0;
 }
 
 #message {
@@ -375,7 +387,7 @@ onMount(function() {
 		<div class="input">
 			<input bind:value={formOptions.replaceWith} id="replaceWith">
 		</div>
-		<div class="input checkboxes">
+		<div class="checkboxes">
 			<Checkbox bind:value={formOptions.regex} label="Rege%x"/>
 			<Checkbox bind:value={formOptions.smartCase} label="%Smart case"/>
 			{#if formOptions.smartCase}
@@ -395,31 +407,24 @@ onMount(function() {
 			<div class="spacer"></div>
 		{/if}
 		<AccelLabel for="searchIn" label="Search %in"/>
-		<div class="input">
+		<div class="inputs">
 			<select bind:value={formOptions.searchIn} id="searchIn">
 				<option value="currentDocument">Current document</option>
 				<option value="selectedText">Selected text</option>
 				<option value="openFiles">Open files</option>
 				<option value="files">Files</option>
 			</select>
+			<input bind:value={formOptions.paths} id="paths" disabled={formOptions.searchIn !== "files"}>
+			<Checkbox bind:value={formOptions.searchInSubDirs} label="Search in su%b directories" disabled={formOptions.searchIn !== "files"}/>
 		</div>
-		{#if formOptions.searchIn === "files"}
-			<AccelLabel for="paths" label="%Paths"/>
-			<div class="input">
-				<input bind:value={formOptions.paths} id="paths">
-			</div>
-			<div class="input checkboxes">
-				<Checkbox bind:value={formOptions.searchInSubDirs} label="Search in su%b directories"/>
-			</div>
-			<AccelLabel for="include" label="Incl%ude"/>
-			<div class="input">
-				<input bind:value={formOptions.includePatterns} id="include">
-			</div>
-			<AccelLabel for="exclude" label="%Exclude"/>
-			<div class="input">
-				<input bind:value={formOptions.excludePatterns} id="exclude">
-			</div>
-		{/if}
+		<AccelLabel for="include" label="Incl%ude" disabled={formOptions.searchIn !== "files"}/>
+		<div class="input">
+			<input bind:value={formOptions.includePatterns} id="include" disabled={formOptions.searchIn !== "files"}>
+		</div>
+		<AccelLabel for="exclude" label="%Exclude" disabled={formOptions.searchIn !== "files"}/>
+		<div class="input">
+			<input bind:value={formOptions.excludePatterns} id="exclude" disabled={formOptions.searchIn !== "files"}>
+		</div>
 	</div>
 	<div id="actions">
 		{#if formOptions.replace}
