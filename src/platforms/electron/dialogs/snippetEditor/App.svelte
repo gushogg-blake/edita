@@ -1,7 +1,7 @@
 <script>
 import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
-import clickButtonFromAccel from "utils/dom/clickButtonFromAccel";
+import clickElementFromAccel from "utils/dom/clickElementFromAccel";
 import themeStyle from "components/themeStyle";
 import SnippetEditor from "components/SnippetEditor.svelte";
 
@@ -28,7 +28,7 @@ let keymap = {
 };
 
 function keydown(e) {
-	if (clickButtonFromAccel(e)) {
+	if (clickElementFromAccel(e)) {
 		return;
 	}
 	

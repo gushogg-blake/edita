@@ -1,7 +1,7 @@
 <script>
 import {onMount, createEventDispatcher} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
-import clickButtonFromAccel from "utils/dom/clickButtonFromAccel";
+import clickElementFromAccel from "utils/dom/clickElementFromAccel";
 import Accel from "components/utils/Accel.svelte";
 import Gap from "components/utils/Gap.svelte";
 
@@ -28,7 +28,7 @@ let keymap = {
 };
 
 function keydown(e) {
-	if (clickButtonFromAccel(e, {noAlt: true})) {
+	if (clickElementFromAccel(e, {noAlt: true})) {
 		return;
 	}
 	

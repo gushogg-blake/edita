@@ -2,7 +2,7 @@
 import {onMount, tick, getContext, createEventDispatcher} from "svelte";
 import mapObject from "utils/mapObject";
 import getKeyCombo from "utils/getKeyCombo";
-import clickButtonFromAccel from "utils/dom/clickButtonFromAccel";
+import clickElementFromAccel from "utils/dom/clickElementFromAccel";
 import autoFocusAsync from "components/actions/autoFocusAsync";
 import Spacer from "components/utils/Spacer.svelte";
 import Accel from "components/utils/Accel.svelte";
@@ -198,7 +198,7 @@ let keymap = {
 };
 
 function keydown(e) {
-	if (clickButtonFromAccel(e, {el: main})) {
+	if (clickElementFromAccel(e, {el: main})) {
 		return;
 	}
 	
@@ -343,7 +343,6 @@ onMount(function() {
 				bind:this={searchInput}
 				bind:value={formOptions.search}
 				id="find"
-				accesskey="n"
 				use:autoFocusAsync
 			>
 		</div>
@@ -351,12 +350,14 @@ onMount(function() {
 			<Accel label="Rep%lace with"/>
 		</label>
 		<div class="input">
-			<input bind:value={formOptions.replaceWith} id="replaceWith" accesskey="l">
+			<input bind:value={formOptions.replaceWith} id="replaceWith">
 		</div>
 		<div class="input checkboxes">
 			<Checkbox bind:checked={formOptions.regex} label="Rege%x"/>
-			<!--<Checkbox bind:checked={formOptions.smartCase} label="%Smart case"/>-->
-			{#if !formOptions.smartCase}
+			<Checkbox bind:checked={formOptions.smartCase} label="%Smart case"/>
+			{#if formOptions.smartCase}
+				<Checkbox label="Match %case" disabled/>
+			{:else}
 				<Checkbox bind:checked={formOptions.matchCase} label="Match %case"/>
 			{/if}
 			<Checkbox bind:checked={formOptions.word} label="%Word"/>
@@ -374,7 +375,7 @@ onMount(function() {
 			<Accel label="Search %in"/>
 		</label>
 		<div class="input">
-			<select bind:value={formOptions.searchIn} id="searchIn" accesskey="i">
+			<select bind:value={formOptions.searchIn} id="searchIn">
 				<option value="currentDocument">Current document</option>
 				<option value="selectedText">Selected text</option>
 				<option value="openFiles">Open files</option>
@@ -386,7 +387,7 @@ onMount(function() {
 				<Accel label="%Paths"/>
 			</label>
 			<div class="input">
-				<input bind:value={formOptions.paths} id="paths" accesskey="p">
+				<input bind:value={formOptions.paths} id="paths">
 			</div>
 			<div class="input checkboxes">
 				<Checkbox bind:checked={formOptions.searchInSubDirs} label="Search in su%b directories"/>
@@ -395,13 +396,13 @@ onMount(function() {
 				<Accel label="Incl%ude"/>
 			</label>
 			<div class="input">
-				<input bind:value={formOptions.includePatterns} id="include" accesskey="u">
+				<input bind:value={formOptions.includePatterns} id="include">
 			</div>
 			<label for="exclude">
 				<Accel label="%Exclude"/>
 			</label>
 			<div class="input">
-				<input bind:value={formOptions.excludePatterns} id="exclude" accesskey="e">
+				<input bind:value={formOptions.excludePatterns} id="exclude">
 			</div>
 		{/if}
 	</div>

@@ -2,8 +2,9 @@
 import getAccessKey from "utils/dom/getAccessKey";
 import Accel from "components/utils/Accel.svelte";
 
-export let checked;
+export let checked = false;
 export let label;
+export let disabled = false;
 </script>
 
 <style lang="scss">
@@ -15,12 +16,13 @@ label {
 }
 </style>
 
-<label>
+<label class:disabled>
 	<input
 		bind:checked
 		type="checkbox"
 		on:change
 		accesskey={getAccessKey(label)}
+		{disabled}
 	>
 	<Accel {label}/>
 </label>

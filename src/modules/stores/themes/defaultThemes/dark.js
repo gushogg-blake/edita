@@ -16,6 +16,8 @@ module.exports = {
 		buttonBorderDisabled: "1px solid #626262",
 		buttonBackgroundDisabled: "#ffffff05",
 		
+		labelColor: "var(--buttonColor)",
+		labelColorDisabled: "var(--buttonColorDisabled)",
 		
 		tabBackground: "transparent",
 		tabSelectedBackground: "#505050",

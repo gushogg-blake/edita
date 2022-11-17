@@ -21,6 +21,14 @@
 		background: var(--inputBackground);
 	}
 	
+	label {
+		color: var(--labelColor);
+		
+		&.disabled {
+			color: var(--labelColorDisabled);
+		}
+	}
+	
 	button {
 		color: var(--buttonColor);
 		border: var(--buttonBorder);

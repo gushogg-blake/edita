@@ -16,6 +16,9 @@ module.exports = {
 		buttonBorderDisabled: "var(--inputBorder)",
 		buttonBackgroundDisabled: "#fbf9f680",
 		
+		labelColor: "var(--buttonColor)",
+		labelColorDisabled: "#777777",
+		
 		tabBackground: "transparent",
 		tabSelectedBackground: "white",
 		toolbarBackground: "#f2f2f0",
