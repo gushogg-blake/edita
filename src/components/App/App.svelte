@@ -5,6 +5,7 @@ import getKeyCombo from "utils/getKeyCombo";
 import inlineStyle from "utils/dom/inlineStyle";
 
 import themeStyle from "components/themeStyle";
+import labelClick from "components/actions/labelClick";
 
 import Toolbar from "./Toolbar.svelte";
 import EditorTabBar from "./EditorTabBar.svelte";
@@ -241,6 +242,7 @@ onMount(function() {
 	on:mousedown={mousedown}
 	on:contextmenu={e => e.preventDefault()}
 	tabindex="0"
+	use:labelClick
 >
 	<div id="toolbar">
 		<Toolbar/>
