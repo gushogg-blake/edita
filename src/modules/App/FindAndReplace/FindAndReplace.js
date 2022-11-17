@@ -28,7 +28,7 @@ function getMethod(action, options) {
 }
 
 function shouldShowResults(action, options) {
-	return options.showResults || ["findAll", "replaceAll"].includes(action);
+	return options.showResults || action === "findAll";
 }
 
 let maxHistoryEntries = 100;

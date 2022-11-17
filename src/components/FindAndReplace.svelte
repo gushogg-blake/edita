@@ -147,6 +147,10 @@ let functions = {
 	},
 	
 	async findNext() {
+		if (!options.search) {
+			return;
+		}
+		
 		let {
 			done,
 			counts,
@@ -372,16 +376,16 @@ onMount(function() {
 			<input bind:value={formOptions.replaceWith} id="replaceWith">
 		</div>
 		<div class="input checkboxes">
-			<Checkbox bind:checked={formOptions.regex} label="Rege%x"/>
-			<Checkbox bind:checked={formOptions.smartCase} label="%Smart case"/>
+			<Checkbox bind:value={formOptions.regex} label="Rege%x"/>
+			<Checkbox bind:value={formOptions.smartCase} label="%Smart case"/>
 			{#if formOptions.smartCase}
 				<Checkbox label="Match %case" disabled/>
 			{:else}
-				<Checkbox bind:checked={formOptions.matchCase} label="Match %case"/>
+				<Checkbox bind:value={formOptions.matchCase} label="Match %case"/>
 			{/if}
-			<Checkbox bind:checked={formOptions.word} label="%Word"/>
-			<!--<Checkbox bind:checked={formOptions.multiline} label="Mul%tiline"/>-->
-			<Checkbox bind:checked={formOptions.replace} label="%Replace"/>
+			<Checkbox bind:value={formOptions.word} label="%Word"/>
+			<!--<Checkbox bind:value={formOptions.multiline} label="Mul%tiline"/>-->
+			<Checkbox bind:value={formOptions.replace} label="%Replace"/>
 		</div>
 		{#if session.message}
 			<div id="message">
@@ -405,7 +409,7 @@ onMount(function() {
 				<input bind:value={formOptions.paths} id="paths">
 			</div>
 			<div class="input checkboxes">
-				<Checkbox bind:checked={formOptions.searchInSubDirs} label="Search in su%b directories"/>
+				<Checkbox bind:value={formOptions.searchInSubDirs} label="Search in su%b directories"/>
 			</div>
 			<AccelLabel for="include" label="Incl%ude"/>
 			<div class="input">

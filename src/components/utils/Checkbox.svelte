@@ -1,7 +1,7 @@
 <script>
 import Accel from "components/utils/Accel.svelte";
 
-export let checked = false;
+export let value = false;
 export let label;
 export let disabled = false;
 </script>
@@ -17,7 +17,7 @@ label {
 
 <label class:disabled>
 	<input
-		bind:checked
+		bind:checked={value}
 		type="checkbox"
 		on:change
 		{disabled}

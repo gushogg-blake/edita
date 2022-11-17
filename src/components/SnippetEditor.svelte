@@ -183,7 +183,7 @@ input#name {
 	</div>
 	<!--<div class="options">-->
 	<!--	<Checkbox-->
-	<!--		bind:checked={isDynamic}-->
+	<!--		bind:value={isDynamic}-->
 	<!--		on:change={onToggleDynamic}-->
 	<!--		label="Dynamic"-->
 	<!--	/>-->
