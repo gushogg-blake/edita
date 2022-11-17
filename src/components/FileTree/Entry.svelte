@@ -117,7 +117,7 @@ onMount(function() {
 }
 
 .selected {
-	background: var(--listItemSelectedBackground);
+	background: var(--treeEntrySelectedBackground);
 }
 
 #icon {
@@ -149,10 +149,10 @@ onMount(function() {
 	text-align: center;
 	width: 15px;
 	height: 15px;
-	border: 1px solid var(--listItemExpandContractBorder);
+	border: 1px solid var(--treeEntryExpandContractBorder);
 	border-radius: 1px;
 	padding: 1px 3px;
-	background: var(--listItemExpandContractBackground);
+	background: var(--treeEntryExpandContractBackground);
 }
 </style>
 

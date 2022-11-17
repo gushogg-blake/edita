@@ -247,6 +247,7 @@ onMount(function() {
 
 <style lang="scss">
 @import "classes/hide";
+@import "mixins/abs-sticky";
 
 #main {
 	display: grid;
@@ -255,16 +256,33 @@ onMount(function() {
 	padding: 8px 12px;
 }
 
-#history {
+#historyWrapper {
+	position: relative;
 	width: 150px;
+}
+
+#history {
+	@include abs-sticky;
+	
 	border: var(--inputBorder);
 	border-radius: 3px;
+	overflow-y: auto;
 	background: var(--inputBackground);
 }
 
 .historyEntry {
-	border-bottom: var(--inputBorder);
+	white-space: nowrap;
+	text-overflow: ellipsis;
 	padding: 3px 5px;
+	overflow: hidden;
+	
+	&:not(:last-child) {
+		border-bottom: var(--selectItemDivider);
+	}
+	
+	&:hover {
+		//background: var(--selectItemHoverBackground);
+	}
 }
 
 #inputs {
@@ -325,12 +343,14 @@ onMount(function() {
 	use:accels
 >
 	<button type="submit" class="hide"></button>
-	<div id="history">
-		{#each history as {options}}
-			<div class="historyEntry" on:click={() => applyHistoryEntry(options)}>
-				{options.search}
-			</div>
-		{/each}
+	<div id="historyWrapper">
+		<div id="history">
+			{#each history as {options}}
+				<div class="historyEntry" on:click={() => applyHistoryEntry(options)}>
+					{options.search}
+				</div>
+			{/each}
+		</div>
 	</div>
 	<div id="inputs">
 		<AccelLabel for="find" label="Fi%nd"/>

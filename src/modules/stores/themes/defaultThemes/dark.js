@@ -27,9 +27,12 @@ module.exports = {
 		inputBorder: "1px solid #8b8a89",
 		inputBackground: "#ffffff10",
 		
-		listItemSelectedBackground: "rgba(0, 0, 0, 0.1)",
-		listItemExpandContractBackground: "#ffffff15",
-		listItemExpandContractBorder: "#858585",
+		selectItemDivider: "1px solid #707070",
+		selectItemHoverBackground: "#565656",
+		
+		treeEntrySelectedBackground: "rgba(0, 0, 0, 0.1)",
+		treeEntryExpandContractBackground: "#ffffff15",
+		treeEntryExpandContractBorder: "#858585",
 		
 		dirEntryFolderBackground: "#9fcaef",
 		dirEntryFileBackground: "#fbfbfbe8",
