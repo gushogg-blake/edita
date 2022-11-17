@@ -298,7 +298,9 @@ class View extends Evented {
 			sizes: {topMargin, height},
 		} = this;
 		
-		return topMargin + (this.countLineRowsFolded() - 1) * rowHeight + height;
+		let rows = this.countLineRowsFolded();
+		
+		return rows === 1 ? height : topMargin + (rows - 1) * rowHeight + height;
 	}
 	
 	getVerticalScrollMax() {

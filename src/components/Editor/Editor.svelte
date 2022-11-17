@@ -49,9 +49,7 @@ if (editorMode === "textarea") {
 	}
 }
 
-let {
-	theme,
-} = base;
+let {theme} = base;
 
 let {
 	document,
@@ -458,7 +456,7 @@ function updateMeasurements() {
 	let {
 		fontFamily,
 		fontSize,
-	} = base.theme.editor;
+	} = theme.editor;
 	
 	measurementsDiv.style = inlineStyle({
 		fontFamily,
@@ -480,9 +478,7 @@ function toggleHorizontalScrollbar(show) {
 }
 
 function onThemeUpdated() {
-	({
-		theme,
-	} = base);
+	({theme} = base);
 	
 	updateMeasurements();
 	redraw();
