@@ -2,10 +2,11 @@
 import {onMount, tick, getContext, createEventDispatcher} from "svelte";
 import mapObject from "utils/mapObject";
 import getKeyCombo from "utils/getKeyCombo";
-import clickElementFromAccel from "utils/dom/clickElementFromAccel";
 import autoFocusAsync from "components/actions/autoFocusAsync";
+import accels from "components/actions/accels";
 import Spacer from "components/utils/Spacer.svelte";
 import Accel from "components/utils/Accel.svelte";
+import AccelLabel from "components/utils/AccelLabel.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 
 let initOptions;
@@ -198,10 +199,6 @@ let keymap = {
 };
 
 function keydown(e) {
-	if (clickElementFromAccel(e, {el: main})) {
-		return;
-	}
-	
 	let fnName = keymap[getKeyCombo(e).keyCombo];
 	
 	if (fnName) {
@@ -325,6 +322,7 @@ onMount(function() {
 	on:keydown={keydown}
 	autocomplete="off"
 	tabindex="0"
+	use:accels
 >
 	<button type="submit" class="hide"></button>
 	<div id="history">
@@ -335,9 +333,7 @@ onMount(function() {
 		{/each}
 	</div>
 	<div id="inputs">
-		<label for="find">
-			<Accel label="Fi%nd"/>
-		</label>
+		<AccelLabel for="find" label="Fi%nd"/>
 		<div class="input">
 			<input
 				bind:this={searchInput}
@@ -346,9 +342,7 @@ onMount(function() {
 				use:autoFocusAsync
 			>
 		</div>
-		<label for="replaceWith">
-			<Accel label="Rep%lace with"/>
-		</label>
+		<AccelLabel for="replaceWith" label="Rep%lace with"/>
 		<div class="input">
 			<input bind:value={formOptions.replaceWith} id="replaceWith">
 		</div>
@@ -371,9 +365,7 @@ onMount(function() {
 		{:else}
 			<div class="spacer"></div>
 		{/if}
-		<label for="searchIn">
-			<Accel label="Search %in"/>
-		</label>
+		<AccelLabel for="searchIn" label="Search %in"/>
 		<div class="input">
 			<select bind:value={formOptions.searchIn} id="searchIn">
 				<option value="currentDocument">Current document</option>
@@ -383,24 +375,18 @@ onMount(function() {
 			</select>
 		</div>
 		{#if formOptions.searchIn === "files"}
-			<label for="paths">
-				<Accel label="%Paths"/>
-			</label>
+			<AccelLabel for="paths" label="%Paths"/>
 			<div class="input">
 				<input bind:value={formOptions.paths} id="paths">
 			</div>
 			<div class="input checkboxes">
 				<Checkbox bind:checked={formOptions.searchInSubDirs} label="Search in su%b directories"/>
 			</div>
-			<label for="include">
-				<Accel label="Incl%ude"/>
-			</label>
+			<AccelLabel for="include" label="Incl%ude"/>
 			<div class="input">
 				<input bind:value={formOptions.includePatterns} id="include">
 			</div>
-			<label for="exclude">
-				<Accel label="%Exclude"/>
-			</label>
+			<AccelLabel for="exclude" label="%Exclude"/>
 			<div class="input">
 				<input bind:value={formOptions.excludePatterns} id="exclude">
 			</div>
@@ -431,7 +417,7 @@ onMount(function() {
 		{/if}
 		<Spacer/>
 		<button on:click={actions.close}>
-			<Accel label="Clo%se (Esc)"/>
+			<Accel label="Close (Esc)"/>
 		</button>
 	</div>
 </form>

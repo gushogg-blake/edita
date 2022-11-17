@@ -22,9 +22,9 @@ module.exports = function(e, options) {
 		return false;
 	}
 	
-	for (let button of el.querySelectorAll("button, label")) {
-		if (button.innerHTML.toLowerCase().includes("<u>" + key + "</u>")) {
-			button.click();
+	for (let node of el.querySelectorAll("button, label")) {
+		if (node.innerHTML.toLowerCase().includes("<u>" + key + "</u>")) {
+			node.click();
 			
 			return true;
 		}
