@@ -216,8 +216,13 @@ function setMessage(str) {
 	session.message = str;
 }
 
-function applyHistoryEntry(options) {
+async function applyHistoryEntry(options) {
 	formOptions = getFormOptions(options);
+	
+	await tick();
+	
+	searchInput.focus();
+	searchInput.select();
 }
 
 async function endSession(counts) {
