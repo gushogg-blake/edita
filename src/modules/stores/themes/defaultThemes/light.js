@@ -26,6 +26,9 @@ module.exports = {
 		inputColor: "#444444",
 		inputBorder: "1px solid #adaba6",
 		inputBackground: "white",
+		inputColorDisabled: "#666666",
+		inputBorderDisabled: "1px solid #adaba6",
+		inputBackgroundDisabled: "#ffffff52",
 		
 		selectItemDivider: "1px solid #d1d0cc",
 		selectItemHoverBackground: "#f3f3f3",

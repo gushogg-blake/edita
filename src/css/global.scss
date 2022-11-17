@@ -19,6 +19,12 @@
 		border-radius: 3px;
 		outline: none;
 		background: var(--inputBackground);
+		
+		&:disabled {
+			color: var(--inputColorDisabled);
+			border: var(--inputBorderDisabled);
+			background: var(--inputBackgroundDisabled);
+		}
 	}
 	
 	label {

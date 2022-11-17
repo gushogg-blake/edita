@@ -26,6 +26,9 @@ module.exports = {
 		inputColor: "var(--appColor)",
 		inputBorder: "1px solid #8b8a89",
 		inputBackground: "#ffffff10",
+		inputColorDisabled: "#666666",
+		inputBorderDisabled: "1px solid #adaba6",
+		inputBackgroundDisabled: "#ffffff52",
 		
 		selectItemDivider: "1px solid #707070",
 		selectItemHoverBackground: "#565656",
