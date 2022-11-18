@@ -133,17 +133,13 @@ let functions = {
 			setMessage("No occurrences found");
 		}
 		
-		fire("done", results);
+		fire("close");
 	},
 	
 	async replaceAll() {
 		let results = await findAndReplace.replaceAll(options);
 		
-		if (results.length === 0) {
-			setMessage("No occurrences found");
-		}
-		
-		fire("done", results);
+		fire("close");
 	},
 	
 	async findNext() {
@@ -214,10 +210,6 @@ function keydown(e) {
 
 function submit(e) {
 	e.preventDefault();
-}
-
-function setMessage(str) {
-	session.message = str;
 }
 
 async function applyHistoryEntry(options) {
@@ -319,6 +311,7 @@ onMount(function() {
 .inputs, .checkboxes {
 	grid-column: 2 / 3;
 	display: flex;
+	flex-wrap: wrap;
 }
 
 .inputs {
@@ -334,12 +327,12 @@ onMount(function() {
 }
 
 #message {
+	color: var(--messageColor);
 	grid-column: 2 / 3;
-	border: 1px solid #3d7dcc;
+	border: var(--messageBorder);
 	border-radius: 3px;
 	padding: 3px 5px;
-	background: #cce3ff;
-	/*background: #b6d5fb;*/
+	background: var(--messageBackground);
 }
 
 .spacer {
@@ -351,6 +344,7 @@ onMount(function() {
 	display: flex;
 	flex-direction: column;
 	gap: .3em;
+	width: 120px;
 }
 </style>
 

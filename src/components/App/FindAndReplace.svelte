@@ -23,12 +23,6 @@ function onHide() {
 	showing = false;
 }
 
-function onDone({detail: results}) {
-	if (results.length > 0) {
-		app.hideFindAndReplace();
-	}
-}
-
 function onClose() {
 	app.hideFindAndReplace();
 }
@@ -63,7 +57,6 @@ onMount(function() {
 		<FindAndReplace
 			{options}
 			{history}
-			on:done={onDone}
 			on:close={onClose}
 		/>
 	</div>
