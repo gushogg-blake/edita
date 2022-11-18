@@ -293,6 +293,8 @@ class Base extends Evented {
 		
 		this.treeSitterLanguages[code] = treeSitterLanguage;
 		
+		// tree-sitter query creation is slow so pre-create them
+		
 		lang.injections = (lang.injections || []).map((injection) => {
 			return {
 				...injection,
