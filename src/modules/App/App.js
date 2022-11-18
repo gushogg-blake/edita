@@ -76,7 +76,10 @@ class App extends Evented {
 			this.findAndReplace.init(),
 		]);
 		
-		setTimeout(() => this.showFindAndReplace(), 10); // DEV
+		// DEV
+		if (platform.config.dev) {
+			setTimeout(() => this.showFindAndReplace(), 10);
+		}
 	}
 	
 	get selectedProject() {

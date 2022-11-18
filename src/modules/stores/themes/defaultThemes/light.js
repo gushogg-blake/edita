@@ -42,6 +42,10 @@ module.exports = {
 		
 		findResultsBackground: "#ffffff",
 		
+		messageColor: "var(--appColor)",
+		messageBorder: "1px solid #7697bf",
+		messageBackground: "#cce3ff",
+		
 		contextMenuColor: "var(--appColor)",
 		contextMenuBorder: "1px solid #B4BBC1",
 		contextMenuBackground: "white",

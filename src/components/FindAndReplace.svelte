@@ -117,7 +117,8 @@ function action(fn) {
 		loading = true;
 		
 		init();
-		setMessage(null);
+		
+		session.message = null;
 		
 		await fn();
 		
@@ -129,17 +130,21 @@ let functions = {
 	async findAll() {
 		let results = await findAndReplace.findAll(options);
 		
-		if (results.length === 0) {
-			setMessage("No occurrences found");
+		if (results.length > 0) {
+			fire("close");
+		} else {
+			endSession({total: 0});
 		}
-		
-		fire("close");
 	},
 	
 	async replaceAll() {
 		let results = await findAndReplace.replaceAll(options);
 		
-		fire("close");
+		if (results.length > 0) {
+			fire("close");
+		} else {
+			endSession({total: 0});
+		}
 	},
 	
 	async findNext() {
@@ -155,7 +160,7 @@ let functions = {
 		session.hasResult = !done;
 		
 		if (done) {
-			await endSession(counts);
+			endSession(counts);
 		}
 	},
 	
@@ -169,7 +174,7 @@ let functions = {
 		session.hasResult = !done;
 		
 		if (done) {
-			await endSession(counts);
+			endSession(counts);
 		}
 	},
 	
@@ -221,20 +226,20 @@ async function applyHistoryEntry(options) {
 	searchInput.select();
 }
 
-async function endSession(counts) {
+function endSession(counts) {
 	let message;
 	
 	if (counts.total === 0) {
-		message = "No occurrences found";
+		message = "No occurrences found.";
 	} else {
 		if (options.replace) {
-			message = counts.replaced + " of " + counts.total + " occurrences replaced";
+			message = counts.replaced + " of " + counts.total + " occurrences replaced.";
 		} else {
-			message = counts.total + " occurrences found";
+			message = counts.total + " occurrences found.";
 		}
 	}
 	
-	setMessage(message);
+	session.message = message;
 }
 
 onMount(function() {
