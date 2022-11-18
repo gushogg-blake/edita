@@ -393,7 +393,7 @@ onMount(function() {
 		</div>
 		<div class="checkboxes">
 			<Checkbox bind:value={formOptions.regex} label="Rege%x"/>
-			<Checkbox bind:value={formOptions.smartCase} label="%Smart case"/>
+			<!--<Checkbox bind:value={formOptions.smartCase} label="%Smart case"/>-->
 			{#if formOptions.smartCase}
 				<Checkbox label="Match %case" disabled/>
 			{:else}
