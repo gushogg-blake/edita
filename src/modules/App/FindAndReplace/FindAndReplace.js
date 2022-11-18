@@ -53,7 +53,7 @@ class FindAndReplace extends Evented {
 			searchInSubDirs: true,
 			includePatterns: [],
 			excludePatterns: [],
-			showResults: false,
+			showResults: true,
 		};
 		
 		this.savedOptions = null;
