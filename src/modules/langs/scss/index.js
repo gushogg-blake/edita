@@ -1,6 +1,8 @@
 let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
 
+let nodeUtils;
+
 module.exports = {
 	group: "css",
 	code: "scss",
@@ -9,6 +11,10 @@ module.exports = {
 	astMode,
 	codeIntel,
 	injections: [],
+	
+	init(env) {
+		({nodeUtils} = env.base.utils.treeSitter);
+	},
 	
 	isBlock(node) {
 		return node.startPosition.row !== node.endPosition.row && [
