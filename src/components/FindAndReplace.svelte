@@ -4,6 +4,7 @@ import mapObject from "utils/mapObject";
 import getKeyCombo from "utils/getKeyCombo";
 import autoFocusAsync from "components/actions/autoFocusAsync";
 import accels from "components/actions/accels";
+import Gap from "components/utils/Gap.svelte";
 import Spacer from "components/utils/Spacer.svelte";
 import Accel from "components/utils/Accel.svelte";
 import AccelLabel from "components/utils/AccelLabel.svelte";
@@ -338,6 +339,10 @@ onMount(function() {
 	border-radius: 3px;
 	padding: 3px 5px;
 	background: var(--messageBackground);
+	
+	&:not(.visible) {
+		visibility: hidden;
+	}
 }
 
 .spacer {
@@ -398,13 +403,7 @@ onMount(function() {
 			<!--<Checkbox bind:value={formOptions.multiline} label="Mul%tiline"/>-->
 			<Checkbox bind:value={formOptions.replace} label="%Replace"/>
 		</div>
-		{#if session.message}
-			<div id="message">
-				{session.message}
-			</div>
-		{:else}
-			<div class="spacer"></div>
-		{/if}
+		<div class="spacer"></div>
 		<AccelLabel for="searchIn" label="Search %in"/>
 		<div class="inputs">
 			<select bind:value={formOptions.searchIn} id="searchIn">
@@ -448,6 +447,10 @@ onMount(function() {
 				<Accel label="Find %all"/>
 			</button>
 		{/if}
+		<Gap height={5}/>
+		<div id="message" class:visible={session.message}>
+			{session.message}
+		</div>
 		<Spacer/>
 		<button on:click={actions.close}>
 			<Accel label="Close (Esc)"/>
