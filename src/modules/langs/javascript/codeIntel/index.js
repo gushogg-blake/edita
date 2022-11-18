@@ -1,8 +1,8 @@
 let lang;
 
 module.exports = {
-	set lang(_lang) {
-		lang = _lang;
+	init(env) {
+		({lang} = env);
 	},
 	
 	shouldIndentOnNewline(document, line, cursor) {

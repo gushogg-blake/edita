@@ -171,7 +171,7 @@ module.exports = class extends LineRowRenderer {
 	getColor(node) {
 		let {lang} = this.scope;
 		let colors = base.theme.langs[lang.code];
-		let hiliteClass = lang.getHiliteClass(node, nodeUtils);
+		let hiliteClass = lang.getHiliteClass(node);
 		
 		return hiliteClass ? colors[hiliteClass] : null;
 	}

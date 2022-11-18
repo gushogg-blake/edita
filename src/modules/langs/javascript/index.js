@@ -3,6 +3,8 @@ let codeIntel = require("./codeIntel");
 
 let wordRe = /\w/;
 
+let nodeUtils;
+
 let lang = {
 	group: "javascript",
 	code: "javascript",
@@ -11,6 +13,15 @@ let lang = {
 	astMode,
 	codeIntel,
 	injections: [],
+	
+	init(env) {
+		({nodeUtils} = env.base.utils.treeSitter);
+		
+		env = {...env, lang: this};
+		
+		this.astMode.init(this, env);
+		this.codeIntel.init(this, env);
+	},
 	
 	isBlock(node) {
 		return node.startPosition.row !== node.endPosition.row && [
@@ -71,7 +82,7 @@ let lang = {
 		return null;
 	},
 	
-	getHiliteClass(node, nodeUtils) {
+	getHiliteClass(node) {
 		let {type} = node;
 		let parent = nodeUtils.parent(node);
 		
@@ -165,8 +176,5 @@ let lang = {
 		return null;
 	},
 };
-
-lang.astMode.lang = lang;
-lang.codeIntel.lang = lang;
 
 module.exports = lang;

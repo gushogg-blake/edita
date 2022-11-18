@@ -11,7 +11,7 @@ module.exports = {
 	possibleInjections: ["javascript", "css"],
 	injections: [],
 	
-	getHiliteClass(node, nodeUtils) {
+	getHiliteClass(node) {
 		// TODO
 	},
 	

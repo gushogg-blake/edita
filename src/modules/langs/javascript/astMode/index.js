@@ -3,8 +3,8 @@ let dropTargets = require("./dropTargets");
 let astManipulations = require("./astManipulations");
 
 module.exports = {
-	set lang(_lang) {
-		this.astManipulations.lang = _lang;
+	init(env) {
+		this.astManipulations.init(env);
 	},
 	
 	pickOptions,

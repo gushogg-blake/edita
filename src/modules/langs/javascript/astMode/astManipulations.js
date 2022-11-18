@@ -1,4 +1,3 @@
-//let indentLines = require("modules/utils/indentLines");
 let AstSelection = require("modules/utils/AstSelection");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
@@ -9,10 +8,8 @@ let {c} = Cursor;
 let lang;
 
 module.exports = {
-	set lang(_lang) {
-		lang = _lang;
-		
-		delete this.lang;
+	init(env) {
+		({lang} = env);
 	},
 	
 	convertVariableAssignmentsToObject: {

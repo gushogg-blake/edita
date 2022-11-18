@@ -281,7 +281,7 @@ class Base extends Evented {
 		}
 		
 		if (lang.init) {
-			lang.init(this);
+			lang.init({base: this});
 		}
 		
 		this.initialisedLangs.add(lang);
