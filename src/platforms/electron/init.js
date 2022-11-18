@@ -30,7 +30,7 @@ window.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
 export default async function(init, options={}) {
 	let {
 		isDialog = false,
-		initLangs = true,
+		useLangs = true,
 	} = options;
 	
 	window.platform = new Platform();
@@ -40,7 +40,7 @@ export default async function(init, options={}) {
 	window.base = new Base();
 	
 	await base.init(components, {
-		initLangs,
+		useLangs,
 	});
 	
 	if (isDialog) {

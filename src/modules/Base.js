@@ -7,13 +7,13 @@ let Evented = require("utils/Evented");
 let getIndentationDetails = require("modules/utils/getIndentationDetails");
 let guessIndent = require("modules/utils/guessIndent");
 let checkNewlines = require("modules/utils/checkNewlines");
+let utils = require("modules/utils");
 
 let Project = require("modules/Project");
 let Document = require("modules/Document");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
 let DirEntries = require("modules/DirEntries");
-let langs = require("modules/langs");
 let stores = require("modules/stores");
 
 let javascript = require("modules/langs/javascript");
@@ -40,20 +40,40 @@ the UI.
 lifespan: global singleton created on startup; never destroyed.
 */
 
+class Langs {
+	constructor() {
+		this.langs = {};
+	}
+	
+	add(lang) {
+		this.langs[lang.code] = lang;
+	}
+	
+	get(code) {
+		return this.langs[code] || null;
+	}
+	
+	get all() {
+		return Object.values(this.langs);
+	}
+}
+
 class Base extends Evented {
 	constructor() {
 		super();
 		
-		this.langs = langs;
+		this.langs = new Langs();
 		this.treeSitterLanguages = {};
 		this.initialisedLangs = new Set();
+		this.utils = utils;
 		
 		this.DirEntries = DirEntries;
 	}
 	
 	async init(components, options) {
 		options = {
-			initLangs: true,
+			// lang initialisation can be skipped for e.g. dialogs that don't use editors
+			useLangs: true,
 			prefs: {},
 			init: null,
 			...options,
@@ -64,7 +84,7 @@ class Base extends Evented {
 		
 		await Promise.all([
 			this.initStores(),
-			this.initLangs(),
+			options.useLangs && TreeSitter.init(),
 		]);
 		
 		await Promise.all([
@@ -92,31 +112,6 @@ class Base extends Evented {
 		this.stores = await stores();
 	}
 	
-	async initLangs() {
-		if (!this.options.initLangs) {
-			return;
-		}
-		
-		await TreeSitter.init();
-		
-		let langs = [
-			javascript,
-			svelte,
-			html,
-			css,
-			scss,
-			php,
-			c,
-			cpp,
-			python,
-			plainText,
-		];
-		
-		for (let lang of langs) {
-			this.langs.add(lang);
-		}
-	}
-	
 	async initPrefs() {
 		this.prefs = await this.stores.prefs.load();
 	}
@@ -142,7 +137,7 @@ class Base extends Evented {
 	async asyncInit() {
 		// pre-init common langs
 		
-		if (this.options.initLangs) {
+		if (this.options.useLangs) {
 			await bluebird.map([
 				"javascript",
 				"html",
@@ -150,7 +145,7 @@ class Base extends Evented {
 				//"php",
 				//"c",
 				//"cpp",
-			], code => this.initLanguage(this.langs.get(code)));
+			], code => this.initLang(this.langs.get(code)));
 		}
 	}
 	
@@ -259,11 +254,23 @@ class Base extends Evented {
 		return this.treeSitterLanguages[code];
 	}
 	
-	async initLanguage(lang) {
-		if (this.initialisedLangs.has(lang) || lang.code === "plainText") {
+	async initLang(lang) {
+		if (this.initialisedLangs.has(lang)) {
 			return;
 		}
 		
+		if (lang.code !== "plainText") {
+			await this.initTreeSitterLanguage(lang);
+		}
+		
+		if (lang.init) {
+			lang.init(this);
+		}
+		
+		this.initialisedLangs.add(lang);
+	}
+	
+	async initTreeSitterLanguage(lang) {
 		let {code} = lang;
 		let treeSitterLanguage = await platform.loadTreeSitterLanguage(code);
 		
@@ -279,8 +286,6 @@ class Base extends Evented {
 		lang.queries = {
 			error: treeSitterLanguage.query("(ERROR) @error"),
 		};
-		
-		this.initialisedLangs.add(lang);
 	}
 	
 	createEditorForTextArea(string="") {

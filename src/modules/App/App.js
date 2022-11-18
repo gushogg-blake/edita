@@ -365,7 +365,7 @@ class App extends Evented {
 			throw "File " + url.path + " has mixed newlines";
 		}
 		
-		await bluebird.map([...generateRequiredLangs(fileDetails.lang)], lang => base.initLanguage(lang));
+		await bluebird.map([...generateRequiredLangs(fileDetails.lang)], lang => base.initLang(lang));
 		
 		let document = this.createDocument(code, url, {
 			project: await this.projects.findOrCreateProjectForUrl(url),

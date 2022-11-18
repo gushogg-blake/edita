@@ -40,7 +40,7 @@ module.exports = class Scope {
 		let treeSitterLanguage = base.getTreeSitterLanguage(this.lang.code);
 		
 		if (!treeSitterLanguage) {
-			// langs must be pre-initialised with base.initLanguage.
+			// langs must be pre-initialised with base.initLang.
 			
 			throw "tree-sitter language not initialised";
 		}
