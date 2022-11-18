@@ -414,7 +414,7 @@ onMount(function() {
 				<option value="files">Files</option>
 			</select>
 			<input bind:value={formOptions.paths} id="paths" disabled={formOptions.searchIn !== "files"}>
-			<Checkbox bind:value={formOptions.searchInSubDirs} label="Search in su%b directories" disabled={formOptions.searchIn !== "files"}/>
+			<Checkbox bind:value={formOptions.searchInSubDirs} label="Search su%b dirs" disabled={formOptions.searchIn !== "files"}/>
 		</div>
 		<AccelLabel for="include" label="Incl%ude" disabled={formOptions.searchIn !== "files"}/>
 		<div class="input">
