@@ -77,9 +77,9 @@ class App extends Evented {
 		]);
 		
 		// DEV
-		if (platform.config.dev) {
-			setTimeout(() => this.showFindAndReplace(), 10);
-		}
+		//if (platform.config.dev) {
+		//	setTimeout(() => this.showFindAndReplace(), 10);
+		//}
 	}
 	
 	get selectedProject() {
