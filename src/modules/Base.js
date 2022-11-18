@@ -68,6 +68,23 @@ class Base extends Evented {
 		this.utils = utils;
 		
 		this.DirEntries = DirEntries;
+		
+		let langs = [
+			javascript,
+			svelte,
+			html,
+			css,
+			scss,
+			php,
+			c,
+			cpp,
+			python,
+			plainText,
+		];
+		
+		for (let lang of langs) {
+			this.langs.add(lang);
+		}
 	}
 	
 	async init(components, options) {

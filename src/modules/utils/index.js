@@ -8,6 +8,6 @@ module.exports = {
 	treeSitter,
 	AstSelection,
 	Selection,
-	cursor,
+	Cursor,
 	indentLines,
 };
