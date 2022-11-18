@@ -22,7 +22,7 @@ function select({detail: tab}) {
 
 function dblclick({detail: tab}) {
 	if (tab.project) {
-		app.selectProject(tab.project);
+		app.projects.select(tab.project);
 	}
 }
 
