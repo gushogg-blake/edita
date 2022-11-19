@@ -274,6 +274,33 @@ class App extends Evented {
 		this.selectedTab?.editor.view.requestFocus();
 	}
 	
+	showFindAndReplace(options) {
+		let search = "";
+		
+		if (this.selectedTab) {
+			let {editor} = this.selectedTab;
+			let {document} = editor;
+			let selectedText = editor.getSelectedText();
+			
+			if (selectedText.indexOf(document.fileDetails.newline) === -1) {
+				search = selectedText;
+			}
+		}
+		
+		this.fire("showFindAndReplace", {
+			...this.findAndReplace.defaultOptions,
+			...this.findAndReplace.savedOptions,
+			search,
+			...options,
+		});
+	}
+	
+	hideFindAndReplace() {
+		this.fire("hideFindAndReplace");
+		
+		this.selectedTab?.editor.view.requestFocus();
+	}
+	
 	openPath(path, code=null) {
 		return this.openFile(URL.file(path), code);
 	}
@@ -545,31 +572,6 @@ class App extends Evented {
 			searchIn: "files",
 			paths,
 		});
-	}
-	
-	showFindAndReplace(options) {
-		let search = "";
-		
-		if (this.selectedTab) {
-			let {editor} = this.selectedTab;
-			let {document} = editor;
-			let selectedText = editor.getSelectedText();
-			
-			if (selectedText.indexOf(document.fileDetails.newline) === -1) {
-				search = selectedText;
-			}
-		}
-		
-		this.fire("showFindAndReplace", {
-			...this.findAndReplace.defaultOptions,
-			...this.findAndReplace.savedOptions,
-			search,
-			...options,
-		});
-	}
-	
-	hideFindAndReplace() {
-		this.fire("hideFindAndReplace");
 	}
 	
 	newSnippet(details={}) {
