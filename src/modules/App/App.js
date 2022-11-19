@@ -88,25 +88,8 @@ class App extends Evented {
 	
 	getCurrentDir(_default=null) {
 		let lastSelectedPath = this.lastSelectedSavedUrl && platform.fs(this.lastSelectedSavedUrl.path).parent.path;
-		let projectDir = this.selectedProject?.dirs[0].path;
 		
-		if (!this.lastSelectedSavedUrl && !this.selectedProject) {
-			return _default;
-		}
-		
-		if (!this.lastSelectedSavedUrl) {
-			return projectDir;
-		}
-		
-		if (!this.selectedProject) {
-			return lastSelectedPath;
-		}
-		
-		if (this.selectedProject.ownsUrl(this.lastSelectedSavedUrl)) {
-			return lastSelectedPath;
-		} else {
-			return projectDir;
-		}
+		return lastSelectedPath || _default;
 	}
 	
 	async save(tab) {
