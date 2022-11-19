@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd /path/to/treefrog
+
+export ELECTRON_IS_DEV=0
+
+npx electron . -- "$@"

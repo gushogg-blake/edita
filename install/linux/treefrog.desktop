@@ -2,7 +2,6 @@
 Encoding=UTF-8
 Name=Treefrog
 GenericName=Treefrog
-Comment=Treefrog Editor
 Exec=/path/to/bin/treefrog %F
 Icon=/path/to/treefrog/src/platforms/electron/resources/icon-96x96.png
 Terminal=false
