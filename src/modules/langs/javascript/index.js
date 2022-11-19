@@ -19,8 +19,8 @@ let lang = {
 		
 		env = {...env, lang: this};
 		
-		this.astMode.init(this, env);
-		this.codeIntel.init(this, env);
+		this.astMode.init(env);
+		this.codeIntel.init(env);
 	},
 	
 	isBlock(node) {
