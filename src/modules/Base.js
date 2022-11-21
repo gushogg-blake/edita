@@ -28,6 +28,7 @@ let c = require("modules/langs/c");
 let markdown = require("modules/langs/markdown");
 let cpp = require("modules/langs/cpp");
 let python = require("modules/langs/python");
+let ruby = require("modules/langs/ruby");
 let plainText = require("modules/langs/plainText");
 
 /*
@@ -83,6 +84,7 @@ class Base extends Evented {
 			c,
 			cpp,
 			python,
+			ruby,
 			plainText,
 		];
 		

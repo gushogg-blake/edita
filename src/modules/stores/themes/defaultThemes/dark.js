@@ -192,6 +192,17 @@ let theme = {
 			string: "#89e14b",
 			type: "#e8f8fd",
 		},
+		
+		ruby: {
+			keyword: "#54b9ec",
+			id: "#e8f8fd",
+			comment: "#4686C1",
+			symbol: "#5692cd",
+			bracket: "#54B9EC",
+			number: "#96defa",
+			string: "#89e14b",
+			type: "#e8f8fd",
+		},
 	},
 };
 
