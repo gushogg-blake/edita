@@ -139,6 +139,10 @@ module.exports = {
 			string: "#2233bb",
 		},
 		
+		markdown: {
+			link: "#0338ff",
+		},
+		
 		c: {
 			keyword: "#0032ff",
 			id: "#202020",

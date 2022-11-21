@@ -145,6 +145,10 @@ module.exports = {
 			regex: "#1ab3ec",
 		},
 		
+		markdown: {
+			link: "#8dc4ff",
+		},
+		
 		c: {
 			keyword: "#54b9ec",
 			id: "#e8f8fd",

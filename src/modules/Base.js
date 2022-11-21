@@ -17,14 +17,15 @@ let DirEntries = require("modules/DirEntries");
 let stores = require("modules/stores");
 
 let javascript = require("modules/langs/javascript");
+let svelte = require("modules/langs/svelte");
 let html = require("modules/langs/html");
 let css = require("modules/langs/css");
 let scss = require("modules/langs/scss");
 let php = require("modules/langs/php");
 let c = require("modules/langs/c");
+let markdown = require("modules/langs/markdown");
 let cpp = require("modules/langs/cpp");
 let python = require("modules/langs/python");
-let svelte = require("modules/langs/svelte");
 let plainText = require("modules/langs/plainText");
 
 /*
@@ -76,6 +77,7 @@ class Base extends Evented {
 			css,
 			scss,
 			php,
+			markdown,
 			c,
 			cpp,
 			python,

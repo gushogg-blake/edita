@@ -3,42 +3,12 @@ let codeIntel = require("./codeIntel");
 
 module.exports = {
 	group: "html",
-	code: "html",
-	name: "HTML",
-	defaultExtension: "html",
+	code: "markdown",
+	name: "Markdown",
+	defaultExtension: "md",
 	astMode,
 	codeIntel,
-	possibleInjections: ["javascript", "css", "scss", "sass"],
-	
-	injections: [
-		{
-			pattern: "(script_element (raw_text) @injectionNode)",
-			
-			lang(captures) {
-				return "javascript";
-			},
-		},
-		{
-			pattern: "(style_element (raw_text) @injectionNode)",
-			
-			lang(captures) {
-				let lang;
-				
-				let startTag = captures.injectionNode.parent.firstChild;
-				let [, ...attributes] = startTag.namedChildren;
-				let langAttribute = attributes.find(a => a.text.match(/^lang=/));
-				let typeAttribute = attributes.find(a => a.text.match(/^type=/));
-				
-				if (langAttribute) {
-					lang = langAttribute.text.match(/^lang=["'](scss|sass)/)?.[1];
-				} else if (typeAttribute) {
-					lang = typeAttribute.text.match(/^type=["']text\/(scss|sass)/)?.[1];
-				}
-				
-				return lang || "css";
-			},
-		},
-	],
+	injections: [],
 	
 	isElementBlock(node) {
 		return (
@@ -83,6 +53,10 @@ module.exports = {
 			type,
 			parent,
 		} = node;
+		
+		if (type === "link") {
+			return "link";
+		}
 		
 		if ([
 			"quoted_attribute_value",
@@ -142,8 +116,7 @@ module.exports = {
 		let type = platform.fs(path).lastType;
 		
 		if ([
-			"html",
-			"htm",
+			"md",
 		].includes(type)) {
 			return "general";
 		}
