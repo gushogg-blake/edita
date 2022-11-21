@@ -27,18 +27,12 @@ module.exports = class {
 		let lineStrings = this.string.split(fileDetails.newline);
 		let lineStartIndex = 0;
 		
-		this.maxLineLength = 0;
-		
 		for (let i = 0; i < lineStrings.length; i++) {
 			let lineString = lineStrings[i];
 			
 			this.lines.push(new Line(lineString, fileDetails, lineStartIndex, i));
 			
 			lineStartIndex += lineString.length + fileDetails.newline.length;
-			
-			if (lineString.length > this.maxLineLength) {
-				this.maxLineLength = lineString.length;
-			}
 		}
 	}
 	

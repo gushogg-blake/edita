@@ -54,7 +54,6 @@ module.exports = class Scope {
 		if (
 			this.source.noParse
 			|| this.lang.code === "plainText"
-			|| this.source.maxLineLength > base.prefs.maxLineLengthForParsing
 		) {
 			return;
 		}

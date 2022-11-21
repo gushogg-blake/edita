@@ -74,6 +74,10 @@ let migrations = {
 		
 		prefs.normalKeymap["Ctrl+Shift+V"] = "pasteAndIndent";
 	},
+	
+	"11"(prefs) {
+		delete prefs.maxLineLengthForParsing;
+	},
 };
 
 module.exports = function() {
@@ -84,8 +88,6 @@ module.exports = function() {
 		defaultLangCode: "javascript",
 		
 		wrap: false,
-		
-		maxLineLengthForParsing: 300,
 		
 		modeSwitchKey: "Escape",
 		minHoldTime: 200,
