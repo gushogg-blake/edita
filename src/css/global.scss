@@ -16,7 +16,7 @@
 	input, select {
 		color: var(--inputColor);
 		border: var(--inputBorder);
-		border-radius: 3px;
+		border-radius: var(--inputBorderRadius);
 		outline: none;
 		background: var(--inputBackground);
 		

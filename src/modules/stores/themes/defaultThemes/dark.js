@@ -25,6 +25,7 @@ module.exports = {
 		
 		inputColor: "var(--appColor)",
 		inputBorder: "1px solid #8b8a89",
+		inputBorderRadius: 3,
 		inputBackground: "#ffffff10",
 		inputColorDisabled: "#666666",
 		inputBorderDisabled: "1px solid #adaba6",

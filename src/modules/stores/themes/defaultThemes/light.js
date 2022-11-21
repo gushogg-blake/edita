@@ -25,6 +25,7 @@ module.exports = {
 		
 		inputColor: "#444444",
 		inputBorder: "1px solid #adaba6",
+		inputBorderRadius: 3,
 		inputBackground: "white",
 		inputColorDisabled: "#666666",
 		inputBorderDisabled: "1px solid #adaba6",
