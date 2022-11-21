@@ -86,6 +86,8 @@ async function newProject() {
 		
 		selectProject(project);
 	} catch (e) {
+		console.error(e);
+		
 		alert(e.message);
 	}
 }

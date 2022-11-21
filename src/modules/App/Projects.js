@@ -103,7 +103,7 @@ class Projects extends Evented {
 		let project = new Project(dirs, {}, true);
 		
 		if (this.all.some(p => p.key === project.key)) {
-			throw "Project already exists";
+			throw new Error("Project already exists");
 		}
 		
 		await project.save();
