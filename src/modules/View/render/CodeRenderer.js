@@ -58,7 +58,7 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	get nodeColor() {
-		return this._node?.color || null;
+		return this._node?.color || base.theme.editor.defaultColor;
 	}
 	
 	get nodeEndCursor() {
@@ -170,10 +170,10 @@ module.exports = class extends LineRowRenderer {
 	
 	getColor(node) {
 		let {lang} = this.scope;
-		let colors = base.theme.langs[lang.code];
 		let hiliteClass = lang.getHiliteClass(node);
+		let colors = base.theme.langs[lang.code];
 		
-		return hiliteClass ? colors[hiliteClass] : null;
+		return colors && hiliteClass ? colors[hiliteClass] : null;
 	}
 	
 	getCurrentRangeEnd() {
