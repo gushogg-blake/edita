@@ -67,7 +67,9 @@ class Projects extends Evented {
 			return project;
 		}
 		
-		let dirs = await bluebird.map(platform.fs(url.path).parents, async function(dir) {
+		let node = platform.fs(url.path);
+		
+		let dirs = await bluebird.map(node.parents, async function(dir) {
 			let files = (await dir.ls()).map(node => node.name.toLowerCase());
 			
 			return {
@@ -86,13 +88,9 @@ class Projects extends Evented {
 		
 		dirs.reverse();
 		
-		let projectRoot = dirs.find(dir => dir.isProjectRoot);
+		let projectRoot = dirs.find(dir => dir.isProjectRoot)?.dir.path || node.parent.path;
 		
-		if (!projectRoot) {
-			return null;
-		}
-		
-		project = new Project([projectRoot.dir.path], {}, false);
+		project = new Project([projectRoot], {}, false);
 		
 		this.inferredProjects.push(project);
 		
