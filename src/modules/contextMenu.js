@@ -2,7 +2,12 @@ let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
 let screenOffsets = require("utils/dom/screenOffsets");
 
-module.exports = function(app, items, coords, noCancel=false) {
+module.exports = function(app, items, coords, options={}) {
+	options = {
+		noCancel: false,
+		...options,
+	};
+	
 	if (items.length === 0) {
 		return;
 	}
@@ -75,7 +80,7 @@ module.exports = function(app, items, coords, noCancel=false) {
 	function keydown(e) {
 		e.preventDefault();
 		
-		if (e.key === "Escape" && !noCancel) {
+		if (e.key === "Escape" && !options.noCancel) {
 			close();
 			
 			return;

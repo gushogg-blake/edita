@@ -144,7 +144,12 @@ class Platform extends Common {
 		return promise;
 	}
 	
-	showContextMenu(e, app, items, noCancel=false) {
+	showContextMenu(e, app, items, options={}) {
+		options = {
+			noCancel: false,
+			...options,
+		};
+		
 		items = items.map(function(item) {
 			return {
 				...item,
@@ -152,17 +157,22 @@ class Platform extends Common {
 			};
 		});
 		
-		if (noCancel) {
+		if (options.noCancel) {
 			contextMenu(app, items, {
 				x: e.clientX,
 				y: e.clientY,
-			}, true);
+			}, options);
 		} else {
 			ipc.contextMenu(items);
 		}
 	}
 	
-	showContextMenuForElement(app, element, items, noCancel=false) {
+	showContextMenuForElement(app, element, items, options={}) {
+		options = {
+			noCancel: false,
+			...options,
+		};
+		
 		let {x, y, height} = screenOffsets(element);
 		
 		x = Math.round(x);
@@ -170,8 +180,8 @@ class Platform extends Common {
 		
 		let coords = {x, y: y + height};
 		
-		if (noCancel) {
-			contextMenu(app, items, coords, true);
+		if (options.noCancel) {
+			contextMenu(app, items, coords, options);
 		} else {
 			ipc.contextMenu(items, coords);
 		}
