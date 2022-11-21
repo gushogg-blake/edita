@@ -1,3 +1,4 @@
+let _typeof = require("utils/typeof");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
@@ -8,6 +9,18 @@ let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 let Range = require("./Range");
 
 let {s} = Selection;
+
+function getInjectionLang(injection, matchOrMatches) {
+	let langCode;
+	
+	if (_typeof(injection.lang) === "Function") {
+		langCode = injection.lang(matchOrMatches);
+	} else {
+		langCode = injection.lang;
+	}
+	
+	return base.langs.get(langCode);
+}
 
 module.exports = class Scope {
 	constructor(source, parent, lang, code, ranges) {
@@ -209,7 +222,7 @@ module.exports = class Scope {
 			}
 			
 			if (injection.combined) {
-				let injectionLang = base.langs.get(injection.lang);
+				let injectionLang = getInjectionLang(injection, matches);
 				
 				if (!injectionLang) {
 					continue;
@@ -244,7 +257,7 @@ module.exports = class Scope {
 				}
 			} else {
 				for (let match of matches) {
-					let injectionLang = base.langs.get(injection.lang(match));
+					let injectionLang = getInjectionLang(injection, match);
 					
 					if (!injectionLang) {
 						continue;
