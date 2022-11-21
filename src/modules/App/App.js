@@ -56,6 +56,7 @@ class App extends Evented {
 			...Object.values(this.panes).map(pane => pane.on("show hide resize", () => this.fire("updatePanes"))),
 			this.on("selectTab", this.onSelectTab.bind(this)),
 			this.on("document.save", this.onDocumentSave.bind(this)),
+			this.on("document.projectChanged", this.onDocumentProjectChanged.bind(this)),
 		];
 		
 		// DEV
@@ -406,7 +407,7 @@ class App extends Evented {
 	createDocument(code, url, options) {
 		let document = new Document(code, url, options);
 		
-		for (let event of ["edit", "undo", "redo", "save", "fileChanged"]) {
+		for (let event of ["edit", "undo", "redo", "save", "fileChanged", "projectChanged"]) {
 			document.on(event, (...args) => {
 				this.updateTitle();
 				
@@ -604,14 +605,24 @@ class App extends Evented {
 			this.lastSelectedSavedUrl = tab.url;
 		}
 		
-		if (tab.project && !this.selectedProject) {
-			this.projects.select(tab.project);
+		this.projects.select(tab.project);
+	}
+	
+	async onDocumentSave(document) {
+		if (document === this.selectedTab.document) {
+			this.lastSelectedSavedUrl = document.url;
+		}
+		
+		let project = await this.projects.findOrCreateProjectForUrl(document.url);
+		
+		if (project !== document.project) {
+			document.setProject(project);
 		}
 	}
 	
-	onDocumentSave(document) {
+	async onDocumentProjectChanged(document) {
 		if (document === this.selectedTab.document) {
-			this.lastSelectedSavedUrl = document.url;
+			this.projects.select(document.project);
 		}
 	}
 	

@@ -114,7 +114,7 @@ class Projects extends Evented {
 	}
 	
 	onTabCreated(tab) {
-		tab.project?.tabCreated(tab);
+		tab.project.tabCreated(tab);
 		
 		this.fire("update");
 	}
@@ -122,11 +122,11 @@ class Projects extends Evented {
 	onTabClosed(tab) {
 		let {project} = tab;
 		
-		if (project && !this.openProjects.includes(project)) {
+		if (!this.openProjects.includes(project)) {
 			removeInPlace(this.inferredProjects, project);
 		}
 		
-		project?.tabClosed(tab);
+		project.tabClosed(tab);
 		
 		this.fire("update");
 	}

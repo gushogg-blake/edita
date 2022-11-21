@@ -59,6 +59,12 @@ class Document extends BaseDocument {
 		});
 	}
 	
+	setProject(project) {
+		this.project = project;
+		
+		this.fire("projectChanged");
+	}
+	
 	get path() {
 		return this.url?.path;
 	}
