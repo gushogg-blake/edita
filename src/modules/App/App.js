@@ -56,7 +56,6 @@ class App extends Evented {
 			...Object.values(this.panes).map(pane => pane.on("show hide resize", () => this.fire("updatePanes"))),
 			this.on("selectTab", this.onSelectTab.bind(this)),
 			this.on("document.save", this.onDocumentSave.bind(this)),
-			this.on("document.projectChanged", this.onDocumentProjectChanged.bind(this)),
 		];
 		
 		// DEV
@@ -213,9 +212,6 @@ class App extends Evented {
 			this.initialNewFileTab = null;
 		}
 		
-		this.fire("updateTabs");
-		this.fire("tabClosed", tab);
-		
 		if (selectNext) {
 			this.selectTab(selectNext);
 		} else {
@@ -225,6 +221,9 @@ class App extends Evented {
 			
 			this.updateTitle();
 		}
+		
+		this.fire("updateTabs");
+		this.fire("tabClosed", tab);
 	}
 	
 	async deleteTab(tab) {
@@ -482,10 +481,6 @@ class App extends Evented {
 			if (session) {
 				tabsToOpen = session.tabs;
 				fileToSelect = session.selectedTabUrl;
-				
-				if (session.projectKey) {
-					//this.projects.
-				}
 			}
 			
 			window.addEventListener("beforeunload", () => {
@@ -604,8 +599,6 @@ class App extends Evented {
 		if (tab.isSaved) {
 			this.lastSelectedSavedUrl = tab.url;
 		}
-		
-		this.projects.select(tab.project);
 	}
 	
 	async onDocumentSave(document) {
@@ -617,12 +610,6 @@ class App extends Evented {
 		
 		if (project !== document.project) {
 			document.setProject(project);
-		}
-	}
-	
-	async onDocumentProjectChanged(document) {
-		if (document === this.selectedTab.document) {
-			this.projects.select(document.project);
 		}
 	}
 	

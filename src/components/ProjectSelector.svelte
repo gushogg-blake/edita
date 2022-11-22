@@ -41,27 +41,17 @@ function projectMouseup(project) {
 		return;
 	}
 	
-	selectAndClose(project);
+	viewProject(project);
+	
+	quickSelectMode = false;
 }
 
 function projectClick(project) {
 	viewProject(project);
 }
 
-function projectDblclick(project) {
-	selectAndClose(project);
-}
-
-function selectAndClose(project) {
-	selectProject(project);
-	
-	close();
-}
-
 function newProjectClick() {
 	newProject();
-	
-	close();
 }
 
 function newProjectMouseup() {
@@ -71,7 +61,7 @@ function newProjectMouseup() {
 	
 	newProject();
 	
-	close();
+	quickSelectMode = false;
 }
 
 async function newProject() {
@@ -90,10 +80,6 @@ async function newProject() {
 		
 		alert(e.message);
 	}
-}
-
-function selectProject(project) {
-	projects.select(project);
 }
 
 function viewProject(project) {
@@ -234,7 +220,7 @@ onMount(function() {
 		class:showingSelector
 		title={selectedProject ? getFullName(selectedProject) : ""}
 	>
-		{selectedProject ? getLabel(selectedProject) : "Project"}
+		{selectedProject ? getLabel(selectedProject) : "Projects"}
 	</div>
 	<div id="selectorWrapper">
 		<div id="selector" class:hide={!showingSelector}>
@@ -244,7 +230,6 @@ onMount(function() {
 						class="project"
 						on:mouseup={() => projectMouseup(project)}
 						on:click={() => projectClick(project)}
-						on:dblclick={() => projectDblclick(project)}
 					>
 						{getLabel(project)}
 					</div>
@@ -259,13 +244,13 @@ onMount(function() {
 					</div>
 				{/if}
 			</div>
-			{#if !quickSelectMode && viewingProject}
+			{#if viewingProject}
 				<div id="details">
 					<div>
 						{getFullName(viewingProject)}
 					</div>
 					<div id="actions">
-						<button on:click={() => selectAndClose(viewingProject)}>Select</button>
+						<!--<button on:click={() => selectAndClose(viewingProject)}>Select</button>-->
 					</div>
 				</div>
 			{/if}

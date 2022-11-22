@@ -27,12 +27,17 @@ class Projects extends Evented {
 		super();
 		
 		this.app = app;
-		this.selectedProject = null;
 		this.savedProjects = [];
 		this.inferredProjects = [];
+		this._selectedProject = this.selectedProject;
 		
 		app.on("tabCreated", this.onTabCreated.bind(this));
 		app.on("tabClosed", this.onTabClosed.bind(this));
+		app.on("selectTab tabClosed document.projectChanged", this.update.bind(this));
+	}
+	
+	get selectedProject() {
+		return this.app.selectedTab?.project;
 	}
 	
 	get all() {
@@ -48,12 +53,6 @@ class Projects extends Evented {
 		let json = Object.values(byKey);
 		
 		this.savedProjects = json.map(Project.fromJson);
-	}
-	
-	select(project) {
-		this.selectedProject = project;
-		
-		this.fire("select");
 	}
 	
 	findProjectForUrl(url) {
@@ -129,6 +128,16 @@ class Projects extends Evented {
 		project.tabClosed(tab);
 		
 		this.fire("update");
+	}
+	
+	update() {
+		let {selectedProject} = this;
+		
+		if (this._selectedProject !== selectedProject) {
+			this._selectedProject = selectedProject;
+			
+			this.fire("select");
+		}
 	}
 }
 
