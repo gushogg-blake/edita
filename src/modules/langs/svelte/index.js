@@ -11,6 +11,14 @@ module.exports = {
 	possibleInjections: ["javascript", "css"],
 	injections: [],
 	
+	getFooter(node) {
+		return null;
+	},
+	
+	getHeader(node) {
+		return null;
+	},
+	
 	getHiliteClass(node) {
 		// TODO
 	},
