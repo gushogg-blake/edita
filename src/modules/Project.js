@@ -1,17 +1,43 @@
+let get = require("lodash.get");
+let set = require("lodash.set");
 let Evented = require("utils/Evented");
 let normaliseLangCode = require("modules/lsp/utils/normaliseLangCode");
 let LspClient = require("modules/lsp/LspClient");
+
+function defaultConfig() {
+	return {
+		name: null,
+		
+		prefs: {
+			findAndReplace: {
+				excludePatterns: [],
+			},
+		},
+	};
+}
 
 class Project extends Evented {
 	constructor(dirs, config, isSaved) {
 		super();
 		
 		this.dirs = dirs;
-		this.config = config;
+		this.config = config || defaultConfig();
 		this.isSaved = isSaved;
 		
 		this.lspServers = {};
 		this.lspClient = new LspClient(this);
+	}
+	
+	get prefs() {
+		return this.config.prefs;
+	}
+	
+	getPref(key) {
+		return get(this.prefs, key);
+	}
+	
+	setPref(key, value) {
+		set(this.prefs, key, value);
 	}
 	
 	lspServerKey(langCode) {

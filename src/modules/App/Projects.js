@@ -89,7 +89,7 @@ class Projects extends Evented {
 		
 		let projectRoot = dirs.find(dir => dir.isProjectRoot)?.dir.path || node.parent.path;
 		
-		project = new Project([projectRoot], {}, false);
+		project = new Project([projectRoot], null, false);
 		
 		this.inferredProjects.push(project);
 		
