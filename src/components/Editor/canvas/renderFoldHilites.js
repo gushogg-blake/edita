@@ -14,7 +14,7 @@ module.exports = function(layers, view, offsets) {
 	
 	return {
 		drawHilite(indentCols, lineWidth) {
-			let x = Math.round(leftEdge + indentCols * colWidth);
+			let x = Math.round(offsets.leftEdge + indentCols * colWidth);
 			let width = Math.round(lineWidth * colWidth);
 			
 			context = layers.hilites;

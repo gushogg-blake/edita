@@ -11,7 +11,7 @@ module.exports = class extends LineRowRenderer {
 		if (this.foldedLineRow.isFoldHeader) {
 			let {line} = this;
 			
-			this.renderFoldHilites.drawHilite(line.indentCols, line.width - line.indentCols);
+			this.canvasRenderer.drawHilite(line.indentCols, line.width - line.indentCols);
 		}
 	}
 }
