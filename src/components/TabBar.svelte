@@ -145,7 +145,7 @@ onMount(function() {
 <style lang="scss">
 #main {
 	white-space: nowrap;
-	padding: 1px 3px 0;
+	padding: 1px 0 0;
 	overflow-x: auto;
 	overflow-y: hidden;
 	background: var(--appBackground);

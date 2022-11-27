@@ -6,7 +6,9 @@ module.exports = {
 		fontFamily: "\"Noto Sans\", \"Segoe UI\", \"Helvetica Neue\", sans-serif",
 		fontSize: 12.5,
 		
-		appBorder: "1px solid #707070",
+		appBorder: "1px solid #606060",
+		appBorderLight: "1px solid #606060",
+		appBorderMedium: "1px solid #606060",
 		appBackground: "#303030",
 		
 		buttonColor: "#ffffffee",
@@ -57,7 +59,7 @@ module.exports = {
 		scrollbarPadding: 3,
 		scrollbarWidth: "calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2)",
 		scrollbarBackground: "#505050",
-		scrollbarBorder: "var(--appBorder)",
+		scrollbarBorder: "var(--appBorderLight)",
 		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackground)",
 		scrollbarThumbBackground: "#909090",
 		scrollbarSpacerBackground: "#606060",

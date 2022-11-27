@@ -6,7 +6,9 @@ module.exports = {
 		fontSize: 12.5,
 		color: "#444444",
 		
-		appBorder: "1px solid #afacaa",
+		appBorder: "1px solid #c5c3c1",
+		appBorderLight: "1px solid #d5d3d0",
+		appBorderMedium: "1px solid #d5d3d0",
 		appBackground: "#edecea",
 		
 		buttonColor: "#333333",
@@ -57,7 +59,7 @@ module.exports = {
 		scrollbarPadding: 3,
 		scrollbarWidth: "calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2)",
 		scrollbarBackground: "white",
-		scrollbarBorder: "1px solid #bababa",
+		scrollbarBorder: "var(--appBorderLight)",
 		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackground)",
 		scrollbarThumbBackground: "#B2B2B2",
 		scrollbarSpacerBackground: "#e8e8e8",

@@ -169,7 +169,7 @@ onMount(function() {
 }
 
 #tabBar {
-	border-bottom: var(--appBorder);
+	border-bottom: var(--appBorderMedium);
 }
 
 #editor {
