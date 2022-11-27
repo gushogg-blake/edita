@@ -263,13 +263,13 @@ module.exports = class extends LineRowRenderer {
 		while (this.variableWidthPart) {
 			this.step();
 			
-			if (++i === 1000) {
-				console.log("infinite");
-			}
-			
-			if (i === 1010) {
-				break;
-			}
+			//if (++i === 1000) {
+			//	console.log("infinite");
+			//}
+			//
+			//if (i === 1010) {
+			//	break;
+			//}
 		}
 	}
 }
