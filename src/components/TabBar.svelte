@@ -145,7 +145,7 @@ onMount(function() {
 <style lang="scss">
 #main {
 	white-space: nowrap;
-	padding: 1px 0 0;
+	padding: 0px 0 0;
 	overflow-x: auto;
 	overflow-y: hidden;
 	background: var(--appBackground);
@@ -165,7 +165,7 @@ onMount(function() {
 	background: var(--tabBackground);
 	
 	&.isSelected {
-		box-shadow: 0 0 3px 0 rgba(0, 0, 0, .2);
+		//box-shadow: 0 0 3px 0 rgba(0, 0, 0, .2);
 		background: var(--tabSelectedBackground);
 	}
 }
