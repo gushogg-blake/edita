@@ -80,6 +80,7 @@ function tabIndexFromMouseEvent(e) {
 function dragstart(e) {
 	e.dataTransfer.effectAllowed = "all";
 	e.dataTransfer.setData(mimeType, ""); //
+	e.dataTransfer.setDragImage(new Image(), 0, 0);
 	
 	dragging = true;
 }
