@@ -95,15 +95,15 @@ function renderDiv(div) {
 let paneStyle = {};
 
 $: paneStyle.left = {
-	width: panes.left.visible ? panes.left.size : 0,
+	width: panes.left.size,
 };
 
 $: paneStyle.right = {
-	width: panes.right.visible ? panes.right.size : 0,
+	width: panes.right.size,
 };
 
 $: paneStyle.bottom = {
-	height: panes.bottom.visible ? panes.bottom.size : 0,
+	height: panes.bottom.size,
 };
 
 onMount(function() {
@@ -254,6 +254,7 @@ onMount(function() {
 	</div>
 	<div
 		id="leftPaneContainer"
+		class:hide={!panes.left.visible}
 		style={inlineStyle(paneStyle.left)}
 	>
 		<div id="leftPane">
@@ -289,6 +290,7 @@ onMount(function() {
 	</div>
 	<div
 		id="rightPaneContainer"
+		class:hide={!panes.right.visible}
 		style={inlineStyle(paneStyle.right)}
 	>
 		<div id="rightPane">
@@ -305,6 +307,7 @@ onMount(function() {
 		<FindAndReplace/>
 		<div
 			id="bottomPaneContainer"
+			class:hide={!panes.bottom.visible}
 			style={inlineStyle(paneStyle.bottom)}
 		>
 			<div id="bottomPane">
