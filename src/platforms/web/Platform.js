@@ -4,6 +4,7 @@ let bluebird = require("bluebird");
 let path = require("vendor/path-browser");
 let fsWeb = require("vendor/fs-web");
 
+let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");
 let {on} = require("utils/dom/domEvents");
 let loadScript = require("utils/dom/loadScript");
@@ -11,14 +12,12 @@ let loadCss = require("utils/dom/loadCss");
 let contextMenu = require("modules/contextMenu");
 let createFs = require("modules/fs");
 
-let Common = require("platforms/common/Platform");
-
 let clipboard = require("platform/modules/clipboard");
 let jsonStore = require("platform/modules/jsonStore");
 let Snippets = require("platform/modules/Snippets");
 let lsp = require("platform/modules/lsp");
 
-class Platform extends Common {
+class Platform extends Evented {
 	constructor() {
 		super();
 		

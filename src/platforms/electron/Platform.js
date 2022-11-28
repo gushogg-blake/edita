@@ -2,19 +2,20 @@ let os = require("os");
 let path = require("path");
 let bluebird = require("bluebird");
 
+let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");
 let promiseWithMethods = require("utils/promiseWithMethods");
 let contextMenu = require("modules/contextMenu");
-
-let Common = require("platforms/common/Platform");
 
 let fs = require("platform/modules/fs");
 let ipcRenderer = require("platform/modules/ipcRenderer");
 let ipc = require("platform/modules/ipc");
 
-class Platform extends Common {
+class Platform extends Evented {
 	constructor() {
 		super();
+		
+		this.isWeb = false;
 		
 		let {
 			config,

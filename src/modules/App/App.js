@@ -97,7 +97,7 @@ class App extends Evented {
 		
 		if (document.isSaved) {
 			if (document.fileChangedWhileModified) {
-				if (!await platform.confirm(tab.name + " has changed on disk since the last save.  Overwrite current version?")) {
+				if (!await confirm(tab.name + " has changed on disk since the last save.  Overwrite current version?")) {
 					return;
 				}
 			}
@@ -227,7 +227,7 @@ class App extends Evented {
 	}
 	
 	async deleteTab(tab) {
-		if (!await platform.confirm("Delete " + tab.path + "?")) {
+		if (!await confirm("Delete " + tab.path + "?")) {
 			return;
 		}
 		

@@ -54,7 +54,7 @@ function contextmenu(e) {
 			label: "Delete...",
 			
 			async onClick() {
-				if (!await platform.confirm("Delete " + path + "?")) {
+				if (!await confirm("Delete " + path + "?")) {
 					return;
 				}
 				
