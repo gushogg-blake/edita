@@ -8,9 +8,6 @@ import themeStyle from "components/themeStyle";
 import themeStyleDev from "components/themeStyleDev";
 import labelClick from "components/actions/labelClick";
 
-import Spacer from "components/utils/Spacer.svelte";
-import Checkbox from "components/utils/Checkbox.svelte";
-
 import Toolbar from "./Toolbar.svelte";
 import EditorTabBar from "./EditorTabBar.svelte";
 import Tab from "./Tab.svelte";
@@ -20,6 +17,7 @@ import BottomPane from "./BottomPane.svelte";
 import ResizeHandle from "./ResizeHandle.svelte";
 import FindBar from "./FindBar.svelte";
 import FindAndReplace from "./FindAndReplace.svelte";
+import DevToolbar from "./DevToolbar.svelte";
 
 export let app;
 
@@ -241,9 +239,7 @@ onMount(function() {
 }
 
 #devToolbar {
-	display: flex;
 	border-top: var(--appBorder);
-	padding: 3px;
 }
 </style>
 
@@ -336,17 +332,7 @@ onMount(function() {
 		</div>
 		{#if prefs.dev.showToolbar}
 			<div id="devToolbar">
-				<div>
-					<Checkbox
-						label="Theme style element"
-						value={prefs.dev.showThemeStyleElement}
-						on:change={(e) => base.setPref("dev.showThemeStyleElement", e.target.checked)}
-					/>
-				</div>
-				<Spacer/>
-				<button on:click={() => base.setPref("dev.showToolbar", false)}>
-					Hide
-				</button>
+				<DevToolbar/>
 			</div>
 		{/if}
 	</div>
