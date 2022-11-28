@@ -62,7 +62,7 @@ module.exports = {
 		scrollbarBorder: "var(--appBorderLight)",
 		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackground)",
 		scrollbarThumbBackground: "#B2B2B2",
-		scrollbarSpacerBackground: "#e8e8e8",
+		scrollbarSpacerBackground: "var(--appBackground)",
 	},
 	
 	editor: {
