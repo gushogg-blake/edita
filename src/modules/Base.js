@@ -138,9 +138,9 @@ class Base extends Evented {
 	updatePrefs(prefs) {
 		this.prefs = prefs;
 		
-		this.fire("prefsUpdated");
-		
 		this.updateTheme();
+		
+		this.fire("prefsUpdated");
 	}
 	
 	async initThemes() {

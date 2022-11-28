@@ -2,6 +2,18 @@ let mapArrayToObject = require("utils/mapArrayToObject");
 let _typeof = require("utils/typeof");
 let inlineStyle = require("utils/dom/inlineStyle");
 
+/*
+write theme variables to the node's style (and update them when the
+theme is switched) and then poll them and write them back to the theme.
+this lets you open dev tools, modify the variables and see the results
+for e.g. tweaking colors.
+
+for non-editor variables this is unnecessary and you can just change
+the variables on the main app div instead, but editors read the values
+directly from the theme to use in canvas drawing so won't get the
+updates from that.
+*/
+
 function getVariables(theme, path=[]) {
 	let vars = {};
 	
@@ -52,20 +64,33 @@ function getTheme(node) {
 	return theme;
 }
 
-module.exports = function(node, {theme, update}) {
+module.exports = function(node, update) {
 	function updateTheme() {
 		update(getTheme(node));
 	}
 	
-	node.style = inlineStyle(getVariables(theme));
+	function updateStyle() {
+		node.style = inlineStyle(getVariables(base.theme));
+	}
 	
+	updateStyle();
 	updateTheme();
 	
-	let timer = setInterval(updateTheme, 500);
+	let timer = setInterval(updateTheme, 300);
+	
+	let teardown = [
+		function() {
+			clearInterval(timer);
+		},
+		
+		base.on("prefsUpdated", updateStyle),
+	];
 	
 	return {
 		destroy() {
-			clearInterval(timer);
+			for (let fn of teardown) {
+				fn();
+			}
 		},
 	};
 }

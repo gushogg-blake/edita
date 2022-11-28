@@ -246,7 +246,9 @@ onMount(function() {
 	tabindex="0"
 	use:labelClick
 >
-	<div class="hide" use:themeStyleDev={{theme, update: theme => base.modifyThemeForDev(theme)}}></div>
+	{#if platform.config.dev}
+		<div class="hide" use:themeStyleDev={theme => base.modifyThemeForDev(theme)}></div>
+	{/if}
 	<div id="toolbar">
 		<Toolbar/>
 	</div>
