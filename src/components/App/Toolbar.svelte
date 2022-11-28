@@ -54,15 +54,13 @@ onMount(function() {
 
 <style lang="scss">
 #main {
+	--buttonBackground: transparent;
+	--buttonBorder: 0;
+	
 	display: flex;
 	gap: 3px;
 	padding: 3px;
 	background: var(--toolbarBackground);
-}
-
-button {
-	border: 0;
-	background: transparent;
 }
 </style>
 
