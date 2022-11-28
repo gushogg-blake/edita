@@ -313,7 +313,9 @@ module.exports = class Scope {
 				
 				injectionRanges: this.scopes.reduce(function(ranges, scope) {
 					return [...ranges, ...scope.ranges.filter(range => Selection.isOverlapping(selection, range.selection))];
-				}, []),
+				}, []).sort(function(a, b) {
+					return a.startIndex - b.startIndex;
+				}),
 			},
 			
 			...children,
