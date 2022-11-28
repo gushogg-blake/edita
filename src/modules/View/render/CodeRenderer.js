@@ -206,7 +206,7 @@ module.exports = class extends LineRowRenderer {
 			let nextChildStart = this.getNextChildStart();
 			let currentRangeEnd = this.getCurrentRangeEnd();
 			let nextRangeStart = this.getNextRangeStart();
-			let currentInjectionRangeEnd = this.getCurrentRangeEnd();
+			let currentInjectionRangeEnd = this.getCurrentInjectionRangeEnd();
 			let nextInjectionRangeStart = this.getNextInjectionRangeStart();
 			let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
 			
