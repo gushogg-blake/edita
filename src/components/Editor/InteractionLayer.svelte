@@ -400,24 +400,23 @@ function onEdit() {
 
 function calculateMarginStyle(sizes) {
 	return {
-		width: sizes.marginWidth - sizes.marginStyle.paddingRight,
+		width: sizes.marginWidth,
 	};
 }
 
-function calculateCodeStyle(
-	sizes,
-	mode,
-	dragStartedHere,
-) {
+function calculateCodeStyle(sizes, mode, dragStartedHere) {
 	let cursor = mode === "ast" ? "default" : "text";
 	
 	if (dragStartedHere) {
 		cursor = "grabbing";
 	}
 	
+	let {width, marginWidth, marginOffset, marginStyle, codeWidth} = sizes;
+	let marginWidthMinusPadding = marginWidth - marginStyle.paddingRight;
+	
 	return {
-		left: sizes.marginOffset,
-		width: sizes.codeWidth,
+		left: mode === "ast" ? marginOffset : marginWidthMinusPadding,
+		width: mode === "ast" ? codeWidth : width - marginWidthMinusPadding,
 		cursor,
 	};
 }
@@ -456,13 +455,9 @@ function targetIsActive(target, currentDropTarget) {
 	);
 }
 
-$: marginStyle = calculateMarginStyle(sizes);
+$: marginStyle = calculateMarginStyle(sizes, mode);
 
-$: codeStyle = calculateCodeStyle(
-	sizes,
-	mode,
-	dragStartedHere,
-);
+$: codeStyle = calculateCodeStyle(sizes, mode, dragStartedHere);
 
 onMount(function() {
 	let teardown = [
