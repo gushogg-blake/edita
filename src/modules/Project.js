@@ -57,6 +57,10 @@ class Project extends Evented {
 	}
 	
 	getLspServer(langCode) {
+		if (!platform.lsp) {
+			return null;
+		}
+		
 		langCode = normaliseLangCode(langCode);
 		
 		if (!this.lspServers[langCode]) {
