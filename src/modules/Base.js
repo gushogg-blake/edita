@@ -159,12 +159,11 @@ class Base extends Evented {
 	*/
 	
 	modifyThemeForDev(theme) {
-		console.log(theme);
 		this.theme = theme;
 		
 		this.fire("themeUpdated");
 		
-		//this.stores.themes.save(this.prefs.theme, this.theme);
+		this.stores.themes.save(this.prefs.theme, this.theme);
 	}
 	
 	async asyncInit() {
