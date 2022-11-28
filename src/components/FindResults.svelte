@@ -53,9 +53,13 @@ onMount(function() {
 }
 
 #nav {
-	border-bottom: var(--appBorder);
+	--buttonBorder: 0;
+	--buttonBackground: transparent;
+	
+	border-top: var(--appBorder);
+	border-bottom: var(--appBorderMedium);
 	padding: 3px;
-	background: var(--appBackground);
+	background: var(--toolbarBackground);
 }
 
 #results {
@@ -71,7 +75,6 @@ onMount(function() {
 
 .result {
 	display: grid;
-	/*display: flex;*/
 	cursor: pointer;
 	
 	&:hover {

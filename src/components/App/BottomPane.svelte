@@ -56,10 +56,6 @@ onMount(function() {
 	height: 100%;
 }
 
-#content {
-	border-top: var(--appBorder);
-}
-
 .content {
 	width: 100%;
 	height: 100%;
