@@ -76,6 +76,11 @@ class LspClient extends Evented {
 		this.urisByScope.set(scope, uri);
 		
 		let server = this.project.getLspServer(lang.code);
+		
+		if (!server) {
+			return;
+		}
+		
 		let code = maskOtherRegions(scope);
 		
 		server.notify("textDocument/didOpen", {
@@ -93,6 +98,10 @@ class LspClient extends Evented {
 		let {lang} = scope;
 		
 		let server = this.project.getLspServer(lang.code);
+		
+		if (!server) {
+			return;
+		}
 		
 		server.notify("textDocument/didClose", {
 			textDocument: {
