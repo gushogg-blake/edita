@@ -649,7 +649,7 @@ canvas {
 	class="treefrog"
 	class:showingHorizontalScrollbar
 	class:textarea={editorMode === "textarea"}
-	style={editorMode === "textarea" ? themeStyle(theme) : ""}
+	style={editorMode === "textarea" ? themeStyle(theme.app) : ""}
 	tabindex="0"
 	on:focus={onFocus}
 	on:blur={onBlur}

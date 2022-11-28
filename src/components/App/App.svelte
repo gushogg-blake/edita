@@ -5,6 +5,7 @@ import getKeyCombo from "utils/getKeyCombo";
 import inlineStyle from "utils/dom/inlineStyle";
 
 import themeStyle from "components/themeStyle";
+import themeStyleDev from "components/themeStyleDev";
 import labelClick from "components/actions/labelClick";
 
 import Toolbar from "./Toolbar.svelte";
@@ -126,6 +127,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
+@import "classes/hide";
 @import "mixins/abs-sticky";
 
 #main {
@@ -235,7 +237,7 @@ onMount(function() {
 	bind:this={main}
 	id="main"
 	class="treefrog"
-	style={themeStyle(theme)}
+	style={themeStyle(theme.app)}
 	on:dragover={dragover}
 	on:drop={drop}
 	on:keydown={keydown}
@@ -244,6 +246,7 @@ onMount(function() {
 	tabindex="0"
 	use:labelClick
 >
+	<div class="hide" use:themeStyleDev={{theme, update: theme => base.modifyThemeForDev(theme)}}></div>
 	<div id="toolbar">
 		<Toolbar/>
 	</div>

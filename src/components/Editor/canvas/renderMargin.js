@@ -17,7 +17,7 @@ module.exports = function(layers, view, offsets) {
 	
 	return {
 		init() {
-			context.font = fontSize + "px " + fontFamily;
+			context.font = fontSize + " " + fontFamily;
 			
 			context.fillStyle = marginBackground;
 			context.fillRect(0, 0, marginWidth, height);

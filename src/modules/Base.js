@@ -153,6 +153,20 @@ class Base extends Evented {
 		this.fire("themeUpdated");
 	}
 	
+	/*
+	enable tweaking theme by changing CSS variables in dev tools. see
+	components/themeStyleDev
+	*/
+	
+	modifyThemeForDev(theme) {
+		console.log(theme);
+		this.theme = theme;
+		
+		this.fire("themeUpdated");
+		
+		//this.stores.themes.save(this.prefs.theme, this.theme);
+	}
+	
 	async asyncInit() {
 		// pre-init common langs
 		
