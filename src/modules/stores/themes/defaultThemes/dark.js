@@ -4,7 +4,7 @@ module.exports = {
 	app: {
 		color: "#d5d5d5",
 		fontFamily: "\"Noto Sans\", \"Segoe UI\", \"Helvetica Neue\", sans-serif",
-		fontSize: 12.5,
+		fontSize: "12.5px",
 		
 		appBorder: "1px solid #606060",
 		appBorderLight: "1px solid #606060",
@@ -27,7 +27,7 @@ module.exports = {
 		
 		inputColor: "var(--appColor)",
 		inputBorder: "1px solid #8b8a89",
-		inputBorderRadius: 3,
+		inputBorderRadius: "3px",
 		inputBackground: "#ffffff10",
 		inputColorDisabled: "#666666",
 		inputBorderDisabled: "1px solid #adaba6",
@@ -55,8 +55,8 @@ module.exports = {
 		contextMenuHoverColor: "white",
 		contextMenuHoverBackground: "#ffffff20",
 		
-		scrollbarThumbWidth: 8,
-		scrollbarPadding: 3,
+		scrollbarThumbWidth: "8px",
+		scrollbarPadding: "3px",
 		scrollbarWidth: "calc(var(--scrollbarThumbWidth) + var(--scrollbarPadding) * 2)",
 		scrollbarBackground: "#505050",
 		scrollbarBorder: "var(--appBorderLight)",
@@ -67,7 +67,7 @@ module.exports = {
 	
 	editor: {
 		fontFamily: "\"DejaVu Sans Mono\", Menlo, Consolas, monospace",
-		fontSize: 14,
+		fontSize: "14px",
 		defaultColor: "#f0f0f0",
 		
 		cursorColor: "#f0f0f0",
