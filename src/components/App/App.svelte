@@ -8,6 +8,9 @@ import themeStyle from "components/themeStyle";
 import themeStyleDev from "components/themeStyleDev";
 import labelClick from "components/actions/labelClick";
 
+import Spacer from "components/utils/Spacer.svelte";
+import Checkbox from "components/utils/Checkbox.svelte";
+
 import Toolbar from "./Toolbar.svelte";
 import EditorTabBar from "./EditorTabBar.svelte";
 import Tab from "./Tab.svelte";
@@ -24,7 +27,7 @@ let main;
 
 setContext("app", app);
 
-let {theme} = base;
+let {prefs, theme} = base;
 
 let {
 	tabs,
@@ -84,6 +87,10 @@ function onUpdatePanes() {
 	({panes} = app);
 }
 
+function onPrefsUpdated() {
+	({prefs} = base);
+}
+
 function onThemeUpdated() {
 	({theme} = base);
 }
@@ -108,6 +115,7 @@ $: paneStyle.bottom = {
 
 onMount(function() {
 	let teardown = [
+		base.on("prefsUpdated", onPrefsUpdated),
 		base.on("themeUpdated", onThemeUpdated),
 		
 		app.on("updateTabs", onUpdateTabs),
@@ -231,6 +239,12 @@ onMount(function() {
 	border-top: var(--appBorder);
 	height: 100%;
 }
+
+#devToolbar {
+	display: flex;
+	border-top: var(--appBorder);
+	padding: 3px;
+}
 </style>
 
 <div
@@ -246,7 +260,7 @@ onMount(function() {
 	tabindex="0"
 	use:labelClick
 >
-	{#if platform.config.dev}
+	{#if prefs.dev.showThemeStyleElement}
 		<div class="hide" use:themeStyleDev={theme => base.modifyThemeForDev(theme)}></div>
 	{/if}
 	<div id="toolbar">
@@ -320,5 +334,20 @@ onMount(function() {
 				on:end={({detail: size}) => app.panes.bottom.resizeAndSave(size)}
 			/>
 		</div>
+		{#if prefs.dev.showToolbar}
+			<div id="devToolbar">
+				<div>
+					<Checkbox
+						label="Theme style element"
+						value={prefs.dev.showThemeStyleElement}
+						on:change={(e) => base.setPref("dev.showThemeStyleElement", e.target.checked)}
+					/>
+				</div>
+				<Spacer/>
+				<button on:click={() => base.setPref("dev.showToolbar", false)}>
+					Hide
+				</button>
+			</div>
+		{/if}
 	</div>
 </div>

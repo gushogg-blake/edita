@@ -78,6 +78,14 @@ let migrations = {
 	"11"(prefs) {
 		delete prefs.maxLineLengthForParsing;
 	},
+	
+	"12"(prefs) {
+		prefs.dev = {
+			showToolbar: false,
+			timing: {},
+			showThemeStyleElement: false,
+		};
+	},
 };
 
 module.exports = function() {
@@ -266,6 +274,12 @@ module.exports = function() {
 		},
 		
 		showThemeSelector: false,
+		
+		dev: {
+			showToolbar: false,
+			timing: {},
+			showThemeStyleElement: false,
+		},
 	};
 	
 	return new JsonStore("prefs", defaultPrefs, migrations);
