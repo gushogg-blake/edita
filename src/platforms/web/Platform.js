@@ -63,9 +63,9 @@ class Platform extends Evented {
 		
 		await this.snippets.init();
 		
-		if (config.lspUrl) {
-			this.lsp = lsp(config.lspUrl);
-		}
+		//if (config.lspUrl) {
+		//	this.lsp = lsp(config.lspUrl);
+		//}
 	}
 	
 	createFs(key) {
