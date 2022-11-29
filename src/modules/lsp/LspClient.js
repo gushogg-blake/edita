@@ -1,17 +1,79 @@
 let Evented = require("utils/Evented");
 let lid = require("utils/lid");
 let URL = require("modules/URL");
+let normaliseLangCode = require("modules/lsp/utils/normaliseLangCode");
 let cursorToLspPosition = require("modules/lsp/utils/cursorToLspPosition");
 let maskOtherRegions = require("modules/lsp/utils/maskOtherRegions");
 
 class LspClient extends Evented {
-	constructor(project) {
+	constructor() {
 		super();
 		
-		this.project = project;
+		this.servers = {};
+		this.unavailableLangCodes = new Set();
+		
 		this.scopesByDocument = new WeakMap();
 		this.scopesByUri = new Map();
 		this.urisByScope = new WeakMap();
+	}
+	
+	serverKey(langCode) {
+		return langCode + ":" + this.key;
+	}
+	
+	startServer(langCode) {
+		let server = platform.lsp.start(this.serverKey(langCode), langCode, {
+			workspaceFolders: this.dirs,
+		});
+		
+		server.start().catch((e) => {
+			delete this.servers[langCode];
+			
+			this.unavailableLangCodes.add(langCode);
+			
+			console.error(e);
+		});
+		
+		server.on("notification", this.onNotification.bind(this, server));
+		server.on("error", this.onServerError.bind(this, server));
+		
+		this.servers[langCode] = server;
+	}
+	
+	getServer(langCode) {
+		langCode = normaliseLangCode(langCode);
+		
+		if (!platform.lsp || this.unavailableLangCodes.has(langCode)) {
+			return null;
+		}
+		
+		if (!this.servers[langCode]) {
+			this.startServer(langCode);
+		}
+		
+		return this.servers[langCode];
+	}
+	
+	closeServer(langCode) {
+		langCode = normaliseLangCode(langCode);
+		
+		delete this.servers[langCode];
+		
+		return platform.lsp.close(this.serverKey(langCode));
+	}
+	
+	onNotification(server, notification) {
+		this.fire("notification", {
+			server,
+			notification,
+		});
+	}
+	
+	onServerError(server, error) {
+		this.fire("serverError", {
+			server,
+			error,
+		});
 	}
 	
 	createUriForScope(document, scope) {
@@ -24,7 +86,7 @@ class LspClient extends Evented {
 		let uri = this.urisByScope.get(scope);
 		
 		try {
-			let server = this.project.getLspServer(lang.code);
+			let server = this.getServer(lang.code);
 			
 			let result = await server.request("textDocument/completion", {
 				textDocument: {
@@ -75,7 +137,7 @@ class LspClient extends Evented {
 		this.scopesByUri.set(uri, scope);
 		this.urisByScope.set(scope, uri);
 		
-		let server = this.project.getLspServer(lang.code);
+		let server = this.getServer(lang.code);
 		
 		if (!server) {
 			return;
@@ -97,7 +159,7 @@ class LspClient extends Evented {
 		let uri = this.urisByScope.get(scope);
 		let {lang} = scope;
 		
-		let server = this.project.getLspServer(lang.code);
+		let server = this.getServer(lang.code);
 		
 		if (!server) {
 			return;

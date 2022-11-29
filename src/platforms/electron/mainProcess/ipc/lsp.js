@@ -4,6 +4,10 @@ let LspServer = require("../modules/lsp/LspServer");
 let config = require("../modules/lsp/config");
 
 module.exports = function(app) {
+	function langIsSupported(langCode) {
+		return !!config.perLang[langCode];
+	}
+	
 	let servers = {};
 	
 	function sendNotification(key, notification) {
@@ -22,7 +26,11 @@ module.exports = function(app) {
 	
 	let buffers = {};
 	
-	function bufferedCall(key, fn) {
+	function bufferedCall(key, langCode, fn) {
+		if (!langIsSupported(langCode)) {
+			throw new Error("Language " + langCode + " not supported");
+		}
+		
 		return new Promise(function(resolve, reject) {
 			if (!buffers[key]) {
 				buffers[key] = [];
@@ -66,6 +74,10 @@ module.exports = function(app) {
 	
 	return {
 		async start(e, key, langCode, initializeParams) {
+			if (!langIsSupported(langCode)) {
+				throw new Error("Language " + langCode + " not supported");
+			}
+			
 			if (servers[key]) {
 				return servers[key].serverCapabilities;
 			}
@@ -83,12 +95,12 @@ module.exports = function(app) {
 			return server.serverCapabilities;
 		},
 		
-		request(e, key, method, params) {
-			return bufferedCall(key, server => server.request(method, params));
+		request(e, key, langCode, method, params) {
+			return bufferedCall(key, langCode, server => server.request(method, params));
 		},
 		
-		notify(e, key, method, params) {
-			return bufferedCall(key, server => server.notify(method, params));
+		notify(e, key, langCode, method, params) {
+			return bufferedCall(key, langCode, server => server.notify(method, params));
 		},
 		
 		close(e, key) {

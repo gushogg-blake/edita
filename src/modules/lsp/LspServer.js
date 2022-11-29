@@ -23,6 +23,10 @@ class LspServer extends Evented {
 	onNotificationReceived(notification) {
 		this.fire("notification", notification);
 	}
+	
+	onError(error) {
+		this.fire("error", error);
+	}
 }
 
 module.exports = LspServer;

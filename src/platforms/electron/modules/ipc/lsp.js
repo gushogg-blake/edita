@@ -8,6 +8,10 @@ ipcRenderer.on("lspNotification", function(e, key, notification) {
 	servers[key]?.onNotificationReceived(notification);
 });
 
+ipcRenderer.on("lspServerError", function(e, key, error) {
+	servers[key]?.onError(error);
+});
+
 module.exports = {
 	start(key, langCode, initializeParams) {
 		initializeParams = {
@@ -27,11 +31,11 @@ module.exports = {
 			},
 			
 			request(method, params) {
-				return ipcRenderer.invoke("lsp", "request", key, method, params);
+				return ipcRenderer.invoke("lsp", "request", key, langCode, method, params);
 			},
 			
 			notify(method, params) {
-				return ipcRenderer.invoke("lsp", "notify", key, method, params);
+				return ipcRenderer.invoke("lsp", "notify", key, langCode, method, params);
 			},
 		});
 		
