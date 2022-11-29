@@ -81,9 +81,9 @@ module.exports = {
 		cursorColor: "black",
 		
 		background: "white",
-		selectionBackground: "#d0d0d0",
+		selectionBackground: "#dddddd",
 		hiliteBackground: "#fdee20",
-		astSelectionBackground: "#dfdfdf",
+		astSelectionBackground: "#dddddd",
 		astSelectionHiliteBackground: "#f2f2f2",
 		astInsertionHiliteBackground: "#606060",
 		
