@@ -37,9 +37,14 @@ onMount(function() {
 		on:change={(e) => base.setPref("dev.showThemeStyleElement", e.target.checked)}
 	/>
 	<Checkbox
-		label="Show find & replace"
-		value={prefs.dev.showFindAndReplace}
-		on:change={(e) => base.setPref("dev.showFindAndReplace", e.target.checked)}
+		label="Open find & replace"
+		value={prefs.dev.openFindAndReplace}
+		on:change={(e) => base.setPref("dev.openFindAndReplace", e.target.checked)}
+	/>
+	<Checkbox
+		label="Log focused element"
+		value={prefs.dev.logFocusedElement}
+		on:change={(e) => base.setPref("dev.logFocusedElement", e.target.checked)}
 	/>
 	<Spacer/>
 	<button on:click={() => base.setPref("dev.showToolbar", false)}>

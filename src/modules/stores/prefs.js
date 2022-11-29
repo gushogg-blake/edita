@@ -86,6 +86,16 @@ let migrations = {
 			showThemeStyleElement: false,
 		};
 	},
+	
+	"12"(prefs) {
+		prefs.dev = {
+			showToolbar: false,
+			timing: {},
+			showThemeStyleElement: false,
+			openFindAndReplace: false,
+			logFocusedElement: false,
+		};
+	},
 };
 
 module.exports = function() {
@@ -279,8 +289,8 @@ module.exports = function() {
 			showToolbar: false,
 			timing: {},
 			showThemeStyleElement: false,
-			showFindAndReplace: false,
-			showFocusedElement: false,
+			openFindAndReplace: false,
+			logFocusedElement: false,
 		},
 	};
 	
