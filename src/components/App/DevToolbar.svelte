@@ -25,6 +25,7 @@ onMount(function() {
 <style lang="scss">
 #main {
 	display: flex;
+	gap: 1em;
 	padding: 3px;
 }
 </style>
@@ -34,6 +35,11 @@ onMount(function() {
 		label="Theme style element"
 		value={prefs.dev.showThemeStyleElement}
 		on:change={(e) => base.setPref("dev.showThemeStyleElement", e.target.checked)}
+	/>
+	<Checkbox
+		label="Show find & replace"
+		value={prefs.dev.showFindAndReplace}
+		on:change={(e) => base.setPref("dev.showFindAndReplace", e.target.checked)}
 	/>
 	<Spacer/>
 	<button on:click={() => base.setPref("dev.showToolbar", false)}>

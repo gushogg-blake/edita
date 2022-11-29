@@ -279,6 +279,8 @@ module.exports = function() {
 			showToolbar: false,
 			timing: {},
 			showThemeStyleElement: false,
+			showFindAndReplace: false,
+			showFocusedElement: false,
 		},
 	};
 	

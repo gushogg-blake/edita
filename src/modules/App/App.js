@@ -22,6 +22,7 @@ let BottomPane = require("./BottomPane");
 let FindAndReplace = require("./FindAndReplace");
 let openDialogWindow = require("./openDialogWindow");
 let functions = require("./functions");
+let dev = require("./dev");
 
 class App extends Evented {
 	constructor() {
@@ -57,14 +58,6 @@ class App extends Evented {
 			this.on("selectTab", this.onSelectTab.bind(this)),
 			this.on("document.save", this.onDocumentSave.bind(this)),
 		];
-		
-		// DEV
-		setInterval(() => {
-			if (base.getPref("dev.showFocusedElement")) {
-				console.log(this.selectedTab.editor.view.focused);
-				console.log(document.activeElement);
-			}
-		}, 1000);
 	}
 	
 	async init() {
@@ -76,10 +69,7 @@ class App extends Evented {
 			this.findAndReplace.init(),
 		]);
 		
-		// DEV
-		//if (platform.config.dev) {
-		//	setTimeout(() => this.showFindAndReplace(), 10);
-		//}
+		dev(this);
 	}
 	
 	get selectedProject() {
