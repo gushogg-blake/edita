@@ -1,6 +1,7 @@
 let bluebird = require("bluebird");
 let get = require("lodash.get");
 let set = require("lodash.set");
+let merge = require("lodash.merge");
 
 let Evented = require("utils/Evented");
 
@@ -158,8 +159,8 @@ class Base extends Evented {
 	components/themeStyleDev
 	*/
 	
-	modifyThemeForDev(theme) {
-		this.theme = theme;
+	modifyThemeForDev(values) {
+		merge(this.theme, values);
 		
 		this.fire("themeUpdated");
 		

@@ -257,7 +257,7 @@ onMount(function() {
 	use:labelClick
 >
 	{#if prefs.dev.showThemeStyleElement}
-		<div class="hide" use:themeStyleDev={theme => base.modifyThemeForDev(theme)}></div>
+		<div class="hide" use:themeStyleDev={{app, update: theme => base.modifyThemeForDev(theme)}}></div>
 	{/if}
 	<div id="toolbar">
 		<Toolbar/>

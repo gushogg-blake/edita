@@ -18,6 +18,7 @@
 		"fs-extra": "^10.0.0",
 		"glob": "^7.2.0",
 		"lodash.get": "^4.4.2",
+		"lodash.merge": "^4.6.2",
 		"lodash.set": "^4.3.2",
 		"minimatch-browser": "^1.0.0",
 		"mkdirp": "^1.0.4",

@@ -1,4 +1,4 @@
-let mapArrayToObject = require("utils/mapArrayToObject");
+let mapObject = require("utils/mapObject");
 let _typeof = require("utils/typeof");
 let inlineStyle = require("utils/dom/inlineStyle");
 
@@ -8,24 +8,46 @@ theme is switched) and then poll them and write them back to the theme.
 this lets you open dev tools, modify the variables and see the results
 for e.g. tweaking colors.
 
-for non-editor variables this is unnecessary and you can just change
-the variables on the main app div instead, but editors read the values
-directly from the theme to use in canvas drawing so won't get the
-updates from that.
+we're only interested in canvas-related values like margin style and
+syntax highlighting colors for this as app variables are used as CSS
+variables directly, so changing them in dev tools will update
+automatically.
 */
 
-function getVariables(theme, path=[]) {
+function _getVariables(values, path=[]) {
 	let vars = {};
 	
-	for (let [key, value] of Object.entries(theme)) {
+	for (let [key, value] of Object.entries(values)) {
 		if (_typeof(value) === "Object") {
-			vars = {...vars, ...getVariables(value, [...path, key])};
+			vars = {...vars, ..._getVariables(value, [...path, key])};
 		} else {
 			vars[["--dev", ...path, key].join("_")] = value;
 		}
 	}
 	
 	return vars;
+}
+
+function getVariables(theme, selectedTab, path=[]) {
+	let {editor, langs} = theme;
+	
+	let values = {
+		editor,
+	};
+	
+	if (selectedTab) {
+		values.langs = {};
+		
+		for (let {lang} of selectedTab.editor.document.scopes) {
+			values.langs[lang.code] = mapObject(langs[lang.code], function(style) {
+				return {
+					color: style.color,
+				};
+			});
+		}
+	}
+	
+	return _getVariables(values);
 }
 
 function addValueToTheme(obj, path, value) {
@@ -40,7 +62,7 @@ function addValueToTheme(obj, path, value) {
 	obj[path.at(-1)] = value;
 }
 
-function getTheme(node) {
+function getThemeValues(node) {
 	let vars = [];
 	let style = getComputedStyle(node);
 	
@@ -64,13 +86,13 @@ function getTheme(node) {
 	return theme;
 }
 
-module.exports = function(node, update) {
+module.exports = function(node, {app, update}) {
 	function updateTheme() {
-		update(getTheme(node));
+		update(getThemeValues(node));
 	}
 	
 	function updateStyle() {
-		node.style = inlineStyle(getVariables(base.theme));
+		node.style = inlineStyle(getVariables(base.theme, app.selectedTab));
 	}
 	
 	updateStyle();
@@ -84,6 +106,7 @@ module.exports = function(node, update) {
 		},
 		
 		base.on("prefsUpdated", updateStyle),
+		app.on("selectTab", updateStyle),
 	];
 	
 	return {
