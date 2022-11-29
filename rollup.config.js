@@ -13,8 +13,9 @@ import cssOnly from "rollup-plugin-css-only";
 import {terser} from "rollup-plugin-terser";
 import _delete from "rollup-plugin-delete";
 
-let prod = !process.env.ROLLUP_WATCH;
-let dev = !prod;
+let dev = process.env.NODE_ENV === "development";
+let prod = !dev;
+let watch = process.env.ROLLUP_WATCH;
 let root = __dirname;
 let platform = process.env.PLATFORM || "all";
 
@@ -142,7 +143,7 @@ if (platform === "all" || platform === "electron") {
 			...electronPlugins(),
 			
 			copy({
-				watch: dev && "src/platforms/electron/public",
+				watch: watch && "src/platforms/electron/public",
 				
 				targets: [
 					{
@@ -158,7 +159,7 @@ if (platform === "all" || platform === "electron") {
 			
 			copy({
 				copyOnce: true,
-				watch: dev && "src/platforms/electron/mainProcess",
+				watch: watch && "src/platforms/electron/mainProcess",
 				
 				targets: [
 					{
@@ -208,7 +209,7 @@ if (platform === "all" || platform === "web") {
 			...webPlugins(),
 			
 			copy({
-				watch: dev && "src/platforms/web/public",
+				watch: watch && "src/platforms/web/public",
 				
 				targets: [
 					{
@@ -222,7 +223,7 @@ if (platform === "all" || platform === "web") {
 				],
 			}),
 			
-			dev && livereload(dir),
+			watch && livereload(dir),
 			prod && terser(),
 		],
 	});
@@ -242,7 +243,7 @@ if (platform === "all" || platform === "test") {
 			...webPlugins(),
 			
 			copy({
-				watch: dev && "test/public",
+				watch: watch && "test/public",
 				
 				targets: [
 					{

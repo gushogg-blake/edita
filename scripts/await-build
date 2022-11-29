@@ -1,0 +1,11 @@
+#!/bin/bash
+
+dir="build/$1"
+
+if [ ! -d $dir ]; then
+	echo "Awaiting build $1"
+	
+	while [ ! -d $dir ]; do
+		sleep 1
+	done
+fi

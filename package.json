@@ -51,20 +51,24 @@
 	},
 	"scripts": {
 		"start": "cross-env ELECTRON_IS_DEV=0 electron .",
-		"electron": "NODE_ENV=development electron build/electron-dev/mainProcess/main.js --inspect",
 		"build": "rollup -c",
-		"autobuild": "rollup -cw",
+		"build-dev": "NODE_ENV=development rollup -c",
+		"autobuild-dev": "NODE_ENV=development rollup -cw",
 		"build-electron": "PLATFORM=electron rollup -c",
-		"autobuild-electron": "PLATFORM=electron rollup -cw",
+		"build-electron-dev": "NODE_ENV=development PLATFORM=electron rollup -c",
+		"autobuild-electron-dev": "NODE_ENV=development PLATFORM=electron rollup -cw",
 		"build-web": "PLATFORM=web rollup -c",
-		"autobuild-web": "PLATFORM=web rollup -cw",
+		"build-web-dev": "NODE_ENV=development PLATFORM=web rollup -c",
+		"autobuild-web-dev": "NODE_ENV=development PLATFORM=web rollup -cw",
 		"build-test": "PLATFORM=test rollup -c",
 		"autobuild-test": "PLATFORM=test rollup -cw",
-		"dev": "run-p autobuild test electron web",
-		"electron-dev": "run-p autobuild-electron test electron",
-		"web-dev": "run-p autobuild-web test web",
+		"dev": "run-p autobuild-dev test electron web",
+		"electron-dev": "run-p autobuild-electron-dev test electron",
+		"web-dev": "run-p autobuild-web-dev test web",
 		"test-dev": "run-p autobuild-test test",
-		"web": "sirv --dev --no-clear --port 5000 build/web-dev",
-		"test": "sirv --dev --no-clear --port 5001 build/test"
+		"electron": "await-build electron-dev; NODE_ENV=development electron build/electron-dev/mainProcess/main.js --inspect",
+		"web": "await-build web-dev; sirv --dev --no-clear --port 5000 build/web-dev",
+		"test": "await-build test; sirv --dev --no-clear --port 5001 build/test",
+		"await-build": "./scripts/await-build"
 	}
 }
