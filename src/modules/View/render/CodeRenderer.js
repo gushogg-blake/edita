@@ -57,8 +57,8 @@ module.exports = class extends LineRowRenderer {
 		return this._node?.node || null;
 	}
 	
-	get nodeColor() {
-		return this._node?.color || base.theme.editor.defaultColor;
+	get nodeStyle() {
+		return this._node?.style || base.theme.editor.defaultStyle;
 	}
 	
 	get nodeEndCursor() {
@@ -83,30 +83,30 @@ module.exports = class extends LineRowRenderer {
 		let node = this.scope.findSmallestNodeAtCharCursor(this.cursor);
 		let lineage = node ? nodeUtils.lineage(node) : [];
 		
-		let currentColor = null;
+		let currentStyle = null;
 		let currentParent = null;
 		
 		this.nodeStack = [{
 			node: null,
-			color: null,
+			style: null,
 			nextChild: node ? null : this.scope.tree?.rootNode || null,
 		}];
 		
 		for (let node of lineage) {
-			let color = this.getColor(node) || currentColor;
+			let style = this.getStyle(node) || currentStyle;
 			let nextChild = findFirstChildAfterCursor(node, this.cursor) || null;
 			
 			this.nodeStack.push({
 				node,
 				nextChild,
-				color,
+				style,
 			});
 			
-			currentColor = color;
+			currentStyle = style;
 			currentParent = node;
 		}
 		
-		this.setColor();
+		this.setStyle();
 	}
 	
 	nextNode() {
@@ -117,19 +117,19 @@ module.exports = class extends LineRowRenderer {
 			
 			this._node.nextChild = next;
 		} else if (this.atNextChildStart()) {
-			let currentColor = this.nodeColor;
+			let currentStyle = this.nodeStyle;
 			let node = this._node.nextChild;
 			let nextChild = nodeUtils.firstChild(node);
-			let color = this.getColor(node) || currentColor;
+			let style = this.getStyle(node) || currentStyle;
 			
 			this.nodeStack.push({
 				node,
 				nextChild,
-				color,
+				style,
 			});
 		}
 		
-		this.setColor();
+		this.setStyle();
 		
 		if (this.atNodeBoundary()) {
 			this.nextNode();
@@ -164,16 +164,16 @@ module.exports = class extends LineRowRenderer {
 		this.injectionRangeIndex++;
 	}
 	
-	setColor() {
-		this.canvasRenderer.setColor(this.nodeColor);
+	setStyle() {
+		this.canvasRenderer.setStyle(this.nodeStyle);
 	}
 	
-	getColor(node) {
+	getStyle(node) {
 		let {lang} = this.scope;
 		let hiliteClass = lang.getHiliteClass(node);
-		let colors = base.theme.langs[lang.code];
+		let styles = base.theme.langs[lang.code];
 		
-		return colors && hiliteClass ? colors[hiliteClass] : null;
+		return styles && hiliteClass ? styles[hiliteClass] : null;
 	}
 	
 	getCurrentRangeEnd() {

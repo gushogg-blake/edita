@@ -1,3 +1,5 @@
+let hiliteClasses = require("./hiliteClasses");
+
 module.exports = {
 	name: "Light",
 	
@@ -68,7 +70,13 @@ module.exports = {
 	editor: {
 		fontFamily: "\"DejaVu Sans Mono\", Menlo, Consolas, monospace",
 		fontSize: "14px",
-		defaultColor: "#202020",
+		
+		defaultStyle: {
+			color: "#202020",
+			fontWeight: "normal",
+			fontStyle: "normal",
+			textDecoration: "none",
+		},
 		
 		cursorColor: "black",
 		
@@ -87,7 +95,7 @@ module.exports = {
 	},
 	
 	langs: {
-		javascript: {
+		javascript: hiliteClasses({
 			keyword: "#aa33aa",
 			id: "#202020",
 			comment: "#7f7f7f",
@@ -96,17 +104,17 @@ module.exports = {
 			number: "#cc2222",
 			string: "#2233bb",
 			regex: "#cc7030",
-		},
+		}),
 		
-		html: {
+		html: hiliteClasses({
 			tag: "#0032ff",
 			attribute: "#871f78",
 			string: "#2233bb",
 			text: "#000000",
 			comment: "#7f7f7f",
-		},
+		}),
 		
-		css: {
+		css: hiliteClasses({
 			tagName: "#0032ff",
 			className: "#008b8b",
 			idName: "#8b0000",
@@ -116,9 +124,9 @@ module.exports = {
 			comment: "#7f7f7f",
 			symbol: "#333333",
 			text: "#000000",
-		},
+		}),
 		
-		scss: {
+		scss: hiliteClasses({
 			tagName: "#0032ff",
 			className: "#008b8b",
 			idName: "#8b0000",
@@ -128,9 +136,9 @@ module.exports = {
 			comment: "#7f7f7f",
 			symbol: "#333333",
 			text: "#000000",
-		},
+		}),
 		
-		php: {
+		php: hiliteClasses({
 			phpTag: "maroon",
 			keyword: "#aa33aa",
 			id: "#202020",
@@ -139,13 +147,16 @@ module.exports = {
 			bracket: "#202020",
 			number: "#cc2222",
 			string: "#2233bb",
-		},
+		}),
 		
-		markdown: {
-			link: "#0338ff",
-		},
+		markdown: hiliteClasses({
+			link: {
+				color: "#0338ff",
+				textDecoration: "underline",
+			},
+		}),
 		
-		c: {
+		c: hiliteClasses({
 			keyword: "#0032ff",
 			id: "#202020",
 			comment: "#7f7f7f",
@@ -155,9 +166,9 @@ module.exports = {
 			number: "#cc2222",
 			string: "#2233bb",
 			type: "#008b8b",
-		},
+		}),
 		
-		cpp: {
+		cpp: hiliteClasses({
 			keyword: "#0032ff",
 			id: "#202020",
 			comment: "#7f7f7f",
@@ -167,9 +178,9 @@ module.exports = {
 			number: "#cc2222",
 			string: "#2233bb",
 			type: "#008b8b",
-		},
+		}),
 		
-		python: {
+		python: hiliteClasses({
 			keyword: "#0032ff",
 			id: "#202020",
 			comment: "#7f7f7f",
@@ -177,6 +188,6 @@ module.exports = {
 			bracket: "#202020",
 			number: "#cc2222",
 			string: "#2233bb",
-		},
+		}),
 	},
 };

@@ -1,3 +1,5 @@
+let hiliteClasses = require("./hiliteClasses");
+
 module.exports = {
 	name: "Dark",
 	
@@ -88,7 +90,7 @@ module.exports = {
 	},
 	
 	langs: {
-		javascript: {
+		javascript: hiliteClasses({
 			keyword: "#54b9ec",
 			id: "#e8f8fd",
 			comment: "#4686C1",
@@ -97,17 +99,17 @@ module.exports = {
 			number: "#96defa",
 			string: "#89e14b",
 			regex: "#1ab3ec",
-		},
+		}),
 		
-		html: {
+		html: hiliteClasses({
 			tag: "#d6ad0c",//ffcd00
 			attribute: "#e8f8fd",
 			string: "#2aa198",
 			text: "#e8f8fd",
 			comment: "#aed7e5",
-		},
+		}),
 		
-		css: {
+		css: hiliteClasses({
 			tagName: "#b58900",
 			className: "#b58900",
 			idName: "#b58900",
@@ -119,9 +121,9 @@ module.exports = {
 			color: "#e8f8fd",
 			number: "#e8f8fd",
 			text: "#e8f8fd",
-		},
+		}),
 		
-		scss: {
+		scss: hiliteClasses({
 			tagName: "#b58900",
 			className: "#b58900",
 			idName: "#b58900",
@@ -133,9 +135,9 @@ module.exports = {
 			color: "#e8f8fd",
 			number: "#e8f8fd",
 			text: "#e8f8fd",
-		},
+		}),
 		
-		php: {
+		php: hiliteClasses({
 			phpTag: "#ec3636",
 			keyword: "#54b9ec",
 			id: "#e8f8fd",
@@ -145,13 +147,13 @@ module.exports = {
 			number: "#96defa",
 			string: "#89e14b",
 			regex: "#1ab3ec",
-		},
+		}),
 		
-		markdown: {
+		markdown: hiliteClasses({
 			link: "#8dc4ff",
-		},
+		}),
 		
-		c: {
+		c: hiliteClasses({
 			keyword: "#54b9ec",
 			id: "#e8f8fd",
 			comment: "#4686C1",
@@ -161,9 +163,9 @@ module.exports = {
 			number: "#96defa",
 			string: "#89e14b",
 			type: "#e8f8fd",
-		},
+		}),
 		
-		cpp: {
+		cpp: hiliteClasses({
 			keyword: "#54b9ec",
 			id: "#e8f8fd",
 			comment: "#4686C1",
@@ -173,9 +175,9 @@ module.exports = {
 			number: "#96defa",
 			string: "#89e14b",
 			type: "#e8f8fd",
-		},
+		}),
 		
-		python: {
+		python: hiliteClasses({
 			keyword: "#54b9ec",
 			id: "#e8f8fd",
 			comment: "#4686C1",
@@ -184,6 +186,6 @@ module.exports = {
 			number: "#96defa",
 			string: "#89e14b",
 			type: "#e8f8fd",
-		},
+		}),
 	},
 };
