@@ -20,7 +20,7 @@ class LspServer extends Evented {
 		return this.backend.notify(method, params);
 	}
 	
-	onNotificationReceived(notification) {
+	onNotification(notification) {
 		this.fire("notification", notification);
 	}
 	

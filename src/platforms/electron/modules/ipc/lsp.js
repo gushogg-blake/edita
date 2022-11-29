@@ -5,7 +5,7 @@ let baseInitializeParams = require("modules/lsp/baseInitializeParams");
 let servers = {};
 
 ipcRenderer.on("lspNotification", function(e, key, notification) {
-	servers[key]?.onNotificationReceived(notification);
+	servers[key]?.onNotification(notification);
 });
 
 ipcRenderer.on("lspServerError", function(e, key, error) {
