@@ -608,6 +608,8 @@ class View extends Evented {
 		this.measurements = measurements;
 		
 		this.fire("updateMeasurements");
+		
+		this.updateSizes();
 	}
 	
 	setCanvasSize(width, height) {
