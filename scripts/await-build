@@ -3,7 +3,8 @@
 dir="build/$1"
 
 if [ ! -d $dir ]; then
-	echo "Awaiting build $1"
+	echo "Awaiting build $1..."
+	echo "Note: this script assumes you are running build-$1 in parallel!"
 	
 	while [ ! -d $dir ]; do
 		sleep 1

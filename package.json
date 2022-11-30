@@ -66,9 +66,8 @@
 		"electron-dev": "run-p autobuild-electron-dev test electron",
 		"web-dev": "run-p autobuild-web-dev test web",
 		"test-dev": "run-p autobuild-test test",
-		"electron": "await-build electron-dev; NODE_ENV=development electron build/electron-dev/mainProcess/main.js --inspect",
-		"web": "await-build web-dev; sirv --dev --no-clear --port 5000 build/web-dev",
-		"test": "await-build test; sirv --dev --no-clear --port 5001 build/test",
-		"await-build": "./scripts/await-build"
+		"electron": "./scripts/await-build electron-dev; NODE_ENV=development electron build/electron-dev/mainProcess/main.js --inspect",
+		"web": "./scripts/await-build web-dev; sirv --dev --no-clear --port 5000 build/web-dev",
+		"test": "./scripts/await-build test; sirv --dev --no-clear --port 5001 build/test"
 	}
 }
