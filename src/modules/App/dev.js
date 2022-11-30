@@ -14,7 +14,7 @@ module.exports = async function(app) {
 		}
 	}, 1000);
 	
-	if (get("showFindAndReplace")) {
+	if (get("openFindAndReplace")) {
 		app.showFindAndReplace();
 	}
 }
