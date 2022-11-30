@@ -1,9 +1,9 @@
 let os = require("os");
 let path = require("path");
-let dev = require("electron-is-dev");
 let {hideBin} = require("yargs/helpers");
 let yargs = require("yargs/yargs");
 
+let dev = process.env.ELECTRON_IS_DEV === "1";
 let args = yargs(hideBin(process.argv));
 
 args.boolean("forceNewInstance");

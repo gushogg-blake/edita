@@ -12,7 +12,6 @@
 		"bluebird": "^3.7.2",
 		"chokidar": "^3.5.2",
 		"detect-indent": "^7.0.0",
-		"electron-is-dev": "^2.0.0",
 		"electron-window-state": "^5.0.3",
 		"fast-stable-stringify": "^1.0.0",
 		"fs-extra": "^10.0.0",
