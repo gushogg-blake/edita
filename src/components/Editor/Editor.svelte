@@ -1,5 +1,5 @@
 <script>
-import {tick, onMount, getContext} from "svelte";
+import {onMount, getContext} from "svelte";
 
 import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
@@ -365,10 +365,8 @@ function resize() {
 	}
 }
 
-async function resizeAsync() {
-	await tick();
-	
-	resize();
+function resizeAsync() {
+	requestAnimationFrame(resize);
 }
 
 function updateCanvas() {
