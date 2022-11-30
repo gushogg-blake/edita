@@ -278,7 +278,9 @@ class Document extends BaseDocument {
 	}
 	
 	teardown() {
-		this.teardownWatch();
+		if (this.teardownWatch) {
+			this.teardownWatch();
+		}
 	}
 }
 
