@@ -5,6 +5,7 @@
 		"name": "Gus Hogg-Blake",
 		"email": "gus@gushogg-blake.com"
 	},
+	"private": true,
 	"version": "0.17.0",
 	"main": "./build/electron/mainProcess/main.js",
 	"electronVersion": "15.3.0",
