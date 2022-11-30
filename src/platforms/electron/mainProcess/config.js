@@ -3,7 +3,7 @@ let path = require("path");
 let {hideBin} = require("yargs/helpers");
 let yargs = require("yargs/yargs");
 
-let dev = process.env.ELECTRON_IS_DEV === "1";
+let dev = process.env.ELECTRON_IS_DEV !== "0";
 let args = yargs(hideBin(process.argv));
 
 args.boolean("forceNewInstance");
