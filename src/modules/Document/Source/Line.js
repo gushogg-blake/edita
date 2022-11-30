@@ -18,6 +18,8 @@ class Line {
 		let splitByTabs = string.split("\t");
 		let variableWidthParts = [];
 		
+		let offset = 0;
+		
 		for (let i = 0; i < splitByTabs.length; i++) {
 			let str = splitByTabs[i];
 			
@@ -28,18 +30,24 @@ class Line {
 			
 			if (str || i === 0) {
 				variableWidthParts.push({
+					offset,
 					type: "string",
 					string: str,
 					width: str.length,
 				});
+				
+				offset += str.length;
 			}
 			
 			if (i < splitByTabs.length - 1) {
 				variableWidthParts.push({
+					offset,
 					type: "tab",
 					string: "\t",
 					width: tabWidth - str.length % tabWidth,
 				});
+				
+				offset++;
 			}
 		}
 		

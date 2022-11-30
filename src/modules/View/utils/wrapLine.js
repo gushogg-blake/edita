@@ -12,6 +12,7 @@ class LineWrapper {
 		
 		this.screenCols = Math.floor(availableWidth / measurements.colWidth);
 		this.textCols = this.screenCols - line.indentCols;
+		this.offset = 0;
 	}
 	
 	requiresWrapping() {
@@ -67,10 +68,8 @@ class LineWrapper {
 	}
 	
 	nextRow() {
-		let {startOffset} = this;
-		
 		this.lineRows.push({
-			startOffset,
+			startOffset: this.offset,
 			string: "",
 			width: 0,
 			variableWidthParts: [],
@@ -92,7 +91,7 @@ class LineWrapper {
 		lineRow.variableWidthParts.push(part);
 		
 		this.currentlyAvailableCols -= part.width;
-		this.startOffset++;
+		this.offset++;
 	}
 	
 	addStringToCurrentLineRow(string) {
@@ -102,13 +101,14 @@ class LineWrapper {
 		lineRow.width += string.length;
 		
 		lineRow.variableWidthParts.push({
+			offset: this.offset,
 			type: "string",
 			string,
 			width: string.length,
 		});
 		
 		this.currentlyAvailableCols -= string.length;
-		this.startOffset += string.length;
+		this.offset += string.length;
 	}
 	
 	wrap(wrap, isFoldHeader) {
