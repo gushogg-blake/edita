@@ -1,7 +1,16 @@
-let generatorFromArray = require("utils/generatorFromArray");
 let Cursor = require("modules/utils/Cursor");
 
 let {c} = Cursor;
+
+function *generateVariableWidthParts(lineRow) {
+	let offset = lineRow.startOffset;
+	
+	for (let part of lineRow.variableWidthParts) {
+		yield {...part, offset};
+		
+		offset += part.type === "tab" ? 1 : part.string.length;
+	}
+}
 
 module.exports = class {
 	constructor(renderer) {
@@ -69,7 +78,7 @@ module.exports = class {
 	startRow(row) {
 		this.foldedLineRow = row;
 		
-		this.variableWidthPartGenerator = generatorFromArray(this.lineRow.variableWidthParts);
+		this.variableWidthPartGenerator = generateVariableWidthParts(this.lineRow);
 		this.nextVariableWidthPart();
 		
 		this.offset = this.lineRow.startOffset;
