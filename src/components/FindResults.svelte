@@ -56,10 +56,10 @@ onMount(function() {
 	--buttonBorder: 0;
 	--buttonBackground: transparent;
 	
-	//border-top: var(--appBorder);
-	//border-bottom: var(--appBorderMedium);
+	border-top: var(--appBorder);
+	border-bottom: var(--appBorderMedium);
 	padding: 3px;
-	//background: var(--toolbarBackground);
+	background: var(--toolbarBackground);
 }
 
 #results {
