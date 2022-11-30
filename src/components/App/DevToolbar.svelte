@@ -1,12 +1,24 @@
 <script>
-import {onMount} from "svelte";
+import {onMount, getContext} from "svelte";
 import Spacer from "components/utils/Spacer.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
+
+let app = getContext("app");
 
 let {prefs} = base;
 
 function onPrefsUpdated() {
 	({prefs} = base);
+}
+
+function toggleOpenFindAndReplace(open) {
+	base.setPref("dev.openFindAndReplace", open);
+	
+	if (open) {
+		app.showFindAndReplace();
+	} else {
+		app.hideFindAndReplace();
+	}
 }
 
 onMount(function() {
@@ -39,7 +51,7 @@ onMount(function() {
 	<Checkbox
 		label="Open find & replace"
 		value={prefs.dev.openFindAndReplace}
-		on:change={(e) => base.setPref("dev.openFindAndReplace", e.target.checked)}
+		on:change={(e) => toggleOpenFindAndReplace(e.target.checked)}
 	/>
 	<Checkbox
 		label="Log focused element"
