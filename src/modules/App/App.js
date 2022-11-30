@@ -191,6 +191,7 @@ class App extends Evented {
 		}
 		
 		tab.teardown();
+		tab.document.teardown();
 		
 		removeInPlace(this.tabs, tab);
 		

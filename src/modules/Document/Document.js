@@ -276,6 +276,10 @@ class Document extends BaseDocument {
 	getFootersOnLine(lineIndex) {
 		return this.source.getFootersOnLine(lineIndex);
 	}
+	
+	teardown() {
+		this.teardownWatch();
+	}
 }
 
 module.exports = Document;
