@@ -43,7 +43,7 @@ function keydown(e) {
 
 <svelte:window on:keydown={keydown}/>
 
-<style type="text/scss">
+<style lang="scss">
 #main {
 	width: 100%;
 	height: 100%;
