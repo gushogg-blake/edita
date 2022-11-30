@@ -19,6 +19,23 @@ let watch = process.env.ROLLUP_WATCH;
 let root = __dirname;
 let platform = process.env.PLATFORM || "all";
 
+/*
+mark builds as complete for ./scripts/await-build
+*/
+
+function markBuildComplete(dir) {
+	return {
+		name: "internal-mark-build-complete",
+		
+		generateBundle() {
+			require("child_process").spawnSync("touch", [dir + "/.build-complete"], {
+				stdio: "inherit",
+				shell: true,
+			});
+		},
+	};
+}
+
 function commonPlugins(platform) {
 	return [
 		alias({
@@ -188,7 +205,10 @@ if (platform === "all" || platform === "electron") {
 			file: dir + "/js/dialogs/snippetEditor/main.js",
 		},
 		
-		plugins: electronPlugins(),
+		plugins: [
+			...electronPlugins(),
+			dev && markBuildComplete(dir),
+		],
 	});
 }
 
@@ -225,17 +245,20 @@ if (platform === "all" || platform === "web") {
 			
 			watch && livereload(dir),
 			prod && terser(),
+			dev && markBuildComplete(dir),
 		],
 	});
 }
 
 if (platform === "all" || platform === "test") {
+	let dir = "build/test";
+	
 	addBuilds({
 		input: "test/main.js",
 		
 		output: {
 			format: "iife",
-			file: "build/test/js/main.js",
+			file: dir + "/js/main.js",
 			name: "main",
 		},
 		
@@ -248,19 +271,19 @@ if (platform === "all" || platform === "test") {
 				targets: [
 					{
 						src: "test/public/*",
-						dest: "build/test",
+						dest: dir,
 					},
 					{
 						src: "vendor/public/*",
-						dest: "build/test/vendor",
+						dest: dir + "/vendor",
 					},
 					{
 						src: "node_modules/mocha/mocha.css",
-						dest: "build/test/vendor/mocha",
+						dest: dir + "/vendor/mocha",
 					},
 					{
 						src: "node_modules/mocha/mocha.js",
-						dest: "build/test/vendor/mocha",
+						dest: dir + "/vendor/mocha",
 					},
 				],
 			}),
@@ -271,12 +294,13 @@ if (platform === "all" || platform === "test") {
 		output: {
 			sourcemap: true,
 			format: "iife",
-			file: "build/test/js/tests.js",
+			file: dir + "/js/tests.js",
 		},
 		
 		plugins: [
 			multi(),
 			...webPlugins(),
+			markBuildComplete(dir),
 		],
 	});
 }

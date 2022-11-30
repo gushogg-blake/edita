@@ -1,12 +1,14 @@
 #!/bin/bash
 
-dir="build/$1"
+build=$1
+file="build/$build/.build-complete"
+script="build-$build"
 
-if [ ! -d $dir ]; then
-	echo "Awaiting build $1..."
-	echo "Note: this script assumes you are running build-$1 in parallel!"
+if [ ! -f "$file" ]; then
+	echo "Awaiting build $build..."
+	echo "Note: this script assumes you are running $script in parallel!"
 	
-	while [ ! -d $dir ]; do
+	while [ ! -f "$file" ]; do
 		sleep 1
 	done
 fi
