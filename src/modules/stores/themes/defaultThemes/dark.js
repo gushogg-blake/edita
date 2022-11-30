@@ -1,6 +1,6 @@
-let hiliteClasses = require("./hiliteClasses");
+let expandHiliteClasses = require("./expandHiliteClasses");
 
-module.exports = {
+let theme = {
 	name: "Dark",
 	
 	app: {
@@ -90,26 +90,26 @@ module.exports = {
 	},
 	
 	langs: {
-		javascript: hiliteClasses({
+		javascript: {
 			keyword: "#54b9ec",
 			id: "#e8f8fd",
-			comment: "#4686C1",
+			comment: "#4686C1 italic",
 			symbol: "#5692cd",
 			bracket: "#54B9EC",
 			number: "#96defa",
 			string: "#89e14b",
 			regex: "#1ab3ec",
-		}),
+		},
 		
-		html: hiliteClasses({
+		html: {
 			tag: "#d6ad0c",//ffcd00
 			attribute: "#e8f8fd",
 			string: "#2aa198",
 			text: "#e8f8fd",
 			comment: "#aed7e5",
-		}),
+		},
 		
-		css: hiliteClasses({
+		css: {
 			tagName: "#b58900",
 			className: "#b58900",
 			idName: "#b58900",
@@ -121,9 +121,9 @@ module.exports = {
 			color: "#e8f8fd",
 			number: "#e8f8fd",
 			text: "#e8f8fd",
-		}),
+		},
 		
-		scss: hiliteClasses({
+		scss: {
 			tagName: "#b58900",
 			className: "#b58900",
 			idName: "#b58900",
@@ -135,9 +135,9 @@ module.exports = {
 			color: "#e8f8fd",
 			number: "#e8f8fd",
 			text: "#e8f8fd",
-		}),
+		},
 		
-		php: hiliteClasses({
+		php: {
 			phpTag: "#ec3636",
 			keyword: "#54b9ec",
 			id: "#e8f8fd",
@@ -147,13 +147,13 @@ module.exports = {
 			number: "#96defa",
 			string: "#89e14b",
 			regex: "#1ab3ec",
-		}),
+		},
 		
-		markdown: hiliteClasses({
-			link: "#8dc4ff",
-		}),
+		markdown: {
+			link: "#8dc4ff underline",
+		},
 		
-		c: hiliteClasses({
+		c: {
 			keyword: "#54b9ec",
 			id: "#e8f8fd",
 			comment: "#4686C1",
@@ -163,9 +163,9 @@ module.exports = {
 			number: "#96defa",
 			string: "#89e14b",
 			type: "#e8f8fd",
-		}),
+		},
 		
-		cpp: hiliteClasses({
+		cpp: {
 			keyword: "#54b9ec",
 			id: "#e8f8fd",
 			comment: "#4686C1",
@@ -175,9 +175,9 @@ module.exports = {
 			number: "#96defa",
 			string: "#89e14b",
 			type: "#e8f8fd",
-		}),
+		},
 		
-		python: hiliteClasses({
+		python: {
 			keyword: "#54b9ec",
 			id: "#e8f8fd",
 			comment: "#4686C1",
@@ -186,6 +186,10 @@ module.exports = {
 			number: "#96defa",
 			string: "#89e14b",
 			type: "#e8f8fd",
-		}),
+		},
 	},
 };
+
+expandHiliteClasses(theme);
+
+module.exports = theme;

@@ -1,6 +1,6 @@
-let hiliteClasses = require("./hiliteClasses");
+let expandHiliteClasses = require("./expandHiliteClasses");
 
-module.exports = {
+let theme = {
 	name: "Light",
 	
 	app: {
@@ -95,26 +95,26 @@ module.exports = {
 	},
 	
 	langs: {
-		javascript: hiliteClasses({
+		javascript: {
 			keyword: "#aa33aa",
 			id: "#202020",
-			comment: "#7f7f7f",
+			comment: "#7f7f7f italic",
 			symbol: "#bb22bb",
 			bracket: "#202020",
 			number: "#cc2222",
 			string: "#2233bb",
 			regex: "#cc7030",
-		}),
+		},
 		
-		html: hiliteClasses({
+		html: {
 			tag: "#0032ff",
 			attribute: "#871f78",
 			string: "#2233bb",
 			text: "#000000",
 			comment: "#7f7f7f",
-		}),
+		},
 		
-		css: hiliteClasses({
+		css: {
 			tagName: "#0032ff",
 			className: "#008b8b",
 			idName: "#8b0000",
@@ -124,9 +124,9 @@ module.exports = {
 			comment: "#7f7f7f",
 			symbol: "#333333",
 			text: "#000000",
-		}),
+		},
 		
-		scss: hiliteClasses({
+		scss: {
 			tagName: "#0032ff",
 			className: "#008b8b",
 			idName: "#8b0000",
@@ -136,9 +136,9 @@ module.exports = {
 			comment: "#7f7f7f",
 			symbol: "#333333",
 			text: "#000000",
-		}),
+		},
 		
-		php: hiliteClasses({
+		php: {
 			phpTag: "maroon",
 			keyword: "#aa33aa",
 			id: "#202020",
@@ -147,16 +147,13 @@ module.exports = {
 			bracket: "#202020",
 			number: "#cc2222",
 			string: "#2233bb",
-		}),
+		},
 		
-		markdown: hiliteClasses({
-			link: {
-				color: "#0338ff",
-				textDecoration: "underline",
-			},
-		}),
+		markdown: {
+			link: "#0338ff underline",
+		},
 		
-		c: hiliteClasses({
+		c: {
 			keyword: "#0032ff",
 			id: "#202020",
 			comment: "#7f7f7f",
@@ -166,9 +163,9 @@ module.exports = {
 			number: "#cc2222",
 			string: "#2233bb",
 			type: "#008b8b",
-		}),
+		},
 		
-		cpp: hiliteClasses({
+		cpp: {
 			keyword: "#0032ff",
 			id: "#202020",
 			comment: "#7f7f7f",
@@ -178,9 +175,9 @@ module.exports = {
 			number: "#cc2222",
 			string: "#2233bb",
 			type: "#008b8b",
-		}),
+		},
 		
-		python: hiliteClasses({
+		python: {
 			keyword: "#0032ff",
 			id: "#202020",
 			comment: "#7f7f7f",
@@ -188,6 +185,10 @@ module.exports = {
 			bracket: "#202020",
 			number: "#cc2222",
 			string: "#2233bb",
-		}),
+		},
 	},
 };
+
+expandHiliteClasses(theme);
+
+module.exports = theme;
