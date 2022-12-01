@@ -1,5 +1,5 @@
 <script>
-import Refactor from "components/Refactor.svelte";
+import Refactor from "components/Refactor/Refactor.svelte";
 
 export let tab;
 

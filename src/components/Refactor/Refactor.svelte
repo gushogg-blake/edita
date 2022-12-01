@@ -1,10 +1,10 @@
 <script>
 import {onMount, getContext, createEventDispatcher} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
-import autoFocusAsync from "components/actions/autoFocusAsync";
 import accels from "components/actions/accels";
 import Accel from "components/utils/Accel.svelte";
 import AccelLabel from "components/utils/AccelLabel.svelte";
+import Editor from "components/Editor/Editor.svelte";
 
 export let refactor;
 
