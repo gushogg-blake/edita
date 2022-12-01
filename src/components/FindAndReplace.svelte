@@ -21,7 +21,6 @@ let app = getContext("app");
 let {findAndReplace} = app;
 let {multiPathSeparator} = platform.systemInfo;
 
-let main;
 let searchInput;
 let session = null;
 let optionsChangedSinceLastInit = false;
@@ -359,7 +358,6 @@ onMount(function() {
 </style>
 
 <form
-	bind:this={main}
 	id="main"
 	on:submit={submit}
 	on:keydown={keydown}

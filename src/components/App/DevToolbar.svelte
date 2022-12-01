@@ -21,6 +21,18 @@ function toggleOpenFindAndReplace(open) {
 	}
 }
 
+function toggleOpenRefactor(open) {
+	base.setPref("dev.openRefactor", open);
+	
+	if (open) {
+		let {path} = app.editorTabs[0] || {};
+		
+		app.refactor([path || platform.systemInfo.homeDir]);
+	} else {
+		app.tabs.filter(tab => tab.type === "refactor").forEach(tab => app.closeTab(tab));
+	}
+}
+
 onMount(function() {
 	let teardown = [
 		base.on("prefsUpdated", onPrefsUpdated),
@@ -47,6 +59,11 @@ onMount(function() {
 		label="Theme style element"
 		value={prefs.dev.showThemeStyleElement}
 		on:change={(e) => base.setPref("dev.showThemeStyleElement", e.target.checked)}
+	/>
+	<Checkbox
+		label="Open refactor"
+		value={prefs.dev.openRefactor}
+		on:change={(e) => toggleOpenRefactor(e.target.checked)}
 	/>
 	<Checkbox
 		label="Open find & replace"

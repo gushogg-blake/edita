@@ -87,7 +87,7 @@ let migrations = {
 		};
 	},
 	
-	"12"(prefs) {
+	"13"(prefs) {
 		prefs.dev = {
 			showToolbar: false,
 			timing: {},
@@ -95,6 +95,10 @@ let migrations = {
 			openFindAndReplace: false,
 			logFocusedElement: false,
 		};
+	},
+	
+	"14"(prefs) {
+		prefs.dev.openRefactor = false;
 	},
 };
 
@@ -290,6 +294,7 @@ module.exports = function() {
 			timing: {},
 			showThemeStyleElement: false,
 			openFindAndReplace: false,
+			openRefactor: false,
 			logFocusedElement: false,
 		},
 	};

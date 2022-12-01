@@ -581,7 +581,6 @@ onMount(function() {
 @import "classes/hide";
 
 #main {
-	color: black;
 	position: relative;
 	display: grid;
 	grid-template-rows: 1fr 0;

@@ -17,4 +17,10 @@ module.exports = async function(app) {
 	if (get("openFindAndReplace")) {
 		app.showFindAndReplace();
 	}
+	
+	if (get("openRefactor")) {
+		let {path} = app.editorTabs[0] || {};
+		
+		app.refactor([path || platform.systemInfo.homeDir]);
+	}
 }

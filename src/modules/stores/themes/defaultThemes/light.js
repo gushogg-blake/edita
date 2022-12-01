@@ -111,7 +111,7 @@ let theme = {
 			attribute: "#871f78",
 			string: "#2233bb",
 			text: "#000000",
-			comment: "#7f7f7f",
+			comment: "#7f7f7f italic",
 		},
 		
 		css: {
@@ -121,7 +121,7 @@ let theme = {
 			property: "#333333",
 			attribute: "#871f78",
 			string: "#2233bb",
-			comment: "#7f7f7f",
+			comment: "#7f7f7f italic",
 			symbol: "#333333",
 			text: "#000000",
 		},
@@ -133,7 +133,7 @@ let theme = {
 			property: "#333333",
 			attribute: "#871f78",
 			string: "#2233bb",
-			comment: "#7f7f7f",
+			comment: "#7f7f7f italic",
 			symbol: "#333333",
 			text: "#000000",
 		},
@@ -142,7 +142,7 @@ let theme = {
 			phpTag: "maroon",
 			keyword: "#aa33aa",
 			id: "#202020",
-			comment: "#7f7f7f",
+			comment: "#7f7f7f italic",
 			symbol: "#bb22bb",
 			bracket: "#202020",
 			number: "#cc2222",
@@ -156,7 +156,7 @@ let theme = {
 		c: {
 			keyword: "#0032ff",
 			id: "#202020",
-			comment: "#7f7f7f",
+			comment: "#7f7f7f italic",
 			include: "#7f7f7f",
 			symbol: "#202020",
 			bracket: "#202020",
@@ -168,7 +168,7 @@ let theme = {
 		cpp: {
 			keyword: "#0032ff",
 			id: "#202020",
-			comment: "#7f7f7f",
+			comment: "#7f7f7f italic",
 			include: "#7f7f7f",
 			symbol: "#202020",
 			bracket: "#202020",
@@ -180,7 +180,7 @@ let theme = {
 		python: {
 			keyword: "#0032ff",
 			id: "#202020",
-			comment: "#7f7f7f",
+			comment: "#7f7f7f italic",
 			symbol: "#202020",
 			bracket: "#202020",
 			number: "#cc2222",
