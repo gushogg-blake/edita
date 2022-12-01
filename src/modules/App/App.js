@@ -42,6 +42,7 @@ class App extends Evented {
 		
 		this.tabs = [];
 		this.selectedTab = null;
+		this.previouslySelectedTabs = [];
 		this.closedTabs = [];
 		this.lastSelectedSavedUrl = null;
 		
@@ -127,6 +128,10 @@ class App extends Evented {
 	}
 	
 	selectTab(tab) {
+		if (this.selectedTab) {
+			this.addToPreviouslySelectedTabs(this.selectedTab);
+		}
+		
 		this.selectedTab?.editor.view.hide();
 		
 		this.selectedTab = tab;
@@ -140,6 +145,16 @@ class App extends Evented {
 		this.fire("selectTab", tab);
 		
 		this.focusSelectedTabAsync();
+	}
+	
+	addToPreviouslySelectedTabs(tab) {
+		removeInPlace(this.previouslySelectedTabs, tab);
+		
+		this.previouslySelectedTabs.push(tab);
+		
+		if (this.previouslySelectedTabs.length > 10) {
+			this.previouslySelectedTabs.shift();
+		}
 	}
 	
 	focusSelectedTab() {
@@ -181,12 +196,20 @@ class App extends Evented {
 		let selectNext = null;
 		
 		if (this.selectedTab === tab) {
-			let index = this.tabs.indexOf(tab);
+			this.selectedTab = null;
 			
-			if (index > 0) {
-				selectNext = this.tabs[index - 1];
-			} else if (index < this.tabs.length - 1) {
-				selectNext = this.tabs[index + 1];
+			let prevSelected = this.previouslySelectedTabs.pop();
+			
+			if (prevSelected) {
+				selectNext = prevSelected;
+			} else {
+				let index = this.tabs.indexOf(tab);
+				
+				if (index > 0) {
+					selectNext = this.tabs[index - 1];
+				} else if (index < this.tabs.length - 1) {
+					selectNext = this.tabs[index + 1];
+				}
 			}
 		}
 		
@@ -194,6 +217,7 @@ class App extends Evented {
 		tab.document.teardown();
 		
 		removeInPlace(this.tabs, tab);
+		removeInPlace(this.previouslySelectedTabs, tab);
 		
 		if (tab.isSaved && !noSave) {
 			this.closedTabs.unshift(tab.saveState());
@@ -206,10 +230,6 @@ class App extends Evented {
 		if (selectNext) {
 			this.selectTab(selectNext);
 		} else {
-			if (this.selectedTab === tab) {
-				this.selectedTab = null;
-			}
-			
 			this.updateTitle();
 		}
 		
