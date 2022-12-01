@@ -24,7 +24,7 @@ let theme = {
 		labelColorDisabled: "var(--buttonColorDisabled)",
 		
 		tabBackground: "transparent",
-		tabSelectedBackground: "#505050",
+		tabSelectedBackground: "#404040",
 		toolbarBackground: "#404040",
 		
 		inputColor: "var(--appColor)",
