@@ -1,16 +1,15 @@
 let set = require("lodash.set");
-let Evented = require("utils/Evented");
 let defaultPerFilePrefs = require("modules/defaultPerFilePrefs");
+let Tab = require("./Tab");
 
 function fs(...args) {
 	return platform.fs(...args);
 }
 
-class Tab extends Evented {
+class EditorTab extends Tab {
 	constructor(app, editor) {
-		super();
+		super(app, "editor");
 		
-		this.app = app;
 		this.editor = editor;
 		this.currentPath = this.path;
 		this.entries = [];
@@ -21,6 +20,10 @@ class Tab extends Evented {
 		let {document, view} = editor;
 		
 		this.teardownCallbacks = [
+			() => {
+				this.editor.teardown();
+			},
+			
 			document.on("save", this.onDocumentSave.bind(this)),
 			document.on("urlChanged", this.onDocumentUrlChanged.bind(this)),
 			view.on("wrapChanged", this.onWrapChanged.bind(this)),
@@ -54,10 +57,6 @@ class Tab extends Evented {
 		return this.document.url;
 	}
 	
-	get path() {
-		return this.document.path;
-	}
-	
 	get project() {
 		return this.document.project;
 	}
@@ -66,16 +65,8 @@ class Tab extends Evented {
 		return this.document.isSaved;
 	}
 	
-	get protocol() {
-		return this.document.protocol;
-	}
-	
 	get modified() {
 		return this.document.modified;
-	}
-	
-	get name() {
-		return this.app.getTabName(this);
 	}
 	
 	async zoomOut() {
@@ -268,14 +259,6 @@ class Tab extends Evented {
 			editor.setAstSelection(astSelection);
 		}
 	}
-	
-	teardown() {
-		this.editor.teardown();
-		
-		for (let fn of this.teardownCallbacks) {
-			fn();
-		}
-	}
 }
 
-module.exports = Tab;
+module.exports = EditorTab;

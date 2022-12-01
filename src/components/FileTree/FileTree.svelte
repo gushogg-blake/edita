@@ -37,6 +37,14 @@ function contextmenu({detail: {e, entry}}) {
 			},
 		},
 		
+		{
+			label: "Refactor...",
+			
+			onClick() {
+				app.refactor([path]);
+			},
+		},
+		
 		isDir && {
 			label: "Make this folder root",
 			

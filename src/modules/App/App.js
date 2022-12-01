@@ -10,11 +10,12 @@ let nextName = require("utils/nextName");
 let URL = require("modules/URL");
 let protocol = require("modules/protocol");
 let Document = require("modules/Document");
-let Tab = require("modules/Tab");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
 let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
+let EditorTab = require("./EditorTab");
+let RefactorTab = require("./RefactorTab");
 let Projects = require("./Projects");
 let FileTree = require("./FileTree");
 let Pane = require("./Pane");
@@ -277,7 +278,7 @@ class App extends Evented {
 	showFindAndReplace(options) {
 		let search = "";
 		
-		if (this.selectedTab) {
+		if (this.selectedTab?.isEditor) {
 			let {editor} = this.selectedTab;
 			let {document} = editor;
 			let selectedText = editor.getSelectedText();
@@ -328,7 +329,7 @@ class App extends Evented {
 			code = await platform.fs(path).read();
 		}
 		
-		let tab = await this.createTab(code, url);
+		let tab = await this.createEditorTab(code, url);
 		
 		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
 		
@@ -365,7 +366,7 @@ class App extends Evented {
 		let dir = this.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
 		let path = platform.fs(dir).child(name).path;
 		
-		let tab = await this.createTab("", URL._new(path), fileDetails);
+		let tab = await this.createEditorTab("", URL._new(path), fileDetails);
 		
 		this.tabs.push(tab);
 		
@@ -377,9 +378,9 @@ class App extends Evented {
 		return tab;
 	}
 	
-	async createTab(code, url, fileDetails=null) {
+	async createEditorTab(code, url, fileDetails=null) {
 		if (base.getPref("dev.timing.misc")) {
-			console.time("createTab");
+			console.time("createEditorTab");
 		}
 		
 		if (!fileDetails) {
@@ -401,7 +402,7 @@ class App extends Evented {
 		
 		let view = new View(document);
 		let editor = new Editor(document, view);
-		let tab = new Tab(this, editor);
+		let tab = new EditorTab(this, editor);
 		
 		editor.on("cut copy", (str) => {
 			this.bottomPane.addClipping(str);
@@ -414,7 +415,7 @@ class App extends Evented {
 		this.fire("tabCreated", tab);
 		
 		if (base.getPref("dev.timing.misc")) {
-			console.timeEnd("createTab");
+			console.timeEnd("createEditorTab");
 		}
 		
 		return tab;
@@ -522,7 +523,7 @@ class App extends Evented {
 			url = new URL(url);
 			
 			try {
-				return this.createTab(await protocol(url).read(), url);
+				return this.createEditorTab(await protocol(url).read(), url);
 			} catch (e) {
 				console.error(e);
 				

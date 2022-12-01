@@ -10,7 +10,8 @@ import labelClick from "components/actions/labelClick";
 
 import Toolbar from "./Toolbar.svelte";
 import EditorTabBar from "./EditorTabBar.svelte";
-import Tab from "./Tab.svelte";
+import EditorTab from "./EditorTab.svelte";
+import RefactorTab from "./RefactorTab.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
 import BottomPane from "./BottomPane.svelte";
@@ -32,6 +33,11 @@ let {
 	selectedTab,
 	panes,
 } = app;
+
+let tabComponents = {
+	editor: EditorTab,
+	refactor: RefactorTab,
+};
 
 let showingFindBar = false;
 
@@ -287,7 +293,7 @@ onMount(function() {
 	<div id="editor">
 		{#each tabs as tab (tab)}
 			<div class="tab" class:selected={tab === selectedTab}>
-				<Tab {tab}/>
+				<svelte:component this={tabComponents[tab.type]} {tab}/>
 			</div>
 		{/each}
 	</div>
