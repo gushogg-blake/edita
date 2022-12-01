@@ -205,6 +205,16 @@ class Editor extends Evented {
 		this.view.setCompletions(this.completions);
 	}
 	
+	getExternalWordCompletionCandidates() {
+		let candidates = [];
+		
+		this.fire("requestWordCompletionCandidates", function(words) {
+			candidates = [...candidates, words];
+		});
+		
+		return candidates;
+	}
+	
 	onDocumentEdit(edit) {
 		let {selection: oldSelection, newSelection} = edit;
 		let {view} = this;

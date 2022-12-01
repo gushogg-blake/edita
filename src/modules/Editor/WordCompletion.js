@@ -163,9 +163,8 @@ class WordCompletion {
 			wordAtCursor = {left, right};
 		}
 		
-		let {path} = document;
 		let index = document.indexFromCursor(cursor);
-		let extraWords = [path && platform.fs(path).basename].filter(Boolean);
+		let extraWords = editor.getExternalWordCompletionCandidates();
 		
 		let words = findCompletions(document.string, wordAtCursor, index, extraWords);
 		

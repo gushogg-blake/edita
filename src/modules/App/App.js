@@ -84,6 +84,10 @@ class App extends Evented {
 		return lastSelectedPath || _default;
 	}
 	
+	get editorTabs() {
+		return this.tabs.filter(tab => tab.isEditor);
+	}
+	
 	async save(tab) {
 		let {document} = tab;
 		
@@ -401,7 +405,7 @@ class App extends Evented {
 		});
 		
 		let view = new View(document);
-		let editor = new Editor(document, view);
+		let editor = this._createEditor(document, view);
 		let tab = new EditorTab(this, editor);
 		
 		editor.on("cut copy", (str) => {
@@ -435,11 +439,25 @@ class App extends Evented {
 		return document;
 	}
 	
+	_createEditor(document, view) {
+		let editor = new Editor(document, view);
+		
+		editor.on("requestWordCompletionCandidates", (add) => {
+			add(this.editorTabs.map(function(tab) {
+				let {path} = tab;
+				
+				return path && platform.fs(path).basename;
+			}).filter(Boolean));
+		});
+		
+		return editor;
+	}
+	
 	createEditor() {
 		let document = new Document("");
 		let view = new View(document);
 		
-		return new Editor(document, view);
+		return this._createEditor(document, view);
 	}
 	
 	findTabByPath(path) {
