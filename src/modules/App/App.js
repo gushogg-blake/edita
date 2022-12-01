@@ -227,6 +227,12 @@ class App extends Evented {
 		this.closeTab(tab);
 	}
 	
+	async closeOthers(tab) {
+		for (let other of this.tabs.filter(t => t !== tab)) {
+			await this.closeTab(other);
+		}
+	}
+	
 	urlIsOpen(url) {
 		return this.tabs.some(tab => tab.url.toString() === url.toString());
 	}

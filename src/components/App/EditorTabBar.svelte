@@ -38,19 +38,30 @@ function getContextMenuItems(tab) {
 	let {isSaved} = tab.editor.document;
 	
 	return [
-		isSaved && {
+		{
 			label: "%Rename...",
+			enabled: isSaved,
 			
 			onClick() {
 				app.renameTab(tab);
 			},
 		},
 		
-		isSaved && {
+		{
 			label: "%Delete...",
+			enabled: isSaved,
 			
 			onClick() {
 				app.deleteTab(tab);
+			},
+		},
+		
+		{
+			label: "Close others",
+			enabled: app.tabs.length > 1,
+			
+			onClick() {
+				app.closeOthers(tab);
 			},
 		},
 	].filter(Boolean);
