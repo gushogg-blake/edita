@@ -50,7 +50,7 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	get _node() {
-		return this.nodeStack[this.nodeStack.length - 1] || null;
+		return this.nodeStack.at(-1) || null;
 	}
 	
 	get node() {

@@ -301,7 +301,7 @@ let api = {
 		let lines = str.split(newline);
 		
 		let endLineIndex = start.lineIndex + lines.length - 1;
-		let endOffset = lines.length === 1 ? start.offset + lines[0].length : lines[lines.length - 1].length;
+		let endOffset = lines.length === 1 ? start.offset + lines[0].length : lines.at(-1).length;
 		
 		return s(start, c(endLineIndex, endOffset));
 	},

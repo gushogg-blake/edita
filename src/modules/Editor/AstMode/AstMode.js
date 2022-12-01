@@ -70,7 +70,7 @@ class AstMode extends Evented {
 		let edits = [edit];
 		
 		let {lineIndex, offset} = edit.newSelection.end;
-		let cursor = c(lineIndex - 1, insertLines[insertLines.length - 1].length);
+		let cursor = c(lineIndex - 1, insertLines.at(-1).length);
 		let newSelection = Selection.s(cursor);
 		
 		editor.applyAndAddHistoryEntry({

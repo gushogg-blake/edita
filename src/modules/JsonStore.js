@@ -10,7 +10,7 @@ class JsonStore extends Evented {
 		this.migrations = migrations;
 		
 		this.versions = Object.keys(this.migrations || {}).map(Number).sort((a, b) => a - b);
-		this.version = this.versions.length > 0 ? this.versions[this.versions.length - 1] : -1;
+		this.version = this.versions.length > 0 ? this.versions.at(-1) : -1;
 		
 		if (platform.jsonStore.watch) {
 			platform.jsonStore.watch(name, (key, value) => {

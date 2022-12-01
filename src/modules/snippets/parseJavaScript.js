@@ -57,7 +57,7 @@ function parse(string, startIndex) {
 			} else if (ch === ")" || ch === "]" || ch === "}") {
 				if (ch === "}") {
 					if (interpolationStack.length > 0) {
-						if (interpolationStack[interpolationStack.length - 1] > 0) {
+						if (interpolationStack.at(-1) > 0) {
 							interpolationStack[interpolationStack.length - 1]--;
 						} else {
 							interpolationStack.pop();

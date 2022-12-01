@@ -80,7 +80,7 @@ class LineWrapper {
 	}
 	
 	get currentLineRow() {
-		return this.lineRows[this.lineRows.length - 1];
+		return this.lineRows.at(-1);
 	}
 	
 	addTabToCurrentRow(part) {

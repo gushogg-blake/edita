@@ -43,7 +43,7 @@ class BaseDocument extends Evented {
 		insertLines[insertLines.length - 1] += suffix;
 		
 		let newEndLineIndex = start.lineIndex + insertLines.length - 1;
-		let lastLine = insertLines[insertLines.length - 1];
+		let lastLine = insertLines.at(-1);
 		let newSelection = s(start, c(newEndLineIndex, lastLine.length - suffix.length));
 		
 		return {
@@ -68,7 +68,7 @@ class BaseDocument extends Evented {
 		*/
 		
 		if (lineIndex === this.lines.length) {
-			start = c(lineIndex - 1, this.lines[this.lines.length - 1].string.length);
+			start = c(lineIndex - 1, this.lines.at(-1).string.length);
 			
 			if (insertLines.length > 0) {
 				insertString = newline + insertString;
@@ -164,7 +164,7 @@ class BaseDocument extends Evented {
 	}
 	
 	get lastHistoryEntry() {
-		return this.history[this.history.length - 1];
+		return this.history.at(-1);
 	}
 	
 	undo() {
@@ -264,7 +264,7 @@ class BaseDocument extends Evented {
 		
 		let str = lines.map(line => line.string).join(this.fileDetails.newline);
 		let trimLeft = start.offset;
-		let trimRight = lines[lines.length - 1].string.length - end.offset;
+		let trimRight = lines.at(-1).string.length - end.offset;
 		
 		return str.substring(trimLeft, str.length - trimRight);
 	}

@@ -48,7 +48,7 @@ function sessionFromPositions(positions, tabstops, firstTabstopIndex) {
 }
 
 function initNormalSelectionFromPositions(positions, tabstops) {
-	return tabstops.length > 0 ? tabstops[0].selection : positions[positions.length - 1].selection;
+	return tabstops.length > 0 ? tabstops[0].selection : positions.at(-1).selection;
 }
 
 let api = {

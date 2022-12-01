@@ -50,7 +50,7 @@ class Renderer {
 		this.foldedLineRows = getFoldedLineRowsToRender(view);
 		
 		let firstRow = this.foldedLineRows[0];
-		let lastRow = this.foldedLineRows[this.foldedLineRows.length - 1];
+		let lastRow = this.foldedLineRows.at(-1);
 		
 		this.visibleSelection = s(
 			c(firstRow.lineIndex, firstRow.lineRow.startOffset),

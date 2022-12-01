@@ -168,7 +168,7 @@ module.exports = class {
 	}
 	
 	cursorAtEnd() {
-		return c(this.lines.length - 1, this.lines[this.lines.length - 1].string.length);
+		return c(this.lines.length - 1, this.lines.at(-1).string.length);
 	}
 	
 	selectAll() {

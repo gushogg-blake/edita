@@ -235,7 +235,7 @@ let findAndReplace = {
 		let prevResult;
 		
 		if (resultIndex === 0) {
-			prevResult = all[all.length - 1];
+			prevResult = all.at(-1);
 		} else {
 			prevResult = all[resultIndex - 1];
 		}

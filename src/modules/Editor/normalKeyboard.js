@@ -588,7 +588,7 @@ module.exports = {
 		
 		let {positions} = this.snippetSession;
 		
-		this.setSelectionFromNormalKeyboard(positions[positions.length - 1].selection);
+		this.setSelectionFromNormalKeyboard(positions.at(-1).selection);
 		this.clearSnippetSession();
 	},
 	
