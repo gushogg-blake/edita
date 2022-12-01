@@ -70,7 +70,7 @@ let theme = {
 	editor: {
 		fontFamily: "\"DejaVu Sans Mono\", Menlo, Consolas, monospace",
 		fontSize: "14px",
-		defaultColor: "#f0f0f0",
+		defaultStyle: "#f0f0f0",
 		
 		cursorColor: "#f0f0f0",
 		

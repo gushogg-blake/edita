@@ -70,13 +70,7 @@ let theme = {
 	editor: {
 		fontFamily: "\"DejaVu Sans Mono\", Menlo, Consolas, monospace",
 		fontSize: "14px",
-		
-		defaultStyle: {
-			color: "#202020",
-			fontWeight: "normal",
-			fontStyle: "normal",
-			textDecoration: "none",
-		},
+		defaultStyle: "#202020",
 		
 		cursorColor: "black",
 		
