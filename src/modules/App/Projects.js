@@ -45,7 +45,7 @@ class Projects extends Evented {
 	}
 	
 	get openProjects() {
-		return unique(this.app.tabs.map(tab => tab.project).filter(Boolean));
+		return unique(this.app.editorTabs.map(tab => tab.project).filter(Boolean));
 	}
 	
 	async init() {
@@ -113,12 +113,20 @@ class Projects extends Evented {
 	}
 	
 	onTabCreated(tab) {
+		if (!tab.isEditor) {
+			return;
+		}
+		
 		tab.project.tabCreated(tab);
 		
 		this.fire("update");
 	}
 	
 	onTabClosed(tab) {
+		if (!tab.isEditor) {
+			return;
+		}
+		
 		let {project} = tab;
 		
 		if (!this.openProjects.includes(project)) {

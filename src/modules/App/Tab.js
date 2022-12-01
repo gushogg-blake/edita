@@ -35,6 +35,19 @@ class Tab extends Evented {
 		return this.app.getTabName(this);
 	}
 	
+	get modified() {
+		return false;
+	}
+	
+	focus() {
+	}
+	
+	show() {
+	}
+	
+	hide() {
+	}
+	
 	saveState() {
 		return null;
 	}

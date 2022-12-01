@@ -34,37 +34,47 @@ function reorder({detail: {tab, index}}) {
 	app.reorderTab(tab, index);
 }
 
-function getContextMenuItems(tab) {
-	let {isSaved} = tab.editor.document;
+let _getContextMenuItems = {
+	editor(tab) {
+		let {isSaved} = tab.editor.document;
+		
+		return [
+			{
+				label: "%Rename...",
+				enabled: isSaved,
+				
+				onClick() {
+					app.renameTab(tab);
+				},
+			},
+			
+			{
+				label: "%Delete...",
+				enabled: isSaved,
+				
+				onClick() {
+					app.deleteTab(tab);
+				},
+			},
+			
+			{
+				label: "Close others",
+				enabled: app.tabs.length > 1,
+				
+				onClick() {
+					app.closeOthers(tab);
+				},
+			},
+		].filter(Boolean);
+	},
 	
-	return [
-		{
-			label: "%Rename...",
-			enabled: isSaved,
-			
-			onClick() {
-				app.renameTab(tab);
-			},
-		},
-		
-		{
-			label: "%Delete...",
-			enabled: isSaved,
-			
-			onClick() {
-				app.deleteTab(tab);
-			},
-		},
-		
-		{
-			label: "Close others",
-			enabled: app.tabs.length > 1,
-			
-			onClick() {
-				app.closeOthers(tab);
-			},
-		},
-	].filter(Boolean);
+	refactor(tab) {
+		return [];
+	},
+};
+
+function getContextMenuItems(tab) {
+	return _getContextMenuItems[tab.type](tab);
 }
 
 function updateTabs() {

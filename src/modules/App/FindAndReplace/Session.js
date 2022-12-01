@@ -25,10 +25,10 @@ class Session {
 		if (searchIn === "currentDocument" || searchIn === "selectedText") {
 			this.urls = [app.selectedTab.url];
 		} else if (searchIn === "openFiles") {
-			this.urls = app.tabs.map(tab => tab.url);
+			this.urls = app.editorTabs.map(tab => tab.url);
 		} else if (searchIn === "files") {
 			let paths = await getPaths(options);
-			let openPaths = app.tabs.map(tab => tab.path).filter(path => paths.includes(path));
+			let openPaths = app.editorTabs.map(tab => tab.path).filter(path => paths.includes(path));
 			let nonOpenPaths = paths.filter(path => !openPaths.includes(path));
 			
 			this.urls = [...openPaths, ...nonOpenPaths].map(path => URL.file(path));

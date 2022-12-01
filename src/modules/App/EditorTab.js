@@ -41,14 +41,6 @@ class EditorTab extends Tab {
 		this.applyPerFilePrefs();
 	}
 	
-	applyPerFilePrefs() {
-		let {
-			wrap,
-		} = this.perFilePrefs;
-		
-		this.editor.view.setWrap(wrap);
-	}
-	
 	get document() {
 		return this.editor.document;
 	}
@@ -67,6 +59,30 @@ class EditorTab extends Tab {
 	
 	get modified() {
 		return this.document.modified;
+	}
+	
+	get view() {
+		return this.editor.view;
+	}
+	
+	focus() {
+		this.view.requestFocus();
+	}
+	
+	show() {
+		this.view.show();
+	}
+	
+	hide() {
+		this.view.hide();
+	}
+	
+	applyPerFilePrefs() {
+		let {
+			wrap,
+		} = this.perFilePrefs;
+		
+		this.view.setWrap(wrap);
 	}
 	
 	async zoomOut() {
@@ -178,7 +194,7 @@ class EditorTab extends Tab {
 	}
 	
 	onAppUpdatePanes() {
-		this.editor.view.requestResizeAsync();
+		this.view.requestResizeAsync();
 	}
 	
 	async updateDirListing() {
@@ -227,7 +243,7 @@ class EditorTab extends Tab {
 			normalSelection,
 			astSelection,
 			scrollPosition,
-		} = this.editor.view;
+		} = this.view;
 		
 		return {
 			url,
@@ -258,6 +274,12 @@ class EditorTab extends Tab {
 		} else {
 			editor.setAstSelection(astSelection);
 		}
+	}
+	
+	teardown() {
+		super.teardown();
+		
+		this.document.teardown();
 	}
 }
 

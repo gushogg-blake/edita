@@ -9,7 +9,7 @@ import themeStyleDev from "components/themeStyleDev";
 import labelClick from "components/actions/labelClick";
 
 import Toolbar from "./Toolbar.svelte";
-import EditorTabBar from "./EditorTabBar.svelte";
+import TabBar from "./TabBar.svelte";
 import EditorTab from "./EditorTab.svelte";
 import RefactorTab from "./RefactorTab.svelte";
 import LeftPane from "./LeftPane.svelte";
@@ -286,7 +286,7 @@ onMount(function() {
 	<div id="tabBarContainer">
 		{#if tabs.length > 0}
 			<div id="tabBar">
-				<EditorTabBar/>
+				<TabBar/>
 			</div>
 		{/if}
 	</div>

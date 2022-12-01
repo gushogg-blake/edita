@@ -12,6 +12,7 @@ let protocol = require("modules/protocol");
 let Document = require("modules/Document");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
+let Refactor = require("modules/Refactor");
 let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let EditorTab = require("./EditorTab");
@@ -137,15 +138,17 @@ class App extends Evented {
 			this.addToPreviouslySelectedTabs(this.selectedTab);
 		}
 		
-		this.selectedTab?.editor.view.hide();
+		this.selectedTab?.hide();
 		
 		this.selectedTab = tab;
 		
-		tab.editor.view.show();
+		tab.show();
 		
 		this.updateTitle();
 		
-		this.bottomPane.clippingsEditor.setLang(tab.editor.document.lang);
+		if (tab.isEditor) {
+			this.bottomPane.clippingsEditor.setLang(tab.editor.document.lang);
+		}
 		
 		this.fire("selectTab", tab);
 		
@@ -163,17 +166,21 @@ class App extends Evented {
 	}
 	
 	focusSelectedTab() {
-		this.selectedTab?.editor.view.requestFocus();
+		this.selectedTab?.focus();
 	}
 	
 	focusSelectedTabAsync() {
 		setTimeout(() => {
-			this.selectedTab?.editor.view.requestFocus();
+			this.focusSelectedTab();
 		}, 0);
 	}
 	
 	getTabName(tab) {
-		return platform.fs(tab.path).name;
+		if (tab.isEditor) {
+			return platform.fs(tab.path).name;
+		} else if (tab.isRefactor) {
+			return "Refactor";
+		}
 	}
 	
 	getTabLabel(tab) {
@@ -219,7 +226,6 @@ class App extends Evented {
 		}
 		
 		tab.teardown();
-		tab.document.teardown();
 		
 		removeInPlace(this.tabs, tab);
 		removeInPlace(this.previouslySelectedTabs, tab);
@@ -253,17 +259,17 @@ class App extends Evented {
 	}
 	
 	async closeOthers(tab) {
-		for (let other of this.tabs.filter(t => t !== tab)) {
+		for (let other of this.editorTabs.filter(t => t !== tab)) {
 			await this.closeTab(other);
 		}
 	}
 	
 	urlIsOpen(url) {
-		return this.tabs.some(tab => tab.url.toString() === url.toString());
+		return this.editorTabs.some(tab => tab.url.toString() === url.toString());
 	}
 	
 	pathIsOpen(path) {
-		return this.tabs.some(tab => tab.protocol === "file" && tab.path === path);
+		return this.editorTabs.some(tab => tab.protocol === "file" && tab.path === path);
 	}
 	
 	showFindBar() {
@@ -276,7 +282,7 @@ class App extends Evented {
 	
 	hideFindBarAndFocusEditor() {
 		this.hideFindBar();
-		this.selectedTab?.editor.view.requestFocus();
+		this.focusSelectedTab();
 	}
 	
 	showFindAndReplace(options) {
@@ -303,7 +309,7 @@ class App extends Evented {
 	hideFindAndReplace() {
 		this.fire("hideFindAndReplace");
 		
-		this.selectedTab?.editor.view.requestFocus();
+		this.focusSelectedTab();
 	}
 	
 	openPath(path, code=null) {
@@ -314,8 +320,8 @@ class App extends Evented {
 		let {path} = url;
 		
 		if (
-			this.tabs.length === 1
-			&& this.tabs[0] === this.initialNewFileTab
+			this.editorTabs.length === 1
+			&& this.editorTabs[0] === this.initialNewFileTab
 			&& !this.initialNewFileTab.modified
 		) {
 			this.closeTab(this.initialNewFileTab);
@@ -366,7 +372,7 @@ class App extends Evented {
 		
 		let {defaultExtension} = lang;
 		let extension = defaultExtension ? "." + defaultExtension : "";
-		let name = nextName(n => lang.name + "-" + n + extension, name => !this.tabs.some(tab => tab.path.includes(name)));
+		let name = nextName(n => lang.name + "-" + n + extension, name => !this.editorTabs.some(tab => tab.path.includes(name)));
 		let dir = this.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
 		let path = platform.fs(dir).child(name).path;
 		
@@ -417,6 +423,7 @@ class App extends Evented {
 		tab.on("focus", this.onTabFocus.bind(this));
 		
 		this.fire("tabCreated", tab);
+		this.fire("editorTabCreated", tab);
 		
 		if (base.getPref("dev.timing.misc")) {
 			console.timeEnd("createEditorTab");
@@ -460,12 +467,25 @@ class App extends Evented {
 		return this._createEditor(document, view);
 	}
 	
+	async createRefactorTab(paths) {
+		let refactor = new Refactor(paths);
+		let tab = new RefactorTab(refactor);
+		
+		await tab.init();
+		
+		tab.on("focus", this.onTabFocus.bind(this));
+		
+		this.fire("tabCreated", tab);
+		
+		return tab;
+	}
+	
 	findTabByPath(path) {
-		return this.tabs.find(tab => tab.protocol === "file" && tab.path === path);
+		return this.editorTabs.find(tab => tab.protocol === "file" && tab.path === path);
 	}
 	
 	findTabByUrl(url) {
-		return this.tabs.find(tab => tab.url.toString() === url.toString());
+		return this.editorTabs.find(tab => tab.url.toString() === url.toString());
 	}
 	
 	selectNextTab(dir) {
@@ -473,18 +493,19 @@ class App extends Evented {
 			return;
 		}
 		
-		let index = this.tabs.indexOf(this.selectedTab);
+		let {tabs} = this;
+		let index = tabs.indexOf(this.selectedTab);
 		let newIndex = index + dir;
 		
 		if (newIndex === -1) {
-			newIndex = this.tabs.length - 1;
+			newIndex = tabs.length - 1;
 		}
 		
-		if (newIndex === this.tabs.length) {
+		if (newIndex === tabs.length) {
 			newIndex = 0;
 		}
 		
-		this.selectTab(this.tabs[newIndex]);
+		this.selectTab(tabs[newIndex]);
 	}
 	
 	onOpenFromElectronSecondInstance(files) {
@@ -534,7 +555,7 @@ class App extends Evented {
 		tabsToOpen.push(...filesToOpenOnStartup);
 		
 		if (filesToOpenOnStartup.length > 0) {
-			fileToSelect = filesToOpenOnStartup[filesToOpenOnStartup.length - 1].url;
+			fileToSelect = filesToOpenOnStartup.at(-1).url;
 		}
 		
 		this.tabs = await bluebird.map(tabsToOpen, async ({url}) => {
@@ -555,15 +576,15 @@ class App extends Evented {
 			}
 		}
 		
-		if (this.tabs.length > 0) {
-			this.selectTab(fileToSelect && this.findTabByUrl(fileToSelect) || this.tabs[this.tabs.length - 1]);
+		if (this.editorTabs.length > 0) {
+			this.selectTab(fileToSelect && this.findTabByUrl(fileToSelect) || this.editorTabs.at(-1));
 		} else {
 			this.initialNewFileTab = await this.newFile();
 		}
 	}
 	
 	async saveSession() {
-		let tabs = this.tabs.map(function(tab) {
+		let tabs = this.editorTabs.map(function(tab) {
 			return tab.isSaved ? tab.saveState() : null;
 		}).filter(Boolean);
 		
@@ -571,6 +592,16 @@ class App extends Evented {
 			tabs,
 			selectedTabUrl: this.selectedTab?.url.toString(),
 		});
+	}
+	
+	async refactor(paths) {
+		let tab = await this.createRefactorTab(paths);
+		
+		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
+		
+		this.fire("updateTabs");
+		
+		this.selectTab(tab);
 	}
 	
 	findInFiles(paths) {
@@ -658,7 +689,7 @@ class App extends Evented {
 	}
 	
 	async onCloseWindow(e) {
-		let modifiedTabs = this.tabs.filter(tab => tab.modified);
+		let modifiedTabs = this.editorTabs.filter(tab => tab.modified);
 		
 		if (modifiedTabs.length === 0) {
 			return;

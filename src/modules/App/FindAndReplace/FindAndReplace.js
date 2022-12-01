@@ -86,7 +86,7 @@ class FindAndReplace extends Evented {
 	findAllInOpenFiles(options) {
 		let results = [];
 		
-		for (let tab of this.app.tabs) {
+		for (let tab of this.app.editorTabs) {
 			results = [...results, ...tab.editor.api.findAll(getFindAndReplaceOptions(options))];
 		}
 		
@@ -126,7 +126,7 @@ class FindAndReplace extends Evented {
 	replaceAllInOpenFiles(options) {
 		let results = [];
 		
-		for (let tab of this.app.tabs) {
+		for (let tab of this.app.editorTabs) {
 			results = [...results, ...tab.editor.api.replaceAll(getFindAndReplaceOptions(options))];
 		}
 		
