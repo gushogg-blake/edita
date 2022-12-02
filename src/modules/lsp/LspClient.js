@@ -66,6 +66,20 @@ class LspClient extends Evented {
 		return this.servers[langCode];
 	}
 	
+	async withServer(lang, fn, _default) {
+		try {
+			return await fn(this.getServer(lang.code));
+		} catch (e) {
+			if (e instanceof LspError) {
+				console.log(e);
+			} else {
+				console.error(e);
+			}
+			
+			return _default;
+		}
+	}
+	
 	closeServer(langCode) {
 		langCode = normaliseLangCode(langCode);
 		
@@ -97,9 +111,7 @@ class LspClient extends Evented {
 		let {lang} = scope;
 		let uri = this.urisByScope.get(scope);
 		
-		try {
-			let server = this.getServer(lang.code);
-			
+		return await this.withServer(lang, async (server) => {
 			let {error, result} = await server.request("textDocument/completion", {
 				textDocument: {
 					uri,
@@ -122,15 +134,7 @@ class LspClient extends Evented {
 			});
 			
 			return completions;
-		} catch (e) {
-			if (e instanceof LspError) {
-				console.log(e);
-			} else {
-				console.error(e);
-			}
-			
-			return [];
-		}
+		}, []);
 	}
 	
 	registerDocument(document) {
@@ -160,39 +164,31 @@ class LspClient extends Evented {
 		this.scopesByUri.set(uri, scope);
 		this.urisByScope.set(scope, uri);
 		
-		let server = this.getServer(lang.code);
-		
-		if (!server) {
-			return;
-		}
-		
-		let code = maskOtherRegions(scope);
-		
-		server.notify("textDocument/didOpen", {
-			textDocument: {
-				uri,
-				languageId: lang.code,
-				version: 1,
-				text: code,
-			},
-		}).catch(e => console.error(e));
+		this.withServer(lang, (server) => {
+			let code = maskOtherRegions(scope);
+			
+			return server.notify("textDocument/didOpen", {
+				textDocument: {
+					uri,
+					languageId: lang.code,
+					version: 1,
+					text: code,
+				},
+			});
+		});
 	}
 	
 	unregisterScope(scope) {
 		let uri = this.urisByScope.get(scope);
 		let {lang} = scope;
 		
-		let server = this.getServer(lang.code);
-		
-		if (!server) {
-			return;
-		}
-		
-		server.notify("textDocument/didClose", {
-			textDocument: {
-				uri,
-			},
-		}).catch(e => console.error(e));
+		this.withServer(lang, (server) => {
+			return server.notify("textDocument/didClose", {
+				textDocument: {
+					uri,
+				},
+			});
+		});
 		
 		this.scopesByUri.delete(uri);
 		this.urisByScope.delete(scope);
