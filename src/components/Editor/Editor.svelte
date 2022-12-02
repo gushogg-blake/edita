@@ -5,8 +5,6 @@ import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
 import getKeyCombo from "utils/getKeyCombo";
 
-import themeStyle from "components/themeStyle";
-
 import render from "./canvas/render";
 
 import normalMouse from "./normalMouse";
@@ -35,6 +33,10 @@ export let lang = null;
 
 export function setValue(value) {
 	editor.setValue(value);
+}
+
+export function focus() {
+	main.focus();
 }
 
 let app = getContext("app");
@@ -593,10 +595,6 @@ onMount(function() {
 	&.showingHorizontalScrollbar {
 		grid-template-rows: 1fr auto;
 	}
-	
-	&.textarea {
-		border: var(--inputBorder);
-	}
 }
 
 #canvas {
@@ -645,8 +643,6 @@ canvas {
 	on:wheel={wheel}
 	class="treefrog"
 	class:showingHorizontalScrollbar
-	class:textarea={editorMode === "textarea"}
-	style={editorMode === "textarea" ? themeStyle(theme.app) : ""}
 	tabindex="0"
 	on:focus={onFocus}
 	on:blur={onBlur}

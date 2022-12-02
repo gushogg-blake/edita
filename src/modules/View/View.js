@@ -458,15 +458,16 @@ class View extends Evented {
 		let firstFullyVisibleRow = Math.ceil(scrollPosition.y / rowHeight);
 		let lastFullyVisibleRow = firstVisibleRow + rows;
 		
-		let idealRowBuffer = 5;
+		let idealRowBufferTop = rows > 10 ? 5 : 0;
+		let idealRowBufferBottom = rows > 10 ? 5 : 1;
 		
-		let topRowDiff = idealRowBuffer - (row - firstFullyVisibleRow);
+		let topRowDiff = idealRowBufferTop - (row - firstFullyVisibleRow);
 		
 		if (topRowDiff > 0) {
 			scrollPosition.y = Math.max(0, scrollPosition.y - topRowDiff * rowHeight);
 		}
 		
-		let bottomRowDiff = idealRowBuffer - (lastFullyVisibleRow - row);
+		let bottomRowDiff = idealRowBufferBottom - (lastFullyVisibleRow - row);
 		
 		if (bottomRowDiff > 0) {
 			scrollPosition.y = Math.min(scrollPosition.y + bottomRowDiff * rowHeight, maxRow * rowHeight);

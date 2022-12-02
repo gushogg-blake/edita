@@ -468,7 +468,10 @@ class App extends Evented {
 	}
 	
 	async createRefactorTab(paths) {
-		let refactor = new Refactor(paths);
+		let refactor = new Refactor({
+			paths,
+		});
+		
 		let tab = new RefactorTab(this, refactor);
 		
 		await tab.init();

@@ -2,10 +2,10 @@ let URL = require("modules/URL");
 let Tab = require("./Tab");
 
 class RefactorTab extends Tab {
-	constructor(app, options) {
+	constructor(app, refactor) {
 		super(app, "refactor");
 		
-		this.options = options;
+		this.refactor = refactor;
 		this._url = new URL("special://refactor");
 		
 		this.teardownCallbacks = [
