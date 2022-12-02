@@ -70,22 +70,35 @@ onMount(function() {
 
 #editors {
 	display: grid;
-	grid-template-rows: repeat(2, minmax(0, 1fr));
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 1px;
+	grid-template-rows: auto 1fr auto 1fr;
 	border-top: var(--appBorder);
-	background: var(--appBorderColor);
+}
+
+.headers, .editors {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.headers {
+	&:not(:first-child) {
+		border-top: var(--appBorder);
+	}
 	
 	> div {
-		display: grid;
-		grid-template-rows: auto 1fr;
+		padding: 3px 5px;
+		background: var(--appBackground);
 	}
 }
 
-.header {
-	padding: 3px 5px;
-	background: var(--appBackground);
+.editors {
+	gap: 1px;
+	background: var(--appBorderColor);
+	
+	> div {
+		height: 100%;
+	}
 }
+
 </style>
 
 <div id="main">
@@ -105,33 +118,33 @@ onMount(function() {
 		</div>
 	</div>
 	<div id="editors">
-		<div>
-			<div class="header">
+		<div class="headers">
+			<div>
 				<AccelLabel for={matchEditor} label="%Match"/>
 			</div>
 			<div>
-				<Editor bind:this={matchEditor} bind:value={formOptions.match}/>
+				<AccelLabel for={matchedEditor} label="M%atched"/>
 			</div>
 		</div>
-		<div>
-			<div class="header">
-				<AccelLabel for={matchedEditor} label="M%atched"/>
+		<div class="editors">
+			<div>
+				<Editor bind:this={matchEditor} bind:value={formOptions.match}/>
 			</div>
 			<div>
 				<Editor bind:this={matchedEditor} bind:value={preview.matched}/>
 			</div>
 		</div>
-		<div>
-			<div class="header">
+		<div class="headers">
+			<div>
 				<AccelLabel for={replaceWithEditor} label="Rep%lace with"/>
 			</div>
 			<div>
-				<Editor bind:this={replaceWithEditor} bind:value={formOptions.replaceWith}/>
+				<AccelLabel for={refactoredEditor} label="%Preview"/>
 			</div>
 		</div>
-		<div>
-			<div class="header">
-				<AccelLabel for={refactoredEditor} label="Refa%ctored"/>
+		<div class="editors">
+			<div>
+				<Editor bind:this={replaceWithEditor} bind:value={formOptions.replaceWith}/>
 			</div>
 			<div>
 				<Editor bind:this={refactoredEditor} bind:value={preview.refactored}/>
