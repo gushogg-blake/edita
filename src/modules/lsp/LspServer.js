@@ -9,7 +9,11 @@ class LspServer extends Evented {
 	}
 	
 	async start() {
-		this.serverCapabilities = await this.backend.start(this.options);
+		let {error, result} = await this.backend.start(this.options);
+		
+		this.serverCapabilities = result;
+		
+		return {error, result};
 	}
 	
 	request(method, params) {

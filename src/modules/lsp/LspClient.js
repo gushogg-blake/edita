@@ -4,6 +4,7 @@ let URL = require("modules/URL");
 let normaliseLangCode = require("modules/lsp/utils/normaliseLangCode");
 let cursorToLspPosition = require("modules/lsp/utils/cursorToLspPosition");
 let maskOtherRegions = require("modules/lsp/utils/maskOtherRegions");
+let LspError = require("modules/lsp/LspError");
 
 class LspClient extends Evented {
 	constructor() {
@@ -26,12 +27,23 @@ class LspClient extends Evented {
 			workspaceFolders: this.dirs,
 		});
 		
-		server.start().catch((e) => {
+		let markUnavailable = () => {
 			delete this.servers[langCode];
 			
 			this.unavailableLangCodes.add(langCode);
-			
+		}
+		
+		server.start().then(({error}) => {
+			if (error) {
+				console.log("Error starting server for " + langCode);
+				console.log(error);
+				
+				markUnavailable();
+			}
+		}, (e) => {
 			console.error(e);
+			
+			markUnavailable();
 		});
 		
 		server.on("notification", this.onNotification.bind(this, server));
@@ -44,7 +56,7 @@ class LspClient extends Evented {
 		langCode = normaliseLangCode(langCode);
 		
 		if (!platform.lsp || this.unavailableLangCodes.has(langCode)) {
-			return null;
+			throw new LspError("Language " + langCode + " unavailable");
 		}
 		
 		if (!this.servers[langCode]) {
@@ -88,13 +100,20 @@ class LspClient extends Evented {
 		try {
 			let server = this.getServer(lang.code);
 			
-			let result = await server.request("textDocument/completion", {
+			let {error, result} = await server.request("textDocument/completion", {
 				textDocument: {
 					uri,
 				},
 				
 				position: cursorToLspPosition(cursor),
 			});
+			
+			if (error) {
+				console.log("Error fetching completions for lang " + lang.code);
+				console.log(error);
+				
+				return [];
+			}
 			
 			let {items, isIncomplete} = result;
 			
@@ -104,7 +123,11 @@ class LspClient extends Evented {
 			
 			return completions;
 		} catch (e) {
-			console.error(e);
+			if (e instanceof LspError) {
+				console.log(e);
+			} else {
+				console.error(e);
+			}
 			
 			return [];
 		}

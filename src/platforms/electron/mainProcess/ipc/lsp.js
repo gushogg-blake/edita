@@ -8,6 +8,14 @@ module.exports = function(app) {
 		return !!config.perLang[langCode];
 	}
 	
+	function success(result) {
+		return {result};
+	}
+	
+	function langNotSupported(langCode) {
+		return {error: "Language " + langCode + " not supported"};
+	}
+	
 	let servers = {};
 	
 	function sendNotification(key, notification) {
@@ -28,7 +36,7 @@ module.exports = function(app) {
 	
 	function bufferedCall(key, langCode, fn) {
 		if (!langIsSupported(langCode)) {
-			throw new Error("Language " + langCode + " not supported");
+			return langNotSupported(langCode);
 		}
 		
 		return new Promise(function(resolve, reject) {
@@ -42,7 +50,7 @@ module.exports = function(app) {
 				started = true;
 				
 				try {
-					resolve(await fn(server));
+					resolve(success(await fn(server)));
 				} catch (e) {
 					reject(e);
 				}
@@ -75,7 +83,9 @@ module.exports = function(app) {
 	return {
 		async start(e, key, langCode, initializeParams) {
 			if (!langIsSupported(langCode)) {
-				throw new Error("Language " + langCode + " not supported");
+				return {
+					error: "Language " + langCode + " not supported",
+				};
 			}
 			
 			if (servers[key]) {
@@ -92,7 +102,7 @@ module.exports = function(app) {
 			
 			await server.start();
 			
-			return server.serverCapabilities;
+			return success(server.serverCapabilities);
 		},
 		
 		request(e, key, langCode, method, params) {
