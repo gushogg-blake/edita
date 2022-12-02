@@ -2,16 +2,16 @@
 import {onMount, getContext} from "svelte";
 import TabBar from "components/TabBar.svelte";
 import FindResults from "components/FindResults.svelte";
-import Clippings from "components/Clippings.svelte";
+import RefactorTab from "./RefactorTab.svelte";
 
 let app = getContext("app");
 
-let {bottomPane} = app;
+let {tools} = app;
 
 let {
 	tabs,
 	selectedTab,
-} = bottomPane;
+} = tools;
 
 function getDetails(tabs, tab) {
 	return {
@@ -21,21 +21,21 @@ function getDetails(tabs, tab) {
 }
 
 function select({detail: tab}) {
-	bottomPane.selectTab(tab);
+	tools.selectTab(tab);
 }
 
 function updateTabs() {
-	tabs = bottomPane.tabs;
+	tabs = tools.tabs;
 }
 
 function onSelectTab() {
-	selectedTab = bottomPane.selectedTab;
+	selectedTab = tools.selectedTab;
 }
 
 onMount(function() {
 	let teardown = [
-		bottomPane.on("updateTabs", updateTabs),
-		bottomPane.on("selectTab", onSelectTab),
+		tools.on("updateTabs", updateTabs),
+		tools.on("selectTab", onSelectTab),
 	];
 	
 	return function() {
@@ -56,9 +56,20 @@ onMount(function() {
 	height: 100%;
 }
 
-.content {
-	width: 100%;
-	height: 100%;
+#content {
+	position: relative;
+}
+
+.tab {
+	@include abs-sticky;
+	
+	z-index: -1;
+	background: var(--appBackground);
+	contain: strict;
+	
+	&.selected {
+		z-index: auto;
+	}
 }
 </style>
 
@@ -72,17 +83,10 @@ onMount(function() {
 		/>
 	</div>
 	<div id="content">
-		<div class="content" class:hide={selectedTab.id !== "findResults"}>
-			<FindResults/>
-		</div>
-		<div class="content" class:hide={selectedTab.id !== "clippings"}>
-			<Clippings/>
-		</div>
-		<div class="content" class:hide={selectedTab.id !== "log"}>
-			Log
-		</div>
-		<div class="content" class:hide={selectedTab.id !== "commandLine"}>
-			Command line
-		</div>
+		{#each tabs as tab (tab)}
+			<div class="tab" class:selected={tab === selectedTab}>
+				<svelte:component this={tabComponents[tab.type]} {tab}/>
+			</div>
+		{/each}
 	</div>
 </div>

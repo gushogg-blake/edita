@@ -71,7 +71,7 @@ onMount(function() {
 #editors {
 	display: grid;
 	grid-template-rows: auto 1fr auto 1fr;
-	border-top: var(--appBorder);
+	//border-top: var(--appBorder);
 }
 
 .headers, .editors {
@@ -80,9 +80,7 @@ onMount(function() {
 }
 
 .headers {
-	&:not(:first-child) {
-		border-top: var(--appBorder);
-	}
+	border-top: var(--appBorder);
 	
 	> div {
 		padding: 3px 5px;
@@ -128,7 +126,12 @@ onMount(function() {
 		</div>
 		<div class="editors">
 			<div>
-				<Editor bind:this={matchEditor} bind:value={formOptions.match}/>
+				<Editor
+					bind:this={matchEditor}
+					bind:value={formOptions.match}
+					wrap
+					noMargin
+				/>
 			</div>
 			<div>
 				<Editor bind:this={matchedEditor} bind:value={preview.matched}/>
@@ -144,7 +147,12 @@ onMount(function() {
 		</div>
 		<div class="editors">
 			<div>
-				<Editor bind:this={replaceWithEditor} bind:value={formOptions.replaceWith}/>
+				<Editor
+					bind:this={replaceWithEditor}
+					bind:value={formOptions.replaceWith}
+					wrap
+					noMargin
+				/>
 			</div>
 			<div>
 				<Editor bind:this={refactoredEditor} bind:value={preview.refactored}/>

@@ -1,0 +1,55 @@
+let URL = require("modules/URL");
+let Tab = require("./Tab");
+
+class ClippingsTab extends Tab {
+	constructor(app, editor) {
+		super(app, "clippings");
+		
+		this.editor = editor;
+		this._url = new URL("special://clippings");
+		
+		this.teardownCallbacks = [
+		];
+	}
+	
+	async init() {
+		
+	}
+	
+	get url() {
+		return this._url;
+	}
+	
+	get document() {
+		return this.editor.document;
+	}
+	
+	get url() {
+		return this.document.url;
+	}
+	
+	get view() {
+		return this.editor.view;
+	}
+	
+	focus() {
+		this.view.requestFocus();
+	}
+	
+	show() {
+		this.view.show();
+	}
+	
+	hide() {
+		this.view.hide();
+	}
+	
+	addClipping(str) {
+		let {editor, document} = this;
+		let {newline} = document.fileDetails;
+		
+		editor.api.edit(document.cursorAtStart(), str + newline + newline);
+	}
+}
+
+module.exports = ClippingsTab;

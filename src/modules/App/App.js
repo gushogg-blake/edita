@@ -16,11 +16,10 @@ let Refactor = require("modules/Refactor");
 let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let EditorTab = require("./EditorTab");
-let RefactorTab = require("./RefactorTab");
 let Projects = require("./Projects");
 let FileTree = require("./FileTree");
 let Pane = require("./Pane");
-let BottomPane = require("./BottomPane");
+let Tools = require("./Tools");
 let FindAndReplace = require("./FindAndReplace");
 let openDialogWindow = require("./openDialogWindow");
 let functions = require("./functions");
@@ -33,10 +32,10 @@ class App extends Evented {
 		this.panes = {
 			left: new Pane("left"),
 			right: new Pane("right"),
-			bottom: new BottomPane(this),
+			bottom: new Pane("bottom"),
 		};
 		
-		this.bottomPane = this.panes.bottom;
+		this.tools = new Tools(this);
 		
 		this.fileTree = new FileTree(this);
 		
@@ -147,7 +146,7 @@ class App extends Evented {
 		this.updateTitle();
 		
 		if (tab.isEditor) {
-			this.bottomPane.clippingsEditor.setLang(tab.editor.document.lang);
+			this.tools.clippingsEditor.setLang(tab.editor.document.lang);
 		}
 		
 		this.fire("selectTab", tab);
@@ -415,7 +414,7 @@ class App extends Evented {
 		let tab = new EditorTab(this, editor);
 		
 		editor.on("cut copy", (str) => {
-			this.bottomPane.addClipping(str);
+			this.tools.clippingsTab.addClipping(str);
 		});
 		
 		await tab.init();

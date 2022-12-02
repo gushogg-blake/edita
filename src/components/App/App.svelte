@@ -188,9 +188,6 @@ onMount(function() {
 
 #editor {
 	position: relative;
-	display: grid;
-	grid-template-rows: 1fr auto;
-	grid-template-columns: 1fr;
 	grid-area: editor;
 	min-width: 0;
 }
@@ -199,9 +196,6 @@ onMount(function() {
 	@include abs-sticky;
 	
 	z-index: -1;
-	display: grid;
-	grid-template-rows: 1fr;
-	grid-template-columns: 1fr;
 	background: var(--appBackground);
 	contain: strict;
 	
