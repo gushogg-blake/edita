@@ -8,9 +8,12 @@ let theme = {
 		fontFamily: "\"Noto Sans\", \"Segoe UI\", \"Helvetica Neue\", sans-serif",
 		fontSize: "12.5px",
 		
-		appBorder: "1px solid #606060",
-		appBorderLight: "1px solid #606060",
-		appBorderMedium: "1px solid #606060",
+		appBorderColor: "#606060",
+		appBorderColorLight: "#606060",
+		appBorderColorMedium: "#606060",
+		appBorder: "1px solid var(--appBorderColor)",
+		appBorderLight: "1px solid var(--appBorderColorLight)",
+		appBorderMedium: "1px solid var(--appBorderColorMedium)",
 		appBackground: "#303030",
 		
 		buttonColor: "#ffffffee",

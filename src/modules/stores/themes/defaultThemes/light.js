@@ -8,9 +8,12 @@ let theme = {
 		fontSize: "12.5px",
 		color: "#444444",
 		
-		appBorder: "1px solid #c5c3c1",
-		appBorderLight: "1px solid #d5d3d0",
-		appBorderMedium: "1px solid #d5d3d0",
+		appBorderColor: "#c5c3c1",
+		appBorderColorLight: "#d5d3d0",
+		appBorderColorMedium: "#d5d3d0",
+		appBorder: "1px solid var(--appBorderColor)",
+		appBorderLight: "1px solid var(--appBorderColorLight)",
+		appBorderMedium: "1px solid var(--appBorderColorMedium)",
 		appBackground: "#edecea",
 		
 		buttonColor: "#333333",
