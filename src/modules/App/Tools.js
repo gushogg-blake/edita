@@ -40,7 +40,7 @@ class Tools extends Evented {
 	async refactor(paths) {
 		let tab = await this.createRefactorTab(paths);
 		
-		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
+		this.tabs.push(tab);
 		
 		this.fire("updateTabs");
 		

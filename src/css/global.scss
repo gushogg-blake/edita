@@ -39,7 +39,7 @@
 		color: var(--buttonColor);
 		border: var(--buttonBorder);
 		border-radius: 3px;
-		padding: .3em .7em;
+		padding: var(--buttonPaddingY, .3em) var(--buttonPaddingX, .7em);
 		outline: none;
 		background: var(--buttonBackground);
 		

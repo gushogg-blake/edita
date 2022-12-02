@@ -64,6 +64,10 @@ onMount(function() {
 	height: 100%;
 }
 
+#tabBar {
+	--buttonPaddingY: 0;
+}
+
 #content {
 	position: relative;
 }
