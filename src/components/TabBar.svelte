@@ -36,7 +36,7 @@ function closeTab(tab) {
 }
 
 function auxclickTab(e, tab) {
-	if (e.button === 1) {
+	if (e.button === 1 && tab.closeable) {
 		closeTab(tab);
 	}
 }
@@ -160,8 +160,9 @@ onMount(function() {
 	
 	display: inline-flex;
 	align-items: center;
+	min-height: var(--tabHeight, 30px);
 	border-radius: $radius $radius 0 0;
-	padding: 6px 12px;
+	padding: 0 12px;
 	background: var(--tabBackground);
 	
 	&.isSelected {

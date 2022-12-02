@@ -1,4 +1,5 @@
 let Evented = require("utils/Evented");
+let {removeInPlace} = require("utils/arrayMethods");
 let Refactor = require("modules/Refactor");
 let FindResults = require("./FindResults");
 let FindResultsTab = require("./FindResultsTab");
@@ -21,6 +22,8 @@ class Tools extends Evented {
 			this.findResultsTab,
 			this.clippingsTab,
 		];
+		
+		this.previouslySelectedTabs = [];
 		
 		this.selectedTab = this.findResultsTab;
 	}
@@ -58,6 +61,10 @@ class Tools extends Evented {
 	}
 	
 	selectTab(tab) {
+		if (this.selectedTab) {
+			this.addToPreviouslySelectedTabs(this.selectedTab);
+		}
+		
 		this.selectedTab?.hide();
 		
 		this.selectedTab = tab;
@@ -67,6 +74,54 @@ class Tools extends Evented {
 		this.fire("selectTab");
 		
 		this.focusSelectedTabAsync();
+	}
+	
+	addToPreviouslySelectedTabs(tab) {
+		removeInPlace(this.previouslySelectedTabs, tab);
+		
+		this.previouslySelectedTabs.push(tab);
+		
+		if (this.previouslySelectedTabs.length > 10) {
+			this.previouslySelectedTabs.shift();
+		}
+	}
+	
+	closeTab(tab) {
+		let selectNext = null;
+		
+		if (this.selectedTab === tab) {
+			this.selectedTab = null;
+			
+			let prevSelected = this.previouslySelectedTabs.pop();
+			
+			if (prevSelected) {
+				selectNext = prevSelected;
+			} else {
+				let index = this.tabs.indexOf(tab);
+				
+				if (index > 0) {
+					selectNext = this.tabs[index - 1];
+				} else if (index < this.tabs.length - 1) {
+					selectNext = this.tabs[index + 1];
+				}
+			}
+		}
+		
+		tab.teardown();
+		
+		removeInPlace(this.tabs, tab);
+		removeInPlace(this.previouslySelectedTabs, tab);
+		
+		if (tab.isSaved && !noSave) {
+			this.closedTabs.unshift(tab.saveState());
+		}
+		
+		if (selectNext) {
+			this.selectTab(selectNext);
+		}
+		
+		this.fire("updateTabs");
+		this.fire("tabClosed", tab);
 	}
 	
 	showFindResults(action, options, results) {

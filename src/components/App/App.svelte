@@ -183,6 +183,8 @@ onMount(function() {
 }
 
 #tabBar {
+	--tabHeight: 35px;
+	
 	//border-bottom: var(--appBorderLight);
 }
 

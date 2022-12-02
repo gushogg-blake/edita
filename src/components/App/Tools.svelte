@@ -92,6 +92,7 @@ onMount(function() {
 			{selectedTab}
 			{getDetails}
 			on:select={select}
+			on:close={({detail: tab}) => tools.closeTab(tab)}
 		/>
 	</div>
 	<div id="content">
