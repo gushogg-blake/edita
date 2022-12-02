@@ -14,7 +14,7 @@ import EditorTab from "./EditorTab.svelte";
 import RefactorTab from "./RefactorTab.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
-import BottomPane from "./BottomPane.svelte";
+import Tools from "./Tools.svelte";
 import ResizeHandle from "./ResizeHandle.svelte";
 import FindBar from "./FindBar.svelte";
 import FindAndReplace from "./FindAndReplace.svelte";
@@ -36,7 +36,7 @@ let {
 
 let tabComponents = {
 	editor: EditorTab,
-	refactor: RefactorTab,
+	//refactor: RefactorTab,
 };
 
 let showingFindBar = false;
@@ -321,7 +321,7 @@ onMount(function() {
 			style={inlineStyle(paneStyle.bottom)}
 		>
 			<div id="bottomPane">
-				<BottomPane/>
+				<Tools/>
 			</div>
 			<ResizeHandle
 				position="top"

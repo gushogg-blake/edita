@@ -4,9 +4,9 @@ import replaceHomeDirWithTilde from "utils/replaceHomeDirWithTilde";
 import inlineStyle from "utils/dom/inlineStyle";
 import Spacer from "components/utils/Spacer.svelte";
 
-let app = getContext("app");
+export let findResults;
 
-let {findResults} = app.bottomPane;
+let app = getContext("app");
 
 let {
 	index,

@@ -179,7 +179,7 @@ class FindAndReplace extends Evented {
 		let results = await this[getMethod(action, options)](options);
 		
 		if (results.length > 0 && shouldShowResults(action, options)) {
-			this.app.bottomPane.showFindResults(action, options, results);
+			this.app.tools.showFindResults(action, options, results);
 		}
 		
 		await this.addOptionsToHistory(options);

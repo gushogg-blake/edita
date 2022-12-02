@@ -1,8 +1,9 @@
 <script>
 import {onMount, getContext} from "svelte";
 import TabBar from "components/TabBar.svelte";
-import FindResults from "components/FindResults.svelte";
+import FindResultsTab from "./FindResultsTab.svelte";
 import RefactorTab from "./RefactorTab.svelte";
+import ClippingsTab from "./ClippingsTab.svelte";
 
 let app = getContext("app");
 
@@ -13,10 +14,16 @@ let {
 	selectedTab,
 } = tools;
 
+let tabComponents = {
+	findResults: FindResultsTab,
+	clippings: ClippingsTab,
+	refactor: RefactorTab,
+};
+
 function getDetails(tabs, tab) {
 	return {
-		label: tab.label,
-		closeable: false,
+		label: tab.name,
+		closeable: tab.closeable,
 	};
 }
 
@@ -48,6 +55,7 @@ onMount(function() {
 
 <style lang="scss">
 @import "classes/hide";
+@import "mixins/abs-sticky";
 
 #main {
 	display: grid;

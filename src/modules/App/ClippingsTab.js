@@ -6,14 +6,18 @@ class ClippingsTab extends Tab {
 		super(app, "clippings");
 		
 		this.editor = editor;
+		
 		this._url = new URL("special://clippings");
 		
-		this.teardownCallbacks = [
-		];
+		this.view.setWrap(true);
 	}
 	
-	async init() {
-		
+	get closeable() {
+		return false;
+	}
+	
+	get name() {
+		return "Clippings";
 	}
 	
 	get url() {
@@ -22,10 +26,6 @@ class ClippingsTab extends Tab {
 	
 	get document() {
 		return this.editor.document;
-	}
-	
-	get url() {
-		return this.document.url;
 	}
 	
 	get view() {

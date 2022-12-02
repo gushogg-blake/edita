@@ -39,6 +39,10 @@ class Tab extends Evented {
 		return false;
 	}
 	
+	get closeable() {
+		return true;
+	}
+	
 	focus() {
 	}
 	
@@ -56,8 +60,10 @@ class Tab extends Evented {
 	}
 	
 	teardown() {
-		for (let fn of this.teardownCallbacks) {
-			fn();
+		if (this.teardownCallbacks) {
+			for (let fn of this.teardownCallbacks) {
+				fn();
+			}
 		}
 	}
 }

@@ -12,12 +12,16 @@ class RefactorTab extends Tab {
 		];
 	}
 	
-	get url() {
-		return this._url;
-	}
-	
 	async init() {
 		
+	}
+	
+	get name() {
+		return "Refactor";
+	}
+	
+	get url() {
+		return this._url;
 	}
 }
 

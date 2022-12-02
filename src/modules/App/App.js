@@ -466,20 +466,8 @@ class App extends Evented {
 		return this._createEditor(document, view);
 	}
 	
-	async createRefactorTab(paths) {
-		let refactor = new Refactor({
-			paths,
-		});
-		
-		let tab = new RefactorTab(this, refactor);
-		
-		await tab.init();
-		
-		tab.on("focus", this.onTabFocus.bind(this));
-		
-		this.fire("tabCreated", tab);
-		
-		return tab;
+	refactor(...args) {
+		return this.tools.refactor(...args);
 	}
 	
 	findTabByPath(path) {
@@ -594,16 +582,6 @@ class App extends Evented {
 			tabs,
 			selectedTabUrl: this.selectedTab?.url.toString(),
 		});
-	}
-	
-	async refactor(paths) {
-		let tab = await this.createRefactorTab(paths);
-		
-		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
-		
-		this.fire("updateTabs");
-		
-		this.selectTab(tab);
 	}
 	
 	findInFiles(paths) {

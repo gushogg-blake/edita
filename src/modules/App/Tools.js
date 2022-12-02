@@ -1,20 +1,21 @@
 let Evented = require("utils/Evented");
-let mapArrayToObject = require("utils/mapArrayToObject");
-let FindResults = require("modules/app/FindResults");
-let RefactorTab = require("./RefactorTab");
+let Refactor = require("modules/Refactor");
+let FindResults = require("./FindResults");
+let FindResultsTab = require("./FindResultsTab");
 let ClippingsTab = require("./ClippingsTab");
+let RefactorTab = require("./RefactorTab");
 
-class Tools {
+class Tools extends Evented {
 	constructor(app) {
+		super();
+		
 		this.app = app;
 		
 		this.findResults = new FindResults(app);
 		this.clippingsEditor = app.createEditor();
 		
-		this.clippingsEditor.view.setWrap(true);
-		
-		this.findResultsTab = new FindResultsTab(this, this.findResults);
-		this.clippingsTab = new ClippingsTab(this, this.clippingsEditor);
+		this.findResultsTab = new FindResultsTab(app, this.findResults);
+		this.clippingsTab = new ClippingsTab(app, this.clippingsEditor);
 		
 		this.tabs = [
 			this.findResultsTab,
@@ -22,6 +23,28 @@ class Tools {
 		];
 		
 		this.selectedTab = this.findResultsTab;
+	}
+	
+	async createRefactorTab(paths) {
+		let refactor = new Refactor({
+			paths,
+		});
+		
+		let tab = new RefactorTab(this.app, refactor);
+		
+		await tab.init();
+		
+		return tab;
+	}
+	
+	async refactor(paths) {
+		let tab = await this.createRefactorTab(paths);
+		
+		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
+		
+		this.fire("updateTabs");
+		
+		this.selectTab(tab);
 	}
 	
 	focusSelectedTab() {
