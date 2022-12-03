@@ -23,6 +23,18 @@ class RefactorTab extends Tab {
 	get url() {
 		return this._url;
 	}
+	
+	focus() {
+		
+	}
+	
+	show() {
+		this.refactor.show();
+	}
+	
+	hide() {
+		this.refactor.hide();
+	}
 }
 
 module.exports = RefactorTab;

@@ -134,7 +134,7 @@ onMount(function() {
 				/>
 			</div>
 			<div>
-				<Editor bind:this={matchedEditor} bind:value={preview.matched}/>
+				<Editor editor={refactor.editors.matchPreview}/>
 			</div>
 		</div>
 		<div class="headers">
@@ -155,7 +155,7 @@ onMount(function() {
 				/>
 			</div>
 			<div>
-				<Editor bind:this={refactoredEditor} bind:value={preview.refactored}/>
+				<Editor editor={refactor.editors.resultPreview}/>
 			</div>
 		</div>
 	</div>

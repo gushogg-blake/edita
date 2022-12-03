@@ -12,7 +12,6 @@ let protocol = require("modules/protocol");
 let Document = require("modules/Document");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
-let Refactor = require("modules/Refactor");
 let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let EditorTab = require("./EditorTab");

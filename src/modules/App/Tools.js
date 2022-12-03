@@ -1,7 +1,7 @@
 let Evented = require("utils/Evented");
 let {removeInPlace} = require("utils/arrayMethods");
-let Refactor = require("modules/Refactor");
 let Pane = require("./Pane");
+let Refactor = require("./Refactor");
 let FindResults = require("./FindResults");
 let FindResultsTab = require("./FindResultsTab");
 let ClippingsTab = require("./ClippingsTab");
@@ -30,7 +30,7 @@ class Tools extends Pane {
 	}
 	
 	async createRefactorTab(paths) {
-		let refactor = new Refactor({
+		let refactor = new Refactor(app, {
 			paths,
 		});
 		

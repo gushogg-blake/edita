@@ -1,9 +1,9 @@
 let {expect} = require("chai");
 let {is, deep} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
-let parseMatch = require("modules/Refactor/parseMatch");
+let parseMatch = require("modules/refactor/parseMatch");
 
-describe("Refactor", function() {
+describe("refactor", function() {
 	describe("parseMatch", function() {
 		it("plain text only", function() {
 			let code = dedent(`
