@@ -124,49 +124,37 @@ onMount(function() {
 				<AccelLabel for={matchEditor} label="%Match"/>
 			</div>
 			<div>
-				<AccelLabel for={matchedEditor} label="M%atched"/>
+				<label>Matched</label>
 			</div>
 		</div>
 		<div class="editors">
 			<div>
-				<div class="editorLabel">
-					<AccelLabel for={matchEditor} label="%Match"/>
-				</div>
-				<div>
-					<Editor
-						bind:this={matchEditor}
-						editor={refactor.editors.match}
-					/>
-				</div>
+				<Editor
+					bind:this={matchEditor}
+					editor={refactor.editors.match}
+				/>
 			</div>
 			<div>
-				<div class="editorLabel">
-					<label>Matched</label>
-				</div>
-				<div>
-					<Editor editor={refactor.editors.matchPreview}/>
-				</div>
+				<Editor editor={refactor.editors.matchPreview}/>
+			</div>
+		</div>
+		<div class="headers">
+			<div>
+				<AccelLabel for={replaceWithEditor} label="Rep%lace with"/>
+			</div>
+			<div>
+				<label>Preview</label>
 			</div>
 		</div>
 		<div class="editors">
 			<div>
-				<div class="editorLabel">
-					<AccelLabel for={replaceWithEditor} label="Rep%lace with"/>
-				</div>
-				<div>
-					<Editor
-						bind:this={replaceWithEditor}
-						editor={refactor.editors.replaceWith}
-					/>
-				</div>
+				<Editor
+					bind:this={replaceWithEditor}
+					editor={refactor.editors.replaceWith}
+				/>
 			</div>
 			<div>
-				<div class="editorLabel">
-					<label>Preview</label>
-				</div>
-				<div>
-					<Editor editor={refactor.editors.resultPreview}/>
-				</div>
+				<Editor editor={refactor.editors.resultPreview}/>
 			</div>
 		</div>
 	</div>
