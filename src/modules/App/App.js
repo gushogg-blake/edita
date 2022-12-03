@@ -29,13 +29,13 @@ class App extends Evented {
 	constructor() {
 		super();
 		
+		this.tools = new Tools(this, "bottom");
+		
 		this.panes = {
 			left: new Pane("left"),
 			right: new Pane("right"),
-			bottom: new Pane("bottom"),
+			bottom: this.tools,
 		};
-		
-		this.tools = new Tools(this);
 		
 		this.fileTree = new FileTree(this);
 		

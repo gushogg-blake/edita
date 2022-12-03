@@ -117,9 +117,7 @@ class Base extends Evented {
 		this.stores.prefs.on("update", (key, prefs) => this.updatePrefs(prefs));
 		this.stores.themes.on("update", () => this.updateTheme());
 		
-		if (options.prefs) {
-			this.setPrefs(options.prefs);
-		}
+		this.setPrefs(options.prefs);
 		
 		if (options.init) {
 			await options.init();

@@ -1,14 +1,15 @@
 let Evented = require("utils/Evented");
 let {removeInPlace} = require("utils/arrayMethods");
 let Refactor = require("modules/Refactor");
+let Pane = require("./Pane");
 let FindResults = require("./FindResults");
 let FindResultsTab = require("./FindResultsTab");
 let ClippingsTab = require("./ClippingsTab");
 let RefactorTab = require("./RefactorTab");
 
-class Tools extends Evented {
-	constructor(app) {
-		super();
+class Tools extends Pane {
+	constructor(app, panePosition) {
+		super(panePosition);
 		
 		this.app = app;
 		
@@ -46,6 +47,8 @@ class Tools extends Evented {
 		this.tabs.push(tab);
 		
 		this.fire("updateTabs");
+		
+		this.show();
 		
 		this.selectTab(tab);
 	}
@@ -136,9 +139,9 @@ class Tools extends Evented {
 		super.setVisibility(show);
 		
 		if (show) {
-			this.selectTab.show();
+			this.selectedTab.show();
 		} else {
-			this.tabs.forEach(tab => tab.hide);
+			this.tabs.forEach(tab => tab.hide());
 		}
 	}
 }

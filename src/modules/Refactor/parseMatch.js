@@ -109,8 +109,6 @@ function parse(string) {
 		});
 	}
 	
-	console.log(parts);
-	
 	return parts;
 }
 
