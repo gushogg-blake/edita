@@ -1,5 +1,8 @@
 /*
-parse a match description to find the bounds of tree-sitter queries
+parse a match description to separate the literals and the queries
+
+an unescaped ( starts a query and its closing ) closes it -- opening
+brackets in code must be escaped, e.g. fn\()
 */
 
 let states = {
@@ -15,7 +18,7 @@ function parse(string) {
 	
 	let queryStartIndex;
 	let lastQueryEndIndexOrStart = 0;
-	let text = "";
+	let literal = "";
 	
 	let i = 0;
 	let ch;
@@ -24,8 +27,8 @@ function parse(string) {
 		ch = string[i];
 		
 		if (state === states.DEFAULT) {
-			if (ch === "\\" && string[i + 1] === "(") {
-				text += "(";
+			if (ch === "\\") {
+				literal += string[i + 1] || "";
 				
 				i += 2;
 			} else if (ch === "(") {
@@ -33,10 +36,10 @@ function parse(string) {
 				
 				queryStartIndex = i;
 				
-				if (text.length > 0) {
+				if (literal.length > 0) {
 					parts.push({
-						type: "text",
-						string: text,
+						type: "literal",
+						string: literal,
 					});
 				}
 				
@@ -44,7 +47,7 @@ function parse(string) {
 				
 				state = states.IN_QUERY;
 			} else {
-				text += ch;
+				literal += ch;
 				
 				i++;
 			}
@@ -64,7 +67,7 @@ function parse(string) {
 						string: string.substring(queryStartIndex, i),
 					});
 					
-					text = "";
+					literal = "";
 					
 					state = states.DEFAULT;
 				}
@@ -102,10 +105,10 @@ function parse(string) {
 		throw new Error("Unterminated query - expecting closing )");
 	}
 	
-	if (text.length > 0) {
+	if (literal.length > 0) {
 		parts.push({
-			type: "text",
-			string: text,
+			type: "literal",
+			string: literal,
 		});
 	}
 	

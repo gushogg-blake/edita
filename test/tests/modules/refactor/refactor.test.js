@@ -13,7 +13,7 @@ describe("refactor", function() {
 			let parts = parseMatch(code);
 			
 			deep(parts, [{
-				type: "text",
+				type: "literal",
 				string: code,
 			}]);
 		});
@@ -28,7 +28,7 @@ describe("refactor", function() {
 			let parts = parseMatch(code);
 			
 			deep(parts, [{
-				type: "text",
+				type: "literal",
 				string: code.replace("\\(", "("),
 			}]);
 		});
@@ -41,13 +41,13 @@ describe("refactor", function() {
 			let parts = parseMatch(code);
 			
 			deep(parts, [{
-				type: "text",
+				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
 				string: `(function)`,
 			}, {
-				type: "text",
+				type: "literal",
 				string: `;\n`,
 			}]);
 		});
@@ -60,13 +60,13 @@ describe("refactor", function() {
 			let parts = parseMatch(code);
 			
 			deep(parts, [{
-				type: "text",
+				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
 				string: `(function @fn)`,
 			}, {
-				type: "text",
+				type: "literal",
 				string: `;\n`,
 			}]);
 		});
@@ -79,13 +79,13 @@ describe("refactor", function() {
 			let parts = parseMatch(code);
 			
 			deep(parts, [{
-				type: "text",
+				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
 				string: `(function (name))`,
 			}, {
-				type: "text",
+				type: "literal",
 				string: `;\n`,
 			}]);
 		});
@@ -102,13 +102,13 @@ describe("refactor", function() {
 			let parts = parseMatch(code);
 			
 			deep(parts, [{
-				type: "text",
+				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
 				string: `(function\n\t(name)\n\t(body) @body\n\t#match asd\n)`,
 			}, {
-				type: "text",
+				type: "literal",
 				string: `;\n`,
 			}]);
 		});
@@ -125,13 +125,13 @@ describe("refactor", function() {
 			let parts = parseMatch(code);
 			
 			deep(parts, [{
-				type: "text",
+				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
 				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd"\n)`,
 			}, {
-				type: "text",
+				type: "literal",
 				string: `;\n`,
 			}]);
 		});
@@ -148,13 +148,13 @@ describe("refactor", function() {
 			let parts = parseMatch(code);
 			
 			deep(parts, [{
-				type: "text",
+				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
 				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd\\""\n)`,
 			}, {
-				type: "text",
+				type: "literal",
 				string: `;\n`,
 			}]);
 		});
@@ -171,13 +171,13 @@ describe("refactor", function() {
 			let parts = parseMatch(code);
 			
 			deep(parts, [{
-				type: "text",
+				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
 				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd\n)`,
 			}, {
-				type: "text",
+				type: "literal",
 				string: `;\n`,
 			}]);
 		});
@@ -206,19 +206,19 @@ describe("refactor", function() {
 			let parts = parseMatch(code);
 			
 			deep(parts, [{
-				type: "text",
+				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
 				string: `(function)`,
 			}, {
-				type: "text",
+				type: "literal",
 				string: `;\n\nfn(1, 2, `,
 			}, {
 				type: "query",
 				string: `(id)`,
 			}, {
-				type: "text",
+				type: "literal",
 				string: `);\n`,
 			}]);
 		});
