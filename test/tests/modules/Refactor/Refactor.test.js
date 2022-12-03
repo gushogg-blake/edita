@@ -1,3 +1,4 @@
+let {expect} = require("chai");
 let {is, deep} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let parseMatch = require("modules/Refactor/parseMatch");
@@ -9,21 +10,27 @@ describe("Refactor", function() {
 				let asd = 123;
 			`);
 			
-			let queries = parseMatch(code);
+			let parts = parseMatch(code);
 			
-			deep(queries, []);
+			deep(parts, [{
+				type: "text",
+				string: code,
+			}]);
 		});
 		
 		it("escaped brackets", function() {
 			let code = dedent(`
-				function asd\\(\\) {
+				function asd\\() {
 					return 123;
 				}
 			`);
 			
-			let queries = parseMatch(code);
+			let parts = parseMatch(code);
 			
-			deep(queries, []);
+			deep(parts, [{
+				type: "text",
+				string: code.replace("\\(", "("),
+			}]);
 		});
 		
 		it("node", function() {
@@ -31,11 +38,17 @@ describe("Refactor", function() {
 				let asd = (function);
 			`);
 			
-			let queries = parseMatch(code);
+			let parts = parseMatch(code);
 			
-			deep(queries, [{
-				startIndex: 10,
-				endIndex: 20,
+			deep(parts, [{
+				type: "text",
+				string: `let asd = `,
+			}, {
+				type: "query",
+				string: `(function)`,
+			}, {
+				type: "text",
+				string: `;\n`,
 			}]);
 		});
 		
@@ -44,11 +57,17 @@ describe("Refactor", function() {
 				let asd = (function @fn);
 			`);
 			
-			let queries = parseMatch(code);
+			let parts = parseMatch(code);
 			
-			deep(queries, [{
-				startIndex: 10,
-				endIndex: 24,
+			deep(parts, [{
+				type: "text",
+				string: `let asd = `,
+			}, {
+				type: "query",
+				string: `(function @fn)`,
+			}, {
+				type: "text",
+				string: `;\n`,
 			}]);
 		});
 		
@@ -57,11 +76,17 @@ describe("Refactor", function() {
 				let asd = (function (name));
 			`);
 			
-			let queries = parseMatch(code);
+			let parts = parseMatch(code);
 			
-			deep(queries, [{
-				startIndex: 10,
-				endIndex: 27,
+			deep(parts, [{
+				type: "text",
+				string: `let asd = `,
+			}, {
+				type: "query",
+				string: `(function (name))`,
+			}, {
+				type: "text",
+				string: `;\n`,
 			}]);
 		});
 		
@@ -74,11 +99,17 @@ describe("Refactor", function() {
 				);
 			`);
 			
-			let queries = parseMatch(code);
+			let parts = parseMatch(code);
 			
-			deep(queries, [{
-				startIndex: 10,
-				endIndex: 55,
+			deep(parts, [{
+				type: "text",
+				string: `let asd = `,
+			}, {
+				type: "query",
+				string: `(function\n\t(name)\n\t(body) @body\n\t#match asd\n)`,
+			}, {
+				type: "text",
+				string: `;\n`,
 			}]);
 		});
 		
@@ -91,11 +122,17 @@ describe("Refactor", function() {
 				);
 			`);
 			
-			let queries = parseMatch(code);
+			let parts = parseMatch(code);
 			
-			deep(queries, [{
-				startIndex: 10,
-				endIndex: 57,
+			deep(parts, [{
+				type: "text",
+				string: `let asd = `,
+			}, {
+				type: "query",
+				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd"\n)`,
+			}, {
+				type: "text",
+				string: `;\n`,
 			}]);
 		});
 		
@@ -108,11 +145,17 @@ describe("Refactor", function() {
 				);
 			`);
 			
-			let queries = parseMatch(code);
+			let parts = parseMatch(code);
 			
-			deep(queries, [{
-				startIndex: 10,
-				endIndex: 59,
+			deep(parts, [{
+				type: "text",
+				string: `let asd = `,
+			}, {
+				type: "query",
+				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd\\""\n)`,
+			}, {
+				type: "text",
+				string: `;\n`,
 			}]);
 		});
 		
@@ -125,11 +168,17 @@ describe("Refactor", function() {
 				);
 			`);
 			
-			let queries = parseMatch(code);
+			let parts = parseMatch(code);
 			
-			deep(queries, [{
-				startIndex: 10,
-				endIndex: 56,
+			deep(parts, [{
+				type: "text",
+				string: `let asd = `,
+			}, {
+				type: "query",
+				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd\n)`,
+			}, {
+				type: "text",
+				string: `;\n`,
 			}]);
 		});
 		
@@ -142,26 +191,35 @@ describe("Refactor", function() {
 				;
 			`);
 			
-			let queries = parseMatch(code);
-			
-			deep(queries, []);
+			expect(function() {
+				parseMatch(code);
+			}).to.throw();
 		});
 		
 		it("multiple queries", function() {
 			let code = dedent(`
 				let asd = (function);
 				
-				fn\\(1, 2, (id)\\);
+				fn\\(1, 2, (id));
 			`);
 			
-			let queries = parseMatch(code);
+			let parts = parseMatch(code);
 			
-			deep(queries, [{
-				startIndex: 10,
-				endIndex: 20,
+			deep(parts, [{
+				type: "text",
+				string: `let asd = `,
 			}, {
-				startIndex: 33,
-				endIndex: 37,
+				type: "query",
+				string: `(function)`,
+			}, {
+				type: "text",
+				string: `;\n\nfn(1, 2, `,
+			}, {
+				type: "query",
+				string: `(id)`,
+			}, {
+				type: "text",
+				string: `);\n`,
 			}]);
 		});
 	});

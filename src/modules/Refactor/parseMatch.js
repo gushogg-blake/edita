@@ -8,12 +8,15 @@ let states = {
 };
 
 function parse(string) {
-	let queries = [];
+	let parts = [];
 	
 	let state = states.DEFAULT;
 	let openBrackets = 0; // open brackets within a query - if we see ) and this is 1, we've reached the closing )
 	
 	let queryStartIndex;
+	let lastQueryEndIndexOrStart = 0;
+	let text = "";
+	
 	let i = 0;
 	let ch;
 	
@@ -21,17 +24,28 @@ function parse(string) {
 		ch = string[i];
 		
 		if (state === states.DEFAULT) {
-			if (ch === "\\") {
+			if (ch === "\\" && string[i + 1] === "(") {
+				text += "(";
+				
 				i += 2;
 			} else if (ch === "(") {
 				openBrackets++;
 				
 				queryStartIndex = i;
 				
+				if (text.length > 0) {
+					parts.push({
+						type: "text",
+						string: text,
+					});
+				}
+				
 				i++;
 				
 				state = states.IN_QUERY;
 			} else {
+				text += ch;
+				
 				i++;
 			}
 		} else if (state === states.IN_QUERY) {
@@ -45,10 +59,12 @@ function parse(string) {
 				i++;
 				
 				if (openBrackets === 0) {
-					queries.push({
-						startIndex: queryStartIndex,
-						endIndex: i,
+					parts.push({
+						type: "query",
+						string: string.substring(queryStartIndex, i),
 					});
+					
+					text = "";
 					
 					state = states.DEFAULT;
 				}
@@ -82,7 +98,20 @@ function parse(string) {
 		}
 	}
 	
-	return queries;
+	if (openBrackets > 0) {
+		throw new Error("Unterminated query - expecting closing )");
+	}
+	
+	if (text.length > 0) {
+		parts.push({
+			type: "text",
+			string: text,
+		});
+	}
+	
+	console.log(parts);
+	
+	return parts;
 }
 
 module.exports = parse;
