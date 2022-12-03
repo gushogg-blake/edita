@@ -30,7 +30,6 @@ to guess the language from.
 export let editor = null;
 export let value = ""; // readonly - call setValue to set
 export let lang = null;
-export let wrap = null;
 
 export function setValue(value) {
 	editor.setValue(value);
@@ -73,7 +72,7 @@ let resizeInterval;
 
 let verticalScrollbar;
 let horizontalScrollbar;
-let showingHorizontalScrollbar = wrap !== null ? !wrap : !view.wrap;
+let showingHorizontalScrollbar = !view.wrap;
 
 let windowHasFocus;
 
@@ -117,10 +116,6 @@ let _wheelHandler = wheelHandler(editor, {
 		return editorMode;
 	},
 });
-
-$: if (wrap !== null) {
-	view.setWrap(wrap);
-}
 
 function mousedown({detail}) {
 	let {
