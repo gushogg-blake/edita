@@ -149,7 +149,7 @@ literal]
 
 start at the last matched node in the document, search outwards from it to
 find the smallest sequence that's a complete match, transform it, mark the
-transformed region as done so we don't go into it again, go to next node up
+transformed region so we don't go into it again, go to next node up
 */
 
 function query(code, match) {
