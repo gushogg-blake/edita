@@ -8,9 +8,17 @@ class Refactor extends Evented {
 		this.setOptions(options);
 		
 		this.editors = {
+			match: app.createEditor(),
+			replaceWith: app.createEditor(),
 			matchPreview: app.createEditor(),
 			resultPreview: app.createEditor(),
 		};
+		
+		let {match, replaceWith} = this.editors;
+		
+		for (let editor of [match, replaceWith]) {
+			editor.view.setWrap(true);
+		}
 	}
 	
 	setOptions(options) {

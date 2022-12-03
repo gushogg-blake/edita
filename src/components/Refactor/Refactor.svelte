@@ -55,6 +55,9 @@ onMount(function() {
 
 <style lang="scss">
 #main {
+	--borderColor: var(--appBorderColor);
+	--border: 1px solid var(--borderColor);
+	
 	display: grid;
 	grid-template-rows: auto 1fr;
 	width: 100%;
@@ -80,7 +83,7 @@ onMount(function() {
 }
 
 .headers {
-	border-top: var(--appBorder);
+	//border-top: var(--border);
 	
 	> div {
 		padding: 3px 5px;
@@ -126,36 +129,44 @@ onMount(function() {
 		</div>
 		<div class="editors">
 			<div>
-				<Editor
-					bind:this={matchEditor}
-					bind:value={formOptions.match}
-					wrap
-					noMargin
-				/>
+				<div class="editorLabel">
+					<AccelLabel for={matchEditor} label="%Match"/>
+				</div>
+				<div>
+					<Editor
+						bind:this={matchEditor}
+						editor={refactor.editors.match}
+					/>
+				</div>
 			</div>
 			<div>
-				<Editor editor={refactor.editors.matchPreview}/>
-			</div>
-		</div>
-		<div class="headers">
-			<div>
-				<AccelLabel for={replaceWithEditor} label="Rep%lace with"/>
-			</div>
-			<div>
-				<AccelLabel for={refactoredEditor} label="%Preview"/>
+				<div class="editorLabel">
+					<label>Matched</label>
+				</div>
+				<div>
+					<Editor editor={refactor.editors.matchPreview}/>
+				</div>
 			</div>
 		</div>
 		<div class="editors">
 			<div>
-				<Editor
-					bind:this={replaceWithEditor}
-					bind:value={formOptions.replaceWith}
-					wrap
-					noMargin
-				/>
+				<div class="editorLabel">
+					<AccelLabel for={replaceWithEditor} label="Rep%lace with"/>
+				</div>
+				<div>
+					<Editor
+						bind:this={replaceWithEditor}
+						editor={refactor.editors.replaceWith}
+					/>
+				</div>
 			</div>
 			<div>
-				<Editor editor={refactor.editors.resultPreview}/>
+				<div class="editorLabel">
+					<label>Preview</label>
+				</div>
+				<div>
+					<Editor editor={refactor.editors.resultPreview}/>
+				</div>
 			</div>
 		</div>
 	</div>
