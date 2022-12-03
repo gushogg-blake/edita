@@ -36,13 +36,13 @@ let preview = {
 	refactored: "",
 };
 
-function onOptionsChange() {
+function onOptionsChanged() {
 	
 }
 
 onMount(function() {
 	let teardown = [
-		refactor.on("optionsChanged", onOptionsChange),
+		refactor.on("optionsChanged", onOptionsChanged),
 	];
 	
 	return function() {
@@ -124,7 +124,7 @@ onMount(function() {
 				<AccelLabel for={matchEditor} label="%Match"/>
 			</div>
 			<div>
-				<label>Matched</label>
+				<label>Matches</label>
 			</div>
 		</div>
 		<div class="editors">

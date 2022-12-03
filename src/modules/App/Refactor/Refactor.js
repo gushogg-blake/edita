@@ -1,3 +1,4 @@
+let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 let parseMatch = require("modules/refactor/parseMatch");
 
@@ -19,6 +20,14 @@ class Refactor extends Evented {
 		for (let editor of [match, replaceWith]) {
 			editor.view.setWrap(true);
 		}
+		
+		this.updatePaths();
+	}
+	
+	async updatePaths() {
+		let paths = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
+		
+		console.log(paths);
 	}
 	
 	setOptions(options) {

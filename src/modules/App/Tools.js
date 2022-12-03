@@ -31,7 +31,8 @@ class Tools extends Pane {
 	
 	async createRefactorTab(paths) {
 		let refactor = new Refactor(app, {
-			paths,
+			searchIn: "files",
+			globs: paths.map(path => platform.fs(path).child("**", "*").path),
 		});
 		
 		let tab = new RefactorTab(this.app, refactor);
