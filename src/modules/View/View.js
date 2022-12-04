@@ -30,6 +30,8 @@ class View extends Evented {
 		this.visible = false;
 		this.mounted = false;
 		
+		this.redrawnWhileHidden = false;
+		
 		this.mode = "normal";
 		
 		this.normalSelection = s(c(0, 0));
@@ -710,12 +712,20 @@ class View extends Evented {
 	}
 	
 	redraw() {
-		this.updateCanvas();
-		this.updateScrollbars();
+		if (this.visible) {
+			this.updateCanvas();
+			this.updateScrollbars();
+		} else {
+			this.redrawnWhileHidden = true;
+		}
 	}
 	
 	show() {
 		this.visible = true;
+		
+		if (this.redrawnWhileHidden) {
+			this.redraw();
+		}
 		
 		this.fire("show");
 		
