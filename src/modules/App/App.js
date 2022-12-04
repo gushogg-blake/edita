@@ -18,7 +18,8 @@ let EditorTab = require("./EditorTab");
 let Projects = require("./Projects");
 let FileTree = require("./FileTree");
 let Pane = require("./Pane");
-let Tools = require("./Tools");
+let ToolsPane = require("./ToolsPane");
+let OutputPane = require("./OutputPane");
 let FindAndReplace = require("./FindAndReplace");
 let openDialogWindow = require("./openDialogWindow");
 let functions = require("./functions");
@@ -28,12 +29,14 @@ class App extends Evented {
 	constructor() {
 		super();
 		
-		this.tools = new Tools(this, "bottom");
+		this.toolsPane = new ToolsPane(this);
+		this.outputPane = new OutputPane(this);
 		
 		this.panes = {
 			left: new Pane("left"),
 			right: new Pane("right"),
-			bottom: this.tools,
+			bottom1: new Pane("bottom", this.toolsPane),
+			bottom2: new Pane("bottom", this.outputPane),
 		};
 		
 		this.fileTree = new FileTree(this);
@@ -58,6 +61,7 @@ class App extends Evented {
 			...Object.values(this.panes).map(pane => pane.on("show hide resize", () => this.fire("updatePanes"))),
 			this.on("selectTab", this.onSelectTab.bind(this)),
 			this.on("document.save", this.onDocumentSave.bind(this)),
+			...Object.values(this.panes).map(pane => this.relayEvents(pane, ["update"], "pane.")).flat(),
 		];
 	}
 	

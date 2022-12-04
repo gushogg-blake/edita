@@ -12,12 +12,12 @@ import Toolbar from "./Toolbar.svelte";
 import TabBar from "./TabBar.svelte";
 import EditorTab from "./EditorTab.svelte";
 import RefactorTab from "./RefactorTab.svelte";
+import Pane from "./Pane.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
-import Tools from "./Tools.svelte";
-import ResizeHandle from "./ResizeHandle.svelte";
+import TabPane from "./TabPane.svelte";
+import TabPaneStack from "./TabPaneStack.svelte";
 import FindBar from "./FindBar.svelte";
-import FindAndReplace from "./FindAndReplace.svelte";
 import DevToolbar from "./DevToolbar.svelte";
 
 export let app;
@@ -87,10 +87,6 @@ function onHideFindBar() {
 	showingFindBar = false;
 }
 
-function onUpdatePanes() {
-	({panes} = app);
-}
-
 function onPrefsUpdated() {
 	({prefs} = base);
 }
@@ -103,20 +99,6 @@ function renderDiv(div) {
 	main.appendChild(div);
 }
 
-let paneStyle = {};
-
-$: paneStyle.left = {
-	width: panes.left.size,
-};
-
-$: paneStyle.right = {
-	width: panes.right.size,
-};
-
-$: paneStyle.bottom = {
-	height: panes.bottom.size,
-};
-
 onMount(function() {
 	let teardown = [
 		base.on("prefsUpdated", onPrefsUpdated),
@@ -126,7 +108,6 @@ onMount(function() {
 		app.on("selectTab", onSelectTab),
 		app.on("hideFindBar", onHideFindBar),
 		app.on("showFindBar", onShowFindBar),
-		app.on("updatePanes", onUpdatePanes),
 		app.on("renderDiv", renderDiv),
 	];
 	
@@ -165,15 +146,10 @@ onMount(function() {
 	border-bottom: var(--appBorder);
 }
 
-#leftPaneContainer {
-	position: relative;
+#leftPane {
 	grid-area: left;
 	min-width: 0;
-}
-
-#leftPane {
 	height: 100%;
-	border-right: var(--appBorder);
 	overflow: hidden;
 }
 
@@ -215,29 +191,14 @@ onMount(function() {
 	border-top: var(--appBorder);
 }
 
-#rightPaneContainer {
-	position: relative;
+#rightPane {
 	grid-area: right;
 	min-width: 0;
-}
-
-#rightPane {
 	height: 100%;
-	border-left: var(--appBorder);
 }
 
 #bottom {
 	grid-area: bottom;
-	min-width: 0;
-}
-
-#bottomPaneContainer {
-	position: relative;
-}
-
-#bottomPane {
-	border-top: var(--appBorder);
-	height: 100%;
 }
 
 #devToolbar {
@@ -264,20 +225,10 @@ onMount(function() {
 	<div id="toolbar">
 		<Toolbar/>
 	</div>
-	<div
-		id="leftPaneContainer"
-		class:hide={!panes.left.visible}
-		style={inlineStyle(paneStyle.left)}
-	>
-		<div id="leftPane">
+	<div id="leftPane">
+		<Pane pane={panes.left}>
 			<LeftPane/>
-		</div>
-		<ResizeHandle
-			position="right"
-			getSize={() => panes.left.size}
-			on:resize={({detail: size}) => app.panes.left.resize(size)}
-			on:end={({detail: size}) => app.panes.left.resizeAndSave(size)}
-		/>
+		</Pane>
 	</div>
 	<div id="tabBarContainer">
 		{#if tabs.length > 0}
@@ -300,38 +251,16 @@ onMount(function() {
 			</div>
 		{/if}
 	</div>
-	<div
-		id="rightPaneContainer"
-		class:hide={!panes.right.visible}
-		style={inlineStyle(paneStyle.right)}
-	>
-		<div id="rightPane">
+	<div id="rightPane">
+		<Pane pane{panes.right}>
 			<RightPane/>
-		</div>
-		<ResizeHandle
-			position="left"
-			getSize={() => panes.right.size}
-			on:resize={({detail: size}) => app.panes.right.resize(size)}
-			on:end={({detail: size}) => app.panes.right.resizeAndSave(size)}
-		/>
+		</Pane>
 	</div>
 	<div id="bottom">
-		<FindAndReplace/>
-		<div
-			id="bottomPaneContainer"
-			class:hide={!panes.bottom.visible}
-			style={inlineStyle(paneStyle.bottom)}
-		>
-			<div id="bottomPane">
-				<Tools/>
-			</div>
-			<ResizeHandle
-				position="top"
-				getSize={() => panes.bottom.size}
-				on:resize={({detail: size}) => app.panes.bottom.resize(size)}
-				on:end={({detail: size}) => app.panes.bottom.resizeAndSave(size)}
-			/>
-		</div>
+		<TabPaneStack panes={panes.bottom1, panes.bottom2}>
+			<TabPane pane={panes.bottom1}/>
+			<TabPane pane={panes.bottom2}/>
+		</TabPaneStack>
 		{#if prefs.dev.showToolbar}
 			<div id="devToolbar">
 				<DevToolbar/>

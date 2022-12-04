@@ -1,18 +1,19 @@
 <script>
 import {onMount, getContext} from "svelte";
 import TabBar from "components/TabBar.svelte";
+import Pane from "./Pane";
 import FindResultsTab from "./FindResultsTab.svelte";
 import RefactorTab from "./RefactorTab.svelte";
 import ClippingsTab from "./ClippingsTab.svelte";
 
-let app = getContext("app");
+export let pane;
 
-let {tools} = app;
+let {contents} = pane;
 
 let {
 	tabs,
 	selectedTab,
-} = tools;
+} = contents;
 
 let tabComponents = {
 	findResults: FindResultsTab,
@@ -32,17 +33,17 @@ function select({detail: tab}) {
 }
 
 function updateTabs() {
-	tabs = tools.tabs;
+	({tabs} = contents);
 }
 
 function onSelectTab() {
-	selectedTab = tools.selectedTab;
+	({selectedTab} = contents);
 }
 
 onMount(function() {
 	let teardown = [
-		tools.on("updateTabs", updateTabs),
-		tools.on("selectTab", onSelectTab),
+		contents.on("updateTabs", updateTabs),
+		contents.on("selectTab", onSelectTab),
 	];
 	
 	return function() {
@@ -85,21 +86,23 @@ onMount(function() {
 }
 </style>
 
-<div id="main">
-	<div id="tabBar">
-		<TabBar
-			{tabs}
-			{selectedTab}
-			{getDetails}
-			on:select={select}
-			on:close={({detail: tab}) => tools.closeTab(tab)}
-		/>
+<Pane {pane}>
+	<div id="main">
+		<div id="tabBar">
+			<TabBar
+				{tabs}
+				{selectedTab}
+				{getDetails}
+				on:select={select}
+				on:close={({detail: tab}) => contents.closeTab(tab)}
+			/>
+		</div>
+		<div id="content">
+			{#each tabs as tab (tab)}
+				<div class="tab" class:selected={tab === selectedTab}>
+					<svelte:component this={tabComponents[tab.type]} {tab}/>
+				</div>
+			{/each}
+		</div>
 	</div>
-	<div id="content">
-		{#each tabs as tab (tab)}
-			<div class="tab" class:selected={tab === selectedTab}>
-				<svelte:component this={tabComponents[tab.type]} {tab}/>
-			</div>
-		{/each}
-	</div>
-</div>
+</Pane>

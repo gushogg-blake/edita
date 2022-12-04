@@ -27,7 +27,7 @@ class EditorTab extends Tab {
 			document.on("save", this.onDocumentSave.bind(this)),
 			document.on("urlChanged", this.onDocumentUrlChanged.bind(this)),
 			view.on("wrapChanged", this.onWrapChanged.bind(this)),
-			app.on("updatePanes", this.onAppUpdatePanes.bind(this)),
+			app.on("pane.update", this.onAppPaneUpdate.bind(this)),
 			...this.relayEvents(editor, ["focus", "blur"]),
 		];
 	}
@@ -193,7 +193,7 @@ class EditorTab extends Tab {
 		await this.setPerFilePref("wrap", wrap);
 	}
 	
-	onAppUpdatePanes() {
+	onAppPaneUpdate() {
 		this.view.requestResizeAsync();
 	}
 	

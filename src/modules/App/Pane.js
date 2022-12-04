@@ -1,7 +1,7 @@
 let Evented = require("utils/Evented");
 
 class Pane extends Evented {
-	constructor(position) {
+	constructor(position, contents=null) {
 		super();
 		
 		this.position = position;
@@ -43,6 +43,10 @@ class Pane extends Evented {
 		this.visible = visible;
 		
 		base.setPref("panes." + this.position + ".visible", visible);
+		
+		if (this.contents?.setVisibility) {
+			this.contents.setVisibility(visible);
+		}
 		
 		this.fire(visible ? "show" : "hide");
 	}
