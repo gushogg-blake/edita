@@ -448,6 +448,8 @@ function onWrapChanged() {
 	toggleHorizontalScrollbar(!view.wrap);
 }
 
+let lastMeasurements;
+
 function updateMeasurements() {
 	if (!mounted) {
 		return;
@@ -457,6 +459,10 @@ function updateMeasurements() {
 		fontFamily,
 		fontSize,
 	} = theme.editor;
+	
+	if (lastMeasurements && fontFamily === lastMeasurements.fontFamily && fontSize === lastMeasurements.fontSize) {
+		return;
+	}
 	
 	measurementsDiv.style = inlineStyle({
 		fontFamily,
@@ -469,6 +475,11 @@ function updateMeasurements() {
 		colWidth: measurementsDiv.offsetWidth / measurementsDiv.innerHTML.length,
 		rowHeight: measurementsDiv.offsetHeight + rowHeightPadding,
 	});
+	
+	lastMeasurements = {
+		fontFamily,
+		fontSize,
+	};
 }
 
 function toggleHorizontalScrollbar(show) {
