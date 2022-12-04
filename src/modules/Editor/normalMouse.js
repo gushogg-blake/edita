@@ -25,10 +25,6 @@ module.exports = {
 		view.endBatch();
 	},
 	
-	setSelectionClipboard() {
-		platform.clipboard.writeSelection(this.getSelectedText());
-	},
-	
 	async insertSelectionClipboard(cursor) {
 		let str = await platform.clipboard.readSelection();
 		

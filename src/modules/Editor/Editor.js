@@ -353,6 +353,8 @@ class Editor extends Evented {
 		
 		this.applyHistoryEntry(entry, "before");
 		
+		this.setSelectionClipboard();
+		
 		this.clearBatchState();
 		
 		let {view} = this;
@@ -374,6 +376,8 @@ class Editor extends Evented {
 		}
 		
 		this.applyHistoryEntry(entry, "after");
+		
+		this.setSelectionClipboard();
 		
 		this.clearBatchState();
 		
@@ -513,10 +517,7 @@ class Editor extends Evented {
 	
 	setSelectionFromNormalKeyboard(selection) {
 		this.setNormalSelection(selection);
-		
-		if (Selection.isFull(selection)) {
-			platform.clipboard.writeSelection(this.document.getSelectedText(selection));
-		}
+		this.setSelectionClipboard();
 		
 		this.clearBatchState();
 		this.astMode.clearMultiStepCommand();
@@ -524,6 +525,7 @@ class Editor extends Evented {
 	
 	setSelectionFromNormalMouse(selection) {
 		this.setNormalSelection(selection);
+		this.setSelectionClipboard();
 		this.view.updateSelectionEndCol();
 		
 		this.clearSnippetSession();
@@ -543,6 +545,12 @@ class Editor extends Evented {
 	
 	setAstSelection(selection) {
 		this.view.setAstSelection(selection);
+	}
+	
+	setSelectionClipboard() {
+		if (this.view.Selection.isFull()) {
+			platform.clipboard.writeSelection(this.getSelectedText());
+		}
 	}
 	
 	adjustIndent(adjustment) {

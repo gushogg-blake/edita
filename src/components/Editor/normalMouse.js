@@ -82,7 +82,6 @@ module.exports = function(editor, editorComponent) {
 	
 	function mouseup(e) {
 		if (view.Selection.isFull()) {
-			editor.normalMouse.setSelectionClipboard();
 			editor.normalMouse.finishDrawingSelection();
 		}
 		
