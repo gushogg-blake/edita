@@ -1,10 +1,11 @@
 let Evented = require("utils/Evented");
 
 class Pane extends Evented {
-	constructor(name, contents=null) {
+	constructor(name, position=name) {
 		super();
 		
 		this.name = name;
+		this.position = position;
 		
 		let {
 			size,
@@ -33,7 +34,7 @@ class Pane extends Evented {
 	resize(size) {
 		this.size = size;
 		
-		this.fire("resize");
+		this.fire("update");
 	}
 	
 	resizeAndSave(size) {
@@ -69,7 +70,7 @@ class Pane extends Evented {
 	}
 	
 	uiMounted() {
-		this.fire("uiMounted");
+		this.fire("update");
 	}
 }
 

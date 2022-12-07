@@ -1,5 +1,6 @@
 <script>
 import {onMount, getContext} from "svelte";
+import inlineStyle from "utils/dom/inlineStyle";
 import TabBar from "components/TabBar.svelte";
 import ResizeHandle from "./ResizeHandle.svelte";
 import FindResultsTab from "./FindResultsTab.svelte";
@@ -8,8 +9,7 @@ import ClippingsTab from "./ClippingsTab.svelte";
 
 export let pane;
 
-let {contents} = pane;
-let {tabs, selectedTab} = contents;
+let {tabs, selectedTab} = pane;
 
 /*
 size and visibility are applied with manual dom manip so panes can adjust
@@ -34,21 +34,21 @@ function getDetails(tabs, tab) {
 }
 
 function select({detail: tab}) {
-	contents.selectTab(tab);
+	pane.selectTab(tab);
 }
 
 function updateTabs() {
-	({tabs} = contents);
+	({tabs} = pane);
 }
 
 function onSelectTab() {
-	({selectedTab} = contents);
+	({selectedTab} = pane);
 }
 
-function onUpdatePane() {
+function update() {
 	let {visible, size, paneBelowSize} = pane;
 	
-	inlineStyle.assign(contents, {
+	inlineStyle.assign(contentsDiv, {
 		height: size - paneBelowSize,
 	});
 	
@@ -60,13 +60,15 @@ function onUpdatePane() {
 }
 
 onMount(function() {
+	update();
+	
 	pane.uiMounted();
 	
 	let teardown = [
 		pane.on("requestTotalSize", set => set(main.offsetHeight)),
-		pane.on("update", onUpdatePane),
-		contents.on("updateTabs", updateTabs),
-		contents.on("selectTab", onSelectTab),
+		pane.on("update", update),
+		pane.on("updateTabs", updateTabs),
+		pane.on("selectTab", onSelectTab),
 	];
 	
 	return function() {
@@ -117,7 +119,7 @@ onMount(function() {
 >
 	<ResizeHandle
 		position="top"
-		getSize={() => size}
+		getSize={() => pane.size}
 		on:resize={({detail: size}) => pane.resize(size)}
 		on:end={({detail: size}) => pane.resizeAndSave(size)}
 	/>
@@ -127,7 +129,7 @@ onMount(function() {
 			{selectedTab}
 			{getDetails}
 			on:select={select}
-			on:close={({detail: tab}) => contents.closeTab(tab)}
+			on:close={({detail: tab}) => pane.closeTab(tab)}
 		/>
 	</div>
 	<div bind:this={contentsDiv} id="contents">

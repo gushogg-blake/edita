@@ -86,11 +86,11 @@ class TabPane extends Pane {
 	
 	setVisibility(show) {
 		if (show) {
-			this.selectedTab.show();
+			this.selectedTab?.show();
 		} else {
 			this.tabs.forEach(tab => tab.hide());
 		}
 	}
 }
 
-module.exports = Tools;
+module.exports = TabPane;

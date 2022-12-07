@@ -100,6 +100,20 @@ let migrations = {
 	"14"(prefs) {
 		prefs.dev.openRefactor = false;
 	},
+	
+	"15"(prefs) {
+		delete prefs.panes.bottom;
+		
+		prefs.panes.bottom1 = {
+			visible: false,
+			size: 500,
+		};
+			
+		prefs.panes.bottom2 = {
+			visible: false,
+			size: 240,
+		};	
+	},
 };
 
 module.exports = function() {
@@ -281,7 +295,12 @@ module.exports = function() {
 				size: 150,
 			},
 			
-			bottom: {
+			bottom1: {
+				visible: false,
+				size: 500,
+			},
+			
+			bottom2: {
 				visible: false,
 				size: 240,
 			},

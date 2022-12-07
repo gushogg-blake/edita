@@ -1,4 +1,6 @@
 <script>
+import {onMount} from "svelte";
+import inlineStyle from "utils/dom/inlineStyle";
 import ResizeHandle from "./ResizeHandle.svelte";
 
 export let pane;
