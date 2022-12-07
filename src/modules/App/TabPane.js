@@ -1,57 +1,13 @@
-let Evented = require("utils/Evented");
 let {removeInPlace} = require("utils/arrayMethods");
 let Pane = require("./Pane");
-let Refactor = require("./Refactor");
-let FindResults = require("./FindResults");
-let FindResultsTab = require("./FindResultsTab");
-let ClippingsTab = require("./ClippingsTab");
-let RefactorTab = require("./RefactorTab");
 
-class Tools extends Pane {
-	constructor(app, panePosition) {
-		super(panePosition);
+class TabPane extends Pane {
+	constructor(paneName) {
+		super(paneName);
 		
-		this.app = app;
-		
-		this.findResults = new FindResults(app);
-		this.clippingsEditor = app.createEditor();
-		
-		this.findResultsTab = new FindResultsTab(app, this.findResults);
-		this.clippingsTab = new ClippingsTab(app, this.clippingsEditor);
-		
-		this.tabs = [
-			this.findResultsTab,
-			this.clippingsTab,
-		];
-		
+		this.tabs = [];
+		this.selectedTab = null;
 		this.previouslySelectedTabs = [];
-		
-		this.selectedTab = this.findResultsTab;
-	}
-	
-	async createRefactorTab(paths) {
-		let refactor = new Refactor(app, {
-			searchIn: "files",
-			globs: paths.map(path => platform.fs(path).child("**", "*").path),
-		});
-		
-		let tab = new RefactorTab(this.app, refactor);
-		
-		await tab.init();
-		
-		return tab;
-	}
-	
-	async refactor(paths) {
-		let tab = await this.createRefactorTab(paths);
-		
-		this.tabs.push(tab);
-		
-		this.fire("updateTabs");
-		
-		this.show();
-		
-		this.selectTab(tab);
 	}
 	
 	focusSelectedTab() {
@@ -128,17 +84,7 @@ class Tools extends Pane {
 		this.fire("tabClosed", tab);
 	}
 	
-	showFindResults(action, options, results) {
-		this.findResults.add(action, options, results);
-		
-		this.selectTab(this.findResultsTab);
-		
-		this.show();
-	}
-	
 	setVisibility(show) {
-		super.setVisibility(show);
-		
 		if (show) {
 			this.selectedTab.show();
 		} else {

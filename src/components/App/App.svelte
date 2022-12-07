@@ -16,7 +16,6 @@ import Pane from "./Pane.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
 import TabPane from "./TabPane.svelte";
-import TabPaneStack from "./TabPaneStack.svelte";
 import FindBar from "./FindBar.svelte";
 import DevToolbar from "./DevToolbar.svelte";
 
@@ -252,15 +251,13 @@ onMount(function() {
 		{/if}
 	</div>
 	<div id="rightPane">
-		<Pane pane{panes.right}>
+		<Pane pane={panes.right}>
 			<RightPane/>
 		</Pane>
 	</div>
 	<div id="bottom">
-		<TabPaneStack panes={panes.bottom1, panes.bottom2}>
-			<TabPane pane={panes.bottom1}/>
-			<TabPane pane={panes.bottom2}/>
-		</TabPaneStack>
+		<TabPane pane={panes.bottom1}/>
+		<TabPane pane={panes.bottom2}/>
 		{#if prefs.dev.showToolbar}
 			<div id="devToolbar">
 				<DevToolbar/>

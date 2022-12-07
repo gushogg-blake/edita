@@ -11,6 +11,12 @@ export let pane;
 let {contents} = pane;
 let {tabs, selectedTab} = contents;
 
+/*
+size and visibility are applied with manual dom manip so panes can adjust
+according to below panes without loads of flashing (using reactivity would
+mean waiting for the next tick between updates etc)
+*/
+
 let main;
 let contentsDiv;
 
@@ -27,7 +33,7 @@ function getDetails(tabs, tab) {
 	};
 }
 
-function onSelectTab({detail: tab}) {
+function select({detail: tab}) {
 	contents.selectTab(tab);
 }
 
@@ -40,10 +46,10 @@ function onSelectTab() {
 }
 
 function onUpdatePane() {
-	let {visible, size} = pane;
+	let {visible, size, paneBelowSize} = pane;
 	
 	inlineStyle.assign(contents, {
-		height: size,
+		height: size - paneBelowSize,
 	});
 	
 	main.style = visible ? "" : inlineStyle({
@@ -54,6 +60,8 @@ function onUpdatePane() {
 }
 
 onMount(function() {
+	pane.uiMounted();
+	
 	let teardown = [
 		pane.on("requestTotalSize", set => set(main.offsetHeight)),
 		pane.on("update", onUpdatePane),
