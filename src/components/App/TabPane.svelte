@@ -60,16 +60,17 @@ function update() {
 }
 
 onMount(function() {
-	update();
-	
-	pane.uiMounted();
-	
 	let teardown = [
 		pane.on("requestTotalSize", set => set(main.offsetHeight)),
+		pane.on("requestContentSize", set => set(contentsDiv.offsetHeight)),
 		pane.on("update", update),
 		pane.on("updateTabs", updateTabs),
 		pane.on("selectTab", onSelectTab),
 	];
+	
+	update();
+	
+	pane.uiMounted();
 	
 	return function() {
 		for (let fn of teardown) {
@@ -87,8 +88,6 @@ onMount(function() {
 	position: relative;
 	display: grid;
 	grid-template-rows: auto 1fr;
-	width: 100%;
-	height: 100%;
 	border-top: var(--appBorder);
 }
 
@@ -113,10 +112,7 @@ onMount(function() {
 }
 </style>
 
-<div
-	bind:this={main}
-	id="main"
->
+<div bind:this={main} id="main">
 	<ResizeHandle
 		position="top"
 		getSize={() => pane.size}

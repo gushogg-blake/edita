@@ -20,6 +20,7 @@ let FileTree = require("./FileTree");
 let Pane = require("./Pane");
 let ToolsPane = require("./ToolsPane");
 let OutputPane = require("./OutputPane");
+let BottomPanes = require("./BottomPanes");
 let FindAndReplace = require("./FindAndReplace");
 let openDialogWindow = require("./openDialogWindow");
 let functions = require("./functions");
@@ -29,8 +30,8 @@ class App extends Evented {
 	constructor() {
 		super();
 		
-		this.tools = new ToolsPane(this, "bottom1");
-		this.output = new OutputPane(this, "bottom2");
+		this.tools = new ToolsPane(this, "bottom1", "bottom");
+		this.output = new OutputPane(this, "bottom2", "bottom");
 		
 		this.panes = {
 			left: new Pane("left"),
@@ -39,7 +40,7 @@ class App extends Evented {
 			bottom2: this.output,
 		};
 		
-		this.panes.bottom1.stackAbove(this.panes.bottom2);
+		this.bottomPanes = new BottomPanes(this);
 		
 		this.fileTree = new FileTree(this);
 		

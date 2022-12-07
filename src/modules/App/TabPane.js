@@ -10,6 +10,26 @@ class TabPane extends Pane {
 		this.previouslySelectedTabs = [];
 	}
 	
+	get totalSize() {
+		let {size} = this;
+		
+		this.fire("requestTotalSize", function(s) {
+			size = s;
+		});
+		
+		return size;
+	}
+	
+	get contentSize() {
+		let {size} = this;
+		
+		this.fire("requestContentSize", function(s) {
+			size = s;
+		});
+		
+		return size;
+	}
+	
 	focusSelectedTab() {
 		this.selectedTab?.focus();
 	}
@@ -90,6 +110,10 @@ class TabPane extends Pane {
 		} else {
 			this.tabs.forEach(tab => tab.hide());
 		}
+	}
+	
+	uiMounted() {
+		this.fire("update");
 	}
 }
 

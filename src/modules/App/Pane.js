@@ -17,20 +17,6 @@ class Pane extends Evented {
 		this.stackedAbove = null;
 	}
 	
-	get totalSize() {
-		let {size} = this;
-		
-		this.fire("requestTotalSize", function(s) {
-			size = s;
-		});
-		
-		return size;
-	}
-	
-	get paneBelowSize() {
-		return this.stackedAbove?.totalSize || 0;
-	}
-	
 	resize(size) {
 		this.size = size;
 		
@@ -61,16 +47,6 @@ class Pane extends Evented {
 		base.setPref("panes." + this.name + ".visible", visible);
 		
 		this.fire(visible ? "show" : "hide");
-	}
-	
-	stackAbove(pane) {
-		this.stackedAbove = pane;
-		
-		pane.on("update", () => this.fire("update"));
-	}
-	
-	uiMounted() {
-		this.fire("update");
 	}
 }
 

@@ -44,6 +44,7 @@ onMount(function() {
 <style lang="scss">
 #main {
 	position: relative;
+	height: 100%;
 }
 </style>
 

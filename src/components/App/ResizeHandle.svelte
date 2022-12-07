@@ -1,5 +1,6 @@
 <script>
 import {createEventDispatcher} from "svelte";
+import inlineStyle from "utils/dom/inlineStyle";
 import {on, off} from "utils/dom/domEvents";
 
 export let position;
@@ -7,45 +8,59 @@ export let getSize;
 
 let fire = createEventDispatcher();
 
-let eventKey = {
-	horizontal: "clientX",
-	vertical: "clientY",
-};
+let orientation = position === "left" || position === "right" ? "vertical" : "horizontal";
 
-let reverseKey = {
+let eventKey = {
+	horizontal: "clientY",
+	vertical: "clientX",
+}[orientation];
+
+let dir = {
 	left: -1,
 	right: 1,
 	top: -1,
 	bottom: 1,
-};
+}[position];
 
-let orientation = position === "left" || position === "right" ? "horizontal" : "vertical";
+let cursor = {
+	horizontal: "ns-resize",
+	vertical: "ew-resize",
+}[orientation];
+
 let size;
 let startPoint;
 
 function getDiff(e) {
-	let point = e[eventKey[orientation]];
+	let point = e[eventKey];
 	
-	return (point - startPoint) * reverseKey[position];
+	return (point - startPoint) * dir;
 }
 
-function mousedown(e) {
+function pointerdown(e) {
+	let div = e.target;
+	
+	div.setPointerCapture(e.pointerId);
+	
 	size = getSize();
-	startPoint = e[eventKey[orientation]];
+	startPoint = e[eventKey];
 	
-	on(window, "mousemove", mousemove);
-	on(window, "mouseup", mouseup);
+	on(div, "pointermove", pointermove);
+	on(div, "pointerup", pointerup);
 }
 
-function mousemove(e) {
+function pointermove(e) {
 	fire("resize", size + getDiff(e));
 }
 
-function mouseup(e) {
+function pointerup(e) {
+	let div = e.target;
+	
+	div.releasePointerCapture(e.pointerId);
+	
 	fire("end", size + getDiff(e));
 	
-	off(window, "mousemove", mousemove);
-	off(window, "mouseup", mouseup);
+	off(div, "pointermove", pointermove);
+	off(div, "pointerup", pointerup);
 }
 </script>
 
@@ -59,14 +74,12 @@ function mouseup(e) {
 		top: 0;
 		bottom: 0;
 		width: var(--size);
-		cursor: ew-resize;
 	}
 	
 	&.top, &.bottom {
 		left: 0;
 		right: 0;
 		height: var(--size);
-		cursor: ns-resize;
 	}
 	
 	&.left {
@@ -90,5 +103,6 @@ function mouseup(e) {
 <div
 	id="main"
 	class={position}
-	on:mousedown={mousedown}
+	style={inlineStyle({cursor})}
+	on:pointerdown={pointerdown}
 ></div>
