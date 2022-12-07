@@ -12,9 +12,12 @@ export let pane;
 let {tabs, selectedTab} = pane;
 
 /*
-size and visibility are applied with manual dom manip so panes can adjust
-according to below panes without loads of flashing (using reactivity would
-mean waiting for the next tick between updates etc)
+size and visibility are applied with manual dom manip to make logic
+easier, e.g. being able to query total size immediately after setting
+size
+
+("size" for tab panes is the content size, so that 0 is the "just the
+tab bar" state).
 */
 
 let main;
@@ -46,10 +49,10 @@ function onSelectTab() {
 }
 
 function update() {
-	let {visible, size, paneBelowSize} = pane;
+	let {visible, size} = pane;
 	
 	inlineStyle.assign(contentsDiv, {
-		height: size - paneBelowSize,
+		height: size,
 	});
 	
 	main.style = visible ? "" : inlineStyle({
@@ -62,7 +65,7 @@ function update() {
 onMount(function() {
 	let teardown = [
 		pane.on("requestTotalSize", set => set(main.offsetHeight)),
-		pane.on("requestContentSize", set => set(contentsDiv.offsetHeight)),
+		pane.on("requestContentSize", set => set(contentsDiv.offsetHeight)), //
 		pane.on("update", update),
 		pane.on("updateTabs", updateTabs),
 		pane.on("selectTab", onSelectTab),

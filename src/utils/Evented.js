@@ -40,9 +40,13 @@ module.exports = class {
 			return;
 		}
 		
+		let e = new CustomEvent(event);
+		
 		for (let handler of this._handlers[event]) {
-			handler(...args);
+			handler(...args, e);
 		}
+		
+		return e;
 	}
 	
 	relayEvents(source, events, prefix="", extraArgs=[]) {

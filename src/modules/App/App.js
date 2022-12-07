@@ -17,9 +17,7 @@ let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 let EditorTab = require("./EditorTab");
 let Projects = require("./Projects");
 let FileTree = require("./FileTree");
-let Pane = require("./Pane");
-let ToolsPane = require("./ToolsPane");
-let OutputPane = require("./OutputPane");
+let SidePanes = require("./SidePanes");
 let BottomPanes = require("./BottomPanes");
 let FindAndReplace = require("./FindAndReplace");
 let openDialogWindow = require("./openDialogWindow");
@@ -30,17 +28,18 @@ class App extends Evented {
 	constructor() {
 		super();
 		
-		this.tools = new ToolsPane(this, "bottom1", "bottom");
-		this.output = new OutputPane(this, "bottom2", "bottom");
+		this.bottomPanes = new BottomPanes(this);
+		this.sidePanes = new SidePanes(this);
+		
+		this.tools = this.bottomPanes.tools;
+		this.output = this.bottomPanes.output;
 		
 		this.panes = {
-			left: new Pane("left"),
-			right: new Pane("right"),
+			left: this.sidePanes.left,
+			right: this.sidePanes.right,
 			bottom1: this.tools,
 			bottom2: this.output,
 		};
-		
-		this.bottomPanes = new BottomPanes(this);
 		
 		this.fileTree = new FileTree(this);
 		
@@ -61,7 +60,6 @@ class App extends Evented {
 		this.teardownCallbacks = [
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
-			...Object.values(this.panes).map(pane => pane.on("show hide resize", () => this.fire("updatePanes"))),
 			this.on("selectTab", this.onSelectTab.bind(this)),
 			this.on("document.save", this.onDocumentSave.bind(this)),
 			...Object.values(this.panes).map(pane => this.relayEvents(pane, ["update"], "pane.")).flat(),

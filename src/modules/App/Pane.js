@@ -1,20 +1,12 @@
 let Evented = require("utils/Evented");
 
 class Pane extends Evented {
-	constructor(name, position=name) {
+	constructor(position, size, visible) {
 		super();
 		
-		this.name = name;
 		this.position = position;
-		
-		let {
-			size,
-			visible,
-		} = base.getPref("panes." + name);
-		
 		this.size = size;
 		this.visible = visible;
-		this.stackedAbove = null;
 	}
 	
 	resize(size) {
@@ -26,7 +18,7 @@ class Pane extends Evented {
 	resizeAndSave(size) {
 		this.resize(size);
 		
-		base.setPref("panes." + this.name + ".size", size);
+		this.fire("save");
 	}
 	
 	show() {
@@ -44,8 +36,7 @@ class Pane extends Evented {
 	setVisibility(visible) {
 		this.visible = visible;
 		
-		base.setPref("panes." + this.name + ".visible", visible);
-		
+		this.fire("update");
 		this.fire(visible ? "show" : "hide");
 	}
 }

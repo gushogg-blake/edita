@@ -2,8 +2,10 @@ let {removeInPlace} = require("utils/arrayMethods");
 let Pane = require("./Pane");
 
 class TabPane extends Pane {
-	constructor(paneName) {
-		super(paneName);
+	constructor(name, size, visible, expanded) {
+		super(name, size, visible);
+		
+		this.expanded = expanded;
 		
 		this.tabs = [];
 		this.selectedTab = null;
@@ -102,6 +104,20 @@ class TabPane extends Pane {
 		
 		this.fire("updateTabs");
 		this.fire("tabClosed", tab);
+	}
+	
+	expand() {
+		this.expanded = true;
+		
+		this.fire("update");
+		this.fire("expand");
+	}
+	
+	collapse() {
+		this.expanded = false;
+		
+		this.fire("update");
+		this.fire("collapse");
 	}
 	
 	setVisibility(show) {
