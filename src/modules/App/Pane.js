@@ -15,6 +15,16 @@ class Pane extends Evented {
 		this.visible = visible;
 	}
 	
+	get totalSize() {
+		let {size} = this;
+		
+		this.fire("requestTotalSize", function(s) {
+			size = s;
+		});
+		
+		return size;
+	}
+	
 	resize(size) {
 		this.size = size;
 		

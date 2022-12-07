@@ -1,7 +1,7 @@
 <script>
 import {onMount, getContext} from "svelte";
 import TabBar from "components/TabBar.svelte";
-import Pane from "./Pane";
+import ResizeHandle from "./ResizeHandle.svelte";
 import FindResultsTab from "./FindResultsTab.svelte";
 import RefactorTab from "./RefactorTab.svelte";
 import ClippingsTab from "./ClippingsTab.svelte";
@@ -9,11 +9,10 @@ import ClippingsTab from "./ClippingsTab.svelte";
 export let pane;
 
 let {contents} = pane;
+let {tabs, selectedTab} = contents;
 
-let {
-	tabs,
-	selectedTab,
-} = contents;
+let main;
+let contentsDiv;
 
 let tabComponents = {
 	findResults: FindResultsTab,
@@ -28,8 +27,8 @@ function getDetails(tabs, tab) {
 	};
 }
 
-function select({detail: tab}) {
-	tools.selectTab(tab);
+function onSelectTab({detail: tab}) {
+	contents.selectTab(tab);
 }
 
 function updateTabs() {
@@ -40,8 +39,24 @@ function onSelectTab() {
 	({selectedTab} = contents);
 }
 
+function onUpdatePane() {
+	let {visible, size} = pane;
+	
+	inlineStyle.assign(contents, {
+		height: size,
+	});
+	
+	main.style = visible ? "" : inlineStyle({
+		position: "absolute",
+		left: -9000,
+		top: -9000,
+	});
+}
+
 onMount(function() {
 	let teardown = [
+		pane.on("requestTotalSize", set => set(main.offsetHeight)),
+		pane.on("update", onUpdatePane),
 		contents.on("updateTabs", updateTabs),
 		contents.on("selectTab", onSelectTab),
 	];
@@ -59,17 +74,19 @@ onMount(function() {
 @import "mixins/abs-sticky";
 
 #main {
+	position: relative;
 	display: grid;
 	grid-template-rows: auto 1fr;
 	width: 100%;
 	height: 100%;
+	border-top: var(--appBorder);
 }
 
 #tabBar {
 	--buttonPaddingY: 0;
 }
 
-#content {
+#contents {
 	position: relative;
 }
 
@@ -86,23 +103,30 @@ onMount(function() {
 }
 </style>
 
-<Pane {pane}>
-	<div id="main">
-		<div id="tabBar">
-			<TabBar
-				{tabs}
-				{selectedTab}
-				{getDetails}
-				on:select={select}
-				on:close={({detail: tab}) => contents.closeTab(tab)}
-			/>
-		</div>
-		<div id="content">
-			{#each tabs as tab (tab)}
-				<div class="tab" class:selected={tab === selectedTab}>
-					<svelte:component this={tabComponents[tab.type]} {tab}/>
-				</div>
-			{/each}
-		</div>
+<div
+	bind:this={main}
+	id="main"
+>
+	<ResizeHandle
+		position="top"
+		getSize={() => size}
+		on:resize={({detail: size}) => pane.resize(size)}
+		on:end={({detail: size}) => pane.resizeAndSave(size)}
+	/>
+	<div id="tabBar">
+		<TabBar
+			{tabs}
+			{selectedTab}
+			{getDetails}
+			on:select={select}
+			on:close={({detail: tab}) => contents.closeTab(tab)}
+		/>
 	</div>
-</Pane>
+	<div bind:this={contentsDiv} id="contents">
+		{#each tabs as tab (tab)}
+			<div class="tab" class:selected={tab === selectedTab}>
+				<svelte:component this={tabComponents[tab.type]} {tab}/>
+			</div>
+		{/each}
+	</div>
+</div>
