@@ -18,9 +18,8 @@ let EditorTab = require("./EditorTab");
 let Projects = require("./Projects");
 let FileTree = require("./FileTree");
 let Pane = require("./Pane");
-let PaneStack = require("./PaneStack");
-let Tools = require("./Tools");
-let Output = require("./Output");
+let ToolsPane = require("./ToolsPane");
+let OutputPane = require("./OutputPane");
 let FindAndReplace = require("./FindAndReplace");
 let openDialogWindow = require("./openDialogWindow");
 let functions = require("./functions");
@@ -30,14 +29,14 @@ class App extends Evented {
 	constructor() {
 		super();
 		
-		this.tools = new Tools(this);
-		this.output = new Output(this);
+		this.tools = new ToolsPane(this, "bottom1");
+		this.output = new OutputPane(this, "bottom2");
 		
 		this.panes = {
 			left: new Pane("left"),
 			right: new Pane("right"),
-			bottom1: new Pane("bottom1", this.tools),
-			bottom2: new Pane("bottom2", this.output),
+			bottom1: this.tools,
+			bottom2: this.output,
 		};
 		
 		this.panes.bottom1.stackAbove(this.panes.bottom2);
