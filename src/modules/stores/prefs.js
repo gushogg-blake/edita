@@ -114,6 +114,28 @@ let migrations = {
 			size: 240,
 		};	
 	},
+	
+	"16"(prefs) {
+		delete prefs.panes.bottom1;
+		delete prefs.panes.bottom2;
+		
+		prefs.panes.bottom = {
+			preferredSizes: {
+				totalWithTopExpanded: 500,
+				bottomContentsWithTopCollapsedOrHidden: 200,
+			},
+			
+			top: {
+				visible: true,
+				expanded: false,
+			},
+			
+			bottom: {
+				visible: true,
+				expanded: true,
+			},
+		};
+	},
 };
 
 module.exports = function() {
@@ -295,14 +317,21 @@ module.exports = function() {
 				size: 150,
 			},
 			
-			bottom1: {
-				visible: false,
-				size: 500,
-			},
-			
-			bottom2: {
-				visible: false,
-				size: 240,
+			bottom: {
+				preferredSizes: {
+					totalWithTopExpanded: 500,
+					bottomContentsWithTopCollapsedOrHidden: 200,
+				},
+				
+				top: {
+					visible: true,
+					expanded: false,
+				},
+				
+				bottom: {
+					visible: true,
+					expanded: true,
+				},
 			},
 		},
 		

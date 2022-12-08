@@ -7,6 +7,8 @@ let app = getContext("app");
 let {bottomPanes} = app;
 
 let main;
+let toolsComponent;
+let outputComponent;
 
 function update() {
 	let {bottom1, bottom2} = app.panes;
@@ -51,11 +53,13 @@ onMount(function() {
 
 <div bind:this={main} id="main">
 	<TabPane
+		bind:this={toolsComponent}
 		pane={app.panes.tools}
 		on:resize={onToolsResize}
 		on:resizeEnd={onToolsResizeEnd}
 	/>
 	<TabPane
+		bind:this={outputComponent}
 		pane={app.panes.output}
 		on:resize={onOutputResize}
 		on:resizeEnd={onOutputResizeEnd}

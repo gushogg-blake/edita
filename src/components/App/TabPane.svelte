@@ -9,6 +9,12 @@ import ClippingsTab from "./ClippingsTab.svelte";
 
 export let pane;
 
+function _update() {
+	update();
+}
+
+export {_update as update};
+
 let {tabs, selectedTab} = pane;
 
 /*
@@ -49,10 +55,10 @@ function onSelectTab() {
 }
 
 function update() {
-	let {visible, size} = pane;
+	let {visible, size, expanded} = pane;
 	
 	inlineStyle.assign(contentsDiv, {
-		height: size,
+		height: expanded ? size : 0,
 	});
 	
 	main.style = visible ? "" : inlineStyle({
