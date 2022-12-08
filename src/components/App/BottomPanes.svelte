@@ -39,6 +39,8 @@ onMount(function() {
 		bottomPanes.on("update", update),
 	];
 	
+	bottomPanes.uiMounted();
+	
 	return function() {
 		for (let fn of teardown) {
 			fn();
