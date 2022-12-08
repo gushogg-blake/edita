@@ -7,10 +7,7 @@ class SidePanes {
 	}
 	
 	createPane(side) {
-		let {
-			size,
-			visible,
-		} = base.getPref("panes." + side);
+		let {size, visible} = base.getPref("panes." + side);
 		
 		let pane = new Pane(side, size, visible);
 		

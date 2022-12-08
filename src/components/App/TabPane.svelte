@@ -65,7 +65,7 @@ function update() {
 onMount(function() {
 	let teardown = [
 		pane.on("requestTotalSize", set => set(main.offsetHeight)),
-		pane.on("requestContentSize", set => set(contentsDiv.offsetHeight)), //
+		pane.on("requestContentSize", set => set(contentsDiv.offsetHeight)),
 		pane.on("update", update),
 		pane.on("updateTabs", updateTabs),
 		pane.on("selectTab", onSelectTab),
@@ -118,9 +118,8 @@ onMount(function() {
 <div bind:this={main} id="main">
 	<ResizeHandle
 		position="top"
-		getSize={() => pane.size}
-		on:resize={({detail: size}) => pane.resize(size)}
-		on:end={({detail: size}) => pane.resizeAndSave(size)}
+		on:resize
+		on:resizeEnd
 	/>
 	<div id="tabBar">
 		<TabBar

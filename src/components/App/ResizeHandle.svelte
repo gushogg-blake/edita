@@ -4,7 +4,6 @@ import inlineStyle from "utils/dom/inlineStyle";
 import {on, off} from "utils/dom/domEvents";
 
 export let position;
-export let getSize;
 
 let fire = createEventDispatcher();
 
@@ -27,13 +26,15 @@ let cursor = {
 	vertical: "ew-resize",
 }[orientation];
 
-let size;
 let startPoint;
 
-function getDiff(e) {
+function getDiffAndSetStartPoint(e) {
 	let point = e[eventKey];
+	let diff = (point - startPoint) * dir;
 	
-	return (point - startPoint) * dir;
+	startPoint = point;
+	
+	return diff;
 }
 
 function pointerdown(e) {
@@ -41,7 +42,6 @@ function pointerdown(e) {
 	
 	div.setPointerCapture(e.pointerId);
 	
-	size = getSize();
 	startPoint = e[eventKey];
 	
 	on(div, "pointermove", pointermove);
@@ -49,7 +49,7 @@ function pointerdown(e) {
 }
 
 function pointermove(e) {
-	fire("resize", size + getDiff(e));
+	fire("resize", getDiffAndSetStartPoint(e));
 }
 
 function pointerup(e) {
@@ -57,7 +57,7 @@ function pointerup(e) {
 	
 	div.releasePointerCapture(e.pointerId);
 	
-	fire("end", size + getDiff(e));
+	fire("resizeEnd", getDiffAndSetStartPoint(e));
 	
 	off(div, "pointermove", pointermove);
 	off(div, "pointerup", pointerup);

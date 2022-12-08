@@ -15,7 +15,6 @@ import RefactorTab from "./RefactorTab.svelte";
 import Pane from "./Pane.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
-import TabPane from "./TabPane.svelte";
 import FindBar from "./FindBar.svelte";
 import DevToolbar from "./DevToolbar.svelte";
 
@@ -256,8 +255,7 @@ onMount(function() {
 		</Pane>
 	</div>
 	<div id="bottom">
-		<TabPane pane={panes.bottom1}/>
-		<TabPane pane={panes.bottom2}/>
+		<BottomPanes/>
 		{#if prefs.dev.showToolbar}
 			<div id="devToolbar">
 				<DevToolbar/>

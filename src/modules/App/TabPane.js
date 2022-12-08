@@ -1,10 +1,12 @@
 let {removeInPlace} = require("utils/arrayMethods");
-let Pane = require("./Pane");
+let Evented = require("utils/Evented");
 
-class TabPane extends Pane {
-	constructor(name, size, visible, expanded) {
-		super(name, size, visible);
+class TabPane extends Evented {
+	constructor(size, visible, expanded) {
+		super();
 		
+		this.size = size;
+		this.visible = visible;
 		this.expanded = expanded;
 		
 		this.tabs = [];
@@ -30,6 +32,70 @@ class TabPane extends Pane {
 		});
 		
 		return size;
+	}
+	
+	resize(size) {
+		this.fire("resize", size);
+	}
+	
+	resizeAndSave(size) {
+		this.resize(size);
+		
+		this.fire("save");
+	}
+	
+	show() {
+		this.fire("show");
+	}
+	
+	hide() {
+		this.fire("hide");
+	}
+	
+	toggle() {
+		if (this.visible) {
+			this.hide();
+		} else {
+			this.show();
+		}
+	}
+	
+	setSize(size) {
+		this.size = size;
+		
+		this.fire("update");
+	}
+	
+	expand() {
+		this.expanded = true;
+		
+		this.fire("update");
+	}
+	
+	collapse() {
+		this.expanded = false;
+		
+		this.fire("update");
+	}
+	
+	setVisibility(visible) {
+		this.visible = visible;
+		
+		this.fire("update");
+		
+		if (visible) {
+			this.selectedTab?.show();
+		} else {
+			this.tabs.forEach(tab => tab.hide());
+		}
+	}
+	
+	addTab(tab) {
+		this.tabs.push(tab);
+		
+		this.fire("updateTabs");
+		
+		this.selectTab(tab);
 	}
 	
 	focusSelectedTab() {
@@ -104,28 +170,6 @@ class TabPane extends Pane {
 		
 		this.fire("updateTabs");
 		this.fire("tabClosed", tab);
-	}
-	
-	expand() {
-		this.expanded = true;
-		
-		this.fire("update");
-		this.fire("expand");
-	}
-	
-	collapse() {
-		this.expanded = false;
-		
-		this.fire("update");
-		this.fire("collapse");
-	}
-	
-	setVisibility(show) {
-		if (show) {
-			this.selectedTab?.show();
-		} else {
-			this.tabs.forEach(tab => tab.hide());
-		}
 	}
 	
 	uiMounted() {

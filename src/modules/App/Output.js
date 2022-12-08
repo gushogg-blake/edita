@@ -1,13 +1,11 @@
-let TabPane = require("./TabPane");
 let FindResults = require("./FindResults");
 let FindResultsTab = require("./FindResultsTab");
 let ClippingsTab = require("./ClippingsTab");
 
-class OutputPane extends TabPane {
-	constructor(app, paneName) {
-		super(paneName);
-		
+class Output {
+	constructor(app) {
 		this.app = app;
+		this.pane = app.panes.output;
 		
 		this.findResults = new FindResults(app);
 		this.clippingsEditor = app.createEditor();
@@ -28,8 +26,8 @@ class OutputPane extends TabPane {
 		
 		this.selectTab(this.findResultsTab);
 		
-		this.show();
+		this.app.bottomPanes.showFindResults();
 	}
 }
 
-module.exports = OutputPane;
+module.exports = Output;

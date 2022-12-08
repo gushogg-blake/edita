@@ -1,11 +1,13 @@
-let Evented = require("utils/Evented");
+let TabPane = require("./TabPane");
 
 class BottomPanes {
-	constructor() {
-		super();
+	constructor(app) {
+		this.app = app;
 		
 		this.tools = this.createPane("bottom1");
 		this.output = this.createPane("bottom2");
+		
+		let {totalHeight, topHeight} = base.getPref("panes.bottom");
 	}
 	
 	showFindAndReplace() {
@@ -20,9 +22,8 @@ class BottomPanes {
 	}
 	
 	createPane(name) {
-		let {size, visible, expanded} = base.getPref("panes." + name);
 		
-		let pane = new Pane(name, size, visible, expanded);
+		let pane = new TabPane( size, visible, expanded);
 		
 		pane.on("save", () => {
 			base.setPref("panes." + name + ".size", pane.size);

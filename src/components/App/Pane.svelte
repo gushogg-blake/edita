@@ -56,8 +56,7 @@ onMount(function() {
 	<slot/>
 	<ResizeHandle
 		position={borderAndResizeHandlePosition}
-		getSize={() => size}
-		on:resize={({detail: size}) => pane.resize(size)}
-		on:end={({detail: size}) => pane.resizeAndSave(size)}
+		on:resize={({detail: diff}) => pane.resize(diff)}
+		on:resizeEnd={({detail: diff}) => pane.resizeAndSave(diff)}
 	/>
 </div>

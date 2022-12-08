@@ -9,13 +9,13 @@ class Pane extends Evented {
 		this.visible = visible;
 	}
 	
-	resize(size) {
-		this.size = size;
+	resize(diff) {
+		this.size += diff;
 		
 		this.fire("update");
 	}
 	
-	resizeAndSave(size) {
+	resizeAndSave(diff) {
 		this.resize(size);
 		
 		this.fire("save");

@@ -1,12 +1,10 @@
-let TabPane = require("./TabPane");
 let Refactor = require("./Refactor");
 let RefactorTab = require("./RefactorTab");
 
-class ToolsPane extends TabPane {
-	constructor(app, paneName) {
-		super(paneName);
-		
+class Tools {
+	constructor(app) {
 		this.app = app;
+		this.pane = app.panes.tools;
 	}
 	
 	async createRefactorTab(paths) {
@@ -25,14 +23,10 @@ class ToolsPane extends TabPane {
 	async refactor(paths) {
 		let tab = await this.createRefactorTab(paths);
 		
-		this.tabs.push(tab);
+		this.pane.addTab(tab);
 		
-		this.fire("updateTabs");
-		
-		this.show();
-		
-		this.selectTab(tab);
+		this.app.bottomPanes.showRefactor();
 	}
 }
 
-module.exports = ToolsPane;
+module.exports = Tools;

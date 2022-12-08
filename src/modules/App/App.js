@@ -17,6 +17,8 @@ let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 let EditorTab = require("./EditorTab");
 let Projects = require("./Projects");
 let FileTree = require("./FileTree");
+let Tools = require("./Tools");
+let Output = require("./Output");
 let SidePanes = require("./SidePanes");
 let BottomPanes = require("./BottomPanes");
 let FindAndReplace = require("./FindAndReplace");
@@ -31,15 +33,15 @@ class App extends Evented {
 		this.bottomPanes = new BottomPanes(this);
 		this.sidePanes = new SidePanes(this);
 		
-		this.tools = this.bottomPanes.tools;
-		this.output = this.bottomPanes.output;
-		
 		this.panes = {
 			left: this.sidePanes.left,
 			right: this.sidePanes.right,
-			bottom1: this.tools,
-			bottom2: this.output,
+			tools: this.bottomPanes.tools,
+			output: this.bottomPanes.output,
 		};
+		
+		this.tools = new Tools(this);
+		this.output = new Output(this);
 		
 		this.fileTree = new FileTree(this);
 		
