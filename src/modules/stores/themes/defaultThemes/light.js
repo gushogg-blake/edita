@@ -9,11 +9,11 @@ let theme = {
 		color: "#444444",
 		
 		appBorderColor: "#c5c3c1",
-		appBorderColorLight: "#d5d3d0",
-		appBorderColorMedium: "#d5d3d0",
+		appBorder: "#d5d3d0",
+		appBorderMediumColor: "#d5d3d0",
 		appBorder: "1px solid var(--appBorderColor)",
-		appBorderLight: "1px solid var(--appBorderColorLight)",
-		appBorderMedium: "1px solid var(--appBorderColorMedium)",
+		appBorderLight: "1px solid var(--appBorderLightColor)",
+		appBorderMedium: "1px solid var(--appBorderMediumColor)",
 		appBackground: "#edecea",
 		
 		buttonColor: "#333333",

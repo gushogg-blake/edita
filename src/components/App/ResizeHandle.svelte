@@ -69,6 +69,7 @@ function pointerup(e) {
 	--size: 4px;
 	
 	position: absolute;
+	z-index: 2;
 	
 	&.left, &.right {
 		top: 0;

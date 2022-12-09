@@ -135,6 +135,7 @@ onMount(function() {
 	<div id="tabBar">
 		<TabBar
 			border
+			showBorder={expanded}
 			{tabs}
 			{selectedTab}
 			{getDetails}

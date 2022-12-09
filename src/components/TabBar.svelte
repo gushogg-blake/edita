@@ -5,6 +5,7 @@ import scrollIntoView from "utils/dom/scrollIntoView";
 import Gap from "components/utils/Gap.svelte";
 
 export let border = false;
+export let showBorder = true;
 export let tabs;
 export let selectedTab;
 export let getDetails;
@@ -152,13 +153,13 @@ onMount(function() {
 	overflow-y: hidden;
 	background: var(--appBackground);
 	
-	&.border #border {
+	#border {
 		position: absolute;
 		bottom: 0;
 		left: 0;
 		right: 0;
 		height: 1px;
-		background: var(--appBorderColorMedium);
+		background: var(--appBorderMediumColor);
 	}
 	
 	&::-webkit-scrollbar {
@@ -254,7 +255,9 @@ button {
 			{/if}
 		</div>
 	{/each}
-	<div id="border"></div>
+	{#if border && showBorder}
+		<div id="border"></div>
+	{/if}
 	{#if dropIndex === tabs.length}
 		<div id="dropMarker">
 			<div></div>
