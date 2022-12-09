@@ -51,7 +51,6 @@ class App extends Evented {
 		this.selectedTab = null;
 		this.previouslySelectedTabs = [];
 		this.closedTabs = [];
-		this.lastSelectedSavedUrl = null;
 		
 		this.projects = new Projects(this);
 		
@@ -62,7 +61,6 @@ class App extends Evented {
 		this.teardownCallbacks = [
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
-			this.on("selectTab", this.onSelectTab.bind(this)),
 			this.on("document.save", this.onDocumentSave.bind(this)),
 			...Object.values(this.panes).map(pane => this.relayEvents(pane, ["update"], "pane.")).flat(),
 		];
@@ -85,9 +83,11 @@ class App extends Evented {
 	}
 	
 	getCurrentDir(_default=null) {
-		let lastSelectedPath = this.lastSelectedSavedUrl && platform.fs(this.lastSelectedSavedUrl.path).parent.path;
+		if (this.selectedTab?.isSaved) {
+			return platform.fs(this.selectedTab.path).parent.path;
+		}
 		
-		return lastSelectedPath || this.selectedProject?.dirs[0] || this.fileTree.rootEntry.path || _default;
+		return this.selectedProject?.dirs[0] || this.fileTree.rootEntry.path || _default;
 	}
 	
 	get editorTabs() {
@@ -648,17 +648,7 @@ class App extends Evented {
 		delete this.messageBoxPromise;
 	}
 	
-	onSelectTab(tab) {
-		if (tab.isSaved) {
-			this.lastSelectedSavedUrl = tab.url;
-		}
-	}
-	
 	async onDocumentSave(document) {
-		if (document === this.selectedTab.document) {
-			this.lastSelectedSavedUrl = document.url;
-		}
-		
 		let project = await this.projects.findOrCreateProjectForUrl(document.url);
 		
 		if (project !== document.project) {
