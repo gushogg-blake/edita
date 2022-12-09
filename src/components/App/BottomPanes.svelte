@@ -1,5 +1,6 @@
 <script>
 import {onMount, getContext} from "svelte";
+import inlineStyle from "utils/dom/inlineStyle";
 import TabPane from "./TabPane.svelte";
 
 let app = getContext("app");

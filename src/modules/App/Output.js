@@ -13,12 +13,12 @@ class Output {
 		this.findResultsTab = new FindResultsTab(app, this.findResults);
 		this.clippingsTab = new ClippingsTab(app, this.clippingsEditor);
 		
-		this.tabs = [
+		this.pane.setTabs([
 			this.findResultsTab,
 			this.clippingsTab,
-		];
+		]);
 		
-		this.selectedTab = this.findResultsTab;
+		this.pane.selectTab(this.findResultsTab);
 	}
 	
 	showFindResults(action, options, results) {

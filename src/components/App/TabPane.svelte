@@ -106,6 +106,7 @@ onMount(function() {
 	position: relative;
 	display: grid;
 	grid-template-rows: auto 1fr;
+	flex-shrink: 0;
 	border-top: var(--appBorder);
 }
 

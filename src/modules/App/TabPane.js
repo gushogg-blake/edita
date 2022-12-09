@@ -90,6 +90,16 @@ class TabPane extends Evented {
 		}
 	}
 	
+	setTabs(tabs) {
+		for (let tab of this.tabs) {
+			this.closeTab(tab);
+		}
+		
+		this.tabs = tabs;
+		
+		this.fire("updateTabs");
+	}
+	
 	addTab(tab) {
 		this.tabs.push(tab);
 		
@@ -170,10 +180,6 @@ class TabPane extends Evented {
 		
 		this.fire("updateTabs");
 		this.fire("tabClosed", tab);
-	}
-	
-	uiMounted() {
-		this.fire("update");
 	}
 }
 

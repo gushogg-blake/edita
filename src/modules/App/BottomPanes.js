@@ -54,6 +54,8 @@ class BottomPanes extends Evented {
 		let topSize = bottom.visible && bottom.expanded ? "auto" : "fill";
 		let bottomSize = top.visible && top.expanded ? "fill" : preferredSizes.bottomContentsWithTopCollapsedOrHidden;
 		
+		this.preferredSizes = preferredSizes;
+		
 		this.tools = this.createPane(topSize, top.visible, top.expanded);
 		this.output = this.createPane(bottomSize, bottom.visible, bottom.expanded);
 	}
@@ -77,7 +79,15 @@ class BottomPanes extends Evented {
 		
 	}
 	
+	expandTools() {
+		this.tools.show();
+		this.tools.expand();
+		this.tools.setSize("fill");
+	}
+	
 	showRefactor() {
+		this.expandTools();
+		this.fire("update");
 	}
 	
 	createPane(size, visible, expanded) {
