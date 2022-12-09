@@ -176,7 +176,7 @@ onMount(function() {
 	}
 	
 	&.border.closeable {
-		padding: 0 px 0 12px;
+		padding: 0 6px 0 12px;
 	}
 	
 	&:not(.border).isSelected {
