@@ -37,12 +37,16 @@ class ClippingsTab extends Tab {
 	}
 	
 	show() {
-		this.view.requestResizeAsync();
 		this.view.show();
+		this.resize();
 	}
 	
 	hide() {
 		this.view.hide();
+	}
+	
+	resize() {
+		this.view.requestResizeAsync();
 	}
 	
 	addClipping(str) {

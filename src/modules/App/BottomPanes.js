@@ -62,6 +62,11 @@ class BottomPanes extends Evented {
 		
 		this.tools.on("selectTab", this.onSelectTopPaneTab.bind(this));
 		this.output.on("selectTab", this.onSelectBottomPaneTab.bind(this));
+		
+		this.on("update", () => {
+			this.tools.resize();
+			this.output.resize();
+		});
 	}
 	
 	get containerHeight() {

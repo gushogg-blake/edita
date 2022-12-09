@@ -48,6 +48,9 @@ class Tab extends Evented {
 	hide() {
 	}
 	
+	resize() {
+	}
+	
 	saveState() {
 		return null;
 	}

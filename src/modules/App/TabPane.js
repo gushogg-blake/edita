@@ -18,6 +18,10 @@ class TabPane extends Evented {
 		this.setVisibility(false);
 	}
 	
+	resize() {
+		this.selectedTab?.resize();
+	}
+	
 	setVisibility(visible) {
 		if (visible) {
 			this.selectedTab?.show();

@@ -35,6 +35,10 @@ class RefactorTab extends Tab {
 	hide() {
 		this.refactor.hide();
 	}
+	
+	resize() {
+		this.refactor.resize();
+	}
 }
 
 module.exports = RefactorTab;

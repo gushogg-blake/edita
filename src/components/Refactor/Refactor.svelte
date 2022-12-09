@@ -62,7 +62,6 @@ onMount(function() {
 	grid-template-rows: auto 1fr;
 	width: 100%;
 	height: 100%;
-	background: white;
 }
 
 #controls {
