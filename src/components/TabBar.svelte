@@ -153,15 +153,6 @@ onMount(function() {
 	overflow-y: hidden;
 	background: var(--appBackground);
 	
-	#border {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		height: 1px;
-		background: var(--appBorderMediumColor);
-	}
-	
 	&::-webkit-scrollbar {
 	    display: none;
 	}
@@ -174,13 +165,18 @@ onMount(function() {
 	z-index: 1;
 	display: inline-flex;
 	align-items: center;
+	gap: 10px;
 	min-height: var(--tabHeight, 30px);
 	border-radius: $radius $radius 0 0;
 	padding: 0 12px;
 	background: var(--tabBackground);
 	
+	&.border {
+		gap: 5px;
+	}
+	
 	&.border.closeable {
-		padding: 0 5px 0 12px;
+		padding: 0 px 0 12px;
 	}
 	
 	&:not(.border).isSelected {
@@ -191,6 +187,15 @@ onMount(function() {
 	&.border.isSelected {
 		border-bottom: 2px solid #adaba5;
 	}
+}
+
+#border {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: var(--appBorderMediumColor);
 }
 
 #dropMarker {
@@ -219,7 +224,6 @@ button {
 <div
 	bind:this={main}
 	id="main"
-	class:border
 	on:wheel={wheel}
 	on:dragover={dragover}
 	on:drop={drop}
@@ -248,7 +252,6 @@ button {
 				{getDetails(tabs, tab).label}
 			</div>
 			{#if getDetails(tabs, tab).closeable}
-				<Gap width={10}/>
 				<div class="controls">
 					<button on:click={() => closeTab(tab)}>x</button>
 				</div>
