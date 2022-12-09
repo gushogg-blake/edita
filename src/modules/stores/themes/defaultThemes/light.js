@@ -9,7 +9,7 @@ let theme = {
 		color: "#444444",
 		
 		appBorderColor: "#c5c3c1",
-		appBorder: "#d5d3d0",
+		appBorderLightColor: "#d5d3d0",
 		appBorderMediumColor: "#d5d3d0",
 		appBorder: "1px solid var(--appBorderColor)",
 		appBorderLight: "1px solid var(--appBorderLightColor)",
