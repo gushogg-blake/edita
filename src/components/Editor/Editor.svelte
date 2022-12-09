@@ -538,7 +538,7 @@ onMount(function() {
 	
 	resize();
 	
-	resizeInterval = setInterval(resize, 50);
+	//resizeInterval = setInterval(resize, 50);
 	
 	let teardown = [
 		function() {

@@ -78,7 +78,7 @@ class BottomPanes extends Evented {
 		let topSize;
 		let bottomSize;
 		
-		if (["findAndReplace"].includes(this.tools.selectedTab?.type)) { // TODO tools will always have f/r
+		if (["findAndReplace"].includes(this.tools.selectedTab?.type)) {
 			topSize = "auto";
 		} else {
 			topSize = "fill";
@@ -148,6 +148,12 @@ class BottomPanes extends Evented {
 		this.expandTools();
 		this.setSizes();
 		
+		if (this.top.size === "auto") {
+			this.bottom.expanded = true;
+		} else {
+			this.bottom.expanded = false;
+		}
+		
 		this.fire("update");
 	}
 	
@@ -165,10 +171,6 @@ class BottomPanes extends Evented {
 	}
 	
 	resizeTools(diff) {
-		console.log(diff);
-		console.log(this.containerHeight);
-		console.log(this.bottom.size);
-		console.log(this.top.size);
 		if (this.containerHeight === "auto") {
 			this.preferredSizes.bottomContents += diff;
 			this.bottom.size = this.preferredSizes.bottomContents;

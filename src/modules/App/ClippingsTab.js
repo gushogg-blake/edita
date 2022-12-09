@@ -37,6 +37,7 @@ class ClippingsTab extends Tab {
 	}
 	
 	show() {
+		this.view.requestResizeAsync();
 		this.view.show();
 	}
 	
