@@ -49,7 +49,7 @@ onMount(function() {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
-	background: var(--findResultsBackground);
+	background: var(--outputBackground);
 }
 
 #nav {

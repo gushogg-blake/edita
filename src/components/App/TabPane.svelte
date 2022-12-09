@@ -134,6 +134,7 @@ onMount(function() {
 	/>
 	<div id="tabBar">
 		<TabBar
+			border
 			{tabs}
 			{selectedTab}
 			{getDetails}

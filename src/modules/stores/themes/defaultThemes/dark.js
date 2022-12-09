@@ -48,7 +48,7 @@ let theme = {
 		dirEntryFolderBackground: "#9fcaef",
 		dirEntryFileBackground: "#fbfbfbe8",
 		
-		findResultsBackground: "#505050",
+		outputBackground: "#505050",
 		
 		messageColor: "#ffffff",
 		messageBorder: "1px solid #6b9ddb",

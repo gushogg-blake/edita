@@ -4,6 +4,7 @@ import screenOffsets from "utils/dom/screenOffsets";
 import scrollIntoView from "utils/dom/scrollIntoView";
 import Gap from "components/utils/Gap.svelte";
 
+export let border = false;
 export let tabs;
 export let selectedTab;
 export let getDetails;
@@ -150,6 +151,10 @@ onMount(function() {
 	overflow-y: hidden;
 	background: var(--appBackground);
 	
+	&.border #spacer {
+		border-bottom: var(--appBorderMedium);
+	}
+	
 	&::-webkit-scrollbar {
 	    display: none;
 	}
@@ -165,9 +170,17 @@ onMount(function() {
 	padding: 0 12px;
 	background: var(--tabBackground);
 	
-	&.isSelected {
+	&.border.closeable {
+		padding: 0 5px 0 12px;
+	}
+	
+	&:not(.border).isSelected {
 		//box-shadow: 0 0 3px 0 rgba(0, 0, 0, .2);
 		background: var(--tabSelectedBackground);
+	}
+	
+	&.border.isSelected {
+		border-bottom: 2px solid #adaba5;
 	}
 }
 
@@ -197,6 +210,7 @@ button {
 <div
 	bind:this={main}
 	id="main"
+	class:border
 	on:wheel={wheel}
 	on:dragover={dragover}
 	on:drop={drop}
@@ -209,6 +223,8 @@ button {
 		{/if}
 		<div
 			class="tabButton"
+			class:border
+			class:closeable={getDetails(tabs, tab).closeable}
 			class:isSelected={tabIsSelected(tab, selectedTab)}
 			on:mousedown={(e) => mousedownTab(e, tab)}
 			on:dblclick={(e) => dblclickTab(e, tab)}
@@ -230,6 +246,7 @@ button {
 			{/if}
 		</div>
 	{/each}
+	<div id="spacer"></div>
 	{#if dropIndex === tabs.length}
 		<div id="dropMarker">
 			<div></div>
