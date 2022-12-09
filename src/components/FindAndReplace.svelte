@@ -270,7 +270,7 @@ onMount(function() {
 	display: grid;
 	grid-template-columns: auto 1fr auto;
 	gap: 1em;
-	padding: 8px 12px;
+	padding: 8px 6px;
 }
 
 #historyWrapper {
