@@ -11,10 +11,10 @@ import labelClick from "components/actions/labelClick";
 import Toolbar from "./Toolbar.svelte";
 import TabBar from "./TabBar.svelte";
 import EditorTab from "./EditorTab.svelte";
-import RefactorTab from "./RefactorTab.svelte";
 import Pane from "./Pane.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
+import BottomPanes from "./BottomPanes.svelte";
 import FindBar from "./FindBar.svelte";
 import DevToolbar from "./DevToolbar.svelte";
 
@@ -34,7 +34,6 @@ let {
 
 let tabComponents = {
 	editor: EditorTab,
-	//refactor: RefactorTab,
 };
 
 let showingFindBar = false;

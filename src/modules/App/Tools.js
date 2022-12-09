@@ -8,7 +8,7 @@ class Tools {
 	}
 	
 	async createRefactorTab(paths) {
-		let refactor = new Refactor(app, {
+		let refactor = new Refactor(this.app, {
 			searchIn: "files",
 			globs: paths.map(path => platform.fs(path).child("**", "*").path),
 		});

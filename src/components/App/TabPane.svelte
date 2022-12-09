@@ -55,13 +55,27 @@ function onSelectTab() {
 }
 
 function update() {
-	let {visible, size, expanded} = pane;
+	let {size, visible, expanded} = pane;
 	
-	inlineStyle.assign(contentsDiv, {
-		height: expanded ? size : 0,
+	let height;
+	
+	if (expanded) {
+		if (size === "auto" || size === "fill") {
+			height = "auto";
+		} else {
+			height = size;
+		}
+	} else {
+		height = 0;
+	}
+	
+	contentsDiv.style = inlineStyle({
+		height,
 	});
 	
-	main.style = visible ? "" : inlineStyle({
+	main.style = inlineStyle(visible ? {
+		flexGrow: size === "fill" ? 1 : 0,
+	} : {
 		position: "absolute",
 		left: -9000,
 		top: -9000,
@@ -70,16 +84,11 @@ function update() {
 
 onMount(function() {
 	let teardown = [
-		pane.on("requestTotalSize", set => set(main.offsetHeight)),
-		pane.on("requestContentSize", set => set(contentsDiv.offsetHeight)),
-		pane.on("update", update),
 		pane.on("updateTabs", updateTabs),
 		pane.on("selectTab", onSelectTab),
 	];
 	
 	update();
-	
-	pane.uiMounted();
 	
 	return function() {
 		for (let fn of teardown) {

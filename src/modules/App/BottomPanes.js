@@ -1,3 +1,4 @@
+let Evented = require("utils/Evented");
 let TabPane = require("./TabPane");
 
 /*
@@ -13,21 +14,56 @@ should be a bit higher than it would be if the top pane was visible.
 
 so we still need to store a bottom height, it just will only be used if the
 top pane is collapsed or hidden.
+
+preferredSizes: {
+	totalWithTopExpanded: 500,
+	bottomContentsWithTopCollapsedOrHidden: 200,
+},
+
+top: {
+	visible: true,
+	expanded: false,
+},
+
+bottom: {
+	visible: true,
+	expanded: true,
+},
+
+pane.on("save", () => {
+	base.setPref("panes." + name + ".size", pane.size);
+});
+
+pane.on("show hide expand collapse", () => {
+	base.setPref("panes." + name + ".visible", pane.visible);
+});
 */
 
-class BottomPanes {
+class BottomPanes extends Evented {
 	constructor(app) {
+		super();
+		
 		this.app = app;
 		
 		let {
-			totalHeight,
-			toolsHeight,
-			tools,
-			output,
+			preferredSizes,
+			top,
+			bottom,
 		} = base.getPref("panes.bottom");
 		
-		this.tools = this.createPane(tools);
-		this.output = this.createPane(output);
+		let topSize = bottom.visible && bottom.expanded ? "auto" : "fill";
+		let bottomSize = top.visible && top.expanded ? "fill" : preferredSizes.bottomContentsWithTopCollapsedOrHidden;
+		
+		this.tools = this.createPane(topSize, top.visible, top.expanded);
+		this.output = this.createPane(bottomSize, bottom.visible, bottom.expanded);
+	}
+	
+	get containerHeight() {
+		if (this.tools.visible && this.tools.expanded) {
+			return this.preferredSizes.totalWithTopExpanded;
+		} else {
+			return "auto";
+		}
 	}
 	
 	showFindAndReplace() {
@@ -41,18 +77,31 @@ class BottomPanes {
 		
 	}
 	
-	createPane({) {
+	showRefactor() {
+	}
+	
+	createPane(size, visible, expanded) {
 		let pane = new TabPane(size, visible, expanded);
 		
-		pane.on("save", () => {
-			base.setPref("panes." + name + ".size", pane.size);
-		});
 		
-		pane.on("show hide expand collapse", () => {
-			base.setPref("panes." + name + ".visible", pane.visible);
-		});
 		
 		return pane;
+	}
+	
+	resizeTools(diff) {
+		
+	}
+	
+	resizeAndSaveTools(diff) {
+		
+	}
+	
+	resizeOutput(diff) {
+		
+	}
+	
+	resizeAndSaveOutput(diff) {
+		
 	}
 }
 

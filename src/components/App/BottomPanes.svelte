@@ -5,41 +5,43 @@ import TabPane from "./TabPane.svelte";
 let app = getContext("app");
 
 let {bottomPanes} = app;
+let {tools, output} = bottomPanes;
 
 let main;
 let toolsComponent;
 let outputComponent;
 
 function update() {
-	let {bottom1, bottom2} = app.panes;
+	let {containerHeight} = bottomPanes;
 	
-	inlineStyle.assign(main, {
-		height: 
+	main.style = inlineStyle({
+		height: containerHeight,
 	});
+	
+	toolsComponent.update();
+	outputComponent.update();
 }
 
 function onToolsResize({detail: diff}) {
-	console.log(diff);
+	bottomPanes.resizeTools(diff);
 }
 
 function onToolsResizeEnd({detail: diff}) {
-	console.log(diff);
+	bottomPanes.resizeAndSaveTools(diff);
 }
 
 function onOutputResize({detail: diff}) {
-	console.log(diff);
+	bottomPanes.resizeOutput(diff);
 }
 
 function onOutputResizeEnd({detail: diff}) {
-	console.log(diff);
+	bottomPanes.resizeAndSaveOutput(diff);
 }
 
 onMount(function() {
 	let teardown = [
 		bottomPanes.on("update", update),
 	];
-	
-	bottomPanes.uiMounted();
 	
 	return function() {
 		for (let fn of teardown) {
@@ -50,19 +52,22 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-
+#main {
+	display: flex;
+	flex-direction: column;
+}
 </style>
 
 <div bind:this={main} id="main">
 	<TabPane
 		bind:this={toolsComponent}
-		pane={app.panes.tools}
+		pane={tools}
 		on:resize={onToolsResize}
 		on:resizeEnd={onToolsResizeEnd}
 	/>
 	<TabPane
 		bind:this={outputComponent}
-		pane={app.panes.output}
+		pane={output}
 		on:resize={onOutputResize}
 		on:resizeEnd={onOutputResizeEnd}
 	/>
