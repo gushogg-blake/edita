@@ -8,6 +8,7 @@ import RefactorTab from "./RefactorTab.svelte";
 import ClippingsTab from "./ClippingsTab.svelte";
 
 export let pane;
+export let state;
 
 function _update() {
 	update();
@@ -16,18 +17,6 @@ function _update() {
 export {_update as update};
 
 let {tabs, selectedTab} = pane;
-
-/*
-size and visibility are applied with manual dom manip to make logic
-easier, e.g. being able to query total size immediately after setting
-size
-
-("size" for tab panes is the content size, so that 0 is the "just the
-tab bar" state).
-*/
-
-let main;
-let contentsDiv;
 
 let tabComponents = {
 	findResults: FindResultsTab,
@@ -54,9 +43,11 @@ function onSelectTab() {
 	({selectedTab} = pane);
 }
 
+let mainStyle;
+let contentsStyle;
+
 function update() {
-	let {size, visible, expanded} = pane;
-	
+	let {size, visible, expanded} = state;
 	let height;
 	
 	if (expanded) {
@@ -69,26 +60,22 @@ function update() {
 		height = 0;
 	}
 	
-	contentsDiv.style = inlineStyle({
+	contentsStyle = {
 		height,
-	});
+	};
 	
-	main.style = inlineStyle(visible ? {
+	mainStyle = {
 		flexGrow: size === "fill" ? 1 : 0,
-	} : {
-		position: "absolute",
-		left: -9000,
-		top: -9000,
-	});
+	};
 }
+
+update();
 
 onMount(function() {
 	let teardown = [
 		pane.on("updateTabs", updateTabs),
 		pane.on("selectTab", onSelectTab),
 	];
-	
-	update();
 	
 	return function() {
 		for (let fn of teardown) {
@@ -116,22 +103,25 @@ onMount(function() {
 
 #contents {
 	position: relative;
+	
+	&:not(.autoSize) {
+		.tab {
+			@include abs-sticky;
+		}
+	}
 }
 
 .tab {
-	@include abs-sticky;
-	
-	z-index: -1;
 	background: var(--appBackground);
 	contain: strict;
-	
-	&.selected {
-		z-index: auto;
-	}
 }
 </style>
 
-<div bind:this={main} id="main">
+<div
+	id="main"
+	class:hide={!visible}
+	style={inlineStyle(mainStyle)}
+>
 	<ResizeHandle
 		position="top"
 		on:resize
@@ -146,9 +136,16 @@ onMount(function() {
 			on:close={({detail: tab}) => pane.closeTab(tab)}
 		/>
 	</div>
-	<div bind:this={contentsDiv} id="contents">
+	<div
+		id="contents"
+		class:autoSize={size === "auto"}
+		style={inlineStyle(contentsStyle)}
+	>
 		{#each tabs as tab (tab)}
-			<div class="tab" class:selected={tab === selectedTab}>
+			<div
+				class="tab"
+				class:hide={tab !== selectedTab}
+			>
 				<svelte:component this={tabComponents[tab.type]} {tab}/>
 			</div>
 		{/each}

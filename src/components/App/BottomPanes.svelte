@@ -6,7 +6,7 @@ import TabPane from "./TabPane.svelte";
 let app = getContext("app");
 
 let {bottomPanes} = app;
-let {tools, output} = bottomPanes;
+let {tools, output, top, bottom} = bottomPanes;
 
 let main;
 let toolsComponent;
@@ -63,12 +63,14 @@ onMount(function() {
 	<TabPane
 		bind:this={toolsComponent}
 		pane={tools}
+		state={top}
 		on:resize={onToolsResize}
 		on:resizeEnd={onToolsResizeEnd}
 	/>
 	<TabPane
 		bind:this={outputComponent}
 		pane={output}
+		state={bottom}
 		on:resize={onOutputResize}
 		on:resizeEnd={onOutputResizeEnd}
 	/>

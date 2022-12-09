@@ -122,7 +122,7 @@ let migrations = {
 		prefs.panes.bottom = {
 			preferredSizes: {
 				totalWithTopExpanded: 500,
-				bottomContentsWithTopCollapsedOrHidden: 200,
+				bottomContents: 200,
 			},
 			
 			top: {
@@ -320,7 +320,7 @@ module.exports = function() {
 			bottom: {
 				preferredSizes: {
 					totalWithTopExpanded: 500,
-					bottomContentsWithTopCollapsedOrHidden: 200,
+					bottomContents: 200,
 				},
 				
 				top: {
