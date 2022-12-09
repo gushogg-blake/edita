@@ -61,6 +61,7 @@ class BottomPanes extends Evented {
 		this.setSizes();
 		
 		this.tools.on("selectTab", this.onSelectTopPaneTab.bind(this));
+		this.output.on("selectTab", this.onSelectBottomPaneTab.bind(this));
 	}
 	
 	get containerHeight() {
@@ -144,6 +145,14 @@ class BottomPanes extends Evented {
 	}
 	
 	onSelectTopPaneTab(tab) {
+		this.expandTools();
+		this.setSizes();
+		
+		this.fire("update");
+	}
+	
+	onSelectBottomPaneTab(tab) {
+		this.expandOutput();
 		this.setSizes();
 		
 		this.fire("update");
@@ -156,19 +165,51 @@ class BottomPanes extends Evented {
 	}
 	
 	resizeTools(diff) {
+		console.log(diff);
+		console.log(this.containerHeight);
+		console.log(this.bottom.size);
+		console.log(this.top.size);
+		if (this.containerHeight === "auto") {
+			this.preferredSizes.bottomContents += diff;
+			this.bottom.size = this.preferredSizes.bottomContents;
+		} else {
+			this.preferredSizes.totalWithTopExpanded += diff;
+		}
 		
+		this.fire("update");
 	}
 	
 	resizeAndSaveTools(diff) {
+		this.resizeTools(diff);
 		
+		this.savePrefs();
 	}
 	
 	resizeOutput(diff) {
+		if (this.top.size === "auto") {
+			this.preferredSizes.totalWithTopExpanded += diff;
+		} else {
+			this.preferredSizes.bottomContents += diff;
+			this.bottom.size = this.preferredSizes.bottomContents;
+		}
 		
+		this.fire("update");
 	}
 	
 	resizeAndSaveOutput(diff) {
+		this.resizeOutput(diff);
 		
+		this.savePrefs();
+	}
+	
+	savePrefs() {
+		let {top, bottom, preferredSizes} = this;
+		
+		base.setPref("panes.bottom", {
+			top,
+			bottom,
+			preferredSizes,
+		});
 	}
 }
 
