@@ -146,13 +146,19 @@ onMount(function() {
 <style lang="scss">
 #main {
 	white-space: nowrap;
+	position: relative;
 	padding: 0px 0 0;
 	overflow-x: auto;
 	overflow-y: hidden;
 	background: var(--appBackground);
 	
-	&.border #spacer {
-		border-bottom: var(--appBorderMedium);
+	&.border #border {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 1px;
+		background: var(--appBorderColorMedium);
 	}
 	
 	&::-webkit-scrollbar {
@@ -163,6 +169,8 @@ onMount(function() {
 .tabButton {
 	$radius: 3px;
 	
+	position: relative;
+	z-index: 1;
 	display: inline-flex;
 	align-items: center;
 	min-height: var(--tabHeight, 30px);
@@ -246,7 +254,7 @@ button {
 			{/if}
 		</div>
 	{/each}
-	<div id="spacer"></div>
+	<div id="border"></div>
 	{#if dropIndex === tabs.length}
 		<div id="dropMarker">
 			<div></div>
