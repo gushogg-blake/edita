@@ -299,7 +299,7 @@ class App extends Evented {
 			}
 		}
 		
-		this.fire("showFindAndReplace", {
+		this.tools.findAndReplace({
 			...this.findAndReplace.defaultOptions,
 			...this.findAndReplace.savedOptions,
 			search,

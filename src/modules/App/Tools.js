@@ -34,11 +34,17 @@ class Tools {
 		
 		this.pane.addTab(tab);
 		
-		this.app.bottomPanes.openRefactor();
+		//this.app.bottomPanes.openRefactor();
+		
+		this.app.bottomPanes.configure(true, false);
 	}
 	
-	selectFindAndReplace() {
+	findAndReplace(options) {
+		this.app.findAndReplace.options = options; // TODO probs need to trigger component (FindAndReplace.svelte) to update
+		
 		this.pane.selectTab(this.findAndReplaceTab);
+		
+		this.app.bottomPanes.configure(true, true);
 	}
 }
 

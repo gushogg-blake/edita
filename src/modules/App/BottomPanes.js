@@ -100,22 +100,53 @@ class BottomPanes extends Evented {
 		this.tools.show();
 	}
 	
-	openFindAndReplace() {
-		this.expandTools();
+	expandOutput() {
+		this.bottom.visible = true;
+		this.bottom.expanded = true;
 		
-		this.tools.selectFindAndReplace();
-		
-		this.fire("update");
+		this.output.show();
 	}
 	
-	openRefactor() {
-		this.expandTools();
+	collapseOutput() {
+		this.bottom.expanded = false;
+		
+		this.output.hide();
+	}
+	
+	//openFindAndReplace() {
+	//	this.expandTools();
+	//	this.expandOutput();
+	//	
+	//	this.fire("update");
+	//}
+	//
+	//openRefactor() {
+	//	this.expandTools();
+	//	this.collapseOutput();
+	//	
+	//	this.fire("update");
+	//}
+	
+	configure(expandTop, expandBottom) {
+		if (expandTop) {
+			this.expandTools();
+		} else {
+			this.collapseTools();
+		}
+		
+		if (expandBottom) {
+			this.expandOutput();
+		} else {
+			this.collapseOutput();
+		}
 		
 		this.fire("update");
 	}
 	
 	onSelectTopPaneTab(tab) {
 		this.setSizes();
+		
+		this.fire("update");
 	}
 	
 	createPane(visible, expanded) {

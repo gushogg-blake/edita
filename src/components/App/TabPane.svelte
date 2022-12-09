@@ -111,13 +111,14 @@ onMount(function() {
 	&:not(.autoSize) {
 		.tab {
 			@include abs-sticky;
+			
+			contain: strict;
 		}
 	}
 }
 
 .tab {
 	background: var(--appBackground);
-	contain: strict;
 }
 </style>
 

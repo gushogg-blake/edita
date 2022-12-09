@@ -136,6 +136,27 @@ let migrations = {
 			},
 		};
 	},
+	
+	"17"(prefs) {
+		delete prefs.panes.bottom;
+		
+		prefs.panes.bottom = {
+			preferredSizes: {
+				totalWithTopExpanded: 500,
+				bottomContents: 200,
+			},
+			
+			top: {
+				visible: true,
+				expanded: false,
+			},
+			
+			bottom: {
+				visible: true,
+				expanded: true,
+			},
+		};
+	},
 };
 
 module.exports = function() {
