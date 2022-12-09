@@ -34,8 +34,6 @@ class Tools {
 		
 		this.pane.addTab(tab);
 		
-		//this.app.bottomPanes.openRefactor();
-		
 		this.app.bottomPanes.configure(true, false);
 	}
 	

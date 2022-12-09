@@ -74,7 +74,10 @@ class Refactor extends Evented {
 	}
 	
 	show() {
-		Object.values(this.editors).forEach(editor => editor.view.show());
+		Object.values(this.editors).forEach((editor) => {
+			editor.view.show();
+			editor.view.requestResizeAsync();
+		});
 	}
 	
 	hide() {
