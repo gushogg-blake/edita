@@ -21,6 +21,6 @@ module.exports = async function(app) {
 	if (get("openRefactor")) {
 		let {path} = app.editorTabs[0] || {};
 		
-		app.refactor(["/home/gus/projects/treefrog/src"]);
+		app.refactor(["/home/gus/projects/editor/src"]);
 	}
 }

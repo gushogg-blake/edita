@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Edita
+GenericName=Edita
+Exec=/path/to/bin/edita %F
+Icon=/path/to/edita/src/platforms/electron/resources/icon-96x96.png
+Terminal=false
+Type=Application
+MimeType=text/plain;
+Categories=Application;Development;Editor;Utility;TextEditor;
+Name[en_GB]=edita.desktop

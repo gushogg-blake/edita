@@ -221,7 +221,7 @@ if (platform === "all" || platform === "web") {
 		output: {
 			sourcemap: dev,
 			format: "iife",
-			name: "Treefrog",
+			name: "Edita",
 			file: dir + "/js/main.js",
 		},
 		

@@ -18,6 +18,6 @@ function respond({detail: response}) {
 }
 </style>
 
-<div id="main" class="treefrog" style={themeStyle(base.theme.app)}>
+<div id="main" class="edita" style={themeStyle(base.theme.app)}>
 	<MessageBox options={app.options} on:response={respond}/>
 </div>

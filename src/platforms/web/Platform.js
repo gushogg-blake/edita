@@ -39,7 +39,7 @@ class Platform extends Evented {
 		config = {
 			dev: false,
 			resourcePrefix: "",
-			localStoragePrefix: "treefrog.",
+			localStoragePrefix: "edita.",
 			fsPrefix: "treefrogFs",
 			lspUrl: null,
 			test: false,

@@ -1,14 +1,14 @@
-Treefrog
+Edita
 ===
 
-Treefrog is a platform for prototyping novel interaction designs for code editing. It's also a fully-fledged standard code editor with multi-language syntax highlighting, find/replace with regex and JavaScript interpolations, and snippets.
+Edita is a platform for prototyping novel interaction designs for code editing. It's also a fully-fledged standard code editor with multi-language syntax highlighting, find/replace with regex and JavaScript interpolations, and snippets.
 
-Treefrog runs on Electron and the web. Platform-specific code (as in web vs Electron, not Windows/Mac/Linux) is in [src/platforms](./src/platforms).
+Edita runs on Electron and the web. Platform-specific code (as in web vs Electron, not Windows/Mac/Linux) is in [src/platforms](./src/platforms).
 
 Project structure
 ---
 
-The main code for Treefrog is in [src/modules](./src/modules). These constitute the business logic, including some aspects of rendering (see e.g. [src/modules/View/renderCodeAndMargin.js](./src/modules/View/renderCodeAndMargin.js), which coordinates with [src/components/Editor/canvas/render.js](./src/components/Editor/canvas/render.js) to render the code and margin).
+The main code for Edita is in [src/modules](./src/modules). These constitute the business logic, including some aspects of rendering (see e.g. [src/modules/View/renderCodeAndMargin.js](./src/modules/View/renderCodeAndMargin.js), which coordinates with [src/components/Editor/canvas/render.js](./src/components/Editor/canvas/render.js) to render the code and margin).
 
 The UI is written in Svelte and is in [src/components](./src/components). The app is decoupled from the UI and can run without it, with the UI being added later (all communication to the UI that's initiated by the app is done by events, and the UI can render an app in any initial state).
 

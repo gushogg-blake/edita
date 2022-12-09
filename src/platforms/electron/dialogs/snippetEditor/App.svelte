@@ -50,7 +50,7 @@ function keydown(e) {
 }
 </style>
 
-<div id="main" class="treefrog" style={themeStyle(base.theme.app)}>
+<div id="main" class="edita" style={themeStyle(base.theme.app)}>
 	<SnippetEditor
 		snippet={app.snippet}
 		on:saveAndExit={saveAndExit}

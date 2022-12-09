@@ -9,7 +9,7 @@ let args = yargs(hideBin(process.argv));
 args.boolean("forceNewInstance");
 
 args.default({
-	userDataDir: path.join(os.homedir(), dev ? ".treefrog-dev" : ".treefrog"),
+	userDataDir: path.join(os.homedir(), dev ? ".edita-dev" : ".edita"),
 	forceNewInstance: process.env.EDITOR_NEW_INSTANCE === "1",
 });
 

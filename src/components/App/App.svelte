@@ -207,7 +207,7 @@ onMount(function() {
 <div
 	bind:this={main}
 	id="main"
-	class="treefrog"
+	class="edita"
 	style={themeStyle(theme.app)}
 	on:dragover={dragover}
 	on:drop={drop}

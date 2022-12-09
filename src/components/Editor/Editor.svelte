@@ -652,7 +652,7 @@ canvas {
 	bind:this={main}
 	id="main"
 	on:wheel={wheel}
-	class="treefrog"
+	class="edita"
 	class:showingHorizontalScrollbar
 	tabindex="0"
 	on:focus={onFocus}

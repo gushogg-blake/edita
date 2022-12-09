@@ -207,7 +207,7 @@ class Platform extends Evented {
 	}
 	
 	setTitle(title) {
-		document.title = (title ? title + " - " : "") + "Treefrog";
+		document.title = (title ? title + " - " : "") + "Edita";
 	}
 	
 	loadTreeSitterLanguage(name) {
