@@ -87,7 +87,7 @@ class App extends Evented {
 	getCurrentDir(_default=null) {
 		let lastSelectedPath = this.lastSelectedSavedUrl && platform.fs(this.lastSelectedSavedUrl.path).parent.path;
 		
-		return lastSelectedPath || _default;
+		return lastSelectedPath || this.selectedProject?.dirs[0] || this.fileTree.rootEntry.path || _default;
 	}
 	
 	get editorTabs() {
