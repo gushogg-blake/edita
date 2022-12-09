@@ -460,9 +460,5 @@ onMount(function() {
 		<div id="message" class:visible={session.message}>
 			{session.message}
 		</div>
-		<Spacer/>
-		<button on:click={actions.close}>
-			<Accel label="Close (Esc)"/>
-		</button>
 	</div>
 </form>
