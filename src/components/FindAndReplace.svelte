@@ -10,15 +10,12 @@ import Accel from "components/utils/Accel.svelte";
 import AccelLabel from "components/utils/AccelLabel.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 
-let initOptions;
-export {initOptions as options};
-export let history;
-
 let fire = createEventDispatcher();
 
 let app = getContext("app");
 
 let {findAndReplace} = app;
+let {options, history} = findAndReplace;
 let {multiPathSeparator} = platform.systemInfo;
 
 let searchInput;
@@ -74,7 +71,7 @@ function getOptions(formOptions) {
 	};
 }
 
-let formOptions = getFormOptions(initOptions);
+let formOptions = getFormOptions(options);
 
 $: options = getOptions(formOptions);
 
@@ -217,6 +214,10 @@ function submit(e) {
 	e.preventDefault();
 }
 
+function onHistoryUpdated() {
+	({history} = findAndReplace);
+}
+
 async function applyHistoryEntry(options) {
 	formOptions = getFormOptions(options);
 	
@@ -243,11 +244,21 @@ function endSession(counts) {
 }
 
 onMount(function() {
+	let teardown = [
+		findAndReplace.on("historyUpdated", onHistoryUpdated),
+	];
+	
 	init();
 	
 	searchInput.select();
 	
 	mounted = true;
+	
+	return function() {
+		for (let fn of teardown) {
+			fn();
+		}
+	}
 });
 </script>
 

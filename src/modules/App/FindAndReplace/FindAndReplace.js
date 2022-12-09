@@ -57,6 +57,7 @@ class FindAndReplace extends Evented {
 		};
 		
 		this.savedOptions = null;
+		this.options = this.defaultOptions;
 		this.history = [];
 	}
 	

@@ -10,6 +10,14 @@ class TabPane extends Evented {
 		this.previouslySelectedTabs = [];
 	}
 	
+	show() {
+		this.setVisibility(true);
+	}
+	
+	hide() {
+		this.setVisibility(false);
+	}
+	
 	setVisibility(visible) {
 		if (visible) {
 			this.selectedTab?.show();

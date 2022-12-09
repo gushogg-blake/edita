@@ -3,6 +3,7 @@ import {onMount, getContext} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import TabBar from "components/TabBar.svelte";
 import ResizeHandle from "./ResizeHandle.svelte";
+import FindAndReplaceTab from "./FindAndReplaceTab.svelte";
 import FindResultsTab from "./FindResultsTab.svelte";
 import RefactorTab from "./RefactorTab.svelte";
 import ClippingsTab from "./ClippingsTab.svelte";
@@ -17,8 +18,10 @@ function _update() {
 export {_update as update};
 
 let {tabs, selectedTab} = pane;
+let {size, visible, expanded} = state;
 
 let tabComponents = {
+	findAndReplace: FindAndReplaceTab,
 	findResults: FindResultsTab,
 	clippings: ClippingsTab,
 	refactor: RefactorTab,
@@ -47,7 +50,8 @@ let mainStyle;
 let contentsStyle;
 
 function update() {
-	let {size, visible, expanded} = state;
+	({size, visible, expanded} = state);
+	
 	let height;
 	
 	if (expanded) {

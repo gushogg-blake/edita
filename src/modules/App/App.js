@@ -181,11 +181,7 @@ class App extends Evented {
 	}
 	
 	getTabName(tab) {
-		if (tab.isEditor) {
-			return platform.fs(tab.path).name;
-		} else if (tab.isRefactor) {
-			return "Refactor";
-		}
+		return platform.fs(tab.path).name;
 	}
 	
 	getTabLabel(tab) {

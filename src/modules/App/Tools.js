@@ -1,3 +1,4 @@
+let FindAndReplaceTab = require("./FindAndReplaceTab");
 let Refactor = require("./Refactor");
 let RefactorTab = require("./RefactorTab");
 
@@ -5,6 +6,14 @@ class Tools {
 	constructor(app) {
 		this.app = app;
 		this.pane = app.panes.tools;
+		
+		this.findAndReplaceTab = new FindAndReplaceTab(app);
+		
+		this.pane.setTabs([
+			this.findAndReplaceTab,
+		]);
+		
+		this.pane.selectTab(this.findAndReplaceTab);
 	}
 	
 	async createRefactorTab(paths) {
@@ -25,7 +34,11 @@ class Tools {
 		
 		this.pane.addTab(tab);
 		
-		this.app.bottomPanes.showRefactor();
+		this.app.bottomPanes.openRefactor();
+	}
+	
+	selectFindAndReplace() {
+		this.pane.selectTab(this.findAndReplaceTab);
 	}
 }
 

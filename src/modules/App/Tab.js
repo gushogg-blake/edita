@@ -15,10 +15,6 @@ class Tab extends Evented {
 		return this.type === "editor";
 	}
 	
-	get isRefactor() {
-		return this.type === "refactor";
-	}
-	
 	get url() {
 		return null;
 	}

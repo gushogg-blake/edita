@@ -59,25 +59,16 @@ class BottomPanes extends Evented {
 		this.preferredSizes = preferredSizes;
 		
 		this.setSizes();
+		
+		this.tools.on("selectTab", this.onSelectTopPaneTab.bind(this));
 	}
 	
 	get containerHeight() {
-		if (this.tools.visible && this.tools.expanded) {
+		if (this.top.visible && this.top.expanded) {
 			return this.preferredSizes.totalWithTopExpanded;
 		} else {
 			return "auto";
 		}
-	}
-	
-	showFindAndReplace() {
-		/*
-		get total height, set top pane height to auto, then set bottom pane
-		height to (total - top pane total)
-		*/
-		
-		this.tools.setSize("auto");
-		
-		
 	}
 	
 	setSizes() {
@@ -103,31 +94,32 @@ class BottomPanes extends Evented {
 	}
 	
 	expandTools() {
+		this.top.visible = true;
+		this.top.expanded = true;
+		
 		this.tools.show();
-		this.tools.expand();
-		this.tools.setSize("fill");
-		this.output.setSize(this.preferredSizes.bottomContents);
 	}
 	
-	showRefactor() {
+	openFindAndReplace() {
 		this.expandTools();
+		
+		this.tools.selectFindAndReplace();
+		
+		this.fire("update");
+	}
+	
+	openRefactor() {
+		this.expandTools();
+		
 		this.fire("update");
 	}
 	
 	onSelectTopPaneTab(tab) {
-		if (["findAndReplace"].includes(tab.type)) {
-			this.tools.setSize("auto");
-			this.output.setSize("fill");
-		} else {
-			this.tools.setSize("fill");
-			this.output.setSize(this.preferredSizes.bottomContents);
-		}
+		this.setSizes();
 	}
 	
 	createPane(visible, expanded) {
 		let pane = new TabPane(visible, expanded);
-		
-		pane.on("selectTab", this.onSelectTab.bind(this));
 		
 		return pane;
 	}
