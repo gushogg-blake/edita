@@ -123,11 +123,13 @@ onMount(function() {
 	class:hide={!visible}
 	style={inlineStyle(mainStyle)}
 >
-	<ResizeHandle
-		position="top"
-		on:resize
-		on:resizeEnd
-	/>
+	{#if expanded}
+		<ResizeHandle
+			position="top"
+			on:resize
+			on:resizeEnd
+		/>
+	{/if}
 	<div id="tabBar">
 		<TabBar
 			border
