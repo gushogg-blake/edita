@@ -54,14 +54,10 @@ function update() {
 	
 	let height;
 	
-	if (expanded) {
-		if (size === "auto" || size === "fill") {
-			height = "auto";
-		} else {
-			height = size;
-		}
+	if (size === "auto" || size === "fill") {
+		height = "auto";
 	} else {
-		height = 0;
+		height = size;
 	}
 	
 	contentsStyle = {
@@ -145,6 +141,7 @@ onMount(function() {
 	</div>
 	<div
 		id="contents"
+		class:hide={!expanded}
 		class:autoSize={size === "auto"}
 		style={inlineStyle(contentsStyle)}
 	>

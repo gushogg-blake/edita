@@ -106,6 +106,12 @@ class BottomPanes extends Evented {
 		this.tools.show();
 	}
 	
+	collapseTools() {
+		this.top.expanded = false;
+		
+		this.tools.hide();
+	}
+	
 	expandOutput() {
 		this.bottom.visible = true;
 		this.bottom.expanded = true;
@@ -145,6 +151,8 @@ class BottomPanes extends Evented {
 		} else {
 			this.collapseOutput();
 		}
+		
+		this.setSizes();
 		
 		this.fire("update");
 	}

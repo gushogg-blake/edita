@@ -7,6 +7,8 @@ class FindAndReplaceTab extends Tab {
 		
 		this._url = new URL("special://find-and-replace");
 		
+		this.findAndReplace = app.findAndReplace;
+		
 		this.teardownCallbacks = [
 		];
 	}
@@ -28,7 +30,7 @@ class FindAndReplaceTab extends Tab {
 	}
 	
 	focus() {
-		
+		this.findAndReplace.requestFocus();
 	}
 	
 	show() {

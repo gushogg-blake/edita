@@ -2,7 +2,6 @@
 import {onMount, tick, getContext, createEventDispatcher} from "svelte";
 import mapObject from "utils/mapObject";
 import getKeyCombo from "utils/getKeyCombo";
-import autoFocusAsync from "components/actions/autoFocusAsync";
 import accels from "components/actions/accels";
 import Gap from "components/utils/Gap.svelte";
 import Spacer from "components/utils/Spacer.svelte";
@@ -246,6 +245,7 @@ function endSession(counts) {
 onMount(function() {
 	let teardown = [
 		findAndReplace.on("historyUpdated", onHistoryUpdated),
+		findAndReplace.on("requestFocus", () => searchInput.focus()),
 	];
 	
 	init();
@@ -393,7 +393,6 @@ onMount(function() {
 				bind:this={searchInput}
 				bind:value={formOptions.search}
 				id="find"
-				use:autoFocusAsync
 			>
 		</div>
 		<AccelLabel for="replaceWith" label="Rep%lace with"/>

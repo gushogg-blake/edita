@@ -30,6 +30,8 @@ class App extends Evented {
 	constructor() {
 		super();
 		
+		this.findAndReplace = new FindAndReplace(this);
+		
 		this.bottomPanes = new BottomPanes(this);
 		this.sidePanes = new SidePanes(this);
 		
@@ -44,8 +46,6 @@ class App extends Evented {
 		this.output = new Output(this);
 		
 		this.fileTree = new FileTree(this);
-		
-		this.findAndReplace = new FindAndReplace(this);
 		
 		this.tabs = [];
 		this.selectedTab = null;
@@ -62,7 +62,7 @@ class App extends Evented {
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
 			this.on("document.save", this.onDocumentSave.bind(this)),
-			...Object.values(this.panes).map(pane => this.relayEvents(pane, ["update"], "pane.")).flat(),
+			...[this.panes.left, this.panes.right, this.bottomPanes].map(pane => this.relayEvents(pane, ["update"], "pane.")).flat(),
 		];
 	}
 	

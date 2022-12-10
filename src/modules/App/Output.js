@@ -24,9 +24,9 @@ class Output {
 	showFindResults(action, options, results) {
 		this.findResults.add(action, options, results);
 		
-		this.selectTab(this.findResultsTab);
+		this.pane.selectTab(this.findResultsTab);
 		
-		this.app.bottomPanes.showFindResults();
+		this.app.bottomPanes.configure(null, true);
 	}
 }
 

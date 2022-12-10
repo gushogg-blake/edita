@@ -180,7 +180,7 @@ class FindAndReplace extends Evented {
 		let results = await this[getMethod(action, options)](options);
 		
 		if (results.length > 0 && shouldShowResults(action, options)) {
-			this.app.tools.showFindResults(action, options, results);
+			this.app.output.showFindResults(action, options, results);
 		}
 		
 		await this.addOptionsToHistory(options);
@@ -280,6 +280,10 @@ class FindAndReplace extends Evented {
 		await base.stores.findAndReplaceHistory.save(this.history);
 		
 		this.fire("historyUpdated");
+	}
+	
+	requestFocus() {
+		this.fire("requestFocus");
 	}
 }
 
