@@ -38,7 +38,7 @@ class Tools {
 	}
 	
 	findAndReplace(options) {
-		this.app.findAndReplace.options = options; // TODO probs need to trigger component (FindAndReplace.svelte) to update
+		this.app.findAndReplace.setOptions(options);
 		
 		this.pane.selectTab(this.findAndReplaceTab);
 		

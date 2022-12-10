@@ -72,6 +72,12 @@ class FindAndReplace extends Evented {
 		this.session = null;
 	}
 	
+	setOptions(options) {
+		this.options = options;
+		
+		this.fire("optionsUpdated");
+	}
+	
 	useExistingSession(options) {
 		return this.session && JSON.stringify(this.session.options) === JSON.stringify(options);
 	}

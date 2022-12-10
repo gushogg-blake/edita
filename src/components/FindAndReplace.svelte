@@ -45,6 +45,12 @@ function optionsChanged() {
 	optionsChangedSinceLastInit = true;
 }
 
+function onOptionsUpdated() {
+	({options} = findAndReplace);
+	
+	formOptions = getFormOptions(options);
+}
+
 function getFormOptions(options) {
 	let {caseMode, paths, includePatterns, excludePatterns} = options;
 	
@@ -245,6 +251,7 @@ function endSession(counts) {
 onMount(function() {
 	let teardown = [
 		findAndReplace.on("historyUpdated", onHistoryUpdated),
+		findAndReplace.on("optionsUpdated", onOptionsUpdated),
 		findAndReplace.on("requestFocus", () => searchInput.focus()),
 	];
 	
