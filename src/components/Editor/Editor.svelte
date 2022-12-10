@@ -580,6 +580,8 @@ onMount(function() {
 	view.uiMounted();
 	
 	return function() {
+		mounted = false;
+		
 		for (let fn of teardown) {
 			fn();
 		}
