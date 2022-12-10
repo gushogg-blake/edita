@@ -4,29 +4,27 @@ let TabPane = require("./TabPane");
 /*
 bottom pane sizing
 
-we store and calculate based on the desired total height when the top pane
-(tools) is expanded. if the bottom pane is visible it takes up the remaining
-space after auto-sizing the top pane; otherwise the top pane is ... this is
-starting to sound a lot like flex-box....
+container height:
 
-BUT we also need a height for when it's just the bottom pane - and maybe this
-should be a bit higher than it would be if the top pane was visible.
+- if the top pane is visible and expanded, this is set to
+preferredSizes.totalWithTopExpanded (regardless of the bottom pane)
 
-so we still need to store a bottom height, it just will only be used if the
-top pane is collapsed or hidden.
+- if only the bottom pane is visible, its height is set by
+preferredSizes.bottomContentsWithoutTop and the container height is
+auto
 
-the top pane is auto sized (grows to fit content) for find and replace, as it
-doesn't have any space-filling elements.
+top pane height:
 
-if the top pane is auto sized, the bottom pane fills any available space.
+- depending on the tab type, this is auto (fit contents) or fill
+(flex-grow: 1). if it is auto and the top pane is expanded and visible,
+the bottom pane is always visible and expanded, and takes up any
+remaining space in the container
 
-pane.on("save", () => {
-	base.setPref("panes." + name + ".size", pane.size);
-});
+bottom pane height:
 
-pane.on("show hide expand collapse", () => {
-	base.setPref("panes." + name + ".visible", pane.visible);
-});
+- two prefs are stored for this, one for when the top pane is visible
+and expanded and one for when it's not. the appropriate one of these is
+used unless the height is "fill" from any of the other rules.
 */
 
 class BottomPanes extends Evented {
@@ -70,11 +68,15 @@ class BottomPanes extends Evented {
 	}
 	
 	get containerHeight() {
-		if (this.top.visible && this.top.expanded) {
+		if (this.topVisibleAndExpanded) {
 			return this.preferredSizes.totalWithTopExpanded;
 		} else {
 			return "auto";
 		}
+	}
+	
+	get topVisibleAndExpanded() {
+		return this.top.visible && this.top.expanded;
 	}
 	
 	setSizes() {
@@ -89,10 +91,10 @@ class BottomPanes extends Evented {
 			topSize = "fill";
 		}
 		
-		if (top.visible && top.expanded) {
-			bottomSize = topSize === "fill" ? this.preferredSizes.bottomContents : "fill";
+		if (this.topVisibleAndExpanded) {
+			bottomSize = topSize === "fill" ? this.preferredSizes.bottomContentsWithTop : "fill";
 		} else {
-			bottomSize = this.preferredSizes.bottomContents;
+			bottomSize = this.preferredSizes.bottomContentsWithoutTop;
 		}
 		
 		this.top.size = topSize;
@@ -184,11 +186,11 @@ class BottomPanes extends Evented {
 	}
 	
 	resizeTools(diff) {
-		if (this.containerHeight === "auto") {
-			this.preferredSizes.bottomContents += diff;
-			this.bottom.size = this.preferredSizes.bottomContents;
-		} else {
+		if (this.top.expanded) {
 			this.preferredSizes.totalWithTopExpanded += diff;
+		} else {
+			this.preferredSizes.bottomContentsWithoutTop += diff;
+			this.bottom.size = this.preferredSizes.bottomContentsWithoutTop;
 		}
 		
 		this.fire("update");
@@ -204,8 +206,13 @@ class BottomPanes extends Evented {
 		if (this.top.size === "auto") {
 			this.preferredSizes.totalWithTopExpanded += diff;
 		} else {
-			this.preferredSizes.bottomContents += diff;
-			this.bottom.size = this.preferredSizes.bottomContents;
+			if (this.topVisibleAndExpanded) {
+				this.preferredSizes.bottomContentsWithTop += diff;
+				this.bottom.size = this.preferredSizes.bottomContentsWithTop;
+			} else {
+				this.preferredSizes.bottomContentsWithoutTop += diff;
+				this.bottom.size = this.preferredSizes.bottomContentsWithoutTop;
+			}
 		}
 		
 		this.fire("update");
