@@ -423,25 +423,11 @@ function updateHorizontalScrollbar() {
 }
 
 function verticalScroll({detail: position}) {
-	let {height} = view.sizes;
-	
-	let scrollHeight = view.getScrollHeight();
-	let scrollMax = scrollHeight - height;
-	
-	let scrollTop = Math.round(scrollMax * position);
-	
-	view.setVerticalScrollNoValidate(scrollTop);
+	view.setVerticalScrollPosition(position);
 }
 
 function horizontalScroll({detail: position}) {
-	let {width} = view.sizes;
-	
-	let scrollWidth = view.getScrollWidth();
-	let scrollMax = scrollWidth - width;
-	
-	let scrollLeft = Math.round(scrollMax * position);
-	
-	view.setHorizontalScrollNoValidate(scrollLeft);
+	view.setHorizontalScrollPosition(position);
 }
 
 function onWrapChanged() {

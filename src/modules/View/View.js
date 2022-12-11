@@ -305,10 +305,6 @@ class View extends Evented {
 		return rows === 1 ? height : topMargin + (rows - 1) * rowHeight + height;
 	}
 	
-	getVerticalScrollMax() {
-		return this.getScrollHeight() - this.sizes.height;
-	}
-	
 	getScrollWidth() {
 		let {
 			document,
@@ -321,29 +317,44 @@ class View extends Evented {
 		return longestLineWidth * colWidth + width;
 	}
 	
+	getVerticalScrollMax() {
+		return this.getScrollHeight() - this.sizes.height;
+	}
+	
 	getHorizontalScrollMax() {
-		return this.getScrollWidth() - this.sizes.codeWidth;
+		return this.wrap ? 0 : this.getScrollWidth() - this.sizes.codeWidth;
+	}
+	
+	boundedScrollY(y) {
+		return Math.max(0, Math.min(y, this.getVerticalScrollMax()));
+	}
+	
+	boundedScrollX(x) {
+		return Math.max(0, Math.min(x, this.getHorizontalScrollMax()));
+	}
+	
+	ensureScrollIsWithinBounds() {
+		let x = this.boundedScrollX(this.scrollPosition.x);
+		let y = this.boundedScrollY(this.scrollPosition.y);
+		
+		if (x !== this.scrollPosition.x || y !== this.scrollPosition.y) {
+			this.setScrollPositionNoValidate({x, y});
+		}
 	}
 	
 	scrollBy(x, y) {
 		let scrolled = false;
 		
 		if (x !== 0 && !this.wrap) {
-			let newX = Math.round(this.scrollPosition.x + x);
+			let newX = Math.round(this.boundedScrollX(this.scrollPosition.x + x));
 			
-			newX = Math.max(0, newX);
-			newX = Math.min(newX, this.getHorizontalScrollMax());
+			scrolled = newX !== this.scrollPosition.x;
 			
 			this.scrollPosition.x = newX;
-			
-			scrolled = true;
 		}
 		
 		if (y !== 0) {
-			let newY = this.scrollPosition.y + y;
-			
-			newY = Math.max(0, newY);
-			newY = Math.min(newY, this.getVerticalScrollMax());
+			let newY = this.boundedScrollY(this.scrollPosition.y + y);
 			
 			scrolled = newY !== this.scrollPosition.y;
 			
@@ -359,8 +370,16 @@ class View extends Evented {
 		return scrolled;
 	}
 	
+	setVerticalScrollPosition(position) {
+		this.setVerticalScrollNoValidate(Math.round(this.getVerticalScrollMax() * position));
+	}
+	
+	setHorizontalScrollPosition(position) {
+		this.setHorizontalScrollNoValidate(Math.round(this.getHorizontalScrollMax() * position));
+	}
+	
 	setVerticalScrollNoValidate(y) {
-		this.scrollPosition.y = Math.max(0, y);
+		this.scrollPosition.y = y;
 		
 		this.fire("scroll");
 		
@@ -380,11 +399,20 @@ class View extends Evented {
 	}
 	
 	setScrollPosition(scrollPosition) {
-		this.scrollPosition = {...scrollPosition};
+		let {x, y} = scrollPosition;
 		
-		if (this.wrap) {
-			this.scrollPosition.x = 0;
-		}
+		this.scrollPosition = {
+			x: this.boundedScrollX(x),
+			y: this.boundedScrollY(y),
+		};
+		
+		this.updateScrollbars();
+		
+		this.fire("scroll");
+	}
+	
+	setScrollPositionNoValidate(scrollPosition) {
+		this.scrollPosition = {...scrollPosition};
 		
 		this.updateScrollbars();
 		
