@@ -572,7 +572,7 @@ class View extends Evented {
 	}
 	
 	updateNormalSelectionFromAstSelection() {
-		this.normalSelection = this.Selection.endOfLineContent(this.astSelection.endLineIndex - 1);
+		this.normalSelection = this.Selection.endOfLineContent(Math.max(0, this.astSelection.endLineIndex - 1));
 		
 		this.updateSelectionEndCol();
 		
