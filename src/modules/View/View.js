@@ -88,11 +88,6 @@ class View extends Evented {
 		this.updateWrappedLines();
 		
 		this.blur = this.blur.bind(this);
-		
-		this.teardownCallbacks = [
-			document.on("edit", () => this.ensureScrollIsWithinBounds()),
-			document.on("edit fileDetailsChanged", () => this.batchRedraw()),
-		];
 	}
 	
 	render(canvas, uiState) {
@@ -811,10 +806,6 @@ class View extends Evented {
 	
 	teardown() {
 		this.clearCursorBlink();
-		
-		for (let fn of this.teardownCallbacks) {
-			fn();
-		}
 	}
 }
 
