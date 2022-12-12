@@ -109,6 +109,8 @@ module.exports = {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.all());
 		this.view.updateSelectionEndCol();
 		this.clearSnippetSession();
+		
+		return ["noScrollCursorIntoView"];
 	},
 	
 	enter() {
