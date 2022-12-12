@@ -12,7 +12,7 @@ function split(str) {
 		words = str.split("-");
 	} else if (str.indexOf("_") !== -1) {
 		words = str.split("_");
-	} else if (str.match(/[A-Z][a-z]/)) {
+	} else if (str.match(/([A-Z][a-z]|[a-z][A-Z])/)) {
 		words = str.replace(/[A-Z]/g, (ch) => "-" + ch).split("-").filter(Boolean);
 	} else {
 		words = [str];
