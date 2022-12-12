@@ -23,12 +23,12 @@ function findCompletions(code, wordAtCursor, index, extraWords=[]) {
 	let after = code.substr(index);
 	
 	let beforeInstances = regexMatches(before, re).reverse();
-	let extraInstances = regexMatches(extraWords.join(","), re);
 	let afterInstances = regexMatches(after, re);
+	let extraInstances = regexMatches(extraWords.join(","), re);
 	
 	let words = [];
 	
-	for (let word of [...beforeInstances, ...extraInstances, ...afterInstances]) {
+	for (let word of [...beforeInstances, ...afterInstances, ...extraInstances]) {
 		let matchCaseTypes = getPossibleCaseTypes(word);
 		let caseTypesOverlap = matchCaseTypes.some(caseType => caseTypes.includes(caseType));
 		
