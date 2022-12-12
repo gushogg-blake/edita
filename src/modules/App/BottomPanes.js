@@ -67,6 +67,40 @@ class BottomPanes extends Evented {
 		});
 	}
 	
+	configure(expandTop, expandBottom) {
+		if (expandTop) {
+			this.expandTools();
+		} else {
+			this.collapseTools();
+		}
+		
+		if (expandBottom) {
+			this.expandOutput();
+		} else {
+			this.collapseOutput();
+		}
+		
+		this.setSizes();
+		
+		this.fire("update");
+	}
+	
+	toggleTools() {
+		this.top.visible = !this.top.visible;
+		
+		this.setSizes();
+		
+		this.fire("update");
+	}
+	
+	toggleOutput() {
+		this.bottom.visible = !this.bottom.visible;
+		
+		this.setSizes();
+		
+		this.fire("update");
+	}
+	
 	get containerHeight() {
 		if (this.topVisibleAndExpanded) {
 			if (this.top.size === "auto") {
@@ -152,24 +186,6 @@ class BottomPanes extends Evented {
 	//	
 	//	this.fire("update");
 	//}
-	
-	configure(expandTop, expandBottom) {
-		if (expandTop) {
-			this.expandTools();
-		} else {
-			this.collapseTools();
-		}
-		
-		if (expandBottom) {
-			this.expandOutput();
-		} else {
-			this.collapseOutput();
-		}
-		
-		this.setSizes();
-		
-		this.fire("update");
-	}
 	
 	onSelectTopPaneTab(tab) {
 		this.expandTools();
