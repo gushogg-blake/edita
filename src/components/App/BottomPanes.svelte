@@ -6,21 +6,10 @@ import TabPane from "./TabPane.svelte";
 let app = getContext("app");
 
 let {bottomPanes} = app;
-let {tools, output, top, bottom} = bottomPanes;
-
-let main;
-let toolsComponent;
-let outputComponent;
+let {tools, output, top, bottom, containerHeight} = bottomPanes;
 
 function update() {
-	let {containerHeight} = bottomPanes;
-	
-	main.style = inlineStyle({
-		height: containerHeight,
-	});
-	
-	toolsComponent.update();
-	outputComponent.update();
+	({containerHeight} = bottomPanes);
 }
 
 function onToolsResize({detail: diff}) {
@@ -38,6 +27,10 @@ function onOutputResize({detail: diff}) {
 function onOutputResizeEnd({detail: diff}) {
 	bottomPanes.resizeAndSaveOutput(diff);
 }
+
+$: mainStyle = {
+	height: containerHeight,
+};
 
 onMount(function() {
 	let teardown = [
@@ -59,16 +52,14 @@ onMount(function() {
 }
 </style>
 
-<div bind:this={main} id="main">
+<div id="main" style={inlineStyle(mainStyle)}>
 	<TabPane
-		bind:this={toolsComponent}
 		pane={tools}
 		state={top}
 		on:resize={onToolsResize}
 		on:resizeEnd={onToolsResizeEnd}
 	/>
 	<TabPane
-		bind:this={outputComponent}
 		pane={output}
 		state={bottom}
 		on:resize={onOutputResize}

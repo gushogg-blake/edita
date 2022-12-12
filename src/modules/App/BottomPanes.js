@@ -67,6 +67,10 @@ class BottomPanes extends Evented {
 	init() {
 		this.tools.on("selectTab", this.onSelectTopPaneTab.bind(this));
 		this.output.on("selectTab", this.onSelectBottomPaneTab.bind(this));
+		
+		this.setSizes();
+		
+		this.fire("update");
 	}
 	
 	configure(expandTop, expandBottom) {
@@ -204,6 +208,8 @@ class BottomPanes extends Evented {
 		}
 		
 		this.fire("update");
+		
+		this.savePrefs();
 	}
 	
 	onSelectBottomPaneTab(tab) {
@@ -211,6 +217,8 @@ class BottomPanes extends Evented {
 		this.setSizes();
 		
 		this.fire("update");
+		
+		this.savePrefs();
 	}
 	
 	createPane(visible, expanded) {

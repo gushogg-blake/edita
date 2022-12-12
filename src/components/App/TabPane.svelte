@@ -11,12 +11,9 @@ import ClippingsTab from "./ClippingsTab.svelte";
 export let pane;
 export let state;
 
-function _update() {
-	update();
-}
+let app = getContext("app");
 
-export {_update as update};
-
+let {bottomPanes} = app;
 let {tabs, selectedTab} = pane;
 let {size, visible, expanded} = state;
 
@@ -73,6 +70,7 @@ update();
 
 onMount(function() {
 	let teardown = [
+		bottomPanes.on("update", update),
 		pane.on("updateTabs", updateTabs),
 		pane.on("selectTab", onSelectTab),
 	];
