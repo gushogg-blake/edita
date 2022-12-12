@@ -28,6 +28,7 @@ let theme = {
 		
 		tabBackground: "transparent",
 		tabSelectedBackground: "#404040",
+		tabSelectedBorder: "2px solid #898989",
 		toolbarBackground: "#404040",
 		
 		inputColor: "var(--appColor)",

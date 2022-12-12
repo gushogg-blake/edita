@@ -185,7 +185,7 @@ onMount(function() {
 	}
 	
 	&.border.isSelected {
-		border-bottom: 2px solid #adaba5;
+		border-bottom: var(--tabSelectedBorder);
 	}
 }
 
