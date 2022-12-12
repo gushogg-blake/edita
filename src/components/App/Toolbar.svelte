@@ -84,10 +84,10 @@ onMount(function() {
 	<button on:click={() => app.panes.left.toggle()}>
 		[
 	</button>
-	<button on:click={() => app.bottomPanes.toggleTools()}>
+	<button on:click={() => app.bottomPanes.toggleOutput()}>
 		_
 	</button>
-	<button on:click={() => app.bottomPanes.toggleOutput()}>
+	<button on:click={() => app.bottomPanes.toggleTools()}>
 		_
 	</button>
 	<button on:click={() => app.panes.right.toggle()}>
