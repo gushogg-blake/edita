@@ -252,6 +252,8 @@ class Editor extends Evented {
 		
 		view.updateWrappedLines();
 		
+		view.ensureScrollIsWithinBounds();
+		
 		view.endBatch();
 		
 		this.clearBatchState();
