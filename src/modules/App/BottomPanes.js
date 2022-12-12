@@ -7,24 +7,24 @@ bottom pane sizing
 container height:
 
 - if the top pane is visible and expanded, this is set to
-preferredSizes.totalWithTopExpanded (regardless of the bottom pane)
+preferredSizes.totalWithTopExpanded - unless the top pane height
+is auto and the bottom pane is collapsed or hidden, in which case
+it is auto.
 
-- if only the bottom pane is visible, its height is set by
+- if only the bottom pane is visible, its height is set to
 preferredSizes.bottomContentsWithoutTop and the container height is
-auto
+auto.
 
 top pane height:
 
 - depending on the tab type, this is auto (fit contents) or fill
-(flex-grow: 1). if it is auto and the top pane is expanded and visible,
-the bottom pane is always visible and expanded, and takes up any
-remaining space in the container
+(flex-grow: 1). if it is auto, the bottom pane is set to fill.
 
 bottom pane height:
 
 - two prefs are stored for this, one for when the top pane is visible
 and expanded and one for when it's not. the appropriate one of these is
-used unless the height is "fill" from any of the other rules.
+used unless the height is "fill" from the above rule.
 */
 
 class BottomPanes extends Evented {
@@ -69,7 +69,15 @@ class BottomPanes extends Evented {
 	
 	get containerHeight() {
 		if (this.topVisibleAndExpanded) {
-			return this.preferredSizes.totalWithTopExpanded;
+			if (this.top.size === "auto") {
+				if (this.bottomVisibleAndExpanded) {
+					return this.preferredSizes.totalWithTopExpanded;
+				} else {
+					return "auto";
+				}
+			} else {
+				return this.preferredSizes.totalWithTopExpanded;
+			}
 		} else {
 			return "auto";
 		}
@@ -77,6 +85,10 @@ class BottomPanes extends Evented {
 	
 	get topVisibleAndExpanded() {
 		return this.top.visible && this.top.expanded;
+	}
+	
+	get bottomVisibleAndExpanded() {
+		return this.bottom.visible && this.bottom.expanded;
 	}
 	
 	setSizes() {

@@ -42,6 +42,8 @@ onMount(function() {
 </script>
 
 <style lang="scss">
+@import "classes/hide";
+
 #main {
 	position: relative;
 	height: 100%;

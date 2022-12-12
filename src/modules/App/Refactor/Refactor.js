@@ -35,6 +35,11 @@ class Refactor extends Evented {
 		
 		dev();
 		
+		this.editors.match.api.edit(
+			{start: {lineIndex: 0, offset: 0}, end: {lineIndex: 0, offset: 0}},
+			`f literal\n(function @f)\n`,
+		);
+		
 		app.on("selectTab", dev);
 	}
 	

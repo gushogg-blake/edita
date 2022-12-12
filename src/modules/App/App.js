@@ -416,7 +416,7 @@ class App extends Evented {
 		let tab = new EditorTab(this, editor);
 		
 		editor.on("cut copy", (str) => {
-			this.tools.clippingsTab.addClipping(str);
+			this.output.clippingsTab.addClipping(str);
 		});
 		
 		await tab.init();
