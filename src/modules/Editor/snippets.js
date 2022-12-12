@@ -53,7 +53,8 @@ function initNormalSelectionFromPositions(positions, tabstops) {
 
 let api = {
 	insert(editor, snippet, replaceWord)  {
-		let {document, normalSelection: selection} = editor;
+		let {document} = editor;
+		let selection = editor.view.Selection.sort();
 		let {start} = selection;
 		let {lineIndex, offset} = start;
 		let {indentLevel} = document.lines[lineIndex];
