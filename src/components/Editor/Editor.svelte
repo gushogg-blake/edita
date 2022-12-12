@@ -288,7 +288,7 @@ function wheel(e) {
 
 // ENTRYPOINT key press on the Editor (handler installed on main div below)
 
-async function keydown(e) {
+function keydown(e) {
 	if (editorMode === "textarea" && e.key === "Escape") {
 		main.blur();
 		
@@ -301,6 +301,10 @@ async function keydown(e) {
 		modeSwitchKey.keydown(e);
 		
 		return;
+	}
+	
+	if (base.getPref("dev.timing.keydown")) {
+		console.time("keydown");
 	}
 	
 	let {keyCombo, isModified} = getKeyCombo(e);
@@ -318,6 +322,10 @@ async function keydown(e) {
 		e.preventDefault();
 		
 		editor.commonKeydown(keyCombo);
+	}
+	
+	if (base.getPref("dev.timing.keydown")) {
+		console.timeEnd("keydown");
 	}
 }
 
@@ -489,7 +497,7 @@ function onBlur() {
 	view.blur();
 }
 
-async function onEdit() {
+function onEdit() {
 	if (view.mode === "ast") {
 		astMouseHandler.updateHilites(lastMouseEvent);
 	}

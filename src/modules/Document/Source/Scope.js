@@ -71,7 +71,9 @@ module.exports = class Scope {
 			return;
 		}
 		
-		console.time("parse (" + this.lang.code + ")");
+		if (base.getPref("dev.timing.parse")) {
+			console.time("parse (" + this.lang.code + ")");
+		}
 		
 		try {
 			let parser = this.createTreeSitterParser();
@@ -107,7 +109,9 @@ module.exports = class Scope {
 			this.processInjections(findExistingScope, editExistingScope);
 		}
 		
-		console.timeEnd("parse (" + this.lang.code + ")");
+		if (base.getPref("dev.timing.parse")) {
+			console.timeEnd("parse (" + this.lang.code + ")");
+		}
 	}
 	
 	edit(edit, index, newRanges, code) {

@@ -58,13 +58,15 @@ class BottomPanes extends Evented {
 		
 		this.setSizes();
 		
-		this.tools.on("selectTab", this.onSelectTopPaneTab.bind(this));
-		this.output.on("selectTab", this.onSelectBottomPaneTab.bind(this));
-		
 		this.on("update", () => {
 			this.tools.resize();
 			this.output.resize();
 		});
+	}
+	
+	init() {
+		this.tools.on("selectTab", this.onSelectTopPaneTab.bind(this));
+		this.output.on("selectTab", this.onSelectBottomPaneTab.bind(this));
 	}
 	
 	configure(expandTop, expandBottom) {
@@ -91,6 +93,8 @@ class BottomPanes extends Evented {
 		this.setSizes();
 		
 		this.fire("update");
+		
+		this.savePrefs();
 	}
 	
 	toggleOutput() {
@@ -99,6 +103,8 @@ class BottomPanes extends Evented {
 		this.setSizes();
 		
 		this.fire("update");
+		
+		this.savePrefs();
 	}
 	
 	get containerHeight() {

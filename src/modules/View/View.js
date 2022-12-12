@@ -90,8 +90,8 @@ class View extends Evented {
 		this.blur = this.blur.bind(this);
 		
 		this.teardownCallbacks = [
+			document.on("edit", () => this.ensureScrollIsWithinBounds()),
 			document.on("edit fileDetailsChanged", () => this.batchRedraw()),
-			document.on("fileChanged", () => this.ensureScrollIsWithinBounds()),
 		];
 	}
 	
@@ -335,16 +335,12 @@ class View extends Evented {
 	}
 	
 	ensureScrollIsWithinBounds() {
-		console.time("ensureScrollIsWithinBounds");
-		
 		let x = this.boundedScrollX(this.scrollPosition.x);
 		let y = this.boundedScrollY(this.scrollPosition.y);
 		
 		if (x !== this.scrollPosition.x || y !== this.scrollPosition.y) {
 			this.setScrollPositionNoValidate({x, y});
 		}
-		
-		console.timeEnd("ensureScrollIsWithinBounds");
 	}
 	
 	scrollBy(x, y) {
