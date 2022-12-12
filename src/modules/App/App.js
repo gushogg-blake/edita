@@ -45,6 +45,8 @@ class App extends Evented {
 		this.tools = new Tools(this);
 		this.output = new Output(this);
 		
+		this.bottomPanes.init();
+		
 		this.fileTree = new FileTree(this);
 		
 		this.tabs = [];
