@@ -404,7 +404,7 @@ onMount(function() {
 		</div>
 		<AccelLabel for="replaceWith" label="Rep%lace with"/>
 		<div class="input">
-			<input bind:value={formOptions.replaceWith} id="replaceWith">
+			<input bind:value={formOptions.replaceWith} id="replaceWith" disabled={!formOptions.replace}>
 		</div>
 		<div class="checkboxes">
 			<Checkbox bind:value={formOptions.regex} label="Rege%x"/>
