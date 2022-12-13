@@ -10,26 +10,44 @@ describe("refactor", function() {
 				let asd = 123;
 			`);
 			
-			let parts = parseMatch(code);
+			let tokens = parseMatch(code);
 			
-			deep(parts, [{
+			deep(tokens, [{
 				type: "literal",
-				string: code,
+				string: `let asd = 123;`,
 			}]);
 		});
 		
 		it("escaped brackets", function() {
 			let code = dedent(`
 				function asd\\() {
-					return 123;
+				    return 123;
 				}
 			`);
 			
-			let parts = parseMatch(code);
+			let tokens = parseMatch(code);
 			
-			deep(parts, [{
+			console.log(tokens);
+			
+			deep(tokens, [{
 				type: "literal",
-				string: code.replace("\\(", "("),
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 1,
+			}, {
+				type: "literal",
+				string: `return 123;`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 0,
+			}, {
+				type: "literal",
+				string: `}`,
 			}]);
 		});
 		
@@ -38,9 +56,9 @@ describe("refactor", function() {
 				let asd = (function);
 			`);
 			
-			let parts = parseMatch(code);
+			let tokens = parseMatch(code);
 			
-			deep(parts, [{
+			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
@@ -48,7 +66,7 @@ describe("refactor", function() {
 				string: `(function)`,
 			}, {
 				type: "literal",
-				string: `;\n`,
+				string: `;`,
 			}]);
 		});
 		
@@ -57,9 +75,9 @@ describe("refactor", function() {
 				let asd = (function @fn);
 			`);
 			
-			let parts = parseMatch(code);
+			let tokens = parseMatch(code);
 			
-			deep(parts, [{
+			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
@@ -67,7 +85,7 @@ describe("refactor", function() {
 				string: `(function @fn)`,
 			}, {
 				type: "literal",
-				string: `;\n`,
+				string: `;`,
 			}]);
 		});
 		
@@ -76,9 +94,9 @@ describe("refactor", function() {
 				let asd = (function (name));
 			`);
 			
-			let parts = parseMatch(code);
+			let tokens = parseMatch(code);
 			
-			deep(parts, [{
+			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
@@ -86,7 +104,7 @@ describe("refactor", function() {
 				string: `(function (name))`,
 			}, {
 				type: "literal",
-				string: `;\n`,
+				string: `;`,
 			}]);
 		});
 		
@@ -99,9 +117,9 @@ describe("refactor", function() {
 				);
 			`);
 			
-			let parts = parseMatch(code);
+			let tokens = parseMatch(code);
 			
-			deep(parts, [{
+			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
@@ -109,7 +127,7 @@ describe("refactor", function() {
 				string: `(function\n\t(name)\n\t(body) @body\n\t#match asd\n)`,
 			}, {
 				type: "literal",
-				string: `;\n`,
+				string: `;`,
 			}]);
 		});
 		
@@ -122,9 +140,9 @@ describe("refactor", function() {
 				);
 			`);
 			
-			let parts = parseMatch(code);
+			let tokens = parseMatch(code);
 			
-			deep(parts, [{
+			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
@@ -132,7 +150,7 @@ describe("refactor", function() {
 				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd"\n)`,
 			}, {
 				type: "literal",
-				string: `;\n`,
+				string: `;`,
 			}]);
 		});
 		
@@ -145,9 +163,9 @@ describe("refactor", function() {
 				);
 			`);
 			
-			let parts = parseMatch(code);
+			let tokens = parseMatch(code);
 			
-			deep(parts, [{
+			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
@@ -155,7 +173,7 @@ describe("refactor", function() {
 				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd\\""\n)`,
 			}, {
 				type: "literal",
-				string: `;\n`,
+				string: `;`,
 			}]);
 		});
 		
@@ -168,9 +186,9 @@ describe("refactor", function() {
 				);
 			`);
 			
-			let parts = parseMatch(code);
+			let tokens = parseMatch(code);
 			
-			deep(parts, [{
+			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
@@ -178,7 +196,7 @@ describe("refactor", function() {
 				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd\n)`,
 			}, {
 				type: "literal",
-				string: `;\n`,
+				string: `;`,
 			}]);
 		});
 		
@@ -203,9 +221,9 @@ describe("refactor", function() {
 				fn\\(1, 2, (id));
 			`);
 			
-			let parts = parseMatch(code);
+			let tokens = parseMatch(code);
 			
-			deep(parts, [{
+			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
@@ -213,13 +231,18 @@ describe("refactor", function() {
 				string: `(function)`,
 			}, {
 				type: "literal",
-				string: `;\n\nfn(1, 2, `,
+				string: `;`,
+			}, {
+				type: "newline",
+			}, {
+				type: "literal",
+				string: `fn(1, 2, `,
 			}, {
 				type: "query",
 				string: `(id)`,
 			}, {
 				type: "literal",
-				string: `);\n`,
+				string: `);`,
 			}]);
 		});
 	});

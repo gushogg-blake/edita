@@ -1,3 +1,5 @@
+let gcd = require("utils/gcd");
+
 /*
 parse a match description to separate the literals and the queries
 
@@ -10,24 +12,113 @@ let states = {
 	IN_QUERY: "Q",
 };
 
+function countIndentChars(str, startIndex) {
+	let n = 0;
+	
+	for (let i = startIndex; i < str.length; i++) {
+		let ch = str[i];
+		
+		if (" \t".includes(ch)) {
+			n++;
+		} else {
+			break;
+		}
+	}
+	
+	return n;
+}
+
+function lineIsEmpty(str, startIndex) {
+	let hasChars = false;
+	
+	for (let i = startIndex; i < str.length; i++) {
+		let ch = str[i];
+		
+		if ("\r\n".includes(ch)) {
+			break;
+		}
+		
+		if (!" \t".includes(ch)) {
+			hasChars = true;
+		}
+	}
+	
+	return !hasChars;
+}
+
 function parse(string) {
-	let parts = [];
+	let tokens = [];
 	
 	let state = states.DEFAULT;
 	let openBrackets = 0; // open brackets within a query - if we see ) and this is 1, we've reached the closing )
 	
 	let queryStartIndex;
-	let lastQueryEndIndexOrStart = 0;
 	let literal = "";
+	let indent = 0;
+	let indentLevels = new Set();
 	
 	let i = 0;
 	let ch;
+	
+	function addLiteral() {
+		if (literal) {
+			tokens.push({
+				type: "literal",
+				string: literal,
+			});
+		}
+		
+		literal = "";
+	}
+	
+	function setIndent() {
+		if (lineIsEmpty(string, i)) {
+			return;
+		}
+		
+		let n = countIndentChars(string, i);
+		
+		if (n !== indent) {
+			tokens.push({
+				type: "indent",
+				level: n,
+			});
+			
+			indent = n;
+			
+			if (indent !== 0) {
+				indentLevels.add(indent);
+			}
+		}
+		
+		i += n;
+		
+		ch = string[i];
+	}
+	
+	setIndent();
 	
 	while (i < string.length) {
 		ch = string[i];
 		
 		if (state === states.DEFAULT) {
-			if (ch === "\\") {
+			if ("\r\n".includes(ch)) {
+				addLiteral();
+				
+				if (tokens.length > 0 && tokens.at(-1)?.type !== "newline") {
+					tokens.push({
+						type: "newline",
+					});
+				}
+				
+				do {
+					i++;
+					
+					ch = string[i];
+				} while ("\r\n".includes(ch));
+				
+				setIndent();
+			} else if (ch === "\\") {
 				literal += string[i + 1] || "";
 				
 				i += 2;
@@ -36,12 +127,7 @@ function parse(string) {
 				
 				queryStartIndex = i;
 				
-				if (literal.length > 0) {
-					parts.push({
-						type: "literal",
-						string: literal,
-					});
-				}
+				addLiteral();
 				
 				i++;
 				
@@ -62,12 +148,10 @@ function parse(string) {
 				i++;
 				
 				if (openBrackets === 0) {
-					parts.push({
+					tokens.push({
 						type: "query",
 						string: string.substring(queryStartIndex, i),
 					});
-					
-					literal = "";
 					
 					state = states.DEFAULT;
 				}
@@ -105,14 +189,23 @@ function parse(string) {
 		throw new Error("Unterminated query - expecting closing )");
 	}
 	
-	if (literal.length > 0) {
-		parts.push({
-			type: "literal",
-			string: literal,
-		});
+	addLiteral();
+	
+	while (tokens.at(-1)?.type === "newline") {
+		tokens.pop();
 	}
 	
-	return parts;
+	// normalise indents
+	
+	let f = gcd(...indentLevels);
+	
+	for (let token of tokens) {
+		if (token.type === "indent") {
+			token.level /= f;
+		}
+	}
+	
+	return tokens;
 }
 
 module.exports = parse;
