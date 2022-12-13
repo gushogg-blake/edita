@@ -1,10 +1,33 @@
 let gcd = require("utils/gcd");
 
 /*
-parse a match description to separate the literals and the queries
+parse a match description
 
-an unescaped ( starts a query and its closing ) closes it -- opening
-brackets in code must be escaped, e.g. fn\()
+syntax:
+
+(...) - tree-sitter query
+[ - start range to be replaced
+] - end range to be replaced
+
+* - 0 or more lines, greedy
+*? - 0 or more lines, lazy
++ - 1 or more lines, greedy
++? - 1 or more lines, lazy
+
+* and + can be followed by a capture group, e.g.
+
+	+? @lines
+
+to make them available in the replacement
+
+lines must appear on their own line
+
+indentation - sets the indentation level relative to the
+starting indentation level of the matched code, e.g.
+
+function /\w+/@name\() {
+	+ @body
+}
 */
 
 let states = {
@@ -122,6 +145,22 @@ function parse(string) {
 				literal += string[i + 1] || "";
 				
 				i += 2;
+			} else if (ch === "[") {
+				addLiteral();
+				
+				tokens.push({
+					type: "replaceStart",
+				});
+				
+				i++;
+			} else if (ch === "]") {
+				addLiteral();
+				
+				tokens.push({
+					type: "replaceEnd",
+				});
+				
+				i++;
 			} else if (ch === "(") {
 				openBrackets++;
 				
