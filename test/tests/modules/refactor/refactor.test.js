@@ -414,8 +414,6 @@ describe("refactor", function() {
 			
 			let tokens = parseMatch(code);
 			
-			console.log(tokens);
-			
 			deep(tokens, [{
 				type: "literal",
 				string: `function asd() {`,
