@@ -69,6 +69,20 @@ function lineIsEmpty(str, startIndex) {
 	return !hasChars;
 }
 
+function isAtStartOfLine(str, index) {
+	for (let i = index - 1; i > 0; i--) {
+		let ch = str[i];
+		
+		if ("\r\n".includes(ch)) {
+			return true;
+		} else if (!" \t".includes(ch)) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
 function parse(string) {
 	let tokens = [];
 	
@@ -83,6 +97,8 @@ function parse(string) {
 	let i = 0;
 	let ch;
 	
+	let identifierRe = /[\w_]+/g;
+	
 	function addLiteral() {
 		if (literal) {
 			tokens.push({
@@ -94,7 +110,7 @@ function parse(string) {
 		literal = "";
 	}
 	
-	function setIndent() {
+	function consumeAndSetIndentation() {
 		if (lineIsEmpty(string, i)) {
 			return;
 		}
@@ -119,7 +135,39 @@ function parse(string) {
 		ch = string[i];
 	}
 	
-	setIndent();
+	function consumeString(str) {
+		if (string.substr(i, str.length) === str) {
+			i += str.length;
+			
+			ch = string[i];
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	function consumeRe(re) {
+		re.lastIndex = i;
+		
+		let match = re.exec(string)?.[0] || "";
+		
+		i += match.length;
+		
+		ch = string[i];
+		
+		return match;
+	}
+	
+	function skipWhitespace() {
+		while (" \t".includes(string[i])) {
+			i++;
+			
+			ch = string[i];
+		}
+	}
+	
+	consumeAndSetIndentation();
 	
 	while (i < string.length) {
 		ch = string[i];
@@ -140,7 +188,7 @@ function parse(string) {
 					ch = string[i];
 				} while ("\r\n".includes(ch));
 				
-				setIndent();
+				consumeAndSetIndentation();
 			} else if (ch === "\\") {
 				literal += string[i + 1] || "";
 				
@@ -171,6 +219,25 @@ function parse(string) {
 				i++;
 				
 				state = states.IN_QUERY;
+			} else if ("*+".includes(ch) && isAtStartOfLine(string, i)) {
+				let type = ch === "*" ? "zeroOrMoreLines" : "oneOrMoreLines";
+				let capture = null;
+				
+				i++;
+				
+				let lazy = consumeString("?");
+				
+				skipWhitespace();
+				
+				if (consumeString("@")) {
+					capture = consumeRe(identifierRe);
+				}
+				
+				tokens.push({
+					type,
+					lazy,
+					capture,
+				});
 			} else {
 				literal += ch;
 				

@@ -243,5 +243,204 @@ describe("refactor", function() {
 				string: `);`,
 			}]);
 		});
+		
+		it("zero or more lines", function() {
+			let code = dedent(`
+				function asd\\() {
+					*
+				}
+			`);
+			
+			let tokens = parseMatch(code);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 1,
+			}, {
+				type: "zeroOrMoreLines",
+				lazy: false,
+				capture: null,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 0,
+			}, {
+				type: "literal",
+				string: `}`,
+			}]);
+		});
+		
+		it("zero or more lines, lazy", function() {
+			let code = dedent(`
+				function asd\\() {
+					*?
+				}
+			`);
+			
+			let tokens = parseMatch(code);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 1,
+			}, {
+				type: "zeroOrMoreLines",
+				lazy: true,
+				capture: null,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 0,
+			}, {
+				type: "literal",
+				string: `}`,
+			}]);
+		});
+		
+		it("one or more lines", function() {
+			let code = dedent(`
+				function asd\\() {
+					+
+				}
+			`);
+			
+			let tokens = parseMatch(code);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 1,
+			}, {
+				type: "oneOrMoreLines",
+				lazy: false,
+				capture: null,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 0,
+			}, {
+				type: "literal",
+				string: `}`,
+			}]);
+		});
+		
+		it("one or more lines, lazy", function() {
+			let code = dedent(`
+				function asd\\() {
+					+?
+				}
+			`);
+			
+			let tokens = parseMatch(code);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 1,
+			}, {
+				type: "oneOrMoreLines",
+				lazy: true,
+				capture: null,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 0,
+			}, {
+				type: "literal",
+				string: `}`,
+			}]);
+		});
+		
+		it("lines with capture", function() {
+			let code = dedent(`
+				function asd\\() {
+					+ @lines
+				}
+			`);
+			
+			let tokens = parseMatch(code);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 1,
+			}, {
+				type: "oneOrMoreLines",
+				lazy: false,
+				capture: "lines",
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 0,
+			}, {
+				type: "literal",
+				string: `}`,
+			}]);
+		});
+		
+		it("plus and asterisk in code (not on own line)", function() {
+			let code = dedent(`
+				function asd\\() {
+					a + @lines
+					b * @lines
+				}
+			`);
+			
+			let tokens = parseMatch(code);
+			
+			console.log(tokens);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 1,
+			}, {
+				type: "literal",
+				string: "a + @lines",
+			}, {
+				type: "newline",
+			}, {
+				type: "literal",
+				string: "b * @lines",
+			}, {
+				type: "newline",
+			}, {
+				type: "indent",
+				level: 0,
+			}, {
+				type: "literal",
+				string: `}`,
+			}]);
+		});
 	});
 });
