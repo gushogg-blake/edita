@@ -1,7 +1,7 @@
 let gcd = require("utils/gcd");
 
 /*
-parse a match description
+tokenise a codex expression
 
 syntax:
 
@@ -21,6 +21,8 @@ syntax:
 to make them available in the replacement
 
 lines must appear on their own line
+
+regex literals - /\w+/@id
 
 indentation - sets the indentation level relative to the
 starting indentation level of the matched code, e.g.
@@ -98,6 +100,7 @@ function parse(string) {
 	let ch;
 	
 	let identifierRe = /[\w_]+/g;
+	let regexFlagsRe = /[gmiysu]*/g;
 	
 	function addLiteral() {
 		if (literal) {
@@ -167,6 +170,14 @@ function parse(string) {
 		}
 	}
 	
+	function consumeCaptureLabel() {
+		if (consumeString("@")) {
+			return consumeRe(identifierRe);
+		} else {
+			return null;
+		}
+	}
+	
 	consumeAndSetIndentation();
 	
 	while (i < string.length) {
@@ -221,7 +232,6 @@ function parse(string) {
 				state = states.IN_QUERY;
 			} else if ("*+".includes(ch) && isAtStartOfLine(string, i)) {
 				let type = ch === "*" ? "zeroOrMoreLines" : "oneOrMoreLines";
-				let capture = null;
 				
 				i++;
 				
@@ -229,13 +239,59 @@ function parse(string) {
 				
 				skipWhitespace();
 				
-				if (consumeString("@")) {
-					capture = consumeRe(identifierRe);
-				}
+				let capture = consumeCaptureLabel();
 				
 				tokens.push({
 					type,
 					lazy,
+					capture,
+				});
+			} else if (ch === "/") {
+				addLiteral();
+				
+				let startIndex = i;
+				let inClass = false;
+				
+				i++;
+				
+				while (i < string.length) {
+					ch = string[i];
+					
+					if ("\r\n".includes(ch)) {
+						throw new Error("Unterminated regex");
+					} else if (ch === "\\") {
+						i++;
+						
+						if (i < string.length && !"\r\n".includes(string[i + 1])) {
+							i++;
+						}
+						
+						continue;
+					} else if (ch === "[") {
+						inClass = true;
+					} else if (ch === "]") {
+						inClass = false;
+					} else if (!inClass && ch === "/") {
+						i++;
+						
+						break;
+					}
+					
+					i++;
+				}
+				
+				let regex = string.substring(startIndex + 1, i - 1);
+				
+				let flags = consumeRe(regexFlagsRe);
+				
+				i += flags.length;
+				
+				let capture = consumeCaptureLabel();
+				
+				tokens.push({
+					type: "regex",
+					regex,
+					flags,
 					capture,
 				});
 			} else {

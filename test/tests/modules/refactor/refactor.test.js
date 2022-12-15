@@ -1,16 +1,16 @@
 let {expect} = require("chai");
 let {is, deep} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
-let parseMatch = require("modules/refactor/parseMatch");
+let tokeniseCodex = require("modules/refactor/tokeniseCodex");
 
 describe("refactor", function() {
-	describe("parseMatch", function() {
+	describe("tokeniseCodex", function() {
 		it("plain text only", function() {
 			let code = dedent(`
 				let asd = 123;
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -25,7 +25,7 @@ describe("refactor", function() {
 				}
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -54,7 +54,7 @@ describe("refactor", function() {
 				let asd = (function);
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -73,7 +73,7 @@ describe("refactor", function() {
 				let asd = (function @fn);
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -92,7 +92,7 @@ describe("refactor", function() {
 				let asd = (function (name));
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -115,7 +115,7 @@ describe("refactor", function() {
 				);
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -138,7 +138,7 @@ describe("refactor", function() {
 				);
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -161,7 +161,7 @@ describe("refactor", function() {
 				);
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -184,7 +184,7 @@ describe("refactor", function() {
 				);
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -208,7 +208,7 @@ describe("refactor", function() {
 			`);
 			
 			expect(function() {
-				parseMatch(code);
+				tokeniseCodex(code);
 			}).to.throw();
 		});
 		
@@ -219,7 +219,7 @@ describe("refactor", function() {
 				fn\\(1, 2, (id));
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -251,7 +251,7 @@ describe("refactor", function() {
 				}
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -283,7 +283,7 @@ describe("refactor", function() {
 				}
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -315,7 +315,7 @@ describe("refactor", function() {
 				}
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -347,7 +347,7 @@ describe("refactor", function() {
 				}
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -379,7 +379,7 @@ describe("refactor", function() {
 				}
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -412,7 +412,7 @@ describe("refactor", function() {
 				}
 			`);
 			
-			let tokens = parseMatch(code);
+			let tokens = tokeniseCodex(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -438,6 +438,82 @@ describe("refactor", function() {
 			}, {
 				type: "literal",
 				string: `}`,
+			}]);
+		});
+		
+		it("regex", function() {
+			let code = dedent(`
+				let asd = /\\w+/;
+			`);
+			
+			let tokens = tokeniseCodex(code);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `let asd = `,
+			}, {
+				type: "regex",
+				regex: `\\w+`,
+				flags: "",
+				capture: null,
+			}, {
+				type: "literal",
+				string: `;`,
+			}]);
+		});
+		
+		it("regex with capture", function() {
+			let code = dedent(`
+				let asd = /\\w+/@id;
+			`);
+			
+			let tokens = tokeniseCodex(code);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `let asd = `,
+			}, {
+				type: "regex",
+				regex: `\\w+`,
+				flags: "",
+				capture: "id",
+			}, {
+				type: "literal",
+				string: `;`,
+			}]);
+		});
+		
+		it("regex with class", function() {
+			let code = dedent(`
+				let asd = /[a-z/]\\w+/@id;
+			`);
+			
+			let tokens = tokeniseCodex(code);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `let asd = `,
+			}, {
+				type: "regex",
+				regex: `[a-z/]\\w+`,
+				flags: "",
+				capture: "id",
+			}, {
+				type: "literal",
+				string: `;`,
+			}]);
+		});
+		
+		it("division in code", function() {
+			let code = dedent(`
+				let asd = 3 \\/ 4;
+			`);
+			
+			let tokens = tokeniseCodex(code);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `let asd = 3 / 4;`,
 			}]);
 		});
 	});

@@ -1,4 +1,4 @@
-let parseMatch = require("./parseMatch");
+let tokeniseCodex = require("./tokeniseCodex");
 
 /*
 a query consists of a tree-sitter query and an optional prefix and suffix.
@@ -21,8 +21,8 @@ let (id) = (fn)
 module.exports = (fn);
 */
 
-function query(code, match) {
-	let parts = parseMatch(match);
+function query(code, codex) {
+	let parts = tokeniseCodex(codex);
 	
 	
 }
