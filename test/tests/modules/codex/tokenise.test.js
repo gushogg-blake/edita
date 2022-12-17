@@ -1,10 +1,10 @@
 let {expect} = require("chai");
 let {is, deep} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
-let tokeniseCodex = require("modules/refactor/tokeniseCodex");
+let tokeniseCodex = require("modules/codex/tokenise");
 
-describe("refactor", function() {
-	describe("tokeniseCodex", function() {
+describe("codex", function() {
+	describe("tokenise", function() {
 		it("plain text only", function() {
 			let code = dedent(`
 				let asd = 123;
@@ -458,7 +458,7 @@ describe("refactor", function() {
 				string: `let asd = `,
 			}, {
 				type: "regex",
-				regex: `\\w+`,
+				pattern: `\\w+`,
 				flags: "",
 				capture: null,
 			}, {
@@ -479,7 +479,7 @@ describe("refactor", function() {
 				string: `let asd = `,
 			}, {
 				type: "regex",
-				regex: `\\w+`,
+				pattern: `\\w+`,
 				flags: "",
 				capture: "id",
 			}, {
@@ -500,7 +500,7 @@ describe("refactor", function() {
 				string: `let asd = `,
 			}, {
 				type: "regex",
-				regex: `[a-z/]\\w+`,
+				pattern: `[a-z/]\\w+`,
 				flags: "",
 				capture: "id",
 			}, {

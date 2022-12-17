@@ -1,7 +1,33 @@
 let Cursor = require("modules/utils/Cursor");
-let tokeniseCodex = require("./tokeniseCodex");
+let tokenise = require("./tokenise");
 
 let {c} = Cursor;
+
+let regexes = {};
+
+function getRegex(pattern, flags) {
+	/*
+	add start assertion if necessary to anchor the regex to the
+	current index and remove g flag if present - we're only interested
+	in a single match at the current index
+	*/
+	
+	if (pattern[0] !== "^") {
+		pattern = "^" + pattern;
+	}
+	
+	flags = flags.replaceAll("g", "");
+	
+	if (!regexes[pattern]?.[flags]) {
+		if (!regexes[pattern]) {
+			regexes[pattern] = {};
+		}
+		
+		regexes[pattern][flags] = new RegExp(pattern, flags);
+	}
+	
+	return regexes[pattern][flags];
+}
 
 let matchers = {
 	literal(document, matches, states, token, next) {
@@ -25,12 +51,37 @@ let matchers = {
 		return next();
 	},
 	
-	newline(document, matches, states, token, next) {
-		let {
-			cursor,
-			minIndentLevel,
-		} = states.at(-1);
+	regex(document, matches, states, token, next) {
+		let re = getRegex(token.pattern, token.flags);
+		let {cursor, minIndentLevel} = states.at(-1);
+		let index = document.indexFromCursor(cursor);
 		
+		console.log(document.string);
+		console.log(index);
+		
+		let result = re.exec(document.string.substr(index));
+		
+		if (!result) {
+			return false;
+		}
+		
+		let [match] = result;
+		
+		matches.push({
+			token,
+			match,
+		});
+		
+		states.push({
+			cursor: document.cursorFromIndex(index + match.length),
+			minIndentLevel,
+		});
+		
+		return next();
+	},
+	
+	newline(document, matches, states, token, next) {
+		let {cursor, minIndentLevel} = states.at(-1);
 		let line = document.lines[cursor.lineIndex];
 		
 		if (cursor.offset !== line.string.length || Cursor.equals(cursor, document.cursorAtEnd())) {
@@ -46,11 +97,7 @@ let matchers = {
 	},
 	
 	lines(document, matches, states, token, next) {
-		let {
-			cursor,
-			minIndentLevel,
-		} = states.at(-1);
-		
+		let {cursor, minIndentLevel} = states.at(-1);
 		let {lineIndex} = cursor;
 		
 		while (lineIndex < document.lines.length && document.lines[lineIndex].string === "") {
@@ -92,7 +139,6 @@ let matchers = {
 		
 		return isMatch;
 	},
-	
 };
 
 function advanceCursor(document, cursor) {
@@ -120,10 +166,10 @@ function skipEmptyLines(document, cursor) {
 	return cursor;
 }
 
-function matchCodex(document, codex, startCursor) {
+function match(document, codex, startCursor) {
 	startCursor = skipEmptyLines(document, startCursor);
 	
-	let tokens = tokeniseCodex(codex);
+	let tokens = tokenise(codex);
 	
 	let matches = [];
 	
@@ -159,4 +205,4 @@ function matchCodex(document, codex, startCursor) {
 	}
 }
 
-module.exports = matchCodex;
+module.exports = match;

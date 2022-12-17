@@ -1,6 +1,6 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
-let tokeniseCodex = require("modules/refactor/tokeniseCodex");
+let codexFind = require("modules/codex/codexFind");
 
 class Refactor extends Evented {
 	constructor(app, options) {
@@ -59,9 +59,9 @@ class Refactor extends Evented {
 	
 	findMatches() {
 		try {
-			let parts = tokeniseCodex(this.editors.match.document.string);
+			//let parts = tokeniseCodex(this.editors.match.document.string);
 			
-			console.log(parts);
+			//console.log(parts);
 		} catch (e) {
 			console.log("Error parsing match query");
 			console.log(e);

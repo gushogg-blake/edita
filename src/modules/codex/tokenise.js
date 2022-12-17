@@ -85,7 +85,7 @@ function isAtStartOfLine(str, index) {
 	return true;
 }
 
-function parse(string) {
+function tokenise(string) {
 	let tokens = [];
 	
 	let state = states.DEFAULT;
@@ -279,7 +279,7 @@ function parse(string) {
 					i++;
 				}
 				
-				let regex = string.substring(startIndex + 1, i - 1);
+				let pattern = string.substring(startIndex + 1, i - 1);
 				
 				let flags = consumeRe(regexFlagsRe);
 				
@@ -289,7 +289,7 @@ function parse(string) {
 				
 				tokens.push({
 					type: "regex",
-					regex,
+					pattern,
 					flags,
 					capture,
 				});
@@ -369,4 +369,4 @@ function parse(string) {
 	return tokens;
 }
 
-module.exports = parse;
+module.exports = tokenise;
