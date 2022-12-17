@@ -12,6 +12,8 @@ describe("codex", function() {
 				let asd = 123;
 			`);
 			
+			console.log(doc.langFromCursor({lineIndex: 0, offset: 0}));
+			
 			let codex = dedent(`
 				let asd
 			`);
@@ -101,8 +103,6 @@ describe("codex", function() {
 			
 			let matches = match(doc, codex, Cursor.start());
 			
-			console.log(matches);
-			
 			subset(matches, [
 				{
 					token: {
@@ -123,6 +123,50 @@ describe("codex", function() {
 					token: {
 						type: "literal",
 						string: ` = 123;`,
+					},
+				},
+			]);
+		});
+		
+		it("query", function() {
+			let doc = createJsDoc(`
+				let asd = function() {
+					return 123;
+				}
+			`);
+			
+			let codex = dedent(`
+				let /\\w+/@id = (function)
+			`);
+			
+			let matches = match(doc, codex, Cursor.start());
+			
+			console.log(matches);
+			
+			subset(matches, [
+				{
+					token: {
+						type: "literal",
+						string: `let `,
+					},
+				},
+				{
+					token: {
+						type: "regex",
+						pattern: "\\w+",
+						capture: "id",
+					},
+					
+					match: "asd",
+				},
+				{
+					token: {
+						type: "query",
+						query: "(function)",
+					},
+					
+					match: {
+						type: "function",
 					},
 				},
 			]);

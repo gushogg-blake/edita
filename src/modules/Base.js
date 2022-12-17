@@ -65,7 +65,6 @@ class Base extends Evented {
 		super();
 		
 		this.langs = new Langs();
-		this.treeSitterLanguages = {};
 		this.initialisedLangs = new Set();
 		this.utils = utils;
 		
@@ -281,10 +280,6 @@ class Base extends Evented {
 		};
 	}
 	
-	getTreeSitterLanguage(code) {
-		return this.treeSitterLanguages[code];
-	}
-	
 	async initLang(lang) {
 		if (this.initialisedLangs.has(lang)) {
 			return;
@@ -305,7 +300,7 @@ class Base extends Evented {
 		let {code} = lang;
 		let treeSitterLanguage = await platform.loadTreeSitterLanguage(code);
 		
-		this.treeSitterLanguages[code] = treeSitterLanguage;
+		lang.treeSitterLanguage = treeSitterLanguage;
 		
 		// tree-sitter query creation is slow so pre-create them
 		

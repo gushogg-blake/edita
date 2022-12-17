@@ -50,7 +50,7 @@ module.exports = class Scope {
 	
 	createTreeSitterParser() {
 		let parser = new TreeSitter();
-		let treeSitterLanguage = base.getTreeSitterLanguage(this.lang.code);
+		let {treeSitterLanguage} = this.lang;
 		
 		if (!treeSitterLanguage) {
 			// langs must be pre-initialised with base.initLang.
@@ -290,6 +290,10 @@ module.exports = class Scope {
 				}
 			}
 		}
+	}
+	
+	query(query) {
+		return query.matches(this.tree.rootNode);
 	}
 	
 	/*

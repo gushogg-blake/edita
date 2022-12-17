@@ -1,5 +1,6 @@
 let Cursor = require("modules/utils/Cursor");
 let tokenise = require("./tokenise");
+let query = require("./query");
 
 let {c} = Cursor;
 
@@ -7,9 +8,9 @@ let regexes = {};
 
 function getRegex(pattern, flags) {
 	/*
-	add start assertion if necessary to anchor the regex to the
-	current index and remove g flag if present - we're only interested
-	in a single match at the current index
+	add start assertion if necessary to anchor the regex to the current
+	index, and remove g flag if present - we're only interested in a
+	single match at the current index
 	*/
 	
 	if (pattern[0] !== "^") {
@@ -18,11 +19,11 @@ function getRegex(pattern, flags) {
 	
 	flags = flags.replaceAll("g", "");
 	
-	if (!regexes[pattern]?.[flags]) {
-		if (!regexes[pattern]) {
-			regexes[pattern] = {};
-		}
-		
+	if (!regexes[pattern]) {
+		regexes[pattern] = {};
+	}
+	
+	if (!regexes[pattern][flags]) {
 		regexes[pattern][flags] = new RegExp(pattern, flags);
 	}
 	
@@ -56,10 +57,32 @@ let matchers = {
 		let {cursor, minIndentLevel} = states.at(-1);
 		let index = document.indexFromCursor(cursor);
 		
-		console.log(document.string);
-		console.log(index);
-		
 		let result = re.exec(document.string.substr(index));
+		
+		if (!result) {
+			return false;
+		}
+		
+		let [match] = result;
+		
+		matches.push({
+			token,
+			match,
+		});
+		
+		states.push({
+			cursor: document.cursorFromIndex(index + match.length),
+			minIndentLevel,
+		});
+		
+		return next();
+	},
+	
+	query(document, matches, states, token, next) {
+		let {cursor, minIndentLevel} = states.at(-1);
+		let index = document.indexFromCursor(cursor);
+		console.log(query);
+		let result = query(document, cursor, token.query);
 		
 		if (!result) {
 			return false;
@@ -190,10 +213,6 @@ function match(document, codex, startCursor) {
 		let isMatch = matchers[token.type](document, matches, states, token, () => next(tokenIndex + 1));
 		
 		return isMatch;
-	}
-	
-	function run() {
-		
 	}
 	
 	let isMatch = next(0);

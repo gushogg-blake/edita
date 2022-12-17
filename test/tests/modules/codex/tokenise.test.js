@@ -1,7 +1,7 @@
 let {expect} = require("chai");
 let {is, deep} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
-let tokeniseCodex = require("modules/codex/tokenise");
+let tokenise = require("modules/codex/tokenise");
 
 describe("codex", function() {
 	describe("tokenise", function() {
@@ -10,7 +10,7 @@ describe("codex", function() {
 				let asd = 123;
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -25,7 +25,7 @@ describe("codex", function() {
 				}
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -54,14 +54,14 @@ describe("codex", function() {
 				let asd = (function);
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
-				string: `(function)`,
+				query: `(function)`,
 			}, {
 				type: "literal",
 				string: `;`,
@@ -73,14 +73,14 @@ describe("codex", function() {
 				let asd = (function @fn);
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
-				string: `(function @fn)`,
+				query: `(function @fn)`,
 			}, {
 				type: "literal",
 				string: `;`,
@@ -92,14 +92,14 @@ describe("codex", function() {
 				let asd = (function (name));
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
-				string: `(function (name))`,
+				query: `(function (name))`,
 			}, {
 				type: "literal",
 				string: `;`,
@@ -115,14 +115,14 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
-				string: `(function\n\t(name)\n\t(body) @body\n\t#match asd\n)`,
+				query: `(function\n\t(name)\n\t(body) @body\n\t#match asd\n)`,
 			}, {
 				type: "literal",
 				string: `;`,
@@ -138,14 +138,14 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
-				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd"\n)`,
+				query: `(function\n\t(name)\n\t(body) @body\n\t#match "asd"\n)`,
 			}, {
 				type: "literal",
 				string: `;`,
@@ -161,14 +161,14 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
-				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd\\""\n)`,
+				query: `(function\n\t(name)\n\t(body) @body\n\t#match "asd\\""\n)`,
 			}, {
 				type: "literal",
 				string: `;`,
@@ -184,14 +184,14 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
-				string: `(function\n\t(name)\n\t(body) @body\n\t#match "asd\n)`,
+				query: `(function\n\t(name)\n\t(body) @body\n\t#match "asd\n)`,
 			}, {
 				type: "literal",
 				string: `;`,
@@ -208,7 +208,7 @@ describe("codex", function() {
 			`);
 			
 			expect(function() {
-				tokeniseCodex(code);
+				tokenise(code);
 			}).to.throw();
 		});
 		
@@ -219,14 +219,14 @@ describe("codex", function() {
 				fn\\(1, 2, (id));
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
 				string: `let asd = `,
 			}, {
 				type: "query",
-				string: `(function)`,
+				query: `(function)`,
 			}, {
 				type: "literal",
 				string: `;`,
@@ -237,7 +237,7 @@ describe("codex", function() {
 				string: `fn(1, 2, `,
 			}, {
 				type: "query",
-				string: `(id)`,
+				query: `(id)`,
 			}, {
 				type: "literal",
 				string: `);`,
@@ -251,7 +251,7 @@ describe("codex", function() {
 				}
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -284,7 +284,7 @@ describe("codex", function() {
 				}
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -317,7 +317,7 @@ describe("codex", function() {
 				}
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -350,7 +350,7 @@ describe("codex", function() {
 				}
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -383,7 +383,7 @@ describe("codex", function() {
 				}
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -417,7 +417,7 @@ describe("codex", function() {
 				}
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -451,7 +451,7 @@ describe("codex", function() {
 				let asd = /\\w+/;
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -472,7 +472,7 @@ describe("codex", function() {
 				let asd = /\\w+/@id;
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -493,7 +493,7 @@ describe("codex", function() {
 				let asd = /[a-z/]\\w+/@id;
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -514,7 +514,7 @@ describe("codex", function() {
 				let asd = 3 \\/ 4;
 			`);
 			
-			let tokens = tokeniseCodex(code);
+			let tokens = tokenise(code);
 			
 			deep(tokens, [{
 				type: "literal",

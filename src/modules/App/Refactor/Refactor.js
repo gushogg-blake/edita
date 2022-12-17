@@ -1,6 +1,6 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
-let codexFind = require("modules/codex/codexFind");
+//let codexFind = require("modules/codex/codexFind");
 
 class Refactor extends Evented {
 	constructor(app, options) {

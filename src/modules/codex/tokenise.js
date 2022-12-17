@@ -231,6 +231,8 @@ function tokenise(string) {
 				
 				state = states.IN_QUERY;
 			} else if ("*+".includes(ch) && isAtStartOfLine(string, i)) {
+				let zero = ch === "*";
+				
 				i++;
 				
 				let lazy = consumeString("?");
@@ -241,7 +243,7 @@ function tokenise(string) {
 				
 				tokens.push({
 					type: "lines",
-					zero: ch === "*",
+					zero,
 					lazy,
 					capture,
 				});
@@ -311,7 +313,7 @@ function tokenise(string) {
 				if (openBrackets === 0) {
 					tokens.push({
 						type: "query",
-						string: string.substring(queryStartIndex, i),
+						query: string.substring(queryStartIndex, i),
 					});
 					
 					state = states.DEFAULT;
