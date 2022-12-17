@@ -5,7 +5,7 @@ tokenise a codex expression
 
 syntax:
 
-(...) - tree-sitter query
+(...) @node - tree-sitter query
 [ - start range to be replaced
 ] - end range to be replaced
 
@@ -311,6 +311,9 @@ function tokenise(string) {
 				i++;
 				
 				if (openBrackets === 0) {
+					skipWhitespace();
+					consumeCaptureLabel();
+					
 					tokens.push({
 						type: "query",
 						query: string.substring(queryStartIndex, i),

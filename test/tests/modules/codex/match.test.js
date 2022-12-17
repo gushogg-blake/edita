@@ -161,6 +161,12 @@ describe("codex", function() {
 				},
 				{
 					token: {
+						type: "literal",
+						string: ` = `,
+					},
+				},
+				{
+					token: {
 						type: "query",
 						query: "(function)",
 					},

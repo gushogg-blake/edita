@@ -81,14 +81,11 @@ let matchers = {
 	query(document, matches, states, token, next) {
 		let {cursor, minIndentLevel} = states.at(-1);
 		let index = document.indexFromCursor(cursor);
-		console.log(query);
-		let result = query(document, cursor, token.query);
+		let match = query(document, cursor, token.query);
 		
-		if (!result) {
+		if (!match) {
 			return false;
 		}
-		
-		let [match] = result;
 		
 		matches.push({
 			token,

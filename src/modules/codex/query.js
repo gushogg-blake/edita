@@ -32,7 +32,24 @@ function findResultAtCursor(results, cursor) {
 	return null;
 }
 
+/*
+if no explicit capture label is given for the top-level node,
+use the node name
+*/
+
+function addCaptureLabel(queryString) {
+	if (!queryString.match(/@([\w_]+)$/)) {
+		let [, nodeName] = queryString.match(/^\(([\w_]+)/);
+		
+		queryString += " @" + nodeName;
+	}
+	
+	return queryString;
+}
+
 function query(document, cursor, queryString) {
+	queryString = addCaptureLabel(queryString);
+	
 	if (!cache.has(document)) {
 		cache.set(document, {});
 	}
