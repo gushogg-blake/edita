@@ -1,4 +1,36 @@
+let middle = require("utils/middle");
+let Cursor = require("modules/utils/Cursor");
+let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
+
 let cache = new WeakMap();
+
+function findResultAtCursor(results, cursor) {
+	let startIndex = 0;
+	let endIndex = results.length;
+	
+	while (endIndex - startIndex > 0) {
+		let index = middle(startIndex, endIndex);
+		let result = results[index];
+		let mainNode = result.captures[0].node;
+		let startCursor = treeSitterPointToCursor(mainNode.startPosition);
+		
+		if (Cursor.equals(cursor, startCursor)) {
+			let captures = {};
+			
+			for (let {name, node} of result.captures) {
+				captures[name] = node;
+			}
+			
+			return captures;
+		} else if (Cursor.isBefore(cursor, startCursor)) {
+			endIndex = index;
+		} else {
+			startIndex = index + 1;
+		}
+	}
+	
+	return null;
+}
 
 function query(document, cursor, queryString) {
 	if (!cache.has(document)) {
@@ -21,7 +53,7 @@ function query(document, cursor, queryString) {
 	
 	let queryResults = results[lang.code][queryString];
 	
-	console.log(queryResults);
+	return findResultAtCursor(queryResults, cursor);
 }
 
 module.exports = query;

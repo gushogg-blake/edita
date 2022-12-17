@@ -11,7 +11,5 @@ export default async function() {
 	
 	await base.init();
 	
-	console.time("lang init");
 	await Promise.all(["javascript", "html", "css", "php"].map(code => base.initLang(base.langs.get(code))));
-	console.timeEnd("lang init");
 }

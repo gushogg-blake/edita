@@ -292,8 +292,10 @@ module.exports = class Scope {
 		}
 	}
 	
-	query(query) {
-		return query.matches(this.tree.rootNode);
+	query(query, startCursor=null) {
+		let startPosition = startCursor ? cursorToTreeSitterPoint(startCursor) : null;
+		
+		return query.matches(this.tree.rootNode, startPosition);
 	}
 	
 	/*
