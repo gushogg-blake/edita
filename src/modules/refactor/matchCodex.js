@@ -95,26 +95,22 @@ let matchers = {
 	
 };
 
-//function advanceCursor(document, cursor) {
-//	let {cursor, index} = position;
-//	
-//	if (index === document.string.length) {
-//		return null;
-//	}
-//	
-//	let {lineIndex, offset} = cursor;
-//	let line = document.lines[lineIndex];
-//	
-//	if (offset === line.string.length) {
-//		cursor = c(lineIndex + 1, 0);
-//		index += document.fileDetails.newline.length;
-//	} else {
-//		cursor = c(lineIndex, offset + 1);
-//		index++;
-//	}
-//	
-//	return {cursor, index};
-//}
+function advanceCursor(document, cursor) {
+	if (Cursor.equals(cursor, document.cursorAtEnd())) {
+		return null;
+	}
+	
+	let {lineIndex, offset} = cursor;
+	let line = document.lines[lineIndex];
+	
+	if (offset === line.string.length) {
+		cursor = c(lineIndex + 1, 0);
+	} else {
+		cursor = c(lineIndex, offset + 1);
+	}
+	
+	return cursor;
+}
 
 function skipEmptyLines(document, cursor) {
 	while (cursor.lineIndex < document.lines.length && document.lines[cursor.lineIndex].string === "") {
@@ -124,7 +120,7 @@ function skipEmptyLines(document, cursor) {
 	return cursor;
 }
 
-function matchCodex(document, codex, startCursor=Cursor.start()) {
+function matchCodex(document, codex, startCursor) {
 	startCursor = skipEmptyLines(document, startCursor);
 	
 	let tokens = tokeniseCodex(codex);

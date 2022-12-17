@@ -1,5 +1,5 @@
 let {expect} = require("chai");
-let {is, deep} = require("test/utils/assertions");
+let {is, deep, subset} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
 let Cursor = require("modules/utils/Cursor");
@@ -44,21 +44,29 @@ describe("refactor", function() {
 			
 			console.log(matches);
 			
-			deep(matches[0], {
-				token: {
-					type: "literal",
-					string: `let asd = 123;`,
+			subset(matches, [
+				{
+					token: {
+						type: "literal",
+						string: `let asd = 123;`,
+					},
 				},
-			});
-			
-			deep(matches.slice(1).map(m => m.line.trimmed), [
-				`let sdf = 456;`,
-				`let line3 = "string";`,
-			]);
-			
-			deep(matches.slice(1).map(m => m.token.type), [
-				"lines",
-				"lines",
+				{
+					token: {
+						type: "lines",
+					},
+					line: {
+						trimmed: `let sdf = 456;`,
+					},
+				},
+				{
+					token: {
+						type: "lines",
+					},
+					line: {
+						trimmed: `let line3 = "string";`,
+					},
+				},
 			]);
 		});
 	});
