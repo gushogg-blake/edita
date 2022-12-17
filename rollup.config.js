@@ -289,7 +289,7 @@ if (platform === "all" || platform === "test") {
 			}),
 		],
 	}, {
-		input: ["test/init.js", "test/tests/**/*.test.js"],
+		input: "test/tests/**/*.test.js",
 		
 		output: {
 			sourcemap: true,

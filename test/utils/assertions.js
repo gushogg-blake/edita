@@ -1,4 +1,9 @@
-let {assert} = require("chai");
+let chai = require("chai");
+let chaiSubset = require("chai-subset");
+
+chai.use(chaiSubset);
+
+let {assert} = chai;
 
 let assertions = {
 	is(a, b) {
