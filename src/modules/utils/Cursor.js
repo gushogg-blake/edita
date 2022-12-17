@@ -36,6 +36,10 @@ let api = {
 	min(a, b) {
 		return isBefore(a, b) ? a : b;
 	},
+	
+	start() {
+		return c(0, 0);
+	},
 };
 
 module.exports = api;

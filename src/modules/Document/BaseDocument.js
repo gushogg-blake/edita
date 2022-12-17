@@ -298,12 +298,15 @@ class BaseDocument extends Evented {
 		return width;
 	}
 	
-	cursorAtStart() {
-		return s(c(0, 0));
-	}
-	
 	cursorAtEnd() {
 		return this.source.cursorAtEnd();
+	}
+	
+	cursorWithinBounds(cursor) {
+		cursor = Cursor.max(cursor, Cursor.start());
+		cursor = Cursor.min(cursor, this.cursorAtEnd());
+		
+		return cursor;
 	}
 	
 	selectAll() {

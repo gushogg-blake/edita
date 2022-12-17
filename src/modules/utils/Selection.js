@@ -305,6 +305,10 @@ let api = {
 		
 		return s(start, c(endLineIndex, endOffset));
 	},
+	
+	start() {
+		return s(Cursor.start());
+	},
 };
 
 module.exports = api;

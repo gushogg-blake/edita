@@ -97,7 +97,7 @@ module.exports = class {
 	}
 	
 	getContainingRange() {
-		return new Range(0, this.string.length, s(c(0, 0), this.cursorAtEnd()));
+		return new Range(0, this.string.length, this.selectAll());
 	}
 	
 	indexFromCursor(cursor) {

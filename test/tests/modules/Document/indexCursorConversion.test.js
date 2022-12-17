@@ -1,7 +1,11 @@
+let Document = require("modules/Document");
 let {is, deep} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let parseIndexMarks = require("test/utils/parseIndexMarks");
-let createJsDoc = require("test/utils/createJsDoc");
+
+function createJsDoc(code) {
+	return new Document(code, "new:///a.js");
+}
 
 let {
 	string: code,

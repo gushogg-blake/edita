@@ -1,3 +1,4 @@
+let Selection = require("modules/utils/Selection");
 let URL = require("modules/URL");
 let Tab = require("./Tab");
 
@@ -53,7 +54,7 @@ class ClippingsTab extends Tab {
 		let {editor, document} = this;
 		let {newline} = document.fileDetails;
 		
-		editor.api.edit(document.cursorAtStart(), str + newline + newline);
+		editor.api.edit(Selection.start(), str + newline + newline);
 	}
 }
 
