@@ -231,8 +231,6 @@ function parse(string) {
 				
 				state = states.IN_QUERY;
 			} else if ("*+".includes(ch) && isAtStartOfLine(string, i)) {
-				let type = ch === "*" ? "zeroOrMoreLines" : "oneOrMoreLines";
-				
 				i++;
 				
 				let lazy = consumeString("?");
@@ -242,7 +240,8 @@ function parse(string) {
 				let capture = consumeCaptureLabel();
 				
 				tokens.push({
-					type,
+					type: "lines",
+					zero: ch === "*",
 					lazy,
 					capture,
 				});

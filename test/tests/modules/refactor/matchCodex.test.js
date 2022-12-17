@@ -2,6 +2,7 @@ let {expect} = require("chai");
 let {is, deep} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
+let Cursor = require("modules/utils/Cursor");
 let matchCodex = require("modules/refactor/matchCodex");
 
 describe("refactor", function() {
@@ -15,9 +16,9 @@ describe("refactor", function() {
 				let asd
 			`);
 			
-			let match = matchCodex(doc, codex);
+			let matches = matchCodex(doc, codex, Cursor.start());
 			
-			deep(match, [
+			deep(matches, [
 				{
 					token: {
 						type: "literal",
@@ -39,23 +40,25 @@ describe("refactor", function() {
 				+
 			`);
 			
-			let match = matchCodex(doc, codex);
+			let matches = matchCodex(doc, codex, Cursor.start());
 			
-			console.log(match);
+			console.log(matches);
 			
-			deep(match, [
-				{
-					token: {
-						type: "literal",
-						string: `let asd = 123;`,
-					},
+			deep(matches[0], {
+				token: {
+					type: "literal",
+					string: `let asd = 123;`,
 				},
-				{
-					token: {
-						type: "oneOrMoreLinesGreedy",
-						string: `let asd = 123;`,
-					},
-				},
+			});
+			
+			deep(matches.slice(1).map(m => m.line.trimmed), [
+				`let sdf = 456;`,
+				`let line3 = "string";`,
+			]);
+			
+			deep(matches.slice(1).map(m => m.token.type), [
+				"lines",
+				"lines",
 			]);
 		});
 	});

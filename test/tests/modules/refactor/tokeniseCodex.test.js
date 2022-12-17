@@ -262,7 +262,8 @@ describe("refactor", function() {
 				type: "indent",
 				level: 1,
 			}, {
-				type: "zeroOrMoreLines",
+				type: "lines",
+				zero: true,
 				lazy: false,
 				capture: null,
 			}, {
@@ -294,7 +295,8 @@ describe("refactor", function() {
 				type: "indent",
 				level: 1,
 			}, {
-				type: "zeroOrMoreLines",
+				type: "lines",
+				zero: true,
 				lazy: true,
 				capture: null,
 			}, {
@@ -326,7 +328,8 @@ describe("refactor", function() {
 				type: "indent",
 				level: 1,
 			}, {
-				type: "oneOrMoreLines",
+				type: "lines",
+				zero: false,
 				lazy: false,
 				capture: null,
 			}, {
@@ -358,7 +361,8 @@ describe("refactor", function() {
 				type: "indent",
 				level: 1,
 			}, {
-				type: "oneOrMoreLines",
+				type: "lines",
+				zero: false,
 				lazy: true,
 				capture: null,
 			}, {
@@ -390,7 +394,8 @@ describe("refactor", function() {
 				type: "indent",
 				level: 1,
 			}, {
-				type: "oneOrMoreLines",
+				type: "lines",
+				zero: false,
 				lazy: false,
 				capture: "lines",
 			}, {

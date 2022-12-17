@@ -45,9 +45,7 @@ let matchers = {
 		return next();
 	},
 	
-	//zeroOrMoreLines
-	
-	oneOrMoreLines(document, matches, states, token, next) {
+	lines(document, matches, states, token, next) {
 		let {
 			cursor,
 			minIndentLevel,
@@ -60,13 +58,13 @@ let matchers = {
 		}
 		
 		if (lineIndex === document.lines.length) {
-			return false;
+			return token.zero ? next() : false;
 		}
 		
 		let line = document.lines[lineIndex];
 		
 		if (line.trimmed.length === 0 || line.indentLevel < minIndentLevel) {
-			return false;
+			return token.zero ? next() : false;
 		}
 		
 		matches.push({
@@ -82,9 +80,9 @@ let matchers = {
 		let isMatch;
 		
 		if (token.lazy) {
-			isMatch = next() || matchers.oneOrMoreLines(document, matches, states, token, next);
+			isMatch = next() || matchers.lines(document, matches, states, token, next);
 		} else {
-			isMatch = matchers.oneOrMoreLines(document, matches, states, token, next) || next();
+			isMatch = matchers.lines(document, matches, states, token, next) || next();
 		}
 		
 		if (!isMatch) {
@@ -94,6 +92,7 @@ let matchers = {
 		
 		return isMatch;
 	},
+	
 };
 
 //function advanceCursor(document, cursor) {
