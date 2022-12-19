@@ -1,7 +1,7 @@
 let {isHeader} = require("modules/astCommon/utils");
 
 module.exports = function(document, lineIndex) {
-	if (isHeader(document, lineIndex) {
+	if (isHeader(document, lineIndex)) {
 		return false;
 	}
 	

@@ -91,7 +91,7 @@ let matchers = {
 		let {indentLevel} = document.lines[cursor.lineIndex];
 		
 		states.push({
-			cursor: document.cursorFromIndex(document.indexFromCursor(cursor) + match.length),
+			cursor: document.cursorFromIndex(document.indexFromCursor(cursor) + match.node.text.length),
 			indentLevel,
 		});
 		
@@ -117,7 +117,7 @@ let matchers = {
 		
 		I think this makes sense as a general approach anyway,
 		but the reason it's required is that literal/regex/query
-		matchers keep us on the line whereas lines put us on
+		matchers keep us on the line whereas lines puts us on
 		the next line.
 		*/
 		
@@ -125,8 +125,42 @@ let matchers = {
 			return false;
 		}
 		
+		/*
+		skip blank lines
+		
+		multiple newlines in the query result in a single newline, so this is
+		needed situations like this:
+		
+		code:
+		
+			literal
+			123
+			456
+			
+			anotherLiteral
+			456
+			567
+		
+		query:
+		
+			literal
+			+
+			anotherLiteral
+			+
+		
+		in this situation, if a newline token simply took us to the next line,
+		the newline after the first + would take us to the blank line below "456"
+		in the code, and then the "anotherLiteral" literal wouldn't match
+		*/
+		
+		let newCursor = offset === 0 ? cursor : document.cursorWithinBounds(c(lineIndex + 1, 0));
+		
+		while (!Cursor.equals(newCursor, document.cursorAtEnd()) && document.lines[newCursor.lineIndex].trimmed.length === 0) {
+			newCursor = document.cursorWithinBounds(c(newCursor.lineIndex + 1, 0));
+		}
+		
 		states.push({
-			cursor: offset === 0 ? cursor : document.cursorWithinBounds(c(lineIndex + 1, 0)),
+			cursor: newCursor,
 			indentLevel,
 		});
 		
@@ -208,17 +242,7 @@ let matchers = {
 	},
 };
 
-function skipEmptyLines(document, cursor) {
-	while (cursor.lineIndex < document.lines.length && document.lines[cursor.lineIndex].string === "") {
-		cursor = c(cursor.lineIndex + 1, 0);
-	}
-	
-	return cursor;
-}
-
 function match(document, codex, startCursor) {
-	startCursor = skipEmptyLines(document, startCursor);
-	
 	let tokens = tokenise(codex);
 	
 	let context = {
@@ -250,7 +274,14 @@ function match(document, codex, startCursor) {
 	let isMatch = next(0);
 	
 	if (isMatch) {
-		return context.matches;
+		let {matches, states} = context;
+		let {cursor} = states.at(-1);
+		
+		return {
+			startCursor,
+			endCursor: cursor,
+			matches,
+		};
 	} else {
 		return null;
 	}

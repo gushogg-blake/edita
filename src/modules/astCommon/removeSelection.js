@@ -1,6 +1,4 @@
-let createSpaces = require("./utils/createSpaces");
-let findSiblingIndex = require("./utils/findSiblingIndex");
-let countSpace = require("./utils/countSpace");
+let {createSpaces, findSiblingIndex, countSpace} = require("./utils");
 
 module.exports = function(document, selection) {
 	let indentStr = document.fileDetails.indentation.string;

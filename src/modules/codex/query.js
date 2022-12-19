@@ -19,7 +19,10 @@ function findResultAtCursor(cache, cursor) {
 				captures[name] = node;
 			}
 			
-			return captures;
+			return {
+				node: mainNode,
+				captures,
+			};
 		} else if (Cursor.isBefore(cursor, startCursor)) {
 			endIndex = index;
 		} else {

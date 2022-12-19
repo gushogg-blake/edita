@@ -4,6 +4,8 @@ let createJsDoc = require("test/utils/createJsDoc");
 let Cursor = require("modules/utils/Cursor");
 let match = require("modules/codex/match");
 
+let {c} = Cursor;
+
 describe("codex", function() {
 	describe("match", function() {
 		it("literal", function() {
@@ -15,7 +17,9 @@ describe("codex", function() {
 				let asd
 			`);
 			
-			let matches = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			
+			deep(endCursor, c(0, 7));
 			
 			deep(matches, [
 				{
@@ -39,7 +43,9 @@ describe("codex", function() {
 				+
 			`);
 			
-			let matches = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			
+			deep(endCursor, c(3, 0));
 			
 			subset(matches, [
 				{
@@ -71,6 +77,84 @@ describe("codex", function() {
 			]);
 		});
 		
+		it("one or more lines greedy repeated", function() {
+			let doc = createJsDoc(`
+				let asd = 123;
+				let sdf = 456;
+				let line3 = "string";
+				
+				let sdf = 123;
+				let fgh = 456;
+				let line3 = "string";
+			`);
+			
+			let codex = dedent(`
+				let asd = 123;
+				+
+				let sdf = 123;
+				+
+			`);
+			
+			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			
+			deep(endCursor, c(7, 0));
+			
+			subset(matches, [
+				{
+					token: {
+						type: "literal",
+						string: `let asd = 123;`,
+					},
+				},
+				{
+					token: {
+						type: "lines",
+					},
+					
+					astSelection: {
+						startLineIndex: 1,
+						endLineIndex: 2,
+					},
+				},
+				{
+					token: {
+						type: "lines",
+					},
+					
+					astSelection: {
+						startLineIndex: 2,
+						endLineIndex: 3,
+					},
+				},
+				{
+					token: {
+						type: "literal",
+						string: `let sdf = 123;`,
+					},
+				},
+				{
+					token: {
+						type: "lines",
+					},
+					
+					astSelection: {
+						startLineIndex: 5,
+						endLineIndex: 6,
+					},
+				},
+				{
+					token: {
+						type: "lines",
+					},
+					
+					astSelection: {
+						startLineIndex: 6,
+						endLineIndex: 7,
+					},
+				},
+			]);
+		});
+		
 		it("zero or more lines greedy (no match)", function() {
 			let doc = createJsDoc(`
 				let asd = 123;
@@ -81,7 +165,9 @@ describe("codex", function() {
 				*
 			`);
 			
-			let matches = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			
+			deep(endCursor, c(1, 0));
 			
 			subset(matches, [
 				{
@@ -102,7 +188,9 @@ describe("codex", function() {
 				let /\\w+/@id = 123;
 			`);
 			
-			let matches = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			
+			deep(endCursor, c(0, 14));
 			
 			subset(matches, [
 				{
@@ -140,7 +228,9 @@ describe("codex", function() {
 				let /\\w+/@id = (function)
 			`);
 			
-			let matches = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			
+			deep(endCursor, c(2, 1));
 			
 			subset(matches, [
 				{
@@ -171,8 +261,14 @@ describe("codex", function() {
 					},
 					
 					match: {
-						function: {
+						node: {
 							type: "function",
+						},
+						
+						captures: {
+							function: {
+								type: "function",
+							},
 						},
 					},
 				},
@@ -192,7 +288,9 @@ describe("codex", function() {
 				}
 			`);
 			
-			let matches = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			
+			deep(endCursor, c(2, 1));
 			
 			subset(matches, [
 				{

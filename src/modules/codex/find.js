@@ -1,10 +1,9 @@
+let Cursor = require("modules/utils/Cursor");
 let match = require("./match");
 
+let {c} = Cursor;
+
 function advanceCursor(document, cursor) {
-	if (Cursor.equals(cursor, document.cursorAtEnd())) {
-		return null;
-	}
-	
 	let {lineIndex, offset} = cursor;
 	let line = document.lines[lineIndex];
 	
@@ -17,6 +16,30 @@ function advanceCursor(document, cursor) {
 	return cursor;
 }
 
-module.exports = function(document, codex) {
+function skipEmptyLines(document, cursor) {
+	while (cursor.lineIndex < document.lines.length && document.lines[cursor.lineIndex].string === "") {
+		cursor = c(cursor.lineIndex + 1, 0);
+	}
 	
+	return cursor;
+}
+
+module.exports = function(document, codex) {
+	let cursor = skipEmptyLines(document, Cursor.start());
+	
+	let matches = [];
+	
+	while (!Cursor.equals(cursor, document.cursorAtEnd())) {
+		let m = match(document, codex, cursor);
+		
+		if (m) {
+			matches.push(m);
+			
+			cursor = m.endCursor;
+		} else {
+			cursor = advanceCursor(document, cursor);
+		}
+	}
+	
+	return matches;
 }
