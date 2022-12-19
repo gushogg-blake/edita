@@ -1,4 +1,4 @@
-let {is, deep, expect} = require("test/utils/chai");
+let {is, deep, expect} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let tokenise = require("modules/codex/tokenise");
 

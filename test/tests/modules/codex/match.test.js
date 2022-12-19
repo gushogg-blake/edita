@@ -1,4 +1,4 @@
-let {is, deep, subset} = require("test/utils/chai");
+let {is, deep, subset} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
 let Cursor = require("modules/utils/Cursor");
