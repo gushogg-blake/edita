@@ -124,7 +124,7 @@ describe("codex", function() {
 			]);
 		});
 		
-		it("one or more lines greedy (multiple matches)", function() {
+		it("one or more lines lazy (multiple matches)", function() {
 			let doc = createJsDoc(`
 				// comment
 				
