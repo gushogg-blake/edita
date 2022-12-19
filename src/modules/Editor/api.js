@@ -15,7 +15,7 @@ module.exports = {
 		let scrollToRow = selectionRow - Math.ceil(rows / 2);
 		let scrollTop = scrollToRow * rowHeight;
 		
-		view.setVerticalScrollNoValidate(scrollTop);
+		view.setVerticalScrollNoValidate(Math.max(0, scrollTop));
 		
 		view.endBatch();
 	},
