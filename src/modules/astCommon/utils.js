@@ -49,7 +49,7 @@ function extend(document, lineIndex, followHeaderFooters=true) {
 	let footerLineIndex = getFooterLineIndex(document, lineIndex);
 	
 	if (footerLineIndex) {
-		return followHeaderFooters ? extend(footerLineIndex) ? footerLineIndex + 1;
+		return followHeaderFooters ? extend(footerLineIndex) : footerLineIndex + 1;
 	} else {
 		return lineIndex + 1;
 	}

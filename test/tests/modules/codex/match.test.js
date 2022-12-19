@@ -41,6 +41,8 @@ describe("codex", function() {
 			
 			let matches = match(doc, codex, Cursor.start());
 			
+			console.log(matches);
+			
 			subset(matches, [
 				{
 					token: {
@@ -53,8 +55,9 @@ describe("codex", function() {
 						type: "lines",
 					},
 					
-					line: {
-						trimmed: `let sdf = 456;`,
+					astSelection: {
+						startLineIndex: 1,
+						endLineIndex: 2,
 					},
 				},
 				{
@@ -62,8 +65,9 @@ describe("codex", function() {
 						type: "lines",
 					},
 					
-					line: {
-						trimmed: `let line3 = "string";`,
+					astSelection: {
+						startLineIndex: 2,
+						endLineIndex: 3,
 					},
 				},
 			]);

@@ -1,5 +1,5 @@
 let Cursor = require("modules/utils/Cursor");
-let AstSelection = require("modules/utilsAstSelectionn");
+let AstSelection = require("modules/utils/AstSelection");
 let {extend} = require("modules/astCommon/utils");
 let tokenise = require("./tokenise");
 let query = require("./query");
@@ -62,7 +62,7 @@ let matchers = {
 		let {lineIndex, offset} = cursor;
 		let line = document.lines[lineIndex];
 		
-		let result = re.exec(line.string.substr(index));
+		let result = re.exec(line.string.substr(offset));
 		
 		if (!result) {
 			return false;
