@@ -144,8 +144,6 @@ describe("codex", function() {
 			
 			let matches = find(doc, codex);
 			
-			console.log(matches);
-			
 			subset(matches[0].matches, [
 				{
 					token: {
