@@ -1,5 +1,5 @@
 let Document = require("modules/Document");
-let {is, deep} = require("test/utils/assertions");
+let {is, deep} = require("test/utils/chai");
 let dedent = require("test/utils/dedent");
 let parseIndexMarks = require("test/utils/parseIndexMarks");
 

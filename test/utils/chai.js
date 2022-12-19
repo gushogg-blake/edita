@@ -4,9 +4,11 @@ let _typeof = require("utils/typeof");
 
 chai.use(chaiSubset);
 
+chai.config.truncateThreshold = 0;
+
 let {assert} = chai;
 
-let assertions = {
+Object.assign(chai, {
 	is(a, b) {
 		assert.strictEqual(a, b);
 	},
@@ -28,6 +30,6 @@ let assertions = {
 			assert.containSubset(a, b);
 		}
 	},
-};
+});
 
-module.exports = assertions;
+module.exports = chai;

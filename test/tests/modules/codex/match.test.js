@@ -1,5 +1,4 @@
-let {expect} = require("chai");
-let {is, deep, subset} = require("test/utils/assertions");
+let {is, deep, subset} = require("test/utils/chai");
 let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
 let Cursor = require("modules/utils/Cursor");
@@ -11,8 +10,6 @@ describe("codex", function() {
 			let doc = createJsDoc(`
 				let asd = 123;
 			`);
-			
-			console.log(doc.langFromCursor({lineIndex: 0, offset: 0}));
 			
 			let codex = dedent(`
 				let asd
@@ -172,7 +169,9 @@ describe("codex", function() {
 					},
 					
 					match: {
-						type: "function",
+						function: {
+							type: "function",
+						},
 					},
 				},
 			]);
