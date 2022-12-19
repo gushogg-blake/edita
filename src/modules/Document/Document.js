@@ -269,14 +269,6 @@ class Document extends BaseDocument {
 		return [...this.source.generateNodesOnLine(lineIndex, lang)];
 	}
 	
-	getHeadersOnLine(lineIndex) {
-		return this.source.getHeadersOnLine(lineIndex);
-	}
-	
-	getFootersOnLine(lineIndex) {
-		return this.source.getFootersOnLine(lineIndex);
-	}
-	
 	teardown() {
 		if (this.teardownWatch) {
 			this.teardownWatch();

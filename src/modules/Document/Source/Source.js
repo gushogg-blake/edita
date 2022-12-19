@@ -74,28 +74,6 @@ module.exports = class {
 		return this.rootScope.generateNodesOnLineWithLang(lineIndex, lang);
 	}
 	
-	getHeadersOnLine(lineIndex) {
-		let nodesWithLang = [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
-		
-		return nodesWithLang.map(function({node, lang}) {
-			return {
-				header: node,
-				footer: lang.getFooter(node),
-			};
-		}).filter(r => r.footer);
-	}
-	
-	getFootersOnLine(lineIndex) {
-		let nodesWithLang = [...this.rootScope.generateNodesOnLineWithLang(lineIndex)];
-		
-		return nodesWithLang.map(function({node, lang}) {
-			return {
-				header: lang.getHeader(node),
-				footer: node,
-			};
-		}).filter(r => r.header);
-	}
-	
 	getContainingRange() {
 		return new Range(0, this.string.length, this.selectAll());
 	}

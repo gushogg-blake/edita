@@ -1,8 +1,11 @@
 let Cursor = require("modules/utils/Cursor");
+let AstSelection = require("modules/utilsAstSelectionn");
+let {extend} = require("modules/astCommon/utils");
 let tokenise = require("./tokenise");
 let query = require("./query");
 
 let {c} = Cursor;
+let {s: a} = AstSelection;
 
 let regexes = {};
 
@@ -33,10 +36,11 @@ function getRegex(pattern, flags) {
 let matchers = {
 	literal(document, matches, states, token, next) {
 		let {string} = token;
-		let {cursor, minIndentLevel} = states.at(-1);
-		let index = document.indexFromCursor(cursor);
+		let {cursor} = states.at(-1);
+		let {lineIndex, offset} = cursor;
+		let line = document.lines[lineIndex];
 		
-		if (document.string.substr(index, string.length) !== string) {
+		if (line.string.substr(offset, string.length) !== string) {
 			return false;
 		}
 		
@@ -45,8 +49,8 @@ let matchers = {
 		});
 		
 		states.push({
-			cursor: document.cursorFromIndex(index + string.length),
-			minIndentLevel,
+			cursor: c(lineIndex, offset + string.length),
+			indentLevel: line.indentLevel,
 		});
 		
 		return next();
@@ -54,10 +58,11 @@ let matchers = {
 	
 	regex(document, matches, states, token, next) {
 		let re = getRegex(token.pattern, token.flags);
-		let {cursor, minIndentLevel} = states.at(-1);
-		let index = document.indexFromCursor(cursor);
+		let {cursor} = states.at(-1);
+		let {lineIndex, offset} = cursor;
+		let line = document.lines[lineIndex];
 		
-		let result = re.exec(document.string.substr(index));
+		let result = re.exec(line.string.substr(index));
 		
 		if (!result) {
 			return false;
@@ -71,16 +76,15 @@ let matchers = {
 		});
 		
 		states.push({
-			cursor: document.cursorFromIndex(index + match.length),
-			minIndentLevel,
+			cursor: c(lineIndex, offset + match.length),
+			indentLevel: line.indentLevel,
 		});
 		
 		return next();
 	},
 	
 	query(document, matches, states, token, next) {
-		let {cursor, minIndentLevel} = states.at(-1);
-		let index = document.indexFromCursor(cursor);
+		let {cursor} = states.at(-1);
 		let match = query(document, cursor, token.query);
 		
 		if (!match) {
@@ -92,16 +96,18 @@ let matchers = {
 			match,
 		});
 		
+		let {indentLevel} = document.lines[cursor.lineIndex];
+		
 		states.push({
-			cursor: document.cursorFromIndex(index + match.length),
-			minIndentLevel,
+			cursor: document.cursorFromIndex(document.indexFromCursor(cursor) + match.length),
+			indentLevel,
 		});
 		
 		return next();
 	},
 	
 	newline(document, matches, states, token, next) {
-		let {cursor, minIndentLevel} = states.at(-1);
+		let {cursor, indentLevel} = states.at(-1);
 		let line = document.lines[cursor.lineIndex];
 		
 		if (cursor.offset !== line.string.length || Cursor.equals(cursor, document.cursorAtEnd())) {
@@ -110,14 +116,25 @@ let matchers = {
 		
 		states.push({
 			cursor: document.cursorWithinBounds(c(cursor.lineIndex + 1, 0)),
-			minIndentLevel,
+			indentLevel,
+		});
+		
+		return next();
+	},
+	
+	indentOrDedent(document, matches, states, token, next) {
+		let {cursor, indentLevel} = states.at(-1);
+		
+		states.push({
+			cursor,
+			indentLevel: indentLevel + token.dir,
 		});
 		
 		return next();
 	},
 	
 	lines(document, matches, states, token, next) {
-		let {cursor, minIndentLevel} = states.at(-1);
+		let {cursor, indentLevel} = states.at(-1);
 		let {lineIndex} = cursor;
 		
 		while (lineIndex < document.lines.length && document.lines[lineIndex].string === "") {
@@ -130,18 +147,23 @@ let matchers = {
 		
 		let line = document.lines[lineIndex];
 		
-		if (line.trimmed.length === 0 || line.indentLevel < minIndentLevel) {
+		if (line.trimmed.length === 0 || line.indentLevel !== indentLevel) {
 			return token.zero ? next() : false;
 		}
 		
+		let astSelection = a(
+			lineIndex,
+			extend(document, lineIndex),
+		);
+		
 		matches.push({
 			token,
-			line,
+			astSelection,
 		});
 		
 		states.push({
-			cursor: document.cursorWithinBounds(c(lineIndex + 1, 0)),
-			minIndentLevel,
+			cursor: document.cursorWithinBounds(c(astSelection.endLineIndex, 0)),
+			indentLevel,
 		});
 		
 		let isMatch;
@@ -196,7 +218,7 @@ function match(document, codex, startCursor) {
 	let states = [
 		{
 			cursor: startCursor,
-			minIndentLevel: document.lines[startCursor.lineIndex].indentLevel,
+			indentLevel: document.lines[startCursor.lineIndex].indentLevel,
 		},
 	];
 	

@@ -53,24 +53,6 @@ function countIndentChars(str, startIndex) {
 	return n;
 }
 
-function lineIsEmpty(str, startIndex) {
-	let hasChars = false;
-	
-	for (let i = startIndex; i < str.length; i++) {
-		let ch = str[i];
-		
-		if ("\r\n".includes(ch)) {
-			break;
-		}
-		
-		if (!" \t".includes(ch)) {
-			hasChars = true;
-		}
-	}
-	
-	return !hasChars;
-}
-
 function isAtStartOfLine(str, index) {
 	for (let i = index - 1; i > 0; i--) {
 		let ch = str[i];
@@ -102,6 +84,12 @@ function tokenise(string) {
 	let identifierRe = /[\w_]+/g;
 	let regexFlagsRe = /[gmiysu]*/g;
 	
+	function lineIsEmpty() {
+		let ch = string[i];
+		
+		return ch && "\r\n".includes(ch);
+	}
+	
 	function addLiteral() {
 		if (literal) {
 			tokens.push({
@@ -113,8 +101,8 @@ function tokenise(string) {
 		literal = "";
 	}
 	
-	function consumeAndSetIndentation() {
-		if (lineIsEmpty(string, i)) {
+	function consumeAndAddIndentOrDedent() {
+		if (lineIsEmpty()) {
 			return;
 		}
 		
@@ -122,16 +110,12 @@ function tokenise(string) {
 		
 		if (n !== indent) {
 			tokens.push({
-				type: "indent",
-				level: n,
+				type: "indentOrDedent",
+				dir: n < indent ? -1 : 1,
 			});
-			
-			indent = n;
-			
-			if (indent !== 0) {
-				indentLevels.add(indent);
-			}
 		}
+		
+		indent = n;
 		
 		i += n;
 		
@@ -178,7 +162,7 @@ function tokenise(string) {
 		}
 	}
 	
-	consumeAndSetIndentation();
+	consumeAndAddIndentOrDedent();
 	
 	while (i < string.length) {
 		ch = string[i];
@@ -199,7 +183,7 @@ function tokenise(string) {
 					ch = string[i];
 				} while ("\r\n".includes(ch));
 				
-				consumeAndSetIndentation();
+				consumeAndAddIndentOrDedent();
 			} else if (ch === "\\") {
 				literal += string[i + 1] || "";
 				
@@ -230,16 +214,26 @@ function tokenise(string) {
 				i++;
 				
 				state = states.IN_QUERY;
-			} else if ("*+".includes(ch) && isAtStartOfLine(string, i)) {
-				let zero = ch === "*";
+			} else if ("*+@".includes(ch) && isAtStartOfLine(string, i)) {
+				let zero;
+				let lazy;
+				let capture;
 				
-				i++;
-				
-				let lazy = consumeString("?");
-				
-				skipWhitespace();
-				
-				let capture = consumeCaptureLabel();
+				if (ch === "@") { // shorthand for * @...
+					zero = true;
+					lazy = false;
+					capture = consumeCaptureLabel();
+				} else {
+					zero = ch === "*";
+					
+					i++;
+					
+					lazy = consumeString("?");
+					
+					skipWhitespace();
+					
+					capture = consumeCaptureLabel();
+				}
 				
 				tokens.push({
 					type: "lines",

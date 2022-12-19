@@ -32,16 +32,16 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 1,
+				type: "indentOrDedent",
+				dir: 1,
 			}, {
 				type: "literal",
 				string: `return 123;`,
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 0,
+				type: "indentOrDedent",
+				dir: -1,
 			}, {
 				type: "literal",
 				string: `}`,
@@ -258,8 +258,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 1,
+				type: "indentOrDedent",
+				dir: 1,
 			}, {
 				type: "lines",
 				zero: true,
@@ -268,8 +268,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 0,
+				type: "indentOrDedent",
+				dir: -1,
 			}, {
 				type: "literal",
 				string: `}`,
@@ -291,8 +291,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 1,
+				type: "indentOrDedent",
+				dir: 1,
 			}, {
 				type: "lines",
 				zero: true,
@@ -301,8 +301,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 0,
+				type: "indentOrDedent",
+				dir: -1,
 			}, {
 				type: "literal",
 				string: `}`,
@@ -324,8 +324,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 1,
+				type: "indentOrDedent",
+				dir: 1,
 			}, {
 				type: "lines",
 				zero: false,
@@ -334,8 +334,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 0,
+				type: "indentOrDedent",
+				dir: -1,
 			}, {
 				type: "literal",
 				string: `}`,
@@ -357,8 +357,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 1,
+				type: "indentOrDedent",
+				dir: 1,
 			}, {
 				type: "lines",
 				zero: false,
@@ -367,8 +367,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 0,
+				type: "indentOrDedent",
+				dir: -1,
 			}, {
 				type: "literal",
 				string: `}`,
@@ -390,8 +390,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 1,
+				type: "indentOrDedent",
+				dir: 1,
 			}, {
 				type: "lines",
 				zero: false,
@@ -400,8 +400,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 0,
+				type: "indentOrDedent",
+				dir: -1,
 			}, {
 				type: "literal",
 				string: `}`,
@@ -424,8 +424,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 1,
+				type: "indentOrDedent",
+				dir: 1,
 			}, {
 				type: "literal",
 				string: "a + @lines",
@@ -437,8 +437,8 @@ describe("codex", function() {
 			}, {
 				type: "newline",
 			}, {
-				type: "indent",
-				level: 0,
+				type: "indentOrDedent",
+				dir: -1,
 			}, {
 				type: "literal",
 				string: `}`,

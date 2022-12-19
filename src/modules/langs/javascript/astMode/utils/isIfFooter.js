@@ -1,5 +1,7 @@
+let {isHeader} = require("modules/astCommon/utils");
+
 module.exports = function(document, lineIndex) {
-	if (document.getHeadersOnLine(lineIndex).length > 0) {
+	if (isHeader(document, lineIndex) {
 		return false;
 	}
 	

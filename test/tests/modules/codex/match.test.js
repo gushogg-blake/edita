@@ -52,6 +52,7 @@ describe("codex", function() {
 					token: {
 						type: "lines",
 					},
+					
 					line: {
 						trimmed: `let sdf = 456;`,
 					},
@@ -60,6 +61,7 @@ describe("codex", function() {
 					token: {
 						type: "lines",
 					},
+					
 					line: {
 						trimmed: `let line3 = "string";`,
 					},
@@ -138,8 +140,6 @@ describe("codex", function() {
 			
 			let matches = match(doc, codex, Cursor.start());
 			
-			console.log(matches);
-			
 			subset(matches, [
 				{
 					token: {
@@ -172,6 +172,56 @@ describe("codex", function() {
 						function: {
 							type: "function",
 						},
+					},
+				},
+			]);
+		});
+		
+		it("indentation", function() {
+			let doc = createJsDoc(`
+				let asd = function() {
+					return 123;
+				}
+			`);
+			
+			let codex = dedent(`
+				let /\\w+/@id = function\\() {
+					@body
+				}
+			`);
+			
+			let matches = match(doc, codex, Cursor.start());
+			
+			subset(matches, [
+				{
+					token: {
+						type: "literal",
+						string: `let `,
+					},
+				},
+				{
+					token: {
+						type: "regex",
+						pattern: "\\w+",
+						capture: "id",
+					},
+					
+					match: "asd",
+				},
+				{
+					token: {
+						type: "literal",
+						string: ` = function() {`,
+					},
+				},
+				{
+					token: {
+						type: "lines",
+						capture: "body",
+					},
+					
+					line: {
+						trimmed: `return 123;`,
 					},
 				},
 			]);

@@ -1,4 +1,5 @@
 let AstSelection = require("modules/utils/AstSelection");
+let {isHeader, getHeaders} = require("modules/astCommon/utils");
 
 let {s: a} = AstSelection;
 
@@ -8,11 +9,11 @@ module.exports = {
 		label: "Contents",
 		
 		isAvailable(document, selection) {
-			return document.getHeadersOnLine(selection.startLineIndex).length > 0;
+			return isHeader(document, selection.startLineIndex);
 		},
 		
 		getSelection(document, selection) {
-			let [{header, footer}] = document.getHeadersOnLine(selection.startLineIndex);
+			let [{header, footer}] = getHeaders(document, selection.startLineIndex);
 			
 			return a(header.startPosition.row + 1, footer.startPosition.row);
 		},

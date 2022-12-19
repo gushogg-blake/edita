@@ -1,8 +1,6 @@
 let AstSelection = require("modules/utils/AstSelection");
 let removeSelection = require("./removeSelection");
-let createSpaces = require("./utils/createSpaces");
-let findIndentLevel = require("./utils/findIndentLevel");
-let findSiblingIndex = require("./utils/findSiblingIndex");
+let {createSpaces, findIndentLevel, findSiblingIndex} = require("./utils");
 
 let {s} = AstSelection;
 
