@@ -5,11 +5,11 @@ let tokenise = require("modules/codex/tokenise");
 describe("codex", function() {
 	describe("tokenise", function() {
 		it("plain text only", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = 123;
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -18,13 +18,13 @@ describe("codex", function() {
 		});
 		
 		it("escaped brackets", function() {
-			let code = dedent(`
+			let query = dedent(`
 				function asd\\() {
 				    return 123;
 				}
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -49,11 +49,11 @@ describe("codex", function() {
 		});
 		
 		it("node", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = (function);
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -68,11 +68,11 @@ describe("codex", function() {
 		});
 		
 		it("node with capture", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = (function @fn);
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -87,11 +87,11 @@ describe("codex", function() {
 		});
 		
 		it("nested node", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = (function (name));
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -106,7 +106,7 @@ describe("codex", function() {
 		});
 		
 		it("multiline", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = (function
 					(name)
 					(body) @body
@@ -114,7 +114,7 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -129,7 +129,7 @@ describe("codex", function() {
 		});
 		
 		it("string", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = (function
 					(name)
 					(body) @body
@@ -137,7 +137,7 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -152,7 +152,7 @@ describe("codex", function() {
 		});
 		
 		it("string with escapes", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = (function
 					(name)
 					(body) @body
@@ -160,7 +160,7 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -175,7 +175,7 @@ describe("codex", function() {
 		});
 		
 		it("unterminated string", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = (function
 					(name)
 					(body) @body
@@ -183,7 +183,7 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -198,7 +198,7 @@ describe("codex", function() {
 		});
 		
 		it("unterminated query", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = (function
 					(name)
 					(body) @body
@@ -207,18 +207,18 @@ describe("codex", function() {
 			`);
 			
 			expect(function() {
-				tokenise(code);
+				tokenise(query);
 			}).to.throw();
 		});
 		
 		it("multiple queries", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = (function);
 				
 				fn\\(1, 2, (id));
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -244,13 +244,13 @@ describe("codex", function() {
 		});
 		
 		it("zero or more lines", function() {
-			let code = dedent(`
+			let query = dedent(`
 				function asd\\() {
 					*
 				}
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -277,13 +277,13 @@ describe("codex", function() {
 		});
 		
 		it("zero or more lines, lazy", function() {
-			let code = dedent(`
+			let query = dedent(`
 				function asd\\() {
 					*?
 				}
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -310,13 +310,13 @@ describe("codex", function() {
 		});
 		
 		it("one or more lines", function() {
-			let code = dedent(`
+			let query = dedent(`
 				function asd\\() {
 					+
 				}
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -343,13 +343,13 @@ describe("codex", function() {
 		});
 		
 		it("one or more lines, lazy", function() {
-			let code = dedent(`
+			let query = dedent(`
 				function asd\\() {
 					+?
 				}
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -376,13 +376,13 @@ describe("codex", function() {
 		});
 		
 		it("lines with capture", function() {
-			let code = dedent(`
+			let query = dedent(`
 				function asd\\() {
 					+ @lines
 				}
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -408,15 +408,15 @@ describe("codex", function() {
 			}]);
 		});
 		
-		it("plus and asterisk in code (not on own line)", function() {
-			let code = dedent(`
+		it("plus and asterisk in query (not on own line)", function() {
+			let query = dedent(`
 				function asd\\() {
 					a + @lines
 					b * @lines
 				}
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -446,11 +446,11 @@ describe("codex", function() {
 		});
 		
 		it("regex", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = /\\w+/;
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -467,11 +467,11 @@ describe("codex", function() {
 		});
 		
 		it("regex with capture", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = /\\w+/@id;
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -488,11 +488,11 @@ describe("codex", function() {
 		});
 		
 		it("regex with class", function() {
-			let code = dedent(`
+			let query = dedent(`
 				let asd = /[a-z/]\\w+/@id;
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -508,16 +508,111 @@ describe("codex", function() {
 			}]);
 		});
 		
-		it("division in code", function() {
-			let code = dedent(`
+		it("division in query", function() {
+			let query = dedent(`
 				let asd = 3 \\/ 4;
 			`);
 			
-			let tokens = tokenise(code);
+			let tokens = tokenise(query);
 			
 			deep(tokens, [{
 				type: "literal",
 				string: `let asd = 3 / 4;`,
+			}]);
+		});
+		
+		it("implicit lines capture", function() {
+			let query = dedent(`
+				function asd\\() {
+					@body
+				}
+			`);
+			
+			let tokens = tokenise(query);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indentOrDedent",
+				dir: 1,
+			}, {
+				type: "lines",
+				lazy: false,
+				zero: true,
+				capture: "body",
+			}, {
+				type: "newline",
+			}, {
+				type: "indentOrDedent",
+				dir: -1,
+			}, {
+				type: "literal",
+				string: "}",
+			}]);
+		});
+		
+		it("escaped @ at beginning of line", function() {
+			let query = dedent(`
+				function asd\\() {
+					\\@body
+				}
+			`);
+			
+			let tokens = tokenise(query);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indentOrDedent",
+				dir: 1,
+			}, {
+				type: "literal",
+				string: "@body",
+			}, {
+				type: "newline",
+			}, {
+				type: "indentOrDedent",
+				dir: -1,
+			}, {
+				type: "literal",
+				string: "}",
+			}]);
+		});
+		
+		it("unescaped @ within line", function() {
+			let query = dedent(`
+				function asd\\() {
+					return a + @var
+				}
+			`);
+			
+			let tokens = tokenise(query);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indentOrDedent",
+				dir: 1,
+			}, {
+				type: "literal",
+				string: "return a + @var",
+			}, {
+				type: "newline",
+			}, {
+				type: "indentOrDedent",
+				dir: -1,
+			}, {
+				type: "literal",
+				string: "}",
 			}]);
 		});
 	});

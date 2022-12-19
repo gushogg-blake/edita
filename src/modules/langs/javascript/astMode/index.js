@@ -1,3 +1,4 @@
+let {isHeader, isFooter} = require("modules/astCommon/utils");
 let pickOptions = require("./pickOptions");
 let dropTargets = require("./dropTargets");
 let astManipulations = require("./astManipulations");
@@ -26,21 +27,11 @@ module.exports = {
 		let lineAbove = insertLineIndex > 0 ? document.lines[insertLineIndex - 1] : null;
 		let lineBelow = insertLineIndex < document.lines.length ? document.lines[insertLineIndex] : null;
 		
-		let isBlock = document.getHeadersOnLine(fromSelection.startLineIndex).length > 0;
+		let isBlock = isHeader(document, fromSelection.startLineIndex);
 		let isBelowSibling = lineAbove?.indentLevel === insertIndentLevel && lineAbove.trimmed.length > 0;
 		let isAboveSibling = lineBelow?.indentLevel === insertIndentLevel && lineBelow.trimmed.length > 0;
-		
-		let isBelowBlock = (
-			lineAbove
-			&& document.getFootersOnLine(insertLineIndex - 1).length > 0
-			&& document.getHeadersOnLine(insertLineIndex - 1).length === 0
-		);
-		
-		let isAboveBlock = (
-			lineBelow
-			&& document.getHeadersOnLine(insertLineIndex).length > 0
-			&& document.getFootersOnLine(insertLineIndex).length === 0
-		);
+		let isBelowBlock = lineAbove && isFooter(document, insertLineIndex - 1) && !isHeader(document, insertLineIndex - 1);
+		let isAboveBlock = lineBelow && isHeader(document, insertLineIndex) && !isFooter(document, insertLineIndex);
 		
 		return {
 			above: isBelowBlock || isBlock && isBelowSibling ? 1 : 0,

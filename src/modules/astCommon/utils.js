@@ -5,6 +5,18 @@ function getFooterLineIndex(document, lineIndex) {
 		let footer = lang.getFooter(node);
 		
 		if (footer) {
+			return nodeGetters.endPosition(node).row;
+		}
+	}
+	
+	return null;
+}
+
+function getHeaderLineIndex(document, lineIndex) {
+	for (let {node, lang} of document.generateNodesOnLineWithLang(lineIndex)) {
+		let header = lang.getHeader(node);
+		
+		if (header) {
 			return nodeGetters.startPosition(node).row;
 		}
 	}
@@ -58,6 +70,7 @@ function extend(document, lineIndex, followHeaderFooters=true) {
 let api = {
 	isHeader,
 	getFooterLineIndex,
+	getHeaderLineIndex,
 	getHeaders,
 	getFooters,
 	extend,
@@ -101,7 +114,7 @@ let api = {
 			if (lines[prevLineIndex].trimmed.length > 0) {
 				prev = lines[prevLineIndex].indentLevel;
 				
-				if (document.getHeadersOnLine(prevLineIndex).length > 0) {
+				if (isHeader(document, prevLineIndex)) {
 					prev++;
 				}
 				

@@ -53,7 +53,14 @@ let matchers = {
 			indentLevel: line.indentLevel,
 		});
 		
-		return next();
+		let isMatch = next();
+		
+		if (!isMatch) {
+			matches.pop();
+			states.pop();
+		}
+		
+		return isMatch;
 	},
 	
 	regex(document, matches, states, token, next) {
@@ -80,7 +87,14 @@ let matchers = {
 			indentLevel: line.indentLevel,
 		});
 		
-		return next();
+		let isMatch = next();
+		
+		if (!isMatch) {
+			matches.pop();
+			states.pop();
+		}
+		
+		return isMatch;
 	},
 	
 	query(document, matches, states, token, next) {
@@ -103,23 +117,47 @@ let matchers = {
 			indentLevel,
 		});
 		
-		return next();
+		let isMatch = next();
+		
+		if (!isMatch) {
+			matches.pop();
+			states.pop();
+		}
+		
+		return isMatch;
 	},
 	
 	newline(document, matches, states, token, next) {
 		let {cursor, indentLevel} = states.at(-1);
-		let line = document.lines[cursor.lineIndex];
+		let {lineIndex, offset} = cursor;
+		let line = document.lines[lineIndex];
 		
-		if (cursor.offset !== line.string.length || Cursor.equals(cursor, document.cursorAtEnd())) {
+		/*
+		newline can be consumed from either side - it matches
+		as long as we're at the beginning or end of a line
+		
+		I think this makes sense as a general approach anyway,
+		but the reason it's required is that literal/regex/query
+		matchers keep us on the line whereas lines put us on
+		the next line.
+		*/
+		
+		if (offset !== 0 && offset !== line.string.length) {
 			return false;
 		}
 		
 		states.push({
-			cursor: document.cursorWithinBounds(c(cursor.lineIndex + 1, 0)),
+			cursor: offset === 0 ? cursor : document.cursorWithinBounds(c(lineIndex + 1, 0)),
 			indentLevel,
 		});
 		
-		return next();
+		let isMatch = next();
+		
+		if (!isMatch) {
+			states.pop();
+		}
+		
+		return isMatch;
 	},
 	
 	indentOrDedent(document, matches, states, token, next) {
@@ -130,7 +168,13 @@ let matchers = {
 			indentLevel: indentLevel + token.dir,
 		});
 		
-		return next();
+		let isMatch = next();
+		
+		if (!isMatch) {
+			states.pop();
+		}
+		
+		return isMatch;
 	},
 	
 	lines(document, matches, states, token, next) {
