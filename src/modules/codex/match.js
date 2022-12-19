@@ -3,38 +3,14 @@ let AstSelection = require("modules/utils/AstSelection");
 let {extend} = require("modules/astCommon/utils");
 let tokenise = require("./tokenise");
 let query = require("./query");
+let createRegex = require("./createRegex");
 
 let {c} = Cursor;
 let {s: a} = AstSelection;
 
-let regexes = {};
-
-function getRegex(pattern, flags) {
-	/*
-	add start assertion if necessary to anchor the regex to the current
-	index, and remove g flag if present - we're only interested in a
-	single match at the current index
-	*/
-	
-	if (pattern[0] !== "^") {
-		pattern = "^" + pattern;
-	}
-	
-	flags = flags.replaceAll("g", "");
-	
-	if (!regexes[pattern]) {
-		regexes[pattern] = {};
-	}
-	
-	if (!regexes[pattern][flags]) {
-		regexes[pattern][flags] = new RegExp(pattern, flags);
-	}
-	
-	return regexes[pattern][flags];
-}
-
 let matchers = {
-	literal(document, matches, states, token, next) {
+	literal(context, token, next) {
+		let {document, matches, states} = context;
 		let {string} = token;
 		let {cursor} = states.at(-1);
 		let {lineIndex, offset} = cursor;
@@ -63,8 +39,9 @@ let matchers = {
 		return isMatch;
 	},
 	
-	regex(document, matches, states, token, next) {
-		let re = getRegex(token.pattern, token.flags);
+	regex(context, token, next) {
+		let {document, matches, states} = context;
+		let re = context.getRegex(token.pattern, token.flags);
 		let {cursor} = states.at(-1);
 		let {lineIndex, offset} = cursor;
 		let line = document.lines[lineIndex];
@@ -97,9 +74,10 @@ let matchers = {
 		return isMatch;
 	},
 	
-	query(document, matches, states, token, next) {
+	query(context, token, next) {
+		let {document, matches, states} = context;
 		let {cursor} = states.at(-1);
-		let match = query(document, cursor, token.query);
+		let match = context.query(document, cursor, token.query);
 		
 		if (!match) {
 			return false;
@@ -127,7 +105,8 @@ let matchers = {
 		return isMatch;
 	},
 	
-	newline(document, matches, states, token, next) {
+	newline(context, token, next) {
+		let {document, matches, states} = context;
 		let {cursor, indentLevel} = states.at(-1);
 		let {lineIndex, offset} = cursor;
 		let line = document.lines[lineIndex];
@@ -160,7 +139,8 @@ let matchers = {
 		return isMatch;
 	},
 	
-	indentOrDedent(document, matches, states, token, next) {
+	indentOrDedent(context, token, next) {
+		let {states} = context;
 		let {cursor, indentLevel} = states.at(-1);
 		
 		states.push({
@@ -177,7 +157,8 @@ let matchers = {
 		return isMatch;
 	},
 	
-	lines(document, matches, states, token, next) {
+	lines(context, token, next) {
+		let {document, matches, states} = context;
 		let {cursor, indentLevel} = states.at(-1);
 		let {lineIndex} = cursor;
 		
@@ -213,9 +194,9 @@ let matchers = {
 		let isMatch;
 		
 		if (token.lazy) {
-			isMatch = next() || matchers.lines(document, matches, states, token, next);
+			isMatch = next() || matchers.lines(context, token, next);
 		} else {
-			isMatch = matchers.lines(document, matches, states, token, next) || next();
+			isMatch = matchers.lines(context, token, next) || next();
 		}
 		
 		if (!isMatch) {
@@ -226,23 +207,6 @@ let matchers = {
 		return isMatch;
 	},
 };
-
-function advanceCursor(document, cursor) {
-	if (Cursor.equals(cursor, document.cursorAtEnd())) {
-		return null;
-	}
-	
-	let {lineIndex, offset} = cursor;
-	let line = document.lines[lineIndex];
-	
-	if (offset === line.string.length) {
-		cursor = c(lineIndex + 1, 0);
-	} else {
-		cursor = c(lineIndex, offset + 1);
-	}
-	
-	return cursor;
-}
 
 function skipEmptyLines(document, cursor) {
 	while (cursor.lineIndex < document.lines.length && document.lines[cursor.lineIndex].string === "") {
@@ -257,14 +221,19 @@ function match(document, codex, startCursor) {
 	
 	let tokens = tokenise(codex);
 	
-	let matches = [];
-	
-	let states = [
-		{
-			cursor: startCursor,
-			indentLevel: document.lines[startCursor.lineIndex].indentLevel,
-		},
-	];
+	let context = {
+		document,
+		getRegex: createRegex(),
+		query: query(),
+		matches: [],
+		
+		states: [
+			{
+				cursor: startCursor,
+				indentLevel: document.lines[startCursor.lineIndex].indentLevel,
+			},
+		],
+	};
 	
 	function next(tokenIndex) {
 		if (tokenIndex === tokens.length) {
@@ -273,7 +242,7 @@ function match(document, codex, startCursor) {
 		
 		let token = tokens[tokenIndex];
 		
-		let isMatch = matchers[token.type](document, matches, states, token, () => next(tokenIndex + 1));
+		let isMatch = matchers[token.type](context, token, () => next(tokenIndex + 1));
 		
 		return isMatch;
 	}
@@ -281,7 +250,7 @@ function match(document, codex, startCursor) {
 	let isMatch = next(0);
 	
 	if (isMatch) {
-		return matches;
+		return context.matches;
 	} else {
 		return null;
 	}

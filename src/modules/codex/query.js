@@ -2,15 +2,13 @@ let middle = require("utils/middle");
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 
-let cache = new WeakMap();
-
-function findResultAtCursor(results, cursor) {
+function findResultAtCursor(cache, cursor) {
 	let startIndex = 0;
-	let endIndex = results.length;
+	let endIndex = cache.length;
 	
 	while (endIndex - startIndex > 0) {
 		let index = middle(startIndex, endIndex);
-		let result = results[index];
+		let result = cache[index];
 		let mainNode = result.captures[0].node;
 		let startCursor = treeSitterPointToCursor(mainNode.startPosition);
 		
@@ -47,30 +45,27 @@ function addCaptureLabel(queryString) {
 	return queryString;
 }
 
-function query(document, cursor, queryString) {
-	queryString = addCaptureLabel(queryString);
+module.exports = function() {
+	let cache = {};
 	
-	if (!cache.has(document)) {
-		cache.set(document, {});
-	}
-	
-	let results = cache.get(document);
-	let range = document.rangeFromCursor(cursor);
-	let {scope, lang} = range;
-	
-	if (!results[lang.code]) {
-		results[lang.code] = {};
-	}
-	
-	if (!results[lang.code][queryString]) {
-		let query = lang.treeSitterLanguage.query(queryString);
+	return function(document, cursor, queryString) {
+		queryString = addCaptureLabel(queryString);
 		
-		results[lang.code][queryString] = scope.query(query);
+		let range = document.rangeFromCursor(cursor);
+		let {scope, lang} = range;
+		
+		if (!cache[lang.code]) {
+			cache[lang.code] = {};
+		}
+		
+		if (!cache[lang.code][queryString]) {
+			let query = lang.treeSitterLanguage.query(queryString);
+			
+			cache[lang.code][queryString] = scope.query(query);
+		}
+		
+		let queryResults = cache[lang.code][queryString];
+		
+		return findResultAtCursor(queryResults, cursor);
 	}
-	
-	let queryResults = results[lang.code][queryString];
-	
-	return findResultAtCursor(queryResults, cursor);
 }
-
-module.exports = query;
