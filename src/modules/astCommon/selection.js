@@ -1,11 +1,10 @@
 let AstSelection = require("modules/utils/AstSelection");
 
 let {
-	//findNextLineIndexAtIndentLevel,
 	findPrevLineIndexAtIndentLevel,
 	findSiblingIndex,
-	getHeaders,
-	getFooters,
+	getFooterLineIndex,
+	getHeaderLineIndex,
 } = require("./utils");
 
 let {s} = AstSelection;
