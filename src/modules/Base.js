@@ -9,6 +9,7 @@ let getIndentationDetails = require("modules/utils/getIndentationDetails");
 let guessIndent = require("modules/utils/guessIndent");
 let checkNewlines = require("modules/utils/checkNewlines");
 let utils = require("modules/utils");
+let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let Project = require("modules/Project");
 let Document = require("modules/Document");
@@ -314,6 +315,10 @@ class Base extends Evented {
 		lang.queries = {
 			error: treeSitterLanguage.query("(ERROR) @error"),
 		};
+	}
+	
+	async ensureRequiredLangsInitialised(fileDetails) {
+		await bluebird.map([...generateRequiredLangs(fileDetails.lang)], lang => this.initLang(lang));
 	}
 	
 	createEditorForTextArea(string="") {

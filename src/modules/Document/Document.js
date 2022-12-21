@@ -48,6 +48,12 @@ class Document extends BaseDocument {
 		this.fire("fileDetailsChanged");
 	}
 	
+	setUrl(url) {
+		this.url = url;
+		
+		this.updateFileDetails();
+	}
+	
 	updateFileDetails() {
 		this.setFileDetails(base.getFileDetails(this.string, this.url));
 	}

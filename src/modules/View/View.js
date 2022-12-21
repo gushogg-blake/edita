@@ -366,6 +366,10 @@ class View extends Evented {
 		return scrolled;
 	}
 	
+	scrollTo(x, y) {
+		this.setScrollPosition({x, y});
+	}
+	
 	setVerticalScrollPosition(position) {
 		this.setVerticalScrollNoValidate(Math.round(this.getVerticalScrollMax() * position));
 	}

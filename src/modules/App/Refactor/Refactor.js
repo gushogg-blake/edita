@@ -3,6 +3,7 @@ let Evented = require("utils/Evented");
 let sync = require("utils/sync");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
+let URL = require("modules/URL");
 let codex = require("modules/codex");
 
 let {s} = Selection;
@@ -103,9 +104,33 @@ class Refactor extends Evented {
 	}
 	
 	selectPath(path) {
-		let {document} = this.editors.matchPreview;
+		return this.sync("selectPath", async () => {
+			return await platform.fs(path).read();
+		}, async (code) => {
+			await this.setPreviewEditorFile(this.editors.matchPreview, path, code);
+		});
+	}
+	
+	async setPreviewEditorFile(editor, path, code) {
+		let {document, view} = editor;
 		
-		//document.
+		let url = new URL("refactor-preview://" + path);
+		
+		let fileDetails = base.getFileDetails(code, url);
+		
+		await base.ensureRequiredLangsInitialised(fileDetails);
+		
+		view.startBatch();
+		
+		view.scrollTo(0, 0);
+		
+		editor.api.edit(document.selectAll(), code);
+		
+		document.url = url;
+		
+		document.setFileDetails(fileDetails);
+		
+		view.endBatch();
 	}
 	
 	setOptions(options) {

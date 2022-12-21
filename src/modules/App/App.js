@@ -12,7 +12,6 @@ let protocol = require("modules/protocol");
 let Document = require("modules/Document");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
-let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let EditorTab = require("./EditorTab");
 let Projects = require("./Projects");
@@ -403,10 +402,10 @@ class App extends Evented {
 		if (fileDetails.hasMixedNewlines) {
 			// TODO prompt to change all newlines
 			
-			throw "File " + url.path + " has mixed newlines";
+			throw new Error("File " + url.path + " has mixed newlines");
 		}
 		
-		await bluebird.map([...generateRequiredLangs(fileDetails.lang)], lang => base.initLang(lang));
+		await base.ensureRequiredLangsInitialised(fileDetails);
 		
 		let document = this.createDocument(code, url, {
 			project: await this.projects.findOrCreateProjectForUrl(url),

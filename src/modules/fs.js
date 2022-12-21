@@ -216,7 +216,7 @@ module.exports = function(backends) {
 		
 		glob(pattern, options) {
 			if (!glob) {
-				throw "No glob backend available";
+				throw new Error("No glob backend available");
 			}
 			
 			return new Promise((resolve, reject) => {

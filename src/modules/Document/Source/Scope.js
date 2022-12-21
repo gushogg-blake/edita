@@ -55,7 +55,7 @@ module.exports = class Scope {
 		if (!treeSitterLanguage) {
 			// langs must be pre-initialised with base.initLang.
 			
-			throw "tree-sitter language not initialised";
+			throw new Error("tree-sitter language not initialised");
 		}
 		
 		parser.setLanguage(treeSitterLanguage);

@@ -7,7 +7,7 @@ module.exports = function(str) {
 	} = checkNewlines(str);
 	
 	if (mixed) {
-		throw "String has mixed newlines";
+		throw new Error("String has mixed newlines");
 	}
 	
 	return mostCommon;
