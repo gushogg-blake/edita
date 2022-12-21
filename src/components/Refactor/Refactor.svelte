@@ -48,7 +48,7 @@ function onUpdatePaths() {
 }
 
 function onSelectPath(e) {
-	console.log(e);
+	refactor.selectPath(e.target.value);
 }
 
 onMount(function() {
@@ -138,8 +138,8 @@ select {
 			{#if paths.length > 0}
 				<div>
 					<select on:change={onSelectPath}>
-						{#each paths as node}
-							<option value={node.path}>{node.path}</option>
+						{#each paths as path}
+							<option value={path}>{path}</option>
 						{/each}
 					</select>
 				</div>

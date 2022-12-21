@@ -1,6 +1,6 @@
 /*
 call asyncFn and then call run with the result, but only
-if the asyncFn call is still the latest one
+if the asyncFn call was the latest one
 */
 
 module.exports = function() {

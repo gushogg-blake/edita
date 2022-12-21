@@ -32,6 +32,7 @@ class Refactor extends Evented {
 		}
 		
 		this.paths = [];
+		this.selectedPath = null;
 		
 		this.updatePaths();
 		
@@ -73,6 +74,10 @@ class Refactor extends Evented {
 			if (e instanceof codex.ParseError) {
 				console.log("Error parsing match query");
 				console.log(e);
+				
+				if (e.cause) {
+					console.log(e.cause);
+				}
 			} else {
 				throw e;
 			}
@@ -81,18 +86,26 @@ class Refactor extends Evented {
 	
 	updatePaths() {
 		return this.sync("updatePaths", async () => {
-			let paths = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
+			let nodes = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
 			
-			paths = await bluebird.filter(paths, node => node.isFile());
+			nodes = await bluebird.filter(nodes, node => node.isFile());
 			
-			return paths;
+			return nodes.map(node => node.path);
 		}, (paths) => {
 			this.paths = paths;
 			
 			console.log(paths);
 			
 			this.fire("updatePaths");
+			
+			this.selectPath(paths[0] || null);
 		});
+	}
+	
+	selectPath(path) {
+		let {document} = this.editors.matchPreview;
+		
+		//document.
 	}
 	
 	setOptions(options) {

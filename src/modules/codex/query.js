@@ -1,6 +1,7 @@
 let middle = require("utils/middle");
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
+let ParseError = require("./ParseError");
 
 function findResultAtCursor(cache, cursor) {
 	let startIndex = 0;
@@ -62,7 +63,15 @@ module.exports = function() {
 		}
 		
 		if (!cache[lang.code][queryString]) {
-			let query = lang.treeSitterLanguage.query(queryString);
+			let query;
+			
+			try {
+				query = lang.treeSitterLanguage.query(queryString);
+			} catch (e) {
+				throw new ParseError("Query parse error", {
+					cause: e,
+				});
+			}
 			
 			cache[lang.code][queryString] = scope.query(query);
 		}

@@ -32,6 +32,12 @@ starting indentation level of the matched code, e.g.
 function /\w+/@name\() {
 	@body
 }
+
+query limitations:
+
+- when capturing repeated nodes, only the last node will be captured
+
+- capture names can't contain dashes
 */
 
 let states = {
@@ -78,7 +84,8 @@ function tokenise(string) {
 	let queryStartIndex;
 	let literal = "";
 	let indent = 0;
-	let indentLevels = new Set();
+	let hasReplaceStart = false;
+	let hasReplaceEnd = false;
 	
 	let i = 0;
 	let ch;
@@ -191,19 +198,35 @@ function tokenise(string) {
 				
 				i += 2;
 			} else if (ch === "[") {
+				if (hasReplaceStart) {
+					throw new ParseError("Unexpected [ (replace start) - only one allowed");
+				}
+				
 				addLiteral();
 				
 				tokens.push({
 					type: "replaceStart",
 				});
 				
+				hasReplaceStart = true;
+				
 				i++;
 			} else if (ch === "]") {
+				if (!hasReplaceStart) {
+					throw new ParseError("Unexpected ] (replace end)");
+				}
+				
+				if (hasReplaceEnd) {
+					throw new ParseError("Unexpected ] (replace end) - only one allowed");
+				}
+				
 				addLiteral();
 				
 				tokens.push({
 					type: "replaceEnd",
 				});
+				
+				hasReplaceEnd = true;
 				
 				i++;
 			} else if (ch === "(") {
@@ -349,6 +372,10 @@ function tokenise(string) {
 	
 	if (openBrackets > 0) {
 		throw new ParseError("Unterminated query - expecting closing )");
+	}
+	
+	if (hasReplaceStart && !hasReplaceEnd) {
+		throw new ParseError("Unterminated replace boundary - expecting closing ]");
 	}
 	
 	addLiteral();
