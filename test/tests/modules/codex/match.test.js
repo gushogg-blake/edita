@@ -3,7 +3,7 @@ let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
 let Cursor = require("modules/utils/Cursor");
 let query = require("modules/codex/query");
-let getRegex = require("modules/codex/createRegex");
+let createRegex = require("modules/codex/createRegex");
 let tokenise = require("modules/codex/tokenise");
 let _match = require("modules/codex/match");
 
