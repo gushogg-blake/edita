@@ -71,10 +71,11 @@ module.exports = function(scope) {
 				tree-sitter is quite sensitive to the structure of the query -
 				the node names have to be valid for the lang (so searching for
 				(function) in html throws an error) and the structure has to be
-				valid within the grammar, so you can't e.g. skip intermediate
-				nesting levels and search for descendant nodes directly within
-				the parent expression, you have to specify each step of the
-				hierarchy.
+				valid within the grammar, so you can't search for e.g.
+				(import_statement (function)) and you also can't skip
+				intermediate nesting levels and search for descendant nodes
+				directly within the parent expression, you have to specify each
+				step of the hierarchy.
 				
 				the nesting errors throw a TypeError whereas bad node names
 				are a RangeError, so if node names were unique across langs it
@@ -84,6 +85,10 @@ module.exports = function(scope) {
 				in another (due to shared node names but different grammars)
 				then we need to be able to carry on with the query, in case
 				one of the langs is nested in the other.
+				
+				a better solution might be to do the tree-sitter query creation
+				in a separate step, trying it on each lang in the document and
+				if it throws an error for all of them then it's invalid
 				*/
 				
 				console.log(e);
