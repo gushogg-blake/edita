@@ -1,6 +1,11 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
-//let codexFind = require("modules/codex/codexFind");
+let Selection = require("modules/utils/Selection");
+let Cursor = require("modules/utils/Cursor");
+let codex = require("modules/codex");
+
+let {s} = Selection;
+let {c} = Cursor;
 
 class Refactor extends Evented {
 	constructor(app, options) {
@@ -35,10 +40,7 @@ class Refactor extends Evented {
 		
 		dev();
 		
-		this.editors.match.api.edit(
-			{start: {lineIndex: 0, offset: 0}, end: {lineIndex: 0, offset: 0}},
-			`f literal\n(function @f)\n`,
-		);
+		this.editors.match.api.edit(Selection.start(), `f literal\n(function @f)\n`);
 		
 		app.on("selectTab", dev);
 	}
@@ -55,13 +57,13 @@ class Refactor extends Evented {
 		this.findMatches();
 	}
 	
-	
-	
 	findMatches() {
 		try {
-			//let parts = tokeniseCodex(this.editors.match.document.string);
+			let matches = codex.find(this.editors.matchPreview.document, this.editors.match.document.string);
 			
-			//console.log(parts);
+			console.log(matches);
+			
+			this.editors.matchPreview.api.setNormalHilites(matches.map(m => m.selection));
 		} catch (e) {
 			console.log("Error parsing match query");
 			console.log(e);

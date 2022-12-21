@@ -118,4 +118,8 @@ module.exports = {
 			snippetSession: this.adjustSnippetSession(edits),
 		});
 	},
+	
+	setNormalHilites(selections) {
+		this.view.setNormalHilites(selections);
+	},
 };

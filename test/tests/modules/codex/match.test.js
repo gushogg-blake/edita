@@ -2,9 +2,21 @@ let {is, deep, subset} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
 let Cursor = require("modules/utils/Cursor");
-let match = require("modules/codex/match");
+let query = require("modules/codex/query");
+let getRegex = require("modules/codex/createRegex");
+let tokenise = require("modules/codex/tokenise");
+let _match = require("modules/codex/match");
 
 let {c} = Cursor;
+
+function match(document, codex) {
+	let context = {
+		query: query(),
+		getRegex: createRegex(),
+	};
+	
+	return _match(context, document, tokenise(codex), Cursor.start());
+}
 
 describe("codex", function() {
 	describe("match", function() {
@@ -17,7 +29,7 @@ describe("codex", function() {
 				let asd
 			`);
 			
-			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex);
 			
 			deep(endCursor, c(0, 7));
 			
@@ -43,7 +55,7 @@ describe("codex", function() {
 				+
 			`);
 			
-			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex);
 			
 			deep(endCursor, c(3, 0));
 			
@@ -95,7 +107,7 @@ describe("codex", function() {
 				+
 			`);
 			
-			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex);
 			
 			deep(endCursor, c(7, 0));
 			
@@ -165,7 +177,7 @@ describe("codex", function() {
 				*
 			`);
 			
-			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex);
 			
 			deep(endCursor, c(1, 0));
 			
@@ -188,7 +200,7 @@ describe("codex", function() {
 				let /\\w+/@id = 123;
 			`);
 			
-			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex);
 			
 			deep(endCursor, c(0, 14));
 			
@@ -228,7 +240,7 @@ describe("codex", function() {
 				let /\\w+/@id = (function)
 			`);
 			
-			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex);
 			
 			deep(endCursor, c(2, 1));
 			
@@ -288,7 +300,7 @@ describe("codex", function() {
 				}
 			`);
 			
-			let {matches, endCursor} = match(doc, codex, Cursor.start());
+			let {matches, endCursor} = match(doc, codex);
 			
 			deep(endCursor, c(2, 1));
 			

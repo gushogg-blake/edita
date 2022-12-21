@@ -242,13 +242,13 @@ let matchers = {
 	},
 };
 
-function match(document, codex, startCursor) {
-	let tokens = tokenise(codex);
+function match(context, document, tokens, startCursor) {
+	let {getRegex, query} = context;
 	
-	let context = {
+	context = {
 		document,
-		getRegex: createRegex(),
-		query: query(),
+		getRegex,
+		query,
 		matches: [],
 		
 		states: [
@@ -278,7 +278,6 @@ function match(document, codex, startCursor) {
 		let {cursor} = states.at(-1);
 		
 		return {
-			startCursor,
 			endCursor: cursor,
 			matches,
 		};
