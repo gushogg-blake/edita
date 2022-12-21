@@ -1,3 +1,5 @@
+let ParseError = require("./ParseError");
+
 module.exports = function() {
 	let cache = {};
 	
@@ -19,7 +21,13 @@ module.exports = function() {
 		}
 		
 		if (!cache[pattern][flags]) {
-			cache[pattern][flags] = new RegExp(pattern, flags);
+			try {
+				cache[pattern][flags] = new RegExp(pattern, flags);
+			} catch (e) {
+				throw new ParseError("Regex syntax error", {
+					cause: e,
+				});
+			}
 		}
 		
 		return cache[pattern][flags];

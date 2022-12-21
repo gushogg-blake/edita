@@ -1,4 +1,5 @@
 let gcd = require("utils/gcd");
+let ParseError = require("./ParseError");
 
 /*
 tokenise a codex expression
@@ -253,7 +254,7 @@ function tokenise(string) {
 					ch = string[i];
 					
 					if ("\r\n".includes(ch)) {
-						throw new Error("Unterminated regex");
+						throw new ParseError("Unterminated regex");
 					} else if (ch === "\\") {
 						i++;
 						
@@ -346,7 +347,7 @@ function tokenise(string) {
 	}
 	
 	if (openBrackets > 0) {
-		throw new Error("Unterminated query - expecting closing )");
+		throw new ParseError("Unterminated query - expecting closing )");
 	}
 	
 	addLiteral();

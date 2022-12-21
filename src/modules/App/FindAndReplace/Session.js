@@ -1,5 +1,4 @@
 let URL = require("modules/URL");
-let {FileIsBinary} = require("modules/errors");
 let getPaths = require("./getPaths");
 let getFindAndReplaceOptions = require("./getFindAndReplaceOptions");
 
@@ -58,7 +57,7 @@ class Session {
 			try {
 				await app.openFile(url);
 			} catch (e) {
-				if (e instanceof FileIsBinary) {
+				if (e instanceof platform.fs.FileIsBinary) {
 					console.info("Skipping binary file: " + url.path);
 				} else {
 					console.error(e);

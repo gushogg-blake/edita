@@ -1,7 +1,6 @@
 let bluebird = require("bluebird");
 let minimatch = require("minimatch-browser");
 let createWalk = require("modules/walk");
-let {FileIsBinary} = require("modules/errors");
 
 module.exports = function(backends) {
 	let {
@@ -19,6 +18,8 @@ module.exports = function(backends) {
 		fs,
 		path: osPath,
 	});
+	
+	class FileIsBinary extends Error {}
 	
 	class Node {
 		constructor(path) {
@@ -307,7 +308,13 @@ module.exports = function(backends) {
 		}
 	}
 	
-	return function(path=cwd(), ...paths) {
+	let api = function(path=cwd(), ...paths) {
 		return new Node(path).child(...paths);
 	}
+	
+	Object.assign(api, {
+		FileIsBinary,
+	});
+	
+	return api;
 }

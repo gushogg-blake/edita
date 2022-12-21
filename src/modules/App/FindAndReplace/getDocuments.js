@@ -1,7 +1,6 @@
 let bluebird = require("bluebird");
 let Document = require("modules/Document");
 let URL = require("modules/URL");
-let {FileIsBinary} = require("modules/errors");
 
 module.exports = async function(paths) {
 	return bluebird.map(paths, async function(path) {
@@ -12,7 +11,7 @@ module.exports = async function(paths) {
 				noParse: true,
 			});
 		} catch (e) {
-			if (e instanceof FileIsBinary) {
+			if (e instanceof platform.fs.FileIsBinary) {
 				console.info("Skipping binary file: " + path);
 			} else {
 				console.error(e);

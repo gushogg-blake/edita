@@ -65,8 +65,12 @@ class Refactor extends Evented {
 			
 			this.editors.matchPreview.api.setNormalHilites(matches.map(m => m.selection));
 		} catch (e) {
-			console.log("Error parsing match query");
-			console.log(e);
+			if (e instanceof codex.ParseError) {
+				console.log("Error parsing match query");
+				console.log(e);
+			} else {
+				throw e;
+			}
 		}
 	}
 	

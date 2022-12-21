@@ -62,7 +62,6 @@ module.exports = function() {
 		}
 		
 		if (!cache[lang.code][queryString]) {
-			console.log("cache entry not found " + lang.code + " " + queryString);
 			let query = lang.treeSitterLanguage.query(queryString);
 			
 			cache[lang.code][queryString] = scope.query(query);

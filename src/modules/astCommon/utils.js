@@ -5,7 +5,7 @@ function getFooterLineIndex(document, lineIndex) {
 		let footer = lang.getFooter(node);
 		
 		if (footer) {
-			return nodeGetters.endPosition(node).row;
+			return nodeGetters.endPosition(footer).row;
 		}
 	}
 	
@@ -17,7 +17,7 @@ function getHeaderLineIndex(document, lineIndex) {
 		let header = lang.getHeader(node);
 		
 		if (header) {
-			return nodeGetters.startPosition(node).row;
+			return nodeGetters.startPosition(header).row;
 		}
 	}
 	
@@ -60,8 +60,8 @@ else ladder).
 function extend(document, lineIndex, followHeaderFooters=true) {
 	let footerLineIndex = getFooterLineIndex(document, lineIndex);
 	
-	if (footerLineIndex) {
-		return followHeaderFooters ? extend(footerLineIndex) : footerLineIndex + 1;
+	if (footerLineIndex !== null) {
+		return followHeaderFooters ? extend(document, footerLineIndex, true) : footerLineIndex + 1;
 	} else {
 		return lineIndex + 1;
 	}
