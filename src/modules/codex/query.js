@@ -1,7 +1,6 @@
 let middle = require("utils/middle");
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
-let ParseError = require("./ParseError");
 
 function findResultAtCursor(cache, cursor) {
 	let startIndex = 0;
@@ -49,14 +48,12 @@ function addCaptureLabel(queryString) {
 	return queryString;
 }
 
-module.exports = function() {
+module.exports = function(scope) {
+	let {lang} = scope;
 	let cache = {};
 	
 	return function(document, cursor, queryString) {
 		queryString = addCaptureLabel(queryString);
-		
-		let range = document.rangeFromCursor(cursor);
-		let {scope, lang} = range;
 		
 		if (!cache[lang.code]) {
 			cache[lang.code] = {};
@@ -67,13 +64,34 @@ module.exports = function() {
 			
 			try {
 				query = lang.treeSitterLanguage.query(queryString);
+				
+				cache[lang.code][queryString] = scope.query(query);
 			} catch (e) {
-				throw new ParseError("Query parse error", {
-					cause: e,
-				});
+				/*
+				tree-sitter is quite sensitive to the structure of the query -
+				the node names have to be valid for the lang (so searching for
+				(function) in html throws an error) and the structure has to be
+				valid within the grammar, so you can't e.g. skip intermediate
+				nesting levels and search for descendant nodes directly within
+				the parent expression, you have to specify each step of the
+				hierarchy.
+				
+				the nesting errors throw a TypeError whereas bad node names
+				are a RangeError, so if node names were unique across langs it
+				would probs be best to check the type and treat the nesting
+				errors as parse errors (to give feedback on invalid queries),
+				but if the same structure can be valid in one lang and invalid
+				in another (due to shared node names but different grammars)
+				then we need to be able to carry on with the query, in case
+				one of the langs is nested in the other.
+				*/
+				
+				console.log(e);
+				
+				cache[lang.code][queryString] = [];
+				
+				return null;
 			}
-			
-			cache[lang.code][queryString] = scope.query(query);
 		}
 		
 		let queryResults = cache[lang.code][queryString];

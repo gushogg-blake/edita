@@ -263,6 +263,10 @@ class Document extends BaseDocument {
 		return this.source.rangeFromCursor(cursor);
 	}
 	
+	rangeFromCharCursor(cursor) {
+		return this.source.rangeFromCharCursor(cursor);
+	}
+	
 	langFromCursor(cursor) {
 		return this.source.langFromCursor(cursor);
 	}

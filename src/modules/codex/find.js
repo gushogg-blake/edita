@@ -38,15 +38,24 @@ module.exports = function(document, codex) {
 	
 	let cursor = skipEmptyLines(document, Cursor.start());
 	
-	let context = {
-		query: query(),
-		getRegex: createRegex(),
-	};
+	let queryByScope = new Map();
+	
+	for (let scope of document.scopes) {
+		console.log(scope);
+		queryByScope.set(scope, query(scope));
+	}
+	
+	let getRegex = createRegex();
 	
 	let results = [];
 	
 	while (!Cursor.equals(cursor, document.cursorAtEnd())) {
-		let m = match(context,document, tokens, cursor);
+		let context = {
+			getRegex,
+			query: queryByScope.get(document.rangeFromCharCursor(cursor).scope),
+		};
+		
+		let m = match(context, document, tokens, cursor);
 		
 		if (m) {
 			let {matches, endCursor} = m;
