@@ -1,5 +1,6 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
+let sync = require("utils/sync");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let codex = require("modules/codex");
@@ -10,6 +11,8 @@ let {c} = Cursor;
 class Refactor extends Evented {
 	constructor(app, options) {
 		super();
+		
+		this.sync = sync();
 		
 		this.app = app;
 		
@@ -27,6 +30,8 @@ class Refactor extends Evented {
 		for (let editor of [match, replaceWith]) {
 			editor.view.setWrap(true);
 		}
+		
+		this.paths = [];
 		
 		this.updatePaths();
 		
@@ -54,10 +59,10 @@ class Refactor extends Evented {
 	}
 	
 	onEditMatch() {
-		this.findMatches();
+		this.hiliteMatches();
 	}
 	
-	findMatches() {
+	hiliteMatches() {
 		try {
 			let matches = codex.find(this.editors.matchPreview.document, this.editors.match.document.string);
 			
@@ -74,10 +79,20 @@ class Refactor extends Evented {
 		}
 	}
 	
-	async updatePaths() {
-		let paths = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
-		
-		console.log(paths);
+	updatePaths() {
+		return this.sync("updatePaths", async () => {
+			let paths = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
+			
+			paths = await bluebird.filter(paths, node => node.isFile());
+			
+			return paths;
+		}, (paths) => {
+			this.paths = paths;
+			
+			console.log(paths);
+			
+			this.fire("updatePaths");
+		});
 	}
 	
 	setOptions(options) {
@@ -85,15 +100,19 @@ class Refactor extends Evented {
 	}
 	
 	show() {
-		Object.values(this.editors).forEach(editor => editor.view.show());
+		this.eachEditor(editor => editor.view.show());
 	}
 	
 	hide() {
-		Object.values(this.editors).forEach(editor => editor.view.hide());
+		this.eachEditor(editor => editor.view.hide());
 	}
 	
 	resize() {
-		Object.values(this.editors).forEach(editor => editor.view.requestResizeAsync());
+		this.eachEditor(editor => editor.view.requestResizeAsync());
+	}
+	
+	eachEditor(fn) {
+		Object.values(this.editors).forEach(fn);
 	}
 }
 

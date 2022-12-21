@@ -1,4 +1,3 @@
-let gcd = require("utils/gcd");
 let ParseError = require("./ParseError");
 
 /*
@@ -23,13 +22,15 @@ to make them available in the replacement
 
 lines must appear on their own line
 
+@capture (on its own line) - shorthand for * @capture
+
 regex literals - /\w+/@id
 
 indentation - sets the indentation level relative to the
 starting indentation level of the matched code, e.g.
 
 function /\w+/@name\() {
-	+ @body
+	@body
 }
 */
 
@@ -354,16 +355,6 @@ function tokenise(string) {
 	
 	while (tokens.at(-1)?.type === "newline") {
 		tokens.pop();
-	}
-	
-	// normalise indents
-	
-	let f = gcd(...indentLevels);
-	
-	for (let token of tokens) {
-		if (token.type === "indent") {
-			token.level /= f;
-		}
 	}
 	
 	return tokens;

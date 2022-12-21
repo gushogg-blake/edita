@@ -5,6 +5,7 @@ import accels from "components/actions/accels";
 import Accel from "components/utils/Accel.svelte";
 import AccelLabel from "components/utils/AccelLabel.svelte";
 import Gap from "components/utils/Gap.svelte";
+import Spacer from "components/utils/Spacer.svelte";
 import Editor from "components/Editor/Editor.svelte";
 
 export let refactor;
@@ -19,6 +20,8 @@ let replaceWithEditor;
 let refactoredEditor;
 
 let formOptions = getFormOptions(refactor.options);
+
+let {paths} = refactor;
 
 $: refactor.setOptions(getOptions(formOptions));
 
@@ -40,9 +43,18 @@ function onOptionsChanged() {
 	
 }
 
+function onUpdatePaths() {
+	({paths} = refactor);
+}
+
+function onSelectPath(e) {
+	console.log(e);
+}
+
 onMount(function() {
 	let teardown = [
 		refactor.on("optionsChanged", onOptionsChanged),
+		refactor.on("updatePaths", onUpdatePaths),
 	];
 	
 	return function() {
@@ -68,6 +80,11 @@ onMount(function() {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	padding: 8px;
+}
+
+#actions {
+	display: flex;
+	flex-direction: column;
 }
 
 #editors {
@@ -99,6 +116,9 @@ onMount(function() {
 	}
 }
 
+select {
+	max-width: 100%;
+}
 </style>
 
 <div id="main">
@@ -114,7 +134,16 @@ onMount(function() {
 			<input bind:value={formOptions.globs} id="globs" disabled={formOptions.searchIn !== "files"}>
 		</div>
 		<div id="actions">
-			
+			<Spacer/>
+			{#if paths.length > 0}
+				<div>
+					<select on:change={onSelectPath}>
+						{#each paths as node}
+							<option value={node.path}>{node.path}</option>
+						{/each}
+					</select>
+				</div>
+			{/if}
 		</div>
 	</div>
 	<div id="editors">
