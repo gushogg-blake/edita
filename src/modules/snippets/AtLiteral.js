@@ -5,6 +5,10 @@ class AtLiteral {
 		this.end = end;
 	}
 	
+	getValue(context) {
+		return "@";
+	}
+	
 	getDefaultValue(context) {
 		return "@";
 	}

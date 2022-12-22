@@ -7,11 +7,9 @@ let EndMarker = require("./EndMarker");
 
 module.exports = function(string, createTabstops=true) {
 	let placeholders = [];
+	let encounteredTabstops = {};
 	
 	let i = 0;
-	let ch;
-	
-	let encounteredTabstops = {};
 	
 	while (i < string.length) {
 		let ch = string[i];
@@ -19,7 +17,7 @@ module.exports = function(string, createTabstops=true) {
 		
 		if (ch === "@" && next) {
 			if (next === "{") {
-				let nameWithDefault = string.substr(i + "@{".length).match(/^([$\w]+)(?=:)/);
+				let nameWithDefault = string.substr(i + "@{".length).match(/^([$\w_]+)(?=:)/);
 				
 				if (nameWithDefault) {
 					// @{name:defaultExpression}
@@ -49,10 +47,10 @@ module.exports = function(string, createTabstops=true) {
 					
 					i = end;
 				}
-			} else if (next.match(/[$\w]/)) {
+			} else if (next.match(/[$\w_]/)) {
 				// @name
 				
-				let [, name] = string.substr(i + "@".length).match(/^([$\w]+)/);
+				let [, name] = string.substr(i + "@".length).match(/^([$\w_]+)/);
 				let start = i;
 				let end = start + "@".length + name.length;
 				
