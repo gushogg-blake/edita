@@ -14,11 +14,11 @@ let matchers = {
 	literal(context, token, next) {
 		let {document, matches, states} = context;
 		let {string} = token;
-		let {cursor} = states.at(-1);
+		let {cursor, indentLevel} = states.at(-1);
 		let {lineIndex, offset} = cursor;
 		let line = document.lines[lineIndex];
 		
-		if (line.string.substr(offset, string.length) !== string) {
+		if (line.indentLevel !== indentLevel || line.string.substr(offset, string.length) !== string) {
 			return false;
 		}
 		
@@ -160,6 +160,10 @@ let matchers = {
 		while (!Cursor.equals(newCursor, document.cursorAtEnd()) && document.lines[newCursor.lineIndex].trimmed.length === 0) {
 			newCursor = document.cursorWithinBounds(c(newCursor.lineIndex + 1, 0));
 		}
+		
+		// skip indentation
+		
+		newCursor = c(newCursor.lineIndex, document.lines[newCursor.lineIndex].indentOffset);
 		
 		states.push({
 			cursor: newCursor,
