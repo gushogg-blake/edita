@@ -659,6 +659,10 @@ class Editor extends Evented {
 		this.modeSwitchKey.mouseup();
 	}
 	
+	get string() {
+		return this.document.string;
+	}
+	
 	get mode() {
 		return this.view.mode;
 	}

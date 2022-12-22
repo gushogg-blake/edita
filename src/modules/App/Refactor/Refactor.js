@@ -33,7 +33,8 @@ class Refactor extends Evented {
 		}
 		
 		this.paths = [];
-		this.selectedPath = null;
+		
+		this.selectedFile = null;
 		
 		this.updatePaths();
 	}
@@ -47,14 +48,19 @@ class Refactor extends Evented {
 	}
 	
 	onEditMatch() {
+		this.find();
+	}
+	
+	find() {
+		this.results = codex.find(this.editors.results.document, this.editors.find.string);
+		
 		this.hiliteMatches();
+		this.updatePreview();
 	}
 	
 	hiliteMatches() {
 		try {
-			let results = codex.find(this.editors.results.document, this.editors.find.document.string);
-			
-			this.editors.results.api.setNormalHilites(results.map(result => result.replaceSelection));
+			this.editors.results.api.setNormalHilites(this.results.map(result => result.replaceSelection));
 		} catch (e) {
 			if (e instanceof codex.ParseError) {
 				console.log("Error parsing codex");
@@ -89,11 +95,28 @@ class Refactor extends Evented {
 		return this.sync("selectPath", async () => {
 			return await platform.fs(path).read();
 		}, async (code) => {
-			await this.setPreviewEditorCode(this.editors.results, new URL("refactor-preview-matches://" + path), code);
+			this.selectedFile = {path, code};
+			
+			await this.setResultsCode();
+			await this.updatePreview();
 		});
 	}
 	
-	async setPreviewEditorCode(editor, url, code) {
+	async setResultsCode() {
+		let {path, code} = this.selectedFile;
+		
+		await this.setEditorCode(this.editors.results, new URL("refactor-results://" + path), code);
+	}
+	
+	async updatePreview() {
+		let {path, code} = this.selectedFile;
+		let replaceWith = this.editors.replaceWith.string;
+		let replaced = codex.replace(code, this.results, replaceWith);
+		
+		await this.setEditorCode(this.editors.preview, new URL("refactor-preview://" + path), replaced);
+	}
+	
+	async setEditorCode(editor, url, code) {
 		let {document, view} = editor;
 		
 		let fileDetails = base.getFileDetails(code, url);

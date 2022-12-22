@@ -1,5 +1,5 @@
 //let tokenise = require("./tokenise");
 
-module.exports = function(document, result, replaceWith) {
-	
+module.exports = function(code, results, replaceWith) {
+	return code;
 }
