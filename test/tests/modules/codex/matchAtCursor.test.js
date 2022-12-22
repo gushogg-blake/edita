@@ -3,10 +3,10 @@ let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
 let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
-let query = require("modules/codex/query");
-let createRegex = require("modules/codex/createRegex");
-let tokenise = require("modules/codex/tokenise");
-let matchAtCursor = require("modules/codex/matchAtCursor");
+let query = require("modules/codex/find/query");
+let createRegex = require("modules/codex/find/createRegex");
+let tokenise = require("modules/codex/find/tokenise");
+let matchAtCursor = require("modules/codex/find/matchAtCursor");
 
 let {c} = Cursor;
 let {s} = Selection;

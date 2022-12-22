@@ -1,6 +1,6 @@
 let {is, deep, expect} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
-let tokenise = require("modules/codex/tokenise");
+let tokenise = require("modules/codex/find/tokenise");
 
 describe("codex", function() {
 	describe("tokenise", function() {

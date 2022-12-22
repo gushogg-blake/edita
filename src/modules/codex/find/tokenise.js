@@ -99,17 +99,6 @@ function tokenise(string) {
 		return true;
 	}
 	
-	function addLiteral() {
-		if (literal) {
-			tokens.push({
-				type: "literal",
-				string: literal,
-			});
-		}
-		
-		literal = "";
-	}
-	
 	function consumeAndAddIndentOrDedent() {
 		if (lineIsEmpty()) {
 			return;
@@ -171,6 +160,19 @@ function tokenise(string) {
 		}
 	}
 	
+	function addLiteral(ch) {
+		let lastToken = tokens.at(-1);
+		
+		if (lastToken?.type === "literal") {
+			lastToken.string += ch;
+		} else {
+			tokens.push({
+				type: "literal",
+				string: ch,
+			});
+		}
+	}
+	
 	consumeAndAddIndentOrDedent();
 	
 	while (i < string.length) {
@@ -178,8 +180,6 @@ function tokenise(string) {
 		
 		if (state === states.DEFAULT) {
 			if ("\r\n".includes(ch)) {
-				addLiteral();
-				
 				if (tokens.length > 0 && tokens.at(-1)?.type !== "newline") {
 					tokens.push({
 						type: "newline",
@@ -194,15 +194,13 @@ function tokenise(string) {
 				
 				consumeAndAddIndentOrDedent();
 			} else if (ch === "\\") {
-				literal += string[i + 1] || "";
+				addLiteral(string[i + 1] || "");
 				
 				i += 2;
 			} else if (ch === "[") {
 				if (hasReplaceStart) {
 					throw new ParseError("Unexpected [ (replace start) - only one allowed");
 				}
-				
-				addLiteral();
 				
 				tokens.push({
 					type: "replaceStart",
@@ -220,8 +218,6 @@ function tokenise(string) {
 					throw new ParseError("Unexpected ] (replace end) - only one allowed");
 				}
 				
-				addLiteral();
-				
 				tokens.push({
 					type: "replaceEnd",
 				});
@@ -233,8 +229,6 @@ function tokenise(string) {
 				openBrackets++;
 				
 				queryStartIndex = i;
-				
-				addLiteral();
 				
 				i++;
 				
@@ -267,8 +261,6 @@ function tokenise(string) {
 					capture,
 				});
 			} else if (ch === "/") {
-				addLiteral();
-				
 				let startIndex = i;
 				let inClass = false;
 				
@@ -315,7 +307,7 @@ function tokenise(string) {
 					capture,
 				});
 			} else {
-				literal += ch;
+				addLiteral(ch);
 				
 				i++;
 			}
@@ -377,8 +369,6 @@ function tokenise(string) {
 	if (hasReplaceStart && !hasReplaceEnd) {
 		throw new ParseError("Unterminated replace boundary - expecting closing ]");
 	}
-	
-	addLiteral();
 	
 	while (tokens.at(-1)?.type === "newline") {
 		tokens.pop();
