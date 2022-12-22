@@ -47,8 +47,6 @@ class Refactor extends Evented {
 		
 		dev();
 		
-		this.editors.match.api.edit(Selection.start(), `f literal\n(function @f)\n`);
-		
 		app.on("selectTab", dev);
 	}
 	
@@ -94,8 +92,6 @@ class Refactor extends Evented {
 			return nodes.map(node => node.path);
 		}, (paths) => {
 			this.paths = paths;
-			
-			console.log(paths);
 			
 			this.fire("updatePaths");
 			

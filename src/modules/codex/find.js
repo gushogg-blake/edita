@@ -41,7 +41,6 @@ module.exports = function(document, codex) {
 	let queryByScope = new Map();
 	
 	for (let scope of document.scopes) {
-		console.log(scope);
 		queryByScope.set(scope, query(scope));
 	}
 	
@@ -58,14 +57,9 @@ module.exports = function(document, codex) {
 		let m = match(context, document, tokens, cursor);
 		
 		if (m) {
-			let {matches, endCursor} = m;
+			results.push(m);
 			
-			results.push({
-				matches,
-				selection: s(cursor, endCursor),
-			});
-			
-			cursor = m.endCursor;
+			cursor = m.selection.end;
 		} else {
 			cursor = advanceCursor(document, cursor);
 		}

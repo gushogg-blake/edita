@@ -1,4 +1,5 @@
 let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/utils/Selection");
 let AstSelection = require("modules/utils/AstSelection");
 let {extend} = require("modules/astCommon/utils");
 let tokenise = require("./tokenise");
@@ -6,6 +7,7 @@ let query = require("./query");
 let createRegex = require("./createRegex");
 
 let {c} = Cursor;
+let {s} = Selection;
 let {s: a} = AstSelection;
 
 let matchers = {
@@ -240,6 +242,32 @@ let matchers = {
 		
 		return isMatch;
 	},
+	
+	_replaceStartOrEnd(context, token, next) {
+		let {matches, states} = context;
+		let {cursor} = states.at(-1);
+		
+		matches.push({
+			token,
+			cursor,
+		});
+		
+		let isMatch = next();
+		
+		if (!isMatch) {
+			matches.pop();
+		}
+		
+		return isMatch;
+	},
+	
+	replaceStart(...args) {
+		return matchers._replaceStartOrEnd(...args);
+	},
+	
+	replaceEnd(...args) {
+		return matchers._replaceStartOrEnd(...args);
+	},
 };
 
 function match(context, document, tokens, startCursor) {
@@ -276,10 +304,25 @@ function match(context, document, tokens, startCursor) {
 	if (isMatch) {
 		let {matches, states} = context;
 		let {cursor} = states.at(-1);
+		let selection = s(startCursor, cursor);
+		let replaceSelection = selection;
+		
+		let replaceStart;
+		
+		for (let m of matches) {
+			let {type} = m.token;
+			
+			if (type === "replaceStart") {
+				replaceStart = m.cursor;
+			} else if (type === "replaceEnd") {
+				replaceSelection = s(replaceStart, m.cursor);
+			}
+		}
 		
 		return {
-			endCursor: cursor,
 			matches,
+			selection,
+			replaceSelection,
 		};
 	} else {
 		return null;

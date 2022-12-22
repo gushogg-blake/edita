@@ -1,6 +1,7 @@
 let {is, deep, subset} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
+let Selection = require("modules/utils/Selection");
 let Cursor = require("modules/utils/Cursor");
 let query = require("modules/codex/query");
 let createRegex = require("modules/codex/createRegex");
@@ -8,10 +9,11 @@ let tokenise = require("modules/codex/tokenise");
 let _match = require("modules/codex/match");
 
 let {c} = Cursor;
+let {s} = Selection;
 
 function match(document, codex) {
 	let context = {
-		query: query(),
+		query: query(document.source.rootScope),
 		getRegex: createRegex(),
 	};
 	
@@ -29,9 +31,9 @@ describe("codex", function() {
 				let asd
 			`);
 			
-			let {matches, endCursor} = match(doc, codex);
+			let {matches, selection} = match(doc, codex);
 			
-			deep(endCursor, c(0, 7));
+			deep(selection.end, c(0, 7));
 			
 			deep(matches, [
 				{
@@ -55,9 +57,9 @@ describe("codex", function() {
 				+
 			`);
 			
-			let {matches, endCursor} = match(doc, codex);
+			let {matches, selection} = match(doc, codex);
 			
-			deep(endCursor, c(3, 0));
+			deep(selection.end, c(3, 0));
 			
 			subset(matches, [
 				{
@@ -107,9 +109,9 @@ describe("codex", function() {
 				+
 			`);
 			
-			let {matches, endCursor} = match(doc, codex);
+			let {matches, selection} = match(doc, codex);
 			
-			deep(endCursor, c(7, 0));
+			deep(selection.end, c(7, 0));
 			
 			subset(matches, [
 				{
@@ -177,9 +179,9 @@ describe("codex", function() {
 				*
 			`);
 			
-			let {matches, endCursor} = match(doc, codex);
+			let {matches, selection} = match(doc, codex);
 			
-			deep(endCursor, c(1, 0));
+			deep(selection.end, c(1, 0));
 			
 			subset(matches, [
 				{
@@ -200,9 +202,9 @@ describe("codex", function() {
 				let /\\w+/@id = 123;
 			`);
 			
-			let {matches, endCursor} = match(doc, codex);
+			let {matches, selection} = match(doc, codex);
 			
-			deep(endCursor, c(0, 14));
+			deep(selection.end, c(0, 14));
 			
 			subset(matches, [
 				{
@@ -240,9 +242,9 @@ describe("codex", function() {
 				let /\\w+/@id = (function)
 			`);
 			
-			let {matches, endCursor} = match(doc, codex);
+			let {matches, selection} = match(doc, codex);
 			
-			deep(endCursor, c(2, 1));
+			deep(selection.end, c(2, 1));
 			
 			subset(matches, [
 				{
@@ -300,9 +302,9 @@ describe("codex", function() {
 				}
 			`);
 			
-			let {matches, endCursor} = match(doc, codex);
+			let {matches, selection} = match(doc, codex);
 			
-			deep(endCursor, c(2, 1));
+			deep(selection.end, c(2, 1));
 			
 			subset(matches, [
 				{
@@ -344,6 +346,30 @@ describe("codex", function() {
 					},
 				},
 			]);
+		});
+		
+		it("replace selection", function() {
+			let doc = createJsDoc(`
+				line1
+				line2
+				
+				let asd = function() {
+					return 123;
+				}
+			`);
+			
+			let codex = dedent(`
+				line1
+				line2
+				
+				[let /\\w+/@id = function\\() {
+					@body
+				}]
+			`);
+			
+			let {replaceSelection} = match(doc, codex);
+			
+			deep(replaceSelection, s(c(3, 0), c(5, 1)));
 		});
 	});
 });
