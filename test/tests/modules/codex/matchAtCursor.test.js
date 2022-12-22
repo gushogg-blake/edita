@@ -6,7 +6,7 @@ let Cursor = require("modules/utils/Cursor");
 let query = require("modules/codex/query");
 let createRegex = require("modules/codex/createRegex");
 let tokenise = require("modules/codex/tokenise");
-let getMatchesAtCursor = require("modules/codex/getMatchesAtCursor");
+let matchAtCursor = require("modules/codex/matchAtCursor");
 
 let {c} = Cursor;
 let {s} = Selection;
@@ -17,7 +17,7 @@ function match(document, codex) {
 		getRegex: createRegex(),
 	};
 	
-	return getMatchesAtCursor(context, document, tokenise(codex), Cursor.start());
+	return matchAtCursor(context, document, tokenise(codex), Cursor.start());
 }
 
 describe("codex", function() {

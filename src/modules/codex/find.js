@@ -3,7 +3,7 @@ let Cursor = require("modules/utils/Cursor");
 let createRegex = require("./createRegex");
 let query = require("./query");
 let tokenise = require("./tokenise");
-let getMatchesAtCursor = require("./getMatchesAtCursor");
+let matchAtCursor = require("./matchAtCursor");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -54,7 +54,7 @@ module.exports = function(document, codex) {
 			query: queryByScope.get(document.rangeFromCharCursor(cursor).scope),
 		};
 		
-		let result = getMatchesAtCursor(context, document, tokens, cursor);
+		let result = matchAtCursor(context, document, tokens, cursor);
 		
 		if (result) {
 			results.push(result);

@@ -615,5 +615,36 @@ describe("codex", function() {
 				string: "}",
 			}]);
 		});
+		
+		it("test", function() {
+			let codex = dedent(`
+				[*]
+			`);
+			
+			let tokens = tokenise(codex);
+			
+			console.log(tokens);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `function asd() {`,
+			}, {
+				type: "newline",
+			}, {
+				type: "indentOrDedent",
+				dir: 1,
+			}, {
+				type: "literal",
+				string: "return a + @var",
+			}, {
+				type: "newline",
+			}, {
+				type: "indentOrDedent",
+				dir: -1,
+			}, {
+				type: "literal",
+				string: "}",
+			}]);
+		});
 	});
 });

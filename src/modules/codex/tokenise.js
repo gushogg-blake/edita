@@ -61,20 +61,6 @@ function countIndentChars(str, startIndex) {
 	return n;
 }
 
-function isAtStartOfLine(str, index) {
-	for (let i = index - 1; i > 0; i--) {
-		let ch = str[i];
-		
-		if ("\r\n".includes(ch)) {
-			return true;
-		} else if (!" \t".includes(ch)) {
-			return false;
-		}
-	}
-	
-	return true;
-}
-
 function tokenise(string) {
 	let tokens = [];
 	
@@ -97,6 +83,20 @@ function tokenise(string) {
 		let ch = string[i];
 		
 		return ch && "\r\n".includes(ch);
+	}
+	
+	function isAtStartOfLine() {
+		for (let i = tokens.length - 1; i >= 0; i--) {
+			let token = tokens[i];
+			
+			if (token.type === "newline") {
+				return true;
+			} else if (!["indentOrDedent", "replaceStart", "replaceEnd"].includes(token.type)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	function addLiteral() {
@@ -239,7 +239,7 @@ function tokenise(string) {
 				i++;
 				
 				state = states.IN_QUERY;
-			} else if ("*+@".includes(ch) && isAtStartOfLine(string, i)) {
+			} else if ("*+@".includes(ch) && isAtStartOfLine()) {
 				let zero;
 				let lazy;
 				let capture;
