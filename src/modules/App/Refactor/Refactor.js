@@ -36,18 +36,6 @@ class Refactor extends Evented {
 		this.selectedPath = null;
 		
 		this.updatePaths();
-		
-		let dev = () => {
-			let editor = this.editors.results;
-			let {document} = editor;
-			
-			editor.api.edit(document.selectAll(), app.selectedTab.editor.document.string);
-			document.setLang(base.langs.get("javascript"));
-		};
-		
-		dev();
-		
-		app.on("selectTab", dev);
 	}
 	
 	createFindEditor() {
