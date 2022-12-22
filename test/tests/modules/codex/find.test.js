@@ -160,7 +160,7 @@ describe("codex", function() {
 				},
 			]);
 			
-			subset(matches[1].matches, [
+			subset(results[1].matches, [
 				{
 					token: {
 						type: "literal",
