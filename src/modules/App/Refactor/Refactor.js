@@ -20,15 +20,15 @@ class Refactor extends Evented {
 		this.setOptions(options);
 		
 		this.editors = {
-			match: this.createMatchEditor(),
+			find: this.createFindEditor(),
 			replaceWith: app.createEditor(),
-			matchPreview: app.createEditor(),
-			resultPreview: app.createEditor(),
+			results: app.createEditor(),
+			preview: app.createEditor(),
 		};
 		
-		let {match, replaceWith} = this.editors;
+		let {find, replaceWith} = this.editors;
 		
-		for (let editor of [match, replaceWith]) {
+		for (let editor of [find, replaceWith]) {
 			editor.view.setWrap(true);
 		}
 		
@@ -38,7 +38,7 @@ class Refactor extends Evented {
 		this.updatePaths();
 		
 		let dev = () => {
-			let editor = this.editors.matchPreview;
+			let editor = this.editors.results;
 			let {document} = editor;
 			
 			editor.api.edit(document.selectAll(), app.selectedTab.editor.document.string);
@@ -50,7 +50,7 @@ class Refactor extends Evented {
 		app.on("selectTab", dev);
 	}
 	
-	createMatchEditor() {
+	createFindEditor() {
 		let editor = app.createEditor();
 		
 		editor.on("edit", this.onEditMatch.bind(this));
@@ -64,14 +64,12 @@ class Refactor extends Evented {
 	
 	hiliteMatches() {
 		try {
-			let matches = codex.find(this.editors.matchPreview.document, this.editors.match.document.string);
+			let results = codex.find(this.editors.results.document, this.editors.find.document.string);
 			
-			console.log(matches);
-			
-			this.editors.matchPreview.api.setNormalHilites(matches.map(m => m.replaceSelection));
+			this.editors.results.api.setNormalHilites(results.map(result => result.replaceSelection));
 		} catch (e) {
 			if (e instanceof codex.ParseError) {
-				console.log("Error parsing match query");
+				console.log("Error parsing codex");
 				console.log(e);
 				
 				if (e.cause) {
@@ -103,14 +101,12 @@ class Refactor extends Evented {
 		return this.sync("selectPath", async () => {
 			return await platform.fs(path).read();
 		}, async (code) => {
-			await this.setPreviewEditorFile(this.editors.matchPreview, path, code);
+			await this.setPreviewEditorCode(this.editors.results, new URL("refactor-preview-matches://" + path), code);
 		});
 	}
 	
-	async setPreviewEditorFile(editor, path, code) {
+	async setPreviewEditorCode(editor, url, code) {
 		let {document, view} = editor;
-		
-		let url = new URL("refactor-preview://" + path);
 		
 		let fileDetails = base.getFileDetails(code, url);
 		

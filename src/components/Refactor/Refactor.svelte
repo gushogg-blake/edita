@@ -14,10 +14,10 @@ let fire = createEventDispatcher();
 
 let app = getContext("app");
 
-let matchEditor;
-let matchedEditor;
+let findEditor;
+let resultsEditor;
 let replaceWithEditor;
-let refactoredEditor;
+let previewEditor;
 
 let formOptions = getFormOptions(refactor.options);
 
@@ -149,21 +149,21 @@ select {
 	<div id="editors">
 		<div class="headers">
 			<div>
-				<AccelLabel for={matchEditor} label="%Match"/>
+				<AccelLabel for={findEditor} label="%Find"/>
 			</div>
 			<div>
-				<label>Matches</label>
+				<label>Results</label>
 			</div>
 		</div>
 		<div class="editors">
 			<div>
 				<Editor
-					bind:this={matchEditor}
-					editor={refactor.editors.match}
+					bind:this={findEditor}
+					editor={refactor.editors.find}
 				/>
 			</div>
 			<div>
-				<Editor editor={refactor.editors.matchPreview}/>
+				<Editor editor={refactor.editors.results}/>
 			</div>
 		</div>
 		<div class="headers">
@@ -182,7 +182,7 @@ select {
 				/>
 			</div>
 			<div>
-				<Editor editor={refactor.editors.resultPreview}/>
+				<Editor editor={refactor.editors.preview}/>
 			</div>
 		</div>
 	</div>
