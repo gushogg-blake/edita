@@ -1,10 +1,7 @@
 let {is, deep, subset} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
-let Cursor = require("modules/utils/Cursor");
 let find = require("modules/codex/find");
-
-let {c} = Cursor;
 
 describe("codex", function() {
 	describe("find", function() {
@@ -18,9 +15,9 @@ describe("codex", function() {
 				let asd
 			`);
 			
-			let matches = find(doc, codex);
+			let results = find(doc, codex);
 			
-			subset(matches, [
+			subset(results, [
 				{
 					matches: [
 						{
@@ -62,9 +59,9 @@ describe("codex", function() {
 				+
 			`);
 			
-			let matches = find(doc, codex);
+			let results = find(doc, codex);
 			
-			subset(matches[0].matches, [
+			subset(results[0].matches, [
 				{
 					token: {
 						type: "literal",
@@ -142,9 +139,9 @@ describe("codex", function() {
 				+?
 			`);
 			
-			let matches = find(doc, codex);
+			let results = find(doc, codex);
 			
-			subset(matches[0].matches, [
+			subset(results[0].matches, [
 				{
 					token: {
 						type: "literal",
