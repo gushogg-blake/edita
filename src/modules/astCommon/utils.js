@@ -28,6 +28,10 @@ function isHeader(document, lineIndex) {
 	return getFooterLineIndex(document, lineIndex) !== null;
 }
 
+function isFooter(document, lineIndex) {
+	return getHeaderLineIndex(document, lineIndex) !== null;
+}
+
 function getHeaders(document, lineIndex) {
 	let nodesWithLang = [...document.generateNodesOnLineWithLang(lineIndex)];
 	
@@ -69,6 +73,7 @@ function extend(document, lineIndex, followHeaderFooters=true) {
 
 let api = {
 	isHeader,
+	isFooter,
 	getFooterLineIndex,
 	getHeaderLineIndex,
 	getHeaders,
