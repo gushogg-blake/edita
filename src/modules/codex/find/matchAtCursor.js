@@ -38,9 +38,7 @@ module.exports = function(context, document, tokens, cursor) {
 		let {matches, states} = context;
 		let {cursor: endCursor} = states.at(-1);
 		let selection = s(cursor, endCursor);
-		let replaceSelection = selection;
-		
-		let replaceStart;
+		let {start: replaceStart, end: replaceEnd} = selection;
 		
 		for (let match of matches) {
 			let {type} = match.token;
@@ -48,14 +46,14 @@ module.exports = function(context, document, tokens, cursor) {
 			if (type === "replaceStart") {
 				replaceStart = match.cursor;
 			} else if (type === "replaceEnd") {
-				replaceSelection = s(replaceStart, match.cursor);
+				replaceEnd = match.cursor;
 			}
 		}
 		
 		return {
 			matches,
 			selection,
-			replaceSelection,
+			replaceSelection: s(replaceStart, replaceEnd),
 		};
 	} else {
 		return null;

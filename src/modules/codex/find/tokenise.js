@@ -210,10 +210,6 @@ function tokenise(string) {
 				
 				i++;
 			} else if (ch === "]") {
-				if (!hasReplaceStart) {
-					throw new ParseError("Unexpected ] (replace end)");
-				}
-				
 				if (hasReplaceEnd) {
 					throw new ParseError("Unexpected ] (replace end) - only one allowed");
 				}
@@ -364,10 +360,6 @@ function tokenise(string) {
 	
 	if (openBrackets > 0) {
 		throw new ParseError("Unterminated query - expecting closing )");
-	}
-	
-	if (hasReplaceStart && !hasReplaceEnd) {
-		throw new ParseError("Unterminated replace boundary - expecting closing ]");
 	}
 	
 	while (tokens.at(-1)?.type === "newline") {
