@@ -52,15 +52,11 @@ class Refactor extends Evented {
 	}
 	
 	find() {
-		this.results = codex.find(this.editors.results.document, this.editors.find.string);
-		
-		this.hiliteMatches();
-		this.updatePreview();
-	}
-	
-	hiliteMatches() {
 		try {
-			this.editors.results.api.setNormalHilites(this.results.map(result => result.replaceSelection));
+			this.results = codex.find(this.editors.results.document, this.editors.find.string);
+			
+			this.hiliteMatches();
+			this.updatePreview();
 		} catch (e) {
 			if (e instanceof codex.ParseError) {
 				console.log("Error parsing codex");
@@ -73,6 +69,10 @@ class Refactor extends Evented {
 				throw e;
 			}
 		}
+	}
+	
+	hiliteMatches() {
+		this.editors.results.api.setNormalHilites(this.results.map(result => result.replaceSelection));
 	}
 	
 	updatePaths() {
