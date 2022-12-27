@@ -90,7 +90,7 @@ let matchers = {
 		let {indentLevel} = document.lines[cursor.lineIndex];
 		
 		states.push({
-			cursor: document.cursorFromIndex(document.indexFromCursor(cursor) + match.node.text.length),
+			cursor: match.endCursor,
 			indentLevel,
 		});
 		

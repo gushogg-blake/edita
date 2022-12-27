@@ -76,8 +76,9 @@ function tokenise(string) {
 	let i = 0;
 	let ch;
 	
-	let identifierRe = /[\w_]+/g;
-	let regexFlagsRe = /[gmiysu]*/g;
+	let identifierRe = /^[\w_]+/;
+	let regexFlagsRe = /^[gmiysu]*/;
+	let queryQuantifierRe = /^[*+?]/;
 	
 	function lineIsEmpty() {
 		let ch = string[i];
@@ -133,9 +134,7 @@ function tokenise(string) {
 	}
 	
 	function consumeRe(re) {
-		re.lastIndex = i;
-		
-		let match = re.exec(string)?.[0] || "";
+		let match = string.substr(i).match(re)?.[0] || "";
 		
 		i += match.length;
 		
@@ -158,6 +157,10 @@ function tokenise(string) {
 		} else {
 			return null;
 		}
+	}
+	
+	function consumeQueryQuantifier() {
+		consumeRe(queryQuantifierRe);
 	}
 	
 	function addLiteral(ch) {
@@ -318,6 +321,7 @@ function tokenise(string) {
 				i++;
 				
 				if (openBrackets === 0) {
+					consumeQueryQuantifier();
 					skipWhitespace();
 					consumeCaptureLabel();
 					

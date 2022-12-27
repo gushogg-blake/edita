@@ -1,6 +1,7 @@
 let middle = require("utils/middle");
 let Cursor = require("modules/utils/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
+let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 
 function findResultAtCursor(cache, cursor) {
 	let startIndex = 0;
@@ -9,19 +10,38 @@ function findResultAtCursor(cache, cursor) {
 	while (endIndex - startIndex > 0) {
 		let index = middle(startIndex, endIndex);
 		let result = cache[index];
-		let mainNode = result.captures[0].node;
-		let startCursor = treeSitterPointToCursor(mainNode.startPosition);
+		let firstNode = result.captures[0].node;
+		let startCursor = treeSitterPointToCursor(firstNode.startPosition);
 		
 		if (Cursor.equals(cursor, startCursor)) {
+			let matches = [];
 			let captures = {};
 			
 			for (let {name, node} of result.captures) {
-				captures[name] = node;
+				/*
+				if this is the first node or it's not a child of the last
+				top-level node, it's a top-level node
+				*/
+				
+				if (matches.length === 0 || nodeUtils.isOnOrAfter(node, treeSitterPointToCursor(nodeUtils.endPosition(matches.at(-1).node)))) {
+					matches.push({
+						node,
+						captures: {},
+					});
+				}
+				
+				let {captures} = matches.at(-1);
+				
+				if (!captures[name]) {
+					captures[name] = [];
+				}
+				
+				captures[name].push(node);
 			}
 			
 			return {
-				node: mainNode,
-				captures,
+				matches,
+				endCursor: treeSitterPointToCursor(nodeUtils.endPosition(matches.at(-1).node)),
 			};
 		} else if (Cursor.isBefore(cursor, startCursor)) {
 			endIndex = index;
@@ -34,13 +54,14 @@ function findResultAtCursor(cache, cursor) {
 }
 
 /*
-if no explicit capture label is given for the top-level node,
-use the node name
+if no explicit capture label is given at the top level, use the first
+word (which will probably be a node name) - this allows shorthand like
+(function) for simple queries, which expands to (function) @function
 */
 
 function addCaptureLabel(queryString) {
 	if (!queryString.match(/@([\w_]+)$/)) {
-		let [, nodeName] = queryString.match(/^\(([\w_]+)/);
+		let [, nodeName] = queryString.match(/([\w_]+)/);
 		
 		queryString += " @" + nodeName;
 	}
@@ -65,7 +86,10 @@ module.exports = function(scope) {
 			try {
 				query = lang.treeSitterLanguage.query(queryString);
 				
-				cache[lang.code][queryString] = scope.query(query);
+				// filter to ones that have one or more captures, as * quantifiers
+				// in tree-sitter queries can generate a bunch of empty matches
+				
+				cache[lang.code][queryString] = scope.query(query).filter(result => result.captures.length > 0);
 			} catch (e) {
 				/*
 				tree-sitter is quite sensitive to the structure of the query -

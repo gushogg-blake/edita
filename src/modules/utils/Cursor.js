@@ -9,9 +9,14 @@ function isBefore(a, b) {
 	);
 }
 
+function equals(a, b) {
+	return a.lineIndex === b.lineIndex && a.offset === b.offset;
+}
+
 let api = {
 	c,
 	isBefore,
+	equals,
 	
 	startOfLineContent(wrappedLines, lineIndex) {
 		let {line} = wrappedLines[lineIndex];
@@ -23,10 +28,6 @@ let api = {
 		let {line} = wrappedLines[lineIndex];
 		
 		return c(lineIndex, line.string.length);
-	},
-	
-	equals(a, b) {
-		return a.lineIndex === b.lineIndex && a.offset === b.offset;
 	},
 	
 	max(a, b) {
