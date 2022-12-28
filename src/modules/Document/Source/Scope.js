@@ -41,26 +41,10 @@ module.exports = class Scope {
 	
 	setRanges(ranges) {
 		this.ranges = ranges;
-		this.treeSitterRanges = ranges.map(Range.toTreeSitterRange);
 		
 		for (let range of ranges) {
 			range.scope = this;
 		}
-	}
-	
-	createTreeSitterParser() {
-		let parser = new TreeSitter();
-		let {treeSitterLanguage} = this.lang;
-		
-		if (!treeSitterLanguage) {
-			// langs must be pre-initialised with base.initLang.
-			
-			throw new Error("tree-sitter language not initialised");
-		}
-		
-		parser.setLanguage(treeSitterLanguage);
-		
-		return parser;
 	}
 	
 	parse(editedTree=null, findExistingScope=null, editExistingScope=null) {
@@ -76,11 +60,7 @@ module.exports = class Scope {
 		}
 		
 		try {
-			let parser = this.createTreeSitterParser();
-			
-			this.tree = parser.parse(this.code, editedTree, {
-				includedRanges: this.treeSitterRanges,
-			});
+			this.tree = Tree.parse(this.lang, this.code, editedTree, this.ranges);
 			
 			/*
 			ERROR nodes can be incorrectly linked, which can cause infinite loops in

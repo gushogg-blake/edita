@@ -5,7 +5,7 @@ function getFooterLineIndex(document, lineIndex) {
 		let footer = lang.getFooter(node);
 		
 		if (footer) {
-			return nodeGetters.endPosition(footer).row;
+			return footer.end.lineIndex;
 		}
 	}
 	
@@ -17,7 +17,7 @@ function getHeaderLineIndex(document, lineIndex) {
 		let header = lang.getHeader(node);
 		
 		if (header) {
-			return nodeGetters.startPosition(header).row;
+			return header.start.lineIndex;
 		}
 	}
 	

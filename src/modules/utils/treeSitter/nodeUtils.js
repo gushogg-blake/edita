@@ -48,7 +48,7 @@ let api = {
 	},
 	
 	selection(node) {
-		let {startPosition, endPosition} = api.get(node, "startPosition", "endPosition");
+		let {startPosition, endPosition} = api.getFields(node, "startPosition", "endPosition");
 		
 		return s(c(startPosition.row, startPosition.column), c(endPosition.row, endPosition.column));
 	},

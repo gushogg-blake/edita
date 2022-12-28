@@ -1,7 +1,4 @@
 let Cursor = require("modules/Cursor");
-let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
-let findFirstChildAfterCursor = require("modules/utils/treeSitter/findFirstChildAfterCursor");
-let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 let LineRowRenderer = require("./LineRowRenderer");
 
 module.exports = class extends LineRowRenderer {
@@ -62,13 +59,11 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	get nodeEndCursor() {
-		return this.node && treeSitterPointToCursor(nodeUtils.endPosition(this.node));
+		return this.node?.end;
 	}
 	
 	get nextChildStartCursor() {
-		let nextChild = this._node?.nextChild || null;
-		
-		return nextChild && treeSitterPointToCursor(nodeUtils.startPosition(nextChild));
+		this._node?.nextChild?.start;
 	}
 	
 	inRange() {
@@ -81,7 +76,7 @@ module.exports = class extends LineRowRenderer {
 	
 	initNodeStack() {
 		let node = this.scope.findSmallestNodeAtCharCursor(this.cursor);
-		let lineage = node ? nodeUtils.lineage(node) : [];
+		let lineage = node?.lineage() [];
 		
 		let currentStyle = null;
 		let currentParent = null;
@@ -94,7 +89,7 @@ module.exports = class extends LineRowRenderer {
 		
 		for (let node of lineage) {
 			let style = this.getStyle(node) || currentStyle;
-			let nextChild = findFirstChildAfterCursor(node, this.cursor) || null;
+			let nextChild = node.findFirstChildAfterCursor(this.cursor) || null;
 			
 			this.nodeStack.push({
 				node,
@@ -111,7 +106,7 @@ module.exports = class extends LineRowRenderer {
 	
 	nextNode() {
 		if (this.atNodeEnd()) {
-			let next = nodeUtils.nextSibling(this.node);
+			let next = this.node.nextSibling;
 			
 			this.nodeStack.pop();
 			
@@ -119,7 +114,7 @@ module.exports = class extends LineRowRenderer {
 		} else if (this.atNextChildStart()) {
 			let currentStyle = this.nodeStyle;
 			let node = this._node.nextChild;
-			let nextChild = nodeUtils.firstChild(node);
+			let nextChild = node.firstChild;
 			let style = this.getStyle(node) || currentStyle;
 			
 			this.nodeStack.push({

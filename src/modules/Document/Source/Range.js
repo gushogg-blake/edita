@@ -1,5 +1,4 @@
 let Selection = require("modules/Selection");
-let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 
 /*
 Note - all Ranges have a .scope property. This is set by the owner
@@ -34,34 +33,7 @@ class Range {
 	}
 	
 	containsNodeStart(node) {
-		return this.selection.containsCharCursor(treeSitterPointToCursor(node.startPosition));
-	}
-	
-	toTreeSitterRange() {
-		let {
-			startIndex,
-			endIndex,
-			selection,
-		} = this;
-		
-		return {
-			startIndex,
-			endIndex,
-			
-			startPosition: {
-				row: selection.start.lineIndex,
-				column: selection.start.offset,
-			},
-			
-			endPosition: {
-				row: selection.end.lineIndex,
-				column: selection.end.offset,
-			},
-		};
-	}
-	
-	static toTreeSitterRange(range) {
-		return range.toTreeSitterRange();
+		return this.selection.containsCharCursor(node.start);
 	}
 }
 
