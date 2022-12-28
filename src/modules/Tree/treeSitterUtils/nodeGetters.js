@@ -1,6 +1,6 @@
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
-let cachedNodeFunction = require("./cachedNodeFunction");
+let cachedNodeFunction = require("./utils/cachedNodeFunction");
 let {treeSitterPointToCursor} = require("./conversions");
 
 let {s} = Selection;
