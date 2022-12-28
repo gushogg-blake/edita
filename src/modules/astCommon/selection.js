@@ -191,7 +191,7 @@ let api = {
 	trim(document, selection) {
 		// only trim selections that have at least one non-blank line
 		
-		if (!AstSelection.isFull(selection)) {
+		if (!selection.isFull()) {
 			return selection;
 		}
 		

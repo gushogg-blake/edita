@@ -113,7 +113,7 @@ module.exports = function(editor, editorComponent) {
 			offset,
 		);
 		
-		if (AstSelection.isWithin(range, astSelection)) {
+		if (range.isWithin(astSelection)) {
 			return s(astSelection.startLineIndex);
 		}
 		

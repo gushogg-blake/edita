@@ -86,7 +86,7 @@ class Renderer {
 		let renderNormalCursor = normal && cursorBlinkOn && focused && !insertCursor && windowHasFocus;
 		let renderInsertCursor = normal && insertCursor;
 		let renderNormalSelection = normal && normalSelection.isFull();
-		let renderAstSelectionHilite = ast && astSelectionHilite && (isPeekingAstMode || !AstSelection.equals(astSelection, astSelectionHilite));
+		let renderAstSelectionHilite = ast && astSelectionHilite && (isPeekingAstMode || !astSelection.equals(astSelectionHilite));
 		let renderAstInsertionHilite = ast && astInsertionHilite;
 		
 		let renderers = [
