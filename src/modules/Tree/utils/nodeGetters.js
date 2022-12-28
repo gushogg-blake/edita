@@ -1,4 +1,10 @@
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 let cachedNodeFunction = require("./cachedNodeFunction");
+let {treeSitterPointToCursor} = require("./conversions");
+
+let {s} = Selection;
+let {c} = Cursor;
 
 let api = {
 	type: cachedNodeFunction(node => node.type),
@@ -57,6 +63,49 @@ let api = {
 		
 		return null;
 	}),
+	
+	next: cachedNodeFunction(function(node) {
+		let firstChild = api.firstChild(node);
+		
+		if (firstChild) {
+			return firstChild;
+		}
+		
+		let nextSibling = api.nextSibling(node);
+		
+		if (nextSibling) {
+			return nextSibling;
+		}
+		
+		while (node = api.parent(node)) {
+			let nextSibling = api.nextSibling(node);
+			
+			if (nextSibling) {
+				return nextSibling;
+			}
+		}
+		
+		return null;
+	}),
+	
+	lineage: function(node) {
+		let lineage = [node];
+		let parent = api.parent(node);
+		
+		while (parent) {
+			lineage.unshift(parent);
+			
+			parent = api.parent(parent);
+		}
+		
+		return lineage;
+	},
+	
+	selection(node) {
+		let {startPosition, endPosition} = api.get(node, "startPosition", "endPosition");
+		
+		return s(treeSitterPointToCursor(startPosition), treeSitterPointToCursor(endPosition));
+	},
 	
 	get(node, ...fields) {
 		let result = {};

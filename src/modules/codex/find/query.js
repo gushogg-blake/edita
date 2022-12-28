@@ -1,7 +1,5 @@
 let middle = require("utils/middle");
 let Cursor = require("modules/Cursor");
-let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
-let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 
 function findResultAtCursor(cache, cursor) {
 	let startIndex = 0;
@@ -11,7 +9,7 @@ function findResultAtCursor(cache, cursor) {
 		let index = middle(startIndex, endIndex);
 		let result = cache[index];
 		let firstNode = result.captures[0].node;
-		let startCursor = treeSitterPointToCursor(firstNode.startPosition);
+		let startCursor = firstNode.start;
 		
 		if (cursor.equals(startCursor)) {
 			let matches = [];
@@ -23,7 +21,7 @@ function findResultAtCursor(cache, cursor) {
 				top-level node, it's a top-level node
 				*/
 				
-				if (matches.length === 0 || nodeUtils.isOnOrAfter(node, treeSitterPointToCursor(nodeUtils.endPosition(matches.at(-1).node)))) {
+				if (matches.length === 0 || node.isOnOrAfter(matches.at(-1).node.end)) {
 					matches.push({
 						node,
 						captures: {},
@@ -41,7 +39,7 @@ function findResultAtCursor(cache, cursor) {
 			
 			return {
 				matches,
-				endCursor: treeSitterPointToCursor(nodeUtils.endPosition(matches.at(-1).node)),
+				endCursor: matches.at(-1).node.end,
 			};
 		} else if (cursor.isBefore(startCursor)) {
 			endIndex = index;
@@ -84,7 +82,7 @@ module.exports = function(scope) {
 			let query;
 			
 			try {
-				query = lang.treeSitterLanguage.query(queryString);
+				query = lang.query(queryString);
 				
 				// filter to ones that have one or more captures, as * quantifiers
 				// in tree-sitter queries can generate a bunch of empty matches

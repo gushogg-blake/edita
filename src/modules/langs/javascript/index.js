@@ -24,7 +24,7 @@ let lang = {
 	},
 	
 	isBlock(node) {
-		return node.startPosition.row !== node.endPosition.row && [
+		return node.isMultiline() && [
 			"object",
 			"array",
 			"parenthesized_expression", // includes if condition brackets

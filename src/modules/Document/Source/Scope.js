@@ -2,8 +2,6 @@ let _typeof = require("utils/typeof");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
 let findSmallestNodeAtCharCursor = require("modules/utils/treeSitter/findSmallestNodeAtCharCursor");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
-let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
-let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
 let Range = require("./Range");
@@ -95,12 +93,7 @@ module.exports = class Scope {
 	}
 	
 	edit(edit, index, newRanges, code) {
-		let {
-			selection,
-			newSelection,
-			string,
-			replaceWith,
-		} = edit;
+		let {selection, newSelection} = edit;
 		
 		this.code = code;
 		
@@ -114,14 +107,7 @@ module.exports = class Scope {
 		
 		let existingScopes = this.scopes;
 		
-		this.tree.edit({
-			startPosition: cursorToTreeSitterPoint(selection.start),
-			startIndex: index,
-			oldEndPosition: cursorToTreeSitterPoint(selection.end),
-			oldEndIndex: index + string.length,
-			newEndPosition: cursorToTreeSitterPoint(newSelection.end),
-			newEndIndex: index + replaceWith.length,
-		});
+		this.tree.edit(edit, index);
 			
 		this.parse(this.tree, function(injectionLang, ranges) {
 			/*
@@ -273,9 +259,7 @@ module.exports = class Scope {
 	}
 	
 	query(query, startCursor=null) {
-		let startPosition = startCursor ? cursorToTreeSitterPoint(startCursor) : null;
-		
-		return query.matches(this.tree.rootNode, startPosition);
+		return this.tree.query(query, startCursor);
 	}
 	
 	/*
@@ -354,11 +338,11 @@ module.exports = class Scope {
 	}
 	
 	findSmallestNodeAtCharCursor(cursor) {
-		return this.tree && findSmallestNodeAtCharCursor(this.tree.rootNode, cursor);
+		return this.tree?.findSmallestNodeAtCharCursor(cursor);
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
-		return this.tree && findFirstNodeOnOrAfterCursor(this.tree.rootNode, cursor);
+		return this.tree?.findFirstNodeOnOrAfterCursor(cursor);
 	}
 	
 	/*
@@ -400,7 +384,7 @@ module.exports = class Scope {
 			return;
 		}
 		
-		for (let node of generateNodesOnLine(this.tree.rootNode, lineIndex, startOffset)) {
+		for (let node of this.tree.generateNodesOnLine(lineIndex, startOffset)) {
 			if (!lang || this.lang === lang) {
 				yield {
 					node,

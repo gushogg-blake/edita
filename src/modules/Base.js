@@ -17,6 +17,7 @@ let Editor = require("modules/Editor");
 let View = require("modules/View");
 let DirEntries = require("modules/DirEntries");
 let stores = require("modules/stores");
+let Lang = require("modules/Lang");
 
 let javascript = require("modules/langs/javascript");
 let svelte = require("modules/langs/svelte");
@@ -49,7 +50,7 @@ class Langs {
 	}
 	
 	add(lang) {
-		this.langs[lang.code] = lang;
+		this.langs[lang.code] = new Lang(lang);
 	}
 	
 	get(code) {
@@ -287,7 +288,7 @@ class Base extends Evented {
 		}
 		
 		if (lang.code !== "plainText") {
-			await this.initTreeSitterLanguage(lang);
+			await lang.initTreeSitterLanguage();
 		}
 		
 		if (lang.init) {
@@ -295,26 +296,6 @@ class Base extends Evented {
 		}
 		
 		this.initialisedLangs.add(lang);
-	}
-	
-	async initTreeSitterLanguage(lang) {
-		let {code} = lang;
-		let treeSitterLanguage = await platform.loadTreeSitterLanguage(code);
-		
-		lang.treeSitterLanguage = treeSitterLanguage;
-		
-		// tree-sitter query creation is slow so pre-create them
-		
-		lang.injections = (lang.injections || []).map((injection) => {
-			return {
-				...injection,
-				query: treeSitterLanguage.query(injection.pattern),
-			};
-		});
-		
-		lang.queries = {
-			error: treeSitterLanguage.query("(ERROR) @error"),
-		};
 	}
 	
 	async ensureRequiredLangsInitialised(fileDetails) {

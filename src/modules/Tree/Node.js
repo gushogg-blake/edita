@@ -5,8 +5,8 @@ let Cursor = require("modules/Cursor");
 let {s} = Selection;
 let {c} = Cursor;
 
-function treeSitterPointToCursor(point) {
-	return c(point.row, point.column);
+function wrap(treeSitterNode) {
+	return treeSitterNode && new Node(treeSitterNode);
 }
 
 class Node {
@@ -14,6 +14,10 @@ class Node {
 		this._node = treeSitterNode;
 		
 		
+	}
+	
+	get type() {
+		return this.get("type");
 	}
 	
 	get selection() {
@@ -28,17 +32,23 @@ class Node {
 		return this.selection.end;
 	}
 	
+	isMultiline() {
+		return this.selection.isMultiline();
+	}
+	
 	equals(node) {
 		return this._node.equals(node._node);
 	}
 	
 	findFirstChildAfterCursor(cursor) {
-		return findFirstChildAfterCursor(this, cursor);
+		return wrap(findFirstChildAfterCursor(this, cursor));
 	}
 	
 	get(field) {
-		return nodeUtils[field](this._node);
+		return nodeGetters[field](this._node);
 	}
+	
+	static wrap = wrap;
 }
 
 module.exports = Node;
