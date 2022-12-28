@@ -1,12 +1,6 @@
 let _typeof = require("utils/typeof");
-let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
-let findSmallestNodeAtCharCursor = require("modules/utils/treeSitter/findSmallestNodeAtCharCursor");
-let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
 let Range = require("./Range");
-
-let {s} = Selection;
 
 function getInjectionLang(injection, matchOrMatches) {
 	let langCode;

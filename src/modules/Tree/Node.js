@@ -1,4 +1,4 @@
-let findFirstChildAfterCursor = require("modules/utils/treeSitter/findFirstChildAfterCursor");
+let {firstChildAfterCursor} = require("./treeSitterUtils/find");
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
 
@@ -41,7 +41,7 @@ class Node {
 	}
 	
 	findFirstChildAfterCursor(cursor) {
-		return wrap(findFirstChildAfterCursor(this, cursor));
+		return wrap(firstChildAfterCursor(this, cursor));
 	}
 	
 	get(field) {

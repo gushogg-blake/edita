@@ -76,7 +76,7 @@ module.exports = class extends LineRowRenderer {
 	
 	initNodeStack() {
 		let node = this.scope.findSmallestNodeAtCharCursor(this.cursor);
-		let lineage = node?.lineage() [];
+		let lineage = node?.lineage() || [];
 		
 		let currentStyle = null;
 		let currentParent = null;

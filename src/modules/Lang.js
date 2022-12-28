@@ -3,7 +3,7 @@ class Lang {
 		Object.assign(this, lang);
 	}
 	
-	initTreeSitterLanguage() {
+	async initTreeSitterLanguage() {
 		let treeSitterLanguage = await platform.loadTreeSitterLanguage(this.code);
 		
 		this.treeSitterLanguage = treeSitterLanguage;
