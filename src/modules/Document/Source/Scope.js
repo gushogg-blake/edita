@@ -1,11 +1,11 @@
 let _typeof = require("utils/typeof");
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
 let cursorToTreeSitterPoint = require("modules/utils/treeSitter/cursorToTreeSitterPoint");
 let findSmallestNodeAtCharCursor = require("modules/utils/treeSitter/findSmallestNodeAtCharCursor");
 let findFirstNodeOnOrAfterCursor = require("modules/utils/treeSitter/findFirstNodeOnOrAfterCursor");
 let generateNodesOnLine = require("modules/utils/treeSitter/generateNodesOnLine");
 let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 let Range = require("./Range");
 
 let {s} = Selection;
@@ -186,9 +186,9 @@ module.exports = class Scope {
 					let existingRange = scope.ranges[i];
 					let range = ranges[i];
 					
-					let existingSelectionEdited = Selection.edit(existingRange.selection, selection, newSelection);
+					let existingSelectionEdited = existingRange.selection.edit(selection, newSelection);
 					
-					if (!existingSelectionEdited || !Selection.equals(existingSelectionEdited, range.selection)) {
+					if (!existingSelectionEdited || !existingSelectionEdited.equals(range.selection)) {
 						return false;
 					}
 				}
@@ -306,7 +306,7 @@ module.exports = class Scope {
 	*/
 	
 	getVisibleScopes(selection) {
-		let ranges = this.ranges.filter(range => Selection.isOverlapping(selection, range.selection));
+		let ranges = this.ranges.filter(range => selection.overlaps(range.selection));
 		
 		if (ranges.length === 0) {
 			return [];
@@ -322,7 +322,7 @@ module.exports = class Scope {
 				ranges,
 				
 				injectionRanges: this.scopes.reduce(function(ranges, scope) {
-					return [...ranges, ...scope.ranges.filter(range => Selection.isOverlapping(selection, range.selection))];
+					return [...ranges, ...scope.ranges.filter(range => selection.overlaps(range.selection))];
 				}, []).sort(function(a, b) {
 					return a.startIndex - b.startIndex;
 				}),

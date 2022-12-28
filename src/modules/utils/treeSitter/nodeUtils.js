@@ -1,5 +1,5 @@
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 let treeSitterPointToCursor = require("./treeSitterPointToCursor");
 let cachedNodeFunction = require("./cachedNodeFunction");
 let nodeGetters = require("./nodeGetters");

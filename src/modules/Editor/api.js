@@ -1,4 +1,4 @@
-let Selection = require("modules/utils/Selection");
+let Selection = require("modules/Selection");
 let FindAndReplaceSession = require("./FindAndReplaceSession");
 
 module.exports = {
@@ -76,10 +76,10 @@ module.exports = {
 			rangeEndIndex: document.indexFromCursor(end),
 		});
 		
-		let selection = Selection.sort(this.normalSelection);
+		let selection = this.normalSelection.sort();
 		
 		for (let edit of edits) {
-			selection = Selection.adjustForEditWithinSelection(selection, edit.selection, edit.newSelection);
+			selection = selection.adjustForEditWithinSelection(edit.selection, edit.newSelection);
 			
 			if (!selection) {
 				selection = this.normalSelection;

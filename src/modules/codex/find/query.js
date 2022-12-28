@@ -1,5 +1,5 @@
 let middle = require("utils/middle");
-let Cursor = require("modules/utils/Cursor");
+let Cursor = require("modules/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let nodeUtils = require("modules/utils/treeSitter/nodeUtils");
 
@@ -13,7 +13,7 @@ function findResultAtCursor(cache, cursor) {
 		let firstNode = result.captures[0].node;
 		let startCursor = treeSitterPointToCursor(firstNode.startPosition);
 		
-		if (Cursor.equals(cursor, startCursor)) {
+		if (cursor.equals(startCursor)) {
 			let matches = [];
 			let captures = {};
 			
@@ -43,7 +43,7 @@ function findResultAtCursor(cache, cursor) {
 				matches,
 				endCursor: treeSitterPointToCursor(nodeUtils.endPosition(matches.at(-1).node)),
 			};
-		} else if (Cursor.isBefore(cursor, startCursor)) {
+		} else if (cursor.isBefore(startCursor)) {
 			endIndex = index;
 		} else {
 			startIndex = index + 1;

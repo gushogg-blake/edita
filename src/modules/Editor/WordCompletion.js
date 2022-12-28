@@ -2,8 +2,8 @@ let regexMatches = require("utils/regexMatches");
 let regexMatch = require("utils/regexMatch");
 let unique = require("utils/array/unique");
 let convertCase = require("utils/convertCase");
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -148,7 +148,7 @@ class WordCompletion {
 	init() {
 		let {editor} = this;
 		let {document, normalSelection} = editor;
-		let cursor = Selection.sort(normalSelection).start;
+		let cursor = normalSelection.left;
 		let {lineIndex, offset} = cursor;
 		
 		let wordAtCursor = document.wordAtCursor(cursor);

@@ -1,5 +1,5 @@
 let findAndReplace = require("modules/findAndReplace");
-let Cursor = require("modules/utils/Cursor");
+let Cursor = require("modules/Cursor");
 
 let {c} = Cursor;
 
@@ -9,14 +9,14 @@ module.exports = class {
 		
 		let {document, view} = editor;
 		let {searchIn, startCursor} = options;
-		let normalSelection = view.Selection.sort();
+		let {normalSelection} = view;
 		let startIndex = startCursor ? document.indexFromCursor(startCursor) : 0;
 		
 		this.options = {
 			...options,
 			startIndex,
-			rangeStartIndex: searchIn === "selectedText" ? document.indexFromCursor(normalSelection.start) : 0,
-			rangeEndIndex: searchIn === "selectedText" ? document.indexFromCursor(normalSelection.end) : null,
+			rangeStartIndex: searchIn === "selectedText" ? document.indexFromCursor(normalSelection.left) : 0,
+			rangeEndIndex: searchIn === "selectedText" ? document.indexFromCursor(normalSelection.right) : null,
 		};
 		
 		this.generator = this.createGenerator(this.options.startIndex);

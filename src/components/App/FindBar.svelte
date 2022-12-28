@@ -6,7 +6,7 @@ import Spacer from "components/utils/Spacer.svelte";
 let app = getContext("app");
 
 let {editor} = app.selectedTab;
-let startCursor = editor.view.Selection.sort().end;
+let startCursor = editor.normalSelection.right;
 let session;
 
 let main;
@@ -15,7 +15,7 @@ let search;
 let type = "plain";
 let caseMode = "caseSensitive";
 
-if (editor.view.Selection.isMultiline()) {
+if (editor.normalSelection.isMultiline()) {
 	search = "";
 } else {
 	search = editor.getSelectedText();

@@ -1,6 +1,6 @@
-let Cursor = require("modules/utils/Cursor");
-let Selection = require("modules/utils/Selection");
-let AstSelection = require("modules/utils/AstSelection");
+let Cursor = require("modules/Cursor");
+let Selection = require("modules/Selection");
+let AstSelection = require("modules/AstSelection");
 
 let CurrentLineHiliteRenderer = require("./CurrentLineHiliteRenderer");
 let NormalSelectionRenderer = require("./NormalSelectionRenderer");
@@ -85,14 +85,14 @@ class Renderer {
 		
 		let renderNormalCursor = normal && cursorBlinkOn && focused && !insertCursor && windowHasFocus;
 		let renderInsertCursor = normal && insertCursor;
-		let renderNormalSelection = normal && this.view.Selection.isFull();
+		let renderNormalSelection = normal && normalSelection.isFull();
 		let renderAstSelectionHilite = ast && astSelectionHilite && (isPeekingAstMode || !AstSelection.equals(astSelection, astSelectionHilite));
 		let renderAstInsertionHilite = ast && astInsertionHilite;
 		
 		let renderers = [
 			normal && new CurrentLineHiliteRenderer(this),
 			new NormalSelectionRenderer(this, normalHilites, this.canvasRenderers.normalHilites),
-			renderNormalSelection && new NormalSelectionRenderer(this, [Selection.sort(normalSelection)], this.canvasRenderers.normalSelection),
+			renderNormalSelection && new NormalSelectionRenderer(this, [normalSelection.sort()], this.canvasRenderers.normalSelection),
 			
 			ast && new AstSelectionRenderer(this, astSelection, this.canvasRenderers.astSelection),
 			renderAstSelectionHilite && new AstSelectionRenderer(this, astSelectionHilite, this.canvasRenderers.astSelectionHilite),

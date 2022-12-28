@@ -1,5 +1,5 @@
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -31,7 +31,7 @@ module.exports = {
 		let {
 			edit,
 			newSelection,
-		} = this.document.replaceSelection(Selection.s(cursor), str);
+		} = this.document.replaceSelection(s(cursor), str);
 		
 		let {view} = this;
 		
@@ -52,11 +52,11 @@ module.exports = {
 		let {normalSelection: selection} = view;
 		
 		if (move && fromUs) {
-			if (Selection.cursorIsWithinOrNextToSelection(selection, cursor)) {
+			if (cursor.isWithinOrNextTo(selection)) {
 				return;
 			}
 		} else {
-			if (Selection.cursorIsWithinSelection(selection, cursor)) {
+			if (cursor.isWithin(selection)) {
 				return;
 			}
 		}
@@ -70,7 +70,7 @@ module.exports = {
 				newSelection,
 			} = document.move(selection, cursor));
 		} else {
-			let edit = document.replaceSelection(Selection.s(cursor), str);
+			let edit = document.replaceSelection(s(cursor), str);
 			
 			edits = [edit.edit];
 			newSelection = document.getSelectionContainingString(cursor, str);

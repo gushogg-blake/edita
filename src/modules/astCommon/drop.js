@@ -1,4 +1,4 @@
-let AstSelection = require("modules/utils/AstSelection");
+let AstSelection = require("modules/AstSelection");
 let removeSelection = require("./removeSelection");
 let {createSpaces, findIndentLevel, findSiblingIndex} = require("./utils");
 
@@ -44,7 +44,7 @@ module.exports = function(
 	if (
 		fromSelection
 		&& toSelection
-		&& AstSelection.isAdjacent(fromSelection, toSelection)
+		&& fromSelection.isNextTo(toSelection)
 	) { // space from sibling
 		// might be better to do nothing here, as this action (space the
 		// selection from its sibling) is only available to nodes that are

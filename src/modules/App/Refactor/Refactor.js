@@ -1,8 +1,8 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 let sync = require("utils/sync");
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 let URL = require("modules/URL");
 let codex = require("modules/codex");
 

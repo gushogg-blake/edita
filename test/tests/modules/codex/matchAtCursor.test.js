@@ -1,8 +1,8 @@
 let {is, deep, subset} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 let query = require("modules/codex/find/query");
 let createRegex = require("modules/codex/find/createRegex");
 let tokenise = require("modules/codex/find/tokenise");

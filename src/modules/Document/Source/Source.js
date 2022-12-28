@@ -1,5 +1,5 @@
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 let Scope = require("./Scope");
 let Range = require("./Range");
 let Line = require("./Line");
@@ -51,7 +51,7 @@ module.exports = class {
 			replaceWith,
 		} = edit;
 		
-		let index = this.indexFromCursor(Selection.sort(selection).start);
+		let index = this.indexFromCursor(selection.left);
 		
 		this.string = this.string.substr(0, index) + replaceWith + this.string.substr(index + string.length);
 		

@@ -3,9 +3,9 @@ let bindFunctions = require("utils/bindFunctions");
 let {removeInPlace} = require("utils/arrayMethods");
 
 let astCommon = require("modules/astCommon");
-let AstSelection = require("modules/utils/AstSelection");
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let AstSelection = require("modules/AstSelection");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 
 let AstMode = require("./AstMode");
 let normalMouse = require("./normalMouse");
@@ -148,8 +148,8 @@ class Editor extends Evented {
 			let selection = this.normalSelection;
 			
 			for (let edit of edits) {
-				if (Selection.isBefore(edit.selection, selection)) {
-					selection = Selection.adjustForEarlierEdit(selection, edit.selection, edit.newSelection);
+				if (edit.selection.isBefore(selection)) {
+					selection = selection.adjustForEarlierEdit(edit.selection, edit.newSelection);
 				}
 			}
 			
@@ -178,7 +178,7 @@ class Editor extends Evented {
 			return;
 		}
 		
-		let cursor = Selection.sort(this.normalSelection).start;
+		let cursor = this.normalSelection.left;
 		let {document} = this;
 		let {project} = document;
 		
@@ -223,11 +223,11 @@ class Editor extends Evented {
 		view.startBatch();
 		
 		view.setNormalHilites(normalHilites.map(function(hilite) {
-			if (Selection.isOverlapping(hilite, oldSelection)) {
+			if (hilite.overlaps(oldSelection)) {
 				return null;
 			}
 			
-			return Selection.edit(hilite, oldSelection, newSelection);
+			return hilite.edit(oldSelection, newSelection);
 		}).filter(Boolean));
 		
 		view.updateMarginSize();
@@ -550,13 +550,13 @@ class Editor extends Evented {
 	}
 	
 	setSelectionClipboard() {
-		if (this.view.Selection.isFull()) {
+		if (this.normalSelection.isFull()) {
 			platform.clipboard.writeSelection(this.getSelectedText());
 		}
 	}
 	
 	adjustIndent(adjustment) {
-		let selection = Selection.sort(this.normalSelection);
+		let selection = this.normalSelection.sort();
 		let {start, end} = selection;
 		let edits = [];
 		
@@ -569,7 +569,7 @@ class Editor extends Evented {
 		}
 		
 		let newSelection = (
-			Selection.isFull(selection)
+			selection.isFull()
 			? s(c(start.lineIndex, 0), c(end.lineIndex, Infinity))
 			: s(c(start.lineIndex, Math.max(0, start.offset + adjustment)))
 		);

@@ -1,6 +1,6 @@
-let Cursor = require("modules/utils/Cursor");
-let Selection = require("modules/utils/Selection");
-let AstSelection = require("modules/utils/AstSelection");
+let Cursor = require("modules/Cursor");
+let Selection = require("modules/Selection");
+let AstSelection = require("modules/AstSelection");
 let {extend} = require("modules/astCommon/utils");
 
 let {c} = Cursor;
@@ -154,7 +154,7 @@ let matchers = {
 		
 		let newCursor = offset === 0 ? cursor : document.cursorWithinBounds(c(lineIndex + 1, 0));
 		
-		while (!Cursor.equals(newCursor, document.cursorAtEnd()) && document.lines[newCursor.lineIndex].trimmed.length === 0) {
+		while (!newCursor.equals(document.cursorAtEnd()) && document.lines[newCursor.lineIndex].trimmed.length === 0) {
 			newCursor = document.cursorWithinBounds(c(newCursor.lineIndex + 1, 0));
 		}
 		

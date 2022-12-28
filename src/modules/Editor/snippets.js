@@ -1,5 +1,5 @@
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 let stringToLineTuples = require("modules/utils/stringToLineTuples");
 let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let createPositions = require("modules/snippets/createPositions");
@@ -54,7 +54,7 @@ function initNormalSelectionFromPositions(positions, tabstops) {
 let api = {
 	insert(editor, snippet, replaceWord)  {
 		let {document} = editor;
-		let selection = editor.view.Selection.sort();
+		let selection = editor.view.normalSelection.sort();
 		let {start} = selection;
 		let {lineIndex, offset} = start;
 		let {indentLevel} = document.lines[lineIndex];
@@ -144,7 +144,7 @@ let api = {
 				for (let j = i + 1; j < positions.length; j++) {
 					let laterPosition = positions[j];
 					
-					laterPosition.selection = Selection.adjustForEarlierEdit(laterPosition.selection, edit.selection, edit.newSelection);
+					laterPosition.selection = laterPosition.selection.adjustForEarlierEdit(edit.selection, edit.newSelection);
 				}
 			}
 		}
@@ -184,7 +184,7 @@ let api = {
 				for (let j = i + 1; j < positions.length; j++) {
 					let laterPosition = positions[j];
 					
-					laterPosition.selection = laterPosition.selection && Selection.adjustForEarlierEdit(laterPosition.selection, edit.selection, edit.newSelection);
+					laterPosition.selection = laterPosition.selection?.adjustForEarlierEdit(edit.selection, edit.newSelection);
 				}
 			}
 		}
@@ -249,21 +249,21 @@ let api = {
 				} = edit;
 				
 				if (placeholder.type === "expression") {
-					if (Selection.isBefore(oldSelection, selection)) {
+					if (oldSelection.isBefore(selection)) {
 						if (i > index) {
-							selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
+							selection = selection.adjustForEarlierEdit(oldSelection, newSelection);
 						}
-					} else if (Selection.equals(selection, oldSelection) || Selection.isPartiallyOverlapping(selection, oldSelection)) {
+					} else if (selection.equals(oldSelection) || selection.partiallyOverlaps(oldSelection)) {
 						selection = null;
 					}
 				} else {
-					if (placeholder.type === "tabstop" && i === index && string === "" && Cursor.equals(oldSelection.start, selection.end)) {
-						selection = Selection.expand(selection, newSelection);
-					} else if (Selection.isBefore(oldSelection, selection)) {
-						selection = Selection.adjustForEarlierEdit(selection, oldSelection, newSelection);
-					} else if (Selection.isWithin(oldSelection, selection)) {
-						selection = Selection.adjustForEditWithinSelection(selection, oldSelection, newSelection);
-					} else if (Selection.isPartiallyOverlapping(selection, oldSelection)) {
+					if (placeholder.type === "tabstop" && i === index && string === "" && oldSelection.start.equals(selection.end)) {
+						selection = selection.expand(newSelection);
+					} else if (oldSelection.isBefore(selection)) {
+						selection = selection.adjustForEarlierEdit(oldSelection, newSelection);
+					} else if (selection.contains(oldSelection)) {
+						selection = selection.adjustForEditWithinSelection(oldSelection, newSelection);
+					} else if (selection.isPartiallyOverlapping(oldSelection)) {
 						selection = null;
 					}
 				}

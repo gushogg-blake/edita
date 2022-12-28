@@ -1,5 +1,5 @@
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 let Document = require("modules/Document");
 let getPlaceholders = require("./getPlaceholders");
 

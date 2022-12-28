@@ -1,6 +1,6 @@
-let AstSelection = require("modules/utils/AstSelection");
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let AstSelection = require("modules/AstSelection");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 
 let {s} = Selection;
 let {c} = Cursor;

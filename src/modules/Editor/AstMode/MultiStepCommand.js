@@ -1,5 +1,5 @@
 let Evented = require("utils/Evented");
-let AstSelection = require("modules/utils/AstSelection");
+let AstSelection = require("modules/AstSelection");
 
 let {s} = AstSelection;
 

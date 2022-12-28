@@ -1,5 +1,5 @@
 let indentLines = require("modules/utils/indentLines");
-let AstSelection = require("modules/utils/AstSelection");
+let AstSelection = require("modules/AstSelection");
 let removeSelection = require("modules/astCommon/removeSelection");
 let isIfFooter = require("./utils/isIfFooter");
 

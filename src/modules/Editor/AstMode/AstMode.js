@@ -1,7 +1,7 @@
 let Evented = require("utils/Evented");
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
-let AstSelection = require("modules/utils/AstSelection");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
+let AstSelection = require("modules/AstSelection");
 let MultiStepCommand = require("./MultiStepCommand");
 
 let {s} = AstSelection;
@@ -58,10 +58,10 @@ class AstMode extends Evented {
 		let {editor} = this;
 		let {document} = editor;
 		
-		let {start, end} = editor.view.Selection.sort();
-		let {indentLevel} = document.lines[start.lineIndex];
+		let {left, right} = editor.view.normalSelection;
+		let {indentLevel} = document.lines[left.lineIndex];
 		
-		let astSelection = s(start.lineIndex, end.lineIndex + 1);
+		let astSelection = s(left.lineIndex, right.lineIndex + 1);
 		
 		let insertLines = AstSelection.selectionLinesToStrings(this.clipboard, document.fileDetails.indentation.string, indentLevel);
 		

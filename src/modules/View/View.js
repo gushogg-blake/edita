@@ -1,8 +1,8 @@
 let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
-let Cursor = require("modules/utils/Cursor");
-let Selection = require("modules/utils/Selection");
-let AstSelection = require("modules/utils/AstSelection");
+let Cursor = require("modules/Cursor");
+let Selection = require("modules/Selection");
+let AstSelection = require("modules/AstSelection");
 let astCommon = require("modules/astCommon");
 
 let SelectionUtils = require("./utils/Selection");
@@ -207,8 +207,8 @@ class View extends Evented {
 			let {line} = wrappedLine;
 			
 			if (
-				AstSelection.lineIsWithinSelection(lineIndex, astSelection)
-				|| astSelectionHilite && AstSelection.lineIsWithinSelection(lineIndex, astSelectionHilite)
+				astSelection.containsLineIndex(lineIndex)
+				|| astSelectionHilite?.containsLineIndex(lineIndex)
 			) {
 				lineIndex++;
 				
@@ -585,16 +585,16 @@ class View extends Evented {
 	
 	updateAstSelectionFromNormalSelection() {
 		let {document} = this;
-		let {start, end} = Selection.sort(this.normalSelection);
+		let {left, right} = this.normalSelection;
 		let {astMode} = this.lang;
 		
-		this.astSelection = astCommon.selection.fromLineRange(document, start.lineIndex, end.lineIndex + 1);
+		this.astSelection = astCommon.selection.fromLineRange(document, left.lineIndex, right.lineIndex + 1);
 		
 		this.batchRedraw();
 	}
 	
 	getNormalSelectionForFind() {
-		return this.mode === "ast" ? this.Selection.fromAstSelection(this.normalSelection) : this.Selection.sort();
+		return this.mode === "ast" ? this.Selection.fromAstSelection(this.normalSelection) : this.normalSelection.sort();
 	}
 	
 	setFolds(folds) {

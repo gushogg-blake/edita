@@ -1,4 +1,4 @@
-let AstSelection = require("modules/utils/AstSelection");
+let AstSelection = require("modules/AstSelection");
 let astCommon = require("modules/astCommon");
 
 module.exports = {
@@ -33,8 +33,8 @@ module.exports = {
 		dropTargetType,
 	) {
 		if (fromSelection && toSelection && (
-			!AstSelection.isFull(toSelection) && AstSelection.isAdjacent(fromSelection, toSelection)
-			|| AstSelection.equals(fromSelection, toSelection)
+			!toSelection.isFull() && fromSelection.isNextTo(toSelection)
+			|| fromSelection.equals(toSelection)
 		)) {
 			this.astMouse.invalidDrop();
 			

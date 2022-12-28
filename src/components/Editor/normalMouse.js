@@ -1,7 +1,9 @@
 let {on, off} = require("utils/dom/domEvents");
-let Selection = require("modules/utils/Selection");
+let Selection = require("modules/Selection");
 let autoScroll = require("./utils/autoScroll");
 let {getCursor, getCharCursor} = require("./utils/cursorFromEvent");
+
+let {s} = Selection;
 
 module.exports = function(editor, editorComponent) {
 	let {document, view} = editor;
@@ -40,7 +42,7 @@ module.exports = function(editor, editorComponent) {
 			showingHorizontalScrollbar,
 		);
 		
-		if (Selection.charIsWithinSelection(view.normalSelection, charCursor)) {
+		if (view.normalSelection.containsCharCursor(charCursor)) {
 			if (e.button === 0) {
 				mousedownInSelection(e, enableDrag);
 			}
@@ -48,7 +50,7 @@ module.exports = function(editor, editorComponent) {
 			return;
 		}
 		
-		editor.normalMouse.setSelectionAndStartCursorBlink(Selection.s(cursor));
+		editor.normalMouse.setSelectionAndStartCursorBlink(s(cursor));
 		
 		drawingSelection = true;
 		
@@ -81,7 +83,7 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function mouseup(e) {
-		if (view.Selection.isFull()) {
+		if (view.normalSelection.isFull()) {
 			editor.normalMouse.finishDrawingSelection();
 		}
 		
@@ -109,7 +111,7 @@ module.exports = function(editor, editorComponent) {
 		
 		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		
-		editor.normalMouse.setSelectionAndStartCursorBlink(Selection.s(cursor));
+		editor.normalMouse.setSelectionAndStartCursorBlink(s(cursor));
 	}
 	
 	function dblclick(e) {
@@ -117,7 +119,7 @@ module.exports = function(editor, editorComponent) {
 		
 		editor.normalMouse.setSelectionAndStartCursorBlink(view.Selection.wordUnderCursor(cursor));
 		
-		if (view.Selection.isFull()) {
+		if (view.normalSelection.isFull()) {
 			platform.clipboard.writeSelection(editor.getSelectedText());
 		}
 	}

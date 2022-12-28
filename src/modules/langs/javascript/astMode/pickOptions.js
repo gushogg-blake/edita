@@ -1,4 +1,4 @@
-let AstSelection = require("modules/utils/AstSelection");
+let AstSelection = require("modules/AstSelection");
 let {isHeader, getHeaders} = require("modules/astCommon/utils");
 
 let {s: a} = AstSelection;

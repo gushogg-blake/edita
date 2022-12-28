@@ -1,7 +1,7 @@
 let Evented = require("utils/Evented");
-let AstSelection = require("modules/utils/AstSelection");
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let AstSelection = require("modules/AstSelection");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -29,7 +29,7 @@ class BaseDocument extends Evented {
 	}
 	
 	edit(selection, replaceWith) {
-		selection = Selection.sort(selection);
+		selection = selection.sort();
 		
 		let currentStr = this.getSelectedText(selection);
 		let {start, end} = selection;
@@ -226,11 +226,11 @@ class BaseDocument extends Evented {
 		
 		let newSelection = this.getSelectionContainingString(toCursor, str);
 		
-		newSelection = Selection.subtractEarlierSelection(newSelection, fromSelection);
+		newSelection = newSelection.subtractEarlierSelection(fromSelection);
 		
 		let edits;
 		
-		if (Cursor.isBefore(toCursor, fromSelection.start)) {
+		if (toCursor.isBefore(fromSelection.start)) {
 			edits = [remove, insert];
 		} else {
 			edits = [insert, remove];
@@ -251,7 +251,7 @@ class BaseDocument extends Evented {
 	}
 	
 	getSelectedLines(astSelection) {
-		return AstSelection.getSelectedLines(this.lines, astSelection);
+		return astSelection.getSelectedLines(this.lines);
 	}
 	
 	getAstSelection(astSelection) {
@@ -259,12 +259,12 @@ class BaseDocument extends Evented {
 	}
 	
 	getSelectedText(selection) {
-		let {start, end} = Selection.sort(selection);
-		let lines = this.lines.slice(start.lineIndex, end.lineIndex + 1);
+		let {left, right} = selection;
+		let lines = this.lines.slice(left.lineIndex, right.lineIndex + 1);
 		
 		let str = lines.map(line => line.string).join(this.fileDetails.newline);
-		let trimLeft = start.offset;
-		let trimRight = lines.at(-1).string.length - end.offset;
+		let trimLeft = left.offset;
+		let trimRight = lines.at(-1).string.length - right.offset;
 		
 		return str.substring(trimLeft, str.length - trimRight);
 	}

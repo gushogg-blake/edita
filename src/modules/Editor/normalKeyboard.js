@@ -1,5 +1,5 @@
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -116,12 +116,12 @@ module.exports = {
 	enter() {
 		let {document, normalSelection: selection} = this;
 		let {newline, indentation} = document.fileDetails;
-		let {start} = Selection.sort(selection);
-		let {lineIndex} = start;
+		let {left} = selection;
+		let {lineIndex} = left;
 		let line = document.lines[lineIndex];
 		let {indentLevel} = line;
 		
-		if (this.view.lang.codeIntel?.shouldIndentOnNewline(document, line, start)) {
+		if (this.view.lang.codeIntel?.shouldIndentOnNewline(document, line, left)) {
 			indentLevel++;
 		}
 		
@@ -151,7 +151,7 @@ module.exports = {
 	newLineBeforeSelection() {
 		let {document, normalSelection} = this;
 		let {newline, indentation} = document.fileDetails;
-		let {lineIndex} = Selection.sort(normalSelection).start;
+		let {lineIndex} = normalSelection.left;
 		let {indentLevel} = document.lines[lineIndex];
 		
 		let selection = s(c(lineIndex, 0));
@@ -177,7 +177,7 @@ module.exports = {
 	newLineAfterSelection() {
 		let {document, normalSelection} = this;
 		let {newline, indentation} = document.fileDetails;
-		let {lineIndex} = Selection.sort(normalSelection).start;
+		let {lineIndex} = normalSelection.left;
 		let line = document.lines[lineIndex];
 		
 		let selection = s(c(lineIndex, line.string.length));
@@ -201,10 +201,10 @@ module.exports = {
 	},
 	
 	backspace() {
-		let selection = Selection.sort(this.normalSelection);
+		let selection = this.normalSelection.sort();
 		let {start} = selection;
 		let {lineIndex, offset} = start;
-		let isFull = this.view.Selection.isFull();
+		let isFull = selection.isFull();
 		
 		let newBatchState = isFull || offset === 0 ? null : "backspace";
 		
@@ -252,10 +252,10 @@ module.exports = {
 	},
 	
 	delete() {
-		let selection = Selection.sort(this.normalSelection);
+		let selection = this.normalSelection.sort();
 		let {start} = selection;
 		let {lineIndex, offset} = start;
-		let isFull = this.view.Selection.isFull();
+		let isFull = selection.isFull();
 		
 		let newBatchState = (
 			isFull || offset === this.document.lines[lineIndex].string.length
@@ -309,7 +309,7 @@ module.exports = {
 	},
 	
 	deleteWordLeft() {
-		let isFull = this.view.Selection.isFull();
+		let isFull = this.normalSelection.isFull();
 		let selection = isFull ? this.normalSelection : this.view.Selection.expandOrContractWordLeft();
 		
 		let {
@@ -330,7 +330,7 @@ module.exports = {
 	},
 	
 	deleteWordRight() {
-		let isFull = this.view.Selection.isFull();
+		let isFull = this.normalSelection.isFull();
 		let selection = isFull ? this.normalSelection : this.view.Selection.expandOrContractWordRight();
 		
 		let {
@@ -355,7 +355,7 @@ module.exports = {
 		let {start} = this.normalSelection;
 		let snippet = null;
 		
-		if (!this.view.Selection.isFull()) {
+		if (!this.normalSelection.isFull()) {
 			let {left} = this.document.wordAtCursor(start);
 			
 			if (left) {
@@ -389,7 +389,7 @@ module.exports = {
 			this.nextTabstop();
 		} else if (this.astMode.multiStepCommandWaitingForReturnToAstMode) {
 			this.astMode.multiStepCommandReturnToAstMode();
-		} else if (this.view.Selection.isMultiline()) {
+		} else if (this.normalSelection.isMultiline()) {
 			this.indentSelection();
 			
 			flags = ["noScrollCursorIntoView"];
@@ -404,9 +404,9 @@ module.exports = {
 			if (indentation.type === "tab") {
 				str = "\t";
 			} else {
-				let {start} = Selection.sort(normalSelection);
+				let {left} = normalSelection;
 				let {colsPerIndent} = indentation;
-				let insertCols = colsPerIndent - start.offset % colsPerIndent;
+				let insertCols = colsPerIndent - left.offset % colsPerIndent;
 				
 				str = " ".repeat(insertCols);
 			}
@@ -453,7 +453,7 @@ module.exports = {
 	
 	cut() {
 		// TODO line if not full selection
-		if (!this.view.Selection.isFull()) {
+		if (!this.normalSelection.isFull()) {
 			return;
 		}
 		
@@ -482,7 +482,7 @@ module.exports = {
 	
 	copy() {
 		let str = (
-			this.view.Selection.isFull()
+			this.normalSelection.isFull()
 			? this.getSelectedText()
 			: this.document.lines[this.normalSelection.start.lineIndex].string
 		);
@@ -517,12 +517,11 @@ module.exports = {
 	},
 	
 	insert(key) {
-		let newBatchState = this.view.Selection.isFull() ? null : "typing";
+		let newBatchState = this.normalSelection.isFull() ? null : "typing";
 		
 		let {document} = this;
 		let {normalSelection: selection} = this.view;
-		let {start} = Selection.sort(selection);
-		let {lineIndex} = start;
+		let {lineIndex} = selection.left;
 		
 		let {
 			edit,

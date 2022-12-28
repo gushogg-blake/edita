@@ -1,15 +1,9 @@
 let regexMatch = require("utils/regexMatch");
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 
+let {s} = Selection;
 let {c} = Cursor;
-
-let {
-	s,
-	sort,
-	isFull,
-	isMultiline,
-} = Selection;
 
 let wordUnderCursorRe = {
 	wordChar: /[\w_]/,
@@ -20,21 +14,8 @@ let wordUnderCursorRe = {
 };
 
 module.exports = {
-	isFull() {
-		return isFull(this.normalSelection);
-	},
-	
-	isMultiline() {
-		return isMultiline(this.normalSelection);
-	},
-	
-	sort() {
-		return sort(this.normalSelection);
-	},
-	
 	up() {
-		let {start} = sort(this.normalSelection);
-		let [startRow, startCol] = this.rowColFromCursor(start);
+		let [startRow, startCol] = this.rowColFromCursor(this.normalSelection.left);
 		
 		if (startRow === 0) {
 			return s(c(0, 0));
@@ -47,11 +28,11 @@ module.exports = {
 	},
 	
 	down() {
-		let {end} = sort(this.normalSelection);
-		let [endRow, endCol] = this.rowColFromCursor(end);
+		let {right} = this.normalSelection;
+		let [endRow, endCol] = this.rowColFromCursor(right);
 		
 		if (endRow === this.countLineRowsFolded() - 1) {
-			return s(c(end.lineIndex, this.lines[end.lineIndex].string.length));
+			return s(c(right.lineIndex, this.lines[right.lineIndex].string.length));
 		}
 		
 		let row = endRow + 1;
@@ -61,11 +42,11 @@ module.exports = {
 	},
 	
 	left() {
-		let {start} = sort(this.normalSelection);
-		let {lineIndex, offset} = start;
+		let {left} = this.normalSelection;
+		let {lineIndex, offset} = left;
 		
-		if (this.Selection.isFull()) {
-			return s(start);
+		if (this.normalSelection.isFull()) {
+			return s(left);
 		}
 		
 		if (lineIndex === 0 && offset === 0) {
@@ -80,12 +61,12 @@ module.exports = {
 	},
 	
 	right() {
-		let {end} = sort(this.normalSelection);
-		let {lineIndex, offset} = end;
+		let {right} = this.normalSelection;
+		let {lineIndex, offset} = right;
 		let line = this.lines[lineIndex];
 		
-		if (this.Selection.isFull()) {
-			return s(end);
+		if (this.normalSelection.isFull()) {
+			return s(right);
 		}
 		
 		if (lineIndex === this.lines.length - 1 && offset === line.string.length) {
@@ -101,9 +82,9 @@ module.exports = {
 	
 	pageUp() {
 		let {rows} = this.sizes;
-		let {start} = sort(this.normalSelection);
+		let {left} = this.normalSelection;
 		
-		let [startRow, startCol] = this.rowColFromCursor(start);
+		let [startRow, startCol] = this.rowColFromCursor(left);
 		
 		let row = Math.max(0, startRow - rows);
 		let col = this.selectionEndCol;
@@ -113,9 +94,9 @@ module.exports = {
 	
 	pageDown() {
 		let {rows} = this.sizes;
-		let {end} = sort(this.normalSelection);
+		let {right} = this.normalSelection;
 		
-		let [endRow, endCol] = this.rowColFromCursor(end);
+		let [endRow, endCol] = this.rowColFromCursor(right);
 		
 		let row = Math.min(endRow + rows, this.countLineRowsFolded() - 1);
 		let col = this.selectionEndCol;
@@ -125,12 +106,12 @@ module.exports = {
 	
 	home() {
 		let {wrappedLines} = this;
-		let {start} = sort(this.normalSelection);
-		let {lineIndex, offset} = start;
-		let [row, col] = this.rowColFromCursor(start);
+		let {left} = this.normalSelection;
+		let {lineIndex, offset} = left;
+		let [row, col] = this.rowColFromCursor(left);
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(start);
+		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(left);
 		let {indentCols} = line;
 		
 		if (wrappedLine.height > 1 && lineRowIndex > 0) {
@@ -152,11 +133,11 @@ module.exports = {
 	
 	end() {
 		let {wrappedLines} = this;
-		let {end} = sort(this.normalSelection);
-		let {lineIndex, offset} = end;
+		let {right} = this.normalSelection;
+		let {lineIndex, offset} = right;
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(end);
+		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(right);
 		
 		if (wrappedLine.height > 1 && lineRowIndex < wrappedLine.height - 1) {
 			let lineRow = wrappedLine.lineRows[lineRowIndex];
@@ -173,7 +154,7 @@ module.exports = {
 	
 	wordLeft() {
 		let {wrappedLines} = this;
-		let {lineIndex, offset} = sort(this.normalSelection).start;
+		let {lineIndex, offset} = this.normalSelection.left;
 		let {line} = wrappedLines[lineIndex];
 		
 		if (offset === 0) {
@@ -188,7 +169,7 @@ module.exports = {
 	
 	wordRight() {
 		let {wrappedLines} = this;
-		let {lineIndex, offset} = sort(this.normalSelection).end;
+		let {lineIndex, offset} = this.normalSelection.right;
 		let {line} = wrappedLines[lineIndex];
 		
 		if (offset === line.string.length) {
@@ -422,17 +403,7 @@ module.exports = {
 		endLineIndex = Math.min(endLineIndex, lines.length - 1);
 		endOffset = Math.min(endOffset, lines[endLineIndex].string.length);
 		
-		return {
-			start: {
-				lineIndex: startLineIndex,
-				offset: startOffset,
-			},
-			
-			end: {
-				lineIndex: endLineIndex,
-				offset: endOffset,
-			},
-		};
+		return s(c(startLineIndex, startOffset), c(endLineIndex, endOffset));
 	},
 	
 	fromAstSelection(astSelection) {

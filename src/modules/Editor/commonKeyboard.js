@@ -1,5 +1,5 @@
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -7,11 +7,11 @@ let {c} = Cursor;
 module.exports = {
 	toggleComment(comment) {
 		let {document} = this;
-		let {start, end} = this.view.Selection.sort();
+		let {left, right} = this.normalSelection;
 		
 		let [startLineIndex, endLineIndex] = (
 			this.mode === "normal"
-			? [start.lineIndex, end.lineIndex + 1]
+			? [left.lineIndex, right.lineIndex + 1]
 			: [this.astSelection.startLineIndex, this.astSelection.endLineIndex]
 		);
 		

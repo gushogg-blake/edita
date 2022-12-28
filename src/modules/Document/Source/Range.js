@@ -1,4 +1,4 @@
-let Selection = require("modules/utils/Selection");
+let Selection = require("modules/Selection");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 
 /*
@@ -19,16 +19,22 @@ class Range {
 		return this.scope.lang;
 	}
 	
+	/*
+	Note - this is different to Selection.containsCursor, where the cursor
+	has to be fully inside the selection - here containsCursor is more
+	permissive than containsCharCursor.
+	*/
+	
 	containsCursor(cursor) {
-		return Selection.cursorIsWithinOrNextToSelection(this.selection, cursor);
+		return cursor.isWithinOrNextTo(this.selection);
 	}
 	
 	containsCharCursor(cursor) {
-		return Selection.charIsWithinSelection(this.selection, cursor);
+		return this.selection.containsCharCursor(cursor);
 	}
 	
 	containsNodeStart(node) {
-		return Selection.charIsWithinSelection(this.selection, treeSitterPointToCursor(node.startPosition));
+		return this.selection.containsCharCursor(treeSitterPointToCursor(node.startPosition));
 	}
 	
 	toTreeSitterRange() {

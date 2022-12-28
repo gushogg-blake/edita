@@ -1,5 +1,5 @@
 let generatorFromArray = require("utils/generatorFromArray");
-let Cursor = require("modules/utils/Cursor");
+let Cursor = require("modules/Cursor");
 
 let {c} = Cursor;
 
@@ -56,7 +56,7 @@ module.exports = class {
 	}
 	
 	atCursor(cursor) {
-		return cursor && Cursor.equals(this.cursor, cursor);
+		return cursor?.equals(this.cursor);
 	}
 	
 	_offsetOrInfinity(cursor) {

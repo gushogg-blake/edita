@@ -1,4 +1,4 @@
-let Selection = require("modules/utils/Selection");
+let Selection = require("modules/Selection");
 let URL = require("modules/URL");
 let Tab = require("./Tab");
 

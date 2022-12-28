@@ -1,4 +1,4 @@
-let AstSelection = require("modules/utils/AstSelection");
+let AstSelection = require("modules/AstSelection");
 
 let {
 	findPrevLineIndexAtIndentLevel,

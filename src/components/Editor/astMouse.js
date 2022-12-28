@@ -1,6 +1,6 @@
 let parseJson = require("utils/parseJson");
 let {on, off} = require("utils/dom/domEvents");
-let AstSelection = require("modules/utils/AstSelection");
+let AstSelection = require("modules/AstSelection");
 let astCommon = require("modules/astCommon");
 let autoScroll = require("./utils/autoScroll");
 
@@ -85,7 +85,7 @@ module.exports = function(editor, editorComponent) {
 		
 		let {lineIndex} = view.cursorFromRowCol(row, col);
 		
-		if (!withinSelection && AstSelection.lineIsWithinSelection(lineIndex, astSelection)) {
+		if (!withinSelection && astSelection.containsLineIndex(lineIndex)) {
 			return astSelection;
 		}
 		

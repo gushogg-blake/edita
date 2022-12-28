@@ -52,7 +52,7 @@ module.exports = {
 		
 		this.showFindAndReplace({
 			replace: true,
-			searchIn: editor.view.Selection.isMultiline() ? "selectedText" : "currentDocument",
+			searchIn: editor.view.normalSelection.isMultiline() ? "selectedText" : "currentDocument",
 		});
 	},
 	

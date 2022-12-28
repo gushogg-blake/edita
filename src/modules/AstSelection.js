@@ -1,55 +1,38 @@
-function s(startLineIndex, endLineIndex=startLineIndex) {
-	return {startLineIndex, endLineIndex};
+function s(startLineIndex, endLineIndex=null) {
+	return new AstSelection(startLineIndex, endLineIndex);
 }
 
-/*
-linesToSelectionLines/selectionLinesToStrings:
-
-The contents of an AST selection is an array of [indentLevel, trimmedString]
-pairs representing the lines ("selection lines").  These two functions convert
-between arrays of Document lines, strings, and selection lines.
-*/
-
-function linesToSelectionLines(lines) {
-	let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
+class AstSelection {
+	constructor(startLineIndex, endLineIndex) {
+		this.startLineIndex = startLineIndex;
+		this.endLineIndex = endLineIndex || startLineIndex;
+	}
 	
-	return lines.map(function(line) {
-		return [line.indentLevel - minIndentLevel, line.trimmed];
-	});
-}
-
-function selectionLinesToStrings(selectionLines, indentStr, indent=0) {
-	return selectionLines.map(function([indentLevel, line]) {
-		return indentStr.repeat(indent + indentLevel) + line;
-	});
-}
-
-let api = {
-	s,
+	isFull() {
+		return this.startLineIndex !== this.endLineIndex;
+	}
 	
-	isFull(selection) {
-		return selection.startLineIndex !== selection.endLineIndex;
-	},
+	equals(selection) {
+		return this.startLineIndex === selection.startLineIndex && this.endLineIndex === selection.endLineIndex;
+	}
 	
-	equals(a, b) {
-		return a.startLineIndex === b.startLineIndex && a.endLineIndex === b.endLineIndex;
-	},
+	isWithin(selection) {
+		return this.startLineIndex >= selection.startLineIndex && this.endLineIndex <= selection.endLineIndex;
+	}
 	
-	isWithin(a, b) {
-		return a.startLineIndex >= b.startLineIndex && a.endLineIndex <= b.endLineIndex;
-	},
+	isNextTo(selection) {
+		return this.startLineIndex === selection.endLineIndex || selection.startLineIndex === this.endLineIndex;
+	}
 	
-	isAdjacent(a, b) {
-		return a.startLineIndex === b.endLineIndex || b.startLineIndex === a.endLineIndex;
-	},
+	containsLineIndex(lineIndex) {
+		return lineIndex >= this.startLineIndex && lineIndex < this.endLineIndex;
+	}
 	
-	lineIsWithinSelection(lineIndex, selection) {
-		return lineIndex >= selection.startLineIndex && lineIndex < selection.endLineIndex;
-	},
+	getSelectedLines(lines) {
+		return lines.slice(this.startLineIndex, this.endLineIndex);
+	}
 	
-	getSelectedLines(lines, selection) {
-		return lines.slice(selection.startLineIndex, selection.endLineIndex);
-	},
+	static s = s;
 	
 	/*
 	insertion range - given line indexes above and below the mouse, and the
@@ -75,7 +58,7 @@ let api = {
 	lines
 	*/
 	
-	insertionRange(lines, aboveLineIndex, belowLineIndex, offset) {
+	static insertionRange(lines, aboveLineIndex, belowLineIndex, offset) {
 		if (aboveLineIndex === null) {
 			return s(0);
 		}
@@ -121,10 +104,29 @@ let api = {
 		}
 		
 		return s(start, end);
-	},
+	}
 	
-	linesToSelectionLines,
-	selectionLinesToStrings,
-};
+	/*
+	linesToSelectionLines/selectionLinesToStrings:
+	
+	The contents of an AST selection is an array of [indentLevel, trimmedString]
+	pairs representing the lines ("selection lines").  These two functions convert
+	between arrays of Document lines, strings, and selection lines.
+	*/
+	
+	static linesToSelectionLines(lines) {
+		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
+		
+		return lines.map(function(line) {
+			return [line.indentLevel - minIndentLevel, line.trimmed];
+		});
+	}
+	
+	static selectionLinesToStrings(selectionLines, indentStr, indent=0) {
+		return selectionLines.map(function([indentLevel, line]) {
+			return indentStr.repeat(indent + indentLevel) + line;
+		});
+	}
+}
 
-module.exports = api;
+module.exports = AstSelection;

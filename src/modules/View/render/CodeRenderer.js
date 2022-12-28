@@ -1,4 +1,4 @@
-let Cursor = require("modules/utils/Cursor");
+let Cursor = require("modules/Cursor");
 let treeSitterPointToCursor = require("modules/utils/treeSitter/treeSitterPointToCursor");
 let findFirstChildAfterCursor = require("modules/utils/treeSitter/findFirstChildAfterCursor");
 let nodeUtils = require("modules/utils/treeSitter/nodeUtils");

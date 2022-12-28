@@ -1,5 +1,5 @@
-let Selection = require("modules/utils/Selection");
-let Cursor = require("modules/utils/Cursor");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 let createRegex = require("./createRegex");
 let query = require("./query");
 let tokenise = require("./tokenise");
@@ -48,7 +48,7 @@ module.exports = function(document, codex) {
 	
 	let results = [];
 	
-	while (!Cursor.equals(cursor, document.cursorAtEnd())) {
+	while (!cursor.equals(document.cursorAtEnd())) {
 		let context = {
 			getRegex,
 			query: queryByScope.get(document.rangeFromCharCursor(cursor).scope),

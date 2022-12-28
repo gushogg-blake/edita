@@ -1,5 +1,8 @@
-let Selection = require("modules/utils/Selection");
+let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
 let expandTabs = require("modules/utils/expandTabs");
+
+let {c} = Cursor;
 
 module.exports = {
 	countLineRowsFolded() {
@@ -52,43 +55,43 @@ module.exports = {
 		
 		// consume chars until c is col
 		
-		let c = 0;
+		let currentCol = 0;
 		
 		for (let part of lineRow.variableWidthParts) {
-			if (c === col) {
+			if (currentCol === col) {
 				break;
 			}
 			
 			if (part.type === "tab") {
 				let {width} = part;
 				
-				if (c + width > col) {
+				if (currentCol + width > col) {
 					// the col is within the tab
 					// if more than half way go to after the tab
 					// otherwise stay before it
 					
-					if (!beforeTab && col - c > width / 2) {
+					if (!beforeTab && col - currentCol > width / 2) {
 						offset++;
 					}
 					
 					break;
 				}
 				
-				c += width;
+				currentCol += width;
 				offset++;
 			} else if (part.type === "string") {
 				let {string} = part;
 				
-				if (c + string.length > col) {
+				if (currentCol + string.length > col) {
 					// col is within the current string
 					// add the remaining cols to the offset
 					
-					offset += col - c;
+					offset += col - currentCol;
 					
 					break;
 				}
 				
-				c += string.length;
+				currentCol += string.length;
 				offset += string.length;
 			}
 		}
@@ -97,7 +100,7 @@ module.exports = {
 			offset--;
 		}
 		
-		return {lineIndex, offset};
+		return c(lineIndex, offset);
 	},
 	
 	cursorFromScreenCoords(x, y) {

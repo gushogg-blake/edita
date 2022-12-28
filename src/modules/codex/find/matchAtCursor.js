@@ -1,4 +1,4 @@
-let Selection = require("modules/utils/Selection");
+let Selection = require("modules/Selection");
 let matchers = require("./matchers");
 
 let {s} = Selection;

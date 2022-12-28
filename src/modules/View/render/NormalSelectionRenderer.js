@@ -1,5 +1,5 @@
 let middle = require("utils/middle");
-let Selection = require("modules/utils/Selection");
+let Selection = require("modules/Selection");
 let LineRowRenderer = require("./LineRowRenderer");
 
 function findFirstVisibleSelectionIndex(visibleSelection, selections) {
@@ -15,10 +15,10 @@ function findFirstVisibleSelectionIndex(visibleSelection, selections) {
 		let index = middle(startIndex, endIndex);
 		let selection = selections[index];
 		
-		if (Selection.isOverlapping(visibleSelection, selection)) {
+		if (selection.overlaps(visibleSelection)) {
 			first = index;
 			endIndex = index;
-		} else if (Selection.isBefore(selection, visibleSelection)) {
+		} else if (selection.isBefore(visibleSelection)) {
 			startIndex = index + 1;
 		} else {
 			endIndex = index;
@@ -51,7 +51,7 @@ module.exports = class extends LineRowRenderer {
 		super.init(row);
 		
 		this.selectionIndex = findFirstVisibleSelectionIndex(this.renderer.visibleSelection, this.selections);
-		this.inSelection = this.selection && Selection.charIsWithinSelection(this.selection, this.cursor);
+		this.inSelection = this.selection?.containsCharCursor(this.cursor);
 		
 		if (this.inSelection) {
 			this.canvasRenderer.enterSelection();

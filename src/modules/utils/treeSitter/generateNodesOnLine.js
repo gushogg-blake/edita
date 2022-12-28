@@ -1,4 +1,4 @@
-let Cursor = require("modules/utils/Cursor");
+let Cursor = require("modules/Cursor");
 let findFirstNodeOnOrAfterCursor = require("./findFirstNodeOnOrAfterCursor");
 let nodeUtils = require("./nodeUtils");
 
