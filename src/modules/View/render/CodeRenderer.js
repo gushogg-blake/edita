@@ -89,7 +89,7 @@ module.exports = class extends LineRowRenderer {
 		
 		for (let node of lineage) {
 			let style = this.getStyle(node) || currentStyle;
-			let nextChild = node.findFirstChildAfterCursor(this.cursor) || null;
+			let nextChild = node.firstChildAfter(this.cursor) || null;
 			
 			this.nodeStack.push({
 				node,

@@ -1,6 +1,6 @@
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
-let {nodeGetters} = require("./treeSitterUtils");
+let {nodeUtils, find} = require("./treeSitterUtils");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -14,6 +14,8 @@ class Node {
 		this.lang = lang;
 		
 		this._node = treeSitterNode;
+		
+		this._wrap = this.wrap.bind(this);
 	}
 	
 	get type() {
@@ -36,6 +38,10 @@ class Node {
 		return this.selection.end;
 	}
 	
+	firstChildAfter(cursor) {
+		return this.wrap(find.firstChildAfterCursor(this._node, cursor));
+	}
+	
 	isMultiline() {
 		return this.selection.isMultiline();
 	}
@@ -44,8 +50,16 @@ class Node {
 		return this._node.equals(node._node);
 	}
 	
+	lineage() {
+		return nodeUtils.lineage(this._node).map(this._wrap);
+	}
+	
 	get(field) {
-		return nodeGetters[field](this._node);
+		return nodeUtils[field](this._node);
+	}
+	
+	wrap(treeSitterNode) {
+		return wrap(this.lang, treeSitterNode);
 	}
 	
 	static wrap = wrap;
