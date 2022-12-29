@@ -21,7 +21,7 @@ function match(document, codex) {
 }
 
 describe("codex", function() {
-	describe("match", function() {
+	describe("matchAtCursor", function() {
 		it("literal", function() {
 			let doc = createJsDoc(`
 				let asd = 123;
