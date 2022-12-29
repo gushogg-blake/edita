@@ -37,10 +37,7 @@ module.exports = {
 		lineIndex = Math.min(lineIndex, this.wrappedLines.length - 1);
 		
 		if (row - rowsCounted > 0) { // mouse is below text
-			return {
-				lineIndex,
-				offset: wrappedLine.line.string.length,
-			};
+			return c(lineIndex, wrappedLine.line.string.length);
 		}
 		
 		let offset = lineRow.startOffset;
