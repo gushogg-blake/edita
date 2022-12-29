@@ -12,6 +12,13 @@ class Cursor {
 		return this.lineIndex === cursor.lineIndex && this.offset === cursor.offset;
 	}
 	
+	isAfter(cursor) {
+		return (
+			this.lineIndex > cursor.lineIndex
+			|| this.lineIndex === cursor.lineIndex && this.offset > cursor.offset
+		);
+	}
+	
 	isBefore(cursor) {
 		return (
 			this.lineIndex < cursor.lineIndex
@@ -21,6 +28,10 @@ class Cursor {
 	
 	isOnOrBefore(cursor) {
 		return this.isBefore(cursor) || this.equals(cursor);
+	}
+	
+	isOnOrAfter(cursor) {
+		return this.isAfter(cursor) || this.equals(cursor);
 	}
 	
 	/*

@@ -53,6 +53,10 @@ class Node {
 		return this.wrap(find.firstChildAfterCursor(this._node, cursor));
 	}
 	
+	isOnOrAfter(cursor) {
+		return this.start.isOnOrAfter(cursor);
+	}
+	
 	isMultiline() {
 		return this.selection.isMultiline();
 	}
