@@ -65,6 +65,15 @@ class Tree {
 	query(query, startCursor=null) {
 		let startPosition = startCursor ? cursorToTreeSitterPoint(startCursor) : null;
 		
+		/*
+		query.matches returns an array of objects, each with a list of captures
+		which are {node, name} objects. we convert this to a list of lists of
+		captures.
+		
+		the captures can be zero-length as * quantifiers in tree-sitter queries
+		can generate a bunch of empty matches, so we filter those out
+		*/
+		
 		return query.matches(this._tree.rootNode, startPosition).map((match) => {
 			return match.captures.map(({node: treeSitterNode, name}) => {
 				return {
@@ -72,7 +81,7 @@ class Tree {
 					name,
 				};
 			});
-		});
+		}).filter(captures => captures.length > 0);
 	}
 	
 	static createTreeSitterParser(lang) {

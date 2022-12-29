@@ -8,14 +8,14 @@ function findResultAtCursor(cache, cursor) {
 	while (endIndex - startIndex > 0) {
 		let index = middle(startIndex, endIndex);
 		let result = cache[index];
-		let firstNode = result.captures[0].node;
+		let firstNode = result[0].node;
 		let startCursor = firstNode.start;
 		
 		if (cursor.equals(startCursor)) {
 			let matches = [];
 			let captures = {};
 			
-			for (let {name, node} of result.captures) {
+			for (let {name, node} of result) {
 				/*
 				if this is the first node or it's not a child of the last
 				top-level node, it's a top-level node
@@ -84,10 +84,7 @@ module.exports = function(scope) {
 			try {
 				query = lang.query(queryString);
 				
-				// filter to ones that have one or more captures, as * quantifiers
-				// in tree-sitter queries can generate a bunch of empty matches
-				
-				cache[lang.code][queryString] = scope.query(query).filter(result => result.captures.length > 0);
+				cache[lang.code][queryString] = scope.query(query);
 			} catch (e) {
 				/*
 				tree-sitter is quite sensitive to the structure of the query -

@@ -246,6 +246,8 @@ describe("codex", function() {
 			
 			deep(selection.end, c(2, 1));
 			
+			console.log(matches[3]);
+			
 			subset(matches, [
 				{
 					token: {
@@ -275,15 +277,19 @@ describe("codex", function() {
 					},
 					
 					match: {
-						node: {
-							type: "function",
-						},
-						
-						captures: {
-							function: {
-								type: "function",
+						matches: [
+							{
+								node: {
+									type: "function",
+								},
+								
+								captures: {
+									function: [{
+										type: "function",
+									}],
+								},
 							},
-						},
+						],
 					},
 				},
 			]);
