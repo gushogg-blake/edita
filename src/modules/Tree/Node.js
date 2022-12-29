@@ -1,9 +1,4 @@
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
 let {nodeUtils, find} = require("./treeSitterUtils");
-
-let {s} = Selection;
-let {c} = Cursor;
 
 function wrap(lang, treeSitterNode) {
 	return treeSitterNode && new Node(lang, treeSitterNode);
@@ -18,6 +13,10 @@ class Node {
 		this._wrap = this.wrap.bind(this);
 	}
 	
+	get id() {
+		return this._node.id;
+	}
+	
 	get type() {
 		return this.get("type");
 	}
@@ -27,7 +26,19 @@ class Node {
 	}
 	
 	get parent() {
-		return this.get("parent");
+		return this.wrap(this.get("parent"));
+	}
+	
+	get nextSibling() {
+		return this.wrap(this.get("nextSibling"));
+	}
+	
+	get firstChild() {
+		return this.wrap(this.get("firstChild"));
+	}
+	
+	get lastChild() {
+		return this.wrap(this.get("lastChild"));
 	}
 	
 	get start() {
@@ -36,6 +47,10 @@ class Node {
 	
 	get end() {
 		return this.selection.end;
+	}
+	
+	next() {
+		return this.wrap(nodeUtils.next(this._node));
 	}
 	
 	firstChildAfter(cursor) {

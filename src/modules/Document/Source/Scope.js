@@ -62,7 +62,7 @@ module.exports = class Scope {
 			
 			let errors = this.tree.query(this.lang.queries.error);
 			
-			for (let {node} of errors) {
+			for (let [{node}] of errors) {
 				if (!node.parent || node.parent.equals(node)) { // obviously, a node shouldn't be its own parent
 					let msg = "ERROR node incorrectly linked or root node is ERROR";
 					

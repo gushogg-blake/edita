@@ -63,7 +63,7 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	get nextChildStartCursor() {
-		this._node?.nextChild?.start;
+		return this._node?.nextChild?.start;
 	}
 	
 	inRange() {
