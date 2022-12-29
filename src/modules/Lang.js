@@ -4,9 +4,7 @@ class Lang {
 	}
 	
 	async initTreeSitterLanguage() {
-		let treeSitterLanguage = await platform.loadTreeSitterLanguage(this.code);
-		
-		this.treeSitterLanguage = treeSitterLanguage;
+		this.treeSitterLanguage = await platform.loadTreeSitterLanguage(this.code);
 		
 		// tree-sitter query creation is slow so pre-create them
 		
@@ -18,7 +16,7 @@ class Lang {
 		});
 		
 		this.queries = {
-			error: treeSitterLanguage.query("(ERROR) @error"),
+			error: this.query("(ERROR) @error"),
 		};
 	}
 	

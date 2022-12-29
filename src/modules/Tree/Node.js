@@ -1,8 +1,4 @@
-let {nodeUtils, find} = require("./treeSitterUtils");
-
-function wrap(lang, treeSitterNode) {
-	return treeSitterNode && new Node(lang, treeSitterNode);
-}
+let {nodeUtils, find, cachedNodeFunction} = require("./treeSitterUtils");
 
 class Node {
 	constructor(lang, treeSitterNode) {
@@ -10,7 +6,7 @@ class Node {
 		
 		this._node = treeSitterNode;
 		
-		this._wrap = this.wrap.bind(this);
+		this.wrap = Node.getCachedWrapFunction(this.lang).bind(this);
 	}
 	
 	get id() {
@@ -66,18 +62,18 @@ class Node {
 	}
 	
 	lineage() {
-		return nodeUtils.lineage(this._node).map(this._wrap);
+		return nodeUtils.lineage(this._node).map(this.wrap);
 	}
 	
 	get(field) {
 		return nodeUtils[field](this._node);
 	}
 	
-	wrap(treeSitterNode) {
-		return wrap(this.lang, treeSitterNode);
+	static getCachedWrapFunction(lang) {
+		let getter = cachedNodeFunction(treeSitterNode => new Node(lang, treeSitterNode));
+		
+		return treeSitterNode => treeSitterNode && getter(treeSitterNode);
 	}
-	
-	static wrap = wrap;
 }
 
 module.exports = Node;

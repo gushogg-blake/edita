@@ -8,13 +8,14 @@ let {
 } = require("./treeSitterUtils");
 
 let {c} = Cursor;
-let {wrap} = Node;
 
 class Tree {
 	constructor(lang, treeSitterTree) {
 		this.lang = lang;
 		
 		this._tree = treeSitterTree;
+		
+		this.wrap = Node.getCachedWrapFunction(this.lang);
 	}
 	
 	get rootNode() {
