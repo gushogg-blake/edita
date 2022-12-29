@@ -53,14 +53,6 @@ class Tree {
 		}
 	}
 	
-	firstAfter(cursor) {
-		return this.wrap(find.firstAfterCursor(this.rootNode._node, cursor));
-	}
-	
-	firstChildAfter(cursor) {
-		return this.wrap(find.firstChildAfterCursor(this.rootNode._node, cursor));
-	}
-	
 	firstOnOrAfter(cursor) {
 		return this.wrap(find.firstOnOrAfterCursor(this.rootNode._node, cursor));
 	}
