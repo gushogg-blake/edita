@@ -1,5 +1,5 @@
 let middle = require("utils/middle");
-let nodeUtils = require("./nodeUtils");
+let nodeUtils = require("../nodeUtils");
 
 module.exports = function(node, cursor) {
 	let children = nodeUtils.children(node);

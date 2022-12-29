@@ -1,6 +1,8 @@
 let nodeGetters = require("./nodeGetters");
 
 let api = {
+	...nodeGetters,
+	
 	compareCharCursor(node, cursor) {
 		let {lineIndex, offset} = cursor;
 		let start = nodeGetters.startPosition(node);

@@ -1,6 +1,6 @@
 function getFooterLineIndex(document, lineIndex) {
-	for (let {node, lang} of document.generateNodesOnLineWithLang(lineIndex)) {
-		let footer = lang.getFooter(node);
+	for (let node of document.generateNodesOnLine(lineIndex)) {
+		let footer = node.lang.getFooter(node);
 		
 		if (footer) {
 			return footer.end.lineIndex;
@@ -11,8 +11,8 @@ function getFooterLineIndex(document, lineIndex) {
 }
 
 function getHeaderLineIndex(document, lineIndex) {
-	for (let {node, lang} of document.generateNodesOnLineWithLang(lineIndex)) {
-		let header = lang.getHeader(node);
+	for (let node of document.generateNodesOnLine(lineIndex)) {
+		let header = node.lang.getHeader(node);
 		
 		if (header) {
 			return header.start.lineIndex;
@@ -31,22 +31,22 @@ function isFooter(document, lineIndex) {
 }
 
 function getHeaders(document, lineIndex) {
-	let nodesWithLang = [...document.generateNodesOnLineWithLang(lineIndex)];
+	let nodes = [...document.generateNodesOnLine(lineIndex)];
 	
-	return nodesWithLang.map(function({node, lang}) {
+	return nodes.map(function(node) {
 		return {
 			header: node,
-			footer: lang.getFooter(node),
+			footer: node.lang.getFooter(node),
 		};
 	}).filter(r => r.footer);
 }
 
 function getFooters(document, lineIndex) {
-	let nodesWithLang = [...document.generateNodesOnLineWithLang(lineIndex)];
+	let nodes = [...document.generateNodesOnLine(lineIndex)];
 	
-	return nodesWithLang.map(function({node, lang}) {
+	return nodes.map(function(node) {
 		return {
-			header: lang.getHeader(node),
+			header: node.lang.getHeader(node),
 			footer: node,
 		};
 	}).filter(r => r.header);

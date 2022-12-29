@@ -271,8 +271,8 @@ class Document extends BaseDocument {
 		return this.source.langFromCursor(cursor);
 	}
 	
-	generateNodesOnLineWithLang(lineIndex, lang=null) {
-		return this.source.generateNodesOnLineWithLang(lineIndex, lang);
+	generateNodesOnLine(lineIndex, lang=null) {
+		return this.source.generateNodesOnLine(lineIndex, lang);
 	}
 	
 	getNodesOnLine(lineIndex, lang=null) {

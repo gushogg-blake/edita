@@ -1,5 +1,5 @@
 let middle = require("utils/middle");
-let nodeUtils = require("./nodeUtils");
+let nodeUtils = require("../nodeUtils");
 
 /*
 given a node and a cursor, find the first node within or after the

@@ -1,3 +1,7 @@
+let Cursor = require("modules/Cursor");
+
+let {c} = Cursor;
+
 let api = {
 	treeSitterPointToCursor(point) {
 		return c(point.row, point.column);

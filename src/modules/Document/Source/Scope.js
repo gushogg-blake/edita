@@ -60,11 +60,9 @@ module.exports = class Scope {
 			rendering. try to detect issues like this and throw a parse error instead.
 			*/
 			
-			let errors = this.lang.queries.error.matches(this.tree.rootNode);
+			let errors = this.tree.query(this.lang.queries.error);
 			
-			for (let error of errors) {
-				let {node} = error.captures[0];
-				
+			for (let {node} of errors) {
 				if (!node.parent || node.parent.equals(node)) { // obviously, a node shouldn't be its own parent
 					let msg = "ERROR node incorrectly linked or root node is ERROR";
 					
@@ -304,10 +302,9 @@ module.exports = class Scope {
 	
 	rangesFromNode(node) {
 		let ranges = [];
-		let nodeSelection = nodeUtils.selection(node);
 		
 		for (let parentRange of this.ranges) {
-			let selection = Selection.intersection(nodeSelection, parentRange.selection);
+			let selection = Selection.intersection(node.selection, parentRange.selection);
 			
 			if (selection) {
 				let startIndex = this.source.indexFromCursor(selection.start);
@@ -333,11 +330,11 @@ module.exports = class Scope {
 	}
 	
 	findSmallestNodeAtCharCursor(cursor) {
-		return this.tree?.findSmallestNodeAtCharCursor(cursor);
+		return this.tree?.smallestAtChar(cursor);
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
-		return this.tree?.findFirstNodeOnOrAfterCursor(cursor);
+		return this.tree?.firstOnOrAfter(cursor);
 	}
 	
 	/*
@@ -374,48 +371,35 @@ module.exports = class Scope {
 	startOffset = 0.
 	*/
 	
-	*_generateNodesOnLine(lineIndex, startOffset, lang) {
+	*generateNodesOnLine(lineIndex, startOffset, lang=null) {
 		if (!this.tree) {
 			return;
 		}
 		
 		for (let node of this.tree.generateNodesOnLine(lineIndex, startOffset)) {
 			if (!lang || this.lang === lang) {
-				yield {
-					node,
-					lang: this.lang,
-				};
+				yield node;
 			}
 			
-			startOffset = nodeUtils.endPosition(node).column;
+			startOffset = node.end.offset;
 			
 			let scope = this.scopesByNode[node.id];
 			
 			if (scope) {
-				for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, lang)) {
+				for (let childNode of scope.generateNodesOnLine(lineIndex, startOffset, lang)) {
 					yield childNode;
 					
-					startOffset = nodeUtils.endPosition(childNode.node).column;
+					startOffset = childNode.end.offset;
 				}
 			}
 		}
 		
 		for (let scope of this.scopes) {
-			for (let childNode of scope._generateNodesOnLine(lineIndex, startOffset, lang)) {
+			for (let childNode of scope.generateNodesOnLine(lineIndex, startOffset, lang)) {
 				yield childNode;
 				
-				startOffset = nodeUtils.endPosition(childNode.node).column;
+				startOffset = childNode.end.offset;
 			}
 		}
-	}
-	
-	*generateNodesOnLine(lineIndex, lang=null) {
-		for (let {node} of this._generateNodesOnLine(lineIndex, 0, lang)) {
-			yield node;
-		}
-	}
-	
-	generateNodesOnLineWithLang(lineIndex, lang=null) {
-		return this._generateNodesOnLine(lineIndex, 0, lang);
 	}
 }

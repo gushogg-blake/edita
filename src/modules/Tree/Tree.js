@@ -11,12 +11,18 @@ let {c} = Cursor;
 let {wrap} = Node;
 
 class Tree {
-	constructor(treeSitterTree) {
+	constructor(lang, treeSitterTree) {
+		this.lang = lang;
+		
 		this._tree = treeSitterTree;
 	}
 	
 	get rootNode() {
-		return new Node(this._tree.rootNode);
+		return this.wrap(this._tree.rootNode);
+	}
+	
+	wrap(treeSitterNode) {
+		return wrap(this.lang, treeSitterNode);
 	}
 	
 	edit(edit, index) {
@@ -48,25 +54,32 @@ class Tree {
 	}
 	
 	firstAfter(cursor) {
-		return wrap(find.firstAfterCursor(this.rootNode._node, cursor));
+		return this.wrap(find.firstAfterCursor(this.rootNode._node, cursor));
 	}
 	
 	firstChildAfter(cursor) {
-		return wrap(find.firstChildAfterCursor(this.rootNode._node, cursor));
+		return this.wrap(find.firstChildAfterCursor(this.rootNode._node, cursor));
 	}
 	
 	firstOnOrAfter(cursor) {
-		return wrap(find.firstOnOrAfterCursor(this.rootNode._node, cursor));
+		return this.wrap(find.firstOnOrAfterCursor(this.rootNode._node, cursor));
 	}
 	
 	smallestAtChar(cursor) {
-		return wrap(find.smallestAtCharCursor(this.rootNode._node, cursor));
+		return this.wrap(find.smallestAtCharCursor(this.rootNode._node, cursor));
 	}
 	
 	query(query, startCursor=null) {
 		let startPosition = startCursor ? cursorToTreeSitterPoint(startCursor) : null;
 		
-		return query.matches(this._tree.rootNode, startPosition); // TODO wrap
+		return query.matches(this._tree.rootNode, startPosition).map((match) => {
+			return match.captures.map(({node: treeSitterNode, name}) => {
+				return {
+					node: this.wrap(treeSitterNode),
+					name,
+				};
+			});
+		});
 	}
 	
 	static createTreeSitterParser(lang) {
@@ -91,7 +104,7 @@ class Tree {
 			includedRanges: includedRanges?.map(rangeToTreeSitterRange),
 		});
 		
-		return new Tree(treeSitterTree);
+		return new Tree(lang, treeSitterTree);
 	}
 }
 

@@ -70,10 +70,6 @@ module.exports = class {
 		return this.rootScope.generateNodesOnLine(lineIndex, lang);
 	}
 	
-	generateNodesOnLineWithLang(lineIndex, lang=null) {
-		return this.rootScope.generateNodesOnLineWithLang(lineIndex, lang);
-	}
-	
 	getContainingRange() {
 		return new Range(0, this.string.length, this.selectAll());
 	}

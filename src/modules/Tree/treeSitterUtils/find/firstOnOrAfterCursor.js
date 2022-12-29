@@ -1,5 +1,5 @@
 let middle = require("utils/middle");
-let nodeUtils = require("./nodeUtils");
+let nodeUtils = require("../nodeUtils");
 
 function isOn(node, cursor) {
 	let {row, column} = nodeUtils.startPosition(node);
