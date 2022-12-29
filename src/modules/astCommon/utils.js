@@ -1,5 +1,3 @@
-let nodeGetters = require("modules/utils/treeSitter/nodeGetters");
-
 function getFooterLineIndex(document, lineIndex) {
 	for (let {node, lang} of document.generateNodesOnLineWithLang(lineIndex)) {
 		let footer = lang.getFooter(node);

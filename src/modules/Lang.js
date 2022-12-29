@@ -10,7 +10,7 @@ class Lang {
 		
 		// tree-sitter query creation is slow so pre-create them
 		
-		this.injections = (lang.injections || []).map((injection) => {
+		this.injections = (this.injections || []).map((injection) => {
 			return {
 				...injection,
 				query: this.query(injection.pattern),

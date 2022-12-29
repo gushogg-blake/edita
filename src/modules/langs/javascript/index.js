@@ -3,8 +3,6 @@ let codeIntel = require("./codeIntel");
 
 let wordRe = /\w/;
 
-let nodeUtils;
-
 let lang = {
 	group: "javascript",
 	code: "javascript",
@@ -15,8 +13,6 @@ let lang = {
 	injections: [],
 	
 	init(env) {
-		({nodeUtils} = env.base.utils.treeSitter);
-		
 		env = {...env, lang: this};
 		
 		this.astMode.init(env);
@@ -84,8 +80,7 @@ let lang = {
 	},
 	
 	getHiliteClass(node) {
-		let {type} = node;
-		let parent = nodeUtils.parent(node);
+		let {type, parent} = node;
 		
 		if ([
 			"string",

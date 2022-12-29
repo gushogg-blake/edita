@@ -8,7 +8,6 @@ let Evented = require("utils/Evented");
 let getIndentationDetails = require("modules/utils/getIndentationDetails");
 let guessIndent = require("modules/utils/guessIndent");
 let checkNewlines = require("modules/utils/checkNewlines");
-let utils = require("modules/utils");
 let generateRequiredLangs = require("modules/utils/generateRequiredLangs");
 
 let Project = require("modules/Project");
@@ -68,7 +67,6 @@ class Base extends Evented {
 		
 		this.langs = new Langs();
 		this.initialisedLangs = new Set();
-		this.utils = utils;
 		
 		this.DirEntries = DirEntries;
 		

@@ -1,13 +1,14 @@
 let Cursor = require("modules/Cursor");
 let Node = require("./Node");
 
-let let {
+let {
 	cursorToTreeSitterPoint,
 	rangeToTreeSitterRange,
-	findFirstNodeOnOrAfterCursor,
+	find,
 } = require("./treeSitterUtils");
 
 let {c} = Cursor;
+let {wrap} = Node;
 
 class Tree {
 	constructor(treeSitterTree) {
@@ -37,13 +38,7 @@ class Tree {
 	}
 	
 	*generateNodesOnLine(lineIndex, startOffset=0) {
-		let treeSitterNode = findFirstNodeOnOrAfterCursor(this._tree.rootNode, c(lineIndex, startOffset));
-		
-		if (!treeSitterNode) {
-			return;
-		}
-		
-		let node = new Node(treeSitterNode);
+		let node = this.firstOnOrAfter(c(lineIndex, startOffset));
 		
 		while (node?.start.lineIndex === lineIndex) {
 			yield node;
@@ -52,10 +47,20 @@ class Tree {
 		}
 	}
 	
-	findSmallestNodeAtCharCursor(cursor) {
+	firstAfter(cursor) {
+		return wrap(find.firstAfterCursor(this.rootNode._node, cursor));
 	}
 	
-	findFirstNodeOnOrAfterCursor(cursor) {
+	firstChildAfter(cursor) {
+		return wrap(find.firstChildAfterCursor(this.rootNode._node, cursor));
+	}
+	
+	firstOnOrAfter(cursor) {
+		return wrap(find.firstOnOrAfterCursor(this.rootNode._node, cursor));
+	}
+	
+	smallestAtChar(cursor) {
+		return wrap(find.smallestAtCharCursor(this.rootNode._node, cursor));
 	}
 	
 	query(query, startCursor=null) {
