@@ -30,7 +30,7 @@ function contextmenu({detail: {e, entry}}) {
 		},
 		
 		{
-			label: "Replace...",
+			label: "Replace",
 			
 			onClick() {
 				app.replaceInFiles([path]);
