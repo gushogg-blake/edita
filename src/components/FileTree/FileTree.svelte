@@ -22,7 +22,7 @@ function contextmenu({detail: {e, entry}}) {
 	
 	platform.showContextMenu(e, app, [
 		{
-			label: "Find...",
+			label: "Find",
 			
 			onClick() {
 				app.findInFiles([path]);
