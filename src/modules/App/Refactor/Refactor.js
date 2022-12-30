@@ -21,7 +21,7 @@ class Refactor extends Evented {
 		
 		this.editors = {
 			find: this.createFindEditor(),
-			replaceWith: app.createEditor(),
+			replaceWith: this.createReplaceWithEditor(),
 			results: app.createEditor(),
 			preview: app.createEditor(),
 		};
@@ -42,13 +42,25 @@ class Refactor extends Evented {
 	createFindEditor() {
 		let editor = app.createEditor();
 		
-		editor.on("edit", this.onEditMatch.bind(this));
+		editor.on("edit", this.onEditFind.bind(this));
 		
 		return editor;
 	}
 	
-	onEditMatch() {
+	createReplaceWithEditor() {
+		let editor = app.createEditor();
+		
+		editor.on("edit", this.onEditReplaceWith.bind(this));
+		
+		return editor;
+	}
+	
+	onEditFind() {
 		this.find();
+	}
+	
+	onEditReplaceWith() {
+		this.updatePreview();
 	}
 	
 	find() {
@@ -109,11 +121,13 @@ class Refactor extends Evented {
 	}
 	
 	async updatePreview() {
+		let editor = this.editors.preview;
 		let {path, code} = this.selectedFile;
+		
+		await this.setEditorCode(editor, new URL("refactor-preview://" + path), code);
+		
 		let replaceWith = this.editors.replaceWith.string;
 		let replaced = codex.replace(code, this.results, replaceWith);
-		
-		await this.setEditorCode(this.editors.preview, new URL("refactor-preview://" + path), replaced);
 	}
 	
 	async setEditorCode(editor, url, code) {
