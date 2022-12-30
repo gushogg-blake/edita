@@ -38,7 +38,7 @@ function contextmenu({detail: {e, entry}}) {
 		},
 		
 		{
-			label: "Refactor...",
+			label: "Refactor",
 			
 			onClick() {
 				app.refactor([path]);
