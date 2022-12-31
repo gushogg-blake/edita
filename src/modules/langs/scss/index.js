@@ -1,8 +1,6 @@
 let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
 
-let nodeUtils;
-
 module.exports = {
 	group: "css",
 	code: "scss",
@@ -13,11 +11,11 @@ module.exports = {
 	injections: [],
 	
 	init(env) {
-		({nodeUtils} = env.base.utils.treeSitter);
+		
 	},
 	
 	isBlock(node) {
-		return node.startPosition.row !== node.endPosition.row && [
+		return node.start.lineIndex !== node.end.lineIndex && [
 			"block",
 		].includes(node.type);
 	},
@@ -28,7 +26,7 @@ module.exports = {
 		if (
 			parent
 			&& this.isBlock(parent)
-			&& node.id === parent.firstChild.id
+			&& node.equals(parent.firstChild)
 		) {
 			return parent.lastChild;
 		}
@@ -42,7 +40,7 @@ module.exports = {
 		if (
 			parent
 			&& this.isBlock(parent)
-			&& node.id === parent.lastChild.id
+			&& node.equals(parent.lastChild)
 		) {
 			return parent.firstChild;
 		}
@@ -51,8 +49,7 @@ module.exports = {
 	},
 	
 	getHiliteClass(node) {
-		let {type} = node;
-		let parent = nodeUtils.parent(node);
+		let {type, parent} = node;
 		
 		if ([
 			"string_value",

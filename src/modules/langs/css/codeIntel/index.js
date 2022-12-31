@@ -11,7 +11,7 @@ module.exports = {
 			return 0;
 		}
 		
-		let headerIndentLevel = document.lines[lastNode.parent.startPosition.row].indentLevel;
+		let headerIndentLevel = document.lines[lastNode.parent.start.lineIndex].indentLevel;
 		
 		return headerIndentLevel - line.indentLevel;
 	},

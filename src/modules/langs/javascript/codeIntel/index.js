@@ -13,14 +13,14 @@ module.exports = {
 		let nodes = document.getNodesOnLine(cursor.lineIndex, lang);
 		
 		for (let node of nodes) {
-			if (node.endPosition.column !== cursor.offset) {
+			if (node.end.offset !== cursor.offset) {
 				continue;
 			}
 			
 			let header = lang.getHeader(node);
 			
 			if (header) {
-				let {indentLevel} = document.lines[header.startPosition.row];
+				let {indentLevel} = document.lines[header.start.lineIndex];
 				
 				if (indentLevel !== line.indentLevel) {
 					return indentLevel - line.indentLevel;

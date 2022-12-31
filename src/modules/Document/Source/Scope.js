@@ -1,13 +1,14 @@
 let _typeof = require("utils/typeof");
+let mapArrayToObject = require("utils/mapArrayToObject");
 let Selection = require("modules/Selection");
 let Tree = require("modules/Tree");
 let Range = require("./Range");
 
-function getInjectionLang(injection, matchOrMatches) {
+function getInjectionLang(injection, node) {
 	let langCode;
 	
 	if (_typeof(injection.lang) === "Function") {
-		langCode = injection.lang(matchOrMatches);
+		langCode = injection.lang(node);
 	} else {
 		langCode = injection.lang;
 	}
@@ -168,30 +169,19 @@ module.exports = class Scope {
 		}
 		
 		for (let injection of this.lang.injections) {
-			let matches = injection.query.matches(this.tree.rootNode).map(function(match) {
-				let captures = {};
-				
-				for (let capture of match.captures) {
-					captures[capture.name] = capture.node;
-				}
-				
-				return captures;
-			}).filter(function(match) {
-				return match.injectionNode && match.injectionNode.text.length > 0;
-			});
+			let nodes = this.tree.captureSingle(injection.query, "injectionNode").filter(node => node.text.length > 0);
 			
-			if (matches.length === 0) {
+			if (nodes.length === 0) {
 				continue;
 			}
 			
 			if (injection.combined) {
-				let injectionLang = getInjectionLang(injection, matches);
+				let injectionLang = getInjectionLang(injection, nodes[0]);
 				
 				if (!injectionLang) {
 					continue;
 				}
 				
-				let nodes = matches.map(match => match.injectionNode);
 				let nodeRanges = nodes.map(node => this.rangesFromNode(node));
 				let ranges = nodeRanges.flat();
 				
@@ -219,14 +209,13 @@ module.exports = class Scope {
 					this.scopesByNode[node.id] = scope;
 				}
 			} else {
-				for (let match of matches) {
-					let injectionLang = getInjectionLang(injection, match);
+				for (let node of nodes) {
+					let injectionLang = getInjectionLang(injection, node);
 					
 					if (!injectionLang) {
 						continue;
 					}
 					
-					let node = match.injectionNode;
 					let ranges = this.rangesFromNode(node);
 					
 					let existingScope;

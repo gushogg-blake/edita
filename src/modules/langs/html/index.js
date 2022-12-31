@@ -14,17 +14,17 @@ module.exports = {
 		{
 			pattern: "(script_element (raw_text) @injectionNode)",
 			
-			lang(captures) {
+			lang(node) {
 				return "javascript";
 			},
 		},
 		{
 			pattern: "(style_element (raw_text) @injectionNode)",
 			
-			lang(captures) {
+			lang(node) {
 				let lang;
 				
-				let startTag = captures.injectionNode.parent.firstChild;
+				let startTag = node.parent.firstChild;
 				let [, ...attributes] = startTag.namedChildren;
 				let langAttribute = attributes.find(a => a.text.match(/^lang=/));
 				let typeAttribute = attributes.find(a => a.text.match(/^type=/));
@@ -48,7 +48,7 @@ module.exports = {
 				"script_element",
 			].includes(node.type)
 			
-			&& node.firstChild.endPosition.row !== node.lastChild.startPosition.row
+			&& node.firstChild.end.lineIndex !== node.lastChild.start.lineIndex
 		);
 	},
 	

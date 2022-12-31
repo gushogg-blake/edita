@@ -15,7 +15,7 @@ module.exports = {
 		getSelection(document, selection) {
 			let [{header, footer}] = getHeaders(document, selection.startLineIndex);
 			
-			return a(header.startPosition.row + 1, footer.startPosition.row);
+			return a(header.start.lineIndex + 1, footer.start.lineIndex);
 		},
 	},
 };

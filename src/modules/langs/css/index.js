@@ -11,7 +11,7 @@ module.exports = {
 	injections: [],
 	
 	isBlock(node) {
-		return node.startPosition.row !== node.endPosition.row && [
+		return node.start.lineIndex !== node.end.lineIndex && [
 			"block",
 		].includes(node.type);
 	},

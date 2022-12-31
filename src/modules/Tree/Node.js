@@ -17,6 +17,10 @@ class Node {
 		return this.get("type");
 	}
 	
+	get text() {
+		return this.get("text");
+	}
+	
 	get selection() {
 		return this.get("selection");
 	}
@@ -35,6 +39,14 @@ class Node {
 	
 	get lastChild() {
 		return this.wrap(this.get("lastChild"));
+	}
+	
+	get children() {
+		return this._node.children.map(this.wrap);
+	}
+	
+	get namedChildren() {
+		return this._node.namedChildren.map(this.wrap);
 	}
 	
 	get start() {

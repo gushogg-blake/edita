@@ -13,7 +13,7 @@ module.exports = {
 	injections: [],
 	
 	isBlock(node) {
-		return node.startPosition.row !== node.endPosition.row && [
+		return node.start.lineIndex !== node.end.lineIndex && [
 			
 		].includes(node.type);
 	},

@@ -1,3 +1,4 @@
+let mapArrayToObject = require("utils/mapArrayToObject");
 let Cursor = require("modules/Cursor");
 let Node = require("./Node");
 
@@ -82,6 +83,14 @@ class Tree {
 				};
 			});
 		}).filter(captures => captures.length > 0);
+	}
+	
+	/*
+	query and return a single captured node per result
+	*/
+	
+	captureSingle(query, name) {
+		return this.query(query).map(result => mapArrayToObject(result, c => [c.name, c.node])[name]).filter(Boolean);
 	}
 	
 	static createTreeSitterParser(lang) {

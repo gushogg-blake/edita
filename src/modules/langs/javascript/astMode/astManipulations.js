@@ -37,7 +37,7 @@ module.exports = {
 					return false;
 				}
 				
-				i = nodes[0].endPosition.row;
+				i = nodes[0].end.lineIndex;
 			}
 			
 			return true;
@@ -63,9 +63,9 @@ module.exports = {
 				let nodes = document.getNodesOnLine(i);
 				
 				let [node] = nodes;
-				let endLineIndex = node.endPosition.row;
+				let endLineIndex = node.end.lineIndex;
 				
-				if (i === node.endPosition.row) {
+				if (i === node.end.lineIndex) {
 					statements.push({
 						type: "singleLine",
 						line,
@@ -166,9 +166,9 @@ module.exports = {
 			
 			let ifStatement = nodes.find(node => node.type === "if_statement");
 			let parenthesizedExpression = ifStatement.children[1];
-			let {startPosition, endPosition} = parenthesizedExpression;
+			let {start, end} = parenthesizedExpression;
 			
-			return s(c(startPosition.row, startPosition.column + 1), c(endPosition.row, endPosition.column - 1));
+			return s(c(start.lineIndex, start.offset + 1), c(end.lineIndex, end.offset - 1));
 		},
 	},
 	
@@ -188,9 +188,9 @@ module.exports = {
 			
 			let whileStatement = nodes.find(node => node.type === "while_statement");
 			let parenthesizedExpression = whileStatement.children[1];
-			let {startPosition, endPosition} = parenthesizedExpression;
+			let {start, end} = parenthesizedExpression;
 			
-			return s(c(startPosition.row, startPosition.column + 1), c(endPosition.row, endPosition.column - 1));
+			return s(c(start.lineIndex, start.offset + 1), c(end.lineIndex, end.offset - 1));
 		},
 	},
 	
@@ -213,8 +213,8 @@ module.exports = {
 			let closingBracket = forStatement.children.find(node => node.type === ")");
 			
 			return s(
-				c(openingBracket.startPosition.row, openingBracket.startPosition.column + 1),
-				c(closingBracket.startPosition.row, closingBracket.startPosition.column),
+				c(openingBracket.start.lineIndex, openingBracket.start.offset + 1),
+				c(closingBracket.start.lineIndex, closingBracket.start.offset),
 			);
 		},
 	},
