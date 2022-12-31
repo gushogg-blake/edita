@@ -25,9 +25,9 @@ module.exports = function(string, createTabstops=true) {
 					let [, name] = nameWithDefault;
 					let start = i;
 					let expressionStart = start + "@{".length + name.length + ":".length;
-					let {index: expressionEnd, dollarVariables} = parseJavaScript(string, expressionStart);
+					let expressionEnd = parseJavaScript(string, expressionStart);
 					let expression = string.substring(expressionStart, expressionEnd);
-					let fn = createExpressionFunction(expression, dollarVariables);
+					let fn = createExpressionFunction(expression);
 					let end = Math.min(string.length, expressionEnd + "}".length);
 					
 					placeholders.push(new Tabstop(start, end, name, fn));
@@ -38,9 +38,9 @@ module.exports = function(string, createTabstops=true) {
 					
 					let start = i;
 					let expressionStart = start + "@{".length;
-					let {index: expressionEnd, dollarVariables} = parseJavaScript(string, expressionStart);
+					let expressionEnd = parseJavaScript(string, expressionStart);
 					let expression = string.substring(expressionStart, expressionEnd);
-					let fn = createExpressionFunction(expression, dollarVariables);
+					let fn = createExpressionFunction(expression);
 					let end = Math.min(string.length, expressionEnd + "}".length);
 					
 					placeholders.push(new Expression(start, end, fn));
@@ -57,7 +57,7 @@ module.exports = function(string, createTabstops=true) {
 				if (encounteredTabstops[name] || !createTabstops) {
 					// convert subsequent @name tabstops to expressions
 					
-					let fn = createExpressionFunction("$" + name, [0]);
+					let fn = createExpressionFunction(name);
 					
 					placeholders.push(new Expression(start, end, fn));
 				} else {
