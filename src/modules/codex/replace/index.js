@@ -1,7 +1,12 @@
+let Document = require("modules/Document");
 let createPositions = require("modules/snippets/createPositions");
 
-module.exports = function(document, results, replaceWith) {
-	console.log(results);
+module.exports = function(code, results, replaceWith) {
+	let document = new Document(code);
 	
-	return "";
+	for (let result of results) {
+		document.apply(document.edit(result.selection, replaceWith));
+	}
+	
+	return document.string;
 }

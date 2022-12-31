@@ -60,7 +60,7 @@ class Refactor extends Evented {
 		
 		editor.api.edit(Selection.start(), dedent(`
 			module.exports = function(env) {
-				@{$init.body}
+				@{init.body}
 				
 				return @obj;
 			}

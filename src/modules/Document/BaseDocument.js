@@ -101,8 +101,6 @@ class BaseDocument extends Evented {
 		
 		this.modified = true;
 		
-		this.throttledBackup();
-		
 		this.fire("edit", edit);
 	}
 	

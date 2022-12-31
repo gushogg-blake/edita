@@ -35,6 +35,8 @@ class Document extends BaseDocument {
 			platform.backup(this);
 		}, 15000);
 		
+		this.on("edit", this.throttledBackup);
+		
 		this.fileChangedWhileModified = false;
 		
 		this.setupWatch();
