@@ -9,6 +9,8 @@ let codex = require("modules/codex");
 let {s} = Selection;
 let {c} = Cursor;
 
+let dedent = require("test/utils/dedent");
+
 class Refactor extends Evented {
 	constructor(app, options) {
 		super();
@@ -42,6 +44,12 @@ class Refactor extends Evented {
 	createFindEditor() {
 		let editor = app.createEditor();
 		
+		editor.api.edit(Selection.start(), dedent(`
+			let lang = (object (method_definition (property_identifier) @p) @-init (#eq? @p "init")) @obj;
+			
+			module.exports = lang;
+		`));
+		
 		editor.on("edit", this.onEditFind.bind(this));
 		
 		return editor;
@@ -49,6 +57,14 @@ class Refactor extends Evented {
 	
 	createReplaceWithEditor() {
 		let editor = app.createEditor();
+		
+		editor.api.edit(Selection.start(), dedent(`
+			module.exports = function(env) {
+				@{$init.body}
+				
+				return @obj;
+			}
+		`));
 		
 		editor.on("edit", this.onEditReplaceWith.bind(this));
 		
@@ -99,7 +115,7 @@ class Refactor extends Evented {
 			
 			this.fire("updatePaths");
 			
-			this.selectPath(paths[0] || null);
+			this.selectPath("/home/gus/projects/edita/src/modules/langs/javascript/index.js");
 		});
 	}
 	
@@ -110,6 +126,9 @@ class Refactor extends Evented {
 			this.selectedFile = {path, code};
 			
 			await this.setResultsCode();
+			
+			this.find();
+			
 			await this.updatePreview();
 		});
 	}
@@ -124,10 +143,10 @@ class Refactor extends Evented {
 		let editor = this.editors.preview;
 		let {path, code} = this.selectedFile;
 		
-		await this.setEditorCode(editor, new URL("refactor-preview://" + path), code);
-		
 		let replaceWith = this.editors.replaceWith.string;
 		let replaced = codex.replace(code, this.results, replaceWith);
+		
+		await this.setEditorCode(editor, new URL("refactor-preview://" + path), replaced);
 	}
 	
 	async setEditorCode(editor, url, code) {

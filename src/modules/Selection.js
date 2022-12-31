@@ -91,11 +91,11 @@ class Selection {
 	}
 	
 	addEarlierSelection(addSelection) {
-		return addOrSubtractEarlierSelection(this, addSelection, 1);
+		return this.addOrSubtractEarlierSelection(addSelection, 1);
 	}
 	
 	subtractEarlierSelection(subtractSelection) {
-		return addOrSubtractEarlierSelection(this, subtractSelection, -1);
+		return this.addOrSubtractEarlierSelection(subtractSelection, -1);
 	}
 	
 	/*
@@ -133,10 +133,7 @@ class Selection {
 	*/
 	
 	expand(newSelection) {
-		return {
-			start: this.left,
-			end: newSelection.right,
-		};
+		return s(this.left, newSelection.right);
 	}
 	
 	/*
@@ -171,9 +168,6 @@ class Selection {
 		let newEndLineIndex = end.lineIndex;
 		let newEndOffset = end.offset;
 		
-		let selectionIsMultiline = selection.isMultiline();
-		let adjustmentIsMultiline = adjustment.isMultiline();
-		
 		let linesOverlap = (
 			sign === 1
 			? adjustment.start.lineIndex === start.lineIndex
@@ -182,7 +176,7 @@ class Selection {
 		
 		let adjustmentLines = adjustment.end.lineIndex - adjustment.start.lineIndex;
 		
-		if (adjustmentIsMultiline) {
+		if (adjustment.isMultiline()) {
 			let adjustLineIndex = (linesOverlap ? adjustmentLines : adjustmentLines) * sign;
 			
 			newStartLineIndex += adjustLineIndex;
@@ -194,7 +188,7 @@ class Selection {
 			
 			newStartOffset += adjustOffset;
 			
-			if (!selectionIsMultiline) {
+			if (!this.isMultiline()) {
 				newEndOffset += adjustOffset;
 			}
 		}
@@ -205,11 +199,10 @@ class Selection {
 	addOrSubtractSelection(adjustment, sign) {
 		let {start, end} = this;
 		
-		let selectionIsMultiline = this.isMultiline();
 		let adjustmentHeightDiff = adjustment.end.lineIndex - adjustment.start.lineIndex;
 		
 		if (adjustment.start.lineIndex === start.lineIndex && adjustment.end.lineIndex === end.lineIndex) {
-			if (selectionIsMultiline) {
+			if (this.isMultiline()) {
 				return s(
 					start,
 					c(end.lineIndex + adjustmentHeightDiff * sign, end.offset + adjustment.end.offset * sign),
