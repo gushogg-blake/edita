@@ -1,9 +1,9 @@
 module.exports = function(lineTuples, indentStr, baseIndentLevel=0, noHeaderIndent=false) {
-	return lineTuples.map(function([indentLevel, line], i) {
+	return lineTuples.map(function([indentLevel, string], i) {
 		if (noHeaderIndent && i === 0) {
-			return line;
+			return string;
 		} else {
-			return indentStr.repeat(baseIndentLevel + indentLevel) + line;
+			return indentStr.repeat(baseIndentLevel + indentLevel) + string;
 		}
 	});
 }

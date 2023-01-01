@@ -1,5 +1,6 @@
 let mapArrayToObject = require("utils/mapArrayToObject");
 let stringToLineTuples = require("modules/utils/stringToLineTuples");
+let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let adjustIndent = require("modules/utils/adjustIndent");
 let Document = require("modules/Document");
 let Node = require("modules/Tree/Node");
@@ -10,10 +11,10 @@ function getLineParts(string) {
 	let parts = [];
 	let placeholders = getPlaceholders(string, false).filter(p => p.type === "expression");
 	
-	if (placeholders[0]?.start > 0) {
+	if (placeholders[0]?.start > 0 || placeholders.length === 0) {
 		parts.push({
 			type: "literal",
-			string: string.substr(0, placeholders[0].start),
+			string: string.substr(0, placeholders[0]?.start || string.length),
 		});
 	}
 	
@@ -101,7 +102,7 @@ multiline placeholders will be properly indented
 function getReplacedLines(document, lines, result) {
 	let replacedLines = [];
 	
-	console.log(result);
+	console.log(lines);
 	
 	for (let {indentLevel, parts} of lines) {
 		let line = {
@@ -148,7 +149,9 @@ module.exports = function(code, results, replaceWith) {
 	for (let result of results) {
 		let replacedLines = getReplacedLines(document, lines, result);
 		
-		document.apply(document.edit(result.selection, replaceWith));
+		let str = lineTuplesToStrings(replacedLines.map(l => [l.indentLevel, l.string]), document.fileDetails.indentation.string, document.lines[result.replaceSelection.start.lineIndex].indentLevel, true);
+		
+		document.apply(document.edit(result.selection, str.join(document.fileDetails.newline)));
 	}
 	
 	return document.string;
