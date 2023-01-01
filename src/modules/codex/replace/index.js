@@ -101,8 +101,6 @@ multiline placeholders will be properly indented
 function getReplacedLines(document, lines, result) {
 	let replacedLines = [];
 	
-	console.log(lines);
-	
 	for (let {indentLevel, parts} of lines) {
 		let line = {
 			indentLevel,
