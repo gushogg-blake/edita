@@ -9,7 +9,13 @@ class Expression {
 	}
 	
 	getValue(context) {
-		return this.fn(functions, context) || "";
+		try {
+			return this.fn(functions, context) || "";
+		} catch (e) {
+			console.log(e);
+			
+			return "";
+		}
 	}
 	
 	getDefaultValue(context) {
