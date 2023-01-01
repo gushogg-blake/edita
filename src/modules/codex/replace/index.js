@@ -4,7 +4,6 @@ let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let adjustIndent = require("modules/utils/adjustIndent");
 let Document = require("modules/Document");
 let Node = require("modules/Tree/Node");
-//let createPositions = require("modules/snippets/createPositions");
 let getPlaceholders = require("modules/snippets/getPlaceholders");
 
 function getLineParts(string) {
