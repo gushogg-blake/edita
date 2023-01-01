@@ -1,6 +1,6 @@
 class AtLiteral {
 	constructor(start, end) {
-		this.type = "atLiteral";
+		this.type = "expression";
 		this.start = start
 		this.end = end;
 	}
