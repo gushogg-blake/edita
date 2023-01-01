@@ -8,38 +8,26 @@ function findResultAtCursor(cache, cursor) {
 	while (endIndex - startIndex > 0) {
 		let index = middle(startIndex, endIndex);
 		let result = cache[index];
-		let firstNode = result[0].node;
-		let startCursor = firstNode.start;
+		let startCursor = result[0].node.start;
+		let endCursor = startCursor;
 		
 		if (cursor.equals(startCursor)) {
-			let matches = [];
 			let captures = {};
 			
 			for (let {name, node} of result) {
-				/*
-				if this is the first node or it's not a child of the last
-				top-level node, it's a top-level node
-				*/
-				
-				if (matches.length === 0 || node.isOnOrAfter(matches.at(-1).node.end)) {
-					matches.push({
-						node,
-						captures: {},
-					});
-				}
-				
-				let {captures} = matches.at(-1);
-				
 				if (!captures[name]) {
 					captures[name] = [];
 				}
 				
 				captures[name].push(node);
+				
+				endCursor = Cursor.max(endCursor, node.end);
 			}
 			
 			return {
-				matches,
-				endCursor: matches.at(-1).node.end,
+				captures,
+				startCursor,
+				endCursor,
 			};
 		} else if (cursor.isBefore(startCursor)) {
 			endIndex = index;

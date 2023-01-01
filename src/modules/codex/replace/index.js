@@ -1,6 +1,8 @@
 let mapArrayToObject = require("utils/mapArrayToObject");
 let stringToLineTuples = require("modules/utils/stringToLineTuples");
+let adjustIndent = require("modules/utils/adjustIndent");
 let Document = require("modules/Document");
+let Node = require("modules/Tree/Node");
 //let createPositions = require("modules/snippets/createPositions");
 let getPlaceholders = require("modules/snippets/getPlaceholders");
 
@@ -55,7 +57,37 @@ function parseReplaceWith(replaceWith) {
 }
 
 /*
-convert {indentLevel, parts} lines into line tuples with placeholders
+get placeholder values from result
+*/
+
+function getContext(result) {
+	let context = {};
+	
+	for (let {token, match} of result.matches) {
+		let {type} = token;
+		
+		if (type === "query") {
+			let {captures} = match;
+			
+			for (let [name, nodes] of Object.entries(captures)) {
+				name = name.replace("-", "");
+				
+				context[name] = nodes[0];
+			}
+		} else if (type === "regex") {
+			let {capture} = token;
+			
+			if (capture) {
+				context[capture] = match;
+			}
+		}
+	}
+	
+	return context;
+}
+
+/*
+convert {indentLevel, parts} lines into lines with placeholders
 filled in
 
 this can result in more lines if placeholders are multiline
@@ -66,12 +98,47 @@ to the indent level in the original document)
 multiline placeholders will be properly indented
 */
 
-function getReplacedLines(lines, result) {
-	let lineTuples = [];
+function getReplacedLines(document, lines, result) {
+	let replacedLines = [];
+	
+	console.log(result);
 	
 	for (let {indentLevel, parts} of lines) {
+		let line = {
+			indentLevel,
+			string: "",
+		};
 		
+		replacedLines.push(line);
+		
+		for (let part of parts) {
+			if (part.type === "literal") {
+				line.string += part.string;
+			} else {
+				let context = getContext(result);
+				let value = part.placeholder.getValue(context);
+				
+				if (value instanceof Node) {
+					value = value.text;
+				}
+				
+				let lineTuples = adjustIndent(stringToLineTuples(value), -document.lines[result.replaceSelection.start.lineIndex].indentLevel);
+				
+				line.string += lineTuples[0][1];
+				
+				for (let [indentLevel, string] of lineTuples.slice(1)) {
+					replacedLines.push({
+						indentLevel: line.indentLevel + indentLevel,
+						string,
+					});
+				}
+				
+				line = replacedLines.at(-1);
+			}
+		}
 	}
+	
+	return replacedLines;
 }
 
 module.exports = function(code, results, replaceWith) {
@@ -79,7 +146,7 @@ module.exports = function(code, results, replaceWith) {
 	let lines = parseReplaceWith(replaceWith);
 	
 	for (let result of results) {
-		let replacedLines = getReplacedLines(lines, result);
+		let replacedLines = getReplacedLines(document, lines, result);
 		
 		document.apply(document.edit(result.selection, replaceWith));
 	}
