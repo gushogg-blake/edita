@@ -2,9 +2,33 @@ let mapArrayToObject = require("utils/mapArrayToObject");
 let stringToLineTuples = require("modules/utils/stringToLineTuples");
 let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let adjustIndent = require("modules/utils/adjustIndent");
+let Selection = require("modules/Selection");
 let Document = require("modules/Document");
 let Node = require("modules/Tree/Node");
 let getPlaceholders = require("modules/snippets/getPlaceholders");
+
+let {s} = Selection;
+
+/*
+proxy nodes to use lang functions for node-specific properties
+e.g. .condition for an if statement
+*/
+
+//function proxy(node) {
+//	let {lang} = node;
+//	
+//	return new Proxy(node, {
+//		get(node, prop, receiver) {
+//			if (prop in node) {
+//				return node[prop];
+//			} else if (lang.getters[prop]) {
+//				return 
+//			} else {
+//				return undefined;
+//			}
+//		},
+//	});
+//}
 
 function getLineParts(string) {
 	let parts = [];
@@ -60,7 +84,7 @@ function parseReplaceWith(replaceWith) {
 get placeholder values from result
 */
 
-function getContext(result) {
+function getContext(document, result) {
 	let context = {};
 	
 	for (let {token, match} of result.matches) {
@@ -72,7 +96,11 @@ function getContext(result) {
 			for (let [name, nodes] of Object.entries(captures)) {
 				name = name.replace("-", "");
 				
-				context[name] = nodes[0];
+				//context[name] = nodes.map(node => node.text).join("");
+				
+				
+				
+				context[name] = document.getSelectedText(s(nodes[0].start, nodes.at(-1).end));
 			}
 		} else if (type === "regex") {
 			let {capture} = token;
@@ -113,7 +141,7 @@ function getReplacedLines(document, lines, result) {
 			if (part.type === "literal") {
 				line.string += part.string;
 			} else {
-				let context = getContext(result);
+				let context = getContext(document, result);
 				let value = part.placeholder.getValue(context);
 				
 				if (value instanceof Node) {

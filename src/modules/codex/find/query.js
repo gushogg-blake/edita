@@ -1,5 +1,8 @@
 let middle = require("utils/middle");
+let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
+
+let {s} = Selection;
 
 function findResultAtCursor(cache, cursor) {
 	let startIndex = 0;
@@ -26,8 +29,7 @@ function findResultAtCursor(cache, cursor) {
 			
 			return {
 				captures,
-				startCursor,
-				endCursor,
+				selection: s(startCursor, endCursor),
 			};
 		} else if (cursor.isBefore(startCursor)) {
 			endIndex = index;
