@@ -360,7 +360,7 @@ module.exports = class Scope {
 	startOffset = 0.
 	*/
 	
-	*generateNodesOnLine(lineIndex, startOffset, lang=null) {
+	*_generateNodesOnLine(lineIndex, startOffset, lang=null) {
 		if (!this.tree) {
 			return;
 		}
@@ -390,5 +390,9 @@ module.exports = class Scope {
 				startOffset = childNode.end.offset;
 			}
 		}
+	}
+	
+	generateNodesOnLine(lineIndex, lang=null) {
+		return this._generateNodesOnLine(lineIndex, 0, lang);
 	}
 }
