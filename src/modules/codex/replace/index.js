@@ -140,7 +140,7 @@ function getReplacedLines(document, lines, result) {
 				
 				if (placeholder.name in regexCaptures) {
 					line.string += placeholder.getValue(regexCaptures);
-				} else {
+				} else if (placeholder.name in queryCaptures) {
 					let selection = queryCaptures[placeholder.name];
 					let {indentLevel} = document.lines[selection.start.lineIndex];
 					let value = document.getSelectedText(selection);
@@ -168,7 +168,9 @@ module.exports = function(code, results, replaceWith) {
 	let document = new Document(code);
 	let lines = parseReplaceWith(replaceWith);
 	
-	for (let result of results) {
+	for (let i = results.length - 1; i >= 0; i--) {
+		let result = results[i];
+		
 		let replacedLines = getReplacedLines(document, lines, result);
 		
 		let str = lineTuplesToStrings(replacedLines.map(l => [l.indentLevel, l.string]), document.fileDetails.indentation.string, document.lines[result.replaceSelection.start.lineIndex].indentLevel, true);
