@@ -44,6 +44,10 @@ class Refactor extends Evented {
 	createFindEditor() {
 		let editor = app.createEditor();
 		
+		//editor.api.edit(Selection.start(), dedent(`
+		//	(lexical_declaration (variable_declarator (identifier) @id))
+		//`));
+		
 		editor.api.edit(Selection.start(), dedent(`
 			let lang = (object (method_definition (property_identifier) @p (statement_block "{" (_)+ @body "}")) @-init (#eq? @p "init")) @obj/;?/
 			
@@ -57,6 +61,8 @@ class Refactor extends Evented {
 	
 	createReplaceWithEditor() {
 		let editor = app.createEditor();
+		
+		//editor.api.edit(Selection.start(), "@id");
 		
 		editor.api.edit(Selection.start(), dedent(`
 			module.exports = function(env) {
