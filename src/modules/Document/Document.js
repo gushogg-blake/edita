@@ -278,7 +278,7 @@ class Document extends BaseDocument {
 	}
 	
 	getNodesOnLine(lineIndex, lang=null) {
-		return [...this.source.generateNodesOnLine(lineIndex, lang)];
+		return [...this.generateNodesOnLine(lineIndex, lang)];
 	}
 	
 	teardown() {
