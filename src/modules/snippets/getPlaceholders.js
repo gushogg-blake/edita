@@ -59,7 +59,7 @@ module.exports = function(string, createTabstops=true) {
 					
 					let fn = createExpressionFunction(name);
 					
-					placeholders.push(new Expression(start, end, fn));
+					placeholders.push(new Expression(start, end, fn, name));
 				} else {
 					placeholders.push(new Tabstop(start, end, name, null));
 					

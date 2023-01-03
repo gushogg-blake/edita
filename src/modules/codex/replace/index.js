@@ -9,27 +9,6 @@ let getPlaceholders = require("modules/snippets/getPlaceholders");
 
 let {s} = Selection;
 
-/*
-proxy nodes to use lang functions for node-specific properties
-e.g. .condition for an if statement
-*/
-
-//function proxy(node) {
-//	let {lang} = node;
-//	
-//	return new Proxy(node, {
-//		get(node, prop, receiver) {
-//			if (prop in node) {
-//				return node[prop];
-//			} else if (lang.getters[prop]) {
-//				return 
-//			} else {
-//				return undefined;
-//			}
-//		},
-//	});
-//}
-
 function getLineParts(string) {
 	let parts = [];
 	let placeholders = getPlaceholders(string, false).filter(p => p.type === "expression");
@@ -80,38 +59,40 @@ function parseReplaceWith(replaceWith) {
 	return lines;
 }
 
-/*
-get placeholder values from result
-*/
-
-function getContext(document, result) {
-	let context = {};
+function getRegexCaptures(result) {
+	let captures = {};
 	
 	for (let {token, match} of result.matches) {
-		let {type} = token;
+		if (token.type !== "regex") {
+			continue;
+		}
 		
-		if (type === "query") {
-			let {captures} = match;
-			
-			for (let [name, nodes] of Object.entries(captures)) {
-				name = name.replace("-", "");
-				
-				//context[name] = nodes.map(node => node.text).join("");
-				
-				
-				
-				context[name] = document.getSelectedText(s(nodes[0].start, nodes.at(-1).end));
-			}
-		} else if (type === "regex") {
-			let {capture} = token;
-			
-			if (capture) {
-				context[capture] = match;
-			}
+		let {capture} = token;
+		
+		if (capture) {
+			captures[capture] = match;
 		}
 	}
 	
-	return context;
+	return captures;
+}
+
+function getQueryCaptures(result) {
+	let captures = {};
+	
+	for (let {token, match, selection} of result.matches) {
+		if (token.type !== "query") {
+			continue;
+		}
+		
+		for (let [name, nodes] of Object.entries(match.captures)) {
+			name = name.replace("-", "");
+			
+			captures[name] = s(nodes[0].start, nodes.at(-1).end);
+		}
+	}
+	
+	return captures;
 }
 
 /*
@@ -141,25 +122,41 @@ function getReplacedLines(document, lines, result) {
 			if (part.type === "literal") {
 				line.string += part.string;
 			} else {
-				let context = getContext(document, result);
-				let value = part.placeholder.getValue(context);
+				let {placeholder} = part;
+				let regexCaptures = getRegexCaptures(result);
+				let queryCaptures = getQueryCaptures(result);
 				
-				if (value instanceof Node) {
-					value = value.text;
+				/*
+				regex captures are single-line so can be handled by standard
+				snippet substitution, and can be @{...} expressions
+				
+				query captures can be multi-line so need to be formatted,
+				and it doesn't make sense to use expressions as snippet
+				expressions are designed to work on strings, e.g. quote() or
+				.toUpperCase(). functions for node manipulation e.g.
+				converting functions to arrow functions could be useful but
+				aren't supported yet
+				*/
+				
+				if (placeholder.name in regexCaptures) {
+					line.string += placeholder.getValue(regexCaptures);
+				} else {
+					let selection = queryCaptures[placeholder.name];
+					let {indentLevel} = document.lines[selection.start.lineIndex];
+					let value = document.getSelectedText(selection);
+					let lineTuples = adjustIndent(stringToLineTuples(value), -indentLevel);
+					
+					line.string += lineTuples[0][1];
+					
+					for (let [indentLevel, string] of lineTuples.slice(1)) {
+						replacedLines.push({
+							indentLevel: line.indentLevel + indentLevel,
+							string,
+						});
+					}
+					
+					line = replacedLines.at(-1);
 				}
-				
-				let lineTuples = adjustIndent(stringToLineTuples(value), -document.lines[result.replaceSelection.start.lineIndex].indentLevel);
-				
-				line.string += lineTuples[0][1];
-				
-				for (let [indentLevel, string] of lineTuples.slice(1)) {
-					replacedLines.push({
-						indentLevel: line.indentLevel + indentLevel,
-						string,
-					});
-				}
-				
-				line = replacedLines.at(-1);
 			}
 		}
 	}

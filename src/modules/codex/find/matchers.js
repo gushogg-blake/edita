@@ -19,12 +19,15 @@ let matchers = {
 			return false;
 		}
 		
+		let endCursor = c(lineIndex, offset + string.length);
+		
 		matches.push({
 			token,
+			selection: s(cursor, endCursor),
 		});
 		
 		states.push({
-			cursor: c(lineIndex, offset + string.length),
+			cursor: endCursor,
 			indentLevel: line.indentLevel,
 		});
 		
@@ -128,7 +131,7 @@ let matchers = {
 		skip blank lines
 		
 		multiple newlines in the query result in a single newline, so this is
-		needed situations like this:
+		needed for situations like this:
 		
 		code:
 		
