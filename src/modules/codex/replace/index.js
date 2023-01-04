@@ -1,7 +1,6 @@
 let mapArrayToObject = require("utils/mapArrayToObject");
 let stringToLineTuples = require("modules/utils/stringToLineTuples");
 let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
-let adjustIndent = require("modules/utils/adjustIndent");
 let Selection = require("modules/Selection");
 let Document = require("modules/Document");
 let SelectionContents = require("modules/SelectionContents");
@@ -48,9 +47,9 @@ literal or an expression placeholder
 */
 
 function parseReplaceWith(replaceWith) {
-	let lineTuples = stringToLineTuples(replaceWith);
+	let selectionContents = SelectionContents.fromString(replaceWith);
 	
-	let lines = lineTuples.map(function([indentLevel, string]) {
+	let lines = selectionContents.lines.map(function({indentLevel, string}) {
 		return {
 			indentLevel,
 			parts: getLineParts(string),
@@ -209,22 +208,17 @@ module.exports = function(code, results, replaceWith) {
 	let original = new Document(code);
 	let document = new Document(code);
 	let lines = parseReplaceWith(replaceWith);
-	let editsApplied = [];
 	
-	function getAdjustedSelection(selection) {
-		return selection.adjust(editsApplied);
-	}
-	
-	for (let result of results) {
-		let replacedLines = getReplacedLines(document, lines, result, getAdjustedSelection);
+	for (let i = results.length - 1; i >= 0; i--) {
+		let result = results[i];
+		let {indentLevel} = document.lines[result.replaceSelection.start.lineIndex];
+		let replacedLines = getReplacedLines(document, lines, result);
+		let selectionContents = new SelectionContents(replacedLines);
+		let string = selectionContents.getString(document, indentLevel, true);
 		
-		let str = lineTuplesToStrings(replacedLines.map(l => [l.indentLevel, l.string]), document.fileDetails.indentation.string, document.lines[result.replaceSelection.start.lineIndex].indentLevel, true);
-		
-		let edit = document.edit(result.selection, str.join(document.fileDetails.newline));
+		let edit = document.edit(result.selection, string);
 		
 		document.apply(edit);
-		
-		editsApplied.push(edit);
 	}
 	
 	return document.string;

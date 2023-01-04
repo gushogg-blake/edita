@@ -15,7 +15,7 @@ class SelectionContents {
 	}
 	
 	getLineStrings(document, baseIndentLevel=0, noHeaderIndent=false) {
-		let {indentationDetails} = document.fileDetails;
+		let {indentation: indentationDetails} = document.fileDetails;
 		
 		return this.lines.map(function({indentLevel, string}, i) {
 			if (noHeaderIndent && i === 0) {
