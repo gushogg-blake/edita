@@ -245,7 +245,7 @@ class BottomPanes extends Evented {
 	}
 	
 	resizeOutput(diff) {
-		if (this.top.size === "auto") {
+		if (this.top.size === "auto" && this.topVisibleAndExpanded) {
 			this.preferredSizes.totalWithTopExpanded += diff;
 		} else {
 			if (this.topVisibleAndExpanded) {
