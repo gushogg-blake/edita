@@ -80,7 +80,7 @@ function getRegexCaptures(result) {
 function getQueryCaptures(result) {
 	let captures = {};
 	
-	for (let {token, match, selection} of result.matches) {
+	for (let {token, match} of result.matches) {
 		if (token.type !== "query") {
 			continue;
 		}
@@ -93,6 +93,39 @@ function getQueryCaptures(result) {
 	}
 	
 	return captures;
+}
+
+function removeMinusPrefixedNodesFromCapturedNode(document, result, selection) {
+	let copy = new Document(document.string);
+	let editsApplied = [];
+	
+	for (let {token, match} of result.matches) {
+		if (token.type !== "query") {
+			continue;
+		}
+		
+		for (let [name, nodes] of Object.entries(match.captures)) {
+			if (!name.startsWith("-")) {
+				continue;
+			}
+			
+			let removeSelection = s(nodes[0].start, nodes.at(-1).end).adjust(editsApplied);
+			
+			if (!selection.contains(removeSelection)) {
+				continue;
+			}
+			
+			let edit = copy.edit(removeSelection, "");
+			
+			copy.apply(edit);
+			
+			editsApplied.push(removeSelection);
+			
+			selection = selection.edit(edit);
+		}
+	}
+	
+	return copy.getSelectedText(selection);
 }
 
 /*
@@ -143,7 +176,7 @@ function getReplacedLines(document, lines, result) {
 				} else if (placeholder.name in queryCaptures) {
 					let selection = queryCaptures[placeholder.name];
 					let {indentLevel} = document.lines[selection.start.lineIndex];
-					let value = document.getSelectedText(selection);
+					let value = removeMinusPrefixedNodesFromCapturedNode(document, result, selection);
 					let lineTuples = adjustIndent(stringToLineTuples(value), -indentLevel);
 					
 					line.string += lineTuples[0][1];
@@ -165,17 +198,25 @@ function getReplacedLines(document, lines, result) {
 }
 
 module.exports = function(code, results, replaceWith) {
+	let original = new Document(code);
 	let document = new Document(code);
 	let lines = parseReplaceWith(replaceWith);
+	let editsApplied = [];
 	
-	for (let i = results.length - 1; i >= 0; i--) {
-		let result = results[i];
-		
-		let replacedLines = getReplacedLines(document, lines, result);
+	function getAdjustedSelection(selection) {
+		return selection.adjust(editsApplied);
+	}
+	
+	for (let result of results) {
+		let replacedLines = getReplacedLines(document, lines, result, getAdjustedSelection);
 		
 		let str = lineTuplesToStrings(replacedLines.map(l => [l.indentLevel, l.string]), document.fileDetails.indentation.string, document.lines[result.replaceSelection.start.lineIndex].indentLevel, true);
 		
-		document.apply(document.edit(result.selection, str.join(document.fileDetails.newline)));
+		let edit = document.edit(result.selection, str.join(document.fileDetails.newline));
+		
+		document.apply(edit);
+		
+		editsApplied.push(edit);
 	}
 	
 	return document.string;

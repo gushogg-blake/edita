@@ -87,8 +87,6 @@ module.exports = class Scope {
 	}
 	
 	edit(edit, index, newRanges, code) {
-		let {selection, newSelection} = edit;
-		
 		this.code = code;
 		
 		this.setRanges(newRanges);
@@ -146,7 +144,7 @@ module.exports = class Scope {
 					let existingRange = scope.ranges[i];
 					let range = ranges[i];
 					
-					let existingSelectionEdited = existingRange.selection.edit(selection, newSelection);
+					let existingSelectionEdited = existingRange.selection.edit(edit);
 					
 					if (!existingSelectionEdited || !existingSelectionEdited.equals(range.selection)) {
 						return false;

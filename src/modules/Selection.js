@@ -114,8 +114,12 @@ class Selection {
 		return this.subtract(oldSelection).add(newSelection);
 	}
 	
-	edit(oldSelection, newSelection) {
-		if (oldSelection.isBefore(this)) {
+	edit(edit) {
+		let {selection: oldSelection, newSelection} = edit;
+		
+		if (this.isBefore(oldSelection)) {
+			return this;
+		} else if (oldSelection.isBefore(this)) {
 			return this.adjustForEarlierEdit(oldSelection, newSelection);
 		} else if (this.equals(oldSelection)) {
 			return newSelection;
@@ -123,9 +127,21 @@ class Selection {
 			return this.adjustForEditWithinSelection(oldSelection, newSelection);
 		} else if (this.partiallyOverlaps(oldSelection)) {
 			return null;
-		} else {
-			return this;
 		}
+	}
+	
+	adjust(edits) {
+		let selection = this;
+		
+		for (let edit of edits) {
+			selection = selection.edit(edit);
+			
+			if (!selection) {
+				break;
+			}
+		}
+		
+		return selection;
 	}
 	
 	/*

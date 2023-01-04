@@ -216,7 +216,6 @@ class Editor extends Evented {
 	}
 	
 	onDocumentEdit(edit) {
-		let {selection: oldSelection, newSelection} = edit;
 		let {view} = this;
 		let {normalHilites} = view;
 		
@@ -227,7 +226,7 @@ class Editor extends Evented {
 				return null;
 			}
 			
-			return hilite.edit(oldSelection, newSelection);
+			return hilite.edit(edit);
 		}).filter(Boolean));
 		
 		view.updateMarginSize();
