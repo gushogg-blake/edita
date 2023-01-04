@@ -4,6 +4,7 @@ let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let adjustIndent = require("modules/utils/adjustIndent");
 let Selection = require("modules/Selection");
 let Document = require("modules/Document");
+let SelectionContents = require("modules/SelectionContents");
 let Node = require("modules/Tree/Node");
 let getPlaceholders = require("modules/snippets/getPlaceholders");
 
@@ -104,7 +105,7 @@ want to be able to use them in the replacement, so they have to be accessible
 somehow but without any other deleted nodes inside them.
 */
 
-function removeMinusPrefixedNodesFromCapturedNode(document, result, selection) {
+function capturedNodeSelectionContentsWithoutDeletedNodes(document, result, captureName, selection) {
 	let copy = new Document(document.string);
 	let editsApplied = [];
 	
@@ -114,14 +115,13 @@ function removeMinusPrefixedNodesFromCapturedNode(document, result, selection) {
 		}
 		
 		for (let [name, nodes] of Object.entries(match.captures)) {
-			if (!name.startsWith("-")) {
+			if (!name.startsWith("-") || name.replace("-", "") === captureName) {
 				continue;
 			}
 			
 			let removeSelection = s(nodes[0].start, nodes.at(-1).end).adjust(editsApplied);
 			
 			if (!selection.contains(removeSelection)) {
-				
 				continue;
 			}
 			
@@ -135,7 +135,7 @@ function removeMinusPrefixedNodesFromCapturedNode(document, result, selection) {
 		}
 	}
 	
-	return copy.getSelectedText(selection);
+	return SelectionContents.fromSelection(document, selection);
 }
 
 /*
@@ -185,13 +185,11 @@ function getReplacedLines(document, lines, result) {
 					line.string += placeholder.getValue(regexCaptures);
 				} else if (placeholder.name in queryCaptures) {
 					let selection = queryCaptures[placeholder.name];
-					let {indentLevel} = document.lines[selection.start.lineIndex];
-					let value = removeMinusPrefixedNodesFromCapturedNode(document, result, selection);
-					let lineTuples = adjustIndent(stringToLineTuples(value), -indentLevel);
+					let value = capturedNodeSelectionContentsWithoutDeletedNodes(document, result, placeholder.name, selection);
 					
-					line.string += lineTuples[0][1];
+					line.string += value.lines[0].string;
 					
-					for (let [indentLevel, string] of lineTuples.slice(1)) {
+					for (let {indentLevel, string} of value.lines.slice(1)) {
 						replacedLines.push({
 							indentLevel: line.indentLevel + indentLevel,
 							string,

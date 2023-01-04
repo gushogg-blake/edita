@@ -49,7 +49,15 @@ class Refactor extends Evented {
 		//`));
 		
 		editor.api.edit(Selection.start(), dedent(`
-			let lang = (object (method_definition (property_identifier) @p (statement_block "{" (_)+ @body "}")) @-init (#eq? @p "init")) @obj/;?/
+			let lang = (object
+				(method_definition
+					(property_identifier) @p
+					(statement_block "{" (_)+ @body "}")
+				) @-init
+				.
+				"," @-c
+				(#eq? @p "init")
+			) @obj/;?/
 			
 			module.exports = lang;
 		`));
@@ -66,7 +74,7 @@ class Refactor extends Evented {
 		
 		editor.api.edit(Selection.start(), dedent(`
 			module.exports = function(env) {
-				@body
+				@init
 				
 				return @obj;
 			}
