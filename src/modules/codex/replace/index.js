@@ -1,6 +1,4 @@
 let mapArrayToObject = require("utils/mapArrayToObject");
-let stringToLineTuples = require("modules/utils/stringToLineTuples");
-let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
 let Selection = require("modules/Selection");
 let Document = require("modules/Document");
 let SelectionContents = require("modules/SelectionContents");
