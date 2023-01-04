@@ -95,6 +95,15 @@ function getQueryCaptures(result) {
 	return captures;
 }
 
+/*
+for each captured node we want the text of, we go through all @- prefixed nodes
+in the result and if they're inside the captured node, remove them.
+
+removing all the @- prefixed nodes in a single pass is not possible as we still
+want to be able to use them in the replacement, so they have to be accessible
+somehow but without any other deleted nodes inside them.
+*/
+
 function removeMinusPrefixedNodesFromCapturedNode(document, result, selection) {
 	let copy = new Document(document.string);
 	let editsApplied = [];
@@ -112,6 +121,7 @@ function removeMinusPrefixedNodesFromCapturedNode(document, result, selection) {
 			let removeSelection = s(nodes[0].start, nodes.at(-1).end).adjust(editsApplied);
 			
 			if (!selection.contains(removeSelection)) {
+				
 				continue;
 			}
 			
@@ -119,7 +129,7 @@ function removeMinusPrefixedNodesFromCapturedNode(document, result, selection) {
 			
 			copy.apply(edit);
 			
-			editsApplied.push(removeSelection);
+			editsApplied.push(edit);
 			
 			selection = selection.edit(edit);
 		}
