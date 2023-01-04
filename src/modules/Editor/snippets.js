@@ -1,7 +1,6 @@
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
-let stringToLineTuples = require("modules/utils/stringToLineTuples");
-let lineTuplesToStrings = require("modules/utils/lineTuplesToStrings");
+let SelectionContents = require("modules/SelectionContents");
 let createPositions = require("modules/snippets/createPositions");
 
 let {s} = Selection;
@@ -54,14 +53,13 @@ function initNormalSelectionFromPositions(positions, tabstops) {
 let api = {
 	insert(editor, snippet, replaceWord)  {
 		let {document} = editor;
-		let selection = editor.view.normalSelection.sort();
+		let selection = editor.normalSelection.sort();
 		let {start} = selection;
 		let {lineIndex, offset} = start;
+		
 		let {indentLevel} = document.lines[lineIndex];
-		let indentStr = document.fileDetails.indentation.string;
-		let lineTuples = stringToLineTuples(snippet.text);
-		let lineStrings = lineTuplesToStrings(lineTuples, indentStr, indentLevel, true);
-		let indentedSnippetText = lineStrings.join(document.fileDetails.newline);
+		let snippetSelectionContents = SelectionContents.fromString(snippet.text);
+		let indentedSnippetText = snippetSelectionContents.getString(document, indentLevel, true);
 		
 		let editSelection = (
 			replaceWord

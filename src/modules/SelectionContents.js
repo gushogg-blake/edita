@@ -57,9 +57,9 @@ class SelectionContents {
 		let newline = getNewline(string);
 		let indentationDetails = getIndentationDetails(guessIndent(string) || base.getPref("defaultIndent"));
 		
-		let lines = string.split(getNewline(str)).map(function(lineString) {
+		let lines = string.split(newline).map(function(lineString) {
 			return {
-				indentLevel: getIndentLevel(line, indentationDetails).level,
+				indentLevel: getIndentLevel(lineString, indentationDetails).level,
 				string: lineString.trimLeft(),
 			};
 		});
