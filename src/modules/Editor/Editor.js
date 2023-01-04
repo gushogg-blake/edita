@@ -222,7 +222,7 @@ class Editor extends Evented {
 		view.startBatch();
 		
 		view.setNormalHilites(normalHilites.map(function(hilite) {
-			if (hilite.overlaps(oldSelection)) {
+			if (hilite.overlaps(edit.selection)) {
 				return null;
 			}
 			
