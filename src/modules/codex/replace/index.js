@@ -229,12 +229,18 @@ module.exports = function(code, results, replaceWith) {
 	
 	for (let i = results.length - 1; i >= 0; i--) {
 		let result = results[i];
-		let {indentLevel} = document.lines[result.replaceSelection.start.lineIndex];
-		let replacedLines = getReplacedLines(document, lines, result);
-		let selectionContents = new SelectionContents(replacedLines);
-		let string = selectionContents.getString(document, indentLevel, true);
+		let edit;
 		
-		let edit = document.edit(result.selection, string);
+		if (replaceWith === "") {
+			edit = expandRemoveSelectionToTrimBlankLines(document, result.replaceSelection);
+		} else {
+			let {indentLevel} = document.lines[result.replaceSelection.start.lineIndex];
+			let replacedLines = getReplacedLines(document, lines, result);
+			let selectionContents = new SelectionContents(replacedLines);
+			let string = selectionContents.getString(document, indentLevel, true);
+			
+			edit = document.edit(result.selection, string);
+		}
 		
 		document.apply(edit);
 	}
