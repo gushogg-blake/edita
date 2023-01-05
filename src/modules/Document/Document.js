@@ -33,6 +33,7 @@ class Document extends Evented {
 		this.url = url;
 		this.fileDetails = options.fileDetails;
 		this.project = options.project;
+		this.noParse = options.noParse;
 		
 		this.createLines();
 		
@@ -369,7 +370,7 @@ class Document extends Evented {
 	setFileDetails(fileDetails) {
 		this.fileDetails = fileDetails;
 		
-		this.source.init(this.fileDetails);
+		this.source.init();
 		
 		this.fire("fileDetailsChanged");
 	}

@@ -36,6 +36,10 @@ module.exports = class Scope {
 		return this.source.string;
 	}
 	
+	get document() {
+		return this.source.document;
+	}
+	
 	setRanges(ranges) {
 		this.ranges = ranges;
 		
@@ -46,7 +50,7 @@ module.exports = class Scope {
 	
 	parse(editedTree=null, findExistingScope=null, editExistingScope=null) {
 		if (
-			this.source.noParse
+			this.document.noParse
 			|| this.lang.code === "plainText"
 		) {
 			return;
