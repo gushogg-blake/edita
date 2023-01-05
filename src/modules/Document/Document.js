@@ -24,22 +24,22 @@ class Document extends Evented {
 			...options,
 		};
 		
-		this.history = [];
-		this.historyIndex = 0;
-		this.historyIndexAtSave = 0;
-		this.modified = false;
-		
 		this.string = string;
 		this.url = url;
 		this.fileDetails = options.fileDetails;
 		this.project = options.project;
 		this.noParse = options.noParse;
 		
+		this.history = [];
+		this.historyIndex = 0;
+		this.historyIndexAtSave = 0;
+		this.modified = false;
+		
 		this.createLines();
 		
 		this.source = new Source(this);
 		
-		this.source.init();
+		this.source.parse();
 		
 		this.throttledBackup = throttle(() => {
 			platform.backup(this);
@@ -193,7 +193,7 @@ class Document extends Evented {
 	}
 	
 	reverseEdits(edits) {
-		return [...edits].reverse().map(e => this.reverse(e));
+		return [...edits].reverse().map(edit => this.reverse(edit));
 	}
 	
 	applyEdits(edits) {
@@ -382,7 +382,7 @@ class Document extends Evented {
 	setFileDetails(fileDetails) {
 		this.fileDetails = fileDetails;
 		
-		this.source.init();
+		this.source.parse();
 		
 		this.fire("fileDetailsChanged");
 	}

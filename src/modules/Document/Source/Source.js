@@ -27,10 +27,6 @@ module.exports = class {
 		return this.fileDetails.lang;
 	}
 	
-	init() {
-		this.parse();
-	}
-	
 	parse() {
 		this.rootScope = new Scope(this, null, this.lang, [this.getContainingRange()]);
 	}
