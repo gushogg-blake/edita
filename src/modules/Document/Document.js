@@ -1,35 +1,44 @@
 let throttle = require("utils/throttle");
 let sleep = require("utils/sleep");
+let Evented = require("utils/Evented");
 let AstSelection = require("modules/AstSelection");
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
 let protocol = require("modules/protocol");
 let findAndReplace = require("modules/findAndReplace");
 
-let BaseDocument = require("./BaseDocument");
 let Source = require("./Source");
+let Line = require("./Line");
 
 let {s} = Selection;
 let {c} = Cursor;
 
-class Document extends BaseDocument {
-	constructor(code, url=null, options={}) {
+class Document extends Evented {
+	constructor(string, url=null, options={}) {
 		super();
 		
 		options = {
 			project: null,
-			fileDetails: base.getFileDetails(code, url),
+			fileDetails: base.getFileDetails(string, url),
 			noParse: false,
 			...options,
 		};
 		
+		this.history = [];
+		this.historyIndex = 0;
+		this.historyIndexAtSave = 0;
+		this.modified = false;
+		
+		this.string = string;
 		this.url = url;
 		this.fileDetails = options.fileDetails;
 		this.project = options.project;
 		
-		this.source = new Source(code, options.noParse);
+		this.createLines();
 		
-		this.source.init(this.fileDetails);
+		this.source = new Source(this);
+		
+		this.source.init();
 		
 		this.throttledBackup = throttle(() => {
 			platform.backup(this);
@@ -40,6 +49,321 @@ class Document extends BaseDocument {
 		this.fileChangedWhileModified = false;
 		
 		this.setupWatch();
+	}
+	
+	get lang() {
+		return this.fileDetails.lang;
+	}
+	
+	createLines() {
+		this.lines = [];
+		
+		let {fileDetails} = this;
+		let lineStrings = this.string.split(fileDetails.newline);
+		let lineStartIndex = 0;
+		
+		for (let i = 0; i < lineStrings.length; i++) {
+			let lineString = lineStrings[i];
+			
+			this.lines.push(new Line(lineString, fileDetails, lineStartIndex, i));
+			
+			lineStartIndex += lineString.length + fileDetails.newline.length;
+		}
+	}
+	
+	edit(selection, replaceWith) {
+		selection = selection.sort();
+		
+		let currentStr = this.getSelectedText(selection);
+		let {start, end} = selection;
+		
+		let prefix = this.lines[start.lineIndex].string.substr(0, start.offset);
+		let suffix = this.lines[end.lineIndex].string.substr(end.offset);
+		
+		let insertLines = replaceWith.split(this.fileDetails.newline);
+		
+		insertLines[0] = prefix + insertLines[0];
+		insertLines[insertLines.length - 1] += suffix;
+		
+		let newEndLineIndex = start.lineIndex + insertLines.length - 1;
+		let lastLine = insertLines.at(-1);
+		let newSelection = s(start, c(newEndLineIndex, lastLine.length - suffix.length));
+		
+		return {
+			selection,
+			string: currentStr,
+			replaceWith,
+			newSelection,
+		};
+	}
+	
+	lineEdit(lineIndex, removeLinesCount, insertLines) {
+		let {newline} = this.fileDetails;
+		
+		let endLineIndex = lineIndex + removeLinesCount;
+		let insertString = insertLines.join(newline);
+		let start;
+		let end;
+		
+		/*
+		removing/inserting at the last line needs special handling as the
+		last line doesn't end with a newline
+		*/
+		
+		if (lineIndex === this.lines.length) {
+			start = c(lineIndex - 1, this.lines.at(-1).string.length);
+			
+			if (insertLines.length > 0) {
+				insertString = newline + insertString;
+			}
+		} else {
+			start = c(lineIndex, 0);
+		}
+		
+		if (endLineIndex === this.lines.length) {
+			end = c(endLineIndex - 1, this.lines[endLineIndex - 1].string.length);
+		} else {
+			end = c(endLineIndex, 0);
+			
+			if (insertLines.length > 0) {
+				insertString += newline;
+			}
+		}
+		
+		return this.edit(s(start, end), insertString);
+	}
+	
+	astEdit(astSelection, insertLines) {
+		let {startLineIndex, endLineIndex} = astSelection;
+		
+		return this.lineEdit(startLineIndex, endLineIndex - startLineIndex, insertLines);
+	}
+	
+	apply(edit) {
+		let {
+			selection,
+			string,
+			replaceWith,
+		} = edit;
+		
+		let index = this.indexFromCursor(selection.left);
+		
+		this.string = this.string.substr(0, index) + replaceWith + this.string.substr(index + string.length);
+		
+		this.createLines();
+		
+		this.source.edit(edit, index);
+		
+		this.modified = true;
+		
+		this.fire("edit", edit);
+	}
+	
+	reverse(edit) {
+		let {
+			selection,
+			string,
+			newSelection,
+			replaceWith,
+		} = edit;
+		
+		return {
+			selection: newSelection,
+			string: replaceWith,
+			newSelection: selection,
+			replaceWith: string,
+		};
+	}
+	
+	reverseEdits(edits) {
+		return [...edits].reverse().map(e => this.reverse(e));
+	}
+	
+	applyEdits(edits) {
+		for (let edit of edits) {
+			this.apply(edit);
+		}
+	}
+	
+	applyAndAddHistoryEntry(edits) {
+		let undo = this.reverseEdits(edits);
+		
+		this.applyEdits(edits);
+		
+		let entry = {
+			undo,
+			redo: edits,
+		};
+		
+		if (this.historyIndex < this.history.length) {
+			this.history.splice(this.historyIndex, this.history.length - this.historyIndex);
+		}
+		
+		this.history.push(entry);
+		this.historyIndex = this.history.length;
+		
+		return entry;
+	}
+	
+	applyAndMergeWithLastHistoryEntry(edits) {
+		let entry = this.lastHistoryEntry;
+		
+		this.applyEdits(edits);
+		
+		entry.redo = [...entry.redo, ...edits];
+		entry.undo = [...this.reverseEdits(edits), ...entry.undo];
+		
+		return entry;
+	}
+	
+	get lastHistoryEntry() {
+		return this.history.at(-1);
+	}
+	
+	undo() {
+		if (this.historyIndex === 0) {
+			return null;
+		}
+		
+		let entry = this.history[this.historyIndex - 1];
+		
+		this.historyIndex--;
+		this.applyEdits(entry.undo);
+		
+		if (this.historyIndex === this.historyIndexAtSave) {
+			this.modified = false;
+		}
+		
+		this.fire("undo", entry);
+		
+		return entry;
+	}
+	
+	redo() {
+		if (this.historyIndex === this.history.length) {
+			return null;
+		}
+		
+		let entry = this.history[this.historyIndex];
+		
+		this.historyIndex++;
+		this.applyEdits(entry.redo);
+		
+		if (this.historyIndex === this.historyIndexAtSave) {
+			this.modified = false;
+		}
+		
+		this.fire("redo", entry);
+		
+		return entry;
+	}
+	
+	replaceSelection(selection, string) {
+		let edit = this.edit(selection, string);
+		let newSelection = s(edit.newSelection.end);
+		
+		return {
+			edit,
+			newSelection,
+		};
+	}
+	
+	insert(selection, ch) {
+		return this.replaceSelection(selection, ch);
+	}
+	
+	move(fromSelection, toCursor) {
+		let str = this.getSelectedText(fromSelection);
+		let remove = this.edit(fromSelection, "");
+		let insert = this.edit(s(toCursor), str);
+		
+		let newSelection = this.getSelectionContainingString(toCursor, str);
+		
+		newSelection = newSelection.subtractEarlierSelection(fromSelection);
+		
+		let edits;
+		
+		if (toCursor.isBefore(fromSelection.start)) {
+			edits = [remove, insert];
+		} else {
+			edits = [insert, remove];
+		}
+		
+		return {
+			edits,
+			newSelection,
+		};
+	}
+	
+	indexFromCursor(cursor) {
+		return this.source.indexFromCursor(cursor);
+	}
+	
+	cursorFromIndex(index) {
+		return this.source.cursorFromIndex(index);
+	}
+	
+	getSelectedLines(astSelection) {
+		return astSelection.getSelectedLines(this.lines);
+	}
+	
+	getAstSelection(astSelection) {
+		return AstSelection.linesToSelectionLines(this.getSelectedLines(astSelection));
+	}
+	
+	getSelectedText(selection) {
+		let {left, right} = selection;
+		let lines = this.lines.slice(left.lineIndex, right.lineIndex + 1);
+		
+		let str = lines.map(line => line.string).join(this.fileDetails.newline);
+		let trimLeft = left.offset;
+		let trimRight = lines.at(-1).string.length - right.offset;
+		
+		return str.substring(trimLeft, str.length - trimRight);
+	}
+	
+	getSelectionContainingString(cursor, str) {
+		return Selection.containString(cursor, str, this.fileDetails.newline);
+	}
+	
+	wordAtCursor(cursor) {
+		let {lineIndex, offset} = cursor;
+		
+		let line = this.lines[lineIndex];
+		let stringToCursor = line.string.substr(0, offset);
+		let stringFromCursor = line.string.substr(offset);
+		
+		let left = stringToCursor.match(/\w+$/)?.[0] || "";
+		let right = stringFromCursor.match(/^\w+/)?.[0] || "";
+		
+		return {left, right};
+	}
+	
+	getLongestLineWidth() {
+		let width = 0;
+		
+		for (let line of this.lines) {
+			if (line.width > width) {
+				width = line.width;
+			}
+		}
+		
+		return width;
+	}
+	
+	cursorAtEnd() {
+		return c(this.lines.length - 1, this.lines.at(-1).string.length);
+	}
+	
+	selectAll() {
+		return s(c(0, 0), this.cursorAtEnd());
+	}
+	
+	cursorWithinBounds(cursor) {
+		cursor = Cursor.max(cursor, Cursor.start());
+		cursor = Cursor.min(cursor, this.cursorAtEnd());
+		
+		return cursor;
 	}
 	
 	setFileDetails(fileDetails) {
@@ -279,6 +603,10 @@ class Document extends BaseDocument {
 	
 	getNodesOnLine(lineIndex, lang=null) {
 		return [...this.generateNodesOnLine(lineIndex, lang)];
+	}
+	
+	toString() {
+		return this.string;
 	}
 	
 	teardown() {

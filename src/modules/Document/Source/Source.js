@@ -2,64 +2,41 @@ let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
 let Scope = require("./Scope");
 let Range = require("./Range");
-let Line = require("./Line");
 
 let {s} = Selection;
 let {c} = Cursor;
 
 module.exports = class {
-	constructor(string, noParse) {
-		this.string = string;
-		this.noParse = noParse;
+	constructor(document) {
+		this.document = document;
 	}
 	
-	init(fileDetails) {
-		this.fileDetails = fileDetails;
-		this.lang = fileDetails.lang;
-		
+	get string() {
+		return this.document.string;
+	}
+	
+	get lines() {
+		return this.document.lines;
+	}
+	
+	get fileDetails() {
+		return this.document.fileDetails;
+	}
+	
+	get lang() {
+		return this.fileDetails.lang;
+	}
+	
+	init() {
 		this.parse();
 	}
 	
-	createLines() {
-		this.lines = [];
-		
-		let {fileDetails} = this;
-		let lineStrings = this.string.split(fileDetails.newline);
-		let lineStartIndex = 0;
-		
-		for (let i = 0; i < lineStrings.length; i++) {
-			let lineString = lineStrings[i];
-			
-			this.lines.push(new Line(lineString, fileDetails, lineStartIndex, i));
-			
-			lineStartIndex += lineString.length + fileDetails.newline.length;
-		}
-	}
-	
 	parse() {
-		this.createLines();
-		
-		this.rootScope = new Scope(this, null, this.lang, this.string, [this.getContainingRange()]);
+		this.rootScope = new Scope(this, null, this.lang, [this.getContainingRange()]);
 	}
 	
-	edit(edit) {
-		//console.time("edit");
-		
-		let {
-			selection,
-			string,
-			replaceWith,
-		} = edit;
-		
-		let index = this.indexFromCursor(selection.left);
-		
-		this.string = this.string.substr(0, index) + replaceWith + this.string.substr(index + string.length);
-		
-		this.createLines();
-		
-		this.rootScope.edit(edit, index, [this.getContainingRange()], this.string);
-		
-		//console.timeEnd("edit");
+	edit(edit, index) {
+		this.rootScope.edit(edit, index, [this.getContainingRange()]);
 	}
 	
 	getVisibleScopes(selection) {
@@ -71,7 +48,7 @@ module.exports = class {
 	}
 	
 	getContainingRange() {
-		return new Range(0, this.string.length, this.selectAll());
+		return new Range(0, this.string.length, this.document.selectAll());
 	}
 	
 	indexFromCursor(cursor) {
@@ -139,13 +116,5 @@ module.exports = class {
 	
 	get scopes() {
 		return [this.rootScope, ...this.getScopes(this.rootScope)];
-	}
-	
-	cursorAtEnd() {
-		return c(this.lines.length - 1, this.lines.at(-1).string.length);
-	}
-	
-	selectAll() {
-		return s(c(0, 0), this.cursorAtEnd());
 	}
 }

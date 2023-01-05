@@ -17,11 +17,10 @@ function getInjectionLang(injection, node) {
 }
 
 module.exports = class Scope {
-	constructor(source, parent, lang, code, ranges) {
+	constructor(source, parent, lang, ranges) {
 		this.source = source;
 		this.parent = parent;
 		this.lang = lang;
-		this.code = code;
 		
 		this.tree = null;
 		
@@ -31,6 +30,10 @@ module.exports = class Scope {
 		this.scopesByNode = {};
 		
 		this.parse();
+	}
+	
+	get string() {
+		return this.source.string;
 	}
 	
 	setRanges(ranges) {
@@ -54,7 +57,7 @@ module.exports = class Scope {
 		}
 		
 		try {
-			this.tree = Tree.parse(this.lang, this.code, editedTree, this.ranges);
+			this.tree = Tree.parse(this.lang, this.string, editedTree, this.ranges);
 			
 			/*
 			ERROR nodes can be incorrectly linked, which can cause infinite loops in
@@ -86,9 +89,7 @@ module.exports = class Scope {
 		}
 	}
 	
-	edit(edit, index, newRanges, code) {
-		this.code = code;
-		
+	edit(edit, index, newRanges) {
 		this.setRanges(newRanges);
 		
 		if (!this.tree) {
@@ -154,7 +155,7 @@ module.exports = class Scope {
 				return true;
 			});
 		}, function(existingScope, ranges) {
-			existingScope.edit(edit, index, ranges, code);
+			existingScope.edit(edit, index, ranges);
 		});
 	}
 	
@@ -195,7 +196,7 @@ module.exports = class Scope {
 					
 					scope = existingScope;
 				} else {
-					scope = new Scope(this.source, this, injectionLang, this.code, ranges);
+					scope = new Scope(this.source, this, injectionLang, ranges);
 				}
 				
 				this.scopes.push(scope);
@@ -228,7 +229,7 @@ module.exports = class Scope {
 						
 						scope = existingScope;
 					} else {
-						scope = new Scope(this.source, this, injectionLang, this.code, ranges);
+						scope = new Scope(this.source, this, injectionLang, ranges);
 					}
 					
 					this.scopes.push(scope);
