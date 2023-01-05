@@ -56,6 +56,22 @@ class Document extends Evented {
 		return this.fileDetails.lang;
 	}
 	
+	get path() {
+		return this.url?.path;
+	}
+	
+	get protocol() {
+		return this.url?.protocol;
+	}
+	
+	get isSaved() {
+		return ["file"].includes(this.protocol);
+	}
+	
+	get scopes() {
+		return this.source.scopes;
+	}
+	
 	createLines() {
 		this.lines = [];
 		
@@ -207,7 +223,7 @@ class Document extends Evented {
 	}
 	
 	applyAndMergeWithLastHistoryEntry(edits) {
-		let entry = this.lastHistoryEntry;
+		let entry = this.history.at(-1);
 		
 		this.applyEdits(edits);
 		
@@ -215,10 +231,6 @@ class Document extends Evented {
 		entry.undo = [...this.reverseEdits(edits), ...entry.undo];
 		
 		return entry;
-	}
-	
-	get lastHistoryEntry() {
-		return this.history.at(-1);
 	}
 	
 	undo() {
@@ -396,22 +408,6 @@ class Document extends Evented {
 		this.project = project;
 		
 		this.fire("projectChanged");
-	}
-	
-	get path() {
-		return this.url?.path;
-	}
-	
-	get protocol() {
-		return this.url?.protocol;
-	}
-	
-	get isSaved() {
-		return ["file"].includes(this.protocol);
-	}
-	
-	get scopes() {
-		return this.source.scopes;
 	}
 	
 	async save() {
