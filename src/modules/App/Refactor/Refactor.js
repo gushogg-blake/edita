@@ -74,11 +74,11 @@ class Refactor extends Evented {
 		
 		editor.api.edit(Selection.start(), dedent(`
 			module.exports = function(env) {
-				@init
+				@body
 				
 				return @obj;
 			}
-		`));
+		`).trimRight());
 		
 		editor.on("edit", this.onEditReplaceWith.bind(this));
 		
@@ -129,7 +129,7 @@ class Refactor extends Evented {
 			
 			this.fire("updatePaths");
 			
-			this.selectPath("/home/gus/projects/edita/src/modules/langs/javascript/index.js");
+			this.selectPath("/home/gus/projects/edita-main/src/modules/langs/javascript/index.js");
 		});
 	}
 	
