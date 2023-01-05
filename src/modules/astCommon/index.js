@@ -1,11 +1,13 @@
 let selection = require("./selection");
 let drop = require("./drop");
 let astManipulations = require("./astManipulations");
+let removeSelection = require("./removeSelection");
 
 module.exports = {
 	selection,
 	drop,
 	astManipulations,
+	removeSelection,
 	
 	astManipulationIsAvailable(astManipulation, document, selection) {
 		return !astManipulation.isAvailable || astManipulation.isAvailable(document, selection);

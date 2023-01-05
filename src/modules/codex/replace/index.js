@@ -1,13 +1,16 @@
 let mapArrayToObject = require("utils/mapArrayToObject");
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
+let AstSelection = require("modules/AstSelection");
 let Document = require("modules/Document");
 let SelectionContents = require("modules/SelectionContents");
+let astCommon = require("modules/astCommon");
 let Node = require("modules/Tree/Node");
 let getPlaceholders = require("modules/snippets/getPlaceholders");
 
 let {s} = Selection;
 let {c} = Cursor;
+let {s: a} = AstSelection;
 
 function getLineParts(string) {
 	let parts = [];
@@ -97,48 +100,17 @@ function getQueryCaptures(result) {
 
 function expandRemoveSelectionToTrimBlankLines(document, selection) {
 	let {start, end} = selection;
-	let copy = new Document(document.string);
+	let startLine = document.lines[start.lineIndex];
+	let endLine = document.lines[end.lineIndex];
 	
-	let startLine = copy.lines[start.lineIndex];
-	let endLine = copy.lines[end.lineIndex];
-	
-	if (start.offset <= startLine.indentOffset) {
-		let newStartLineIndex = start.lineIndex;
-		let newStartOffset = start.offset;
+	if (start.offset > startLine.indentOffset || end.offset !== endLine.string.length) {
+		return document.edit(selection, "");
+	} else {
+		let astSelection = a(start.lineIndex, end.lineIndex + 1);
+		let {lineIndex, removeLinesCount, insertLines} = astCommon.removeSelection(document, astSelection);
 		
-		for (let i = start.lineIndex - 1; i >= 0; i--) {
-			let newStartLine = copy.lines[i];
-			
-			if (newStartLine.trimmed.length === 0) {
-				newStartLineIndex = i;
-				newStartOffset = newStartLine.indentOffset;
-			} else {
-				break;
-			}
-		}
-		
-		start = c(newStartLineIndex, newStartOffset);
+		return document.lineEdit(lineIndex, removeLinesCount, insertLines);
 	}
-	
-	if (end.offset === endLine.string.length) {
-		let newEndLineIndex = end.lineIndex;
-		let newEndOffset = end.offset;
-		
-		for (let i = end.lineIndex + 1; i < copy.lines.length; i++) {
-			let newEndLine = copy.lines[i];
-			
-			if (newEndLine.trimmed.length === 0) {
-				newEndLineIndex = i;
-				newEndOffset = newEndLine.indentOffset;
-			} else {
-				break;
-			}
-		}
-		
-		end = c(newEndLineIndex, newEndOffset);
-	}
-	
-	return s(start, end);
 }
 
 /*
@@ -166,13 +138,11 @@ function capturedNodeSelectionContentsWithoutDeletedNodes(document, result, capt
 			
 			let removeSelection = s(nodes[0].start, nodes.at(-1).end).adjust(editsApplied);
 			
-			removeSelection = expandRemoveSelectionToTrimBlankLines(copy, removeSelection);
-			
 			if (!selection.contains(removeSelection)) {
 				continue;
 			}
 			
-			let edit = copy.edit(removeSelection, "");
+			let edit = expandRemoveSelectionToTrimBlankLines(copy, removeSelection);
 			
 			copy.apply(edit);
 			
