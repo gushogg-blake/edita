@@ -132,7 +132,7 @@ function capturedNodeSelectionContentsWithoutDeletedNodes(document, result, capt
 		}
 	}
 	
-	return SelectionContents.fromSelection(document, selection);
+	return SelectionContents.fromSelection(copy, selection);
 }
 
 /*
