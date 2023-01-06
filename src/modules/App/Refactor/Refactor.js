@@ -24,7 +24,7 @@ class Refactor extends Evented {
 		this.editors = {
 			find: this.createFindEditor(),
 			replaceWith: this.createReplaceWithEditor(),
-			results: app.createEditor(),
+			results: this.createResultsEditor(),
 			preview: app.createEditor(),
 		};
 		
@@ -42,7 +42,7 @@ class Refactor extends Evented {
 	}
 	
 	createFindEditor() {
-		let editor = app.createEditor();
+		let editor = this.app.createEditor();
 		
 		//editor.api.edit(Selection.start(), dedent(`
 		//	(lexical_declaration (variable_declarator (identifier) @id))
@@ -68,7 +68,7 @@ class Refactor extends Evented {
 	}
 	
 	createReplaceWithEditor() {
-		let editor = app.createEditor();
+		let editor = this.app.createEditor();
 		
 		//editor.api.edit(Selection.start(), "@id");
 		
@@ -83,6 +83,33 @@ class Refactor extends Evented {
 		editor.on("edit", this.onEditReplaceWith.bind(this));
 		
 		return editor;
+	}
+	
+	createResultsEditor() {
+		let editor = this.app.createEditor();
+		
+		editor.on("normalSelectionChangedByMouseOrKeyboard", this.onNormalSelectionChanged.bind(this));
+		
+		return editor;
+	}
+	
+	getTooltipComponent(type) {
+		let component = null;
+		
+		this.fire("requestTooltipComponent", type, c => component = c);
+		
+		return component;
+	}
+	
+	onNormalSelectionChanged() {
+		let editor = this.editors.results;
+		let selection = editor.normalSelection;
+		
+		if (selection.isFull()) {
+			let component = this.getTooltipComponent("subtreeContents");
+		} else {
+			let component = this.getTooltipComponent("nodePath");
+		}
 	}
 	
 	onEditFind() {

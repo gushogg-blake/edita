@@ -1,12 +1,8 @@
 <script>
 import {onMount, getContext, createEventDispatcher} from "svelte";
-import getKeyCombo from "utils/getKeyCombo";
-import accels from "components/actions/accels";
-import Accel from "components/utils/Accel.svelte";
-import AccelLabel from "components/utils/AccelLabel.svelte";
-import Gap from "components/utils/Gap.svelte";
-import Spacer from "components/utils/Spacer.svelte";
+
 import Editor from "components/Editor/Editor.svelte";
+import NodePathTooltip from "./NodePathTooltip.svelte";
 
 export let refactor;
 
@@ -17,23 +13,6 @@ let app = getContext("app");
 let tooltipComponents = {
 	nodePath: NodePathTooltip,
 };
-
-let findEditor;
-let replaceWithEditor;
-
-let formOptions = getFormOptions(refactor.options);
-
-let {paths} = refactor;
-
-$: refactor.setOptions(getOptions(formOptions));
-
-function getFormOptions(options) {
-	return options;
-}
-
-function getOptions(formOptions) {
-	return formOptions;
-}
 
 function onOptionsChanged() {
 	
@@ -47,10 +26,15 @@ function onSelectPath(e) {
 	refactor.selectPath(e.target.value);
 }
 
+function onRequestTooltipComponent(type, callback) {
+	callback(tooltipComponents[type]);
+}
+
 onMount(function() {
 	let teardown = [
 		refactor.on("optionsChanged", onOptionsChanged),
 		refactor.on("updatePaths", onUpdatePaths),
+		refactor.on("requestTooltipComponent", onRequestTooltipComponent),
 	];
 	
 	return function() {

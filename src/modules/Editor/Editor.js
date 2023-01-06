@@ -522,6 +522,8 @@ class Editor extends Evented {
 		
 		this.clearBatchState();
 		this.astMode.clearMultiStepCommand();
+		
+		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
 	
 	setSelectionFromNormalMouse(selection) {
@@ -533,6 +535,8 @@ class Editor extends Evented {
 		this.clearBatchState();
 		this.astMode.clearMultiStepCommand();
 		this.clearCompletions();
+		
+		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
 	
 	setNormalSelection(selection) {

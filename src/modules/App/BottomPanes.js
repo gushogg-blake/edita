@@ -202,6 +202,7 @@ class BottomPanes extends Evented {
 		this.setSizes();
 		
 		if (this.top.size === "auto") {
+			this.bottom.visible = true;
 			this.bottom.expanded = true;
 		} else {
 			this.bottom.expanded = false;
