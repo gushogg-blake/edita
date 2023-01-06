@@ -27,6 +27,10 @@
 		}
 	}
 	
+	select {
+		max-width: 100%;
+	}
+	
 	label {
 		color: var(--labelColor);
 		

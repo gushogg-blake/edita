@@ -14,16 +14,10 @@ let fire = createEventDispatcher();
 
 let app = getContext("app");
 
-let tooltipComponents = {
-	nodePath: NodePathTooltip,
-};
-
 let findEditor;
 let replaceWithEditor;
 
 let formOptions = getFormOptions(refactor.options);
-
-let {paths} = refactor;
 
 $: refactor.setOptions(getOptions(formOptions));
 
@@ -39,10 +33,6 @@ function onOptionsChanged() {
 	
 }
 
-function onUpdatePaths() {
-	({paths} = refactor);
-}
-
 function onSelectPath(e) {
 	refactor.selectPath(e.target.value);
 }
@@ -50,7 +40,6 @@ function onSelectPath(e) {
 onMount(function() {
 	let teardown = [
 		refactor.on("optionsChanged", onOptionsChanged),
-		refactor.on("updatePaths", onUpdatePaths),
 	];
 	
 	return function() {
@@ -63,9 +52,6 @@ onMount(function() {
 
 <style lang="scss">
 #main {
-	--borderColor: var(--appBorderColor);
-	--border: 1px solid var(--borderColor);
-	
 	display: grid;
 	grid-template-rows: auto 1fr;
 	width: 100%;
@@ -104,10 +90,6 @@ onMount(function() {
 .editor {
 	height: 100%;
 }
-
-select {
-	max-width: 100%;
-}
 </style>
 
 <div id="main">
@@ -124,15 +106,6 @@ select {
 		</div>
 		<div id="actions">
 			<Spacer/>
-			{#if paths.length > 0}
-				<div>
-					<select on:change={onSelectPath}>
-						{#each paths as path}
-							<option value={path}>{path}</option>
-						{/each}
-					</select>
-				</div>
-			{/if}
 		</div>
 	</div>
 	<div id="editors">

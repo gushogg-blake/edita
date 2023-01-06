@@ -24,10 +24,6 @@ class RefactorTab extends Tab {
 		return this._url;
 	}
 	
-	get closeable() {
-		return false;
-	}
-	
 	focus() {
 		
 	}
