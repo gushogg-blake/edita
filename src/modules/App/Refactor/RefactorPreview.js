@@ -11,6 +11,11 @@ class RefactorPreview extends Evented {
 			results: this.createResultsEditor(),
 			preview: app.createEditor(),
 		};
+		
+		this.teardownCallbacks = [
+			//refactor.on("selectFile", this.onSelectFile.bind(this)),
+			//refactor.on("selectFile", this.onSelectFile.bind(this)),
+		];
 	}
 	
 	createResultsEditor() {
@@ -56,6 +61,10 @@ class RefactorPreview extends Evented {
 		await this.setEditorCode(editor, new URL("refactor-preview://" + path), replaced);
 	}
 	
+	hiliteMatches() {
+		this.editors.results.api.setNormalHilites(this.results.map(result => result.replaceSelection));
+	}
+	
 	async setEditorCode(editor, url, code) {
 		let {document, view} = editor;
 		
@@ -76,10 +85,40 @@ class RefactorPreview extends Evented {
 		view.endBatch();
 	}
 	
+	find(string) {
+		try {
+			this.results = codex.find(this.editors.results.document, string);
+			
+			this.hiliteMatches();
+			this.updatePreview();
+		} catch (e) {
+			if (e instanceof codex.ParseError) {
+				console.log("Error parsing codex");
+				console.log(e);
+				
+				if (e.cause) {
+					console.log(e.cause);
+				}
+			} else {
+				throw e;
+			}
+		}
+	}
+	
 	show() {
+		this.eachEditor(editor => editor.view.show());
 	}
 	
 	hide() {
+		this.eachEditor(editor => editor.view.hide());
+	}
+	
+	resize() {
+		this.eachEditor(editor => editor.view.requestResizeAsync());
+	}
+	
+	eachEditor(fn) {
+		Object.values(this.editors).forEach(fn);
 	}
 }
 

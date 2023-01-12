@@ -27,14 +27,7 @@ class Refactor extends Evented {
 			replaceWith: this.createReplaceWithEditor(),
 		};
 		
-		let {find, replaceWith} = this.editors;
-		
-		for (let editor of [find, replaceWith]) {
-			editor.view.setWrap(true);
-		}
-		
-		this.preview = new RefactorPreview(app, this);
-		this.previewTab = app.openRefactorPreviewTab(this.preview);
+		this.eachEditor(editor => editor.setWrap(true));
 		
 		this.paths = [];
 		
@@ -88,31 +81,11 @@ class Refactor extends Evented {
 	}
 	
 	onEditFind() {
-		this.find();
+		this.preview.find(this.editors.find.string);
 	}
 	
 	onEditReplaceWith() {
 		this.updatePreview();
-	}
-	
-	find() {
-		try {
-			this.results = codex.find(this.editors.results.document, this.editors.find.string);
-			
-			this.hiliteMatches();
-			this.updatePreview();
-		} catch (e) {
-			if (e instanceof codex.ParseError) {
-				console.log("Error parsing codex");
-				console.log(e);
-				
-				if (e.cause) {
-					console.log(e.cause);
-				}
-			} else {
-				throw e;
-			}
-		}
 	}
 	
 	hiliteMatches() {
@@ -139,16 +112,8 @@ class Refactor extends Evented {
 		return this.sync("selectPath", async () => {
 			return await platform.fs(path).read();
 		}, async (code) => {
-			this.selectedFile = {path, code};
-			
-			this.find();
-			
-			await this.updatePreview();
+			this.fire("selectFile", {path, code});
 		});
-	}
-	
-	async updatePreview() {
-		await this.preview.update();
 	}
 	
 	setOptions(options) {
