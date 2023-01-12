@@ -5,6 +5,7 @@ let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
 let URL = require("modules/URL");
 let codex = require("modules/codex");
+let RefactorPreview = require("./RefactorPreview");
 
 let {s} = Selection;
 let {c} = Cursor;
@@ -33,6 +34,9 @@ class Refactor extends Evented {
 		for (let editor of [find, replaceWith]) {
 			editor.view.setWrap(true);
 		}
+		
+		this.preview = new RefactorPreview(this);
+		this.previewTab = app.openRefactorPreviewTab(this.preview);
 		
 		this.paths = [];
 		

@@ -14,6 +14,7 @@ let Editor = require("modules/Editor");
 let View = require("modules/View");
 
 let EditorTab = require("./EditorTab");
+let RefactorPreviewTab = require("./RefactorPreviewTab");
 let Projects = require("./Projects");
 let FileTree = require("./FileTree");
 let Tools = require("./Tools");
@@ -471,6 +472,18 @@ class App extends Evented {
 	
 	refactor(...args) {
 		return this.tools.refactor(...args);
+	}
+	
+	openRefactorPreviewTab(refactorPreview) {
+		let tab = new RefactorPreviewTab(this, refactorPreview);
+		
+		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
+		
+		this.fire("updateTabs");
+		
+		this.selectTab(tab);
+		
+		return tab;
 	}
 	
 	findTabByPath(path) {

@@ -31,6 +31,10 @@ class Tab extends Evented {
 		return this.app.getTabName(this);
 	}
 	
+	get label() {
+		return this.app.getTabLabel(this);
+	}
+	
 	get modified() {
 		return false;
 	}

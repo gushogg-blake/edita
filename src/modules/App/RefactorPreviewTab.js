@@ -17,11 +17,15 @@ class RefactorPreviewTab extends Tab {
 	}
 	
 	get name() {
-		return "Refactor";
+		return "Refactor preview";
 	}
 	
 	get url() {
 		return this._url;
+	}
+	
+	get closeable() {
+		return false;
 	}
 	
 	focus() {

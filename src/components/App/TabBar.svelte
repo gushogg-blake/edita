@@ -10,10 +10,7 @@ let {
 } = app;
 
 function getDetails(tabs, tab) {
-	return {
-		label: app.getTabLabel(tab),
-		closeable: true,
-	};
+	return tab;
 }
 
 function select({detail: tab}) {
