@@ -327,7 +327,7 @@ function tokenise(string) {
 				if (openBrackets === 0) {
 					consumeQueryQuantifier();
 					
-					if (checkRe(/\s*@/)) {
+					if (checkRe(/^\s*@/)) {
 						skipWhitespace();
 						consumeCaptureLabel();
 					}
