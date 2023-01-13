@@ -528,7 +528,7 @@ class App extends Evented {
 			title = this.getTabName(this.selectedTab);
 			
 			if (this.selectedTab.isSaved) {
-				title += " (" + platform.fs(this.selectedTab.path).parent.shortPath + ")";
+				title += " (" + platform.fs(this.selectedTab.path).parent.homePath + ")";
 			}
 		}
 		

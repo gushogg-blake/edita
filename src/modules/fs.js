@@ -52,7 +52,7 @@ module.exports = function(config) {
 			return parents;
 		}
 		
-		get shortPath() {
+		get homePath() {
 			let {path} = this;
 			
 			if (

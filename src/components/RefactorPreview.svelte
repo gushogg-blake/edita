@@ -65,7 +65,7 @@ onMount(function() {
 					value={selectedFile?.path}
 				>
 					{#each paths as path}
-						<option value={path}>{platform.fs(path).shortPath}</option>
+						<option value={path}>{platform.fs(path).homePath}</option>
 					{/each}
 				</select>
 			</div>

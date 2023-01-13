@@ -122,7 +122,7 @@ function getLabel(project) {
 }
 
 function getFullName(project) {
-	return project.config.name || project.dirs.map(dir => platform.fs(dir).shortPath).join(", ");
+	return project.config.name || project.dirs.map(dir => platform.fs(dir).homePath).join(", ");
 }
 
 onMount(function() {

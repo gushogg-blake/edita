@@ -127,7 +127,7 @@ onMount(function() {
 					>
 						<div class="file">
 							<div class="path">
-								{platform.fs(result.document.path).parent.shortPath}
+								{platform.fs(result.document.path).parent.homePath}
 							</div>
 							<div class="name">
 								{platform.fs(result.document.path).parent.isRoot ? "" : platform.systemInfo.pathSeparator}{platform.fs(result.document.path).name}
