@@ -65,6 +65,16 @@ class EditorTab extends Tab {
 		return this.editor.view;
 	}
 	
+	get windowTitle() {
+		let title = this.name;
+		
+		if (this.isSaved) {
+			title += " (" + platform.fs(this.path).parent.homePath + ")";
+		}
+		
+		return title;
+	}
+	
 	focus() {
 		this.view.requestFocus();
 	}

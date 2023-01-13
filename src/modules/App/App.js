@@ -522,17 +522,7 @@ class App extends Evented {
 	}
 	
 	updateTitle() {
-		let title = "";
-		
-		if (this.selectedTab) {
-			title = this.getTabName(this.selectedTab);
-			
-			if (this.selectedTab.isSaved) {
-				title += " (" + platform.fs(this.selectedTab.path).parent.homePath + ")";
-			}
-		}
-		
-		platform.setTitle(title);
+		platform.setTitle(this.selectedTab?.windowTitle || "");
 	}
 	
 	async loadSessionAndFilesToOpenOnStartup() {
