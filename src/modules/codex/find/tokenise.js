@@ -143,6 +143,10 @@ function tokenise(string) {
 		return match;
 	}
 	
+	function checkRe(re) {
+		return !!string.substr(i).match(re);
+	}
+	
 	function skipWhitespace() {
 		while (" \t".includes(string[i])) {
 			i++;
@@ -322,8 +326,11 @@ function tokenise(string) {
 				
 				if (openBrackets === 0) {
 					consumeQueryQuantifier();
-					skipWhitespace();
-					consumeCaptureLabel();
+					
+					if (checkRe(/\s*@/)) {
+						skipWhitespace();
+						consumeCaptureLabel();
+					}
 					
 					tokens.push({
 						type: "query",
