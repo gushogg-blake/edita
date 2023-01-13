@@ -96,17 +96,9 @@ onMount(function() {
 <div id="main">
 	<div id="controls">
 		<form id="options" on:submit|preventDefault={updatePaths}>
-			<AccelLabel for="searchIn" label="Search %in"/>
-			<select bind:value={formOptions.searchIn} id="searchIn">
-				<option value="currentDocument">Current document</option>
-				<option value="selectedText">Selected text</option>
-				<option value="openFiles">Open files</option>
-				<option value="files">Files</option>
-			</select>
-			{#if options.searchIn === "files"}
-				<input bind:value={formOptions.globs} id="globs">
-				<button type="submit">Preview</button>
-			{/if}
+			<AccelLabel for="globs" label="Search %in"/>
+			<input bind:value={formOptions.globs} id="globs">
+			<button type="submit">Preview</button>
 		</form>
 		<div id="actions">
 			<Spacer/>
