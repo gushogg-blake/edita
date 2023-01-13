@@ -2,6 +2,8 @@ let Pane = require("./Pane");
 
 class SidePanes {
 	constructor(app) {
+		this.app = app;
+		
 		this.left = this.createPane("left");
 		this.right = this.createPane("right");
 	}
@@ -17,6 +19,10 @@ class SidePanes {
 		
 		pane.on("show hide", () => {
 			base.setPref("panes." + side + ".visible", pane.visible);
+		});
+		
+		pane.on("resize", () => {
+			this.app.resize();
 		});
 		
 		return pane;

@@ -61,6 +61,7 @@ class BottomPanes extends Evented {
 		this.on("update", () => {
 			this.tools.resize();
 			this.output.resize();
+			this.app.resize();
 		});
 	}
 	

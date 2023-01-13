@@ -675,6 +675,10 @@ class App extends Evented {
 		this.fire("renderDiv", div);
 	}
 	
+	resize() {
+		this.fire("resize");
+	}
+	
 	async onCloseWindow(e) {
 		let modifiedTabs = this.editorTabs.filter(tab => tab.modified);
 		

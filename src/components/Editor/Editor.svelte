@@ -69,8 +69,6 @@ let canvases = {};
 let contexts = {};
 let rowHeightPadding = 2;
 
-let resizeInterval;
-
 let verticalScrollbar;
 let horizontalScrollbar;
 let showingHorizontalScrollbar = !view.wrap;
@@ -533,14 +531,10 @@ onMount(function() {
 	
 	resize();
 	
-	//resizeInterval = setInterval(resize, 50);
-	
 	let teardown = [
-		function() {
-			clearInterval(resizeInterval);
-		},
-		
 		base.on("themeUpdated", onThemeUpdated),
+		
+		app.on("resize", resizeAsync),
 		
 		view.on("show", resize),
 		view.on("requestResizeAsync", resizeAsync),
@@ -583,8 +577,6 @@ onMount(function() {
 	}
 });
 </script>
-
-<svelte:window on:resize={resize}/>
 
 <style lang="scss">
 @import "mixins/abs-sticky";

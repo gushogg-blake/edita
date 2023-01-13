@@ -16,7 +16,7 @@ class Pane extends Evented {
 	}
 	
 	resizeAndSave(diff) {
-		this.resize(size);
+		this.resize(diff);
 		
 		this.fire("save");
 	}
