@@ -30,7 +30,7 @@ function skipEmptyLines(document, cursor) {
 }
 
 module.exports = function(document, codex) {
-	if (!codex.trim() || document.string.trim() === "") {
+	if (!codex.trim() || !document.string.trim()) {
 		return [];
 	}
 	

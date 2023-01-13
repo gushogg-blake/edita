@@ -1,4 +1,3 @@
-let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 let URL = require("modules/URL");
 let codex = require("modules/codex");
@@ -30,13 +29,7 @@ class RefactorPreview extends Evented {
 	}
 	
 	async updatePaths() {
-		let nodes = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
-		
-		nodes = await bluebird.filter(nodes, node => node.isFile());
-		
-		let paths = nodes.map(node => node.path);
-		
-		this.paths = paths;
+		this.paths = await this.refactor.getPaths();
 		
 		this.fire("updatePaths");
 		
@@ -90,7 +83,7 @@ class RefactorPreview extends Evented {
 		
 		await this.setEditorCode(this.editors.results, new URL("refactor-results://" + path), code);
 		
-		let results = this.find(this.editors.results.document, find);
+		let results = this.refactor.find(this.editors.results.document, find);
 		
 		let replaced = codex.replace(code, results, replaceWith);
 		
@@ -121,25 +114,6 @@ class RefactorPreview extends Evented {
 		document.setFileDetails(fileDetails);
 		
 		view.endBatch();
-	}
-	
-	find(document, find) {
-		try {
-			return codex.find(document, find);
-		} catch (e) {
-			if (e instanceof codex.ParseError) {
-				console.log("Error parsing codex");
-				console.log(e);
-				
-				if (e.cause) {
-					console.log(e.cause);
-				}
-				
-				return [];
-			} else {
-				throw e;
-			}
-		}
 	}
 	
 	show() {

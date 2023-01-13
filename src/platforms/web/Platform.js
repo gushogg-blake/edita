@@ -88,6 +88,10 @@ class Platform extends Evented {
 				}
 			},
 			
+			fileIsBinary(path) {
+				return false;
+			},
+			
 			cwd() {
 				return "/";
 			},

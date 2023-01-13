@@ -110,7 +110,7 @@ onMount(function() {
 <div id="main">
 	<div id="controls">
 		<form id="options" on:submit|preventDefault={updatePaths}>
-			<AccelLabel for="globs" label="Search %in"/>
+			<AccelLabel for="globs" label="F%iles"/>
 			<input bind:value={formOptions.globs} id="globs">
 			<button type="submit">
 				<Accel label={"%Preview"}/>

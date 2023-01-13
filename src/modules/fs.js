@@ -277,6 +277,14 @@ module.exports = function(config) {
 			}
 		}
 		
+		isBinary() {
+			return fileIsBinary(this.path);
+		}
+		
+		async isTextFile() {
+			return await this.isFile() && !await this.isBinary();
+		}
+		
 		async readJson() {
 			return JSON.parse(await this.read());
 		}
@@ -286,7 +294,7 @@ module.exports = function(config) {
 		}
 		
 		async read() {
-			if (fileIsBinary && await fileIsBinary(this.path)) {
+			if (await this.isBinary()) {
 				throw new FileIsBinary("File is binary: " + this.path);
 			}
 			
