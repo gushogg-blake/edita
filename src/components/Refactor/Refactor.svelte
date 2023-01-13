@@ -26,11 +26,21 @@ let formOptions = getFormOptions(refactor.options);
 $: refactor.setOptions(getOptions(formOptions));
 
 function getFormOptions(options) {
-	return options;
+	let {globs} = options;
+	
+	return {
+		...options,
+		globs: globs.join(platform.systemInfo.multiPathSeparator),
+	};
 }
 
 function getOptions(formOptions) {
-	return formOptions;
+	let {globs} = formOptions;
+	
+	return {
+		...formOptions,
+		globs: globs.split(platform.systemInfo.multiPathSeparator),
+	};
 }
 
 function onOptionsChanged() {
@@ -39,6 +49,10 @@ function onOptionsChanged() {
 
 function updatePaths() {
 	refactor.updatePaths();
+}
+
+function replaceAll() {
+	refactor.replaceAll();
 }
 
 onMount(function() {
@@ -70,7 +84,7 @@ onMount(function() {
 
 #actions {
 	display: flex;
-	flex-direction: column;
+	justify-content: flex-end;
 }
 
 #editors {
@@ -98,10 +112,14 @@ onMount(function() {
 		<form id="options" on:submit|preventDefault={updatePaths}>
 			<AccelLabel for="globs" label="Search %in"/>
 			<input bind:value={formOptions.globs} id="globs">
-			<button type="submit">Preview</button>
+			<button type="submit">
+				<Accel label={"%Preview"}/>
+			</button>
 		</form>
 		<div id="actions">
-			<Spacer/>
+			<button on:click={replaceAll}>
+				<Accel label={"Replace %all"}/>
+			</button>
 		</div>
 	</div>
 	<div id="editors">
