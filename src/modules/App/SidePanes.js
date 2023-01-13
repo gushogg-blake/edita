@@ -21,7 +21,7 @@ class SidePanes {
 			base.setPref("panes." + side + ".visible", pane.visible);
 		});
 		
-		pane.on("resize show hide", () => {
+		pane.on("update", () => {
 			this.app.resize();
 		});
 		
