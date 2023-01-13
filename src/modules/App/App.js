@@ -149,6 +149,7 @@ class App extends Evented {
 		
 		this.selectedTab = tab;
 		
+		tab.select();
 		tab.show();
 		
 		this.updateTitle();
@@ -208,6 +209,8 @@ class App extends Evented {
 			}
 		}
 		
+		removeInPlace(this.previouslySelectedTabs, tab);
+		
 		let selectNext = null;
 		
 		if (this.selectedTab === tab) {
@@ -231,7 +234,6 @@ class App extends Evented {
 		tab.teardown();
 		
 		removeInPlace(this.tabs, tab);
-		removeInPlace(this.previouslySelectedTabs, tab);
 		
 		if (tab.isSaved && !noSave) {
 			this.closedTabs.unshift(tab.saveState());

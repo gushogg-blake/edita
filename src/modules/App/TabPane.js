@@ -67,6 +67,7 @@ class TabPane extends Evented {
 		
 		this.selectedTab = tab;
 		
+		tab.select();
 		tab.show();
 		
 		this.fire("selectTab", tab);

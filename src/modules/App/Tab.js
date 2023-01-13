@@ -55,6 +55,9 @@ class Tab extends Evented {
 	resize() {
 	}
 	
+	select() {
+	}
+	
 	saveState() {
 		return null;
 	}

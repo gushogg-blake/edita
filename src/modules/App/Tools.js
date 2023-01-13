@@ -1,3 +1,4 @@
+let bluebird = require("bluebird");
 let FindAndReplaceTab = require("./FindAndReplaceTab");
 let Refactor = require("./Refactor");
 let RefactorTab = require("./RefactorTab");
@@ -19,7 +20,16 @@ class Tools {
 	async createRefactorTab(paths) {
 		let refactor = new Refactor(this.app, {
 			searchIn: "files",
-			globs: paths.map(path => platform.fs(path).child("**", "*").path),
+			
+			globs: await bluebird.map(paths, async function(path) {
+				let node = platform.fs(path);
+				
+				if (await node.isDir()) {
+					node = node.child("**", "*");
+				}
+				
+				return node.path;
+			}),
 		});
 		
 		let tab = new RefactorTab(this.app, refactor);

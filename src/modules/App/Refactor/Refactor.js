@@ -64,6 +64,14 @@ class Refactor extends Evented {
 		this.eachEditor(editor => editor.view.requestResizeAsync());
 	}
 	
+	select() {
+		this.app.selectTab(this.previewTab);
+	}
+	
+	teardown() {
+		this.app.closeTab(this.previewTab);
+	}
+	
 	eachEditor(fn) {
 		Object.values(this.editors).forEach(fn);
 	}
