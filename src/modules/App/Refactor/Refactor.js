@@ -1,4 +1,4 @@
-let bluebird = require("bluebird");
+
 let Evented = require("utils/Evented");
 let sync = require("utils/sync");
 let Selection = require("modules/Selection");
@@ -27,13 +27,10 @@ class Refactor extends Evented {
 			replaceWith: this.createReplaceWithEditor(),
 		};
 		
-		this.eachEditor(editor => editor.setWrap(true));
+		this.eachEditor(editor => editor.view.setWrap(true));
 		
-		this.paths = [];
-		
-		this.selectedFile = null;
-		
-		this.updatePaths();
+		this.preview = new RefactorPreview(app, this);
+		this.previewTab = app.openRefactorPreviewTab(this.preview);
 	}
 	
 	createFindEditor() {
@@ -85,35 +82,7 @@ class Refactor extends Evented {
 	}
 	
 	onEditReplaceWith() {
-		this.updatePreview();
-	}
-	
-	hiliteMatches() {
-		this.editors.results.api.setNormalHilites(this.results.map(result => result.replaceSelection));
-	}
-	
-	updatePaths() {
-		return this.sync("updatePaths", async () => {
-			let nodes = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
-			
-			nodes = await bluebird.filter(nodes, node => node.isFile());
-			
-			return nodes.map(node => node.path);
-		}, (paths) => {
-			this.paths = paths;
-			
-			this.fire("updatePaths");
-			
-			this.selectPath("/home/gus/projects/edita-main/src/modules/langs/javascript/index.js");
-		});
-	}
-	
-	selectPath(path) {
-		return this.sync("selectPath", async () => {
-			return await platform.fs(path).read();
-		}, async (code) => {
-			this.fire("selectFile", {path, code});
-		});
+		this.preview.updatePreview();
 	}
 	
 	setOptions(options) {

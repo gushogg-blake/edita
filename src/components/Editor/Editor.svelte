@@ -30,6 +30,7 @@ to guess the language from.
 export let editor = null;
 export let value = ""; // readonly - call setValue to set
 export let lang = null;
+export let border = false;
 
 export function setValue(value) {
 	editor.setValue(value);
@@ -602,6 +603,11 @@ onMount(function() {
 	&.showingHorizontalScrollbar {
 		grid-template-rows: 1fr auto;
 	}
+	
+	&.border {
+		border: var(--inputBorder);
+		border-radius: var(--inputBorderRadius);
+	}
 }
 
 #canvas {
@@ -650,6 +656,7 @@ canvas {
 	on:wheel={wheel}
 	class="edita"
 	class:showingHorizontalScrollbar
+	class:border
 	tabindex="0"
 	on:focus={onFocus}
 	on:blur={onBlur}

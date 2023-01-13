@@ -117,6 +117,8 @@ module.exports = {
 			normalSelection: newSelection,
 			snippetSession: this.adjustSnippetSession(edits),
 		});
+		
+		this.view.ensureScrollIsWithinBounds();
 	},
 	
 	setNormalHilites(selections) {

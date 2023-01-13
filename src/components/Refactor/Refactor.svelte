@@ -56,12 +56,12 @@ onMount(function() {
 	grid-template-rows: auto 1fr;
 	width: 100%;
 	height: 100%;
+	padding: 8px;
 }
 
 #controls {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	padding: 8px;
 }
 
 #actions {
@@ -72,19 +72,16 @@ onMount(function() {
 #editors {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px;
 }
 
 #editors > div {
 	display: grid;
 	grid-template-rows: auto 1fr;
-	
-	&:last-child .editor {
-		border-left: var(--appBorder);
-	}
 }
 
 .header {
-	padding: 3px 5px;
+	padding: 3px 0px;
 }
 
 .editor {
@@ -117,6 +114,7 @@ onMount(function() {
 				<Editor
 					bind:this={findEditor}
 					editor={refactor.editors.find}
+					border
 				/>
 			</div>
 		</div>
@@ -128,6 +126,7 @@ onMount(function() {
 				<Editor
 					bind:this={replaceWithEditor}
 					editor={refactor.editors.replaceWith}
+					border
 				/>
 			</div>
 		</div>

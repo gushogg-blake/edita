@@ -1,3 +1,4 @@
+let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 
 class RefactorPreview extends Evented {
@@ -12,10 +13,41 @@ class RefactorPreview extends Evented {
 			preview: app.createEditor(),
 		};
 		
-		this.teardownCallbacks = [
-			//refactor.on("selectFile", this.onSelectFile.bind(this)),
-			//refactor.on("selectFile", this.onSelectFile.bind(this)),
-		];
+		this.paths = [];
+		
+		this.selectedFile = null;
+		
+		this.updatePaths();
+	}
+	
+	get options() {
+		return this.refactor.options;
+	}
+	
+	hiliteMatches() {
+		this.editors.results.api.setNormalHilites(this.results.map(result => result.replaceSelection));
+	}
+	
+	async updatePaths() {
+		let nodes = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
+		
+		nodes = await bluebird.filter(nodes, node => node.isFile());
+		
+		let paths = nodes.map(node => node.path);
+		
+		this.paths = paths;
+		
+		this.fire("updatePaths");
+		
+		await this.selectPath("/home/gus/projects/edita-main/src/modules/langs/javascript/index.js");
+	}
+	
+	async selectPath(path) {
+		let code = await platform.fs(path).read();
+		
+		this.selectedFile = {path, code};
+		
+		await this.setResultsCode();
 	}
 	
 	createResultsEditor() {
@@ -74,7 +106,7 @@ class RefactorPreview extends Evented {
 		
 		view.startBatch();
 		
-		view.scrollTo(0, 0);
+		//view.scrollTo(0, 0);
 		
 		editor.api.edit(document.selectAll(), code);
 		
