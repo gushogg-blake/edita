@@ -1,5 +1,6 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
+let codex = require("modules/codex");
 
 class RefactorPreview extends Evented {
 	constructor(app, refactor) {
@@ -14,7 +15,6 @@ class RefactorPreview extends Evented {
 		};
 		
 		this.paths = [];
-		
 		this.selectedFile = null;
 		
 		this.updatePaths();
@@ -47,7 +47,7 @@ class RefactorPreview extends Evented {
 		
 		this.selectedFile = {path, code};
 		
-		await this.setResultsCode();
+		await this.update();
 	}
 	
 	createResultsEditor() {
@@ -77,24 +77,25 @@ class RefactorPreview extends Evented {
 	//	}
 	//}
 	
-	async setResultsCode() {
+	async update() {
+		let find = this.refactor.editors.find.string;
+		let replaceWith = this.refactor.editors.replaceWith.string;
+		
 		let {path, code} = this.selectedFile;
 		
 		await this.setEditorCode(this.editors.results, new URL("refactor-results://" + path), code);
+		
+		let results = this.find(this.editors.results.document, find);
+		
+		let replaced = codex.replace(code, results, replaceWith);
+		
+		await this.setEditorCode(this.editors.preview, new URL("refactor-preview://" + path), replaced);
+		
+		this.hiliteMatches(results);
 	}
 	
-	async updatePreview() {
-		let editor = this.editors.preview;
-		let {path, code} = this.selectedFile;
-		
-		let replaceWith = this.editors.replaceWith.string;
-		let replaced = codex.replace(code, this.results, replaceWith);
-		
-		await this.setEditorCode(editor, new URL("refactor-preview://" + path), replaced);
-	}
-	
-	hiliteMatches() {
-		this.editors.results.api.setNormalHilites(this.results.map(result => result.replaceSelection));
+	hiliteMatches(results) {
+		this.editors.results.api.setNormalHilites(results.map(result => result.replaceSelection));
 	}
 	
 	async setEditorCode(editor, url, code) {
@@ -117,12 +118,9 @@ class RefactorPreview extends Evented {
 		view.endBatch();
 	}
 	
-	find(string) {
+	find(document, find) {
 		try {
-			this.results = codex.find(this.editors.results.document, string);
-			
-			this.hiliteMatches();
-			this.updatePreview();
+			return codex.find(document, find);
 		} catch (e) {
 			if (e instanceof codex.ParseError) {
 				console.log("Error parsing codex");
@@ -131,6 +129,8 @@ class RefactorPreview extends Evented {
 				if (e.cause) {
 					console.log(e.cause);
 				}
+				
+				return [];
 			} else {
 				throw e;
 			}

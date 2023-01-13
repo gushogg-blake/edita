@@ -1,6 +1,5 @@
 
 let Evented = require("utils/Evented");
-let sync = require("utils/sync");
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
 let URL = require("modules/URL");
@@ -15,8 +14,6 @@ let dedent = require("test/utils/dedent");
 class Refactor extends Evented {
 	constructor(app, options) {
 		super();
-		
-		this.sync = sync();
 		
 		this.app = app;
 		
@@ -78,11 +75,11 @@ class Refactor extends Evented {
 	}
 	
 	onEditFind() {
-		this.preview.find(this.editors.find.string);
+		this.preview.update();
 	}
 	
 	onEditReplaceWith() {
-		this.preview.updatePreview();
+		this.preview.update();
 	}
 	
 	setOptions(options) {

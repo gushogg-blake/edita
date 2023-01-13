@@ -33,10 +33,6 @@ function onOptionsChanged() {
 	
 }
 
-function onSelectPath(e) {
-	refactor.selectPath(e.target.value);
-}
-
 onMount(function() {
 	let teardown = [
 		refactor.on("optionsChanged", onOptionsChanged),
