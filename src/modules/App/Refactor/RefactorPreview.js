@@ -1,5 +1,6 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
+let URL = require("modules/URL");
 let codex = require("modules/codex");
 
 class RefactorPreview extends Evented {
