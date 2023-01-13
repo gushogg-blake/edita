@@ -40,7 +40,9 @@ class RefactorPreview extends Evented {
 		
 		this.fire("updatePaths");
 		
-		await this.selectPath("/home/gus/projects/edita-main/src/modules/langs/javascript/index.js");
+		if (this.paths.length > 0) {
+			await this.selectPath(this.paths[0]);
+		}
 	}
 	
 	async selectPath(path) {
@@ -48,7 +50,9 @@ class RefactorPreview extends Evented {
 		
 		this.selectedFile = {path, code};
 		
-		await this.update();
+		this.fire("selectPath");
+		
+		await this.updatePreview();
 	}
 	
 	createResultsEditor() {
@@ -78,7 +82,7 @@ class RefactorPreview extends Evented {
 	//	}
 	//}
 	
-	async update() {
+	async updatePreview() {
 		let find = this.refactor.editors.find.string;
 		let replaceWith = this.refactor.editors.replaceWith.string;
 		

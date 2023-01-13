@@ -1,15 +1,5 @@
-
 let Evented = require("utils/Evented");
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
-let URL = require("modules/URL");
-let codex = require("modules/codex");
 let RefactorPreview = require("./RefactorPreview");
-
-let {s} = Selection;
-let {c} = Cursor;
-
-let dedent = require("test/utils/dedent");
 
 class Refactor extends Evented {
 	constructor(app, options) {
@@ -33,24 +23,6 @@ class Refactor extends Evented {
 	createFindEditor() {
 		let editor = this.app.createEditor();
 		
-		//editor.api.edit(Selection.start(), dedent(`
-		//	(lexical_declaration (variable_declarator (identifier) @id))
-		//`));
-		
-		editor.api.edit(Selection.start(), dedent(`
-			let lang = (object
-				(method_definition
-					(property_identifier) @p
-					(statement_block "{" (_)+ @body "}")
-				) @-init
-				.
-				"," @-c
-				(#eq? @p "init")
-			) @obj/;?/
-			
-			module.exports = lang;
-		`));
-		
 		editor.on("edit", this.onEditFind.bind(this));
 		
 		return editor;
@@ -59,27 +31,21 @@ class Refactor extends Evented {
 	createReplaceWithEditor() {
 		let editor = this.app.createEditor();
 		
-		//editor.api.edit(Selection.start(), "@id");
-		
-		editor.api.edit(Selection.start(), dedent(`
-			module.exports = function(env) {
-				@body
-				
-				return @obj;
-			}
-		`).trimRight());
-		
 		editor.on("edit", this.onEditReplaceWith.bind(this));
 		
 		return editor;
 	}
 	
+	async updatePaths() {
+		await this.preview.updatePaths();
+	}
+	
 	onEditFind() {
-		this.preview.update();
+		this.preview.updatePreview();
 	}
 	
 	onEditReplaceWith() {
-		this.preview.update();
+		this.preview.updatePreview();
 	}
 	
 	setOptions(options) {

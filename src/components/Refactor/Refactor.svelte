@@ -14,6 +14,10 @@ let fire = createEventDispatcher();
 
 let app = getContext("app");
 
+let {
+	options,
+} = refactor;
+
 let findEditor;
 let replaceWithEditor;
 
@@ -30,7 +34,11 @@ function getOptions(formOptions) {
 }
 
 function onOptionsChanged() {
-	
+	({options} = refactor);
+}
+
+function updatePaths() {
+	refactor.updatePaths();
 }
 
 onMount(function() {
@@ -87,7 +95,7 @@ onMount(function() {
 
 <div id="main">
 	<div id="controls">
-		<div id="options">
+		<form id="options" on:submit|preventDefault={updatePaths}>
 			<AccelLabel for="searchIn" label="Search %in"/>
 			<select bind:value={formOptions.searchIn} id="searchIn">
 				<option value="currentDocument">Current document</option>
@@ -95,8 +103,11 @@ onMount(function() {
 				<option value="openFiles">Open files</option>
 				<option value="files">Files</option>
 			</select>
-			<input bind:value={formOptions.globs} id="globs" disabled={formOptions.searchIn !== "files"}>
-		</div>
+			{#if options.searchIn === "files"}
+				<input bind:value={formOptions.globs} id="globs">
+				<button type="submit">Preview</button>
+			{/if}
+		</form>
 		<div id="actions">
 			<Spacer/>
 		</div>

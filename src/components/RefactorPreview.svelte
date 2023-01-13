@@ -9,8 +9,8 @@ let {
 	selectedFile,
 } = refactorPreview;
 
-function onSelectPath(e) {
-	refactorPreview.selectPath(e.target.value);
+function onSelectPath() {
+	({selectedFile} = refactorPreview);
 }
 
 function onUpdatePaths() {
@@ -20,6 +20,7 @@ function onUpdatePaths() {
 onMount(function() {
 	let teardown = [
 		refactorPreview.on("updatePaths", onUpdatePaths),
+		refactorPreview.on("selectPath", onSelectPath),
 	];
 	
 	return function() {
@@ -58,7 +59,11 @@ onMount(function() {
 	<div id="controls">
 		{#if paths.length > 0}
 			<div>
-				<select class="compact" on:change={onSelectPath}>
+				<select
+					class="compact"
+					on:change={(e) => refactorPreview.selectPath(e.target.value)}
+					value={selectedFile?.path}
+				>
 					{#each paths as path}
 						<option value={path}>{path}</option>
 					{/each}
