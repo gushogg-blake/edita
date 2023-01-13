@@ -74,6 +74,7 @@ class Platform extends Evented {
 		return createFs({
 			fs,
 			path,
+			homeDir: this.systemInfo.homeDir,
 			
 			async mkdirp(path) {
 				let dirs = path.substr(1).split("/").filter(Boolean);

@@ -19,15 +19,20 @@ class Platform extends Evented {
 		
 		let {
 			config,
-			systemInfo,
 			isMainWindow,
 			filesToOpenOnStartup,
 		} = ipc.init;
 		
 		this.config = config;
-		this.systemInfo = systemInfo;
 		this.isMainWindow = isMainWindow;
 		this.filesToOpenOnStartup = filesToOpenOnStartup;
+		
+		this.systemInfo = {
+			newline: os.EOL,
+			homeDir: os.homedir(),
+			pathSeparator: path.sep,
+			multiPathSeparator: process.platform === "win32" ? ";" : ":",
+		};
 		
 		this.clipboard = ipc.clipboard;
 		this.snippets = ipc.snippets;

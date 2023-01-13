@@ -1,3 +1,4 @@
+let os = require("os");
 let path = require("path");
 let fsExtra = require("fs-extra");
 let glob = require("glob");
@@ -12,6 +13,7 @@ module.exports = fs({
 	glob,
 	mkdirp,
 	fileIsBinary,
+	homeDir: os.homedir(),
 	
 	cwd() {
 		return process.cwd();

@@ -3,7 +3,6 @@ let bluebird = require("bluebird");
 let {removeInPlace, moveInPlace} = require("utils/arrayMethods");
 let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
-let replaceHomeDirWithTilde = require("utils/replaceHomeDirWithTilde");
 let promiseWithMethods = require("utils/promiseWithMethods");
 let nextName = require("utils/nextName");
 
@@ -529,7 +528,7 @@ class App extends Evented {
 			title = this.getTabName(this.selectedTab);
 			
 			if (this.selectedTab.isSaved) {
-				title += " (" + replaceHomeDirWithTilde(platform.fs(this.selectedTab.path).parent.path) + ")";
+				title += " (" + platform.fs(this.selectedTab.path).parent.shortPath + ")";
 			}
 		}
 		

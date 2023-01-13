@@ -1,6 +1,5 @@
 <script>
 import {onMount, getContext} from "svelte";
-import replaceHomeDirWithTilde from "utils/replaceHomeDirWithTilde";
 import inlineStyle from "utils/dom/inlineStyle";
 import Spacer from "components/utils/Spacer.svelte";
 
@@ -128,7 +127,7 @@ onMount(function() {
 					>
 						<div class="file">
 							<div class="path">
-								{replaceHomeDirWithTilde(platform.fs(result.document.path).parent.path)}
+								{platform.fs(result.document.path).parent.shortPath}
 							</div>
 							<div class="name">
 								{platform.fs(result.document.path).parent.isRoot ? "" : platform.systemInfo.pathSeparator}{platform.fs(result.document.path).name}

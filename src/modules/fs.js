@@ -2,7 +2,7 @@ let bluebird = require("bluebird");
 let minimatch = require("minimatch-browser");
 let createWalk = require("modules/walk");
 
-module.exports = function(backends) {
+module.exports = function(config) {
 	let {
 		fs,
 		open,
@@ -12,7 +12,8 @@ module.exports = function(backends) {
 		watch,
 		cwd,
 		fileIsBinary,
-	} = backends;
+		homeDir,
+	} = config;
 	
 	let walk = createWalk({
 		fs,
@@ -49,6 +50,20 @@ module.exports = function(backends) {
 			}
 			
 			return parents;
+		}
+		
+		get shortPath() {
+			let {path} = this;
+			
+			if (
+				homeDir
+				&& homeDir !== "/"
+				&& (path === homeDir || path.startsWith(homeDir + osPath.sep))
+			) {
+				return "~" + path.substr(homeDir.length);
+			}
+			
+			return path;
 		}
 		
 		child(...paths) {

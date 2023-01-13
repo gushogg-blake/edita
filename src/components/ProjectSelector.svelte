@@ -2,7 +2,6 @@
 import {onMount, getContext} from "svelte";
 import {on, off} from "utils/dom/domEvents";
 import lineage from "utils/dom/lineage";
-import replaceHomeDirWithTilde from "utils/replaceHomeDirWithTilde";
 
 let app = getContext("app");
 
@@ -123,7 +122,7 @@ function getLabel(project) {
 }
 
 function getFullName(project) {
-	return project.config.name || project.dirs.map(dir => replaceHomeDirWithTilde(dir)).join(", ");
+	return project.config.name || project.dirs.map(dir => platform.fs(dir).shortPath).join(", ");
 }
 
 onMount(function() {
