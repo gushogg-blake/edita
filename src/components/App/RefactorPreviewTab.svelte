@@ -1,6 +1,6 @@
 <script>
 import {onMount} from "svelte";
-import RefactorPreview from "components/RefactorPreview.svelte";
+import RefactorPreview from "components/Refactor/RefactorPreview.svelte";
 
 export let tab;
 

@@ -1,36 +1,47 @@
 <script>
-import {onMount, getContext, createEventDispatcher} from "svelte";
+import {onMount, tick} from "svelte";
+import inlineStyle from "utils/dom/inlineStyle";
+import Gap from "components/utils/Gap.svelte";
 import Editor from "components/Editor/Editor.svelte";
-import NodePathTooltip from "./NodePathTooltip.svelte";
 
-export let refactor;
+export let refactorPreview;
 
-let fire = createEventDispatcher();
+let {
+	paths,
+	selectedFile,
+} = refactorPreview;
 
-let app = getContext("app");
+let astHintDiv;
 
-let tooltipComponents = {
-	nodePath: NodePathTooltip,
-};
+let astHint;
 
-let {paths} = refactor;
+function onSelectPath() {
+	({selectedFile} = refactorPreview);
+}
 
 function onUpdatePaths() {
-	({paths} = refactor);
+	({paths} = refactorPreview);
 }
 
-function onSelectPath(e) {
-	refactor.selectPath(e.target.value);
+async function onShowAstHint(hint) {
+	astHint = hint;
+	
+	await tick();
+	
+	astHintDiv.scroll({top: astHintDiv.scrollHeight});
 }
 
-function onRequestTooltipComponent(type, callback) {
-	callback(tooltipComponents[type]);
+function wrapperStyle(level) {
+	return inlineStyle({
+		marginLeft: 8 * level,
+	});
 }
 
 onMount(function() {
 	let teardown = [
-		refactor.on("updatePaths", onUpdatePaths),
-		refactor.on("requestTooltipComponent", onRequestTooltipComponent),
+		refactorPreview.on("updatePaths", onUpdatePaths),
+		refactorPreview.on("selectPath", onSelectPath),
+		refactorPreview.on("showAstHint", onShowAstHint),
 	];
 	
 	return function() {
@@ -43,25 +54,102 @@ onMount(function() {
 
 <style lang="scss">
 #main {
-	
+	display: grid;
+	grid-template-rows: auto 1fr;
+	width: 100%;
+	height: 100%;
+	background: var(--tabSelectedBackground);
 }
 
+#controls {
+	border-bottom: var(--appBorderMedium);
+	padding: 5px;
+}
+
+#editors {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+#left {
+	display: grid;
+	grid-template-rows: 1fr auto;
+	border-right: var(--appBorderMedium);
+}
+
+#astHint {
+	height: 8em;
+	border-top: var(--appBorderMedium);
+	padding: 5px;
+	overflow-y: auto;
+	
+	.wrapper {
+		
+	}
+	
+	#tip {
+		font-style: italic;
+		opacity: .8;
+	}
+}
 </style>
 
 <div id="main">
 	<div id="controls">
-		<select on:change={onSelectPath}>
-			{#each paths as path}
-				<option value={path}>{path}</option>
-			{/each}
-		</select>
+		{#if paths.length > 0}
+			<div>
+				<select
+					class="compact"
+					on:change={(e) => refactorPreview.selectPath(e.target.value)}
+					value={selectedFile?.path}
+				>
+					{#each paths as path}
+						<option value={path}>{platform.fs(path).homePath}</option>
+					{/each}
+				</select>
+			</div>
+		{/if}
 	</div>
 	<div id="editors">
-		<div>
-			
+		<div id="left">
+			<div>
+				<Editor editor={refactorPreview.editors.results}/>
+			</div>
+			<div bind:this={astHintDiv} id="astHint">
+				{#if astHint?.all.length > 0}
+					{#if astHint.notOnLine.length > 0}
+						{#each astHint.notOnLine as node, i}
+							<div class="wrapper" style={wrapperStyle(i)}>
+								{#if i === astHint.notOnLine.length - 1 && astHint.onLine.length === 0}
+									<b>{node.type}</b>
+								{:else}
+									{node.type}
+								{/if}
+							</div>
+						{/each}
+						<Gap height={8}/>
+					{/if}
+					
+					{#if astHint.onLine.length > 0}
+						{#if astHint.notOnLine.length > 0}
+							->
+						{/if}
+						
+						{astHint.onLine.slice(0, -1).map(n => n.type).join(" -> ")}
+						
+						{#if astHint.onLine.length > 1}
+							->
+						{/if}
+						
+						<b>{astHint.onLine.at(-1).type}</b>
+					{/if}
+				{:else}
+					<span id="tip">Move the cursor to see AST structure</span>
+				{/if}
+			</div>
 		</div>
 		<div>
-			
+			<Editor editor={refactorPreview.editors.preview}/>
 		</div>
 	</div>
 </div>

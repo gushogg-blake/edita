@@ -1,4 +1,5 @@
 let Evented = require("utils/Evented");
+let sortedPartition = require("utils/array/sortedPartition");
 let URL = require("modules/URL");
 let codex = require("modules/codex");
 
@@ -66,15 +67,17 @@ class RefactorPreview extends Evented {
 	
 	onNormalSelectionChanged() {
 		let editor = this.editors.results;
-		
-		let node = editor.document.getNodeAtCursor(editor.normalSelection.left);
+		let cursor = editor.normalSelection.left;
+		let node = editor.document.getNodeAtCursor(cursor);
 		let lineage = node.lineage().slice(1);
 		
-		if (lineage.length === 0) {
-			return;
-		}
+		let [notOnLine, onLine] = sortedPartition(lineage, n => n.start.lineIndex !== cursor.lineIndex);
 		
-		console.log(lineage.map(n => n.type).join(" -> "));
+		this.fire("showAstHint", {
+			all: lineage,
+			notOnLine,
+			onLine,
+		});
 	}
 	
 	async updatePreview() {
