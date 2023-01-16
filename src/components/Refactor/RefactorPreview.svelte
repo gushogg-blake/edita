@@ -132,19 +132,19 @@ onMount(function() {
 					
 					{#if astHint.onLine.length > 0}
 						{#if astHint.notOnLine.length > 0}
-							->
+							›
 						{/if}
 						
-						{astHint.onLine.slice(0, -1).map(n => n.type).join(" -> ")}
+						{@html astHint.onLine.slice(0, -1).map(n => n.type).join(" › ")}
 						
 						{#if astHint.onLine.length > 1}
-							->
+							›
 						{/if}
 						
 						<b>{astHint.onLine.at(-1).type}</b>
 					{/if}
 				{:else}
-					<span id="tip">Move the cursor to see AST structure</span>
+					<span id="tip">Place the cursor to see AST structure</span>
 				{/if}
 			</div>
 		</div>
