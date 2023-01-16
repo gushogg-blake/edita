@@ -16,10 +16,10 @@ class Tree {
 		
 		this._tree = treeSitterTree;
 		
-		this.wrap = Node.getCachedWrapFunction(this.lang);
+		this.wrap = Node.getCachedWrapFunction(this);
 	}
 	
-	get rootNode() {
+	get root() {
 		return this.wrap(this._tree.rootNode);
 	}
 	
@@ -56,11 +56,11 @@ class Tree {
 	}
 	
 	firstOnOrAfter(cursor) {
-		return this.wrap(find.firstOnOrAfterCursor(this.rootNode._node, cursor));
+		return this.wrap(find.firstOnOrAfterCursor(this.root._node, cursor));
 	}
 	
 	smallestAtChar(cursor) {
-		return this.wrap(find.smallestAtCharCursor(this.rootNode._node, cursor));
+		return this.wrap(find.smallestAtCharCursor(this.root._node, cursor));
 	}
 	
 	query(query, startCursor=null) {

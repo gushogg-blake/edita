@@ -51,29 +51,31 @@ class RefactorPreview extends Evented {
 	createResultsEditor() {
 		let editor = this.app.createEditor();
 		
-		//editor.on("normalSelectionChangedByMouseOrKeyboard", this.onNormalSelectionChanged.bind(this));
+		editor.on("normalSelectionChangedByMouseOrKeyboard", this.onNormalSelectionChanged.bind(this));
 		
 		return editor;
 	}
 	
-	//getTooltipComponent(type) {
-	//	let component = null;
-	//	
-	//	this.fire("requestTooltipComponent", type, c => component = c);
-	//	
-	//	return component;
-	//}
-	//
-	//onNormalSelectionChanged() {
-	//	let editor = this.editors.results;
-	//	let selection = editor.normalSelection;
-	//	
-	//	if (selection.isFull()) {
-	//		let component = this.getTooltipComponent("subtreeContents");
-	//	} else {
-	//		let component = this.getTooltipComponent("nodePath");
-	//	}
-	//}
+	getTooltipComponent(type) {
+		let component = null;
+		
+		this.fire("requestTooltipComponent", type, c => component = c);
+		
+		return component;
+	}
+	
+	onNormalSelectionChanged() {
+		let editor = this.editors.results;
+		
+		let node = editor.document.getNodeAtCursor(editor.normalSelection.left);
+		let lineage = node.lineage().slice(1);
+		
+		if (lineage.length === 0) {
+			return;
+		}
+		
+		console.log(lineage.map(n => n.type).join(" -> "));
+	}
 	
 	async updatePreview() {
 		let find = this.refactor.editors.find.string;

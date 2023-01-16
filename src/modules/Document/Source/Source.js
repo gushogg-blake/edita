@@ -43,6 +43,16 @@ module.exports = class {
 		return this.rootScope.generateNodesOnLine(lineIndex, lang);
 	}
 	
+	getNodeAtCursor(cursor) {
+		let range = this.rangeFromCharCursor(cursor);
+		
+		if (range) {
+			return range.scope.findSmallestNodeAtCharCursor(cursor);
+		} else {
+			return this.rootScope.tree.root;
+		}
+	}
+	
 	getContainingRange() {
 		return new Range(0, this.string.length, this.document.selectAll());
 	}

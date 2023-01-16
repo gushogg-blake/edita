@@ -84,7 +84,7 @@ module.exports = class extends LineRowRenderer {
 		this.nodeStack = [{
 			node: null,
 			style: null,
-			nextChild: node ? null : this.scope.tree?.rootNode || null,
+			nextChild: node ? null : this.scope.tree?.root || null,
 		}];
 		
 		for (let node of lineage) {

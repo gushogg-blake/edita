@@ -1,12 +1,16 @@
 let {nodeUtils, find, cachedNodeFunction} = require("./treeSitterUtils");
 
 class Node {
-	constructor(lang, treeSitterNode) {
-		this.lang = lang;
+	constructor(tree, treeSitterNode) {
+		this.tree = tree;
 		
 		this._node = treeSitterNode;
 		
-		this.wrap = Node.getCachedWrapFunction(this.lang).bind(this);
+		this.wrap = Node.getCachedWrapFunction(this.tree);
+	}
+	
+	get lang() {
+		return this.tree.lang;
 	}
 	
 	get id() {
@@ -49,6 +53,10 @@ class Node {
 		return this._node.namedChildren.map(this.wrap);
 	}
 	
+	get isRoot() {
+		return this.equals(this.tree.root);
+	}
+	
 	get start() {
 		return this.selection.start;
 	}
@@ -85,8 +93,8 @@ class Node {
 		return nodeUtils[field](this._node);
 	}
 	
-	static getCachedWrapFunction(lang) {
-		let getter = cachedNodeFunction(treeSitterNode => new Node(lang, treeSitterNode));
+	static getCachedWrapFunction(tree) {
+		let getter = cachedNodeFunction(treeSitterNode => new Node(tree, treeSitterNode));
 		
 		return treeSitterNode => treeSitterNode && getter(treeSitterNode);
 	}

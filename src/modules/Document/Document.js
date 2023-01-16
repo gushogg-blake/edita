@@ -602,6 +602,10 @@ class Document extends Evented {
 		return [...this.generateNodesOnLine(lineIndex, lang)];
 	}
 	
+	getNodeAtCursor(cursor) {
+		return this.source.getNodeAtCursor(cursor);
+	}
+	
 	toString() {
 		return this.string;
 	}
