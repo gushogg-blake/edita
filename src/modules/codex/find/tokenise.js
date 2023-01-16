@@ -35,8 +35,6 @@ function /\w+/@name\() {
 
 query limitations:
 
-- when capturing repeated nodes, only the last node will be captured
-
 - capture names can't contain dashes
 */
 

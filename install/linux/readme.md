@@ -1,7 +1,7 @@
 Installation
 ===
 
-To make Treefrog available on the command line as `edita`, modify `edita` in this folder to point to the correct location (replace `/path/to/edita` with wherever you've cloned the repo) and copy it to somewhere on your PATH, e.g. `~/bin`.
+To make Edita available on the command line as `edita`, modify `edita` in this folder to point to the correct location (replace `/path/to/edita` with wherever you've cloned the repo) and copy it to somewhere on your PATH, e.g. `~/bin`.
 
 To get it registered as an application (so you can set file types to open with it etc), modify the `edita.desktop` file:
 
