@@ -278,10 +278,12 @@ class App extends Evented {
 	
 	showFindBar() {
 		this.fire("showFindBar");
+		this.fire("resize");
 	}
 	
 	hideFindBar() {
 		this.fire("hideFindBar");
+		this.fire("resize");
 	}
 	
 	hideFindBarAndFocusEditor() {
