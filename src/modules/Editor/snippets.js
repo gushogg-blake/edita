@@ -248,9 +248,7 @@ let api = {
 				
 				if (placeholder.type === "expression") {
 					if (oldSelection.isBefore(selection)) {
-						if (i > index) {
-							selection = selection.adjustForEarlierEdit(oldSelection, newSelection);
-						}
+						selection = selection.adjustForEarlierEdit(oldSelection, newSelection);
 					} else if (selection.equals(oldSelection) || selection.partiallyOverlaps(oldSelection)) {
 						selection = null;
 					}
@@ -261,7 +259,7 @@ let api = {
 						selection = selection.adjustForEarlierEdit(oldSelection, newSelection);
 					} else if (selection.contains(oldSelection)) {
 						selection = selection.adjustForEditWithinSelection(oldSelection, newSelection);
-					} else if (selection.isPartiallyOverlapping(oldSelection)) {
+					} else if (selection.partiallyOverlaps(oldSelection)) {
 						selection = null;
 					}
 				}
