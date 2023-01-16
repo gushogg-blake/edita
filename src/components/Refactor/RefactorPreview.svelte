@@ -132,13 +132,13 @@ onMount(function() {
 					
 					{#if astHint.onLine.length > 0}
 						{#if astHint.notOnLine.length > 0}
-							›
+							->
 						{/if}
 						
-						{@html astHint.onLine.slice(0, -1).map(n => n.type).join(" › ")}
+						{astHint.onLine.slice(0, -1).map(n => n.type).join(" -> ")}
 						
 						{#if astHint.onLine.length > 1}
-							›
+							->
 						{/if}
 						
 						<b>{astHint.onLine.at(-1).type}</b>
