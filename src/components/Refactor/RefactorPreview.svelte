@@ -33,7 +33,7 @@ async function onShowAstHint(hint) {
 
 function wrapperStyle(level) {
 	return inlineStyle({
-		marginLeft: 8 * level,
+		paddingLeft: 8 * level,
 	});
 }
 
@@ -144,7 +144,7 @@ onMount(function() {
 						<b>{astHint.onLine.at(-1).type}</b>
 					{/if}
 				{:else}
-					<span id="tip">Place the cursor to see AST structure</span>
+					<span id="tip">Place the cursor to show Tree-sitter node names</span>
 				{/if}
 			</div>
 		</div>
