@@ -65,6 +65,8 @@ class Base extends Evented {
 	constructor() {
 		super();
 		
+		this.packageJson = require("root/package.json");
+		
 		this.langs = new Langs();
 		this.initialisedLangs = new Set();
 		

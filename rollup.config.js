@@ -8,6 +8,7 @@ import copy from "rollup-plugin-copy-watch";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import alias from "@rollup/plugin-alias";
+import json from "@rollup/plugin-json";
 import svelte from "rollup-plugin-svelte";
 import cssOnly from "rollup-plugin-css-only";
 import {terser} from "rollup-plugin-terser";
@@ -40,6 +41,7 @@ function commonPlugins(platform) {
 	return [
 		alias({
 			entries: {
+				"root": ".",
 				"components": path.join(root, "src/components"),
 				"modules": path.join(root, "src/modules"),
 				"utils": path.join(root, "src/utils"),
@@ -69,6 +71,19 @@ function commonPlugins(platform) {
 			browser: true,
 			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
 		}),
+		
+		copy({
+			watch: watch && "package.json",
+			
+			targets: [
+				{
+					src: "package.json",
+					dest: "build/" + platform,
+				},
+			],
+		}),
+		
+		json(),
 	];
 }
 

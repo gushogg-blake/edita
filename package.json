@@ -31,6 +31,7 @@
 		"@gushogg-blake/svelte-preprocess": "^4.10.7",
 		"@rollup/plugin-alias": "^3.1.8",
 		"@rollup/plugin-commonjs": "^21.0.1",
+		"@rollup/plugin-json": "^6.0.0",
 		"@rollup/plugin-multi-entry": "^4.1.0",
 		"@rollup/plugin-node-resolve": "^13.0.6",
 		"chai": "^4.3.4",
