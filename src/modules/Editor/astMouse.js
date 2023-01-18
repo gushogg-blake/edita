@@ -1,3 +1,4 @@
+let Selection = require("modules/Selection");
 let AstSelection = require("modules/AstSelection");
 let astCommon = require("modules/astCommon");
 
@@ -100,6 +101,10 @@ module.exports = {
 		}
 		
 		if (edits.length > 0) {
+			if (!toSelection) {
+				normalSelection = Selection.startOfLine(fromSelection.startLineIndex);
+			}
+			
 			let {lineIndex, removeLinesCount, insertLines} = edits[0];
 			
 			this.applyAndAddHistoryEntry({

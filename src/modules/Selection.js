@@ -279,6 +279,10 @@ class Selection {
 		return s(Cursor.start());
 	}
 	
+	static startOfLine(lineIndex) {
+		return s(c(lineIndex, 0));
+	}
+	
 	static startOfLineContent(wrappedLines, lineIndex) {
 		return s(Cursor.startOfLineContent(wrappedLines, lineIndex));
 	}
