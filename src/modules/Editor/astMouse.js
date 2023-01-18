@@ -2,6 +2,8 @@ let Selection = require("modules/Selection");
 let AstSelection = require("modules/AstSelection");
 let astCommon = require("modules/astCommon");
 
+let {s: a} = AstSelection;
+
 module.exports = {
 	setSelection(selection) {
 		this.view.setAstSelection(selection);
@@ -102,6 +104,7 @@ module.exports = {
 		
 		if (edits.length > 0) {
 			if (!toSelection) {
+				newSelection = a(fromSelection.startLineIndex);
 				normalSelection = Selection.startOfLine(fromSelection.startLineIndex);
 			}
 			
