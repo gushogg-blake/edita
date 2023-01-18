@@ -6,7 +6,9 @@ let {c} = Cursor;
 
 module.exports = {
 	drawSelection(selection) {
-		this.view.setNormalSelection(selection);
+		this.view.setNormalSelection(selection, {
+			updateAstSelection: false,
+		});
 	},
 	
 	finishDrawingSelection() {

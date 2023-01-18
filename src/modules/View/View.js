@@ -522,12 +522,18 @@ class View extends Evented {
 		this.fire("scroll");
 	}
 	
-	setNormalSelection(selection) {
+	setNormalSelection(selection, options={}) {
+		let {
+			updateAstSelection = true,
+		} = options;
+		
 		this.normalSelection = this.Selection.validate(selection);
 		
 		// TODO validate for folds
 		
-		this.updateAstSelectionFromNormalSelection();
+		if (updateAstSelection) {
+			this.updateAstSelectionFromNormalSelection();
+		}
 		
 		this.batchRedraw();
 	}
