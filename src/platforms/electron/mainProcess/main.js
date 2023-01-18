@@ -3,7 +3,7 @@ let path = require("path");
 let App = require("./App");
 let config = require("./config");
 
-// ENTRYPOINT main (node) process for electron)
+// ENTRYPOINT main (node) process for electron
 
 electronApp.setPath("userData", path.join(config.userDataDir, "electron"));
 
