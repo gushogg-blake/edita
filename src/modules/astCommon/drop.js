@@ -114,7 +114,7 @@ module.exports = function(
 				below: 0,
 			};
 			
-			if (astMode.adjustSpaces && toStart === toEnd) {
+			if (fromSelection && astMode.adjustSpaces && toStart === toEnd) {
 				adjustSpaces = astMode.adjustSpaces(document, fromSelection, toSelection, selectionLines, lines, insertIndentLevel);
 			}
 			
