@@ -10,6 +10,7 @@ import render from "./canvas/render";
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
 import wheelHandler from "./wheelHandler";
+import astDragData from "./astDragData";
 
 import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer.svelte";
@@ -77,6 +78,7 @@ let windowHasFocus;
 
 let isDragging = false;
 let lastMouseEvent;
+let inAstModeForDrop = false;
 
 let normalMouseHandler = normalMouse(editor, {
 	get canvasDiv() {
@@ -241,6 +243,12 @@ function dragend({detail: e}) {
 }
 
 function dragenter({detail: e}) {
+	if (view.mode === "normal" && astDragData.get(e)) {
+		editor.switchToAstMode();
+		
+		inAstModeForDrop = true;
+	}
+	
 	if (view.mode === "normal") {
 		normalMouseHandler.dragenter(e);
 	} else if (view.mode === "ast") {
@@ -255,6 +263,12 @@ function dragleave({detail: e}) {
 		normalMouseHandler.dragleave(e);
 	} else if (view.mode === "ast") {
 		astMouseHandler.dragleave(e);
+	}
+	
+	if (inAstModeForDrop) {
+		editor.switchToNormalMode();
+		
+		inAstModeForDrop = false;
 	}
 	
 	lastMouseEvent = e;
@@ -272,6 +286,12 @@ function drop({detail}) {
 		normalMouseHandler.drop(e, fromUs, toUs, extra);
 	} else if (view.mode === "ast") {
 		astMouseHandler.drop(e, fromUs, toUs, extra);
+	}
+	
+	if (inAstModeForDrop) {
+		editor.switchToNormalMode();
+		
+		inAstModeForDrop = false;
 	}
 	
 	if (!fromUs) {

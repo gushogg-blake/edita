@@ -1,41 +1,10 @@
-let parseJson = require("utils/parseJson");
 let {on, off} = require("utils/dom/domEvents");
 let AstSelection = require("modules/AstSelection");
 let astCommon = require("modules/astCommon");
 let autoScroll = require("./utils/autoScroll");
+let astDragData = require("./astDragData");
 
 let {s} = AstSelection;
-
-/*
-you can't see the data (only the types) on dragover, and types can't contain
-uppercase chars, so we encode all the data into a string of char codes.
-*/
-
-function setData(e, data) {
-	let json = JSON.stringify({
-		isAstDragDrop: true,
-		data,
-	});
-	
-	let str = json.split("").map(c => c.charCodeAt(0)).join(",");
-	
-	e.dataTransfer.setData(str, "");
-}
-
-function getData(e) {
-	for (let encodedStr of e.dataTransfer.types) {
-		try {
-			let str = encodedStr.split(",").map(Number).map(n => String.fromCharCode(n)).join("");
-			let json = parseJson(str);
-			
-			if (json && json.isAstDragDrop) {
-				return json.data;
-			}
-		} catch (e) {}
-	}
-	
-	return null;
-}
 
 module.exports = function(editor, editorComponent) {
 	let {document, view} = editor;
@@ -279,7 +248,7 @@ module.exports = function(editor, editorComponent) {
 			lines,
 		};
 		
-		setData(e, {
+		astDragData.set(e, {
 			pickOptionType,
 			lines,
 		});
@@ -288,7 +257,7 @@ module.exports = function(editor, editorComponent) {
 	function dragover(e, dropTargetType) {
 		e.dataTransfer.dropEffect = e.ctrlKey ? "copy" : "move";
 		
-		let data = getData(e);
+		let data = astDragData.get(e);
 		
 		if (!data) {
 			return;
@@ -338,7 +307,7 @@ module.exports = function(editor, editorComponent) {
 		let toSelection;
 		let lines;
 		let pickOptionType;
-		let data = getData(e);
+		let data = astDragData.get(e);
 		
 		if (toUs && !data) {
 			editor.astMode.invalidDrop();
