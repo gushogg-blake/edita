@@ -3,6 +3,7 @@ import {onMount, getContext} from "svelte";
 
 import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
+import {on} from "utils/dom/domEvents";
 import getKeyCombo from "utils/getKeyCombo";
 
 import render from "./canvas/render";
@@ -554,7 +555,7 @@ onMount(function() {
 	let teardown = [
 		base.on("themeUpdated", onThemeUpdated),
 		
-		app.on("resize", resizeAsync),
+		app?.on("resize", resizeAsync) || on(window, "resize", resizeAsync),
 		
 		view.on("show", resize),
 		view.on("requestResizeAsync", resizeAsync),
