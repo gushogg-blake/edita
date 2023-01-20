@@ -9,7 +9,7 @@ module.exports = async function(app) {
 	
 	setInterval(() => {
 		if (get("logFocusedElement")) {
-			console.log(app.selectedTab.editor.view.focused);
+			console.log(app.selectedTab?.editor.view.focused);
 			console.log(document.activeElement);
 		}
 	}, 1000);
