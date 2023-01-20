@@ -206,13 +206,7 @@ let matchers = {
 			lineIndex++;
 		}
 		
-		if (lineIndex === document.lines.length) {
-			return token.zero ? next() : false;
-		}
-		
-		let line = document.lines[lineIndex];
-		
-		if (line.trimmed.length === 0 || line.indentLevel !== indentLevel) {
+		if (document.lines[lineIndex]?.indentLevel !== indentLevel) {
 			return token.zero ? next() : false;
 		}
 		
