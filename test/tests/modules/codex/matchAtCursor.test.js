@@ -3,35 +3,35 @@ let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
-let query = require("modules/cdoePattern/find/query");
-let createRegex = require("modules/cdoePattern/find/createRegex");
-let tokenise = require("modules/cdoePattern/find/tokenise");
-let matchAtCursor = require("modules/cdoePattern/find/matchAtCursor");
+let query = require("modules/codePattern/find/query");
+let createRegex = require("modules/codePattern/find/createRegex");
+let tokenise = require("modules/codePattern/find/tokenise");
+let matchAtCursor = require("modules/codePattern/find/matchAtCursor");
 
 let {c} = Cursor;
 let {s} = Selection;
 
-function match(document, cdoePattern) {
+function match(document, codePattern) {
 	let context = {
 		query: query(document.source.rootScope),
 		getRegex: createRegex(),
 	};
 	
-	return matchAtCursor(context, document, tokenise(cdoePattern), Cursor.start());
+	return matchAtCursor(context, document, tokenise(codePattern), Cursor.start());
 }
 
-describe("cdoePattern", function() {
+describe("codePattern", function() {
 	describe("matchAtCursor", function() {
 		it("literal", function() {
 			let doc = createJsDoc(`
 				let asd = 123;
 			`);
 			
-			let cdoePattern = dedent(`
+			let codePattern = dedent(`
 				let asd
 			`);
 			
-			let {matches, selection} = match(doc, cdoePattern);
+			let {matches, selection} = match(doc, codePattern);
 			
 			deep(selection.end, c(0, 7));
 			
@@ -52,12 +52,12 @@ describe("cdoePattern", function() {
 				let line3 = "string";
 			`);
 			
-			let cdoePattern = dedent(`
+			let codePattern = dedent(`
 				let asd = 123;
 				+
 			`);
 			
-			let {matches, selection} = match(doc, cdoePattern);
+			let {matches, selection} = match(doc, codePattern);
 			
 			deep(selection.end, c(3, 0));
 			
@@ -102,14 +102,14 @@ describe("cdoePattern", function() {
 				let line3 = "string";
 			`);
 			
-			let cdoePattern = dedent(`
+			let codePattern = dedent(`
 				let asd = 123;
 				+
 				let sdf = 123;
 				+
 			`);
 			
-			let {matches, selection} = match(doc, cdoePattern);
+			let {matches, selection} = match(doc, codePattern);
 			
 			deep(selection.end, c(7, 0));
 			
@@ -174,12 +174,12 @@ describe("cdoePattern", function() {
 				let asd = 123;
 			`);
 			
-			let cdoePattern = dedent(`
+			let codePattern = dedent(`
 				let asd = 123;
 				*
 			`);
 			
-			let {matches, selection} = match(doc, cdoePattern);
+			let {matches, selection} = match(doc, codePattern);
 			
 			deep(selection.end, c(1, 0));
 			
@@ -198,11 +198,11 @@ describe("cdoePattern", function() {
 				let asd = 123;
 			`);
 			
-			let cdoePattern = dedent(`
+			let codePattern = dedent(`
 				let /\\w+/@id = 123;
 			`);
 			
-			let {matches, selection} = match(doc, cdoePattern);
+			let {matches, selection} = match(doc, codePattern);
 			
 			deep(selection.end, c(0, 14));
 			
@@ -238,11 +238,11 @@ describe("cdoePattern", function() {
 				}
 			`);
 			
-			let cdoePattern = dedent(`
+			let codePattern = dedent(`
 				let /\\w+/@id = (function)
 			`);
 			
-			let {matches, selection} = match(doc, cdoePattern);
+			let {matches, selection} = match(doc, codePattern);
 			
 			deep(selection.end, c(2, 1));
 			
@@ -302,13 +302,13 @@ describe("cdoePattern", function() {
 				}
 			`);
 			
-			let cdoePattern = dedent(`
+			let codePattern = dedent(`
 				let /\\w+/@id = function\\() {
 					@body
 				}
 			`);
 			
-			let {matches, selection} = match(doc, cdoePattern);
+			let {matches, selection} = match(doc, codePattern);
 			
 			deep(selection.end, c(2, 1));
 			
@@ -364,7 +364,7 @@ describe("cdoePattern", function() {
 				}
 			`);
 			
-			let cdoePattern = dedent(`
+			let codePattern = dedent(`
 				line1
 				line2
 				
@@ -373,7 +373,7 @@ describe("cdoePattern", function() {
 				}]
 			`);
 			
-			let {replaceSelection} = match(doc, cdoePattern);
+			let {replaceSelection} = match(doc, codePattern);
 			
 			deep(replaceSelection, s(c(3, 0), c(5, 1)));
 		});

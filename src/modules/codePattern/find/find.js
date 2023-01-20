@@ -29,12 +29,12 @@ function skipEmptyLines(document, cursor) {
 	return cursor;
 }
 
-module.exports = function(document, cdoePattern) {
-	if (!cdoePattern.trim() || !document.string.trim()) {
+module.exports = function(document, codePattern) {
+	if (!codePattern.trim() || !document.string.trim()) {
 		return [];
 	}
 	
-	let tokens = tokenise(cdoePattern);
+	let tokens = tokenise(codePattern);
 	
 	let cursor = skipEmptyLines(document, Cursor.start());
 	

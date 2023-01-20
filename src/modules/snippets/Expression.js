@@ -9,7 +9,7 @@ class Expression {
 		
 		/*
 		name - for simple @name expressions we might want to calculate the value
-		some other way, e.g. for cdoePattern query captures 
+		some other way, e.g. for codePattern query captures 
 		*/
 		
 		this.name = name;
