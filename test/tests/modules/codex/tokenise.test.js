@@ -1,15 +1,15 @@
 let {is, deep, expect} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
-let tokenise = require("modules/codex/find/tokenise");
+let tokenise = require("modules/cdoePattern/find/tokenise");
 
-describe("codex", function() {
+describe("cdoePattern", function() {
 	describe("tokenise", function() {
 		it("plain text only", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = 123;
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -18,13 +18,13 @@ describe("codex", function() {
 		});
 		
 		it("escaped brackets", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				function asd\\() {
 				    return 123;
 				}
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -49,11 +49,11 @@ describe("codex", function() {
 		});
 		
 		it("node", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = (function);
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -68,11 +68,11 @@ describe("codex", function() {
 		});
 		
 		it("node with capture", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = (function @fn);
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -87,11 +87,11 @@ describe("codex", function() {
 		});
 		
 		it("nested node", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = (function (name));
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -106,7 +106,7 @@ describe("codex", function() {
 		});
 		
 		it("multiline", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = (function
 					(name)
 					(body) @body
@@ -114,7 +114,7 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -129,7 +129,7 @@ describe("codex", function() {
 		});
 		
 		it("string", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = (function
 					(name)
 					(body) @body
@@ -137,7 +137,7 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -152,7 +152,7 @@ describe("codex", function() {
 		});
 		
 		it("string with escapes", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = (function
 					(name)
 					(body) @body
@@ -160,7 +160,7 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -175,7 +175,7 @@ describe("codex", function() {
 		});
 		
 		it("unterminated string", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = (function
 					(name)
 					(body) @body
@@ -183,7 +183,7 @@ describe("codex", function() {
 				);
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -198,7 +198,7 @@ describe("codex", function() {
 		});
 		
 		it("unterminated query", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = (function
 					(name)
 					(body) @body
@@ -207,18 +207,18 @@ describe("codex", function() {
 			`);
 			
 			expect(function() {
-				tokenise(codex);
+				tokenise(cdoePattern);
 			}).to.throw();
 		});
 		
 		it("multiple queries", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = (function);
 				
 				fn\\(1, 2, (id));
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -244,13 +244,13 @@ describe("codex", function() {
 		});
 		
 		it("zero or more lines", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				function asd\\() {
 					*
 				}
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -277,13 +277,13 @@ describe("codex", function() {
 		});
 		
 		it("zero or more lines, lazy", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				function asd\\() {
 					*?
 				}
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -310,13 +310,13 @@ describe("codex", function() {
 		});
 		
 		it("one or more lines", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				function asd\\() {
 					+
 				}
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -343,13 +343,13 @@ describe("codex", function() {
 		});
 		
 		it("one or more lines, lazy", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				function asd\\() {
 					+?
 				}
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -376,13 +376,13 @@ describe("codex", function() {
 		});
 		
 		it("lines with capture", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				function asd\\() {
 					+ @lines
 				}
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -409,14 +409,14 @@ describe("codex", function() {
 		});
 		
 		it("plus and asterisk in query (not on own line)", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				function asd\\() {
 					a + @lines
 					b * @lines
 				}
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -446,11 +446,11 @@ describe("codex", function() {
 		});
 		
 		it("regex", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = /\\w+/;
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -467,11 +467,11 @@ describe("codex", function() {
 		});
 		
 		it("regex with capture", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = /\\w+/@id;
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -488,11 +488,11 @@ describe("codex", function() {
 		});
 		
 		it("regex with class", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = /[a-z/]\\w+/@id;
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -509,11 +509,11 @@ describe("codex", function() {
 		});
 		
 		it("division in query", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = 3 \\/ 4;
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -522,13 +522,13 @@ describe("codex", function() {
 		});
 		
 		it("implicit lines capture", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				function asd\\() {
 					@body
 				}
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -555,13 +555,13 @@ describe("codex", function() {
 		});
 		
 		it("escaped @ at beginning of line", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				function asd\\() {
 					\\@body
 				}
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",
@@ -586,13 +586,13 @@ describe("codex", function() {
 		});
 		
 		it("unescaped @ within line", function() {
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				function asd\\() {
 					return a + @var
 				}
 			`);
 			
-			let tokens = tokenise(codex);
+			let tokens = tokenise(cdoePattern);
 			
 			deep(tokens, [{
 				type: "literal",

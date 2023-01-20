@@ -1,9 +1,9 @@
 let {is, deep, subset} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
-let find = require("modules/codex/find");
+let find = require("modules/cdoePattern/find");
 
-describe("codex", function() {
+describe("cdoePattern", function() {
 	describe("find", function() {
 		it("literal", function() {
 			let doc = createJsDoc(`
@@ -11,11 +11,11 @@ describe("codex", function() {
 				let asd = 456;
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd
 			`);
 			
-			let results = find(doc, codex);
+			let results = find(doc, cdoePattern);
 			
 			subset(results, [
 				{
@@ -54,12 +54,12 @@ describe("codex", function() {
 				let line3 = "string";
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = 123;
 				+
 			`);
 			
-			let results = find(doc, codex);
+			let results = find(doc, cdoePattern);
 			
 			subset(results[0].matches, [
 				{
@@ -134,12 +134,12 @@ describe("codex", function() {
 				let line3 = "string";
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = 123;
 				+?
 			`);
 			
-			let results = find(doc, codex);
+			let results = find(doc, cdoePattern);
 			
 			subset(results[0].matches, [
 				{

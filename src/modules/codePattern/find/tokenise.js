@@ -1,7 +1,7 @@
 let ParseError = require("./ParseError");
 
 /*
-tokenise a codex expression
+tokenise a cdoePattern expression
 
 syntax:
 

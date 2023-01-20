@@ -3,35 +3,35 @@ let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
-let query = require("modules/codex/find/query");
-let createRegex = require("modules/codex/find/createRegex");
-let tokenise = require("modules/codex/find/tokenise");
-let matchAtCursor = require("modules/codex/find/matchAtCursor");
+let query = require("modules/cdoePattern/find/query");
+let createRegex = require("modules/cdoePattern/find/createRegex");
+let tokenise = require("modules/cdoePattern/find/tokenise");
+let matchAtCursor = require("modules/cdoePattern/find/matchAtCursor");
 
 let {c} = Cursor;
 let {s} = Selection;
 
-function match(document, codex) {
+function match(document, cdoePattern) {
 	let context = {
 		query: query(document.source.rootScope),
 		getRegex: createRegex(),
 	};
 	
-	return matchAtCursor(context, document, tokenise(codex), Cursor.start());
+	return matchAtCursor(context, document, tokenise(cdoePattern), Cursor.start());
 }
 
-describe("codex", function() {
+describe("cdoePattern", function() {
 	describe("matchAtCursor", function() {
 		it("literal", function() {
 			let doc = createJsDoc(`
 				let asd = 123;
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd
 			`);
 			
-			let {matches, selection} = match(doc, codex);
+			let {matches, selection} = match(doc, cdoePattern);
 			
 			deep(selection.end, c(0, 7));
 			
@@ -52,12 +52,12 @@ describe("codex", function() {
 				let line3 = "string";
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = 123;
 				+
 			`);
 			
-			let {matches, selection} = match(doc, codex);
+			let {matches, selection} = match(doc, cdoePattern);
 			
 			deep(selection.end, c(3, 0));
 			
@@ -102,14 +102,14 @@ describe("codex", function() {
 				let line3 = "string";
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = 123;
 				+
 				let sdf = 123;
 				+
 			`);
 			
-			let {matches, selection} = match(doc, codex);
+			let {matches, selection} = match(doc, cdoePattern);
 			
 			deep(selection.end, c(7, 0));
 			
@@ -174,12 +174,12 @@ describe("codex", function() {
 				let asd = 123;
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let asd = 123;
 				*
 			`);
 			
-			let {matches, selection} = match(doc, codex);
+			let {matches, selection} = match(doc, cdoePattern);
 			
 			deep(selection.end, c(1, 0));
 			
@@ -198,11 +198,11 @@ describe("codex", function() {
 				let asd = 123;
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let /\\w+/@id = 123;
 			`);
 			
-			let {matches, selection} = match(doc, codex);
+			let {matches, selection} = match(doc, cdoePattern);
 			
 			deep(selection.end, c(0, 14));
 			
@@ -238,11 +238,11 @@ describe("codex", function() {
 				}
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let /\\w+/@id = (function)
 			`);
 			
-			let {matches, selection} = match(doc, codex);
+			let {matches, selection} = match(doc, cdoePattern);
 			
 			deep(selection.end, c(2, 1));
 			
@@ -302,13 +302,13 @@ describe("codex", function() {
 				}
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				let /\\w+/@id = function\\() {
 					@body
 				}
 			`);
 			
-			let {matches, selection} = match(doc, codex);
+			let {matches, selection} = match(doc, cdoePattern);
 			
 			deep(selection.end, c(2, 1));
 			
@@ -364,7 +364,7 @@ describe("codex", function() {
 				}
 			`);
 			
-			let codex = dedent(`
+			let cdoePattern = dedent(`
 				line1
 				line2
 				
@@ -373,7 +373,7 @@ describe("codex", function() {
 				}]
 			`);
 			
-			let {replaceSelection} = match(doc, codex);
+			let {replaceSelection} = match(doc, cdoePattern);
 			
 			deep(replaceSelection, s(c(3, 0), c(5, 1)));
 		});
