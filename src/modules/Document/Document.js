@@ -368,6 +368,14 @@ class Document extends Evented {
 		return c(this.lines.length - 1, this.lines.at(-1).string.length);
 	}
 	
+	cursorAtStartOfLineContent(lineIndex) {
+		return c(lineIndex, this.lines[lineIndex].indentOffset);
+	}
+	
+	cursorAtEndOfLine(lineIndex) {
+		return c(lineIndex, this.lines[lineIndex].string.length);
+	}
+	
 	selectAll() {
 		return s(c(0, 0), this.cursorAtEnd());
 	}

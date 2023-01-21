@@ -147,14 +147,14 @@ let api = {
 			if (footer) {
 				let header = node;
 				
-				if (footer.startPosition.row > header.endPosition.row + 1) {
-					for (let i = header.endPosition.row + 1; i < footer.startPosition.row ; i++) {
+				if (footer.start.lineIndex > header.end.lineIndex + 1) {
+					for (let i = header.end.lineIndex + 1; i < footer.start.lineIndex ; i++) {
 						if (document.lines[i].trimmed.length > 0) {
 							return fromLineIndex(document, i, false);
 						}
 					}
 					
-					return fromLineRange(document, header.endPosition.row + 1, footer.startPosition.row);
+					return fromLineRange(document, header.end.lineIndex + 1, footer.start.lineIndex);
 				}
 				
 				return selection;

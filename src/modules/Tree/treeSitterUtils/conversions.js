@@ -18,7 +18,8 @@ let api = {
 		let {
 			startIndex,
 			endIndex,
-			selection,
+			start,
+			end,
 		} = range;
 		
 		return {
@@ -26,13 +27,13 @@ let api = {
 			endIndex,
 			
 			startPosition: {
-				row: selection.start.lineIndex,
-				column: selection.start.offset,
+				row: start.lineIndex,
+				column: start.offset,
 			},
 			
 			endPosition: {
-				row: selection.end.lineIndex,
-				column: selection.end.offset,
+				row: end.lineIndex,
+				column: end.offset,
 			},
 		};
 	},

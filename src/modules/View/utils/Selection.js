@@ -350,11 +350,11 @@ module.exports = {
 	},
 	
 	startOfLineContent(lineIndex) {
-		return s(Cursor.startOfLineContent(this.wrappedLines, lineIndex));
+		return s(this.document.cursorAtStartOfLineContent(lineIndex));
 	},
 	
 	endOfLineContent(lineIndex) {
-		return s(Cursor.endOfLineContent(this.wrappedLines, lineIndex));
+		return s(this.document.cursorAtEndOfLine(lineIndex));
 	},
 	
 	wordUnderCursor(cursor) {

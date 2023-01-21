@@ -280,15 +280,7 @@ class Selection {
 	}
 	
 	static startOfLine(lineIndex) {
-		return s(c(lineIndex, 0));
-	}
-	
-	static startOfLineContent(wrappedLines, lineIndex) {
-		return s(Cursor.startOfLineContent(wrappedLines, lineIndex));
-	}
-	
-	static endOfLineContent(wrappedLines, lineIndex) {
-		return s(Cursor.endOfLineContent(wrappedLines, lineIndex));
+		return s(Cursor.startOfLine(lineIndex));
 	}
 }
 

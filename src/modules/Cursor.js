@@ -76,16 +76,8 @@ class Cursor {
 	
 	static c = c;
 	
-	static startOfLineContent(wrappedLines, lineIndex) {
-		let {line} = wrappedLines[lineIndex];
-		
-		return c(lineIndex, line.indentOffset);
-	}
-	
-	static endOfLineContent(wrappedLines, lineIndex) {
-		let {line} = wrappedLines[lineIndex];
-		
-		return c(lineIndex, line.string.length);
+	static startOfLine(lineIndex) {
+		return c(lineIndex, 0);
 	}
 	
 	static max(a, b) {

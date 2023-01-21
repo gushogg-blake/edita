@@ -1,4 +1,7 @@
 let Selection = require("modules/Selection");
+let Cursor = require("modules/Cursor");
+
+let {s} = Selection;
 
 /*
 Note - all Ranges have a .scope property. This is set by the owner
@@ -16,6 +19,14 @@ class Range {
 	
 	get lang() {
 		return this.scope.lang;
+	}
+	
+	get start() {
+		return this.selection.start;
+	}
+	
+	get end() {
+		return this.selection.end;
 	}
 	
 	/*

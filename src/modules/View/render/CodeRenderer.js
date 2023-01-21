@@ -144,11 +144,11 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	atRangeEnd() {
-		return this.atCursor(this.range?.selection.end);
+		return this.atCursor(this.range?.end);
 	}
 	
 	atInjectionRangeEnd() {
-		return this.atCursor(this.injectionRange?.selection.end);
+		return this.atCursor(this.injectionRange?.end);
 	}
 	
 	nextRange() {
@@ -172,11 +172,11 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	getCurrentRangeEnd() {
-		return this._offsetOrInfinity(this.range?.selection.end);
+		return this._offsetOrInfinity(this.range?.end);
 	}
 	
 	getNextRangeStart() {
-		return this._offsetOrInfinity(this.nextRangeToEnter?.selection.start);
+		return this._offsetOrInfinity(this.nextRangeToEnter?.start);
 	}
 	
 	getCurrentNodeEnd() {
@@ -188,11 +188,11 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	getNextInjectionRangeStart() {
-		return this._offsetOrInfinity(this.nextInjectionRangeToEnter?.selection.start);
+		return this._offsetOrInfinity(this.nextInjectionRangeToEnter?.start);
 	}
 	
 	getCurrentInjectionRangeEnd() {
-		return this._offsetOrInfinity(this.injectionRange?.selection.end);
+		return this._offsetOrInfinity(this.injectionRange?.end);
 	}
 	
 	step() {
