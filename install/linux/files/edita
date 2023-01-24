@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd /path/to/edita
+cd %path%
 
 npm start -- "$@"
