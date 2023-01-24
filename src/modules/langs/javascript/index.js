@@ -123,6 +123,10 @@ let lang = {
 			return "keyword";
 		}
 		
+		if (type === "hash_bang_line") {
+			return "hashBang";
+		}
+		
 		return "symbol";
 	},
 	

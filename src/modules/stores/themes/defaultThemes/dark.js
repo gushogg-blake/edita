@@ -103,6 +103,7 @@ let theme = {
 			number: "#96defa",
 			string: "#89e14b",
 			regex: "#1ab3ec",
+			hashBang: "#e8f8fd",
 		},
 		
 		html: {

@@ -102,6 +102,7 @@ let theme = {
 			number: "#cc2222",
 			string: "#2233bb",
 			regex: "#cc7030",
+			hashBang: "#202020",
 		},
 		
 		html: {
