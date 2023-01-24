@@ -177,6 +177,13 @@ let migrations = {
 			},
 		};
 	},
+	
+	"19"(prefs) {
+		prefs.panes.left.visible = false;
+		prefs.panes.right.visible = false;
+		prefs.panes.bottom.top.visible = false;
+		prefs.panes.bottom.bottom.visible = false;
+	},
 };
 
 module.exports = function() {
@@ -349,12 +356,12 @@ module.exports = function() {
 		
 		panes: {
 			left: {
-				visible: true,
+				visible: false,
 				size: 150,
 			},
 			
 			right: {
-				visible: true,
+				visible: false,
 				size: 150,
 			},
 			
@@ -366,12 +373,12 @@ module.exports = function() {
 				},
 				
 				top: {
-					visible: true,
+					visible: false,
 					expanded: false,
 				},
 				
 				bottom: {
-					visible: true,
+					visible: false,
 					expanded: true,
 				},
 			},
