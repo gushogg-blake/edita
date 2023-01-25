@@ -2,6 +2,7 @@ let parseJavaScript = require("./parseJavaScript");
 let createExpressionFunction = require("./createExpressionFunction");
 let Tabstop = require("./Tabstop");
 let Expression = require("./Expression");
+let RegexReference = require("./RegexReference");
 let AtLiteral = require("./AtLiteral");
 let EndMarker = require("./EndMarker");
 
@@ -54,16 +55,20 @@ module.exports = function(string, createTabstops=true) {
 				let start = i;
 				let end = start + "@".length + name.length;
 				
-				if (encounteredTabstops[name] || !createTabstops) {
-					// convert subsequent @name tabstops to expressions
-					
-					let fn = createExpressionFunction(name);
-					
-					placeholders.push(new Expression(start, end, fn, name));
+				if (name[0].match(/\d/)) {
+					placeholders.push(new RegexReference(start, end, name));
 				} else {
-					placeholders.push(new Tabstop(start, end, name, null));
-					
-					encounteredTabstops[name] = true;
+					if (encounteredTabstops[name] || !createTabstops) {
+						// convert subsequent @name tabstops to expressions
+						
+						let fn = createExpressionFunction(name);
+						
+						placeholders.push(new Expression(start, end, fn, name));
+					} else {
+						placeholders.push(new Tabstop(start, end, name, null));
+						
+						encounteredTabstops[name] = true;
+					}
 				}
 				
 				i = end;
