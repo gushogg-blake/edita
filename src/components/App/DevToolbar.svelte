@@ -75,6 +75,11 @@ onMount(function() {
 		value={prefs.dev.logFocusedElement}
 		on:change={(e) => base.setPref("dev.logFocusedElement", e.target.checked)}
 	/>
+	<Checkbox
+		label="Show theme selector"
+		value={prefs.showThemeSelector}
+		on:change={(e) => base.setPref("showThemeSelector", e.target.checked)}
+	/>
 	<Spacer/>
 	<button on:click={() => base.setPref("dev.showToolbar", false)}>
 		Hide
