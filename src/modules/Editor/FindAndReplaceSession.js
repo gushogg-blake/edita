@@ -109,7 +109,7 @@ module.exports = class {
 	}
 	
 	getAllResults() {
-		return [...this.createGenerator(this.options.startIndex, true)];
+		return [...this.createGenerator(0, true)];
 	}
 	
 	createGenerator(startIndex, enumerate=false) {
