@@ -125,7 +125,7 @@ class App {
 		let winState = windowStateKeeper();
 		
 		let browserWindow = new BrowserWindow({
-			x: winState.x - 3, // hack for https://github.com/electron/electron/issues/10388
+			x: winState.x,
 			y: winState.y,
 			width: winState.width,
 			height: winState.height,
