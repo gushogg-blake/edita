@@ -8,7 +8,7 @@ let theme = {
 		fontSize: "12.5px",
 		color: "#444444",
 		
-		appBorderColor: "#c5c3c1",
+		appBorderColor: "#d3d3d3",
 		appBorderLightColor: "#d5d5d5",
 		appBorderMediumColor: "#d5d5d5",
 		appBorder: "1px solid var(--appBorderColor)",
