@@ -14,6 +14,7 @@ let streamFromString = require("./utils/streamFromString");
 let fs = require("./modules/fs");
 let ipcMain = require("./modules/ipcMain");
 let mimeTypes = require("./modules/mimeTypes");
+let jsonStore = require("./modules/jsonStore");
 let ipc = require("./ipc");
 let config = require("./config");
 
@@ -34,6 +35,8 @@ class App {
 		this.dataDir = fs(this.config.userDataDir);
 		this.buildDir = fs(__dirname, "..", "..", config.dev ? "electron-dev" : "electron");
 		this.rootDir = this.buildDir.rel("..", "..");
+		
+		this.jsonStore = jsonStore(this);
 	}
 	
 	get dialogWindows() {
@@ -79,7 +82,9 @@ class App {
 			},
 		]);
 		
-		electronApp.on("ready", () => {
+		electronApp.on("ready", async () => {
+			this.windowPositionAdjustment = (await this.jsonStore.load("prefs")).value.windowPositionAdjustment; // https://github.com/electron/electron/issues/10388
+			
 			protocol.registerStreamProtocol("app", async (request, callback) => {
 				// tree-sitter.js requests an incorrect absolute path for some reason
 				if (request.url.endsWith("tree-sitter.wasm")) {
@@ -122,11 +127,16 @@ class App {
 	}
 	
 	createAppWindow() {
+		let {
+			x = 0,
+			y = 0,
+		} = this.windowPositionAdjustment || {};
+		
 		let winState = windowStateKeeper();
 		
 		let browserWindow = new BrowserWindow({
-			x: winState.x - 1, // https://github.com/electron/electron/issues/10388
-			y: winState.y,
+			x: winState.x + x, 
+			y: winState.y + y,
 			width: winState.width,
 			height: winState.height,
 			useContentSize: true,
