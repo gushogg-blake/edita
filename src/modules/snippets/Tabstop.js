@@ -1,3 +1,4 @@
+let getVariableName = require("./getVariableName");
 let functions = require("./functions");
 
 class Tabstop {
@@ -6,6 +7,7 @@ class Tabstop {
 		this.start = start;
 		this.end = end;
 		this.name = name;
+		this.variableName = getVariableName(name);
 		this.defaultFn = defaultFn;
 	}
 	

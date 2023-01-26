@@ -20,7 +20,7 @@ function getContextFromPositions(document, positions) {
 	
 	for (let position of positions) {
 		if (isActiveTabstop(position)) {
-			context[position.placeholder.name] = getCurrentValue(document, position);
+			context[position.placeholder.variableName] = getCurrentValue(document, position);
 		}
 	}
 	

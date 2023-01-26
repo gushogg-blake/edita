@@ -1,4 +1,5 @@
 let escapeRe = require("utils/escapeRe");
+let mapArrayToObject = require("utils/mapArrayToObject");
 let createPlaceholderString = require("utils/createPlaceholderString");
 let getPlaceholders = require("modules/snippets/getPlaceholders");
 
@@ -25,9 +26,13 @@ function replaceExpressionsForRegexReplace(str, match) {
 	let replacedString = "";
 	let prevPlaceholderEnd = 0;
 	
+	let context = mapArrayToObject(match, function(value, index) {
+		return ["$" + index, value];
+	});
+	
 	for (let placeholder of placeholders) {
 		replacedString += str.substring(prevPlaceholderEnd, placeholder.start);
-		replacedString += placeholder.getValue(match) || "";
+		replacedString += placeholder.getValue(context) || "";
 		
 		prevPlaceholderEnd = placeholder.end;
 	}
