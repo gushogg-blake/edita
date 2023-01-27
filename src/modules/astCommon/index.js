@@ -13,8 +13,8 @@ module.exports = {
 		return !astManipulation.isAvailable || astManipulation.isAvailable(document, selection);
 	},
 	
-	getPickOptions(astMode, document, selection) {
-		return Object.values(astMode.pickOptions).filter(pickOption => pickOption.isAvailable(document, selection));
+	getPickOptions(astMode, document, lineIndex) {
+		return Object.values(astMode.pickOptions).filter(pickOption => pickOption.isAvailable(document, lineIndex));
 	},
 	
 	getDropTargets(astMode, document, lineIndex) {

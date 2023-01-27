@@ -9,7 +9,7 @@ module.exports = {
 		this.view.setAstSelection(selection);
 	},
 	
-	setSelectionHilite(selection, showPickOptions=true) {
+	setSelectionHilite(selection, targetLineIndex, showPickOptions=true) {
 		let {view} = this;
 		
 		view.startBatch();
@@ -17,8 +17,19 @@ module.exports = {
 		view.setAstSelectionHilite(selection);
 		
 		if (showPickOptions) {
-			view.showPickOptionsFor(selection);
+			view.showPickOptionsFor(targetLineIndex);
 		}
+		
+		view.endBatch();
+	},
+	
+	clearSelectionHilite() {
+		let {view} = this;
+		
+		view.startBatch();
+		
+		view.clearAstSelectionHilite();
+		view.clearPickOptions();
 		
 		view.endBatch();
 	},

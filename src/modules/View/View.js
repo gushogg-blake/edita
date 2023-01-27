@@ -150,33 +150,26 @@ class View extends Evented {
 		}
 	}
 	
-	showPickOptionsFor(astSelection) {
-		if (!astSelection) {
-			this.pickOptions = [];
-			
-			this.fire("updatePickOptions");
-			
-			return;
-		}
-		
-		let {startLineIndex} = astSelection;
-		let lineIndex = startLineIndex;
-		let {astMode} = this.document.langFromAstSelection(astSelection);
+	showPickOptionsFor(lineIndex) {
+		let {document} = this;
+		let {astMode} = document.langFromAstSelection(a(lineIndex));
 		
 		this.pickOptions = [{
 			lineIndex,
 			
-			options: astCommon.getPickOptions(
-				astMode,
-				this.document,
-				astSelection,
-			).map(function(option) {
+			options: astCommon.getPickOptions(astMode, document, lineIndex).map(function(option) {
 				return {
 					lineIndex,
 					option,
 				};
 			}),
 		}];
+		
+		this.fire("updatePickOptions");
+	}
+	
+	clearPickOptions() {
+		this.pickOptions = [];
 		
 		this.fire("updatePickOptions");
 	}
@@ -565,6 +558,12 @@ class View extends Evented {
 	
 	setAstSelectionHilite(astSelection) {
 		this.astSelectionHilite = astSelection;
+		
+		this.batchRedraw();
+	}
+	
+	clearAstSelectionHilite() {
+		this.astSelectionHilite = null;
 		
 		this.batchRedraw();
 	}

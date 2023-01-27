@@ -3,22 +3,16 @@ let AstSelection = require("modules/AstSelection");
 let {
 	findPrevLineIndexAtIndentLevel,
 	findSiblingIndex,
-	getFooterLineIndex,
-	getHeaderLineIndex,
+	extendUp,
+	extendDown,
 } = require("./utils");
 
 let {s} = AstSelection;
 
 /*
-if not a header/footer then just the line
+if a header/footer, expand to the entire block (following header-footers)
 
-if a header, then to the immediate footer
-
-expanding goes to next indent level, NOT the entire ladder - there's a diff command
-for that (like {} for next/prev paragraph in vim)
-
-cutting selections where the header or footer is a header-footer (e.g. } else {)
-- to be handled intelligently by the lang
+otherwise just the line
 */
 
 function fromLineIndex(document, lineIndex, forHilite) {
@@ -37,22 +31,15 @@ function fromLineIndex(document, lineIndex, forHilite) {
 		}
 	}
 	
-	let footerLineIndex = getFooterLineIndex(document, lineIndex);
-	let headerLineIndex = getHeaderLineIndex(document, lineIndex);
-	
-	if (footerLineIndex !== null) {
-		return s(lineIndex, footerLineIndex + 1);
-	} else if (headerLineIndex !== null) {
-		return s(headerLineIndex, lineIndex + 1);
-	} else if (line.trimmed.length > 0) {
-		return s(lineIndex, lineIndex + 1);
-	} else {
+	if (line.trimmed.length === 0) {
 		if (forHilite) {
 			return null;
 		} else {
 			return s(lineIndex);
 		}
 	}
+	
+	return s(extendUp(document, lineIndex), extendDown(document, lineIndex));
 }
 
 function selectionFromLineIndex(document, lineIndex) {
@@ -65,7 +52,7 @@ function hiliteFromLineIndex(document, lineIndex, pickOptionType=null) {
 	if (pickOptionType) {
 		let {astMode} = document.langFromAstSelection(selection);
 		
-		return astMode.pickOptions[pickOptionType].getSelection(document, selection);
+		return astMode.pickOptions[pickOptionType].getSelection(document, lineIndex);
 	} else {
 		return selection;
 	}

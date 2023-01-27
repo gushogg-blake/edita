@@ -59,13 +59,23 @@ extending to that header's footer and so on (to get e.g. a full if-
 else ladder).
 */
 
-function extend(document, lineIndex, followHeaderFooters=true) {
+function extendDown(document, lineIndex, followHeaderFooters=true) {
 	let footerLineIndex = getFooterLineIndex(document, lineIndex);
 	
 	if (footerLineIndex !== null) {
-		return followHeaderFooters ? extend(document, footerLineIndex, true) : footerLineIndex + 1;
+		return followHeaderFooters ? extendDown(document, footerLineIndex, true) : footerLineIndex + 1;
 	} else {
 		return lineIndex + 1;
+	}
+}
+
+function extendUp(document, lineIndex, followHeaderFooters=true) {
+	let headerLineIndex = getHeaderLineIndex(document, lineIndex);
+	
+	if (headerLineIndex !== null) {
+		return followHeaderFooters ? extendUp(document, headerLineIndex, true) : headerLineIndex;
+	} else {
+		return lineIndex;
 	}
 }
 
@@ -76,7 +86,8 @@ let api = {
 	getHeaderLineIndex,
 	getHeaders,
 	getFooters,
-	extend,
+	extendUp,
+	extendDown,
 	
 	countSpace(document, lineIndex, dir) {
 		let {lines} = document;

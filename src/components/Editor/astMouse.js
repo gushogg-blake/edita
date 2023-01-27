@@ -15,9 +15,7 @@ module.exports = function(editor, editorComponent) {
 	let mouseIsDown = false;
 	
 	function getCanvasCoords(e) {
-		let {
-			canvasDiv,
-		} = editorComponent;
+		let {canvasDiv} = editorComponent;
 		
 		let {
 			x: left,
@@ -30,35 +28,35 @@ module.exports = function(editor, editorComponent) {
 		return [x, y];
 	}
 	
-	function getHilite(e, pickOptionType=null, withinSelection=false) {
-		if (pickOptionType) {
-			withinSelection = true;
-		}
-		
-		let {
-			astSelection,
-			normalSelection,
-		} = view;
-		
-		let {
-			isPeekingAstMode: isPeeking,
-		} = editorComponent;
-		
+	function lineIndexFromEvent(e) {
 		let [x, y] = getCanvasCoords(e);
-		
 		let [row, col] = view.cursorRowColFromScreenCoords(x, y);
 		
 		if (row >= view.countLineRowsFolded()) {
 			return null;
 		}
 		
-		let {lineIndex} = view.cursorFromRowCol(row, col);
+		return view.cursorFromRowCol(row, col).lineIndex;
+	}
+	
+	function hiliteFromLineIndex(lineIndex, pickOptionType=null, withinSelection=false) {
+		if (pickOptionType) {
+			withinSelection = true;
+		}
+		
+		let {astSelection} = view;
 		
 		if (!withinSelection && astSelection.containsLineIndex(lineIndex)) {
 			return astSelection;
 		}
 		
 		return astCommon.selection.hiliteFromLineIndex(document, lineIndex, pickOptionType);
+	}
+	
+	function hiliteFromEvent(e, pickOptionType=null, withinSelection=false) {
+		let lineIndex = lineIndexFromEvent(e);
+		
+		return lineIndex === null ? null : hiliteFromLineIndex(lineIndex, pickOptionType, withinSelection);
 	}
 	
 	function getInsertionRange(e) {
@@ -90,9 +88,17 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function hilite(e, pickOptionType) {
-		let selection = getHilite(e, pickOptionType);
+		let lineIndex = lineIndexFromEvent(e);
 		
-		editor.astMouse.setSelectionHilite(selection, !pickOptionType);
+		if (lineIndex === null) {
+			editor.astMouse.clearSelectionHilite();
+			
+			return;
+		}
+		
+		let selection = hiliteFromLineIndex(lineIndex, pickOptionType);
+		
+		editor.astMouse.setSelectionHilite(selection, lineIndex, !pickOptionType);
 	}
 	
 	function mousedown(e, pickOptionType, enableDrag) {
@@ -126,7 +132,7 @@ module.exports = function(editor, editorComponent) {
 			on(window, "mouseup", mouseup);
 			on(window, "mouseup", finishSelection);
 		} else {
-			let selection = getHilite(e, pickOptionType);
+			let selection = hiliteFromEvent(e, pickOptionType);
 			
 			if (!selection) {
 				return;
@@ -146,7 +152,7 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function mousedownRight(e, pickOptionType) {
-		let selection = getHilite(e, pickOptionType);
+		let selection = hiliteFromEvent(e, pickOptionType);
 		
 		if (!selection) {
 			return;
@@ -211,7 +217,7 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function mouseleave(e) {
-		editor.astMouse.setSelectionHilite(null);
+		editor.astMouse.clearSelectionHilite();
 		
 		mouseIsOver = false;
 	}
@@ -221,7 +227,7 @@ module.exports = function(editor, editorComponent) {
 			return;
 		}
 		
-		let selection = getHilite(e, pickOptionType, true);
+		let selection = hiliteFromEvent(e, pickOptionType, true);
 		
 		if (selection) {
 			view.setAstSelection(selection);
@@ -331,7 +337,7 @@ module.exports = function(editor, editorComponent) {
 		}
 		
 		if (toUs) {
-			toSelection = dropTargetType ? getHilite(e) : getInsertionRange(e);
+			toSelection = dropTargetType ? hiliteFromEvent(e) : getInsertionRange(e);
 		} else {
 			toSelection = null;
 		}
@@ -359,7 +365,7 @@ module.exports = function(editor, editorComponent) {
 		if (e) {
 			hilite(e);
 		} else {
-			editor.astMouse.setSelectionHilite(null);
+			editor.astMouse.clearSelectionHilite();
 		}
 	}
 

@@ -1,7 +1,7 @@
 let Cursor = require("modules/Cursor");
 let Selection = require("modules/Selection");
 let AstSelection = require("modules/AstSelection");
-let {extend} = require("modules/astCommon/utils");
+let {extendDown} = require("modules/astCommon/utils");
 
 let {c} = Cursor;
 let {s} = Selection;
@@ -210,10 +210,7 @@ let matchers = {
 			return token.zero ? next() : false;
 		}
 		
-		let astSelection = a(
-			lineIndex,
-			extend(document, lineIndex),
-		);
+		let astSelection = a(lineIndex, extendDown(document, lineIndex));
 		
 		matches.push({
 			token,

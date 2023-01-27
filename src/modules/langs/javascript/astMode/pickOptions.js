@@ -8,12 +8,12 @@ module.exports = {
 		type: "contents",
 		label: "Contents",
 		
-		isAvailable(document, selection) {
-			return isHeader(document, selection.startLineIndex);
+		isAvailable(document, lineIndex) {
+			return isHeader(document, lineIndex);
 		},
 		
-		getSelection(document, selection) {
-			let [{header, footer}] = getHeaders(document, selection.startLineIndex);
+		getSelection(document, lineIndex) {
+			let [{header, footer}] = getHeaders(document, lineIndex);
 			
 			return a(header.start.lineIndex + 1, footer.start.lineIndex);
 		},
