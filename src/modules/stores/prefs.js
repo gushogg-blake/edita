@@ -184,6 +184,10 @@ let migrations = {
 		prefs.panes.bottom.top.visible = false;
 		prefs.panes.bottom.bottom.visible = false;
 	},
+	
+	"19"(prefs) {
+		prefs.theme = "lightGray";
+	},
 };
 
 module.exports = function() {
@@ -350,7 +354,7 @@ module.exports = function() {
 			//"plainText": ["*.js"],
 		},
 		
-		theme: "light",
+		theme: "lightGray",
 		
 		cursorBlinkPeriod: 700,
 		
