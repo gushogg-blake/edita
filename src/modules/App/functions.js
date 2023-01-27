@@ -1,15 +1,7 @@
-let bluebird = require("bluebird");
-
 module.exports = {
 	async open() {
 		let dir = this.getCurrentDir();
-		
-		let files = await bluebird.map(platform.open(dir), async function(path) {
-			return {
-				path,
-				code: await platform.fs(path).read(),
-			};
-		});
+		let files = await this.readFilesForOpen(await platform.open());
 		
 		for (let {path, code} of files) {
 			this.openPath(path, code);

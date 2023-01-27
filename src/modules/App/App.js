@@ -318,6 +318,67 @@ class App extends Evented {
 		this.focusSelectedTab();
 	}
 	
+	async readFileForOpen(path) {
+		try {
+			return await platform.fs(path).read();
+		} catch (e) {
+			if (e instanceof platform.fs.FileIsBinary) {
+				alert("Opening binary files not supported: " + path);
+			} if (e.code === "EACCES") {
+				alert("Could not read " + path + " (permission denied)");
+			} else {
+				console.log("Error reading file " + path);
+				console.error(e);
+				
+				alert("Error occurred while opening file: " + path + " - see console for more details");
+			}
+			
+			return null;
+		}
+	}
+	
+	async readFilesForOpen(paths) {
+		let permissionsErrors = [];
+		let binaryFiles = [];
+		let otherErrors = false;
+		
+		let files = await bluebird.map(paths, async function(path) {
+			try {
+				return {
+					path,
+					code: await platform.fs(path).read(),
+				};
+			} catch (e) {
+				if (e instanceof platform.fs.FileIsBinary) {
+					binaryFiles.push(path);
+				} else if (e.code === "EACCES") {
+					permissionsErrors.push(path);
+				} else {
+					console.log("Error reading file " + path);
+					console.error(e);
+					
+					otherErrors = true;
+				}
+				
+				return null;
+			}
+		}).filter(Boolean);
+		
+		if (permissionsErrors.length > 0) {
+			alert("Could not read the following files (permission denied):\n\n" + permissionsErrors.join("\n"));
+		}
+		
+		if (binaryFiles.length > 0) {
+			alert("Opening binary files not supported:\n\n" + binaryFiles.join("\n"));
+		}
+		
+		if (otherErrors) {
+			alert("Error occurred while opening files - see console for more details");
+		}
+		
+		return files;
+	}
+	
 	openPath(path, code=null) {
 		return this.openFile(URL.file(path), code);
 	}
@@ -325,13 +386,11 @@ class App extends Evented {
 	async openFile(url, code=null) {
 		let {path} = url;
 		
-		if (
+		let closeInitialNewFileTab = (
 			this.editorTabs.length === 1
 			&& this.editorTabs[0] === this.initialNewFileTab
 			&& !this.initialNewFileTab.modified
-		) {
-			this.closeTab(this.initialNewFileTab);
-		}
+		);
 		
 		let existingTab = this.findTabByUrl(url);
 		
@@ -342,7 +401,15 @@ class App extends Evented {
 		}
 		
 		if (code === null) {
-			code = await platform.fs(path).read();
+			code = await this.readFileForOpen(path);
+			
+			if (code === null) {
+				return;
+			}
+		}
+		
+		if (closeInitialNewFileTab) {
+			this.closeTab(this.initialNewFileTab);
 		}
 		
 		let tab = await this.createEditorTab(code, url);

@@ -40,7 +40,11 @@ class RefactorPreview extends Evented {
 	}
 	
 	async selectPath(path) {
-		let code = await platform.fs(path).read();
+		let code = await this.app.readFileForOpen(path);
+		
+		if (code === null) {
+			return;
+		}
 		
 		this.selectedFile = {path, code};
 		

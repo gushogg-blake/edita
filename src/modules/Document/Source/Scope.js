@@ -82,7 +82,7 @@ module.exports = class Scope {
 		} catch (e) {
 			this.tree = null;
 			
-			console.error("Parse error");
+			console.log("Parse error");
 			console.error(e);
 		} finally {
 			this.processInjections(findExistingScope, editExistingScope);
