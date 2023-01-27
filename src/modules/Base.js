@@ -298,8 +298,8 @@ class Base extends Evented {
 		this.initialisedLangs.add(lang);
 	}
 	
-	async ensureRequiredLangsInitialised(fileDetails) {
-		await bluebird.map([...generateRequiredLangs(fileDetails.lang)], lang => this.initLang(lang));
+	async ensureRequiredLangsInitialised(mainLang) {
+		await bluebird.map([...generateRequiredLangs(mainLang)], lang => this.initLang(lang));
 	}
 	
 	createEditorForTextArea(string="") {

@@ -49,7 +49,7 @@ class Refactor extends Evented {
 		
 		let fileDetails = base.getFileDetails(code, url);
 		
-		await base.ensureRequiredLangsInitialised(fileDetails);
+		await base.ensureRequiredLangsInitialised(fileDetails.lang);
 		
 		return new Document(code, url, {
 			fileDetails,

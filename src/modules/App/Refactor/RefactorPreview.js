@@ -110,7 +110,7 @@ class RefactorPreview extends Evented {
 		
 		let fileDetails = base.getFileDetails(code, url);
 		
-		await base.ensureRequiredLangsInitialised(fileDetails);
+		await base.ensureRequiredLangsInitialised(fileDetails.lang);
 		
 		view.startBatch();
 		

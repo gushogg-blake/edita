@@ -476,7 +476,7 @@ class App extends Evented {
 			throw new Error("File " + url.path + " has mixed newlines");
 		}
 		
-		await base.ensureRequiredLangsInitialised(fileDetails);
+		await base.ensureRequiredLangsInitialised(fileDetails.lang);
 		
 		let document = this.createDocument(code, url, {
 			project: await this.projects.findOrCreateProjectForUrl(url),
