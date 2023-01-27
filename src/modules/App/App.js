@@ -273,7 +273,7 @@ class App extends Evented {
 	}
 	
 	pathIsOpen(path) {
-		return this.editorTabs.some(tab => tab.protocol === "file" && tab.path === path);
+		return this.editorTabs.some(tab => tab.isFile && tab.path === path);
 	}
 	
 	showFindBar() {
@@ -557,7 +557,7 @@ class App extends Evented {
 	}
 	
 	findTabByPath(path) {
-		return this.editorTabs.find(tab => tab.protocol === "file" && tab.path === path);
+		return this.editorTabs.find(tab => tab.isFile && tab.path === path);
 	}
 	
 	findTabByUrl(url) {

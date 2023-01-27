@@ -23,8 +23,8 @@ class Tab extends Evented {
 		return this.url?.path;
 	}
 	
-	get protocol() {
-		return this.url?.protocol;
+	get isFile() {
+		return this.url?.isFile;
 	}
 	
 	get name() {

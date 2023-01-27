@@ -37,6 +37,10 @@ class URL {
 		return this.protocol === "new";
 	}
 	
+	get isFile() {
+		return this.protocol === "file";
+	}
+	
 	static file(path) {
 		return new URL("file://" + pathToUrl(path));
 	}
