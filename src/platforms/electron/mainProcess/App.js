@@ -83,7 +83,7 @@ class App {
 		]);
 		
 		electronApp.on("ready", async () => {
-			this.windowPositionAdjustment = (await this.jsonStore.load("prefs")).value.windowPositionAdjustment; // https://github.com/electron/electron/issues/10388
+			this.windowPositionAdjustment = (await this.jsonStore.load("prefs"))?.value.windowPositionAdjustment; // https://github.com/electron/electron/issues/10388
 			
 			protocol.registerStreamProtocol("app", async (request, callback) => {
 				// tree-sitter.js requests an incorrect absolute path for some reason
