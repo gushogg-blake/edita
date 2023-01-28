@@ -352,14 +352,15 @@ module.exports = {
 	
 	tab() {
 		let flags;
-		let {start} = this.normalSelection;
+		let {document, normalSelection} = this;
+		let {start} = normalSelection;
 		let snippet = null;
 		
-		if (!this.normalSelection.isFull()) {
-			let {left} = this.document.wordAtCursor(start);
+		if (!normalSelection.isFull()) {
+			let {left} = document.wordAtCursor(start);
 			
 			if (left) {
-				snippet = platform.snippets.findByLangAndName(this.document.langFromCursor(start), left);
+				snippet = platform.snippets.findByLangAndName(document.langFromCursor(start), left);
 			}
 		}
 		
@@ -367,24 +368,28 @@ module.exports = {
 			this.clearSnippetSession();
 		}
 		
-		if (this.completions) {
-			
-			//let {
-			//	edit,
-			//	newSelection,
-			//} = this.document.replaceSelection(selection, nextWord);
-			//
-			//let edits = [edit];
-			//
-			//this.applyAndAddHistoryEntry({
-			//	edits,
-			//	normalSelection: newSelection,
-			//	snippetSession: this.adjustSnippetSession(edits),
-			//});
-			//
-			//this.updateSnippetExpressions();
-		} else if (snippet) {
+		let insertSnippet = false;
+		
+		if (snippet && !this.completions) {
+			if (this.snippetSession) {
+				let {insertNestedSnippets} = base.prefs;
+				
+				insertSnippet = (
+					insertNestedSnippets === "always"
+					|| (
+						insertNestedSnippets === "blankLines"
+						&& document.lines[start.lineIndex].trimmed === snippet.name
+					)
+				);
+			} else {
+				insertSnippet = true;
+			}
+		}
+		
+		if (insertSnippet) {
 			this.insertSnippet(snippet, snippet.name);
+		} else if (this.completions) {
+			this.acceptSelectedCompletion();
 		} else if (this.snippetSession) {
 			this.nextTabstop();
 		} else if (this.astMode.multiStepCommandWaitingForReturnToAstMode) {
@@ -394,32 +399,7 @@ module.exports = {
 			
 			flags = ["noScrollCursorIntoView"];
 		} else {
-			// insert tab
-			
-			let {indentation} = this.document.fileDetails;
-			let {normalSelection} = this.view;
-			
-			let str;
-			
-			if (indentation.type === "tab") {
-				str = "\t";
-			} else {
-				let {left} = normalSelection;
-				let {colsPerIndent} = indentation;
-				let insertCols = colsPerIndent - left.offset % colsPerIndent;
-				
-				str = " ".repeat(insertCols);
-			}
-			
-			let {
-				edit,
-				newSelection,
-			} = this.document.replaceSelection(this.view.normalSelection, str);
-			
-			this.applyAndAddHistoryEntry({
-				edits: [edit],
-				normalSelection: newSelection,
-			});
+			this.insertTab();
 		}
 		
 		this.clearBatchState();

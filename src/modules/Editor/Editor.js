@@ -205,6 +205,23 @@ class Editor extends Evented {
 		this.view.setCompletions(this.completions);
 	}
 	
+	acceptSelectedCompletion() {
+		//let {
+		//	edit,
+		//	newSelection,
+		//} = this.document.replaceSelection(selection, nextWord);
+		//
+		//let edits = [edit];
+		//
+		//this.applyAndAddHistoryEntry({
+		//	edits,
+		//	normalSelection: newSelection,
+		//	snippetSession: this.adjustSnippetSession(edits),
+		//});
+		//
+		//this.updateSnippetExpressions();
+	}
+	
 	getExternalWordCompletionCandidates() {
 		let candidates = [];
 		
@@ -593,6 +610,33 @@ class Editor extends Evented {
 	
 	dedentSelection() {
 		this.adjustIndent(-1);
+	}
+	
+	insertTab() {
+		let {document, normalSelection} = this;
+		let {indentation} = document.fileDetails;
+		
+		let str;
+		
+		if (indentation.type === "tab") {
+			str = "\t";
+		} else {
+			let {left} = normalSelection;
+			let {colsPerIndent} = indentation;
+			let insertCols = colsPerIndent - left.offset % colsPerIndent;
+			
+			str = " ".repeat(insertCols);
+		}
+		
+		let {
+			edit,
+			newSelection,
+		} = document.replaceSelection(normalSelection, str);
+		
+		this.applyAndAddHistoryEntry({
+			edits: [edit],
+			normalSelection: newSelection,
+		});
 	}
 	
 	switchToAstMode() {

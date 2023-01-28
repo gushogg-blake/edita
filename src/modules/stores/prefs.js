@@ -185,8 +185,8 @@ let migrations = {
 		prefs.panes.bottom.bottom.visible = false;
 	},
 	
-	"19"(prefs) {
-		prefs.theme = "lightGray";
+	"20"(prefs) {
+		prefs.insertNestedSnippets = "blankLines";
 	},
 };
 
@@ -211,6 +211,8 @@ module.exports = function() {
 		verticalSpacing: {
 			spaceBlocks: true,
 		},
+		
+		insertNestedSnippets: "blankLines",
 		
 		normalKeymap: {
 			"ArrowUp": "up",
