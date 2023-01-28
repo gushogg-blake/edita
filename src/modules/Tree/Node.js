@@ -1,4 +1,5 @@
-let {nodeUtils, find, cachedNodeFunction} = require("./treeSitterUtils");
+let {nodeGetters, cachedNodeFunction} = require("./treeSitterUtils");
+let find = require("./find");
 
 class Node {
 	constructor(tree, treeSitterNode) {
@@ -66,15 +67,19 @@ class Node {
 	}
 	
 	next() {
-		return this.wrap(nodeUtils.next(this._node));
+		return this.wrap(nodeGetters.next(this._node));
 	}
 	
 	firstChildAfter(cursor) {
-		return this.wrap(find.firstChildAfterCursor(this._node, cursor));
+		return find.firstChildAfterCursor(this, cursor);
 	}
 	
 	isOnOrAfter(cursor) {
 		return this.start.isOnOrAfter(cursor);
+	}
+	
+	containsCharCursor(cursor) {
+		return this.selection.containsCharCursor(cursor);
 	}
 	
 	isMultiline() {
@@ -86,11 +91,11 @@ class Node {
 	}
 	
 	lineage() {
-		return nodeUtils.lineage(this._node).map(this.wrap);
+		return nodeGetters.lineage(this._node).map(this.wrap);
 	}
 	
 	get(field) {
-		return nodeUtils[field](this._node);
+		return nodeGetters[field](this._node);
 	}
 	
 	static getCachedWrapFunction(tree) {

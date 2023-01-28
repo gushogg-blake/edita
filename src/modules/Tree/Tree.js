@@ -1,11 +1,11 @@
 let mapArrayToObject = require("utils/mapArrayToObject");
 let Cursor = require("modules/Cursor");
 let Node = require("./Node");
+let find = require("./find");
 
 let {
 	cursorToTreeSitterPoint,
 	rangeToTreeSitterRange,
-	find,
 } = require("./treeSitterUtils");
 
 let {c} = Cursor;
@@ -56,11 +56,11 @@ class Tree {
 	}
 	
 	firstOnOrAfter(cursor) {
-		return this.wrap(find.firstOnOrAfterCursor(this.root._node, cursor));
+		return find.firstOnOrAfterCursor(this.root, cursor);
 	}
 	
 	smallestAtChar(cursor) {
-		return this.wrap(find.smallestAtCharCursor(this.root._node, cursor));
+		return find.smallestAtCharCursor(this.root, cursor);
 	}
 	
 	query(query, startCursor=null) {

@@ -1,5 +1,4 @@
 let middle = require("utils/middle");
-let nodeUtils = require("../nodeUtils");
 
 /*
 given a node and a cursor, find the smallest node within the given node
@@ -10,12 +9,12 @@ returned.
 */
 
 module.exports = function(node, cursor) {
-	if (nodeUtils.compareCharCursor(node, cursor) !== "nodeContainsCursor") {
+	if (!node.containsCharCursor(cursor)) {
 		return null;
 	}
 	
 	let smallestNode = node;
-	let children = nodeUtils.children(smallestNode);
+	let {children} = smallestNode;
 	let startIndex = 0;
 	let endIndex = children.length;
 	
@@ -26,16 +25,15 @@ module.exports = function(node, cursor) {
 		
 		let index = middle(startIndex, endIndex);
 		let child = children[index];
-		let cmp = nodeUtils.compareCharCursor(child, cursor);
 		
-		if (cmp === "nodeContainsCursor") {
+		if (child.containsCharCursor(cursor)) {
 			smallestNode = child;
-			children = nodeUtils.children(smallestNode);
+			children = smallestNode.children;
 			startIndex = 0;
 			endIndex = children.length;
-		} else if (cmp === "cursorBeforeNode") {
+		} else if (cursor.isBefore(child.start)) {
 			endIndex = index;
-		} else if (cmp === "cursorAfterNode") {
+		} else if (cursor.isOnOrAfter(child.end)) {
 			startIndex = index + 1;
 		}
 	}
