@@ -276,8 +276,6 @@ module.exports = function(editor, editorComponent) {
 				return;
 			}
 			
-			let selection = getHilite(e);
-			
 			// TODO auto scroll at edges of code area
 			
 			view.showDropTargets();
