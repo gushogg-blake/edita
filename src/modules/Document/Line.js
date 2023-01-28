@@ -63,6 +63,14 @@ class Line {
 			indentOffset,
 		});
 	}
+	
+	get isEmpty() {
+		return this.string.length === 0;
+	}
+	
+	get isBlank() {
+		return this.trimmed.length === 0;
+	}
 }
 
 module.exports = Line;

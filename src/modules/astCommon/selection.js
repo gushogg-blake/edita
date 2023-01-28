@@ -20,18 +20,18 @@ function fromLineIndex(document, lineIndex, forHilite) {
 	let line = lines[lineIndex];
 	
 	if (!forHilite) {
-		while (line.trimmed.length === 0 && lineIndex > 0) {
+		while (line.isBlank && lineIndex > 0) {
 			lineIndex--;
 			line = lines[lineIndex];
 		}
 		
-		while (line.trimmed.length === 0 && lineIndex < lines.length - 1) {
+		while (line.isBlank && lineIndex < lines.length - 1) {
 			lineIndex++;
 			line = lines[lineIndex];
 		}
 	}
 	
-	if (line.trimmed.length === 0) {
+	if (line.isBlank) {
 		if (forHilite) {
 			return null;
 		} else {
@@ -79,12 +79,12 @@ function fromLineRange(document, startLineIndex, endLineIndex) {
 	let startLine = lines[startLineIndex];
 	let endLine = lines[endLineIndex - 1];
 	
-	while (startLine.trimmed.length === 0 && startLineIndex < endLineIndex - 1) {
+	while (startLine.isBlank && startLineIndex < endLineIndex - 1) {
 		startLineIndex++;
 		startLine = lines[startLineIndex];
 	}
 	
-	while (endLine?.trimmed.length === 0 && endLineIndex > startLineIndex) {
+	while (endLine?.isBlank && endLineIndex > startLineIndex) {
 		endLineIndex--;
 		endLine = lines[endLineIndex - 1];
 	}
@@ -192,12 +192,12 @@ let api = {
 		let startLine = lines[startLineIndex];
 		let endLine = lines[endLineIndex - 1];
 		
-		while (startLine.trimmed.length === 0 && startLineIndex < endLineIndex - 1) {
+		while (startLine.isBlank && startLineIndex < endLineIndex - 1) {
 			startLineIndex++;
 			startLine = lines[startLineIndex];
 		}
 		
-		while (endLine?.trimmed.length === 0 && endLineIndex > startLineIndex) {
+		while (endLine?.isBlank && endLineIndex > startLineIndex) {
 			endLineIndex--;
 			endLine = lines[endLineIndex - 1];
 		}

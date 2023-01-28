@@ -157,7 +157,7 @@ let matchers = {
 		
 		let newCursor = offset === 0 ? cursor : document.cursorWithinBounds(c(lineIndex + 1, 0));
 		
-		while (!newCursor.equals(document.cursorAtEnd()) && document.lines[newCursor.lineIndex].trimmed.length === 0) {
+		while (!newCursor.equals(document.cursorAtEnd()) && document.lines[newCursor.lineIndex].isBlank) {
 			newCursor = document.cursorWithinBounds(c(newCursor.lineIndex + 1, 0));
 		}
 		
@@ -202,7 +202,7 @@ let matchers = {
 		let {cursor, indentLevel} = states.at(-1);
 		let {lineIndex} = cursor;
 		
-		while (lineIndex < document.lines.length && document.lines[lineIndex].string === "") {
+		while (lineIndex < document.lines.length && document.lines[lineIndex].isEmpty) {
 			lineIndex++;
 		}
 		

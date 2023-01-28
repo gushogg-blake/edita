@@ -23,7 +23,7 @@ module.exports = {
 			for (let i = startLineIndex; i < endLineIndex; i++) {
 				let line = lines[i];
 				
-				if (line.trimmed.length === 0) {
+				if (line.isBlank) {
 					continue;
 				}
 				
@@ -52,7 +52,7 @@ module.exports = {
 			for (let i = start; i < end; i++) {
 				let line = lines[i];
 				
-				if (line.trimmed.length === 0) {
+				if (line.isBlank) {
 					statements.push({
 						type: "blankLine",
 					});

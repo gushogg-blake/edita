@@ -95,7 +95,7 @@ let api = {
 		let line;
 		
 		while (line = lines[lineIndex]) {
-			if (line.trimmed.length === 0) {
+			if (line.isBlank) {
 				space++;
 			} else {
 				break;

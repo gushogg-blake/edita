@@ -73,8 +73,8 @@ class AstSelection {
 		
 		let line = offset <= 0 ? lines[belowLineIndex] : lines[aboveLineIndex];
 		let other = offset <= 0 ? lines[aboveLineIndex] : lines[belowLineIndex];
-		let isInWhiteSpace = line.trimmed.length === 0;
-		let otherIsWhiteSpace = other.trimmed.length === 0;
+		let isInWhiteSpace = line.isBlank;
+		let otherIsWhiteSpace = other.isBlank;
 		
 		/*
 		if we're only just on the blank next to a non-blank line,
@@ -95,11 +95,11 @@ class AstSelection {
 		let start = aboveLineIndex + 1;
 		let end = start;
 		
-		while (lines[start - 1] && lines[start - 1].trimmed.length === 0) {
+		while (lines[start - 1] && lines[start - 1].isBlank) {
 			start--;
 		}
 		
-		while (lines[end] && lines[end].trimmed.length === 0) {
+		while (lines[end] && lines[end].isBlank) {
 			end++;
 		}
 		
