@@ -23,7 +23,8 @@ module.exports = {
 		if (
 			parent
 			&& this.isBlock(parent)
-			&& node.id === parent.firstChild.id
+			&& node.equals(parent.firstChild)
+			&& parent.lastChild.end.lineIndex > node.end.lineIndex
 		) {
 			return parent.lastChild;
 		}
@@ -37,7 +38,8 @@ module.exports = {
 		if (
 			parent
 			&& this.isBlock(parent)
-			&& node.id === parent.lastChild.id
+			&& node.equals(parent.lastChild)
+			&& parent.firstChild.start.lineIndex < node.start.lineIndex
 		) {
 			return parent.firstChild;
 		}
