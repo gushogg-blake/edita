@@ -1,7 +1,7 @@
 module.exports = {
 	async open() {
 		let dir = this.getCurrentDir();
-		let files = await this.readFilesForOpen(await platform.open());
+		let files = await this.readFilesForOpen(await platform.open(dir));
 		
 		for (let {path, code} of files) {
 			this.openPath(path, code);
