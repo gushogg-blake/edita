@@ -87,21 +87,22 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	step() {
-		if (this.variableWidthPart.type === "string") {
-			let currentSelectionStart = this.getCurrentSelectionStart();
-			let currentSelectionEnd = this.getCurrentSelectionEnd();
-			let nextSelectionStart = this.getNextSelectionStart();
-			let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
-			
-			let renderTo = Math.min(
-				currentSelectionStart,
-				currentSelectionEnd,
-				nextSelectionStart,
-				partEnd,
-			);
-			
-			let length = renderTo - this.offset;
-			
+		let {variableWidthPart} = this;
+		let currentSelectionStart = this.getCurrentSelectionStart();
+		let currentSelectionEnd = this.getCurrentSelectionEnd();
+		let nextSelectionStart = this.getNextSelectionStart();
+		let partEnd = variableWidthPart.offset + variableWidthPart.string.length;
+		
+		let renderTo = Math.min(
+			currentSelectionStart,
+			currentSelectionEnd,
+			nextSelectionStart,
+			partEnd,
+		);
+		
+		let length = renderTo - this.offset;
+		
+		if (variableWidthPart.type === "string") {
 			this.canvasRenderer.advance(length);
 			
 			this.offset += length;
@@ -110,11 +111,13 @@ module.exports = class extends LineRowRenderer {
 				this.nextVariableWidthPart();
 			}
 		} else {
-			this.canvasRenderer.advance(this.variableWidthPart.width);
-			
-			this.offset++;
-			
-			this.nextVariableWidthPart();
+			if (length === 1) {
+				this.canvasRenderer.advance(variableWidthPart.width);
+				
+				this.offset++;
+				
+				this.nextVariableWidthPart();
+			}
 		}
 		
 		if (this.atSelectionStart()) {

@@ -196,28 +196,29 @@ module.exports = class extends LineRowRenderer {
 	}
 	
 	step() {
-		if (this.variableWidthPart.type === "string") {
-			let currentNodeEnd = this.getCurrentNodeEnd();
-			let nextChildStart = this.getNextChildStart();
-			let currentRangeEnd = this.getCurrentRangeEnd();
-			let nextRangeStart = this.getNextRangeStart();
-			let currentInjectionRangeEnd = this.getCurrentInjectionRangeEnd();
-			let nextInjectionRangeStart = this.getNextInjectionRangeStart();
-			let partEnd = this.variableWidthPart.offset + this.variableWidthPart.string.length;
-			
-			let renderTo = Math.min(
-				currentRangeEnd,
-				nextRangeStart,
-				currentNodeEnd,
-				nextChildStart,
-				currentInjectionRangeEnd,
-				nextInjectionRangeStart,
-				partEnd,
-			);
-			
-			let length = renderTo - this.offset;
-			
-			let {string, offset} = this.variableWidthPart;
+		let {variableWidthPart} = this;
+		let currentNodeEnd = this.getCurrentNodeEnd();
+		let nextChildStart = this.getNextChildStart();
+		let currentRangeEnd = this.getCurrentRangeEnd();
+		let nextRangeStart = this.getNextRangeStart();
+		let currentInjectionRangeEnd = this.getCurrentInjectionRangeEnd();
+		let nextInjectionRangeStart = this.getNextInjectionRangeStart();
+		let partEnd = variableWidthPart.offset + variableWidthPart.string.length;
+		
+		let renderTo = Math.min(
+			currentRangeEnd,
+			nextRangeStart,
+			currentNodeEnd,
+			nextChildStart,
+			currentInjectionRangeEnd,
+			nextInjectionRangeStart,
+			partEnd,
+		);
+		
+		let length = renderTo - this.offset;
+		
+		if (variableWidthPart.type === "string") {
+			let {string, offset} = variableWidthPart;
 			let substring = string.substring(this.offset - offset, renderTo - offset);
 			
 			if (!this.inRange() || this.inInjectionRange()) {
@@ -232,11 +233,13 @@ module.exports = class extends LineRowRenderer {
 				this.nextVariableWidthPart();
 			}
 		} else {
-			this.canvasRenderer.drawTab(this.variableWidthPart.width);
-			
-			this.offset++;
-			
-			this.nextVariableWidthPart();
+			if (length === 1) {
+				this.canvasRenderer.drawTab(variableWidthPart.width);
+				
+				this.offset++;
+				
+				this.nextVariableWidthPart();
+			}
 		}
 		
 		if (this.atNodeBoundary()) {
