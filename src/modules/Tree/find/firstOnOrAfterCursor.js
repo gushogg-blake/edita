@@ -42,7 +42,12 @@ module.exports = function(node, cursor) {
 			break;
 		}
 		
-		if (rightmostBeforeCursor && leftmostAfterCursor && leftmostAfterCursor.equals(rightmostBeforeCursor.nextSibling)) {
+		if (
+			rightmostBeforeCursor
+			&& leftmostAfterCursor
+			&& rightmostBeforeCursor.nextSibling
+			&& leftmostAfterCursor.equals(rightmostBeforeCursor.nextSibling)
+		) {
 			return leftmostAfterCursor;
 		}
 		
