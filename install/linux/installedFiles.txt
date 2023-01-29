@@ -1,2 +1,0 @@
-/home/gus/bin/edita
-/home/gus/.local/share/applications/edita.desktop
