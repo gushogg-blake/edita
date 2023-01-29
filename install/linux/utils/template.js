@@ -3,6 +3,6 @@
 let fs = require("fs");
 
 let template = fs.readFileSync(process.stdin.fd).toString();
-let replaced = template.replace(/%(\w+)%/g, (_, name) => process.env[name]);
+let replaced = template.replace(/%(\w+)%/g, (_, name) => process.env["_" + name]);
 
 process.stdout.write(replaced);

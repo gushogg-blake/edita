@@ -25,7 +25,7 @@ function createOrUpdate {
 		echo "Creating $path"
 	fi
 	
-	path=$root $dir/utils/template.js < $template > $path
+	_path="$root" _bin="$bin" "$dir/utils/template.js" < "$template" > "$path"
 	
 	echo $path >> $installedFiles
 }
@@ -38,15 +38,12 @@ if [ -f $installedFiles ]; then
 	fi
 fi
 
-installBin=$(prompt "Install command-line program? (y/n)" y)
 installDesktop=$(prompt "Install desktop entry? (y/n)" y)
 addToDesktop=$(prompt "Add to desktop? (y/n)" y)
 
-if [[ $installBin == "y" ]]; then
-	bin=$(prompt "Command location" "$HOME/bin/edita")
-	
-	createOrUpdate $dir/files/edita $bin
-fi
+bin=$(prompt "Command location" "$HOME/bin/edita")
+
+createOrUpdate $dir/files/edita $bin
 
 if [[ $installDesktop == "y" ]]; then
 	createOrUpdate $dir/files/edita.desktop "$HOME/.local/share/applications/edita.desktop"

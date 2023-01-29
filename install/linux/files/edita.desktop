@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Name=Edita
 GenericName=Edita
-Exec=cd %path%; npm start -- %F
+Exec=%bin% %F
 Icon=%path%/install/resources/icon-96x96.png
 Terminal=false
 Type=Application

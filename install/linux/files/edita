@@ -2,4 +2,4 @@
 
 cd %path%
 
-npm start -- "$@"
+npm start -- --begin-app-args "$@" --end-app-args
