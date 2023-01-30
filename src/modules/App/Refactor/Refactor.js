@@ -47,12 +47,12 @@ class Refactor extends Evented {
 	async getDocument(code, path) {
 		let url = URL.file(path);
 		
-		let fileDetails = base.getFileDetails(code, url);
+		let format = base.getFormat(code, url);
 		
-		await base.ensureRequiredLangsInitialised(fileDetails.lang);
+		await base.ensureRequiredLangsInitialised(format.lang);
 		
 		return new Document(code, url, {
-			fileDetails,
+			format,
 		});
 	}
 	

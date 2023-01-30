@@ -146,7 +146,7 @@ class LspClient extends Evented {
 			this.registerScope(document, scope);
 		}
 		
-		document.on("edit fileDetailsChanged", this.updateScopes.bind(this, document));
+		document.on("edit formatChanged", this.updateScopes.bind(this, document));
 	}
 	
 	unregisterDocument(document) {

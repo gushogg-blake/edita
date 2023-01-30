@@ -135,11 +135,11 @@ let lang = {
 	commentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);
 		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
-		let minIndent = document.fileDetails.indentation.string.repeat(minIndentLevel);
+		let minIndent = document.format.indentation.string.repeat(minIndentLevel);
 		
 		return lines.map(function(line) {
 			return line.string.replace(new RegExp("^" + minIndent), minIndent + "//");
-		}).join(document.fileDetails.newline);
+		}).join(document.format.newline);
 	},
 	
 	uncommentLines(document, startLineIndex, endLineIndex) {
@@ -147,7 +147,7 @@ let lang = {
 		
 		return lines.map(function(line) {
 			return line.string.replace(/^(\s*)(\/\/)?/, "$1");
-		}).join(document.fileDetails.newline);
+		}).join(document.format.newline);
 	},
 	
 	getSupportLevel(code, path) {

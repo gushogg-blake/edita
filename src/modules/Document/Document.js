@@ -19,14 +19,14 @@ class Document extends Evented {
 		
 		options = {
 			project: null,
-			fileDetails: base.getFileDetails(string, url),
+			format: base.getFormat(string, url),
 			noParse: false,
 			...options,
 		};
 		
 		this.string = string;
 		this.url = url;
-		this.fileDetails = options.fileDetails;
+		this.format = options.format;
 		this.project = options.project;
 		this.noParse = options.noParse;
 		
@@ -53,7 +53,7 @@ class Document extends Evented {
 	}
 	
 	get lang() {
-		return this.fileDetails.lang;
+		return this.format.lang;
 	}
 	
 	get path() {
@@ -75,16 +75,16 @@ class Document extends Evented {
 	createLines() {
 		this.lines = [];
 		
-		let {fileDetails} = this;
-		let lineStrings = this.string.split(fileDetails.newline);
+		let {format} = this;
+		let lineStrings = this.string.split(format.newline);
 		let lineStartIndex = 0;
 		
 		for (let i = 0; i < lineStrings.length; i++) {
 			let lineString = lineStrings[i];
 			
-			this.lines.push(new Line(lineString, fileDetails, lineStartIndex, i));
+			this.lines.push(new Line(lineString, format, lineStartIndex, i));
 			
-			lineStartIndex += lineString.length + fileDetails.newline.length;
+			lineStartIndex += lineString.length + format.newline.length;
 		}
 	}
 	
@@ -97,7 +97,7 @@ class Document extends Evented {
 		let prefix = this.lines[start.lineIndex].string.substr(0, start.offset);
 		let suffix = this.lines[end.lineIndex].string.substr(end.offset);
 		
-		let insertLines = replaceWith.split(this.fileDetails.newline);
+		let insertLines = replaceWith.split(this.format.newline);
 		
 		insertLines[0] = prefix + insertLines[0];
 		insertLines[insertLines.length - 1] += suffix;
@@ -115,7 +115,7 @@ class Document extends Evented {
 	}
 	
 	lineEdit(lineIndex, removeLinesCount, insertLines) {
-		let {newline} = this.fileDetails;
+		let {newline} = this.format;
 		
 		let endLineIndex = lineIndex + removeLinesCount;
 		let insertString = insertLines.join(newline);
@@ -328,7 +328,7 @@ class Document extends Evented {
 		let {left, right} = selection;
 		let lines = this.lines.slice(left.lineIndex, right.lineIndex + 1);
 		
-		let str = lines.map(line => line.string).join(this.fileDetails.newline);
+		let str = lines.map(line => line.string).join(this.format.newline);
 		let trimLeft = left.offset;
 		let trimRight = lines.at(-1).string.length - right.offset;
 		
@@ -336,7 +336,7 @@ class Document extends Evented {
 	}
 	
 	getSelectionContainingString(cursor, str) {
-		return Selection.containString(cursor, str, this.fileDetails.newline);
+		return Selection.containString(cursor, str, this.format.newline);
 	}
 	
 	wordAtCursor(cursor) {
@@ -387,27 +387,27 @@ class Document extends Evented {
 		return cursor;
 	}
 	
-	setFileDetails(fileDetails) {
-		this.fileDetails = fileDetails;
+	setFormat(format) {
+		this.format = format;
 		
 		this.source.parse();
 		
-		this.fire("fileDetailsChanged");
+		this.fire("formatChanged");
 	}
 	
 	setUrl(url) {
 		this.url = url;
 		
-		this.updateFileDetails();
+		this.updateFormat();
 	}
 	
-	updateFileDetails() {
-		this.setFileDetails(base.getFileDetails(this.string, this.url));
+	updateFormat() {
+		this.setFormat(base.getFormat(this.string, this.url));
 	}
 	
 	setLang(lang) {
-		this.setFileDetails({
-			...this.fileDetails,
+		this.setFormat({
+			...this.format,
 			lang,
 		});
 	}
@@ -430,7 +430,7 @@ class Document extends Evented {
 		
 		platform.removeBackup(this);
 		
-		this.updateFileDetails();
+		this.updateFormat();
 		
 		this.fire("save");
 	}

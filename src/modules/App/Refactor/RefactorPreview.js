@@ -108,9 +108,9 @@ class RefactorPreview extends Evented {
 	async setEditorCode(editor, url, code) {
 		let {document, view} = editor;
 		
-		let fileDetails = base.getFileDetails(code, url);
+		let format = base.getFormat(code, url);
 		
-		await base.ensureRequiredLangsInitialised(fileDetails.lang);
+		await base.ensureRequiredLangsInitialised(format.lang);
 		
 		view.startBatch();
 		

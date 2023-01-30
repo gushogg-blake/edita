@@ -23,7 +23,7 @@ module.exports = {
 			option,
 		) {
 			let edits = [];
-			let indentStr = document.fileDetails.indentation.string;
+			let indentStr = document.format.indentation.string;
 			let {startLineIndex: toStart, endLineIndex: toEnd} = toSelection;
 			let removeDiff = 0;
 			
@@ -85,7 +85,7 @@ module.exports = {
 			option,
 		) {	
 			let edits = [];
-			let indentStr = document.fileDetails.indentation.string;
+			let indentStr = document.format.indentation.string;
 			let {startLineIndex: toStart, endLineIndex: toEnd} = toSelection;
 			let removeDiff = 0;
 			let remove;

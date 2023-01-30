@@ -107,7 +107,7 @@ class Editor extends Evented {
 	}
 	
 	createSnippetPositionsForLines(lines, baseLineIndex) {
-		return snippets.createPositionsForLines(lines, baseLineIndex, this.document.fileDetails.newline);
+		return snippets.createPositionsForLines(lines, baseLineIndex, this.document.format.newline);
 	}
 	
 	nextTabstop() {
@@ -585,7 +585,7 @@ class Editor extends Evented {
 			let indentLevel = Math.max(0, line.indentLevel + adjustment);
 			let indentationSelection = s(c(lineIndex, 0), c(lineIndex, line.indentOffset));
 			
-			edits.push(this.document.edit(indentationSelection, this.document.fileDetails.indentation.string.repeat(indentLevel)));
+			edits.push(this.document.edit(indentationSelection, this.document.format.indentation.string.repeat(indentLevel)));
 		}
 		
 		let newSelection = (
@@ -614,7 +614,7 @@ class Editor extends Evented {
 	
 	insertTab() {
 		let {document, normalSelection} = this;
-		let {indentation} = document.fileDetails;
+		let {indentation} = document.format;
 		
 		let str;
 		

@@ -63,7 +63,7 @@ class AstMode extends Evented {
 		
 		let astSelection = s(left.lineIndex, right.lineIndex + 1);
 		
-		let insertLines = AstSelection.selectionLinesToStrings(this.clipboard, document.fileDetails.indentation.string, indentLevel);
+		let insertLines = AstSelection.selectionLinesToStrings(this.clipboard, document.format.indentation.string, indentLevel);
 		
 		let edit = document.astEdit(astSelection, insertLines);
 		

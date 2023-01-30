@@ -299,7 +299,7 @@ class App extends Evented {
 			let {document} = editor;
 			let selectedText = editor.getSelectedText();
 			
-			if (selectedText.indexOf(document.fileDetails.newline) === -1) {
+			if (selectedText.indexOf(document.format.newline) === -1) {
 				search = selectedText;
 			}
 		}
@@ -439,9 +439,9 @@ class App extends Evented {
 	}
 	
 	async newFile(lang=null) {
-		let fileDetails = base.getDefaultFileDetails(lang);
+		let format = base.getDefaultFormat(lang);
 		
-		({lang} = fileDetails);
+		({lang} = format);
 		
 		let {defaultExtension} = lang;
 		let extension = defaultExtension ? "." + defaultExtension : "";
@@ -449,7 +449,7 @@ class App extends Evented {
 		let dir = this.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
 		let path = platform.fs(dir).child(name).path;
 		
-		let tab = await this.createEditorTab("", URL._new(path), fileDetails);
+		let tab = await this.createEditorTab("", URL._new(path), format);
 		
 		this.tabs.push(tab);
 		
@@ -461,26 +461,26 @@ class App extends Evented {
 		return tab;
 	}
 	
-	async createEditorTab(code, url, fileDetails=null) {
+	async createEditorTab(code, url, format=null) {
 		if (base.getPref("dev.timing.misc")) {
 			console.time("createEditorTab");
 		}
 		
-		if (!fileDetails) {
-			fileDetails = base.getFileDetails(code, url);
+		if (!format) {
+			format = base.getFormat(code, url);
 		}
 		
-		if (fileDetails.hasMixedNewlines) {
+		if (format.hasMixedNewlines) {
 			// TODO prompt to change all newlines
 			
 			throw new Error("File " + url.path + " has mixed newlines");
 		}
 		
-		await base.ensureRequiredLangsInitialised(fileDetails.lang);
+		await base.ensureRequiredLangsInitialised(format.lang);
 		
 		let document = this.createDocument(code, url, {
 			project: await this.projects.findOrCreateProjectForUrl(url),
-			fileDetails,
+			format,
 		});
 		
 		let view = new View(document);

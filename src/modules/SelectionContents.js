@@ -9,13 +9,13 @@ class SelectionContents {
 	}
 	
 	getString(document, baseIndentLevel=0, noHeaderIndent=false) {
-		let {newline} = document.fileDetails;
+		let {newline} = document.format;
 		
 		return this.getLineStrings(document, baseIndentLevel, noHeaderIndent).join(newline);
 	}
 	
 	getLineStrings(document, baseIndentLevel=0, noHeaderIndent=false) {
-		let {indentation: indentationDetails} = document.fileDetails;
+		let {indentation: indentationDetails} = document.format;
 		
 		return this.lines.map(function({indentLevel, string}, i) {
 			if (noHeaderIndent && i === 0) {

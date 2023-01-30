@@ -90,7 +90,7 @@ function setKeyCombo(e) {
 }
 
 function wrap() {
-	//let {newline, indentation} = editor.getEditor().document.fileDetails;
+	//let {newline, indentation} = editor.getEditor().document.format;
 }
 
 async function unwrap() {

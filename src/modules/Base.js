@@ -229,7 +229,7 @@ class Base extends Evented {
 		return general || alternate || fallback;
 	}
 	
-	getFileDetails(code, url) {
+	getFormat(code, url) {
 		let {
 			defaultIndent,
 			tabWidth,
@@ -259,7 +259,7 @@ class Base extends Evented {
 		};
 	}
 	
-	getDefaultFileDetails(lang=null) {
+	getDefaultFormat(lang=null) {
 		let {
 			defaultIndent,
 			tabWidth,

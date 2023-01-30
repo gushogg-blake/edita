@@ -52,7 +52,7 @@ class ClippingsTab extends Tab {
 	
 	addClipping(str) {
 		let {editor, document} = this;
-		let {newline} = document.fileDetails;
+		let {newline} = document.format;
 		
 		editor.api.edit(Selection.start(), str + newline + newline);
 	}

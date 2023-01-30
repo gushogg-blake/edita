@@ -19,12 +19,12 @@ module.exports = class {
 		return this.document.lines;
 	}
 	
-	get fileDetails() {
-		return this.document.fileDetails;
+	get format() {
+		return this.document.format;
 	}
 	
 	get lang() {
-		return this.fileDetails.lang;
+		return this.format.lang;
 	}
 	
 	parse() {
@@ -62,7 +62,7 @@ module.exports = class {
 		let index = 0;
 		
 		for (let i = 0; i < lineIndex; i++) {
-			index += this.lines[i].string.length + this.fileDetails.newline.length;
+			index += this.lines[i].string.length + this.format.newline.length;
 		}
 		
 		index += offset;
@@ -79,7 +79,7 @@ module.exports = class {
 			}
 			
 			lineIndex++;
-			index -= line.string.length + this.fileDetails.newline.length;
+			index -= line.string.length + this.format.newline.length;
 		}
 	}
 	

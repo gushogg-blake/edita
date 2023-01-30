@@ -34,7 +34,7 @@ class MultiStepCommand extends Evented {
 			return;
 		}
 		
-		let indentStr = document.fileDetails.indentation.string;
+		let indentStr = document.format.indentation.string;
 		let {indentLevel: baseIndentLevel} = document.lines[astSelection.startLineIndex];
 		
 		let astManipulationResult = astManipulation.apply(this, document, astSelection);

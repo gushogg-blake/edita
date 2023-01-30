@@ -2,12 +2,12 @@ let expandTabs = require("modules/utils/expandTabs");
 let getIndentLevel = require("modules/utils/getIndentLevel");
 
 class Line {
-	constructor(string, fileDetails, startIndex, lineIndex) {
+	constructor(string, format, startIndex, lineIndex) {
 		let {
 			level: indentLevel,
 			cols: indentCols,
 			offset: indentOffset,
-		} = getIndentLevel(string, fileDetails.indentation);
+		} = getIndentLevel(string, format.indentation);
 		
 		let {
 			tabWidth,

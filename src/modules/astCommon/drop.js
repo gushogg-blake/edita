@@ -31,7 +31,7 @@ module.exports = function(
 	let toEnd;
 	let edits = [];
 	let newSelection;
-	let indentStr = document.fileDetails.indentation.string;
+	let indentStr = document.format.indentation.string;
 	
 	if (fromSelection) {
 		({startLineIndex: fromStart, endLineIndex: fromEnd} = fromSelection);

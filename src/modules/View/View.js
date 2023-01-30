@@ -102,7 +102,7 @@ class View extends Evented {
 				this.wrap,
 				line,
 				this.folds[lineIndex],
-				this.document.fileDetails.indentation,
+				this.document.format.indentation,
 				this.measurements,
 				this.sizes.codeWidth,
 			);

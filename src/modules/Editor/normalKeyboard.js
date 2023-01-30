@@ -115,7 +115,7 @@ module.exports = {
 	
 	enter() {
 		let {document, normalSelection: selection} = this;
-		let {newline, indentation} = document.fileDetails;
+		let {newline, indentation} = document.format;
 		let {left} = selection;
 		let {lineIndex} = left;
 		let line = document.lines[lineIndex];
@@ -150,7 +150,7 @@ module.exports = {
 	
 	newLineBeforeSelection() {
 		let {document, normalSelection} = this;
-		let {newline, indentation} = document.fileDetails;
+		let {newline, indentation} = document.format;
 		let {lineIndex} = normalSelection.left;
 		let {indentLevel} = document.lines[lineIndex];
 		
@@ -176,7 +176,7 @@ module.exports = {
 	
 	newLineAfterSelection() {
 		let {document, normalSelection} = this;
-		let {newline, indentation} = document.fileDetails;
+		let {newline, indentation} = document.format;
 		let {lineIndex} = normalSelection.left;
 		let line = document.lines[lineIndex];
 		
@@ -527,7 +527,7 @@ module.exports = {
 		let indentAdjustment = this.view.lang.codeIntel?.indentAdjustmentAfterInsertion(document, line, newSelection.start) || 0;
 		
 		if (indentAdjustment !== 0) {
-			let {string: indentStr} = document.fileDetails.indentation;
+			let {string: indentStr} = document.format.indentation;
 			let {indentLevel} = line;
 			let newIndentLevel = indentLevel + indentAdjustment;
 			let oldIndentStr = indentStr.repeat(indentLevel);

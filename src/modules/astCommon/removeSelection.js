@@ -1,7 +1,7 @@
 let {createSpaces, findSiblingIndex, countSpace} = require("./utils");
 
 module.exports = function(document, selection) {
-	let indentStr = document.fileDetails.indentation.string;
+	let indentStr = document.format.indentation.string;
 	let {startLineIndex, endLineIndex} = selection;
 	let selectionHeaderLine = document.lines[startLineIndex];
 	let prevSiblingIndex = findSiblingIndex(document, startLineIndex - 1, selectionHeaderLine.indentLevel, -1);
