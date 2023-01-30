@@ -32,7 +32,7 @@ let ignoreMouseLeave = false;
 let rowYHint = 0;
 
 let {
-	wrappedLines,
+	lines,
 	mode,
 	dropTargets,
 	pickOptions,
@@ -350,52 +350,35 @@ function dragleave(e) {
 }
 
 function onUpdateSizes() {
-	({
-		sizes,
-	} = view);
+	({sizes} = view);
 }
 
 function onScroll() {
-	({
-		scrollPosition,
-	} = view);
+	({scrollPosition} = view);
 }
 
 function onUpdateMeasurements() {
-	({
-		rowHeight,
-		colWidth,
-	} = view.measurements);
+	({rowHeight, colWidth} = view.measurements);
 }
 
 function onModeSwitch() {
-	({
-		mode,
-	} = view);
+	({mode} = view);
 }
 
 function onUpdatePickOptions() {
-	({
-		pickOptions,
-	} = view);
+	({pickOptions} = view);
 }
 
 function onUpdateDropTargets() {
-	({
-		dropTargets,
-	} = view);
+	({dropTargets} = view);
 }
 
 function onUpdateCompletions() {
-	({
-		completions,
-	} = view);
+	({completions} = view);
 }
 
 function onEdit() {
-	({
-		wrappedLines,
-	} = view);
+	({lines} = view);
 }
 
 function calculateMarginStyle(sizes) {
@@ -421,9 +404,10 @@ function calculateCodeStyle(sizes, mode, dragStartedHere) {
 	};
 }
 
-function rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition) {
+function rowStyle(lines, lineIndex, rowHeight, colWidth, scrollPosition) {
 	let screenY = view.screenYFromLineIndex(lineIndex);
-	let screenCol = wrappedLines[lineIndex].line.width + 1;
+	let line = lines[lineIndex];
+	let screenCol = line.trimmed ? line.width + 1 : line.width;
 	
 	return {
 		top: sizes.topMargin + rowYHint + screenY,
@@ -432,7 +416,7 @@ function rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition) 
 	};
 }
 
-function completionsStyle(wrappedLines, completions, rowHeight, colWidth, scrollPosition) {
+function completionsStyle(completions, rowHeight, colWidth, scrollPosition) {
 	let {cursor} = completions;
 	let [row, col] = view.rowColFromCursor(cursor);
 	let screenY = view.screenYFromLineIndex(cursor.lineIndex + 1);
@@ -572,7 +556,7 @@ onMount(function() {
 			{#each dropTargets as {lineIndex, targets} (lineIndex)}
 				<div
 					class="row"
-					style={inlineStyle(rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition))}
+					style={inlineStyle(rowStyle(lines, lineIndex, rowHeight, colWidth, scrollPosition))}
 				>
 					{#each targets as target (target)}
 						<div
@@ -589,7 +573,7 @@ onMount(function() {
 			{#each pickOptions as {lineIndex, options} (lineIndex)}
 				<div
 					class="row"
-					style={inlineStyle(rowStyle(wrappedLines, lineIndex, rowHeight, colWidth, scrollPosition))}
+					style={inlineStyle(rowStyle(lines, lineIndex, rowHeight, colWidth, scrollPosition))}
 				>
 					{#each options as {option}}
 						<div
@@ -623,7 +607,7 @@ onMount(function() {
 			{#if completions}
 				<div
 					id="completions"
-					style={inlineStyle(completionsStyle(wrappedLines, completions, rowHeight, colWidth, scrollPosition))}
+					style={inlineStyle(completionsStyle(completions, rowHeight, colWidth, scrollPosition))}
 					on:wheel={e => e.stopPropagation()}
 					on:mousedown={e => e.stopPropagation()}
 					on:click={e => e.stopPropagation()}

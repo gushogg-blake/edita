@@ -335,7 +335,14 @@ module.exports = function(editor, editorComponent) {
 		}
 		
 		if (toUs) {
-			toSelection = dropTargetType ? hiliteFromEvent(e) : getInsertionRange(e);
+			let lineIndex = lineIndexFromEvent(e);
+			let line = document.lines[lineIndex];
+			
+			toSelection = (
+				dropTargetType
+				? line?.trimmed ? hiliteFromLineIndex(lineIndex) : getInsertionRange(e)
+				: getInsertionRange(e)
+			);
 		} else {
 			toSelection = null;
 		}
