@@ -12,12 +12,15 @@ args.default({
 	forceNewInstance: process.env.EDITOR_NEW_INSTANCE === "1",
 });
 
+let {argv} = args;
+
 let {
 	userDataDir,
 	forceNewInstance,
-} = args.argv;
+} = argv;
 
 module.exports = {
+	args: argv,
 	dev,
 	userDataDir,
 	forceNewInstance,

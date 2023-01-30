@@ -29,7 +29,7 @@ class App {
 		this.dialogOpeners = new WeakMap();
 		this.dialogsByAppWindowAndName = new WeakMap();
 		
-		this.filesToOpenOnStartup = getArgs(process.argv).argv._.map(p => path.resolve(process.cwd(), p));
+		this.filesToOpenOnStartup = config.args._.map(p => path.resolve(process.cwd(), p));
 		
 		this.dataDir = fs(this.config.userDataDir);
 		this.buildDir = fs(__dirname, "..", "..", config.dev ? "electron-dev" : "electron");
