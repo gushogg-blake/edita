@@ -9,11 +9,13 @@ let filters = [
 	function(argv) {
 		let start = argv.indexOf("--start-args");
 		
-		if (start === -1) {
-			throw new Error("--start-args argument required to separate command-line args from node/electron paths");
+		if (start !== -1) {
+			return argv.slice(start + 1);
+		} else {
+			console.log("Note: ignoring command-line arguments. Pass --start-args to indicate start of app args");
+			
+			return [];
 		}
-		
-		return argv.slice(start + 1);
 	},
 	
 	function(argv) {
