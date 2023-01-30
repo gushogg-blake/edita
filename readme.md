@@ -4,6 +4,8 @@ Edita
 Edita is a code editor combining novel features and interactions with a familiar GUI interface.
 
 See [edita.vercel.app](//edita.vercel.app/).
+
+Project structure
 ---
 
 The main code for Edita is in [src/modules](./src/modules). These constitute the business logic, including some aspects of rendering (see e.g. [View/render/CodeRenderer.js](./src/modules/View/render/CodeRenderer.js), which coordinates with [src/components/Editor/canvas/renderCode.js](./src/components/Editor/canvas/renderCode.js) to render the code).
