@@ -8,8 +8,7 @@ let {
 let windowStateKeeper = require("electron-window-state");
 let path = require("path");
 let {removeInPlace} = require("./utils/arrayMethods");
-let streamFromString = require("./utils/streamFromString");
-let getArgs = require("./utils/getArgs");
+let getConfig = require("./utils/getConfig");
 let fs = require("./modules/fs");
 let ipcMain = require("./modules/ipcMain");
 let mimeTypes = require("./modules/mimeTypes");
@@ -28,8 +27,6 @@ class App {
 		this.closeWithoutConfirming = new WeakSet();
 		this.dialogOpeners = new WeakMap();
 		this.dialogsByAppWindowAndName = new WeakMap();
-		
-		this.filesToOpenOnStartup = config.args._.map(p => path.resolve(process.cwd(), p));
 		
 		this.dataDir = fs(this.config.userDataDir);
 		this.buildDir = fs(__dirname, "..", "..", config.dev ? "electron-dev" : "electron");
@@ -113,7 +110,7 @@ class App {
 		});
 		
 		electronApp.on("second-instance", (e, argv, dir) => {
-			let files = getArgs(argv).argv._.map(p => path.resolve(dir, p));
+			let files = getConfig(argv).files.map(p => path.resolve(dir, p));
 			
 			if (files.length > 0) {
 				ipcMain.sendToRenderer(this.lastFocusedWindow, "open", files);

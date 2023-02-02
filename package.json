@@ -11,7 +11,6 @@
 	"dependencies": {
 		"bluebird": "^3.7.2",
 		"chokidar": "^3.5.2",
-		"cross-env": "^7.0.3",
 		"detect-indent": "^7.0.0",
 		"electron-window-state": "^5.0.3",
 		"fast-stable-stringify": "^1.0.0",
@@ -51,7 +50,7 @@
 		"svelte": "^3.44.1"
 	},
 	"scripts": {
-		"start": "cross-env ELECTRON_IS_DEV=0 electron .",
+		"start": "node ./src/platforms/electron/mainProcess/bootstrap.js",
 		"build": "rollup -c",
 		"build-dev": "NODE_ENV=development rollup -c",
 		"autobuild-dev": "NODE_ENV=development rollup -cw",
@@ -67,7 +66,7 @@
 		"electron-dev": "run-p autobuild-electron-dev test electron",
 		"web-dev": "run-p autobuild-web-dev test web",
 		"test-dev": "run-p autobuild-test test",
-		"electron": "./scripts/await-build electron-dev; NODE_ENV=development electron build/electron-dev/mainProcess/main.js --inspect",
+		"electron": "./scripts/await-build electron-dev; NODE_ENV=development npm start",
 		"web": "./scripts/await-build web-dev; sirv --dev --quiet --no-clear --port 5000 build/web-dev",
 		"test": "./scripts/await-build test; sirv --dev --quiet --no-clear --port 5001 build/test"
 	}

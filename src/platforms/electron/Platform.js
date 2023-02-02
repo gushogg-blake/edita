@@ -20,12 +20,10 @@ class Platform extends Evented {
 		let {
 			config,
 			isMainWindow,
-			filesToOpenOnStartup,
 		} = ipc.init;
 		
 		this.config = config;
 		this.isMainWindow = isMainWindow;
-		this.filesToOpenOnStartup = filesToOpenOnStartup;
 		
 		this.systemInfo = {
 			newline: os.EOL,
@@ -40,6 +38,8 @@ class Platform extends Evented {
 		this.lsp = ipc.lsp;
 		this.path = path;
 		this.fs = fs;
+		
+		this.filesToOpenOnStartup = config.files.map(p => fs(config.cwd, p).path);
 		
 		ipcRenderer.on("closeWindow", () => {
 			let defaultPrevented = false;

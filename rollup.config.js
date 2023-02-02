@@ -190,7 +190,7 @@ if (platform === "all" || platform === "electron") {
 			}),
 			
 			copy({
-				copyOnce: true,
+				copyOnce: true, // files are still re-copied on change - this stops the copy from happening again each time the build re-runs, ie. whenever any file is changed
 				watch: watch && "src/platforms/electron/mainProcess",
 				
 				targets: [
