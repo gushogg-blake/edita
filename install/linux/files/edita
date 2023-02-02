@@ -1,5 +1,7 @@
 #!/bin/bash
 
+path=`pwd`
+
 cd %path%
 
-npm start -- --start-args "$@"
+node build/electron-dev/mainProcess/bootstrap.js -- --start-args --cwd="$path" "$@"
