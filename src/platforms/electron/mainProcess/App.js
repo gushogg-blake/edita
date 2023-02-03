@@ -132,7 +132,7 @@ class App {
 		let winState = windowStateKeeper();
 		
 		let browserWindow = new BrowserWindow({
-			x: winState.x + x, 
+			x: winState.x + x,
 			y: winState.y + y,
 			width: winState.width,
 			height: winState.height,

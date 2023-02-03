@@ -83,7 +83,7 @@ module.exports = {
 			lines,
 			move,
 			option,
-		) {	
+		) {
 			let edits = [];
 			let indentStr = document.format.indentation.string;
 			let {startLineIndex: toStart, endLineIndex: toEnd} = toSelection;
