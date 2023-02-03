@@ -109,8 +109,9 @@ class App {
 			});
 		});
 		
-		electronApp.on("second-instance", (e, argv, dir) => {
-			let files = getConfig(argv).files.map(p => path.resolve(dir, p));
+		electronApp.on("second-instance", (e, argv) => {
+			let config = getConfig(argv);
+			let files = config.files.map(p => path.resolve(config.cwd, p));
 			
 			if (files.length > 0) {
 				ipcMain.sendToRenderer(this.lastFocusedWindow, "open", files);
