@@ -3,13 +3,29 @@ Tree-sitter
 
 Edita uses a fork of tree-sitter with the following changes:
 
-- fix environment detection in lib/binding_web/binding.js
+- fix environment detection in lib/binding_web/binding.js (the old check checked for node globals like `process`, which are available in the renderer process in Electron).
 
-- patch lib/binding_web/exports.json to fix the following langs:
+- statically link parsers in script/build-wasm to support the following langs, which use system libraries that aren't in the main lib/binding_web/exports.json list:
 
 	- Ruby
 	
-	(See https://github.com/tree-sitter/tree-sitter/issues/949)
+	See:
+	
+	- https://github.com/emscripten-core/emscripten/issues/8308
+	- https://emscripten.org/docs/compiling/Dynamic-Linking.html (System Libraries section)
+	- https://github.com/tree-sitter/tree-sitter/issues/949
+	
+	There are two other solutions suggested in the emscripten docs:
+	
+	- add `EMCC_FORCE_STDLIBS=1` and `-s EXPORT_ALL=1` to the `emcc` command in tree-sitter
+	
+	- add missing symbols to exports.json (as described in #949)
+	
+	but neither of these worked.
+	
+	The disadvantage of static linking is that you can't combine static and dynamic linking, so if any langs need to be statically linked then they all need to be.
+	
+	This means that all supported langs need to be loaded on startup, which will introduce lag at some point.
 
 Fork: https://github.com/gushogg-blake/tree-sitter
 
@@ -20,10 +36,17 @@ cd projects/tree-sitter
 ./script/build-wasm
 ```
 
-The files are created in `lib/binding_web`.
+The files (`tree-sitter.js` and `tree-sitter.wasm`) are created in `lib/binding_web`.
+
+### Static linking
+
+The `--static` option generates statically linked files. These will have a `-static` suffix.
+
+To enable switching between static and dynamic linking as easily as possible, we keep both versions in Edita. The currently active version is just called `tree-sitter.js`
 
 ## Creating language wasm files
 
+Wasm files can be created with a non-patched tree-sitter installed as `tree-sitter-cli`.
 Requires `@gushogg-blake/tree-sitter-cli` (latest as in last published, but it will be 0.20.x, not 0.21.0 which broke dependencies) (with the patched exports.json) for `npx tree-sitter`.
 
 ```bash

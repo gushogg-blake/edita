@@ -175,7 +175,7 @@ if (platform === "all" || platform === "electron") {
 			...electronPlugins(),
 			
 			copy({
-				watch: watch && "src/platforms/electron/public",
+				watch: watch && ["src/platforms/electron/public", "vendor/public"],
 				
 				targets: [
 					{
@@ -244,7 +244,7 @@ if (platform === "all" || platform === "web") {
 			...webPlugins(),
 			
 			copy({
-				watch: watch && "src/platforms/web/public",
+				watch: watch && ["src/platforms/web/public", "vendor/public"],
 				
 				targets: [
 					{

@@ -5,8 +5,9 @@ let {
 	Menu,
 } = require("electron");
 
-let windowStateKeeper = require("electron-window-state");
+let {Readable} = require("stream");
 let path = require("path");
+let windowStateKeeper = require("electron-window-state");
 let {removeInPlace} = require("./utils/arrayMethods");
 let getConfig = require("./utils/getConfig");
 let fs = require("./modules/fs");
@@ -82,23 +83,57 @@ class App {
 			this.windowPositionAdjustment = (await this.jsonStore.load("prefs"))?.value.windowPositionAdjustment; // https://github.com/electron/electron/issues/10388
 			
 			protocol.registerStreamProtocol("app", async (request, callback) => {
-				// tree-sitter.js requests an incorrect absolute path for some reason
-				if (request.url.endsWith("tree-sitter.wasm")) {
-					callback({
-						mimeType: "application/wasm",
-						data: this.buildDir.child("vendor", "tree-sitter", "tree-sitter.wasm").createReadStream(),
-					});
+				let requestPath = decodeURIComponent(new URL(request.url).pathname);
+				let {name, type} = fs(requestPath);
+				let mimeType = mimeTypes[type];
+				let path;
+				
+				function emptyStream() {
+					let stream = new Readable();
 					
-					return;
+					stream.push(null);
+					
+					return stream;
 				}
 				
-				let path = decodeURIComponent(new URL(request.url).pathname);
-				let mimeType = mimeTypes[fs(path).type];
+				if (name === "tree-sitter.wasm") {
+					// tree-sitter.js requests an incorrect absolute path for some reason
+					
+					path = "vendor/tree-sitter/tree-sitter.wasm";
+				} else if (name.match(/^tree-sitter-.+\.wasm$/)) {
+					/*
+					parsers that are linked into the tree-sitter wasm at compile time
+					(to solve system library linking issues) are requested as just
+					"tree-sitter-*.wasm"
+					
+					See:
+					
+					- https://github.com/emscripten-core/emscripten/issues/8308
+					- https://emscripten.org/docs/compiling/Dynamic-Linking.html (System Libraries section)
+					- https://github.com/tree-sitter/tree-sitter/issues/949
+					- howto/tree-sitter.md
+					
+					for more on why some parsers are linked in like this.
+					*/
+					
+					path = "vendor/tree-sitter/langs/" + name;
+				} else {
+					path = requestPath.substr(1);
+				}
 				
-				callback({
-					mimeType,
-					data: this.buildDir.child(...path.substr(1).split("/")).createReadStream(),
-				});
+				let node = this.buildDir.child(...path.split("/"));
+				
+				if (await node.exists()) {
+					callback({
+						mimeType,
+						data: request.method === "HEAD" ? emptyStream() : node.createReadStream(),
+					});
+				} else {
+					callback({
+						statusCode: request.method === "HEAD" ? 204 : 404,
+						data: emptyStream(),
+					});
+				}
 			});
 			
 			this.mainWindow = this.createAppWindow();

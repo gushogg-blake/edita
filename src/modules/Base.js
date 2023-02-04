@@ -105,6 +105,27 @@ class Base extends Evented {
 		this.components = components;
 		this.options = options;
 		
+		this.config = {
+			treeSitter: {
+				linkMode: "static",
+			},
+		};
+		
+		if (options.useLangs) {
+			/*
+			tree-sitter linking mode is indicated by the "other" file that's there,
+			ie. if we're in static mode then tree-sitter.js is static and there
+			will be tree-sitter-dynamic.js, otherwise tree-sitter.js will be dynamic
+			and there'll be tree-sitter-static.js
+			*/
+			
+			let res = await fetch("/vendor/tree-sitter/tree-sitter-static.js", {
+				method: "HEAD",
+			});
+			
+			this.config.treeSitter.linkMode = res.status === 200 ? "dynamic" : "static";
+		}
+		
 		await Promise.all([
 			this.initStores(),
 			options.useLangs && TreeSitter.init(),
