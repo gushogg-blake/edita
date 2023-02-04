@@ -57,6 +57,8 @@ function replaceRegexEscapes(str) {
 				result += "\n";
 			} else if (next === "t") {
 				result += "\t";
+			} else {
+				result += next;
 			}
 			
 			i += 2;
