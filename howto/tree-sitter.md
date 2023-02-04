@@ -24,7 +24,7 @@ The files are created in `lib/binding_web`.
 
 ## Creating language wasm files
 
-Requires `@gushogg-blake/tree-sitter-cli@0.20.11` (with the patched exports.json) for `npx tree-sitter`.
+Requires `@gushogg-blake/tree-sitter-cli` (latest as in last published, but it will be 0.20.x, not 0.21.0 which broke dependencies) (with the patched exports.json) for `npx tree-sitter`.
 
 ```bash
 git clone https://github.com/.../tree-sitter-[lang]
@@ -50,7 +50,7 @@ ___cxa_allocate_exception
 ___cxa_throw
 ```
 
-Remove these an re-run the build until it works, then:
+Remove these and re-run the build until it works, then:
 
 - bump the minor version number for cli/npm and update lib/Cargo.toml to match
 
@@ -58,7 +58,7 @@ Remove these an re-run the build until it works, then:
 
 - push to GitHub, publish cli/npm and wait for GitHub CI to run
 
-- install the latest version, e.g. `npm i @gushogg-blake/tree-sitter-cli@v0.20.11`
+- install the latest version, e.g. `npm i @gushogg-blake/tree-sitter-cli@0.20.11`
 
 - build wasm file as above
 
