@@ -4,7 +4,7 @@ class Lang {
 	}
 	
 	async initTreeSitterLanguage() {
-		this.treeSitterLanguage = await platform.loadTreeSitterLanguage(this.code, base.config.treeSitter.linkMode);
+		this.treeSitterLanguage = await platform.loadTreeSitterLanguage(this.code);
 		
 		// tree-sitter query creation is slow so pre-create them
 		

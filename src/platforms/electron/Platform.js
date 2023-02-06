@@ -215,9 +215,8 @@ class Platform extends Evented {
 		document.title = (title ? title + " - " : "") + "Edita";
 	}
 	
-	loadTreeSitterLanguage(name, linkMode) {
-		console.log(linkMode);
-		return TreeSitter.Language.load("/vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm", linkMode);
+	loadTreeSitterLanguage(name) {
+		return TreeSitter.Language.load("/vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
 	}
 	
 	closeWindow() {
