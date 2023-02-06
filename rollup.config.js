@@ -37,6 +37,17 @@ function markBuildComplete(dir) {
 	};
 }
 
+function watchOptions() {
+	return {
+		clearScreen: false,
+		buildDelay: 100,
+		
+		chokidar: {
+			usePolling: true,
+		},
+	};
+}
+
 function commonPlugins(platform) {
 	return [
 		alias({
@@ -129,9 +140,7 @@ function addBuilds(...configs) {
 	builds.push(...configs.map(config => ({
 		onwarn() {},
 		
-		watch: {
-			clearScreen: false,
-		},
+		watch: watchOptions(),
 		
 		...config,
 	})));
