@@ -52,7 +52,7 @@ function commonPlugins(platform) {
 	return [
 		alias({
 			entries: {
-				"root": ".",
+				"root": root,
 				"components": path.join(root, "src/components"),
 				"modules": path.join(root, "src/modules"),
 				"utils": path.join(root, "src/utils"),
