@@ -80,6 +80,10 @@ let lang = {
 		
 		if ([
 			"identifier",
+			"constant",
+			"simple_symbol",
+			"hash_key_symbol",
+			"class_variable",
 		].includes(type)) {
 			return "id";
 		}
@@ -92,7 +96,7 @@ let lang = {
 			return "string";
 		}
 		
-		if (type === "number") {
+		if (type === "integer" || type === "float") {
 			return "number";
 		}
 		

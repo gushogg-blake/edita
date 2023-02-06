@@ -194,6 +194,7 @@ let theme = {
 			bracket: "#202020",
 			number: "#cc2222",
 			string: "#2233bb",
+			regex: "#cc7030",
 		},
 	},
 };
