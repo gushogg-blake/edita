@@ -32,6 +32,14 @@ function setMode {
 }
 
 if [ ! -z $mode ]; then
+	if [[ $mode == "--switch" || $mode == "-s" ]]; then
+		if [[ $currentMode == "static" ]]; then
+			mode="dynamic"
+		else
+			mode="static"
+		fi
+	fi
+	
 	setMode
 	
 	echo "Mode set to $mode"
