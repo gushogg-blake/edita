@@ -107,7 +107,7 @@ class Base extends Evented {
 		
 		await Promise.all([
 			this.initStores(),
-			options.useLangs && TreeSitter.init(),
+			options.useLangs && this.initTreeSitter(),
 		]);
 		
 		await Promise.all([
@@ -135,6 +135,14 @@ class Base extends Evented {
 	
 	async initPrefs() {
 		this.prefs = await this.stores.prefs.load();
+	}
+	
+	async initTreeSitter() {
+		await TreeSitter.init({
+			locateFile(file) {
+				return platform.resolveTreeSitterWasm(file);
+			},
+		});
 	}
 	
 	updatePrefs(prefs) {
