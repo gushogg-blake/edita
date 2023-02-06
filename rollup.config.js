@@ -9,9 +9,9 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import alias from "@rollup/plugin-alias";
 import json from "@rollup/plugin-json";
+import terser from "@rollup/plugin-terser";
 import svelte from "rollup-plugin-svelte";
 import cssOnly from "rollup-plugin-css-only";
-import {terser} from "rollup-plugin-terser";
 import _delete from "rollup-plugin-delete";
 
 let dev = process.env.NODE_ENV === "development";
@@ -59,6 +59,7 @@ function commonPlugins(platform) {
 				"platforms": path.join(root, "src/platforms"),
 				"platform": path.join(root, "src/platforms/" + platform),
 				"vendor": path.join(root, "vendor"),
+				"test": path.join(root, "test"),
 			},
 		}),
 		
