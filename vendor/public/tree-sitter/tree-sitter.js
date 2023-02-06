@@ -2159,6 +2159,7 @@ var TreeSitter = function() {
     var _ts_language_field_count = Module["_ts_language_field_count"] = createExportWrapper("ts_language_field_count");
     var _ts_language_symbol_name = Module["_ts_language_symbol_name"] = createExportWrapper("ts_language_symbol_name");
     var _ts_language_symbol_for_name = Module["_ts_language_symbol_for_name"] = createExportWrapper("ts_language_symbol_for_name");
+    var _strncmp = Module["_strncmp"] = createExportWrapper("strncmp");
     var _ts_language_symbol_type = Module["_ts_language_symbol_type"] = createExportWrapper("ts_language_symbol_type");
     var _ts_language_field_name_for_id = Module["_ts_language_field_name_for_id"] = createExportWrapper("ts_language_field_name_for_id");
     var _memset = Module["_memset"] = createExportWrapper("memset");
@@ -2240,12 +2241,14 @@ var TreeSitter = function() {
     var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
     var _strchr = Module["_strchr"] = createExportWrapper("strchr");
     var ___stdio_exit = Module["___stdio_exit"] = createExportWrapper("__stdio_exit");
+    var _atoi = Module["_atoi"] = createExportWrapper("atoi");
     var _strlen = Module["_strlen"] = createExportWrapper("strlen");
     var _iswdigit = Module["_iswdigit"] = createExportWrapper("iswdigit");
     var _iswalpha = Module["_iswalpha"] = createExportWrapper("iswalpha");
     var _iswlower = Module["_iswlower"] = createExportWrapper("iswlower");
     var _iswupper = Module["_iswupper"] = createExportWrapper("iswupper");
     var _memchr = Module["_memchr"] = createExportWrapper("memchr");
+    var _strncpy = Module["_strncpy"] = createExportWrapper("strncpy");
     var _towupper = Module["_towupper"] = createExportWrapper("towupper");
     var _sbrk = Module["_sbrk"] = createExportWrapper("sbrk");
     var _emscripten_get_sbrk_ptr = Module["_emscripten_get_sbrk_ptr"] = createExportWrapper("emscripten_get_sbrk_ptr");
