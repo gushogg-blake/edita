@@ -382,10 +382,6 @@ function resize() {
 		
 		view.setCanvasSize(width, height);
 		
-		if (width !== prevWidth) {
-			view.updateWrappedLines();
-		}
-		
 		view.endBatch();
 		
 		updateScrollbars();

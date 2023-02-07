@@ -49,11 +49,6 @@ class View extends Evented {
 		this.pickOptions = [];
 		this.dropTargets = [];
 		
-		this.scrollPosition = {
-			x: 0,
-			y: 0,
-		};
-		
 		this.normalHilites = [];
 		
 		this.insertCursor = null;
@@ -79,6 +74,11 @@ class View extends Evented {
 		this.measurements = {
 			rowHeight: 20,
 			colWidth: 8,
+		};
+		
+		this.scrollPosition = {
+			x: 0,
+			y: 0,
 		};
 		
 		this.updateSizes(800, 600);
@@ -412,6 +412,15 @@ class View extends Evented {
 		this.fire("scroll");
 	}
 	
+	/*
+	ensure scroll position is still valid after e.g. resizing, which
+	can change the height if wrapping is enabled
+	*/
+	
+	validateScrollPosition() {
+		this.setScrollPosition(this.scrollPosition);
+	}
+	
 	scrollPage(dir) {
 		let {rows} = this.sizes;
 		
@@ -649,7 +658,13 @@ class View extends Evented {
 	}
 	
 	setCanvasSize(width, height) {
+		this.startBatch();
+		
 		this.updateSizes(width, height);
+		this.updateWrappedLines();
+		this.validateScrollPosition();
+		
+		this.endBatch();
 	}
 	
 	updateSizes(width=null, height=null) {
