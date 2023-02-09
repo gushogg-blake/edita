@@ -183,16 +183,8 @@ module.exports = function(config) {
 			return this._delete(true);
 		}
 		
-		async rename(find, replace) {
-			let newPath;
-			
-			if (replace) {
-				newPath = this.name.replace(find, replace);
-			} else {
-				newPath = find;
-			}
-			
-			let newFile = this.sibling(newPath);
+		async rename(name) {
+			let newFile = this.sibling(name);
 			
 			await fs.rename(this.path, newFile.path);
 			
