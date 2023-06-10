@@ -52,6 +52,8 @@ class Document extends Evented {
 		this.setupWatch();
 	}
 	
+	static maxEditsToApplyIndividually = 2;
+	
 	get lang() {
 		return this.format.lang;
 	}
@@ -156,24 +158,25 @@ class Document extends Evented {
 		return this.lineEdit(startLineIndex, endLineIndex - startLineIndex, insertLines);
 	}
 	
-	apply(edit) {
-		let {
-			selection,
-			string,
-			replaceWith,
-		} = edit;
-		
+	_apply(edit) {
+		let {selection, string, replaceWith} = edit;
 		let index = this.indexFromCursor(selection.left);
 		
 		this.string = this.string.substr(0, index) + replaceWith + this.string.substr(index + string.length);
 		
 		this.createLines();
 		
+		return index;
+	}
+	
+	apply(edit) {
+		let index = this._apply(edit);
+		
 		this.source.edit(edit, index);
 		
 		this.modified = true;
 		
-		this.fire("edit", edit);
+		this.fire("edit", [edit]);
 	}
 	
 	reverse(edit) {
@@ -197,8 +200,20 @@ class Document extends Evented {
 	}
 	
 	applyEdits(edits) {
-		for (let edit of edits) {
-			this.apply(edit);
+		if (edits.length <= Document.maxEditsToApplyIndividually) {
+			for (let edit of edits) {
+				this.apply(edit);
+			}
+		} else {
+			for (let edit of edits) {
+				this._apply(edit);
+			}
+			
+			this.source.parse();
+			
+			this.modified = true;
+			
+			this.fire("edit", edits);
 		}
 	}
 	

@@ -232,19 +232,20 @@ class Editor extends Evented {
 		return candidates;
 	}
 	
-	onDocumentEdit(edit) {
+	onDocumentEdit(edits) {
 		let {view} = this;
-		let {normalHilites} = view;
 		
 		view.startBatch();
 		
-		view.setNormalHilites(normalHilites.map(function(hilite) {
-			if (hilite.overlaps(edit.selection)) {
-				return null;
-			}
-			
-			return hilite.edit(edit);
-		}).filter(Boolean));
+		for (let edit of edits) {
+			view.setNormalHilites(view.normalHilites.map(function(hilite) {
+				if (hilite.overlaps(edit.selection)) {
+					return null;
+				}
+				
+				return hilite.edit(edit);
+			}).filter(Boolean));
+		}
 		
 		view.updateMarginSize();
 		
