@@ -324,7 +324,7 @@ class App extends Evented {
 		} catch (e) {
 			if (e instanceof platform.fs.FileIsBinary) {
 				alert("Opening binary files not supported: " + path);
-			} if (e.code === "EACCES") {
+			} else if (e.code === "EACCES") {
 				alert("Could not read " + path + " (permission denied)");
 			} else {
 				console.log("Error reading file " + path);

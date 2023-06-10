@@ -1,6 +1,6 @@
 let bluebird = require("bluebird");
 
-let Files = {
+module.exports = {
 	async createEntry(path) {
 		let node = platform.fs(path);
 		
@@ -19,5 +19,3 @@ let Files = {
 		return [...dirs, ...files];
 	},
 };
-
-module.exports = Files;

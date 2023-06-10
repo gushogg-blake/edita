@@ -2,6 +2,14 @@ let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
 let screenOffsets = require("utils/dom/screenOffsets");
 
+/*
+RUNS: once, to display a synthetic (non-native) context menu
+
+WHY: electron can display native context menus but sometimes we want them
+to be un-cancelable (if we're holding Esc and don't want the repeat to
+close the menu); web can't display native ones so needs a custom solution
+*/
+
 module.exports = function(app, items, coords, options={}) {
 	options = {
 		noCancel: false,

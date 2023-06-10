@@ -145,7 +145,15 @@ let findAndReplace = {
 		let hasSetLoopedFile = false;
 		let firstResultIndex = null;
 		
+		let i = 0;
+		
 		while (true) {
+			if (++i === 10000) {
+				//console.log("possible infinite loop");
+				//
+				//debugger;
+			}
+			
 			let match = findMatch();
 			
 			if (!match) {

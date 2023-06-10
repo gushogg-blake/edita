@@ -210,6 +210,8 @@ if (platform === "all" || platform === "electron") {
 					},
 				],
 			}),
+			
+			dev && markBuildComplete(dir),
 		],
 	}, {
 		input: "src/platforms/electron/dialogs/messageBox/main.js",
