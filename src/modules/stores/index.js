@@ -1,12 +1,13 @@
 let JsonStore = require("modules/JsonStore");
 let prefs = require("./prefs");
 let themes = require("./themes");
+let session = require("./session");
 
 module.exports = async function() {
 	return {
 		prefs: prefs(),
 		themes: await themes(),
-		session: new JsonStore("session", null),
+		session: session(),
 		fileTree: new JsonStore("fileTree", {}),
 		perFilePrefs: new JsonStore("perFilePrefs", {}),
 		projects: new JsonStore("projects", null),

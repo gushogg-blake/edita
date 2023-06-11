@@ -1,5 +1,6 @@
 let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
+let mapArrayToObject = require("utils/mapArrayToObject");
 let Cursor = require("modules/Cursor");
 let Selection = require("modules/Selection");
 let AstSelection = require("modules/AstSelection");
@@ -651,6 +652,24 @@ class View extends Evented {
 		}
 		
 		this.batchRedraw();
+	}
+	
+	adjustFoldsForEdit(edit) {
+		let {selection, newSelection} = edit;
+		let origEndLineIndex = selection.end.lineIndex;
+		let newEndLineIndex = newSelection.end.lineIndex;
+		let diff = newEndLineIndex - origEndLineIndex;
+		
+		this.folds = mapArrayToObject(Object.entries(this.folds), function([lineIndex, foldTo]) {
+			lineIndex = Number(lineIndex);
+			
+			if (lineIndex > origEndLineIndex) {
+				lineIndex += diff;
+				foldTo += diff;
+			}
+			
+			return [lineIndex, foldTo];
+		});
 	}
 	
 	setNormalHilites(hilites) {

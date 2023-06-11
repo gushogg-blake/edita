@@ -253,6 +253,7 @@ class EditorTab extends Tab {
 			normalSelection,
 			astSelection,
 			scrollPosition,
+			folds,
 		} = this.view;
 		
 		return {
@@ -261,6 +262,7 @@ class EditorTab extends Tab {
 			normalSelection,
 			astSelection,
 			scrollPosition,
+			folds,
 		};
 	}
 	
@@ -270,11 +272,14 @@ class EditorTab extends Tab {
 			normalSelection,
 			astSelection,
 			scrollPosition,
+			folds,
 		} = details;
 		
 		let {editor} = this;
+		let {view} = editor;
 		
-		editor.view.setScrollPosition(scrollPosition);
+		view.setScrollPosition(scrollPosition);
+		view.setFolds(folds);
 		
 		editor.setMode(mode);
 		

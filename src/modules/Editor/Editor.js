@@ -245,6 +245,8 @@ class Editor extends Evented {
 				
 				return hilite.edit(edit);
 			}).filter(Boolean));
+			
+			view.adjustFoldsForEdit(edit);
 		}
 		
 		view.updateMarginSize();
