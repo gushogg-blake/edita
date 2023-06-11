@@ -1,8 +1,21 @@
 module.exports = {
 	foldZoom(wheelCombo, cursor) {
+		let {document, view} = this;
+		
+		if (Object.keys(view.folds).length > 0) {
+			this.savedFolds = view.folds;
+			
+			view.setFolds({});
+		} else {
+			view.setFolds(this.savedFolds || {});
+		}
+		
+		//this.view.setFolds({});
+		
+		return;
+		
 		let foldIndentAdjustment = wheelCombo.dir === "up" ? 1 : -1;
 		
-		let {document, view} = this;
 		let {lines} = document;
 		let {folds} = view;
 		let foldHeaders = Object.keys(folds).map(Number);
