@@ -622,34 +622,19 @@ class View extends Evented {
 	
 	toggleFoldHeader(lineIndex) {
 		let {document} = this;
-		let {lines} = document;
-		
-		if (lineIndex === lines.length - 1 || lines[lineIndex + 1].indentLevel < lines[lineIndex].indentLevel) {
-			return;
-		}
-		
-		let line = lines[lineIndex];
+		let footerLineIndex = astCommon.getFooterLineIndex(document, lineIndex);
 		
 		if (lineIndex in this.folds) {
 			delete this.folds[lineIndex];
-		} else {
-			let foldTo = lineIndex + 1;
 			
-			let foldedLineIndex;
-			let foldIndentLevel = line.indentLevel;
-			
-			for (foldedLineIndex = lineIndex + 1; foldedLineIndex < lines.length; foldedLineIndex++) {
-				let line = lines[foldedLineIndex];
-				
-				if (line.indentLevel < foldIndentLevel) {
-					break;
-				}
-				
-				foldTo++;
-			}
-			
-			this.folds[lineIndex] = foldTo;
+			return;
 		}
+		
+		if (footerLineIndex === null) {
+			return;
+		}
+		
+		this.folds[lineIndex] = footerLineIndex + 1;
 		
 		this.batchRedraw();
 	}

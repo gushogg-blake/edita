@@ -537,7 +537,7 @@ class Editor extends Evented {
 	}
 	
 	marginMousedown(lineIndex) {
-		this.view.toggleFoldHeader(lineIndex + 1);
+		this.view.toggleFoldHeader(lineIndex);
 	}
 	
 	setSelectionFromNormalKeyboard(selection) {
