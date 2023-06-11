@@ -22,14 +22,6 @@ module.exports = function(editor, editorComponent) {
 		let cursor = getCursor(e, view, canvasDiv);
 		let charCursor = getCharCursor(e, view, canvasDiv);
 		
-		let {
-			x: left,
-			y: top,
-		} = canvasDiv.getBoundingClientRect();
-		
-		let x = e.clientX - left;
-		let y = e.clientY - top;
-		
 		if (e.button === 1) {
 			editor.normalMouse.insertSelectionClipboard(cursor);
 			

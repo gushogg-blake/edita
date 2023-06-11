@@ -262,6 +262,8 @@ module.exports = class extends LineRowRenderer {
 	renderRow() {
 		let i = 0;
 		
+		//console.log(this.lineIndex);
+		
 		while (this.variableWidthPart) {
 			this.step();
 			
@@ -273,5 +275,9 @@ module.exports = class extends LineRowRenderer {
 			//	break;
 			//}
 		}
+	}
+	
+	resetAfterFold() {
+		this.initNodeStack();
 	}
 }

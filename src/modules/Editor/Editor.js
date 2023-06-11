@@ -534,6 +534,10 @@ class Editor extends Evented {
 		this.commonWheel[fnName](wheelCombo, cursor);
 	}
 	
+	marginMousedown(lineIndex) {
+		this.view.toggleFoldHeader(lineIndex + 1);
+	}
+	
 	setSelectionFromNormalKeyboard(selection) {
 		this.setNormalSelection(selection);
 		this.setSelectionClipboard();

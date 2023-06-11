@@ -222,6 +222,10 @@ function click(e) {
 	lastClickMousedownTime = lastMousedownTime;
 }
 
+function marginMousedown(e) {
+	fire("marginMousedown", e);
+}
+
 function mouseenter(e) {
 	fire("mouseenter", e);
 }
@@ -547,6 +551,7 @@ onMount(function() {
 	<div
 		id="margin"
 		style={inlineStyle(marginStyle)}
+		on:mousedown={marginMousedown}
 	></div>
 	<div
 		id="code"

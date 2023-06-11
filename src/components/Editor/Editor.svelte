@@ -10,6 +10,7 @@ import render from "./canvas/render";
 
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
+import marginMouse from "./marginMouse";
 import wheelHandler from "./wheelHandler";
 import astDragData from "./astDragData";
 
@@ -107,6 +108,12 @@ let astMouseHandler = astMouse(editor, {
 	},
 	
 	mouseup: _mouseup,
+});
+
+let marginMouseHandler = marginMouse(editor, {
+	get canvasDiv() {
+		return canvasDiv;
+	},
 });
 
 let _wheelHandler = wheelHandler(editor, {
@@ -300,6 +307,10 @@ function drop({detail}) {
 	}
 	
 	lastMouseEvent = e;
+}
+
+function marginMousedown({detail: e}) {
+	marginMouseHandler.mousedown(e);
 }
 
 function wheel(e) {
@@ -708,6 +719,7 @@ canvas {
 				on:dragenter={dragenter}
 				on:dragleave={dragleave}
 				on:drop={drop}
+				on:marginMousedown={marginMousedown}
 			/>
 		</div>
 	</div>

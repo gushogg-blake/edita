@@ -9,6 +9,7 @@ module.exports = class {
 		this.foldedLineRow = null;
 		this.offset = null;
 		this.variableWidthPart = null;
+		this.lastRenderedLineIndex = null;
 	}
 	
 	get lineIndex() {
@@ -74,6 +75,10 @@ module.exports = class {
 		
 		this.offset = this.lineRow.startOffset;
 		
+		if (this.lastRenderedLineIndex !== null && this.lineIndex > this.lastRenderedLineIndex + 1) {
+			this.resetAfterFold();
+		}
+		
 		if (this.canvasRenderer.startRow) {
 			this.canvasRenderer.startRow(this.isFirstRow ? 0 : this.line.indentCols);
 		}
@@ -83,6 +88,12 @@ module.exports = class {
 		if (this.canvasRenderer.endRow) {
 			this.canvasRenderer.endRow();
 		}
+		
+		this.lastRenderedLineIndex = this.lineIndex;
+	}
+	
+	resetAfterFold() {
+		
 	}
 	
 	renderRow() {
