@@ -106,6 +106,30 @@ let theme = {
 			hashBang: "#e8f8fd",
 		},
 		
+		typescript: {
+			keyword: "#54b9ec",
+			id: "#e8f8fd",
+			comment: "#4686C1 italic",
+			symbol: "#5692cd",
+			bracket: "#54B9EC",
+			number: "#96defa",
+			string: "#89e14b",
+			regex: "#1ab3ec",
+			hashBang: "#e8f8fd",
+		},
+		
+		tsx: {
+			keyword: "#54b9ec",
+			id: "#e8f8fd",
+			comment: "#4686C1 italic",
+			symbol: "#5692cd",
+			bracket: "#54B9EC",
+			number: "#96defa",
+			string: "#89e14b",
+			regex: "#1ab3ec",
+			hashBang: "#e8f8fd",
+		},
+		
 		html: {
 			tag: "#d6ad0c",//ffcd00
 			attribute: "#e8f8fd",

@@ -19,6 +19,8 @@ let stores = require("modules/stores");
 let Lang = require("modules/Lang");
 
 let javascript = require("modules/langs/javascript");
+let typescript = require("modules/langs/typescript");
+let tsx = require("modules/langs/tsx");
 let svelte = require("modules/langs/svelte");
 let html = require("modules/langs/html");
 let css = require("modules/langs/css");
@@ -75,6 +77,8 @@ class Base extends Evented {
 		
 		let langs = [
 			javascript,
+			typescript,
+			tsx,
 			svelte,
 			html,
 			css,
