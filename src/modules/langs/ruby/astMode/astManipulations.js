@@ -43,7 +43,7 @@ module.exports = {
 			return true;
 		},
 		
-		apply(document, selection) {
+		apply(multiStepCommand, document, selection) {
 			let {lines} = document;
 			let {startLineIndex: start, endLineIndex: end} = selection;
 			let {indentLevel: baseIndentLevel} = lines[start];
@@ -145,7 +145,7 @@ module.exports = {
 			
 		},
 		
-		apply(document, selection) {
+		apply(multiStepCommand, document, selection) {
 			
 		},
 	},
@@ -227,7 +227,7 @@ module.exports = {
 			return true;
 		},
 		
-		apply(document, selection) {
+		apply(multiStepCommand, document, selection) {
 			console.log("toggleMultilineOuter");
 			
 			return [];
