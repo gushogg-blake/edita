@@ -1,0 +1,48 @@
+#!/bin/bash
+
+version=$1
+
+dir="vendor/public/tree-sitter"
+
+currentJs="$dir/tree-sitter.js"
+currentWasm="$dir/tree-sitter.wasm"
+debugJs="$dir/tree-sitter-debug.js"
+debugWasm="$dir/tree-sitter-debug.wasm"
+minifiedJs="$dir/tree-sitter-minified.js"
+minifiedWasm="$dir/tree-sitter-minified.wasm"
+
+if [ -f $debugJs ]; then
+	currentVersion="minified"
+else
+	currentVersion="debug"
+fi
+
+function setVersion {
+	if [[ $version == "debug" && $currentVersion == "minified" ]]; then
+		mv $currentJs $minifiedJs
+		mv $currentWasm $minifiedWasm
+		mv $debugJs $currentJs
+		mv $debugWasm $currentWasm
+	elif [[ $version == "minified" && $currentVersion == "debug" ]]; then
+		mv $currentJs $debugJs
+		mv $currentWasm $debugWasm
+		mv $minifiedJs $currentJs
+		mv $minifiedWasm $currentWasm
+	fi
+}
+
+if [ ! -z $version ]; then
+	if [[ $version == "--switch" || $version == "-s" ]]; then
+		if [[ $currentVersion == "minified" ]]; then
+			version="debug"
+		else
+			version="minified"
+		fi
+	fi
+	
+	setVersion
+	
+	echo "Version set to $version"
+else 
+	echo "Current version is $currentVersion"
+fi
