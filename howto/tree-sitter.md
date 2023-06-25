@@ -66,11 +66,11 @@ Tools available for installation with emsdk can be seen by running `./emdsk list
 
 The tree-sitter scripts should now use the latest version of `emcc` (you'll have to reload the shell or run the command again to get it onto `$PATH`).
 
-## Creating tree-sitter.wasm and tree-sitter.js
+## Generating tree-sitter.wasm and tree-sitter.js
 
 ```bash
 cd projects/tree-sitter
-./scripts/build-wasm --static
+./scripts/build-wasm --static # add --debug to generate debug version (see below)
 ```
 
 The `--static` option indicates static linking. The list of langs to statically link is hard-coded in `build-wasm`.
@@ -88,7 +88,7 @@ There are two versions of tree-sitter.js and tree-sitter.wasm in `/vendor/public
 ./scripts/tree-sitter-version minified # activate minified
 ```
 
-When generating new versions, copy to `/vendor/public/tree-sitter` and name appropriately depending on the currently active version.
+When generating new versions, copy to `/vendor/public/tree-sitter` and name appropriately depending on the currently active version. (To generate the debug version, add `--debug` to the `build-wasm` command above.)
 
 ## Creating language wasm files
 
