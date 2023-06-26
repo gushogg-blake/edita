@@ -70,7 +70,7 @@ The tree-sitter scripts should now use the latest version of `emcc` (you'll have
 
 ```bash
 cd projects/tree-sitter
-./scripts/build-wasm --static # add --debug to generate debug version (see below)
+./script/build-wasm --static # add --debug to generate debug version (see below)
 ```
 
 The `--static` option indicates static linking. The list of langs to statically link is hard-coded in `build-wasm`.
