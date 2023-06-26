@@ -64,6 +64,7 @@ onMount(function() {
 #controls {
 	border-bottom: var(--appBorderMedium);
 	padding: 5px;
+	overflow: hidden;
 }
 
 #editors {
