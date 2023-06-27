@@ -461,11 +461,17 @@ module.exports = {
 	},
 	
 	copy() {
-		let str = (
-			this.normalSelection.isFull()
-			? this.getSelectedText()
-			: this.document.lines[this.normalSelection.start.lineIndex].string
-		);
+		let str;
+		
+		if (this.normalSelection.isFull()) {
+			str = this.getSelectedText();
+		} else {
+			if (base.prefs.get("copyLineIfSelectionNotFull")) {
+				str = this.document.lines[this.normalSelection.start.lineIndex].string;
+			} else {
+				return;
+			}
+		}
 		
 		platform.clipboard.write(str);
 		
