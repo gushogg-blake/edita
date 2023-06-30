@@ -128,6 +128,8 @@ let theme = {
 			string: "#89e14b",
 			regex: "#1ab3ec",
 			hashBang: "#e8f8fd",
+			tag: "#d6ad0c",
+			attribute: "#e8f8fd",
 		},
 		
 		html: {

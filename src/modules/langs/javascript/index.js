@@ -97,6 +97,8 @@ let lang = {
 			"shorthand_property_identifier",
 			"shorthand_property_identifier_pattern",
 			"statement_identifier",
+			"type_identifier",
+			"predefined_type",
 		].includes(type)) {
 			return "id";
 		}

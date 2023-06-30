@@ -87,9 +87,44 @@ let lang = {
 		if ([
 			"string",
 			"regex",
+			"predefined_type",
 		].includes(parent?.type)) {
 			return null;
 		}
+		
+		if (type === "jsx_attribute") {
+			return "attribute";
+		}
+		
+		if ([
+			"jsx_fragment",
+			"jsx_opening_element",
+			"jsx_closing_element",
+			"jsx_self_closing_element",
+			"jsx_attribute",
+		].includes(parent?.type)) {
+			if (["identifier", "<", "/", ">"].includes(type)) {
+				return "tag";
+			}
+			
+			return null;
+		}
+		
+		//if ([
+		//	"jsx_attribute",
+		//].includes(parent?.type)) {
+		//	if (type === "property_identifier") {
+		//		return "attribute";
+		//	}
+		//}
+		
+		//if ([
+		//	"jsx_expression",
+		//].includes(parent?.type)) {
+		//	if (type === "{") {
+		//		return "attribute";
+		//	}
+		//}
 		
 		if ([
 			"identifier",
@@ -97,6 +132,8 @@ let lang = {
 			"shorthand_property_identifier",
 			"shorthand_property_identifier_pattern",
 			"statement_identifier",
+			"type_identifier",
+			"predefined_type",
 		].includes(type)) {
 			return "id";
 		}
