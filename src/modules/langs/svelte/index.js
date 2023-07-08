@@ -8,7 +8,7 @@ module.exports = {
 	defaultExtension: "svelte",
 	astMode,
 	codeIntel,
-	possibleInjections: ["javascript", "css"],
+	possibleInjections: ["javascript", "css", "scss", "sass"],
 	injections: [],
 	
 	getFooter(node) {
