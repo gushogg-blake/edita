@@ -1,9 +1,9 @@
 let {is, deep, subset} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
-let find = require("modules/codePattern/find");
+let find = require("modules/codePatterns/find");
 
-describe("codePattern", function() {
+describe("codePatterns", function() {
 	describe("find", function() {
 		it("literal", function() {
 			let doc = createJsDoc(`

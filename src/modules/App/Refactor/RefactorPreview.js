@@ -1,7 +1,7 @@
 let Evented = require("utils/Evented");
 let sortedPartition = require("utils/array/sortedPartition");
 let URL = require("modules/URL");
-let codePattern = require("modules/codePattern");
+let codePatterns = require("modules/codePatterns");
 
 class RefactorPreview extends Evented {
 	constructor(app, refactor) {
@@ -94,7 +94,7 @@ class RefactorPreview extends Evented {
 		
 		let results = this.refactor.find(this.editors.results.document, find);
 		
-		let replaced = codePattern.replace(code, results, replaceWith);
+		let replaced = codePatterns.replace(code, results, replaceWith);
 		
 		await this.setEditorCode(this.editors.preview, new URL("refactor-preview://" + path), replaced);
 		

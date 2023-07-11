@@ -3,10 +3,10 @@ let dedent = require("test/utils/dedent");
 let createJsDoc = require("test/utils/createJsDoc");
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
-let query = require("modules/codePattern/find/query");
-let createRegex = require("modules/codePattern/find/createRegex");
-let tokenise = require("modules/codePattern/find/tokenise");
-let matchAtCursor = require("modules/codePattern/find/matchAtCursor");
+let query = require("modules/codePatterns/find/query");
+let createRegex = require("modules/codePatterns/find/createRegex");
+let tokenise = require("modules/codePatterns/find/tokenise");
+let matchAtCursor = require("modules/codePatterns/find/matchAtCursor");
 
 let {c} = Cursor;
 let {s} = Selection;
@@ -20,7 +20,7 @@ function match(document, codePattern) {
 	return matchAtCursor(context, document, tokenise(codePattern), Cursor.start());
 }
 
-describe("codePattern", function() {
+describe("codePatterns", function() {
 	describe("matchAtCursor", function() {
 		it("literal", function() {
 			let doc = createJsDoc(`

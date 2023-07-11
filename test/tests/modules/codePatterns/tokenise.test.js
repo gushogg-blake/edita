@@ -1,8 +1,8 @@
 let {is, deep, expect} = require("test/utils/assertions");
 let dedent = require("test/utils/dedent");
-let tokenise = require("modules/codePattern/find/tokenise");
+let tokenise = require("modules/codePatterns/find/tokenise");
 
-describe("codePattern", function() {
+describe("codePatterns", function() {
 	describe("tokenise", function() {
 		it("plain text only", function() {
 			let codePattern = dedent(`

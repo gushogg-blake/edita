@@ -2,7 +2,7 @@ let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 let URL = require("modules/URL");
 let Document = require("modules/Document");
-let codePattern = require("modules/codePattern");
+let codePatterns = require("modules/codePatterns");
 let RefactorPreview = require("./RefactorPreview");
 
 class Refactor extends Evented {
@@ -38,7 +38,7 @@ class Refactor extends Evented {
 				return;
 			}
 			
-			let replaced = codePattern.replace(code, results, replaceWith);
+			let replaced = codePatterns.replace(code, results, replaceWith);
 			
 			await file.write(replaced);
 		});
@@ -88,9 +88,9 @@ class Refactor extends Evented {
 	
 	find(document, find) {
 		try {
-			return codePattern.find(document, find);
+			return codePatterns.find(document, find);
 		} catch (e) {
-			if (e instanceof codePattern.ParseError) {
+			if (e instanceof codePatterns.ParseError) {
 				console.log("Error parsing codePattern");
 				console.log(e);
 				
