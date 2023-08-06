@@ -570,8 +570,10 @@ class Editor extends Evented {
 		
 		this.wordCompletion.selectionChanged();
 		
-		//console.log(this.document.lines[selection.start.lineIndex]);
-		console.log(this.document.getNodesOnLine(selection.start.lineIndex));
+		if (base.getPref("dev.logNodes")) {
+			//console.log(this.document.lines[selection.start.lineIndex]);
+			console.log(this.document.getNodesOnLine(selection.start.lineIndex));
+		}
 	}
 	
 	setAstSelection(selection) {
