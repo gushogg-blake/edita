@@ -32,17 +32,18 @@ class SelectionContents {
 		
 		let lines = document.lines.slice(left.lineIndex, right.lineIndex + 1).map(function(line, i) {
 			let indentLevel = Math.max(0, line.indentLevel - firstLine.indentLevel);
-			let string;
+			let trimLeft = 0;
+			let trimRight = 0;
 			
 			if (line.lineIndex === left.lineIndex) {
-				string = line.trimmed.substr(Math.max(0, left.offset - line.indentOffset));
-			} else if (line.lineIndex === right.lineIndex) {
-				let trimRight = line.string.length - right.offset;
-				
-				string = line.trimmed.substring(0, Math.max(0, line.string.length - line.indentOffset - trimRight));
-			} else {
-				string = line.trimmed;
+				trimLeft = left.offset <= line.indentOffset ? 0 : left.offset - line.indentOffset;
 			}
+			
+			if (line.lineIndex === right.lineIndex) {
+				trimRight = right.offset <= line.indentOffset ? 0 : line.string.length - right.offset;
+			}
+			
+			let string = line.trimmed.substring(trimLeft, line.trimmed.length - trimRight);
 			
 			return {
 				indentLevel,
