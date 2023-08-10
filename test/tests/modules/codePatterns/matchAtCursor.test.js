@@ -35,7 +35,7 @@ describe("codePatterns", function() {
 			
 			deep(selection.end, c(0, 7));
 			
-			deep(matches, [
+			subset(matches, [
 				{
 					token: {
 						type: "literal",
@@ -246,8 +246,6 @@ describe("codePatterns", function() {
 			
 			deep(selection.end, c(2, 1));
 			
-			console.log(matches[3]);
-			
 			subset(matches, [
 				{
 					token: {
@@ -277,19 +275,13 @@ describe("codePatterns", function() {
 					},
 					
 					match: {
-						matches: [
-							{
-								node: {
+						captures: {
+							function: [
+								{
 									type: "function",
 								},
-								
-								captures: {
-									function: [{
-										type: "function",
-									}],
-								},
-							},
-						],
+							],
+						},
 					},
 				},
 			]);

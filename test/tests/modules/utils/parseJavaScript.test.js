@@ -155,7 +155,7 @@ let tests = [
 describe("parseJavaScript", function() {
 	for (let [name, code, startIndex, expectedEndIndex] of tests) {
 		it(name, function() {
-			let {index: endIndex} = parseJavaScript(dedent(code), startIndex);
+			let endIndex = parseJavaScript(dedent(code), startIndex);
 			
 			is(endIndex, expectedEndIndex);
 		});
