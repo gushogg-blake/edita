@@ -466,7 +466,7 @@ module.exports = {
 		if (this.normalSelection.isFull()) {
 			str = this.getSelectedText();
 		} else {
-			if (base.prefs.get("copyLineIfSelectionNotFull")) {
+			if (base.getPref("copyLineIfSelectionNotFull")) {
 				str = this.document.lines[this.normalSelection.start.lineIndex].string;
 			} else {
 				return;
