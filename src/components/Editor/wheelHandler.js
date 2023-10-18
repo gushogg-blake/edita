@@ -17,7 +17,7 @@ module.exports = function(editor, editorComponent) {
 		}
 		
 		if (wheelCombo.isModified) {
-			return;
+			//return;
 		}
 		
 		let scrolled;
@@ -26,6 +26,13 @@ module.exports = function(editor, editorComponent) {
 		if (e.shiftKey) {
 			deltaX = deltaY;
 			deltaY = 0;
+		}
+		
+		if (e.ctrlKey) {
+			let multiplier = base.getPref("ctrlScrollMultiplier");
+			
+			deltaX *= multiplier;
+			deltaY *= multiplier;
 		}
 		
 		scrolled = view.scrollBy(deltaX, deltaY);

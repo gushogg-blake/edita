@@ -188,6 +188,12 @@ let migrations = {
 	"20"(prefs) {
 		prefs.insertNestedSnippets = "blankLines";
 	},
+	
+	"21"(prefs) {
+		prefs.ctrlScrollMultiplier = 5;
+		
+		delete prefs.editorMouseMap["Ctrl+Wheel"];
+	},
 };
 
 module.exports = function() {
@@ -213,6 +219,8 @@ module.exports = function() {
 		},
 		
 		insertNestedSnippets: "blankLines",
+		
+		ctrlScrollMultiplier: 5,
 		
 		normalKeymap: {
 			"ArrowUp": "up",
@@ -271,7 +279,7 @@ module.exports = function() {
 		},
 		
 		editorMouseMap: {
-			"Ctrl+Wheel": "foldZoom",
+			//"Ctrl+Wheel": "foldZoom",
 		},
 		
 		astKeymap: {
