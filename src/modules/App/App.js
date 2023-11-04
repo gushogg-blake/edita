@@ -461,6 +461,10 @@ class App extends Evented {
 		return tab;
 	}
 	
+	async openLangSelector() {
+		this.fire("openLangSelector");
+	}
+	
 	async createEditorTab(code, url, format=null) {
 		if (base.getPref("dev.timing.misc")) {
 			console.time("createEditorTab");

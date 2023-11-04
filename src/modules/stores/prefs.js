@@ -194,6 +194,10 @@ let migrations = {
 		
 		delete prefs.editorMouseMap["Ctrl+Wheel"];
 	},
+	
+	"22"(prefs) {
+		prefs.globalKeymap["Ctrl+L"] = "newWithLangSelector";
+	},
 };
 
 module.exports = function() {
@@ -339,6 +343,7 @@ module.exports = function() {
 			"Ctrl+O": "open",
 			"Ctrl+S": "save",
 			"Ctrl+N": "_new",
+			"Ctrl+L": "newWithLangSelector",
 			
 			"Ctrl+F": "find",
 			"Ctrl+Shift+F": "findInOpenFiles",

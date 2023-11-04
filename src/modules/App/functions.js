@@ -20,6 +20,10 @@ module.exports = {
 		this.newFile();
 	},
 	
+	newWithLangSelector() {
+		this.openLangSelector();
+	},
+	
 	find() {
 		if (!this.selectedTab) {
 			return;

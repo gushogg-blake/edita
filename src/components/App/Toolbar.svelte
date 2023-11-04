@@ -11,12 +11,14 @@ let {
 	prefs,
 } = base;
 
+let langButton;
+
 function upload({detail: files}) {
 	app.openFilesFromUpload(files);
 }
 
-function openLanguages(e) {
-	platform.showContextMenuForElement(app, e.target, base.langs.all.map(function(lang) {
+function openLanguages() {
+	platform.showContextMenuForElement(app, langButton, base.langs.all.map(function(lang) {
 		return {
 			label: lang.name,
 			
@@ -42,6 +44,7 @@ function onThemeUpdated() {
 onMount(function() {
 	let teardown = [
 		base.on("themeUpdated", onThemeUpdated),
+		app.on("openLangSelector", openLanguages),
 	];
 	
 	return function() {
@@ -68,7 +71,7 @@ onMount(function() {
 	<button on:click={() => app.functions._new()}>
 		New
 	</button>
-	<button on:mousedown={openLanguages}>
+	<button bind:this={langButton} title={base.findGlobalKeyComboFor("newWithLangSelector")} on:mousedown={openLanguages}>
 		Lang
 	</button>
 	{#if platform.isWeb}
