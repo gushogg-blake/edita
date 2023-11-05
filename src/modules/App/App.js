@@ -86,6 +86,14 @@ class App extends Evented {
 	getCurrentDir(_default=null) {
 		if (this.selectedTab?.isSaved) {
 			return platform.fs(this.selectedTab.path).parent.path;
+		} else {
+			for (let i = this.previouslySelectedTabs.length - 1; i >= 0; i--) {
+				let tab = this.previouslySelectedTabs[i];
+				
+				if (tab.isSaved) {
+					return platform.fs(tab.path).parent.path;
+				}
+			}
 		}
 		
 		return this.selectedProject?.dirs[0] || this.fileTree.rootEntry.path || _default;
