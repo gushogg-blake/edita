@@ -22,8 +22,8 @@ function openLanguages() {
 		return {
 			label: lang.name,
 			
-			onClick() {
-				let tab = app.newFile(lang);
+			async onClick() {
+				let tab = await app.newFile(lang);
 				
 				// hack - Svelte grammar is broken so we actually want
 				// HTML (HTML lang module supports .svelte)
