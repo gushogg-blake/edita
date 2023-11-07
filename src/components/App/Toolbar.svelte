@@ -23,7 +23,14 @@ function openLanguages() {
 			label: lang.name,
 			
 			onClick() {
-				app.newFile(lang);
+				let tab = app.newFile(lang);
+				
+				// hack - Svelte grammar is broken so we actually want
+				// HTML (HTML lang module supports .svelte)
+				// so we actually just want whatever lang the extension
+				// indicates
+				
+				tab.document.updateFormat();
 			},
 		};
 	}));
