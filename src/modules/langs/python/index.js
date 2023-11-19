@@ -3,7 +3,7 @@ let codeIntel = require("./codeIntel");
 
 let wordRe = /\w/;
 
-module.exports = {
+let lang = {
 	code: "python",
 	name: "Python",
 	defaultExtension: "py",
@@ -100,3 +100,5 @@ module.exports = {
 		return null;
 	},
 };
+
+module.exports = lang;

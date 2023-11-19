@@ -1,7 +1,7 @@
 let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
 
-module.exports = {
+let lang = {
 	group: "html",
 	code: "svelte",
 	name: "Svelte",
@@ -41,3 +41,5 @@ module.exports = {
 		return null;
 	},
 };
+
+module.exports = lang;

@@ -3,7 +3,7 @@ let codeIntel = require("./codeIntel");
 
 let wordRe = /\w/;
 
-module.exports = {
+let lang = {
 	code: "php",
 	name: "PHP",
 	defaultExtension: "php",
@@ -113,3 +113,5 @@ module.exports = {
 		return null;
 	},
 };
+
+module.exports = lang;

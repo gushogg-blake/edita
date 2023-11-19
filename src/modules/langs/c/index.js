@@ -3,7 +3,7 @@ let codeIntel = require("./codeIntel");
 
 let wordRe = /\w/;
 
-module.exports = {
+let lang = {
 	group: "c",
 	code: "c",
 	name: "C",
@@ -113,3 +113,5 @@ module.exports = {
 		return null;
 	},
 };
+
+module.exports = lang;

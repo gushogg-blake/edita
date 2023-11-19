@@ -5,7 +5,7 @@ let loggedTypes = [];
 
 let wordRe = /\w/;
 
-module.exports = {
+let lang = {
 	group: "c",
 	code: "cpp",
 	name: "C++",
@@ -116,3 +116,5 @@ module.exports = {
 		return null;
 	},
 };
+
+module.exports = lang;

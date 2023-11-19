@@ -1,7 +1,7 @@
 let astMode = require("./astMode");
 let codeIntel = require("./codeIntel");
 
-module.exports = {
+let lang = {
 	group: "css",
 	code: "css",
 	name: "CSS",
@@ -132,4 +132,6 @@ module.exports = {
 		
 		return null;
 	},
-}
+};
+
+module.exports = lang
