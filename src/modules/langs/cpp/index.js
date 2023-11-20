@@ -109,6 +109,7 @@ let lang = {
 		if ([
 			"cpp",
 			"cxx",
+			"cc",
 		].includes(type)) {
 			return "general";
 		}
