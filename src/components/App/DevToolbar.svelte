@@ -2,6 +2,7 @@
 import {onMount, getContext} from "svelte";
 import Spacer from "components/utils/Spacer.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
+import AstHint from "components/App/AstHint.svelte";
 
 let app = getContext("app");
 
@@ -47,7 +48,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-#main {
+#options {
 	display: flex;
 	gap: 1em;
 	padding: 3px;
@@ -55,33 +56,43 @@ onMount(function() {
 </style>
 
 <div id="main">
-	<Checkbox
-		label="Theme style element"
-		value={prefs.dev.showThemeStyleElement}
-		on:change={(e) => base.setPref("dev.showThemeStyleElement", e.target.checked)}
-	/>
-	<Checkbox
-		label="Open refactor"
-		value={prefs.dev.openRefactor}
-		on:change={(e) => toggleOpenRefactor(e.target.checked)}
-	/>
-	<Checkbox
-		label="Open find & replace"
-		value={prefs.dev.openFindAndReplace}
-		on:change={(e) => toggleOpenFindAndReplace(e.target.checked)}
-	/>
-	<Checkbox
-		label="Log focused element"
-		value={prefs.dev.logFocusedElement}
-		on:change={(e) => base.setPref("dev.logFocusedElement", e.target.checked)}
-	/>
-	<Checkbox
-		label="Show theme selector"
-		value={prefs.showThemeSelector}
-		on:change={(e) => base.setPref("showThemeSelector", e.target.checked)}
-	/>
-	<Spacer/>
-	<button on:click={() => base.setPref("dev.showToolbar", false)}>
-		Hide
-	</button>
+	<div id="options">
+		<Checkbox
+			label="Theme style element"
+			value={prefs.dev.showThemeStyleElement}
+			on:change={(e) => base.setPref("dev.showThemeStyleElement", e.target.checked)}
+		/>
+		<Checkbox
+			label="Open refactor"
+			value={prefs.dev.openRefactor}
+			on:change={(e) => toggleOpenRefactor(e.target.checked)}
+		/>
+		<Checkbox
+			label="Open find & replace"
+			value={prefs.dev.openFindAndReplace}
+			on:change={(e) => toggleOpenFindAndReplace(e.target.checked)}
+		/>
+		<Checkbox
+			label="Log focused element"
+			value={prefs.dev.logFocusedElement}
+			on:change={(e) => base.setPref("dev.logFocusedElement", e.target.checked)}
+		/>
+		<Checkbox
+			label="Show theme selector"
+			value={prefs.showThemeSelector}
+			on:change={(e) => base.setPref("showThemeSelector", e.target.checked)}
+		/>
+		<Checkbox
+			label="Show AST hints"
+			value={prefs.dev.showAstHints}
+			on:change={(e) => base.setPref("dev.showAstHints", e.target.checked)}
+		/>
+		<Spacer/>
+		<button on:click={() => base.setPref("dev.showToolbar", false)}>
+			Hide
+		</button>
+	</div>
+	{#if prefs.dev.showAstHints}
+		<AstHint/>
+	{/if}
 </div>

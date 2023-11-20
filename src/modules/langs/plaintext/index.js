@@ -1,5 +1,5 @@
 let lang = {
-	code: "plainText",
+	code: "plaintext",
 	name: "Plain text",
 };
 

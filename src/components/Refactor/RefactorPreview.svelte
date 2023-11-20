@@ -79,7 +79,7 @@ onMount(function() {
 }
 
 #astHint {
-	height: 8em;
+	height: 6em;
 	border-top: var(--appBorderMedium);
 	padding: 5px;
 	overflow-y: auto;

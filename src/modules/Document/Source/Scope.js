@@ -51,7 +51,7 @@ module.exports = class Scope {
 	parse(editedTree=null, findExistingScope=null, editExistingScope=null) {
 		if (
 			this.document.noParse
-			|| this.lang.code === "plainText"
+			|| this.lang.code === "plaintext"
 		) {
 			return;
 		}

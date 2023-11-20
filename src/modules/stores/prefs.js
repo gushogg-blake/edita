@@ -366,7 +366,7 @@ module.exports = function() {
 		
 		fileAssociations: {
 			"html": ["*.svelte"],
-			//"plainText": ["*.js"],
+			//"plaintext": ["*.js"],
 		},
 		
 		theme: "lightGray",

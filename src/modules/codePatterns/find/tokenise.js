@@ -22,8 +22,6 @@ to make them available in the replacement
 
 lines must appear on their own line
 
-@capture (on its own line) - shorthand for * @capture
-
 regex literals - /\w+/@id
 
 indentation - sets the indentation level relative to the
@@ -234,26 +232,20 @@ function tokenise(string) {
 				i++;
 				
 				state = states.IN_QUERY;
-			} else if ("*+@".includes(ch) && isAtStartOfLine()) {
+			} else if ("*+".includes(ch) && isAtStartOfLine()) {
 				let zero;
 				let lazy;
 				let capture;
 				
-				if (ch === "@") { // shorthand for * @...
-					zero = true;
-					lazy = false;
-					capture = consumeCaptureLabel();
-				} else {
-					zero = ch === "*";
-					
-					i++;
-					
-					lazy = consumeString("?");
-					
-					skipWhitespace();
-					
-					capture = consumeCaptureLabel();
-				}
+				zero = ch === "*";
+				
+				i++;
+				
+				lazy = consumeString("?");
+				
+				skipWhitespace();
+				
+				capture = consumeCaptureLabel();
 				
 				tokens.push({
 					type: "lines",

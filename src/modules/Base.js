@@ -31,7 +31,9 @@ let markdown = require("modules/langs/markdown");
 let cpp = require("modules/langs/cpp");
 let python = require("modules/langs/python");
 let ruby = require("modules/langs/ruby");
-let plainText = require("modules/langs/plainText");
+let codepatterns = require("modules/langs/codepatterns");
+let tsq = require("modules/langs/tsq");
+let plaintext = require("modules/langs/plaintext");
 
 /*
 top-level object for general, global things like langs, as well as any
@@ -122,7 +124,9 @@ class Base extends Evented {
 			cpp,
 			python,
 			ruby,
-			plainText,
+			codepatterns,
+			tsq,
+			plaintext,
 		];
 		
 		for (let lang of langs) {
@@ -259,7 +263,7 @@ class Base extends Evented {
 		
 		let general = null;
 		let alternate = null;
-		let fallback = this.langs.get("plainText");
+		let fallback = this.langs.get("plaintext");
 		
 		for (let lang of this.langs.all.filter(lang => lang !== fallback)) {
 			let supportLevel = lang.getSupportLevel(code, url?.path);
@@ -334,7 +338,7 @@ class Base extends Evented {
 			return;
 		}
 		
-		if (lang.code !== "plainText") {
+		if (lang.code !== "plaintext") {
 			await lang.initTreeSitterLanguage();
 		}
 		

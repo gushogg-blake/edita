@@ -20,13 +20,13 @@ module.exports = async function(app) {
 	}
 	
 	if (get("openRefactor")) {
-		await app.refactor(["/home/gus/projects/codepatterns-app/src/lib/modules/codePatterns"]);
+		await app.refactor(["/home/gus/projects/edita/src/modules/langs"]);
 		
 		let {refactor} = app.bottomPanes.tools.tabs[1];
 		
 		await sleep(200);
 		
-		refactor.editors.find.api.edit(Selection.start(), `let /\\w+/ = require\\((string)\\);`);
-		refactor.editors.replaceWith.api.edit(Selection.start(), `@string`);
+		//refactor.editors.find.api.edit(Selection.start(), `let /\\w+/ = require\\((string)\\);`);
+		//refactor.editors.replaceWith.api.edit(Selection.start(), `@string`);
 	}
 }

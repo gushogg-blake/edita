@@ -1,6 +1,7 @@
 let bluebird = require("bluebird");
 
 let {removeInPlace, moveInPlace} = require("utils/arrayMethods");
+let sortedPartition = require("utils/array/sortedPartition");
 let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
 let promiseWithMethods = require("utils/promiseWithMethods");
@@ -503,6 +504,8 @@ class App extends Evented {
 			this.output.clippingsTab.addClipping(str);
 		});
 		
+		editor.on("normalSelectionChangedByMouseOrKeyboard", () => this.showAstHint(editor));
+		
 		await tab.init();
 		
 		tab.on("focus", this.onTabFocus.bind(this));
@@ -550,6 +553,28 @@ class App extends Evented {
 		let view = new View(document);
 		
 		return this._createEditor(document, view);
+	}
+	
+	showAstHint(editor) {
+		if (!base.getPref("dev.showAstHints")) {
+			return;
+		}
+		
+		try {
+			let cursor = editor.normalSelection.left;
+			let node = editor.document.getNodeAtCursor(cursor);
+			let lineage = node.lineage().slice(1);
+			
+			let [notOnLine, onLine] = sortedPartition(lineage, n => n.start.lineIndex !== cursor.lineIndex);
+			
+			this.fire("showAstHint", {
+				all: lineage,
+				notOnLine,
+				onLine,
+			});
+		} catch (e) {
+			console.error(e);
+		}
 	}
 	
 	refactor(...args) {
