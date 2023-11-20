@@ -22,6 +22,10 @@ let lang = {
 			return "literal";
 		}
 		
+		if (type === "predicate_name") {
+			return "keyword";
+		}
+		
 		if ([
 			"wildcard_node",
 			"one_or_more",

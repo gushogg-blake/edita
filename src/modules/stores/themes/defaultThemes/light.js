@@ -236,6 +236,8 @@ let theme = {
 			literal: "#7f7f7f",
 			wildcard: "#d16a00",
 			delete: "#d10000",
+			keyword: "#23c1ab",
+			string: "#2233bb",
 		},
 	},
 };
