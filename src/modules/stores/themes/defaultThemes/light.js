@@ -224,14 +224,16 @@ let theme = {
 		},
 		
 		codepatterns: {
-			lineQuantifier: "#2233bb",
-			regex: "#cc7030",
+			lineQuantifier: "#d16a00", //#14898f
+			regex: "#d16a00",
 			literal: "#7f7f7f",
 			captureLabel: "#0338ff",
 		},
 		
 		tsq: {
 			capture: "#0338ff",
+			literal: "#7f7f7f",
+			wildcard: "#d16a00",
 		},
 	},
 };

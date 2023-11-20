@@ -18,8 +18,20 @@ let lang = {
 			parent,
 		} = node;
 		
-		if (type === "capture") {
-			return "capture";
+		if (type === "anonymous_leaf") {
+			return "literal";
+		}
+		
+		if ([
+			"wildcard_node",
+			"one_or_more",
+			"zero_or_more",
+		].includes(type)) {
+			return "wildcard";
+		}
+		
+		if (type.match(/\w/)) {
+			return type;
 		}
 		
 		return null;
