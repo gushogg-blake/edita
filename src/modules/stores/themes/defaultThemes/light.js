@@ -228,12 +228,14 @@ let theme = {
 			regex: "#d16a00",
 			literal: "#7f7f7f",
 			captureLabel: "#0338ff",
+			//delete: "#d10000",
 		},
 		
 		tsq: {
 			capture: "#0338ff",
 			literal: "#7f7f7f",
 			wildcard: "#d16a00",
+			delete: "#d10000",
 		},
 	},
 };

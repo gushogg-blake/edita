@@ -30,6 +30,10 @@ let lang = {
 			return "wildcard";
 		}
 		
+		if (type === "capture" && node.text.match(/^@-/)) {
+			return "delete";
+		}
+		
 		if (type.match(/\w/)) {
 			return type;
 		}

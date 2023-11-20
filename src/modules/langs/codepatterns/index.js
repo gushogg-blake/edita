@@ -51,7 +51,7 @@ let lang = {
 			
 			//debugger;
 			
-			if (["regex", "lineQuantifier"].includes(prevType)) {
+			if (["regex", "lineQuantifier", "tsq"].includes(prevType)) {
 				return "captureLabel";
 			} else {
 				return "literal";
