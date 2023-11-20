@@ -77,8 +77,6 @@ class Langs {
 			let ch = name[i];
 			
 			if (this.assignedAccelerators.has(ch.toLowerCase())) {
-				console.log(lang.code);
-				console.log("already has " + ch);
 				continue;
 			}
 			
