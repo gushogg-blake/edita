@@ -61,6 +61,8 @@ class Refactor extends Evented {
 		
 		editor.on("edit", this.onEditFind.bind(this));
 		
+		editor.document.setLang(base.langs.get("codepatterns"));
+		
 		return editor;
 	}
 	

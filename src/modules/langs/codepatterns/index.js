@@ -49,8 +49,6 @@ let lang = {
 			
 			let prevType = prevNonEmptySibling?.type;
 			
-			//debugger;
-			
 			if (["regex", "lineQuantifier", "tsq"].includes(prevType)) {
 				return "captureLabel";
 			} else {
