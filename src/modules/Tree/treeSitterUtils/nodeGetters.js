@@ -64,6 +64,28 @@ let api = {
 		return null;
 	}),
 	
+	previousSibling: cachedNodeFunction(function(node) {
+		let parent = api.parent(node);
+		
+		if (!parent) {
+			return null;
+		}
+		
+		let lastSibling = null;
+		
+		for (let child of api.children(parent)) {
+			if (child.id === node.id) {
+				return lastSibling;
+			}
+			
+			if (api.text(child).length > 0) {
+				lastSibling = child;
+			}
+		}
+		
+		return null;
+	}),
+	
 	next: cachedNodeFunction(function(node) {
 		let firstChild = api.firstChild(node);
 		

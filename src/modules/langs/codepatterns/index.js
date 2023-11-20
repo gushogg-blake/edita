@@ -26,12 +26,40 @@ let lang = {
 			parent,
 		} = node;
 		
-		if (type === "regex") {
-			return "regex";
-		} else if (type === "lines") {
-			return "lines";
-		} else if (type === "captureLabel") {
-			return "captureLabel";
+		if ([
+			"regex",
+			"captureLabel",
+		].includes(parent?.type)) {
+			return null;
+		}
+		
+		if (type === "captureLabel") {
+			let prevNonEmptySibling = null;
+			let prevSibling = node.previousSibling;
+			
+			while (prevSibling) {
+				if (prevSibling.text.trim() !== "") {
+					prevNonEmptySibling = prevSibling;
+					
+					break;
+				}
+				
+				prevSibling = prevSibling.previousSibling;
+			}
+			
+			let prevType = prevNonEmptySibling?.type;
+			
+			//debugger;
+			
+			if (["regex", "lineQuantifier"].includes(prevType)) {
+				return "captureLabel";
+			} else {
+				return "literal";
+			}
+		}
+		
+		if (type.match(/\w/)) {
+			return type;
 		}
 		
 		return "literal";

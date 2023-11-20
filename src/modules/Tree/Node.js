@@ -38,6 +38,10 @@ class Node {
 		return this.wrap(this.get("nextSibling"));
 	}
 	
+	get previousSibling() {
+		return this.wrap(this.get("previousSibling"));
+	}
+	
 	get firstChild() {
 		return this.wrap(this.get("firstChild"));
 	}

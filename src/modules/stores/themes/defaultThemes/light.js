@@ -222,6 +222,17 @@ let theme = {
 			string: "#2233bb",
 			regex: "#cc7030",
 		},
+		
+		codepatterns: {
+			lineQuantifier: "#2233bb",
+			regex: "#cc7030",
+			literal: "#7f7f7f",
+			captureLabel: "#0338ff",
+		},
+		
+		tsq: {
+			capture: "#0338ff",
+		},
 	},
 };
 

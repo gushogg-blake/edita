@@ -18,11 +18,11 @@ let lang = {
 			parent,
 		} = node;
 		
-		if (type === "link") {
-			return "link";
+		if (type === "capture") {
+			return "capture";
 		}
 		
-		return "text";
+		return null;
 	},
 	
 	getSupportLevel(code, path) {
