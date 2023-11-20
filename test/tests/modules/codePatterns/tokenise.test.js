@@ -445,6 +445,27 @@ describe("codePatterns", function() {
 			}]);
 		});
 		
+		it("empty regex", function() {
+			let codePattern = dedent(`
+				let asd = //;
+			`);
+			
+			let tokens = tokenise(codePattern);
+			
+			deep(tokens, [{
+				type: "literal",
+				string: `let asd = `,
+			}, {
+				type: "regex",
+				pattern: ``,
+				flags: "",
+				capture: null,
+			}, {
+				type: "literal",
+				string: `;`,
+			}]);
+		});
+		
 		it("regex", function() {
 			let codePattern = dedent(`
 				let asd = /\\w+/;

@@ -193,6 +193,37 @@ describe("codePatterns", function() {
 			]);
 		});
 		
+		it("empty regex", function() {
+			let doc = createJsDoc(`
+				let asd = 123;
+			`);
+			
+			let codePattern = dedent(`
+				let //
+			`);
+			
+			let {matches, selection} = match(doc, codePattern);
+			
+			deep(selection.end, c(0, 4));
+			
+			subset(matches, [
+				{
+					token: {
+						type: "literal",
+						string: `let `,
+					},
+				},
+				{
+					token: {
+						type: "regex",
+						pattern: "",
+					},
+					
+					match: "",
+				},
+			]);
+		});
+		
 		it("regex", function() {
 			let doc = createJsDoc(`
 				let asd = 123;
