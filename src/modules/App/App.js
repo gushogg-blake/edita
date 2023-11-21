@@ -181,6 +181,12 @@ class App extends Evented {
 		}
 	}
 	
+	focus() {
+		setTimeout(() => {
+			this.fire("requestFocus");
+		}, 0);
+	}
+	
 	focusSelectedTab() {
 		this.selectedTab?.focus();
 	}
@@ -253,8 +259,11 @@ class App extends Evented {
 		
 		if (selectNext) {
 			this.selectTab(selectNext);
-		} else {
+		}
+		
+		if (!selectNext) {
 			this.updateTitle();
+			this.focus();
 		}
 		
 		this.fire("updateTabs");

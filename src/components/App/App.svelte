@@ -98,6 +98,10 @@ function renderDiv(div) {
 	main.appendChild(div);
 }
 
+function focus() {
+	main.focus();
+}
+
 onMount(function() {
 	let teardown = [
 		base.on("prefsUpdated", onPrefsUpdated),
@@ -108,6 +112,7 @@ onMount(function() {
 		app.on("hideFindBar", onHideFindBar),
 		app.on("showFindBar", onShowFindBar),
 		app.on("renderDiv", renderDiv),
+		app.on("requestFocus", focus),
 	];
 	
 	return function() {
