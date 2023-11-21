@@ -2,7 +2,7 @@
 import {onMount, getContext} from "svelte";
 import Spacer from "components/utils/Spacer.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
-import AstHint from "components/App/AstHint.svelte";
+import AstHint from "./AstHint.svelte";
 
 let app = getContext("app");
 

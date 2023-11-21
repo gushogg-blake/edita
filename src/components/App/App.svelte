@@ -17,7 +17,7 @@ import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
 import BottomPanes from "./BottomPanes.svelte";
 import FindBar from "./FindBar.svelte";
-import DevToolbar from "./DevToolbar.svelte";
+import DevToolbar from "./DevToolbar/DevToolbar.svelte";
 
 export let app;
 
