@@ -5,7 +5,7 @@
 		"email": "gus@gushogg-blake.com"
 	},
 	"private": true,
-	"version": "0.67.0",
+	"version": "0.68.0",
 	"main": "./build/electron/mainProcess/main.js",
 	"electronVersion": "22.1.0",
 	"dependencies": {
