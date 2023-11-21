@@ -152,6 +152,7 @@ class Base extends Evented {
 		]);
 		
 		await Promise.all([
+			this.ensureRequiredLangsInitialised(this.langs.get("codepatterns")),
 			this.initPrefs(),
 			this.initThemes(),
 		]);
@@ -228,7 +229,7 @@ class Base extends Evented {
 				//"php",
 				//"c",
 				//"cpp",
-			], code => this.initLang(this.langs.get(code)));
+			], code => this.this.ensureRequiredLangsInitialised(this.langs.get(code)));
 		}
 	}
 	
