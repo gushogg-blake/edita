@@ -198,6 +198,10 @@ let migrations = {
 	"22"(prefs) {
 		prefs.globalKeymap["Ctrl+L"] = "newWithLangSelector";
 	},
+	
+	"23"(prefs) {
+		prefs.defaultWrapLangs = ["markdown"];
+	},
 };
 
 module.exports = function() {
@@ -206,6 +210,7 @@ module.exports = function() {
 		defaultIndent: "\t",
 		defaultNewline: platform.systemInfo.newline,
 		defaultLangCode: "javascript",
+		defaultWrapLangs: ["markdown"],
 		
 		wrap: false,
 		

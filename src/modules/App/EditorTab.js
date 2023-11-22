@@ -1,5 +1,5 @@
 let set = require("lodash.set");
-let defaultPerFilePrefs = require("modules/defaultPerFilePrefs");
+let getDefaultPerFilePrefs = require("modules/getDefaultPerFilePrefs");
 let Tab = require("./Tab");
 
 function fs(...args) {
@@ -33,10 +33,8 @@ class EditorTab extends Tab {
 	}
 	
 	async init() {
-		this.perFilePrefs = {
-			...defaultPerFilePrefs(),
-			...await this.getPerFilePrefs(),
-		};
+		this.defaultPerFilePrefs = getDefaultPerFilePrefs(this.document);
+		this.perFilePrefs = await this.loadPerFilePrefs();
 		
 		this.applyPerFilePrefs();
 	}
@@ -85,14 +83,6 @@ class EditorTab extends Tab {
 	
 	hide() {
 		this.view.hide();
-	}
-	
-	applyPerFilePrefs() {
-		let {
-			wrap,
-		} = this.perFilePrefs;
-		
-		this.view.setWrap(wrap);
 	}
 	
 	async zoomOut() {
@@ -217,6 +207,21 @@ class EditorTab extends Tab {
 		this.fire("updateDirListing");
 	}
 	
+	applyPerFilePrefs() {
+		let {
+			wrap,
+		} = this.getPerFilePrefs();
+		
+		this.view.setWrap(wrap);
+	}
+	
+	getPerFilePrefs() {
+		return {
+			...this.defaultPerFilePrefs,
+			...this.perFilePrefs,
+		};
+	}
+	
 	async setPerFilePrefs(prefs) {
 		this.perFilePrefs = prefs;
 		
@@ -237,7 +242,7 @@ class EditorTab extends Tab {
 		await this.writePerFilePrefs();
 	}
 	
-	async getPerFilePrefs() {
+	async loadPerFilePrefs() {
 		if (this.url.isNew) {
 			return {};
 		}
