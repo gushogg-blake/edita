@@ -4,6 +4,9 @@ let minimatch = require("minimatch-browser");
 let glob = require("glob");
 let bluebird = require("bluebird");
 let mkdirp = require("mkdirp");
+let promiseWithMethods = require("../utils/promiseWithMethods");
+
+let writeQueues = {};
 
 class Node {
 	constructor(path) {
@@ -235,11 +238,86 @@ class Node {
 	}
 	
 	async read() {
+		await this.waitForWrites();
+		
 		return (await fs.readFile(this.path)).toString();
 	}
 	
+	async _write(data) {
+		return await fs.writeFile(this.path, data);
+	}
+	
+	getWriteQueue() {
+		if (!writeQueues[this.path]) {
+			writeQueues[this.path] = [];
+		}
+		
+		return writeQueues[this.path];
+	}
+	
 	async write(data) {
-		return fs.writeFile(this.path, data);
+		let pendingWrite = {
+			data,
+			promise: promiseWithMethods(),
+			started: false,
+			done: false,
+			
+			get inProgress() {
+				return this.started && !this.done;
+			},
+		};
+		
+		this.getWriteQueue().push(pendingWrite);
+		
+		this.checkWriteQueue();
+		
+		return pendingWrite.promise;
+	}
+	
+	async checkWriteQueue() {
+		if (!writeQueues[this.path] || writeQueues[this.path][0].inProgress) {
+			return;
+		}
+		
+		let writeQueue = this.getWriteQueue();
+		
+		while (writeQueue[0]?.done) {
+			writeQueue.shift();
+		}
+		
+		if (writeQueue.length === 0) {
+			delete writeQueues[this.path];
+			
+			return;
+		}
+		
+		let nextWrite = writeQueue[0];
+		
+		nextWrite.started = true;
+		
+		try {
+			await this._write(nextWrite.data);
+			
+			nextWrite.promise.resolve();
+		} catch (e) {
+			nextWrite.promise.reject(e);
+		} finally {
+			nextWrite.done = true;
+			
+			this.checkWriteQueue();
+		}
+	}
+	
+	async waitForWrites() {
+		if (!writeQueues[this.path]) {
+			return;
+		}
+		
+		try {
+			await writeQueues[this.path][0].promise;
+		} finally {
+			await this.waitForWrites();
+		}
 	}
 	
 	createReadStream() {
