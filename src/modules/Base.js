@@ -155,6 +155,7 @@ class Base extends Evented {
 			options.useLangs && this.ensureRequiredLangsInitialised(this.langs.get("codepatterns")),
 			this.initPrefs(),
 			this.initThemes(),
+			this.ensureRequiredLangsInitialised(this.langs.get("codepatterns")),
 		]);
 		
 		this.theme = this.themes[this.prefs.theme];
