@@ -60,6 +60,13 @@ class App extends Evented {
 		
 		this.openDialogWindow = openDialogWindow(this);
 		
+		if (platform.isMainWindow) {
+			window.addEventListener("beforeunload", () => {
+				this.saveSession();
+				this.saveEphemeralUiState();
+			});
+		}
+		
 		this.teardownCallbacks = [
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
@@ -76,6 +83,8 @@ class App extends Evented {
 			this.fileTree.init(),
 			this.findAndReplace.init(),
 		]);
+		
+		this.restoreEphemeralUiState();
 		
 		dev(this);
 	}
@@ -704,6 +713,36 @@ class App extends Evented {
 			tabs,
 			selectedTabUrl: this.selectedTab?.url.toString(),
 		});
+	}
+	
+	/*
+	load/save ephemeral state like selected tabs
+	*/
+	
+	async saveEphemeralUiState() {
+		await base.stores.ephemeralUiState.save({
+			selectedTabs: {
+				tools: this.tools.pane.selectedTab.url,
+				output: this.output.pane.selectedTab.url,
+			},
+			
+			expandedDirs: [...this.fileTree.expandedDirs],
+		});
+	}
+	
+	async restoreEphemeralUiState() {
+		let state = await base.stores.ephemeralUiState.load();
+		
+		if (!state) {
+			return;
+		}
+		
+		let {selectedTabs, expandedDirs} = state;
+		
+		this.tools.pane.selectTabByUrl(selectedTabs.tools);
+		this.output.pane.selectTabByUrl(selectedTabs.output);
+		
+		this.fileTree.setExpandedDirs(expandedDirs || []);
 	}
 	
 	findInFiles(paths) {

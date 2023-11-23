@@ -13,5 +13,6 @@ module.exports = async function() {
 		projects: new JsonStore("projects", null),
 		findAndReplaceOptions: new JsonStore("findAndReplaceOptions", {}),
 		findAndReplaceHistory: new JsonStore("findAndReplaceHistory", []),
+		ephemeralUiState: new JsonStore("ephemeralUiState", null),
 	};
 }

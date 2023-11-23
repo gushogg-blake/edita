@@ -75,6 +75,18 @@ class TabPane extends Evented {
 		this.focusSelectedTabAsync();
 	}
 	
+	findTabByUrl(url) {
+		return this.tabs.find(tab => tab.url.toString() === url.toString());
+	}
+	
+	selectTabByUrl(url) {
+		let tab = this.findTabByUrl(url);
+		
+		if (tab) {
+			this.selectTab(tab);
+		}
+	}
+	
 	addToPreviouslySelectedTabs(tab) {
 		removeInPlace(this.previouslySelectedTabs, tab);
 		

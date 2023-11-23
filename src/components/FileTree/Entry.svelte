@@ -1,5 +1,5 @@
 <script>
-import {getContext, onMount, createEventDispatcher} from "svelte";
+import {getContext, onMount, tick, createEventDispatcher} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 
 export let entry;
@@ -12,24 +12,32 @@ let fire = createEventDispatcher();
 let app = getContext("app");
 
 let {fileTree} = app;
+let {expandedDirs} = fileTree;
 
 let {node, isDir} = entry;
 let {name} = node;
 let showEntry = !isRoot;
-let expanded = isRoot ? true : false; // TODO get from store
+let expanded;
 let entries = [];
 let loaded = false;
 let showHiddenFiles = base.getPref("showHiddenFiles");
 
 $: dirs = entries.filter(e => e.isDir);
 $: files = entries.filter(e => !e.isDir);
+$: expanded = isRoot || isDir && expandedDirs.has(entry.path);
 
 $: filteredEntries = [...dirs, ...files].filter(function(entry) {
 	return showHiddenFiles || !entry.node.name.startsWith(".");
 });
 
 async function update() {
-	entries = await base.DirEntries.ls(entry.path);
+	({expandedDirs} = fileTree);
+	
+	await tick();
+	
+	if (expanded) {
+		entries = await base.DirEntries.ls(entry.path);
+	}
 	
 	loaded = true;
 }
@@ -39,7 +47,7 @@ function toggle() {
 		return;
 	}
 	
-	expanded = !expanded;
+	fileTree.toggleDir(entry.path);
 	
 	if (!loaded) {
 		update();
@@ -65,7 +73,7 @@ function select() {
 	fire("select", entry);
 }
 
-if (expanded) {
+$: if (expanded) {
 	update();
 }
 
@@ -91,6 +99,7 @@ onMount(function() {
 	let teardown = [
 		isDir && platform.on("prefsUpdated", onPrefsUpdated),
 		isDir && platform.fs(entry.path).watch(onFsChange),
+		isDir && fileTree.on("updateExpandedDirs", update),
 	];
 	
 	return function() {

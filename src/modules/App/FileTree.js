@@ -7,6 +7,7 @@ module.exports = class extends Evented {
 		
 		this.app = app;
 		this.dir = platform.systemInfo.homeDir;
+		this.expandedDirs = new Set();
 	}
 	
 	async init() {
@@ -32,6 +33,22 @@ module.exports = class extends Evented {
 	
 	async up() {
 		await this.setRootDir(this.rootEntry.node.parent.path);
+	}
+	
+	setExpandedDirs(dirs) {
+		this.expandedDirs = new Set(dirs);
+		
+		this.fire("updateExpandedDirs");
+	}
+	
+	toggleDir(path) {
+		if (this.expandedDirs.has(path)) {
+			this.expandedDirs.delete(path);
+		} else {
+			this.expandedDirs.add(path);
+		}
+		
+		this.fire("updateExpandedDirs");
 	}
 	
 	getRootEntry() {
