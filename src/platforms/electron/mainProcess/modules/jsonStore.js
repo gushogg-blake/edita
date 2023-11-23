@@ -16,9 +16,17 @@ module.exports = function(app) {
 	return {
 		async load(name, key) {
 			try {
-				return await fs(userDataDir, ...jsonStorageKey(name, key)).withExt(".json").readJson() || null;
+				let node = fs(userDataDir, ...jsonStorageKey(name, key)).withExt(".json");
+				
+				if (!await node.exists()) {
+					return null;
+				}
+				
+				return await node.readJson();
 			} catch (e) {
-				return null;
+				console.log("Error loading JSON store: " + name + (key ? ", " + key : ""));
+				
+				throw e;
 			}
 		},
 		

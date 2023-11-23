@@ -80,7 +80,11 @@ class App {
 		]);
 		
 		electronApp.on("ready", async () => {
-			this.windowPositionAdjustment = (await this.jsonStore.load("prefs"))?.value.windowPositionAdjustment; // https://github.com/electron/electron/issues/10388
+			try {
+				this.windowPositionAdjustment = (await this.jsonStore.load("prefs"))?.value.windowPositionAdjustment; // https://github.com/electron/electron/issues/10388
+			} catch (e) {
+				console.error(e);
+			}
 			
 			protocol.registerStreamProtocol("app", async (request, callback) => {
 				let requestPath = decodeURIComponent(new URL(request.url).pathname);
