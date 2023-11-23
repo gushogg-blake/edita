@@ -104,4 +104,8 @@ module.exports = {
 	toggleBottomPane() {
 		this.panes.bottom.toggle();
 	},
+	
+	toggleDevToolbar() {
+		base.setPref("dev.showToolbar", !base.getPref("dev.showToolbar"));
+	},
 };

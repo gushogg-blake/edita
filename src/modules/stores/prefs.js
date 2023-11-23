@@ -202,6 +202,10 @@ let migrations = {
 	"23"(prefs) {
 		prefs.defaultWrapLangs = ["markdown"];
 	},
+	
+	"24"(prefs) {
+		prefs.globalKeymap["Ctrl+Shift+D"] = "toggleDevToolbar";
+	},
 };
 
 module.exports = function() {
@@ -365,6 +369,8 @@ module.exports = function() {
 			"Ctrl+[": "toggleLeftPane",
 			"Ctrl+]": "toggleRightPane",
 			"Ctrl+-": "toggleBottomPane",
+			
+			"Ctrl+Shift+D": "toggleDevToolbar",
 		},
 		
 		doubleClickSpeed: 400,
