@@ -116,7 +116,14 @@ let findAndReplace = {
 			
 			re = new RegExp(pattern, flags);
 		} else if (type === "regex") {
-			re = new RegExp(search, flags);
+			try {
+				re = new RegExp(search, flags);
+			} catch (e) {
+				console.log("Regex error");
+				console.error(e);
+				
+				return null;
+			}
 		}
 		
 		re.lastIndex = startIndex;
