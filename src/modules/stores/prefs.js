@@ -199,11 +199,11 @@ let migrations = {
 		prefs.globalKeymap["Ctrl+L"] = "newWithLangSelector";
 	},
 	
-	"23"(prefs) {
+	"25"(prefs) {
 		prefs.defaultWrapLangs = ["markdown"];
 	},
 	
-	"24"(prefs) {
+	"26"(prefs) {
 		prefs.globalKeymap["Ctrl+Shift+D"] = "toggleDevToolbar";
 	},
 };
