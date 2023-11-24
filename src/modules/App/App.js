@@ -578,21 +578,22 @@ class App extends Evented {
 			return;
 		}
 		
-		try {
-			let cursor = editor.normalSelection.left;
-			let node = editor.document.getNodeAtCursor(cursor);
-			let lineage = node.lineage().slice(1);
-			
-			let [notOnLine, onLine] = sortedPartition(lineage, n => n.start.lineIndex !== cursor.lineIndex);
-			
-			this.fire("showAstHint", {
-				all: lineage,
-				notOnLine,
-				onLine,
-			});
-		} catch (e) {
-			console.error(e);
+		let cursor = editor.normalSelection.left;
+		let node = editor.document.getNodeAtCursor(cursor);
+		
+		if (!node) {
+			return;
 		}
+		
+		let lineage = node.lineage().slice(1);
+		
+		let [notOnLine, onLine] = sortedPartition(lineage, n => n.start.lineIndex !== cursor.lineIndex);
+		
+		this.fire("showAstHint", {
+			all: lineage,
+			notOnLine,
+			onLine,
+		});
 	}
 	
 	refactor(...args) {

@@ -206,6 +206,11 @@ let migrations = {
 	"26"(prefs) {
 		prefs.globalKeymap["Ctrl+Shift+D"] = "toggleDevToolbar";
 	},
+	
+	"27"(prefs) {
+		prefs.normalKeymap["Ctrl+End"] = "end";
+		prefs.normalKeymap["Ctrl+Home"] = "home";
+	},
 };
 
 module.exports = function() {
@@ -244,6 +249,8 @@ module.exports = function() {
 			"PageDown": "pageDown",
 			"End": "end",
 			"Home": "home",
+			"Ctrl+End": "end",
+			"Ctrl+Home": "home",
 			"Ctrl+ArrowLeft": "wordLeft",
 			"Ctrl+ArrowRight": "wordRight",
 			"Shift+ArrowUp": "expandOrContractSelectionUp",
