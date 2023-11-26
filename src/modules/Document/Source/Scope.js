@@ -330,11 +330,11 @@ module.exports = class Scope {
 	}
 	
 	findSmallestNodeAtCharCursor(cursor) {
-		return this.tree?.smallestAtChar(cursor);
+		return this.tree?.smallestAtChar(cursor) || null;
 	}
 	
 	findFirstNodeOnOrAfterCursor(cursor) {
-		return this.tree?.firstOnOrAfter(cursor);
+		return this.tree?.firstOnOrAfter(cursor) || null;
 	}
 	
 	/*

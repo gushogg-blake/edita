@@ -49,7 +49,7 @@ module.exports = class {
 		if (range) {
 			return range.scope.findSmallestNodeAtCharCursor(cursor);
 		} else {
-			return this.rootScope.tree.root;
+			return this.rootScope.tree?.root || null;
 		}
 	}
 	
