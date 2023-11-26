@@ -249,6 +249,10 @@ class Node {
 		return (await fs.readFile(this.path)).toString();
 	}
 	
+	async _write(data) {
+		return await fs.writeFile(this.path, data);
+	}
+	
 	async read() {
 		let existingTask = queues[this.path]?.find(task => task.type === "read");
 		
@@ -269,10 +273,6 @@ class Node {
 		return task.promise;
 	}
 	
-	async _write(data) {
-		return await fs.writeFile(this.path, data);
-	}
-	
 	async write(data) {
 		let task = {
 			type: "write",
@@ -290,12 +290,11 @@ class Node {
 	
 	async checkQueue() {
 		let queue = queues[this.path];
+		let task = queue[0];
 		
-		if (queue[0].inProgress) {
+		if (task.inProgress) {
 			return;
 		}
-		
-		let task = queue[0];
 		
 		task.inProgress = true;
 		
