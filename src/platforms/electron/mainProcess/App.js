@@ -292,9 +292,19 @@ class App {
 		
 		browserWindow.setPosition(...this.calculateDialogPosition(browserWindow, opener));
 		
-		await this.callRenderer(browserWindow, "dialogInit", dialogOptions);
+		let showOnTimeout = setTimeout(function() {
+			browserWindow.show();
+		}, 1000);
 		
-		browserWindow.show();
+		try {
+			await this.callRenderer(browserWindow, "dialogInit", dialogOptions);
+		} catch (e) {
+			throw e;
+		} finally {
+			clearTimeout(showOnTimeout);
+			
+			browserWindow.show();
+		}
 		
 		if (config.dev) {
 			//browserWindow.webContents.openDevTools();
