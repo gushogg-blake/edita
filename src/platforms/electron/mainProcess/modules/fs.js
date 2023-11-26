@@ -247,27 +247,18 @@ class Node {
 		return await fs.writeFile(this.path, data);
 	}
 	
-	getWriteQueue() {
-		if (!writeQueues[this.path]) {
-			writeQueues[this.path] = [];
-		}
-		
-		return writeQueues[this.path];
-	}
-	
 	async write(data) {
 		let pendingWrite = {
 			data,
 			promise: promiseWithMethods(),
-			started: false,
-			done: false,
-			
-			get inProgress() {
-				return this.started && !this.done;
-			},
+			inProgress: false,
 		};
 		
-		this.getWriteQueue().push(pendingWrite);
+		if (!writeQueues[this.path]) {
+			writeQueues[this.path] = [];
+		}
+		
+		writeQueues[this.path].push(pendingWrite);
 		
 		this.checkWriteQueue();
 		
@@ -275,25 +266,15 @@ class Node {
 	}
 	
 	async checkWriteQueue() {
-		if (!writeQueues[this.path] || writeQueues[this.path][0].inProgress) {
-			return;
-		}
+		let writeQueue = writeQueues[this.path];
 		
-		let writeQueue = this.getWriteQueue();
-		
-		while (writeQueue[0]?.done) {
-			writeQueue.shift();
-		}
-		
-		if (writeQueue.length === 0) {
-			delete writeQueues[this.path];
-			
+		if (writeQueue[0].inProgress) {
 			return;
 		}
 		
 		let nextWrite = writeQueue[0];
 		
-		nextWrite.started = true;
+		nextWrite.inProgress = true;
 		
 		try {
 			await this._write(nextWrite.data);
@@ -302,9 +283,13 @@ class Node {
 		} catch (e) {
 			nextWrite.promise.reject(e);
 		} finally {
-			nextWrite.done = true;
+			writeQueue.shift();
 			
-			this.checkWriteQueue();
+			if (writeQueue.length > 0) {
+				this.checkWriteQueue();
+			} else {
+				delete writeQueues[this.path];
+			}
 		}
 	}
 	
