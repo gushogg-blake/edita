@@ -3,9 +3,9 @@ Tree-sitter
 
 Edita uses a fork of tree-sitter with the following changes:
 
-- fix environment detection in lib/binding_web/binding.js (the old check checked for node globals like `process`, which are available in the renderer process in Electron).
+- Fix environment detection in `lib/binding_web/binding.js` (the old check checked for node globals like `process`, which are available in the renderer process in Electron).
 
-- statically link parsers in script/build-wasm to support the following langs, which use system libraries that aren't in the main lib/binding_web/exports.json list:
+- Statically link parsers in `script/build-wasm` to support the following langs, which use system libraries that aren't in the main `lib/binding_web/exports.json` list:
 
 	- Ruby
 	- Svelte
@@ -26,13 +26,13 @@ Edita uses a fork of tree-sitter with the following changes:
 	
 	The only disadvantage of static linking is that the langs will be loaded unconditionally on startup, taking up some of the startup time that we want to use for loading common langs.
 
-- add support for statically linked modules to `Language.load` in lib/binding_web/binding.js
+- Add support for statically linked modules to `Language.load` in `lib/binding_web/binding.js`.
 
 Fork: https://github.com/gushogg-blake/tree-sitter
 
 ## emscripten/emsdk/llvm
 
-A recent version of `emcc` (emscripten) must also be used, in order to get this change: https://github.com/emscripten-core/emscripten/pull/18382 (use locateFile in dynamic module loader):
+A recent version of `emcc` (emscripten) must also be used, in order to get this change: https://github.com/emscripten-core/emscripten/pull/18382 (use `locateFile` in dynamic module loader):
 
 ```bash
 emcc -v # 3.1.43-git
