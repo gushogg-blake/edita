@@ -445,7 +445,7 @@ describe("codePatterns", function() {
 			}]);
 		});
 		
-		it("empty regex", function() {
+		it("empty regex (literal)", function() {
 			let codePattern = dedent(`
 				let asd = //;
 			`);
@@ -454,15 +454,7 @@ describe("codePatterns", function() {
 			
 			deep(tokens, [{
 				type: "literal",
-				string: `let asd = `,
-			}, {
-				type: "regex",
-				pattern: ``,
-				flags: "",
-				capture: null,
-			}, {
-				type: "literal",
-				string: `;`,
+				string: `let asd = //;`,
 			}]);
 		});
 		

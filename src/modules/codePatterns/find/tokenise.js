@@ -163,15 +163,15 @@ function tokenise(string) {
 		consumeRe(queryQuantifierRe);
 	}
 	
-	function addLiteral(ch) {
+	function addLiteral(str) {
 		let lastToken = tokens.at(-1);
 		
 		if (lastToken?.type === "literal") {
-			lastToken.string += ch;
+			lastToken.string += str;
 		} else {
 			tokens.push({
 				type: "literal",
-				string: ch,
+				string: str,
 			});
 		}
 	}
@@ -286,6 +286,12 @@ function tokenise(string) {
 				}
 				
 				let pattern = string.substring(startIndex + 1, i - 1);
+				
+				if (!pattern) {
+					addLiteral("//");
+					
+					continue;
+				}
 				
 				let flags = consumeRe(regexFlagsRe);
 				
