@@ -6,7 +6,7 @@ let bluebird = require("bluebird");
 let mkdirp = require("mkdirp");
 let promiseWithMethods = require("../utils/promiseWithMethods");
 
-let writeQueues = {};
+let queues = {};
 
 class Node {
 	constructor(path) {
@@ -237,10 +237,36 @@ class Node {
 		return this.write(JSON.stringify(json, null, 4));
 	}
 	
-	async read() {
-		await this.waitForWrites();
+	getQueue() {
+		if (!queues[this.path]) {
+			queues[this.path] = [];
+		}
 		
+		return queues[this.path];
+	}
+	
+	async _read() {
 		return (await fs.readFile(this.path)).toString();
+	}
+	
+	async read() {
+		let existingTask = queues[this.path]?.find(task => task.type === "read");
+		
+		if (existingTask) {
+			return existingTask.promise;
+		}
+		
+		let task = {
+			type: "read",
+			promise: promiseWithMethods(),
+			inProgress: false,
+		};
+		
+		this.getQueue().push(task);
+		
+		this.checkQueue();
+		
+		return task.promise;
 	}
 	
 	async _write(data) {
@@ -248,60 +274,47 @@ class Node {
 	}
 	
 	async write(data) {
-		let pendingWrite = {
+		let task = {
+			type: "write",
 			data,
 			promise: promiseWithMethods(),
 			inProgress: false,
 		};
 		
-		if (!writeQueues[this.path]) {
-			writeQueues[this.path] = [];
-		}
+		this.getQueue().push(task);
 		
-		writeQueues[this.path].push(pendingWrite);
+		this.checkQueue();
 		
-		this.checkWriteQueue();
-		
-		return pendingWrite.promise;
+		return task.promise;
 	}
 	
-	async checkWriteQueue() {
-		let writeQueue = writeQueues[this.path];
+	async checkQueue() {
+		let queue = queues[this.path];
 		
-		if (writeQueue[0].inProgress) {
+		if (queue[0].inProgress) {
 			return;
 		}
 		
-		let nextWrite = writeQueue[0];
+		let task = queue[0];
 		
-		nextWrite.inProgress = true;
+		task.inProgress = true;
 		
 		try {
-			await this._write(nextWrite.data);
-			
-			nextWrite.promise.resolve();
-		} catch (e) {
-			nextWrite.promise.reject(e);
-		} finally {
-			writeQueue.shift();
-			
-			if (writeQueue.length > 0) {
-				this.checkWriteQueue();
+			if (task.type === "read") {
+				task.promise.resolve(await this._read());
 			} else {
-				delete writeQueues[this.path];
+				task.promise.resolve(await this._write(task.data));
 			}
-		}
-	}
-	
-	async waitForWrites() {
-		if (!writeQueues[this.path]) {
-			return;
-		}
-		
-		try {
-			await writeQueues[this.path][0].promise;
+		} catch (e) {
+			task.promise.reject(e);
 		} finally {
-			await this.waitForWrites();
+			queue.shift();
+			
+			if (queue.length > 0) {
+				this.checkQueue();
+			} else {
+				delete queues[this.path];
+			}
 		}
 	}
 	
