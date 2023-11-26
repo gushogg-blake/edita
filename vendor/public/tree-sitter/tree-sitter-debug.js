@@ -1801,6 +1801,11 @@ var TreeSitter = function() {
      }
      return bits <= 32 ? 2 * Math.abs(1 << bits - 1) + value : Math.pow(2, bits) + value;
     }
+    function ___assert_fail(condition, filename, line, func) {
+     abort("Assertion failed: " + UTF8ToString(condition) + ", at: " + [ filename ? UTF8ToString(filename) : "unknown filename", line, func ? UTF8ToString(func) : "unknown function" ]);
+    }
+    Module["___assert_fail"] = ___assert_fail;
+    ___assert_fail.sig = "viiii";
     var ___memory_base = new WebAssembly.Global({
      "value": "i32",
      "mutable": false
@@ -2248,7 +2253,9 @@ var TreeSitter = function() {
     var _iswlower = Module["_iswlower"] = createExportWrapper("iswlower");
     var _iswupper = Module["_iswupper"] = createExportWrapper("iswupper");
     var _memchr = Module["_memchr"] = createExportWrapper("memchr");
+    var _strcmp = Module["_strcmp"] = createExportWrapper("strcmp");
     var _strncpy = Module["_strncpy"] = createExportWrapper("strncpy");
+    var _towlower = Module["_towlower"] = createExportWrapper("towlower");
     var _towupper = Module["_towupper"] = createExportWrapper("towupper");
     var _sbrk = Module["_sbrk"] = createExportWrapper("sbrk");
     var _emscripten_get_sbrk_ptr = Module["_emscripten_get_sbrk_ptr"] = createExportWrapper("emscripten_get_sbrk_ptr");

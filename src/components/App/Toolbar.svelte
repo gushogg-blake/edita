@@ -18,7 +18,7 @@ function upload({detail: files}) {
 }
 
 function openLanguages() {
-	platform.showContextMenuForElement(app, langButton, base.langs.all.map(function(lang) {
+	platform.showContextMenuForElement(app, langButton, base.langs.all.filter(lang => !lang.util).map(function(lang) {
 		return {
 			label: lang.name,
 			

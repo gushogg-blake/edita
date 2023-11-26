@@ -178,6 +178,10 @@ let theme = {
 			link: "#0338ff underline",
 		},
 		
+		markdown_inline: {
+			link: "#0338ff underline",
+		},
+		
 		c: {
 			keyword: "#0032ff",
 			id: "#202020",

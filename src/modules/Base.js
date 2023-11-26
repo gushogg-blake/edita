@@ -28,6 +28,7 @@ let scss = require("modules/langs/scss");
 let php = require("modules/langs/php");
 let c = require("modules/langs/c");
 let markdown = require("modules/langs/markdown");
+let markdown_inline = require("modules/langs/markdown_inline");
 let cpp = require("modules/langs/cpp");
 let python = require("modules/langs/python");
 let ruby = require("modules/langs/ruby");
@@ -120,6 +121,7 @@ class Base extends Evented {
 			scss,
 			php,
 			markdown,
+			markdown_inline,
 			c,
 			cpp,
 			python,

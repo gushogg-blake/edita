@@ -98,6 +98,31 @@ class Node {
 		return nodeGetters.lineage(this._node).map(this.wrap);
 	}
 	
+	*generateSelectionsExcludingChildren() {
+		let start = this.selection.start;
+		let nextChild = this.firstChild;
+		
+		while (true) {
+			let end = nextChild?.selection.start || this.selection.end;
+			let selection = s(start, end);
+			
+			if (selection.isFull) {
+				yield selection;
+			}
+			
+			if (end.equals(this.selection.end)) {
+				break;
+			}
+			
+			start = nextChild.end;
+			nextChild = nextChild.nextSibling;
+		}
+	}
+	
+	selectionsExcludingChildren() {
+		return [...this.generateSelectionsExcludingChildren()];
+	}
+	
 	get(field) {
 		return nodeGetters[field](this._node);
 	}

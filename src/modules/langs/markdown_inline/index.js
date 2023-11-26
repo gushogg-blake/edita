@@ -1,37 +1,13 @@
-let astMode = require("./astMode");
-let codeIntel = require("./codeIntel");
-
 let lang = {
-	group: "html",
-	code: "markdown",
-	name: "Markdown",
-	defaultExtension: "md",
-	astMode,
-	codeIntel,
-	possibleInjections: ["html", "markdown_inline"],
+	code: "markdown_inline",
+	name: "markdown_inline (sub-parser for markdown)",
+	util: true,
 	
 	injections: [
 		{
-			pattern: "(inline) @injectionNode",
-			lang: "markdown_inline",
-			//combined: true,
-			//excludeChildren: true,
-		},
-		
-		{
-			pattern: "(html_block) @injectionNode",
+			pattern: "(html_tag) @injectionNode",
 			lang: "html",
-			combined: true,
-		},
-		
-		{
-			pattern: "(fenced_code_block (info_string (language) @lang) (code_fence_content) @injectionNode)",
-			
-			lang({lang}) {
-				return lang.text;
-			},
-			
-			combined: true,
+			combined: false,
 		},
 	],
 	
@@ -49,7 +25,10 @@ let lang = {
 			parent,
 		} = node;
 		
-		if (type === "link") {
+		if ([
+			"inline_link",
+			"shortcut_link",
+		].includes(type)) {
 			return "link";
 		}
 		
@@ -75,18 +54,6 @@ let lang = {
 	},
 	
 	getSupportLevel(code, path) {
-		if (!path) {
-			return null; //
-		}
-		
-		let type = platform.fs(path).lastType;
-		
-		if ([
-			"md",
-		].includes(type)) {
-			return "general";
-		}
-		
 		return null;
 	},
 };

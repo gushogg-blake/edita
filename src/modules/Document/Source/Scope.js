@@ -186,7 +186,7 @@ module.exports = class Scope {
 					continue;
 				}
 				
-				let nodeRanges = nodes.map(node => this.rangesFromNode(node));
+				let nodeRanges = nodes.map(node => this.rangesFromNode(node, injection.excludeChildren));
 				let ranges = nodeRanges.flat();
 				
 				let existingScope;
@@ -221,7 +221,7 @@ module.exports = class Scope {
 						continue;
 					}
 					
-					let ranges = this.rangesFromNode(node);
+					let ranges = this.rangesFromNode(node, injection.excludeChildren);
 					
 					let existingScope;
 					let scope;
@@ -292,19 +292,25 @@ module.exports = class Scope {
 	
 	the ranges we end up with will be the intersections of the node's
 	selection and our ranges.
+	
+	we can also exclude children of the node - added to support
+	https://github.com/MDeiml/tree-sitter-markdown/
 	*/
 	
-	rangesFromNode(node) {
+	rangesFromNode(node, excludeChildren=false) {
 		let ranges = [];
+		let selections = excludeChildren ? node.selectionsExcludingChildren() : [node.selection];
 		
 		for (let parentRange of this.ranges) {
-			let selection = Selection.intersection(node.selection, parentRange.selection);
-			
-			if (selection) {
-				let startIndex = this.source.indexFromCursor(selection.start);
-				let endIndex = this.source.indexFromCursor(selection.end);
+			for (let candidateSelection of selections) {
+				let selection = Selection.intersection(candidateSelection, parentRange.selection);
 				
-				ranges.push(new Range(startIndex, endIndex, selection));
+				if (selection) {
+					let startIndex = this.source.indexFromCursor(selection.start);
+					let endIndex = this.source.indexFromCursor(selection.end);
+					
+					ranges.push(new Range(startIndex, endIndex, selection));
+				}
 			}
 		}
 		
