@@ -172,14 +172,15 @@ module.exports = class Scope {
 		}
 		
 		for (let injection of this.lang.injections) {
-			let nodes = this.tree.captureSingle(injection.query, "injectionNode").filter(node => node.text.length > 0);
+			let results = this.tree.captureSingle(injection.query).filter(result => result.injectionNode?.text.length > 0);
 			
-			if (nodes.length === 0) {
+			if (results.length === 0) {
 				continue;
 			}
 			
 			if (injection.combined) {
-				let injectionLang = getInjectionLang(injection, nodes[0]);
+				let nodes = results.map(result => result.injectionNode);
+				let injectionLang = getInjectionLang(injection, results[0]);
 				
 				if (!injectionLang) {
 					continue;
@@ -212,8 +213,9 @@ module.exports = class Scope {
 					this.scopesByNode[node.id] = scope;
 				}
 			} else {
-				for (let node of nodes) {
-					let injectionLang = getInjectionLang(injection, node);
+				for (let result of results) {
+					let node = result.injectionNode;
+					let injectionLang = getInjectionLang(injection, result);
 					
 					if (!injectionLang) {
 						continue;

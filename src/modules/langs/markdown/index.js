@@ -16,6 +16,16 @@ let lang = {
 			lang: "html",
 			combined: true,
 		},
+		
+		{
+			pattern: "(fenced_code_block (info_string (text) @lang) (code_fence_content (text) @injectionNode))",
+			
+			lang({lang}) {
+				return lang.text;
+			},
+			
+			combined: false,
+		},
 	],
 	
 	getFooter(node) {

@@ -86,11 +86,11 @@ class Tree {
 	}
 	
 	/*
-	query and return a single captured node per result
+	query and return a single captured node per capture name
 	*/
 	
 	captureSingle(query, name) {
-		return this.query(query).map(result => mapArrayToObject(result, c => [c.name, c.node])[name]).filter(Boolean);
+		return this.query(query).map(result => mapArrayToObject(result, c => [c.name, c.node]));
 	}
 	
 	static createTreeSitterParser(lang) {

@@ -21,10 +21,10 @@ let lang = {
 		{
 			pattern: "(style_element (raw_text) @injectionNode)",
 			
-			lang(node) {
+			lang({injectionNode}) {
 				let lang;
 				
-				let startTag = node.parent.firstChild;
+				let startTag = injectionNode.parent.firstChild;
 				let [, ...attributes] = startTag.namedChildren;
 				let langAttribute = attributes.find(a => a.text.match(/^lang=/));
 				let typeAttribute = attributes.find(a => a.text.match(/^type=/));
