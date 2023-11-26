@@ -259,10 +259,10 @@ function tokenise(string) {
 				
 				i++;
 				
-				while (i < string.length) {
+				while (true) {
 					ch = string[i];
 					
-					if ("\r\n".includes(ch)) {
+					if (i === string.length || "\r\n".includes(ch)) {
 						throw new ParseError("Unterminated regex");
 					} else if (ch === "\\") {
 						i++;
