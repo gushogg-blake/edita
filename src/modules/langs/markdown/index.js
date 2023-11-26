@@ -25,10 +25,21 @@ let lang = {
 		},
 		
 		{
-			pattern: "(fenced_code_block (info_string (language) @lang) (code_fence_content) @injectionNode)",
+			pattern: "(fenced_code_block (info_string (language) @langNode) (code_fence_content) @injectionNode)",
 			
-			lang({lang}) {
-				return lang.text;
+			lang({langNode}) {
+				if (!langNode) {
+					return null;
+				}
+				
+				let langRef = langNode.text;
+				let lang = base.langs.get(langRef);
+				
+				if (!lang) {
+					lang = base.langs.all.find(lang => lang.defaultExtension === langRef);
+				}
+				
+				return lang?.code || null;
 			},
 			
 			combined: true,
