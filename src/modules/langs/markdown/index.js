@@ -17,15 +17,18 @@ let lang = {
 			combined: true,
 		},
 		
-		{
-			pattern: "(fenced_code_block (info_string (text) @lang) (code_fence_content (text) @injectionNode))",
-			
-			lang({lang}) {
-				return lang.text;
-			},
-			
-			combined: false,
-		},
+		// NOTE disabling injections in code blocks as they have the
+		// single-line comment issue (EOL isn't detected by the injected lang
+		// so single-line comments comment everything)
+		//{
+		//	pattern: "(fenced_code_block (info_string (text) @lang) (code_fence_content (text) @injectionNode))",
+		//	
+		//	lang({lang}) {
+		//		return lang.text;
+		//	},
+		//	
+		//	combined: true,
+		//},
 	],
 	
 	getFooter(node) {
