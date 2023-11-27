@@ -23,9 +23,9 @@ class Project extends Evented {
 		this.config = config || defaultConfig();
 		this.isSaved = isSaved;
 		
-		this.lspClient = new LspClient();
+		//this.lspClient = new LspClient();
 		
-		this.relayEvents(this.lspClient, ["notification", "error"], "lsp.");
+		//this.relayEvents(this.lspClient, ["notification", "error"], "lsp.");
 	}
 	
 	get prefs() {
@@ -41,11 +41,11 @@ class Project extends Evented {
 	}
 	
 	tabCreated(tab) {
-		this.lspClient.registerDocument(tab.document);
+		this.lspClient?.registerDocument(tab.document);
 	}
 	
 	tabClosed(tab) {
-		this.lspClient.unregisterDocument(tab.document);
+		this.lspClient?.unregisterDocument(tab.document);
 	}
 	
 	ownsUrl(url) {

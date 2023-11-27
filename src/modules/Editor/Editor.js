@@ -182,7 +182,7 @@ class Editor extends Evented {
 		let {document} = this;
 		let {project} = document;
 		
-		let completions = await project?.lspClient.getCompletions(document, cursor) || [];
+		let completions = await project?.lspClient?.getCompletions(document, cursor) || [];
 		
 		console.log(completions);
 		
