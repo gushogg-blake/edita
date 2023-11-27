@@ -38,6 +38,8 @@ A recent version of `emcc` (emscripten) must also be used, in order to get this 
 emcc -v # 3.1.43-git
 ```
 
+**Note** 3.1.50 doesn't work. Use `./emsdk install 3.1.43`.
+
 This probably has to be installed via `emsdk`:
 
 - Clone the latest `emsdk` from https://github.com/emscripten-core/emsdk
