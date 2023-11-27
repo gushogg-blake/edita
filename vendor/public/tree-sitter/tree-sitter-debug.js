@@ -15,7 +15,7 @@ var TreeSitter = function() {
   static init(moduleOptions) {
    if (initPromise) return initPromise;
    Module = Object.assign({}, Module, moduleOptions);
-   return initPromise = new Promise(resolveInitPromise => {
+   return initPromise = new Promise((resolveInitPromise => {
     var moduleOverrides = Object.assign({}, Module);
     var arguments_ = [];
     var thisProgram = "./this.program";
@@ -27,7 +27,7 @@ var TreeSitter = function() {
     var ENVIRONMENT_IS_NODE = false;
     var ENVIRONMENT_IS_SHELL = false;
     if (Module["ENVIRONMENT"]) {
-     throw new Error("Module.ENVIRONMENT has been deprecated. To force the environment, use the ENVIRONMENT compile-time option (for example, -s ENVIRONMENT=web or -s ENVIRONMENT=node)");
+     throw new Error("Module.ENVIRONMENT has been deprecated. To force the environment, use the ENVIRONMENT compile-time option (for example, -sENVIRONMENT=web or -sENVIRONMENT=node)");
     }
     var scriptDirectory = "";
     function locateFile(path) {
@@ -37,22 +37,12 @@ var TreeSitter = function() {
      return scriptDirectory + path;
     }
     var read_, readAsync, readBinary, setWindowTitle;
-    function logExceptionOnExit(e) {
-     if (e instanceof ExitStatus) return;
-     let toLog = e;
-     if (e && typeof e == "object" && e.stack) {
-      toLog = [ e, e.stack ];
-     }
-     err("exiting due to exception: " + toLog);
-    }
     if (ENVIRONMENT_IS_SHELL) {
      if (typeof process == "object" && typeof require === "function" || typeof window == "object" || typeof importScripts == "function") throw new Error("not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)");
      if (typeof read != "undefined") {
-      read_ = function shell_read(f) {
-       return read(f);
-      };
+      read_ = f => read(f);
      }
-     readBinary = function readBinary(f) {
+     readBinary = f => {
       let data;
       if (typeof readbuffer == "function") {
        return new Uint8Array(readbuffer(f));
@@ -61,19 +51,34 @@ var TreeSitter = function() {
       assert(typeof data == "object");
       return data;
      };
-     readAsync = function readAsync(f, onload, onerror) {
-      setTimeout(() => onload(readBinary(f)), 0);
+     readAsync = (f, onload, onerror) => {
+      setTimeout((() => onload(readBinary(f))));
      };
+     if (typeof clearTimeout == "undefined") {
+      globalThis.clearTimeout = id => {};
+     }
+     if (typeof setTimeout == "undefined") {
+      globalThis.setTimeout = f => typeof f == "function" ? f() : abort();
+     }
      if (typeof scriptArgs != "undefined") {
       arguments_ = scriptArgs;
      } else if (typeof arguments != "undefined") {
       arguments_ = arguments;
      }
      if (typeof quit == "function") {
-      quit_ = ((status, toThrow) => {
-       logExceptionOnExit(toThrow);
-       quit(status);
-      });
+      quit_ = (status, toThrow) => {
+       setTimeout((() => {
+        if (!(toThrow instanceof ExitStatus)) {
+         let toLog = toThrow;
+         if (toThrow && typeof toThrow == "object" && toThrow.stack) {
+          toLog = [ toThrow, toThrow.stack ];
+         }
+         err(`exiting due to exception: ${toLog}`);
+        }
+        quit(status);
+       }));
+       throw toThrow;
+      };
      }
      if (typeof print != "undefined") {
       if (typeof console == "undefined") console = {};
@@ -93,71 +98,51 @@ var TreeSitter = function() {
      }
      if (!(typeof window == "object" || typeof importScripts == "function")) throw new Error("not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)");
      {
-      read_ = (url => {
-       var xhr = new XMLHttpRequest();
+      read_ = url => {
+       var xhr = new XMLHttpRequest;
        xhr.open("GET", url, false);
        xhr.send(null);
        return xhr.responseText;
-      });
+      };
       if (ENVIRONMENT_IS_WORKER) {
-       readBinary = (url => {
-        var xhr = new XMLHttpRequest();
+       readBinary = url => {
+        var xhr = new XMLHttpRequest;
         xhr.open("GET", url, false);
         xhr.responseType = "arraybuffer";
         xhr.send(null);
         return new Uint8Array(xhr.response);
-       });
+       };
       }
-      readAsync = ((url, onload, onerror) => {
-       var xhr = new XMLHttpRequest();
+      readAsync = (url, onload, onerror) => {
+       var xhr = new XMLHttpRequest;
        xhr.open("GET", url, true);
        xhr.responseType = "arraybuffer";
-       xhr.onload = (() => {
+       xhr.onload = () => {
         if (xhr.status == 200 || xhr.status == 0 && xhr.response) {
          onload(xhr.response);
          return;
         }
         onerror();
-       });
+       };
        xhr.onerror = onerror;
        xhr.send(null);
-      });
+      };
      }
-     setWindowTitle = (title => document.title = title);
+     setWindowTitle = title => document.title = title;
     } else {
      throw new Error("environment detection error");
     }
     var out = Module["print"] || console.log.bind(console);
-    var err = Module["printErr"] || console.warn.bind(console);
+    var err = Module["printErr"] || console.error.bind(console);
     Object.assign(Module, moduleOverrides);
     moduleOverrides = null;
+    checkIncomingModuleAPI();
     if (Module["arguments"]) arguments_ = Module["arguments"];
-    if (!Object.getOwnPropertyDescriptor(Module, "arguments")) {
-     Object.defineProperty(Module, "arguments", {
-      configurable: true,
-      get: function() {
-       abort("Module.arguments has been replaced with plain arguments_ (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
-      }
-     });
-    }
+    legacyModuleProp("arguments", "arguments_");
     if (Module["thisProgram"]) thisProgram = Module["thisProgram"];
-    if (!Object.getOwnPropertyDescriptor(Module, "thisProgram")) {
-     Object.defineProperty(Module, "thisProgram", {
-      configurable: true,
-      get: function() {
-       abort("Module.thisProgram has been replaced with plain thisProgram (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
-      }
-     });
-    }
+    legacyModuleProp("thisProgram", "thisProgram");
     if (Module["quit"]) quit_ = Module["quit"];
-    if (!Object.getOwnPropertyDescriptor(Module, "quit")) {
-     Object.defineProperty(Module, "quit", {
-      configurable: true,
-      get: function() {
-       abort("Module.quit has been replaced with plain quit_ (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
-      }
-     });
-    }
+    legacyModuleProp("quit", "quit_");
     assert(typeof Module["memoryInitializerPrefixURL"] == "undefined", "Module.memoryInitializerPrefixURL option was removed, use Module.locateFile instead");
     assert(typeof Module["pthreadMainPrefixURL"] == "undefined", "Module.pthreadMainPrefixURL option was removed, use Module.locateFile instead");
     assert(typeof Module["cdInitializerPrefixURL"] == "undefined", "Module.cdInitializerPrefixURL option was removed, use Module.locateFile instead");
@@ -167,342 +152,25 @@ var TreeSitter = function() {
     assert(typeof Module["readBinary"] == "undefined", "Module.readBinary option was removed (modify readBinary in JS)");
     assert(typeof Module["setWindowTitle"] == "undefined", "Module.setWindowTitle option was removed (modify setWindowTitle in JS)");
     assert(typeof Module["TOTAL_MEMORY"] == "undefined", "Module.TOTAL_MEMORY has been renamed Module.INITIAL_MEMORY");
-    if (!Object.getOwnPropertyDescriptor(Module, "read")) {
-     Object.defineProperty(Module, "read", {
-      configurable: true,
-      get: function() {
-       abort("Module.read has been replaced with plain read_ (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
-      }
-     });
-    }
-    if (!Object.getOwnPropertyDescriptor(Module, "readAsync")) {
-     Object.defineProperty(Module, "readAsync", {
-      configurable: true,
-      get: function() {
-       abort("Module.readAsync has been replaced with plain readAsync (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
-      }
-     });
-    }
-    if (!Object.getOwnPropertyDescriptor(Module, "readBinary")) {
-     Object.defineProperty(Module, "readBinary", {
-      configurable: true,
-      get: function() {
-       abort("Module.readBinary has been replaced with plain readBinary (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
-      }
-     });
-    }
-    if (!Object.getOwnPropertyDescriptor(Module, "setWindowTitle")) {
-     Object.defineProperty(Module, "setWindowTitle", {
-      configurable: true,
-      get: function() {
-       abort("Module.setWindowTitle has been replaced with plain setWindowTitle (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
-      }
-     });
-    }
+    legacyModuleProp("read", "read_");
+    legacyModuleProp("readAsync", "readAsync");
+    legacyModuleProp("readBinary", "readBinary");
+    legacyModuleProp("setWindowTitle", "setWindowTitle");
     var IDBFS = "IDBFS is no longer included by default; build with -lidbfs.js";
     var PROXYFS = "PROXYFS is no longer included by default; build with -lproxyfs.js";
     var WORKERFS = "WORKERFS is no longer included by default; build with -lworkerfs.js";
     var NODEFS = "NODEFS is no longer included by default; build with -lnodefs.js";
-    assert(!ENVIRONMENT_IS_WORKER, "worker environment detected but not enabled at build time.  Add 'worker' to `-s ENVIRONMENT` to enable.");
-    assert(!ENVIRONMENT_IS_NODE, "node environment detected but not enabled at build time.  Add 'node' to `-s ENVIRONMENT` to enable.");
-    assert(!ENVIRONMENT_IS_SHELL, "shell environment detected but not enabled at build time.  Add 'shell' to `-s ENVIRONMENT` to enable.");
-    var STACK_ALIGN = 16;
-    var POINTER_SIZE = 4;
-    function getNativeTypeSize(type) {
-     switch (type) {
-     case "i1":
-     case "i8":
-      return 1;
-
-     case "i16":
-      return 2;
-
-     case "i32":
-      return 4;
-
-     case "i64":
-      return 8;
-
-     case "float":
-      return 4;
-
-     case "double":
-      return 8;
-
-     default:
-      {
-       if (type[type.length - 1] === "*") {
-        return POINTER_SIZE;
-       } else if (type[0] === "i") {
-        const bits = Number(type.substr(1));
-        assert(bits % 8 === 0, "getNativeTypeSize invalid bits " + bits + ", type " + type);
-        return bits / 8;
-       } else {
-        return 0;
-       }
-      }
-     }
-    }
-    function warnOnce(text) {
-     if (!warnOnce.shown) warnOnce.shown = {};
-     if (!warnOnce.shown[text]) {
-      warnOnce.shown[text] = 1;
-      err(text);
-     }
-    }
-    function convertJsFunctionToWasm(func, sig) {
-     if (typeof WebAssembly.Function == "function") {
-      var typeNames = {
-       "i": "i32",
-       "j": "i64",
-       "f": "f32",
-       "d": "f64"
-      };
-      var type = {
-       parameters: [],
-       results: sig[0] == "v" ? [] : [ typeNames[sig[0]] ]
-      };
-      for (var i = 1; i < sig.length; ++i) {
-       type.parameters.push(typeNames[sig[i]]);
-      }
-      return new WebAssembly.Function(type, func);
-     }
-     var typeSection = [ 1, 0, 1, 96 ];
-     var sigRet = sig.slice(0, 1);
-     var sigParam = sig.slice(1);
-     var typeCodes = {
-      "i": 127,
-      "j": 126,
-      "f": 125,
-      "d": 124
-     };
-     typeSection.push(sigParam.length);
-     for (var i = 0; i < sigParam.length; ++i) {
-      typeSection.push(typeCodes[sigParam[i]]);
-     }
-     if (sigRet == "v") {
-      typeSection.push(0);
-     } else {
-      typeSection = typeSection.concat([ 1, typeCodes[sigRet] ]);
-     }
-     typeSection[1] = typeSection.length - 2;
-     var bytes = new Uint8Array([ 0, 97, 115, 109, 1, 0, 0, 0 ].concat(typeSection, [ 2, 7, 1, 1, 101, 1, 102, 0, 0, 7, 5, 1, 1, 102, 0, 0 ]));
-     var module = new WebAssembly.Module(bytes);
-     var instance = new WebAssembly.Instance(module, {
-      "e": {
-       "f": func
-      }
-     });
-     var wrappedFunc = instance.exports["f"];
-     return wrappedFunc;
-    }
-    var freeTableIndexes = [];
-    var functionsInTableMap;
-    function getEmptyTableSlot() {
-     if (freeTableIndexes.length) {
-      return freeTableIndexes.pop();
-     }
-     try {
-      wasmTable.grow(1);
-     } catch (err) {
-      if (!(err instanceof RangeError)) {
-       throw err;
-      }
-      throw "Unable to grow wasm table. Set ALLOW_TABLE_GROWTH.";
-     }
-     return wasmTable.length - 1;
-    }
-    function updateTableMap(offset, count) {
-     for (var i = offset; i < offset + count; i++) {
-      var item = getWasmTableEntry(i);
-      if (item) {
-       functionsInTableMap.set(item, i);
-      }
-     }
-    }
-    function addFunction(func, sig) {
-     assert(typeof func != "undefined");
-     if (!functionsInTableMap) {
-      functionsInTableMap = new WeakMap();
-      updateTableMap(0, wasmTable.length);
-     }
-     if (functionsInTableMap.has(func)) {
-      return functionsInTableMap.get(func);
-     }
-     var ret = getEmptyTableSlot();
-     try {
-      setWasmTableEntry(ret, func);
-     } catch (err) {
-      if (!(err instanceof TypeError)) {
-       throw err;
-      }
-      assert(typeof sig != "undefined", "Missing signature argument to addFunction: " + func);
-      var wrapped = convertJsFunctionToWasm(func, sig);
-      setWasmTableEntry(ret, wrapped);
-     }
-     functionsInTableMap.set(func, ret);
-     return ret;
-    }
-    function removeFunction(index) {
-     functionsInTableMap.delete(getWasmTableEntry(index));
-     freeTableIndexes.push(index);
-    }
-    var tempRet0 = 0;
-    var setTempRet0 = value => {
-     tempRet0 = value;
-    };
-    var getTempRet0 = () => tempRet0;
+    assert(!ENVIRONMENT_IS_WORKER, "worker environment detected but not enabled at build time.  Add 'worker' to `-sENVIRONMENT` to enable.");
+    assert(!ENVIRONMENT_IS_NODE, "node environment detected but not enabled at build time.  Add 'node' to `-sENVIRONMENT` to enable.");
+    assert(!ENVIRONMENT_IS_SHELL, "shell environment detected but not enabled at build time.  Add 'shell' to `-sENVIRONMENT` to enable.");
     var dynamicLibraries = Module["dynamicLibraries"] || [];
     var wasmBinary;
     if (Module["wasmBinary"]) wasmBinary = Module["wasmBinary"];
-    if (!Object.getOwnPropertyDescriptor(Module, "wasmBinary")) {
-     Object.defineProperty(Module, "wasmBinary", {
-      configurable: true,
-      get: function() {
-       abort("Module.wasmBinary has been replaced with plain wasmBinary (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
-      }
-     });
-    }
+    legacyModuleProp("wasmBinary", "wasmBinary");
     var noExitRuntime = Module["noExitRuntime"] || true;
-    if (!Object.getOwnPropertyDescriptor(Module, "noExitRuntime")) {
-     Object.defineProperty(Module, "noExitRuntime", {
-      configurable: true,
-      get: function() {
-       abort("Module.noExitRuntime has been replaced with plain noExitRuntime (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
-      }
-     });
-    }
+    legacyModuleProp("noExitRuntime", "noExitRuntime");
     if (typeof WebAssembly != "object") {
      abort("no native wasm support detected");
-    }
-    function setValue(ptr, value, type = "i8", noSafe) {
-     if (type.charAt(type.length - 1) === "*") type = "i32";
-     if (noSafe) {
-      switch (type) {
-      case "i1":
-       HEAP8[ptr >> 0] = value;
-       break;
-
-      case "i8":
-       HEAP8[ptr >> 0] = value;
-       break;
-
-      case "i16":
-       HEAP16[ptr >> 1] = value;
-       break;
-
-      case "i32":
-       HEAP32[ptr >> 2] = value;
-       break;
-
-      case "i64":
-       tempI64 = [ value >>> 0, (tempDouble = value, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0) ], 
-       HEAP32[ptr >> 2] = tempI64[0], HEAP32[ptr + 4 >> 2] = tempI64[1];
-       break;
-
-      case "float":
-       HEAPF32[ptr >> 2] = value;
-       break;
-
-      case "double":
-       HEAPF64[ptr >> 3] = value;
-       break;
-
-      default:
-       abort("invalid type for setValue: " + type);
-      }
-     } else {
-      switch (type) {
-      case "i1":
-       SAFE_HEAP_STORE(ptr | 0, value | 0, 1);
-       break;
-
-      case "i8":
-       SAFE_HEAP_STORE(ptr | 0, value | 0, 1);
-       break;
-
-      case "i16":
-       SAFE_HEAP_STORE(ptr | 0, value | 0, 2);
-       break;
-
-      case "i32":
-       SAFE_HEAP_STORE(ptr | 0, value | 0, 4);
-       break;
-
-      case "i64":
-       tempI64 = [ value >>> 0, (tempDouble = value, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0) ], 
-       SAFE_HEAP_STORE(ptr | 0, tempI64[0] | 0, 4), SAFE_HEAP_STORE(ptr + 4 | 0, tempI64[1] | 0, 4);
-       break;
-
-      case "float":
-       SAFE_HEAP_STORE_D(ptr | 0, Math.fround(value), 4);
-       break;
-
-      case "double":
-       SAFE_HEAP_STORE_D(ptr | 0, +value, 8);
-       break;
-
-      default:
-       abort("invalid type for setValue: " + type);
-      }
-     }
-    }
-    function getValue(ptr, type = "i8", noSafe) {
-     if (type.charAt(type.length - 1) === "*") type = "i32";
-     if (noSafe) {
-      switch (type) {
-      case "i1":
-       return HEAP8[ptr >> 0];
-
-      case "i8":
-       return HEAP8[ptr >> 0];
-
-      case "i16":
-       return HEAP16[ptr >> 1];
-
-      case "i32":
-       return HEAP32[ptr >> 2];
-
-      case "i64":
-       return HEAP32[ptr >> 2];
-
-      case "float":
-       return HEAPF32[ptr >> 2];
-
-      case "double":
-       return Number(HEAPF64[ptr >> 3]);
-
-      default:
-       abort("invalid type for getValue: " + type);
-      }
-     } else {
-      switch (type) {
-      case "i1":
-       return SAFE_HEAP_LOAD(ptr | 0, 1, 0) | 0;
-
-      case "i8":
-       return SAFE_HEAP_LOAD(ptr | 0, 1, 0) | 0;
-
-      case "i16":
-       return SAFE_HEAP_LOAD(ptr | 0, 2, 0) | 0;
-
-      case "i32":
-       return SAFE_HEAP_LOAD(ptr | 0, 4, 0) | 0;
-
-      case "i64":
-       return SAFE_HEAP_LOAD(ptr | 0, 8, 0) | 0;
-
-      case "float":
-       return Math.fround(SAFE_HEAP_LOAD_D(ptr | 0, 4, 0));
-
-      case "double":
-       return +SAFE_HEAP_LOAD_D(ptr | 0, 8, 0);
-
-      default:
-       abort("invalid type for getValue: " + type);
-      }
-     }
-     return null;
     }
     function getSafeHeapType(bytes, isFloat) {
      switch (bytes) {
@@ -519,35 +187,35 @@ var TreeSitter = function() {
       return isFloat ? "double" : "i64";
 
      default:
-      assert(0);
+      assert(0, `getSafeHeapType() invalid bytes=${bytes}`);
      }
     }
     function SAFE_HEAP_STORE(dest, value, bytes, isFloat) {
-     if (dest <= 0) abort("segmentation fault storing " + bytes + " bytes to address " + dest);
-     if (dest % bytes !== 0) abort("alignment error storing to address " + dest + ", which was expected to be aligned to a multiple of " + bytes);
-     if (runtimeInitialized && !runtimeExited) {
-      var brk = _sbrk() >>> 0;
-      if (dest + bytes > brk) abort("segmentation fault, exceeded the top of the available dynamic heap when storing " + bytes + " bytes to address " + dest + ". DYNAMICTOP=" + brk);
-      assert(brk >= _emscripten_stack_get_base());
-      assert(brk <= HEAP8.length);
+     if (dest <= 0) abort(`segmentation fault storing ${bytes} bytes to address ${dest}`);
+     if (dest % bytes !== 0) abort(`alignment error storing to address ${dest}, which was expected to be aligned to a multiple of ${bytes}`);
+     if (runtimeInitialized) {
+      var brk = _sbrk();
+      if (dest + bytes > brk) abort(`segmentation fault, exceeded the top of the available dynamic heap when storing ${bytes} bytes to address ${dest}. DYNAMICTOP=${brk}`);
+      assert(brk >= _emscripten_stack_get_base(), `brk >= _emscripten_stack_get_base() (brk=${brk}, _emscripten_stack_get_base()=${_emscripten_stack_get_base()})`);
+      assert(brk <= wasmMemory.buffer.byteLength, `brk <= wasmMemory.buffer.byteLength (brk=${brk}, wasmMemory.buffer.byteLength=${wasmMemory.buffer.byteLength})`);
      }
-     setValue(dest, value, getSafeHeapType(bytes, isFloat), 1);
+     setValue_safe(dest, value, getSafeHeapType(bytes, isFloat));
      return value;
     }
     function SAFE_HEAP_STORE_D(dest, value, bytes) {
      return SAFE_HEAP_STORE(dest, value, bytes, true);
     }
     function SAFE_HEAP_LOAD(dest, bytes, unsigned, isFloat) {
-     if (dest <= 0) abort("segmentation fault loading " + bytes + " bytes from address " + dest);
-     if (dest % bytes !== 0) abort("alignment error loading from address " + dest + ", which was expected to be aligned to a multiple of " + bytes);
-     if (runtimeInitialized && !runtimeExited) {
-      var brk = _sbrk() >>> 0;
-      if (dest + bytes > brk) abort("segmentation fault, exceeded the top of the available dynamic heap when loading " + bytes + " bytes from address " + dest + ". DYNAMICTOP=" + brk);
-      assert(brk >= _emscripten_stack_get_base());
-      assert(brk <= HEAP8.length);
+     if (dest <= 0) abort(`segmentation fault loading ${bytes} bytes from address ${dest}`);
+     if (dest % bytes !== 0) abort(`alignment error loading from address ${dest}, which was expected to be aligned to a multiple of ${bytes}`);
+     if (runtimeInitialized) {
+      var brk = _sbrk();
+      if (dest + bytes > brk) abort(`segmentation fault, exceeded the top of the available dynamic heap when loading ${bytes} bytes from address ${dest}. DYNAMICTOP=${brk}`);
+      assert(brk >= _emscripten_stack_get_base(), `brk >= _emscripten_stack_get_base() (brk=${brk}, _emscripten_stack_get_base()=${_emscripten_stack_get_base()})`);
+      assert(brk <= wasmMemory.buffer.byteLength, `brk <= wasmMemory.buffer.byteLength (brk=${brk}, wasmMemory.buffer.byteLength=${wasmMemory.buffer.byteLength})`);
      }
      var type = getSafeHeapType(bytes, isFloat);
-     var ret = getValue(dest, type, 1);
+     var ret = getValue_safe(dest, type);
      if (unsigned) ret = unSign(ret, parseInt(type.substr(1), 10));
      return ret;
     }
@@ -557,7 +225,7 @@ var TreeSitter = function() {
     function SAFE_FT_MASK(value, mask) {
      var ret = value & mask;
      if (ret !== value) {
-      abort("Function table mask error: function pointer is " + value + " which is masked by " + mask + ", the likely cause of this is that the function pointer is being called by the wrong type.");
+      abort(`Function table mask error: function pointer is ${value} which is masked by ${mask}, the likely cause of this is that the function pointer is being called by the wrong type.`);
      }
      return ret;
     }
@@ -575,329 +243,23 @@ var TreeSitter = function() {
       abort("Assertion failed" + (text ? ": " + text : ""));
      }
     }
-    function getCFunc(ident) {
-     var func = Module["_" + ident];
-     assert(func, "Cannot call unknown function " + ident + ", make sure it is exported");
-     return func;
+    var HEAP, HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
+    function updateMemoryViews() {
+     var b = wasmMemory.buffer;
+     Module["HEAP8"] = HEAP8 = new Int8Array(b);
+     Module["HEAP16"] = HEAP16 = new Int16Array(b);
+     Module["HEAP32"] = HEAP32 = new Int32Array(b);
+     Module["HEAPU8"] = HEAPU8 = new Uint8Array(b);
+     Module["HEAPU16"] = HEAPU16 = new Uint16Array(b);
+     Module["HEAPU32"] = HEAPU32 = new Uint32Array(b);
+     Module["HEAPF32"] = HEAPF32 = new Float32Array(b);
+     Module["HEAPF64"] = HEAPF64 = new Float64Array(b);
     }
-    function ccall(ident, returnType, argTypes, args, opts) {
-     var toC = {
-      "string": function(str) {
-       var ret = 0;
-       if (str !== null && str !== undefined && str !== 0) {
-        var len = (str.length << 2) + 1;
-        ret = stackAlloc(len);
-        stringToUTF8(str, ret, len);
-       }
-       return ret;
-      },
-      "array": function(arr) {
-       var ret = stackAlloc(arr.length);
-       writeArrayToMemory(arr, ret);
-       return ret;
-      }
-     };
-     function convertReturnValue(ret) {
-      if (returnType === "string") return UTF8ToString(ret);
-      if (returnType === "boolean") return Boolean(ret);
-      return ret;
-     }
-     var func = getCFunc(ident);
-     var cArgs = [];
-     var stack = 0;
-     assert(returnType !== "array", 'Return type should not be "array".');
-     if (args) {
-      for (var i = 0; i < args.length; i++) {
-       var converter = toC[argTypes[i]];
-       if (converter) {
-        if (stack === 0) stack = stackSave();
-        cArgs[i] = converter(args[i]);
-       } else {
-        cArgs[i] = args[i];
-       }
-      }
-     }
-     var ret = func.apply(null, cArgs);
-     function onDone(ret) {
-      if (stack !== 0) stackRestore(stack);
-      return convertReturnValue(ret);
-     }
-     ret = onDone(ret);
-     return ret;
-    }
-    function cwrap(ident, returnType, argTypes, opts) {
-     return function() {
-      return ccall(ident, returnType, argTypes, arguments, opts);
-     };
-    }
-    var ALLOC_NORMAL = 0;
-    var ALLOC_STACK = 1;
-    function allocate(slab, allocator) {
-     var ret;
-     assert(typeof allocator == "number", "allocate no longer takes a type argument");
-     assert(typeof slab != "number", "allocate no longer takes a number as arg0");
-     if (allocator == ALLOC_STACK) {
-      ret = stackAlloc(slab.length);
-     } else {
-      ret = _malloc(slab.length);
-     }
-     if (!slab.subarray && !slab.slice) {
-      slab = new Uint8Array(slab);
-     }
-     HEAPU8.set(slab, ret);
-     return ret;
-    }
-    var UTF8Decoder = typeof TextDecoder != "undefined" ? new TextDecoder("utf8") : undefined;
-    function UTF8ArrayToString(heap, idx, maxBytesToRead) {
-     var endIdx = idx + maxBytesToRead;
-     var endPtr = idx;
-     while (heap[endPtr] && !(endPtr >= endIdx)) ++endPtr;
-     if (endPtr - idx > 16 && heap.subarray && UTF8Decoder) {
-      return UTF8Decoder.decode(heap.subarray(idx, endPtr));
-     } else {
-      var str = "";
-      while (idx < endPtr) {
-       var u0 = heap[idx++];
-       if (!(u0 & 128)) {
-        str += String.fromCharCode(u0);
-        continue;
-       }
-       var u1 = heap[idx++] & 63;
-       if ((u0 & 224) == 192) {
-        str += String.fromCharCode((u0 & 31) << 6 | u1);
-        continue;
-       }
-       var u2 = heap[idx++] & 63;
-       if ((u0 & 240) == 224) {
-        u0 = (u0 & 15) << 12 | u1 << 6 | u2;
-       } else {
-        if ((u0 & 248) != 240) warnOnce("Invalid UTF-8 leading byte 0x" + u0.toString(16) + " encountered when deserializing a UTF-8 string in wasm memory to a JS string!");
-        u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | heap[idx++] & 63;
-       }
-       if (u0 < 65536) {
-        str += String.fromCharCode(u0);
-       } else {
-        var ch = u0 - 65536;
-        str += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
-       }
-      }
-     }
-     return str;
-    }
-    function UTF8ToString(ptr, maxBytesToRead) {
-     return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : "";
-    }
-    function stringToUTF8Array(str, heap, outIdx, maxBytesToWrite) {
-     if (!(maxBytesToWrite > 0)) return 0;
-     var startIdx = outIdx;
-     var endIdx = outIdx + maxBytesToWrite - 1;
-     for (var i = 0; i < str.length; ++i) {
-      var u = str.charCodeAt(i);
-      if (u >= 55296 && u <= 57343) {
-       var u1 = str.charCodeAt(++i);
-       u = 65536 + ((u & 1023) << 10) | u1 & 1023;
-      }
-      if (u <= 127) {
-       if (outIdx >= endIdx) break;
-       heap[outIdx++] = u;
-      } else if (u <= 2047) {
-       if (outIdx + 1 >= endIdx) break;
-       heap[outIdx++] = 192 | u >> 6;
-       heap[outIdx++] = 128 | u & 63;
-      } else if (u <= 65535) {
-       if (outIdx + 2 >= endIdx) break;
-       heap[outIdx++] = 224 | u >> 12;
-       heap[outIdx++] = 128 | u >> 6 & 63;
-       heap[outIdx++] = 128 | u & 63;
-      } else {
-       if (outIdx + 3 >= endIdx) break;
-       if (u > 1114111) warnOnce("Invalid Unicode code point 0x" + u.toString(16) + " encountered when serializing a JS string to a UTF-8 string in wasm memory! (Valid unicode code points should be in range 0-0x10FFFF).");
-       heap[outIdx++] = 240 | u >> 18;
-       heap[outIdx++] = 128 | u >> 12 & 63;
-       heap[outIdx++] = 128 | u >> 6 & 63;
-       heap[outIdx++] = 128 | u & 63;
-      }
-     }
-     heap[outIdx] = 0;
-     return outIdx - startIdx;
-    }
-    function stringToUTF8(str, outPtr, maxBytesToWrite) {
-     assert(typeof maxBytesToWrite == "number", "stringToUTF8(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!");
-     return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
-    }
-    function lengthBytesUTF8(str) {
-     var len = 0;
-     for (var i = 0; i < str.length; ++i) {
-      var u = str.charCodeAt(i);
-      if (u >= 55296 && u <= 57343) u = 65536 + ((u & 1023) << 10) | str.charCodeAt(++i) & 1023;
-      if (u <= 127) ++len; else if (u <= 2047) len += 2; else if (u <= 65535) len += 3; else len += 4;
-     }
-     return len;
-    }
-    function AsciiToString(ptr) {
-     var str = "";
-     while (1) {
-      var ch = SAFE_HEAP_LOAD(ptr++ | 0, 1, 1) >>> 0;
-      if (!ch) return str;
-      str += String.fromCharCode(ch);
-     }
-    }
-    function stringToAscii(str, outPtr) {
-     return writeAsciiToMemory(str, outPtr, false);
-    }
-    var UTF16Decoder = typeof TextDecoder != "undefined" ? new TextDecoder("utf-16le") : undefined;
-    function UTF16ToString(ptr, maxBytesToRead) {
-     assert(ptr % 2 == 0, "Pointer passed to UTF16ToString must be aligned to two bytes!");
-     var endPtr = ptr;
-     var idx = endPtr >> 1;
-     var maxIdx = idx + maxBytesToRead / 2;
-     while (!(idx >= maxIdx) && SAFE_HEAP_LOAD(idx * 2, 2, 1)) ++idx;
-     endPtr = idx << 1;
-     if (endPtr - ptr > 32 && UTF16Decoder) {
-      return UTF16Decoder.decode(HEAPU8.subarray(ptr, endPtr));
-     } else {
-      var str = "";
-      for (var i = 0; !(i >= maxBytesToRead / 2); ++i) {
-       var codeUnit = SAFE_HEAP_LOAD(ptr + i * 2 | 0, 2, 0) | 0;
-       if (codeUnit == 0) break;
-       str += String.fromCharCode(codeUnit);
-      }
-      return str;
-     }
-    }
-    function stringToUTF16(str, outPtr, maxBytesToWrite) {
-     assert(outPtr % 2 == 0, "Pointer passed to stringToUTF16 must be aligned to two bytes!");
-     assert(typeof maxBytesToWrite == "number", "stringToUTF16(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!");
-     if (maxBytesToWrite === undefined) {
-      maxBytesToWrite = 2147483647;
-     }
-     if (maxBytesToWrite < 2) return 0;
-     maxBytesToWrite -= 2;
-     var startPtr = outPtr;
-     var numCharsToWrite = maxBytesToWrite < str.length * 2 ? maxBytesToWrite / 2 : str.length;
-     for (var i = 0; i < numCharsToWrite; ++i) {
-      var codeUnit = str.charCodeAt(i);
-      SAFE_HEAP_STORE(outPtr | 0, codeUnit | 0, 2);
-      outPtr += 2;
-     }
-     SAFE_HEAP_STORE(outPtr | 0, 0 | 0, 2);
-     return outPtr - startPtr;
-    }
-    function lengthBytesUTF16(str) {
-     return str.length * 2;
-    }
-    function UTF32ToString(ptr, maxBytesToRead) {
-     assert(ptr % 4 == 0, "Pointer passed to UTF32ToString must be aligned to four bytes!");
-     var i = 0;
-     var str = "";
-     while (!(i >= maxBytesToRead / 4)) {
-      var utf32 = SAFE_HEAP_LOAD(ptr + i * 4 | 0, 4, 0) | 0;
-      if (utf32 == 0) break;
-      ++i;
-      if (utf32 >= 65536) {
-       var ch = utf32 - 65536;
-       str += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
-      } else {
-       str += String.fromCharCode(utf32);
-      }
-     }
-     return str;
-    }
-    function stringToUTF32(str, outPtr, maxBytesToWrite) {
-     assert(outPtr % 4 == 0, "Pointer passed to stringToUTF32 must be aligned to four bytes!");
-     assert(typeof maxBytesToWrite == "number", "stringToUTF32(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!");
-     if (maxBytesToWrite === undefined) {
-      maxBytesToWrite = 2147483647;
-     }
-     if (maxBytesToWrite < 4) return 0;
-     var startPtr = outPtr;
-     var endPtr = startPtr + maxBytesToWrite - 4;
-     for (var i = 0; i < str.length; ++i) {
-      var codeUnit = str.charCodeAt(i);
-      if (codeUnit >= 55296 && codeUnit <= 57343) {
-       var trailSurrogate = str.charCodeAt(++i);
-       codeUnit = 65536 + ((codeUnit & 1023) << 10) | trailSurrogate & 1023;
-      }
-      SAFE_HEAP_STORE(outPtr | 0, codeUnit | 0, 4);
-      outPtr += 4;
-      if (outPtr + 4 > endPtr) break;
-     }
-     SAFE_HEAP_STORE(outPtr | 0, 0 | 0, 4);
-     return outPtr - startPtr;
-    }
-    function lengthBytesUTF32(str) {
-     var len = 0;
-     for (var i = 0; i < str.length; ++i) {
-      var codeUnit = str.charCodeAt(i);
-      if (codeUnit >= 55296 && codeUnit <= 57343) ++i;
-      len += 4;
-     }
-     return len;
-    }
-    function allocateUTF8(str) {
-     var size = lengthBytesUTF8(str) + 1;
-     var ret = _malloc(size);
-     if (ret) stringToUTF8Array(str, HEAP8, ret, size);
-     return ret;
-    }
-    function allocateUTF8OnStack(str) {
-     var size = lengthBytesUTF8(str) + 1;
-     var ret = stackAlloc(size);
-     stringToUTF8Array(str, HEAP8, ret, size);
-     return ret;
-    }
-    function writeStringToMemory(string, buffer, dontAddNull) {
-     warnOnce("writeStringToMemory is deprecated and should not be called! Use stringToUTF8() instead!");
-     var lastChar, end;
-     if (dontAddNull) {
-      end = buffer + lengthBytesUTF8(string);
-      lastChar = SAFE_HEAP_LOAD(end, 1, 0);
-     }
-     stringToUTF8(string, buffer, Infinity);
-     if (dontAddNull) SAFE_HEAP_STORE(end, lastChar, 1);
-    }
-    function writeArrayToMemory(array, buffer) {
-     assert(array.length >= 0, "writeArrayToMemory array must have a length (should be an array or typed array)");
-     HEAP8.set(array, buffer);
-    }
-    function writeAsciiToMemory(str, buffer, dontAddNull) {
-     for (var i = 0; i < str.length; ++i) {
-      assert(str.charCodeAt(i) === (str.charCodeAt(i) & 255));
-      SAFE_HEAP_STORE(buffer++ | 0, str.charCodeAt(i) | 0, 1);
-     }
-     if (!dontAddNull) SAFE_HEAP_STORE(buffer | 0, 0 | 0, 1);
-    }
-    function alignUp(x, multiple) {
-     if (x % multiple > 0) {
-      x += multiple - x % multiple;
-     }
-     return x;
-    }
-    var HEAP, buffer, HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
-    function updateGlobalBufferAndViews(buf) {
-     buffer = buf;
-     Module["HEAP8"] = HEAP8 = new Int8Array(buf);
-     Module["HEAP16"] = HEAP16 = new Int16Array(buf);
-     Module["HEAP32"] = HEAP32 = new Int32Array(buf);
-     Module["HEAPU8"] = HEAPU8 = new Uint8Array(buf);
-     Module["HEAPU16"] = HEAPU16 = new Uint16Array(buf);
-     Module["HEAPU32"] = HEAPU32 = new Uint32Array(buf);
-     Module["HEAPF32"] = HEAPF32 = new Float32Array(buf);
-     Module["HEAPF64"] = HEAPF64 = new Float64Array(buf);
-    }
-    var TOTAL_STACK = 5242880;
-    if (Module["TOTAL_STACK"]) assert(TOTAL_STACK === Module["TOTAL_STACK"], "the stack size can no longer be determined at runtime");
-    var INITIAL_MEMORY = Module["INITIAL_MEMORY"] || 33554432;
-    if (!Object.getOwnPropertyDescriptor(Module, "INITIAL_MEMORY")) {
-     Object.defineProperty(Module, "INITIAL_MEMORY", {
-      configurable: true,
-      get: function() {
-       abort("Module.INITIAL_MEMORY has been replaced with plain INITIAL_MEMORY (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
-      }
-     });
-    }
-    assert(INITIAL_MEMORY >= TOTAL_STACK, "INITIAL_MEMORY should be larger than TOTAL_STACK, was " + INITIAL_MEMORY + "! (TOTAL_STACK=" + TOTAL_STACK + ")");
+    assert(!Module["STACK_SIZE"], "STACK_SIZE can no longer be set at runtime.  Use -sSTACK_SIZE at link time");
     assert(typeof Int32Array != "undefined" && typeof Float64Array !== "undefined" && Int32Array.prototype.subarray != undefined && Int32Array.prototype.set != undefined, "JS engine does not provide full typed array support");
+    var INITIAL_MEMORY = Module["INITIAL_MEMORY"] || 33554432;
+    legacyModuleProp("INITIAL_MEMORY", "INITIAL_MEMORY");
+    assert(INITIAL_MEMORY >= 65536, "INITIAL_MEMORY should be larger than STACK_SIZE, was " + INITIAL_MEMORY + "! (STACK_SIZE=" + 65536 + ")");
     if (Module["wasmMemory"]) {
      wasmMemory = Module["wasmMemory"];
     } else {
@@ -906,44 +268,47 @@ var TreeSitter = function() {
       "maximum": 2147483648 / 65536
      });
     }
-    if (wasmMemory) {
-     buffer = wasmMemory.buffer;
-    }
-    INITIAL_MEMORY = buffer.byteLength;
+    updateMemoryViews();
+    INITIAL_MEMORY = wasmMemory.buffer.byteLength;
     assert(INITIAL_MEMORY % 65536 === 0);
-    updateGlobalBufferAndViews(buffer);
     var wasmTable = new WebAssembly.Table({
-     "initial": 25,
+     "initial": 27,
      "element": "anyfunc"
     });
     function writeStackCookie() {
      var max = _emscripten_stack_get_end();
      assert((max & 3) == 0);
-     SAFE_HEAP_STORE(max + 4 | 0, 34821223 | 0, 4);
-     SAFE_HEAP_STORE(max + 8 | 0, 2310721022 | 0, 4);
+     if (max == 0) {
+      max += 4;
+     }
+     SAFE_HEAP_STORE((max >> 2) * 4, 34821223, 4);
+     SAFE_HEAP_STORE((max + 4 >> 2) * 4, 2310721022, 4);
     }
     function checkStackCookie() {
      if (ABORT) return;
      var max = _emscripten_stack_get_end();
-     var cookie1 = SAFE_HEAP_LOAD(max + 4 | 0, 4, 1) >>> 0;
-     var cookie2 = SAFE_HEAP_LOAD(max + 8 | 0, 4, 1) >>> 0;
+     if (max == 0) {
+      max += 4;
+     }
+     var cookie1 = SAFE_HEAP_LOAD((max >> 2) * 4, 4, 1);
+     var cookie2 = SAFE_HEAP_LOAD((max + 4 >> 2) * 4, 4, 1);
      if (cookie1 != 34821223 || cookie2 != 2310721022) {
-      abort("Stack overflow! Stack cookie has been overwritten, expected hex dwords 0x89BACDFE and 0x2135467, but received 0x" + cookie2.toString(16) + " 0x" + cookie1.toString(16));
+      abort(`Stack overflow! Stack cookie has been overwritten at ${ptrToString(max)}, expected hex dwords 0x89BACDFE and 0x2135467, but received ${ptrToString(cookie2)} ${ptrToString(cookie1)}`);
      }
     }
     (function() {
      var h16 = new Int16Array(1);
      var h8 = new Int8Array(h16.buffer);
      h16[0] = 25459;
-     if (h8[0] !== 115 || h8[1] !== 99) throw "Runtime error: expected the system to be little-endian! (Run with -s SUPPORT_BIG_ENDIAN=1 to bypass)";
+     if (h8[0] !== 115 || h8[1] !== 99) throw "Runtime error: expected the system to be little-endian! (Run with -sSUPPORT_BIG_ENDIAN to bypass)";
     })();
     var __ATPRERUN__ = [];
     var __ATINIT__ = [];
     var __ATMAIN__ = [];
     var __ATEXIT__ = [];
     var __ATPOSTRUN__ = [];
+    var __RELOC_FUNCS__ = [];
     var runtimeInitialized = false;
-    var runtimeExited = false;
     var runtimeKeepaliveCounter = 0;
     function keepRuntimeAlive() {
      return noExitRuntime || runtimeKeepaliveCounter > 0;
@@ -958,18 +323,15 @@ var TreeSitter = function() {
      callRuntimeCallbacks(__ATPRERUN__);
     }
     function initRuntime() {
-     checkStackCookie();
      assert(!runtimeInitialized);
      runtimeInitialized = true;
+     checkStackCookie();
+     callRuntimeCallbacks(__RELOC_FUNCS__);
      callRuntimeCallbacks(__ATINIT__);
     }
     function preMain() {
      checkStackCookie();
      callRuntimeCallbacks(__ATMAIN__);
-    }
-    function exitRuntime() {
-     checkStackCookie();
-     runtimeExited = true;
     }
     function postRun() {
      checkStackCookie();
@@ -1018,7 +380,7 @@ var TreeSitter = function() {
       assert(!runDependencyTracking[id]);
       runDependencyTracking[id] = 1;
       if (runDependencyWatcher === null && typeof setInterval != "undefined") {
-       runDependencyWatcher = setInterval(function() {
+       runDependencyWatcher = setInterval((() => {
         if (ABORT) {
          clearInterval(runDependencyWatcher);
          runDependencyWatcher = null;
@@ -1035,7 +397,7 @@ var TreeSitter = function() {
         if (shown) {
          err("(end of list)");
         }
-       }, 1e4);
+       }), 1e4);
       }
      } else {
       err("warning: run dependency added without ID");
@@ -1064,14 +426,9 @@ var TreeSitter = function() {
       }
      }
     }
-    Module["preloadedImages"] = {};
-    Module["preloadedAudios"] = {};
-    Module["preloadedWasm"] = {};
     function abort(what) {
-     {
-      if (Module["onAbort"]) {
-       Module["onAbort"](what);
-      }
+     if (Module["onAbort"]) {
+      Module["onAbort"](what);
      }
      what = "Aborted(" + what + ")";
      err(what);
@@ -1081,37 +438,34 @@ var TreeSitter = function() {
      throw e;
     }
     var FS = {
-     error: function() {
-      abort("Filesystem support (FS) was not included. The problem is that you are using files from JS, but files were not used from C/C++, so filesystem support was not auto-included. You can force-include filesystem support with  -s FORCE_FILESYSTEM=1");
+     error() {
+      abort("Filesystem support (FS) was not included. The problem is that you are using files from JS, but files were not used from C/C++, so filesystem support was not auto-included. You can force-include filesystem support with -sFORCE_FILESYSTEM");
      },
-     init: function() {
+     init() {
       FS.error();
      },
-     createDataFile: function() {
+     createDataFile() {
       FS.error();
      },
-     createPreloadedFile: function() {
+     createPreloadedFile() {
       FS.error();
      },
-     createLazyFile: function() {
+     createLazyFile() {
       FS.error();
      },
-     open: function() {
+     open() {
       FS.error();
      },
-     mkdev: function() {
+     mkdev() {
       FS.error();
      },
-     registerDevice: function() {
+     registerDevice() {
       FS.error();
      },
-     analyzePath: function() {
+     analyzePath() {
       FS.error();
      },
-     loadFilesFromDB: function() {
-      FS.error();
-     },
-     ErrnoError: function ErrnoError() {
+     ErrnoError() {
       FS.error();
      }
     };
@@ -1132,7 +486,6 @@ var TreeSitter = function() {
        asm = Module["asm"];
       }
       assert(runtimeInitialized, "native function `" + displayName + "` called before runtime initialization");
-      assert(!runtimeExited, "native function `" + displayName + "` called after runtime exit (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
       if (!asm[name]) {
        assert(asm[name], "exported native function `" + displayName + "` not found");
       }
@@ -1144,57 +497,76 @@ var TreeSitter = function() {
     if (!isDataURI(wasmBinaryFile)) {
      wasmBinaryFile = locateFile(wasmBinaryFile);
     }
-    function getBinary(file) {
-     try {
-      if (file == wasmBinaryFile && wasmBinary) {
-       return new Uint8Array(wasmBinary);
-      }
-      if (readBinary) {
-       return readBinary(file);
-      } else {
-       throw "both async and sync fetching of the wasm failed";
-      }
-     } catch (err) {
-      abort(err);
+    function getBinarySync(file) {
+     if (file == wasmBinaryFile && wasmBinary) {
+      return new Uint8Array(wasmBinary);
      }
+     if (readBinary) {
+      return readBinary(file);
+     }
+     throw "both async and sync fetching of the wasm failed";
     }
-    function getBinaryPromise() {
+    function getBinaryPromise(binaryFile) {
      if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER)) {
       if (typeof fetch == "function") {
-       return fetch(wasmBinaryFile, {
+       return fetch(binaryFile, {
         credentials: "same-origin"
-       }).then(function(response) {
+       }).then((response => {
         if (!response["ok"]) {
-         throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
+         throw "failed to load wasm binary file at '" + binaryFile + "'";
         }
         return response["arrayBuffer"]();
-       }).catch(function() {
-        return getBinary(wasmBinaryFile);
-       });
+       })).catch((() => getBinarySync(binaryFile)));
       }
      }
-     return Promise.resolve().then(function() {
-      return getBinary(wasmBinaryFile);
-     });
+     return Promise.resolve().then((() => getBinarySync(binaryFile)));
+    }
+    function instantiateArrayBuffer(binaryFile, imports, receiver) {
+     return getBinaryPromise(binaryFile).then((binary => WebAssembly.instantiate(binary, imports))).then((instance => instance)).then(receiver, (reason => {
+      err("failed to asynchronously prepare wasm: " + reason);
+      if (isFileURI(wasmBinaryFile)) {
+       err("warning: Loading from a file URI (" + wasmBinaryFile + ") is not supported in most browsers. See https://emscripten.org/docs/getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing");
+      }
+      abort(reason);
+     }));
+    }
+    function instantiateAsync(binary, binaryFile, imports, callback) {
+     if (!binary && typeof WebAssembly.instantiateStreaming == "function" && !isDataURI(binaryFile) && typeof fetch == "function") {
+      return fetch(binaryFile, {
+       credentials: "same-origin"
+      }).then((response => {
+       var result = WebAssembly.instantiateStreaming(response, imports);
+       return result.then(callback, (function(reason) {
+        err("wasm streaming compile failed: " + reason);
+        err("falling back to ArrayBuffer instantiation");
+        return instantiateArrayBuffer(binaryFile, imports, callback);
+       }));
+      }));
+     }
+     return instantiateArrayBuffer(binaryFile, imports, callback);
     }
     function createWasm() {
      var info = {
-      "env": asmLibraryArg,
-      "wasi_snapshot_preview1": asmLibraryArg,
-      "GOT.mem": new Proxy(asmLibraryArg, GOTHandler),
-      "GOT.func": new Proxy(asmLibraryArg, GOTHandler)
+      "env": wasmImports,
+      "wasi_snapshot_preview1": wasmImports,
+      "GOT.mem": new Proxy(wasmImports, GOTHandler),
+      "GOT.func": new Proxy(wasmImports, GOTHandler)
      };
      function receiveInstance(instance, module) {
       var exports = instance.exports;
       exports = relocateExports(exports, 1024);
-      Module["asm"] = exports;
       var metadata = getDylinkMetadata(module);
       if (metadata.neededDynlibs) {
        dynamicLibraries = metadata.neededDynlibs.concat(dynamicLibraries);
       }
       mergeLibSymbols(exports, "main");
+      LDSO.init();
+      loadDylibs();
+      Module["asm"] = exports;
       addOnInit(Module["asm"]["__wasm_call_ctors"]);
+      __RELOC_FUNCS__.push(Module["asm"]["__wasm_apply_data_relocs"]);
       removeRunDependency("wasm-instantiate");
+      return exports;
      }
      addRunDependency("wasm-instantiate");
      var trueModule = Module;
@@ -1203,98 +575,151 @@ var TreeSitter = function() {
       trueModule = null;
       receiveInstance(result["instance"], result["module"]);
      }
-     function instantiateArrayBuffer(receiver) {
-      return getBinaryPromise().then(function(binary) {
-       return WebAssembly.instantiate(binary, info);
-      }).then(function(instance) {
-       return instance;
-      }).then(receiver, function(reason) {
-       err("failed to asynchronously prepare wasm: " + reason);
-       if (isFileURI(wasmBinaryFile)) {
-        err("warning: Loading from a file URI (" + wasmBinaryFile + ") is not supported in most browsers. See https://emscripten.org/docs/getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing");
-       }
-       abort(reason);
-      });
-     }
-     function instantiateAsync() {
-      if (!wasmBinary && typeof WebAssembly.instantiateStreaming == "function" && !isDataURI(wasmBinaryFile) && typeof fetch == "function") {
-       return fetch(wasmBinaryFile, {
-        credentials: "same-origin"
-       }).then(function(response) {
-        var result = WebAssembly.instantiateStreaming(response, info);
-        return result.then(receiveInstantiationResult, function(reason) {
-         err("wasm streaming compile failed: " + reason);
-         err("falling back to ArrayBuffer instantiation");
-         return instantiateArrayBuffer(receiveInstantiationResult);
-        });
-       });
-      } else {
-       return instantiateArrayBuffer(receiveInstantiationResult);
-      }
-     }
      if (Module["instantiateWasm"]) {
       try {
-       var exports = Module["instantiateWasm"](info, receiveInstance);
-       return exports;
+       return Module["instantiateWasm"](info, receiveInstance);
       } catch (e) {
        err("Module.instantiateWasm callback failed with error: " + e);
        return false;
       }
      }
-     instantiateAsync();
+     instantiateAsync(wasmBinary, wasmBinaryFile, info, receiveInstantiationResult);
      return {};
     }
     var tempDouble;
     var tempI64;
+    function legacyModuleProp(prop, newName) {
+     if (!Object.getOwnPropertyDescriptor(Module, prop)) {
+      Object.defineProperty(Module, prop, {
+       configurable: true,
+       get() {
+        abort("Module." + prop + " has been replaced with plain " + newName + " (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)");
+       }
+      });
+     }
+    }
+    function ignoredModuleProp(prop) {
+     if (Object.getOwnPropertyDescriptor(Module, prop)) {
+      abort("`Module." + prop + "` was supplied but `" + prop + "` not included in INCOMING_MODULE_JS_API");
+     }
+    }
+    function isExportedByForceFilesystem(name) {
+     return name === "FS_createPath" || name === "FS_createDataFile" || name === "FS_createPreloadedFile" || name === "FS_unlink" || name === "addRunDependency" || name === "FS_createLazyFile" || name === "FS_createDevice" || name === "removeRunDependency";
+    }
+    function missingGlobal(sym, msg) {
+     if (typeof globalThis !== "undefined") {
+      Object.defineProperty(globalThis, sym, {
+       configurable: true,
+       get() {
+        warnOnce("`" + sym + "` is not longer defined by emscripten. " + msg);
+        return undefined;
+       }
+      });
+     }
+    }
+    missingGlobal("buffer", "Please use HEAP8.buffer or wasmMemory.buffer");
+    function missingLibrarySymbol(sym) {
+     if (typeof globalThis !== "undefined" && !Object.getOwnPropertyDescriptor(globalThis, sym)) {
+      Object.defineProperty(globalThis, sym, {
+       configurable: true,
+       get() {
+        var msg = "`" + sym + "` is a library symbol and not included by default; add it to your library.js __deps or to DEFAULT_LIBRARY_FUNCS_TO_INCLUDE on the command line";
+        var librarySymbol = sym;
+        if (!librarySymbol.startsWith("_")) {
+         librarySymbol = "$" + sym;
+        }
+        msg += " (e.g. -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='" + librarySymbol + "')";
+        if (isExportedByForceFilesystem(sym)) {
+         msg += ". Alternatively, forcing filesystem support (-sFORCE_FILESYSTEM) can export this for you";
+        }
+        warnOnce(msg);
+        return undefined;
+       }
+      });
+     }
+     unexportedRuntimeSymbol(sym);
+    }
+    function unexportedRuntimeSymbol(sym) {
+     if (!Object.getOwnPropertyDescriptor(Module, sym)) {
+      Object.defineProperty(Module, sym, {
+       configurable: true,
+       get() {
+        var msg = "'" + sym + "' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the Emscripten FAQ)";
+        if (isExportedByForceFilesystem(sym)) {
+         msg += ". Alternatively, forcing filesystem support (-sFORCE_FILESYSTEM) can export this for you";
+        }
+        abort(msg);
+       }
+      });
+     }
+    }
+    function dbg(text) {
+     console.warn.apply(console, arguments);
+    }
     var ASM_CONSTS = {};
+    function ExitStatus(status) {
+     this.name = "ExitStatus";
+     this.message = `Program terminated with exit(${status})`;
+     this.status = status;
+    }
     var GOT = {};
+    var currentModuleWeakSymbols = new Set([]);
     var GOTHandler = {
-     get: function(obj, symName) {
-      if (!GOT[symName]) {
-       GOT[symName] = new WebAssembly.Global({
+     get(obj, symName) {
+      var rtn = GOT[symName];
+      if (!rtn) {
+       rtn = GOT[symName] = new WebAssembly.Global({
         "value": "i32",
         "mutable": true
        });
       }
-      return GOT[symName];
+      if (!currentModuleWeakSymbols.has(symName)) {
+       rtn.required = true;
+      }
+      return rtn;
      }
     };
-    function callRuntimeCallbacks(callbacks) {
+    var callRuntimeCallbacks = callbacks => {
      while (callbacks.length > 0) {
-      var callback = callbacks.shift();
-      if (typeof callback == "function") {
-       callback(Module);
+      callbacks.shift()(Module);
+     }
+    };
+    var UTF8Decoder = typeof TextDecoder != "undefined" ? new TextDecoder("utf8") : undefined;
+    var UTF8ArrayToString = (heapOrArray, idx, maxBytesToRead) => {
+     var endIdx = idx + maxBytesToRead;
+     var endPtr = idx;
+     while (heapOrArray[endPtr] && !(endPtr >= endIdx)) ++endPtr;
+     if (endPtr - idx > 16 && heapOrArray.buffer && UTF8Decoder) {
+      return UTF8Decoder.decode(heapOrArray.subarray(idx, endPtr));
+     }
+     var str = "";
+     while (idx < endPtr) {
+      var u0 = heapOrArray[idx++];
+      if (!(u0 & 128)) {
+       str += String.fromCharCode(u0);
        continue;
       }
-      var func = callback.func;
-      if (typeof func == "number") {
-       if (callback.arg === undefined) {
-        getWasmTableEntry(func)();
-       } else {
-        getWasmTableEntry(func)(callback.arg);
-       }
+      var u1 = heapOrArray[idx++] & 63;
+      if ((u0 & 224) == 192) {
+       str += String.fromCharCode((u0 & 31) << 6 | u1);
+       continue;
+      }
+      var u2 = heapOrArray[idx++] & 63;
+      if ((u0 & 240) == 224) {
+       u0 = (u0 & 15) << 12 | u1 << 6 | u2;
       } else {
-       func(callback.arg === undefined ? null : callback.arg);
+       if ((u0 & 248) != 240) warnOnce("Invalid UTF-8 leading byte " + ptrToString(u0) + " encountered when deserializing a UTF-8 string in wasm memory to a JS string!");
+       u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | heapOrArray[idx++] & 63;
+      }
+      if (u0 < 65536) {
+       str += String.fromCharCode(u0);
+      } else {
+       var ch = u0 - 65536;
+       str += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
       }
      }
-    }
-    function withStackSave(f) {
-     var stack = stackSave();
-     var ret = f();
-     stackRestore(stack);
-     return ret;
-    }
-    function demangle(func) {
-     warnOnce("warning: build with  -s DEMANGLE_SUPPORT=1  to link in libcxxabi demangling");
-     return func;
-    }
-    function demangleAll(text) {
-     var regex = /\b_Z[\w\d_]+/g;
-     return text.replace(regex, function(x) {
-      var y = demangle(x);
-      return x === y ? x : y + " [" + x + "]";
-     });
-    }
+     return str;
+    };
     function getDylinkMetadata(binary) {
      var offset = 0;
      var end = 0;
@@ -1342,7 +767,8 @@ var TreeSitter = function() {
      }
      var customSection = {
       neededDynlibs: [],
-      tlsExports: {}
+      tlsExports: new Set,
+      weakImports: new Set
      };
      if (name == "dylink") {
       customSection.memorySize = getLEB();
@@ -1359,7 +785,10 @@ var TreeSitter = function() {
       var WASM_DYLINK_MEM_INFO = 1;
       var WASM_DYLINK_NEEDED = 2;
       var WASM_DYLINK_EXPORT_INFO = 3;
+      var WASM_DYLINK_IMPORT_INFO = 4;
       var WASM_SYMBOL_TLS = 256;
+      var WASM_SYMBOL_BINDING_MASK = 3;
+      var WASM_SYMBOL_BINDING_WEAK = 1;
       while (offset < end) {
        var subsectionType = getU8();
        var subsectionSize = getLEB();
@@ -1380,22 +809,207 @@ var TreeSitter = function() {
          var symname = getString();
          var flags = getLEB();
          if (flags & WASM_SYMBOL_TLS) {
-          customSection.tlsExports[symname] = 1;
+          customSection.tlsExports.add(symname);
+         }
+        }
+       } else if (subsectionType === WASM_DYLINK_IMPORT_INFO) {
+        var count = getLEB();
+        while (count--) {
+         var modname = getString();
+         var symname = getString();
+         var flags = getLEB();
+         if ((flags & WASM_SYMBOL_BINDING_MASK) == WASM_SYMBOL_BINDING_WEAK) {
+          customSection.weakImports.add(symname);
          }
         }
        } else {
-        err("unknown dylink.0 subsection: " + subsectionType);
+        err(`unknown dylink.0 subsection: ${subsectionType}`);
         offset += subsectionSize;
        }
       }
      }
      var tableAlign = Math.pow(2, customSection.tableAlign);
-     assert(tableAlign === 1, "invalid tableAlign " + tableAlign);
+     assert(tableAlign === 1, `invalid tableAlign ${tableAlign}`);
      assert(offset == end);
      return customSection;
     }
+    function getValue(ptr, type = "i8") {
+     if (type.endsWith("*")) type = "*";
+     switch (type) {
+     case "i1":
+      return SAFE_HEAP_LOAD(ptr >> 0, 1, 0);
+
+     case "i8":
+      return SAFE_HEAP_LOAD(ptr >> 0, 1, 0);
+
+     case "i16":
+      return SAFE_HEAP_LOAD((ptr >> 1) * 2, 2, 0);
+
+     case "i32":
+      return SAFE_HEAP_LOAD((ptr >> 2) * 4, 4, 0);
+
+     case "i64":
+      abort("to do getValue(i64) use WASM_BIGINT");
+
+     case "float":
+      return SAFE_HEAP_LOAD_D((ptr >> 2) * 4, 4, 0);
+
+     case "double":
+      return SAFE_HEAP_LOAD_D((ptr >> 3) * 8, 8, 0);
+
+     case "*":
+      return SAFE_HEAP_LOAD((ptr >> 2) * 4, 4, 1);
+
+     default:
+      abort(`invalid type for getValue: ${type}`);
+     }
+    }
+    function getValue_safe(ptr, type = "i8") {
+     if (type.endsWith("*")) type = "*";
+     switch (type) {
+     case "i1":
+      return HEAP8[ptr >> 0];
+
+     case "i8":
+      return HEAP8[ptr >> 0];
+
+     case "i16":
+      return HEAP16[ptr >> 1];
+
+     case "i32":
+      return HEAP32[ptr >> 2];
+
+     case "i64":
+      abort("to do getValue(i64) use WASM_BIGINT");
+
+     case "float":
+      return HEAPF32[ptr >> 2];
+
+     case "double":
+      return HEAPF64[ptr >> 3];
+
+     case "*":
+      return HEAPU32[ptr >> 2];
+
+     default:
+      abort(`invalid type for getValue: ${type}`);
+     }
+    }
+    function newDSO(name, handle, syms) {
+     var dso = {
+      refcount: Infinity,
+      name: name,
+      exports: syms,
+      global: true
+     };
+     LDSO.loadedLibsByName[name] = dso;
+     if (handle != undefined) {
+      LDSO.loadedLibsByHandle[handle] = dso;
+     }
+     return dso;
+    }
+    var LDSO = {
+     loadedLibsByName: {},
+     loadedLibsByHandle: {},
+     init: () => {
+      assert(wasmImports);
+      newDSO("__main__", 0, wasmImports);
+     }
+    };
+    var ___heap_base = 78144;
+    var zeroMemory = (address, size) => {
+     HEAPU8.fill(0, address, address + size);
+     return address;
+    };
+    var alignMemory = (size, alignment) => {
+     assert(alignment, "alignment argument is required");
+     return Math.ceil(size / alignment) * alignment;
+    };
+    function getMemory(size) {
+     if (runtimeInitialized) {
+      return zeroMemory(_malloc(size), size);
+     }
+     var ret = ___heap_base;
+     var end = ret + alignMemory(size, 16);
+     assert(end <= HEAP8.length, "failure to getMemory - memory growth etc. is not supported there, call malloc/sbrk directly or increase INITIAL_MEMORY");
+     ___heap_base = end;
+     GOT["__heap_base"].value = end;
+     return ret;
+    }
+    function isInternalSym(symName) {
+     return [ "__cpp_exception", "__c_longjmp", "__wasm_apply_data_relocs", "__dso_handle", "__tls_size", "__tls_align", "__set_stack_limits", "_emscripten_tls_init", "__wasm_init_tls", "__wasm_call_ctors", "__start_em_asm", "__stop_em_asm", "__start_em_js", "__stop_em_js" ].includes(symName) || symName.startsWith("__em_js__");
+    }
+    function uleb128Encode(n, target) {
+     assert(n < 16384);
+     if (n < 128) {
+      target.push(n);
+     } else {
+      target.push(n % 128 | 128, n >> 7);
+     }
+    }
+    function sigToWasmTypes(sig) {
+     assert(!sig.includes("j"), "i64 not permitted in function signatures when WASM_BIGINT is disabled");
+     var typeNames = {
+      "i": "i32",
+      "j": "i64",
+      "f": "f32",
+      "d": "f64",
+      "p": "i32"
+     };
+     var type = {
+      parameters: [],
+      results: sig[0] == "v" ? [] : [ typeNames[sig[0]] ]
+     };
+     for (var i = 1; i < sig.length; ++i) {
+      assert(sig[i] in typeNames, "invalid signature char: " + sig[i]);
+      type.parameters.push(typeNames[sig[i]]);
+     }
+     return type;
+    }
+    function generateFuncType(sig, target) {
+     var sigRet = sig.slice(0, 1);
+     var sigParam = sig.slice(1);
+     var typeCodes = {
+      "i": 127,
+      "p": 127,
+      "j": 126,
+      "f": 125,
+      "d": 124
+     };
+     target.push(96);
+     uleb128Encode(sigParam.length, target);
+     for (var i = 0; i < sigParam.length; ++i) {
+      assert(sigParam[i] in typeCodes, "invalid signature char: " + sigParam[i]);
+      target.push(typeCodes[sigParam[i]]);
+     }
+     if (sigRet == "v") {
+      target.push(0);
+     } else {
+      target.push(1, typeCodes[sigRet]);
+     }
+    }
+    function convertJsFunctionToWasm(func, sig) {
+     assert(!sig.includes("j"), "i64 not permitted in function signatures when WASM_BIGINT is disabled");
+     if (typeof WebAssembly.Function == "function") {
+      return new WebAssembly.Function(sigToWasmTypes(sig), func);
+     }
+     var typeSectionBody = [ 1 ];
+     generateFuncType(sig, typeSectionBody);
+     var bytes = [ 0, 97, 115, 109, 1, 0, 0, 0, 1 ];
+     uleb128Encode(typeSectionBody.length, bytes);
+     bytes.push.apply(bytes, typeSectionBody);
+     bytes.push(2, 7, 1, 1, 101, 1, 102, 0, 0, 7, 5, 1, 1, 102, 0, 0);
+     var module = new WebAssembly.Module(new Uint8Array(bytes));
+     var instance = new WebAssembly.Instance(module, {
+      "e": {
+       "f": func
+      }
+     });
+     var wrappedFunc = instance.exports["f"];
+     return wrappedFunc;
+    }
     var wasmTableMirror = [];
-    function getWasmTableEntry(funcPtr) {
+    var getWasmTableEntry = funcPtr => {
      var func = wasmTableMirror[funcPtr];
      if (!func) {
       if (funcPtr >= wasmTableMirror.length) wasmTableMirror.length = funcPtr + 1;
@@ -1403,90 +1017,63 @@ var TreeSitter = function() {
      }
      assert(wasmTable.get(funcPtr) == func, "JavaScript-side Wasm function table mirror is out of date!");
      return func;
-    }
-    function handleException(e) {
-     if (e instanceof ExitStatus || e == "unwind") {
-      return EXITSTATUS;
-     }
-     quit_(1, e);
-    }
-    function jsStackTrace() {
-     var error = new Error();
-     if (!error.stack) {
-      try {
-       throw new Error();
-      } catch (e) {
-       error = e;
-      }
-      if (!error.stack) {
-       return "(no stack trace available)";
-      }
-     }
-     return error.stack.toString();
-    }
-    function asmjsMangle(x) {
-     var unmangledSymbols = [ "stackAlloc", "stackSave", "stackRestore" ];
-     return x.indexOf("dynCall_") == 0 || unmangledSymbols.includes(x) ? x : "_" + x;
-    }
-    function mergeLibSymbols(exports, libName) {
-     for (var sym in exports) {
-      if (!exports.hasOwnProperty(sym)) {
-       continue;
-      }
-      if (!asmLibraryArg.hasOwnProperty(sym)) {
-       asmLibraryArg[sym] = exports[sym];
-      }
-      var module_sym = asmjsMangle(sym);
-      if (!Module.hasOwnProperty(module_sym)) {
-       Module[module_sym] = exports[sym];
-      }
-     }
-    }
-    var LDSO = {
-     loadedLibsByName: {},
-     loadedLibsByHandle: {}
     };
-    function dynCallLegacy(sig, ptr, args) {
-     assert("dynCall_" + sig in Module, "bad function pointer type - no table for sig '" + sig + "'");
-     if (args && args.length) {
-      assert(args.length === sig.substring(1).replace(/j/g, "--").length);
-     } else {
-      assert(sig.length == 1);
-     }
-     var f = Module["dynCall_" + sig];
-     return args && args.length ? f.apply(null, [ ptr ].concat(args)) : f.call(null, ptr);
-    }
-    function dynCall(sig, ptr, args) {
-     if (sig.includes("j")) {
-      return dynCallLegacy(sig, ptr, args);
-     }
-     assert(getWasmTableEntry(ptr), "missing table entry in dynCall: " + ptr);
-     return getWasmTableEntry(ptr).apply(null, args);
-    }
-    function createInvokeFunction(sig) {
-     return function() {
-      var sp = stackSave();
-      try {
-       return dynCall(sig, arguments[0], Array.prototype.slice.call(arguments, 1));
-      } catch (e) {
-       stackRestore(sp);
-       if (e !== e + 0 && e !== "longjmp") throw e;
-       _setThrew(1, 0);
+    function updateTableMap(offset, count) {
+     if (functionsInTableMap) {
+      for (var i = offset; i < offset + count; i++) {
+       var item = getWasmTableEntry(i);
+       if (item) {
+        functionsInTableMap.set(item, i);
+       }
       }
-     };
+     }
     }
-    var ___heap_base = 5255552;
-    function getMemory(size) {
-     if (runtimeInitialized) return _malloc(size);
-     var ret = ___heap_base;
-     var end = ret + size + 15 & -16;
-     assert(end <= HEAP8.length, "failure to getMemory - memory growth etc. is not supported there, call malloc/sbrk directly or increase INITIAL_MEMORY");
-     ___heap_base = end;
-     GOT["__heap_base"].value = end;
+    var functionsInTableMap = undefined;
+    function getFunctionAddress(func) {
+     if (!functionsInTableMap) {
+      functionsInTableMap = new WeakMap;
+      updateTableMap(0, wasmTable.length);
+     }
+     return functionsInTableMap.get(func) || 0;
+    }
+    var freeTableIndexes = [];
+    function getEmptyTableSlot() {
+     if (freeTableIndexes.length) {
+      return freeTableIndexes.pop();
+     }
+     try {
+      wasmTable.grow(1);
+     } catch (err) {
+      if (!(err instanceof RangeError)) {
+       throw err;
+      }
+      throw "Unable to grow wasm table. Set ALLOW_TABLE_GROWTH.";
+     }
+     return wasmTable.length - 1;
+    }
+    var setWasmTableEntry = (idx, func) => {
+     wasmTable.set(idx, func);
+     wasmTableMirror[idx] = wasmTable.get(idx);
+    };
+    function addFunction(func, sig) {
+     assert(typeof func != "undefined");
+     var rtn = getFunctionAddress(func);
+     if (rtn) {
+      return rtn;
+     }
+     var ret = getEmptyTableSlot();
+     try {
+      setWasmTableEntry(ret, func);
+     } catch (err) {
+      if (!(err instanceof TypeError)) {
+       throw err;
+      }
+      assert(typeof sig != "undefined", "Missing signature argument to addFunction: " + func);
+      var wrapped = convertJsFunctionToWasm(func, sig);
+      setWasmTableEntry(ret, wrapped);
+     }
+     functionsInTableMap.set(func, ret);
      return ret;
-    }
-    function isInternalSym(symName) {
-     return [ "__cpp_exception", "__wasm_apply_data_relocs", "__dso_handle", "__tls_size", "__tls_align", "__set_stack_limits", "emscripten_tls_init", "__wasm_init_tls", "__wasm_call_ctors" ].includes(symName);
     }
     function updateGOT(exports, replace) {
      for (var symName in exports) {
@@ -1509,10 +1096,8 @@ var TreeSitter = function() {
         GOT[symName].value = addFunction(value);
        } else if (typeof value == "number") {
         GOT[symName].value = value;
-       } else if (typeof value == "bigint") {
-        GOT[symName].value = Number(value);
        } else {
-        err("unhandled export type for `" + symName + "`: " + typeof value);
+        err(`unhandled export type for '${symName}': ${typeof value}`);
        }
       }
      }
@@ -1532,49 +1117,82 @@ var TreeSitter = function() {
      updateGOT(relocated, replace);
      return relocated;
     }
-    function resolveGlobalSymbol(symName, direct) {
+    function isSymbolDefined(symName) {
+     var existing = wasmImports[symName];
+     if (!existing || existing.stub) {
+      return false;
+     }
+     return true;
+    }
+    var dynCallLegacy = (sig, ptr, args) => {
+     assert("dynCall_" + sig in Module, `bad function pointer type - dynCall function not found for sig '${sig}'`);
+     if (args && args.length) {
+      assert(args.length === sig.substring(1).replace(/j/g, "--").length);
+     } else {
+      assert(sig.length == 1);
+     }
+     var f = Module["dynCall_" + sig];
+     return args && args.length ? f.apply(null, [ ptr ].concat(args)) : f.call(null, ptr);
+    };
+    var dynCall = (sig, ptr, args) => {
+     if (sig.includes("j")) {
+      return dynCallLegacy(sig, ptr, args);
+     }
+     assert(getWasmTableEntry(ptr), `missing table entry in dynCall: ${ptr}`);
+     var rtn = getWasmTableEntry(ptr).apply(null, args);
+     return rtn;
+    };
+    function createInvokeFunction(sig) {
+     return function() {
+      var sp = stackSave();
+      try {
+       return dynCall(sig, arguments[0], Array.prototype.slice.call(arguments, 1));
+      } catch (e) {
+       stackRestore(sp);
+       if (e !== e + 0) throw e;
+       _setThrew(1, 0);
+      }
+     };
+    }
+    function resolveGlobalSymbol(symName, direct = false) {
      var sym;
-     if (direct) {
-      sym = asmLibraryArg["orig$" + symName];
+     if (direct && "orig$" + symName in wasmImports) {
+      symName = "orig$" + symName;
      }
-     if (!sym) {
-      sym = asmLibraryArg[symName];
+     if (isSymbolDefined(symName)) {
+      sym = wasmImports[symName];
+     } else if (symName.startsWith("invoke_")) {
+      sym = wasmImports[symName] = createInvokeFunction(symName.split("_")[1]);
      }
-     if (!sym) {
-      sym = Module[asmjsMangle(symName)];
-     }
-     if (!sym && symName.startsWith("invoke_")) {
-      sym = createInvokeFunction(symName.split("_")[1]);
-     }
-     return sym;
+     return {
+      sym: sym,
+      name: symName
+     };
     }
-    function alignMemory(size, alignment) {
-     assert(alignment, "alignment argument is required");
-     return Math.ceil(size / alignment) * alignment;
-    }
-    function zeroMemory(address, size) {
-     HEAPU8.fill(0, address, address + size);
-    }
-    function loadWebAssemblyModule(binary, flags, handle) {
+    var UTF8ToString = (ptr, maxBytesToRead) => {
+     assert(typeof ptr == "number");
+     return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : "";
+    };
+    function loadWebAssemblyModule(binary, flags, libName, localScope, handle) {
      var metadata = getDylinkMetadata(binary);
+     currentModuleWeakSymbols = metadata.weakImports;
      var originalTable = wasmTable;
      function loadModule() {
-      var needsAllocation = !handle || !(SAFE_HEAP_LOAD(handle + 24 | 0, 1, 0) | 0);
-      if (needsAllocation) {
+      var firstLoad = !handle || !SAFE_HEAP_LOAD(handle + 8 >> 0, 1, 0);
+      if (firstLoad) {
        var memAlign = Math.pow(2, metadata.memoryAlign);
-       memAlign = Math.max(memAlign, STACK_ALIGN);
        var memoryBase = metadata.memorySize ? alignMemory(getMemory(metadata.memorySize + memAlign), memAlign) : 0;
        var tableBase = metadata.tableSize ? wasmTable.length : 0;
        if (handle) {
-        SAFE_HEAP_STORE(handle + 24 | 0, 1 | 0, 1);
-        SAFE_HEAP_STORE(handle + 28 | 0, memoryBase | 0, 4);
-        SAFE_HEAP_STORE(handle + 32 | 0, metadata.memorySize | 0, 4);
-        SAFE_HEAP_STORE(handle + 36 | 0, tableBase | 0, 4);
-        SAFE_HEAP_STORE(handle + 40 | 0, metadata.tableSize | 0, 4);
+        SAFE_HEAP_STORE(handle + 8 >> 0, 1, 1);
+        SAFE_HEAP_STORE((handle + 12 >> 2) * 4, memoryBase, 4);
+        SAFE_HEAP_STORE((handle + 16 >> 2) * 4, metadata.memorySize, 4);
+        SAFE_HEAP_STORE((handle + 20 >> 2) * 4, tableBase, 4);
+        SAFE_HEAP_STORE((handle + 24 >> 2) * 4, metadata.tableSize, 4);
        }
       } else {
-       memoryBase = SAFE_HEAP_LOAD(handle + 28 | 0, 4, 0) | 0;
-       tableBase = SAFE_HEAP_LOAD(handle + 36 | 0, 4, 0) | 0;
+       memoryBase = SAFE_HEAP_LOAD((handle + 12 >> 2) * 4, 4, 1);
+       tableBase = SAFE_HEAP_LOAD((handle + 20 >> 2) * 4, 4, 1);
       }
       var tableGrowthNeeded = tableBase + metadata.tableSize - wasmTable.length;
       if (tableGrowthNeeded > 0) {
@@ -1582,15 +1200,18 @@ var TreeSitter = function() {
       }
       var moduleExports;
       function resolveSymbol(sym) {
-       var resolved = resolveGlobalSymbol(sym, false);
+       var resolved = resolveGlobalSymbol(sym).sym;
+       if (!resolved && localScope) {
+        resolved = localScope[sym];
+       }
        if (!resolved) {
         resolved = moduleExports[sym];
        }
-       assert(resolved, "undefined symbol `" + sym + "`. perhaps a side module was not linked in? if this global was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+       assert(resolved, `undefined symbol '${sym}'. perhaps a side module was not linked in? if this global was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment`);
        return resolved;
       }
       var proxyHandler = {
-       "get": function(stubs, prop) {
+       get(stubs, prop) {
         switch (prop) {
         case "__memory_base":
          return memoryBase;
@@ -1598,8 +1219,8 @@ var TreeSitter = function() {
         case "__table_base":
          return tableBase;
         }
-        if (prop in asmLibraryArg) {
-         return asmLibraryArg[prop];
+        if (prop in wasmImports && !wasmImports[prop].stub) {
+         return wasmImports[prop];
         }
         if (!(prop in stubs)) {
          var resolved;
@@ -1616,14 +1237,67 @@ var TreeSitter = function() {
        "GOT.mem": new Proxy({}, GOTHandler),
        "GOT.func": new Proxy({}, GOTHandler),
        "env": proxy,
-       wasi_snapshot_preview1: proxy
+       "wasi_snapshot_preview1": proxy
       };
-      function postInstantiation(instance) {
+      function postInstantiation(module, instance) {
        assert(wasmTable === originalTable);
        updateTableMap(tableBase, metadata.tableSize);
        moduleExports = relocateExports(instance.exports, memoryBase);
        if (!flags.allowUndefined) {
         reportUndefinedSymbols();
+       }
+       function addEmAsm(addr, body) {
+        var args = [];
+        var arity = 0;
+        for (;arity < 16; arity++) {
+         if (body.indexOf("$" + arity) != -1) {
+          args.push("$" + arity);
+         } else {
+          break;
+         }
+        }
+        args = args.join(",");
+        var func = `(${args}) => { ${body} };`;
+        ASM_CONSTS[start] = eval(func);
+       }
+       if ("__start_em_asm" in moduleExports) {
+        var start = moduleExports["__start_em_asm"];
+        var stop = moduleExports["__stop_em_asm"];
+        while (start < stop) {
+         var jsString = UTF8ToString(start);
+         addEmAsm(start, jsString);
+         start = HEAPU8.indexOf(0, start) + 1;
+        }
+       }
+       function addEmJs(name, cSig, body) {
+        var jsArgs = [];
+        cSig = cSig.slice(1, -1);
+        if (cSig != "void") {
+         cSig = cSig.split(",");
+         for (var i in cSig) {
+          var jsArg = cSig[i].split(" ").pop();
+          jsArgs.push(jsArg.replace("*", ""));
+         }
+        }
+        var func = `(${jsArgs}) => ${body};`;
+        moduleExports[name] = eval(func);
+       }
+       for (var name in moduleExports) {
+        if (name.startsWith("__em_js__")) {
+         var start = moduleExports[name];
+         var jsString = UTF8ToString(start);
+         var parts = jsString.split("<::>");
+         addEmJs(name.replace("__em_js__", ""), parts[0], parts[1]);
+         delete moduleExports[name];
+        }
+       }
+       var applyRelocs = moduleExports["__wasm_apply_data_relocs"];
+       if (applyRelocs) {
+        if (runtimeInitialized) {
+         applyRelocs();
+        } else {
+         __RELOC_FUNCS__.push(applyRelocs);
+        }
        }
        var init = moduleExports["__wasm_call_ctors"];
        if (init) {
@@ -1638,49 +1312,68 @@ var TreeSitter = function() {
       if (flags.loadAsync) {
        if (binary instanceof WebAssembly.Module) {
         var instance = new WebAssembly.Instance(binary, info);
-        return Promise.resolve(postInstantiation(instance));
+        return Promise.resolve(postInstantiation(binary, instance));
        }
-       return WebAssembly.instantiate(binary, info).then(function(result) {
-        return postInstantiation(result.instance);
-       });
+       return WebAssembly.instantiate(binary, info).then((result => postInstantiation(result.module, result.instance)));
       }
       var module = binary instanceof WebAssembly.Module ? binary : new WebAssembly.Module(binary);
       var instance = new WebAssembly.Instance(module, info);
-      return postInstantiation(instance);
+      return postInstantiation(module, instance);
      }
      if (flags.loadAsync) {
-      return metadata.neededDynlibs.reduce(function(chain, dynNeeded) {
-       return chain.then(function() {
-        return loadDynamicLibrary(dynNeeded, flags);
-       });
-      }, Promise.resolve()).then(function() {
-       return loadModule();
-      });
+      return metadata.neededDynlibs.reduce(((chain, dynNeeded) => chain.then((() => loadDynamicLibrary(dynNeeded, flags)))), Promise.resolve()).then(loadModule);
      }
-     metadata.neededDynlibs.forEach(function(dynNeeded) {
-      loadDynamicLibrary(dynNeeded, flags);
-     });
+     metadata.neededDynlibs.forEach((needed => loadDynamicLibrary(needed, flags, localScope)));
      return loadModule();
     }
-    function loadDynamicLibrary(lib, flags, handle) {
-     if (lib == "__main__" && !LDSO.loadedLibsByName[lib]) {
-      LDSO.loadedLibsByName[lib] = {
-       refcount: Infinity,
-       name: "__main__",
-       module: Module["asm"],
-       global: true
+    function mergeLibSymbols(exports, libName) {
+     for (var sym in exports) {
+      if (!exports.hasOwnProperty(sym)) {
+       continue;
+      }
+      const setImport = target => {
+       if (!isSymbolDefined(target)) {
+        wasmImports[target] = exports[sym];
+       }
       };
+      setImport(sym);
+      const main_alias = "__main_argc_argv";
+      if (sym == "main") {
+       setImport(main_alias);
+      }
+      if (sym == main_alias) {
+       setImport("main");
+      }
+      if (sym.startsWith("dynCall_") && !Module.hasOwnProperty(sym)) {
+       Module[sym] = exports[sym];
+      }
      }
-     flags = flags || {
-      global: true,
-      nodelete: true
-     };
-     var dso = LDSO.loadedLibsByName[lib];
+    }
+    var asyncLoad = (url, onload, onerror, noRunDep) => {
+     var dep = !noRunDep ? getUniqueRunDependency(`al ${url}`) : "";
+     readAsync(url, (arrayBuffer => {
+      assert(arrayBuffer, `Loading data file "${url}" failed (no arrayBuffer).`);
+      onload(new Uint8Array(arrayBuffer));
+      if (dep) removeRunDependency(dep);
+     }), (event => {
+      if (onerror) {
+       onerror();
+      } else {
+       throw `Loading data file "${url}" failed.`;
+      }
+     }));
+     if (dep) addRunDependency(dep);
+    };
+    function loadDynamicLibrary(libName, flags = {
+     global: true,
+     nodelete: true
+    }, localScope, handle) {
+     var dso = LDSO.loadedLibsByName[libName];
      if (dso) {
       if (flags.global && !dso.global) {
        dso.global = true;
-       if (dso.module !== "loading") {
-        mergeLibSymbols(dso.module, lib);
+       if (dso.exports !== "loading") {
+        mergeLibSymbols(dso.exports, libName);
        }
       }
       if (flags.nodelete && dso.refcount !== Infinity) {
@@ -1692,108 +1385,166 @@ var TreeSitter = function() {
       }
       return flags.loadAsync ? Promise.resolve(true) : true;
      }
-     dso = {
-      refcount: flags.nodelete ? Infinity : 1,
-      name: lib,
-      module: "loading",
-      global: flags.global
-     };
-     LDSO.loadedLibsByName[lib] = dso;
-     if (handle) {
-      LDSO.loadedLibsByHandle[handle] = dso;
-     }
-     function loadLibData(libFile) {
-      if (flags.fs && flags.fs.findObject(libFile)) {
-       var libData = flags.fs.readFile(libFile, {
-        encoding: "binary"
-       });
-       if (!(libData instanceof Uint8Array)) {
-        libData = new Uint8Array(libData);
+     dso = newDSO(libName, handle, "loading");
+     dso.refcount = flags.nodelete ? Infinity : 1;
+     dso.global = flags.global;
+     function loadLibData() {
+      if (handle) {
+       var data = SAFE_HEAP_LOAD((handle + 28 >> 2) * 4, 4, 1);
+       var dataSize = SAFE_HEAP_LOAD((handle + 32 >> 2) * 4, 4, 1);
+       if (data && dataSize) {
+        var libData = HEAP8.slice(data, data + dataSize);
+        return flags.loadAsync ? Promise.resolve(libData) : libData;
        }
-       return flags.loadAsync ? Promise.resolve(libData) : libData;
       }
+      var libFile = locateFile(libName);
       if (flags.loadAsync) {
-       return new Promise(function(resolve, reject) {
-        readAsync(libFile, function(data) {
-         resolve(new Uint8Array(data));
-        }, reject);
-       });
+       return new Promise((function(resolve, reject) {
+        asyncLoad(libFile, (data => resolve(data)), reject);
+       }));
       }
       if (!readBinary) {
-       throw new Error(libFile + ": file not found, and synchronous loading of external files is not available");
+       throw new Error(`${libFile}: file not found, and synchronous loading of external files is not available`);
       }
       return readBinary(libFile);
      }
-     function getLibModule() {
-      if (Module["preloadedWasm"] !== undefined && Module["preloadedWasm"][lib] !== undefined) {
-       var libModule = Module["preloadedWasm"][lib];
-       return flags.loadAsync ? Promise.resolve(libModule) : libModule;
-      }
+     function getExports() {
       if (flags.loadAsync) {
-       return loadLibData(lib).then(function(libData) {
-        return loadWebAssemblyModule(libData, flags, handle);
-       });
+       return loadLibData().then((libData => loadWebAssemblyModule(libData, flags, libName, localScope, handle)));
       }
-      return loadWebAssemblyModule(loadLibData(lib), flags, handle);
+      return loadWebAssemblyModule(loadLibData(), flags, libName, localScope, handle);
      }
-     function moduleLoaded(libModule) {
+     function moduleLoaded(exports) {
       if (dso.global) {
-       mergeLibSymbols(libModule, lib);
+       mergeLibSymbols(exports, libName);
+      } else if (localScope) {
+       Object.assign(localScope, exports);
       }
-      dso.module = libModule;
+      dso.exports = exports;
      }
      if (flags.loadAsync) {
-      return getLibModule().then(function(libModule) {
-       moduleLoaded(libModule);
+      return getExports().then((exports => {
+       moduleLoaded(exports);
        return true;
-      });
+      }));
      }
-     moduleLoaded(getLibModule());
+     moduleLoaded(getExports());
      return true;
     }
     function reportUndefinedSymbols() {
      for (var symName in GOT) {
       if (GOT[symName].value == 0) {
-       var value = resolveGlobalSymbol(symName, true);
-       assert(value, "undefined symbol `" + symName + "`. perhaps a side module was not linked in? if this global was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+       var value = resolveGlobalSymbol(symName, true).sym;
+       if (!value && !GOT[symName].required) {
+        continue;
+       }
+       assert(value, `undefined symbol '${symName}'. perhaps a side module was not linked in? if this global was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment`);
        if (typeof value == "function") {
         GOT[symName].value = addFunction(value, value.sig);
        } else if (typeof value == "number") {
         GOT[symName].value = value;
        } else {
-        throw new Error("bad export type for `" + symName + "`: " + typeof value);
+        throw new Error(`bad export type for '${symName}': ${typeof value}`);
        }
       }
      }
     }
-    function preloadDylibs() {
+    function loadDylibs() {
      if (!dynamicLibraries.length) {
       reportUndefinedSymbols();
       return;
      }
-     addRunDependency("preloadDylibs");
-     dynamicLibraries.reduce(function(chain, lib) {
-      return chain.then(function() {
-       return loadDynamicLibrary(lib, {
-        loadAsync: true,
-        global: true,
-        nodelete: true,
-        allowUndefined: true
-       });
-      });
-     }, Promise.resolve()).then(function() {
+     addRunDependency("loadDylibs");
+     dynamicLibraries.reduce(((chain, lib) => chain.then((() => loadDynamicLibrary(lib, {
+      loadAsync: true,
+      global: true,
+      nodelete: true,
+      allowUndefined: true
+     })))), Promise.resolve()).then((() => {
       reportUndefinedSymbols();
-      removeRunDependency("preloadDylibs");
-     });
+      removeRunDependency("loadDylibs");
+     }));
     }
-    function setWasmTableEntry(idx, func) {
-     wasmTable.set(idx, func);
-     wasmTableMirror[idx] = func;
+    var ptrToString = ptr => {
+     assert(typeof ptr === "number");
+     ptr >>>= 0;
+     return "0x" + ptr.toString(16).padStart(8, "0");
+    };
+    function setValue(ptr, value, type = "i8") {
+     if (type.endsWith("*")) type = "*";
+     switch (type) {
+     case "i1":
+      SAFE_HEAP_STORE(ptr >> 0, value, 1);
+      break;
+
+     case "i8":
+      SAFE_HEAP_STORE(ptr >> 0, value, 1);
+      break;
+
+     case "i16":
+      SAFE_HEAP_STORE((ptr >> 1) * 2, value, 2);
+      break;
+
+     case "i32":
+      SAFE_HEAP_STORE((ptr >> 2) * 4, value, 4);
+      break;
+
+     case "i64":
+      abort("to do setValue(i64) use WASM_BIGINT");
+
+     case "float":
+      SAFE_HEAP_STORE_D((ptr >> 2) * 4, value, 4);
+      break;
+
+     case "double":
+      SAFE_HEAP_STORE_D((ptr >> 3) * 8, value, 8);
+      break;
+
+     case "*":
+      SAFE_HEAP_STORE((ptr >> 2) * 4, value, 4);
+      break;
+
+     default:
+      abort(`invalid type for setValue: ${type}`);
+     }
     }
-    function stackTrace() {
-     var js = jsStackTrace();
-     if (Module["extraStackTrace"]) js += "\n" + Module["extraStackTrace"]();
-     return demangleAll(js);
+    function setValue_safe(ptr, value, type = "i8") {
+     if (type.endsWith("*")) type = "*";
+     switch (type) {
+     case "i1":
+      HEAP8[ptr >> 0] = value;
+      break;
+
+     case "i8":
+      HEAP8[ptr >> 0] = value;
+      break;
+
+     case "i16":
+      HEAP16[ptr >> 1] = value;
+      break;
+
+     case "i32":
+      HEAP32[ptr >> 2] = value;
+      break;
+
+     case "i64":
+      abort("to do setValue(i64) use WASM_BIGINT");
+
+     case "float":
+      HEAPF32[ptr >> 2] = value;
+      break;
+
+     case "double":
+      HEAPF64[ptr >> 3] = value;
+      break;
+
+     case "*":
+      HEAPU32[ptr >> 2] = value;
+      break;
+
+     default:
+      abort(`invalid type for setValue: ${type}`);
+     }
     }
     function unSign(value, bits) {
      if (value >= 0) {
@@ -1801,302 +1552,177 @@ var TreeSitter = function() {
      }
      return bits <= 32 ? 2 * Math.abs(1 << bits - 1) + value : Math.pow(2, bits) + value;
     }
-    function ___assert_fail(condition, filename, line, func) {
-     abort("Assertion failed: " + UTF8ToString(condition) + ", at: " + [ filename ? UTF8ToString(filename) : "unknown filename", line, func ? UTF8ToString(func) : "unknown function" ]);
-    }
-    Module["___assert_fail"] = ___assert_fail;
-    ___assert_fail.sig = "viiii";
+    var warnOnce = text => {
+     if (!warnOnce.shown) warnOnce.shown = {};
+     if (!warnOnce.shown[text]) {
+      warnOnce.shown[text] = 1;
+      err(text);
+     }
+    };
+    var ___assert_fail = (condition, filename, line, func) => {
+     abort(`Assertion failed: ${UTF8ToString(condition)}, at: ` + [ filename ? UTF8ToString(filename) : "unknown filename", line, func ? UTF8ToString(func) : "unknown function" ]);
+    };
+    ___assert_fail.sig = "vppip";
     var ___memory_base = new WebAssembly.Global({
      "value": "i32",
      "mutable": false
     }, 1024);
-    Module["___memory_base"] = ___memory_base;
+    var ___stack_high = 78144;
+    var ___stack_low = 12608;
     var ___stack_pointer = new WebAssembly.Global({
      "value": "i32",
      "mutable": true
-    }, 5255552);
-    Module["___stack_pointer"] = ___stack_pointer;
+    }, 78144);
     var ___table_base = new WebAssembly.Global({
      "value": "i32",
      "mutable": false
     }, 1);
-    Module["___table_base"] = ___table_base;
-    function _abort() {
+    var nowIsMonotonic = true;
+    var __emscripten_get_now_is_monotonic = () => nowIsMonotonic;
+    __emscripten_get_now_is_monotonic.sig = "i";
+    var _abort = () => {
      abort("native code called abort()");
-    }
+    };
     Module["_abort"] = _abort;
     _abort.sig = "v";
+    function _deleter() {
+     if (!wasmImports["deleter"] || wasmImports["deleter"].stub) abort("external symbol 'deleter' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["deleter"].apply(null, arguments);
+    }
+    _deleter.stub = true;
+    function _emscripten_date_now() {
+     return Date.now();
+    }
+    _emscripten_date_now.sig = "d";
     var _emscripten_get_now;
-    _emscripten_get_now = (() => performance.now());
-    var _emscripten_get_now_is_monotonic = true;
-    function setErrNo(value) {
-     SAFE_HEAP_STORE(___errno_location() | 0, value | 0, 4);
-     return value;
-    }
-    function _clock_gettime(clk_id, tp) {
-     var now;
-     if (clk_id === 0) {
-      now = Date.now();
-     } else if ((clk_id === 1 || clk_id === 4) && _emscripten_get_now_is_monotonic) {
-      now = _emscripten_get_now();
-     } else {
-      setErrNo(28);
-      return -1;
-     }
-     SAFE_HEAP_STORE(tp | 0, now / 1e3 | 0 | 0, 4);
-     SAFE_HEAP_STORE(tp + 4 | 0, now % 1e3 * 1e3 * 1e3 | 0 | 0, 4);
-     return 0;
-    }
-    _clock_gettime.sig = "iii";
-    function _emscripten_memcpy_big(dest, src, num) {
-     HEAPU8.copyWithin(dest, src, src + num);
-    }
-    function _emscripten_get_heap_max() {
-     return 2147483648;
-    }
-    function emscripten_realloc_buffer(size) {
+    _emscripten_get_now = () => performance.now();
+    _emscripten_get_now.sig = "d";
+    var _emscripten_memcpy_big = (dest, src, num) => HEAPU8.copyWithin(dest, src, src + num);
+    _emscripten_memcpy_big.sig = "vppp";
+    var getHeapMax = () => 2147483648;
+    var growMemory = size => {
+     var b = wasmMemory.buffer;
+     var pages = size - b.byteLength + 65535 >>> 16;
      try {
-      wasmMemory.grow(size - buffer.byteLength + 65535 >>> 16);
-      updateGlobalBufferAndViews(wasmMemory.buffer);
+      wasmMemory.grow(pages);
+      updateMemoryViews();
       return 1;
      } catch (e) {
-      err("emscripten_realloc_buffer: Attempted to grow heap from " + buffer.byteLength + " bytes to " + size + " bytes, but got error: " + e);
+      err(`growMemory: Attempted to grow heap from ${b.byteLength} bytes to ${size} bytes, but got error: ${e}`);
      }
-    }
-    function _emscripten_resize_heap(requestedSize) {
+    };
+    var _emscripten_resize_heap = requestedSize => {
      var oldSize = HEAPU8.length;
-     requestedSize = requestedSize >>> 0;
+     requestedSize >>>= 0;
      assert(requestedSize > oldSize);
-     var maxHeapSize = _emscripten_get_heap_max();
+     var maxHeapSize = getHeapMax();
      if (requestedSize > maxHeapSize) {
-      err("Cannot enlarge memory, asked to go up to " + requestedSize + " bytes, but the limit is " + maxHeapSize + " bytes!");
+      err(`Cannot enlarge memory, asked to go up to ${requestedSize} bytes, but the limit is ${maxHeapSize} bytes!`);
       return false;
      }
+     var alignUp = (x, multiple) => x + (multiple - x % multiple) % multiple;
      for (var cutDown = 1; cutDown <= 4; cutDown *= 2) {
       var overGrownHeapSize = oldSize * (1 + .2 / cutDown);
       overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296);
       var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
-      var replacement = emscripten_realloc_buffer(newSize);
+      var replacement = growMemory(newSize);
       if (replacement) {
        return true;
       }
      }
-     err("Failed to grow the heap from " + oldSize + " bytes to " + newSize + " bytes, not enough memory!");
+     err(`Failed to grow the heap from ${oldSize} bytes to ${newSize} bytes, not enough memory!`);
      return false;
-    }
-    function _exit(status) {
-     exit(status);
-    }
-    _exit.sig = "vi";
+    };
+    _emscripten_resize_heap.sig = "ip";
     var SYSCALLS = {
-     DEFAULT_POLLMASK: 5,
-     calculateAt: function(dirfd, path, allowEmpty) {
-      if (path[0] === "/") {
-       return path;
-      }
-      var dir;
-      if (dirfd === -100) {
-       dir = FS.cwd();
-      } else {
-       var dirstream = FS.getStream(dirfd);
-       if (!dirstream) throw new FS.ErrnoError(8);
-       dir = dirstream.path;
-      }
-      if (path.length == 0) {
-       if (!allowEmpty) {
-        throw new FS.ErrnoError(44);
-       }
-       return dir;
-      }
-      return PATH.join2(dir, path);
-     },
-     doStat: function(func, path, buf) {
-      try {
-       var stat = func(path);
-      } catch (e) {
-       if (e && e.node && PATH.normalize(path) !== PATH.normalize(FS.getPath(e.node))) {
-        return -54;
-       }
-       throw e;
-      }
-      SAFE_HEAP_STORE(buf | 0, stat.dev | 0, 4);
-      SAFE_HEAP_STORE(buf + 4 | 0, 0 | 0, 4);
-      SAFE_HEAP_STORE(buf + 8 | 0, stat.ino | 0, 4);
-      SAFE_HEAP_STORE(buf + 12 | 0, stat.mode | 0, 4);
-      SAFE_HEAP_STORE(buf + 16 | 0, stat.nlink | 0, 4);
-      SAFE_HEAP_STORE(buf + 20 | 0, stat.uid | 0, 4);
-      SAFE_HEAP_STORE(buf + 24 | 0, stat.gid | 0, 4);
-      SAFE_HEAP_STORE(buf + 28 | 0, stat.rdev | 0, 4);
-      SAFE_HEAP_STORE(buf + 32 | 0, 0 | 0, 4);
-      tempI64 = [ stat.size >>> 0, (tempDouble = stat.size, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0) ], 
-      SAFE_HEAP_STORE(buf + 40 | 0, tempI64[0] | 0, 4), SAFE_HEAP_STORE(buf + 44 | 0, tempI64[1] | 0, 4);
-      SAFE_HEAP_STORE(buf + 48 | 0, 4096 | 0, 4);
-      SAFE_HEAP_STORE(buf + 52 | 0, stat.blocks | 0, 4);
-      SAFE_HEAP_STORE(buf + 56 | 0, stat.atime.getTime() / 1e3 | 0 | 0, 4);
-      SAFE_HEAP_STORE(buf + 60 | 0, 0 | 0, 4);
-      SAFE_HEAP_STORE(buf + 64 | 0, stat.mtime.getTime() / 1e3 | 0 | 0, 4);
-      SAFE_HEAP_STORE(buf + 68 | 0, 0 | 0, 4);
-      SAFE_HEAP_STORE(buf + 72 | 0, stat.ctime.getTime() / 1e3 | 0 | 0, 4);
-      SAFE_HEAP_STORE(buf + 76 | 0, 0 | 0, 4);
-      tempI64 = [ stat.ino >>> 0, (tempDouble = stat.ino, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0) ], 
-      SAFE_HEAP_STORE(buf + 80 | 0, tempI64[0] | 0, 4), SAFE_HEAP_STORE(buf + 84 | 0, tempI64[1] | 0, 4);
-      return 0;
-     },
-     doMsync: function(addr, stream, len, flags, offset) {
-      var buffer = HEAPU8.slice(addr, addr + len);
-      FS.msync(stream, buffer, offset, len, flags);
-     },
-     doMkdir: function(path, mode) {
-      path = PATH.normalize(path);
-      if (path[path.length - 1] === "/") path = path.substr(0, path.length - 1);
-      FS.mkdir(path, mode, 0);
-      return 0;
-     },
-     doMknod: function(path, mode, dev) {
-      switch (mode & 61440) {
-      case 32768:
-      case 8192:
-      case 24576:
-      case 4096:
-      case 49152:
-       break;
-
-      default:
-       return -28;
-      }
-      FS.mknod(path, mode, dev);
-      return 0;
-     },
-     doReadlink: function(path, buf, bufsize) {
-      if (bufsize <= 0) return -28;
-      var ret = FS.readlink(path);
-      var len = Math.min(bufsize, lengthBytesUTF8(ret));
-      var endChar = SAFE_HEAP_LOAD(buf + len, 1, 0);
-      stringToUTF8(ret, buf, bufsize + 1);
-      SAFE_HEAP_STORE(buf + len, endChar, 1);
-      return len;
-     },
-     doAccess: function(path, amode) {
-      if (amode & ~7) {
-       return -28;
-      }
-      var lookup = FS.lookupPath(path, {
-       follow: true
-      });
-      var node = lookup.node;
-      if (!node) {
-       return -44;
-      }
-      var perms = "";
-      if (amode & 4) perms += "r";
-      if (amode & 2) perms += "w";
-      if (amode & 1) perms += "x";
-      if (perms && FS.nodePermissions(node, perms)) {
-       return -2;
-      }
-      return 0;
-     },
-     doDup: function(path, flags, suggestFD) {
-      var suggest = FS.getStream(suggestFD);
-      if (suggest) FS.close(suggest);
-      return FS.open(path, flags, 0, suggestFD, suggestFD).fd;
-     },
-     doReadv: function(stream, iov, iovcnt, offset) {
-      var ret = 0;
-      for (var i = 0; i < iovcnt; i++) {
-       var ptr = SAFE_HEAP_LOAD(iov + i * 8 | 0, 4, 0) | 0;
-       var len = SAFE_HEAP_LOAD(iov + (i * 8 + 4) | 0, 4, 0) | 0;
-       var curr = FS.read(stream, HEAP8, ptr, len, offset);
-       if (curr < 0) return -1;
-       ret += curr;
-       if (curr < len) break;
-      }
-      return ret;
-     },
-     doWritev: function(stream, iov, iovcnt, offset) {
-      var ret = 0;
-      for (var i = 0; i < iovcnt; i++) {
-       var ptr = SAFE_HEAP_LOAD(iov + i * 8 | 0, 4, 0) | 0;
-       var len = SAFE_HEAP_LOAD(iov + (i * 8 + 4) | 0, 4, 0) | 0;
-       var curr = FS.write(stream, HEAP8, ptr, len, offset);
-       if (curr < 0) return -1;
-       ret += curr;
-      }
-      return ret;
-     },
      varargs: undefined,
-     get: function() {
+     get() {
       assert(SYSCALLS.varargs != undefined);
       SYSCALLS.varargs += 4;
-      var ret = SAFE_HEAP_LOAD(SYSCALLS.varargs - 4 | 0, 4, 0) | 0;
+      var ret = SAFE_HEAP_LOAD((SYSCALLS.varargs - 4 >> 2) * 4, 4, 0);
       return ret;
      },
-     getStr: function(ptr) {
+     getStr(ptr) {
       var ret = UTF8ToString(ptr);
       return ret;
-     },
-     getStreamFromFD: function(fd) {
-      var stream = FS.getStream(fd);
-      if (!stream) throw new FS.ErrnoError(8);
-      return stream;
-     },
-     get64: function(low, high) {
-      if (low >= 0) assert(high === 0); else assert(high === -1);
-      return low;
      }
     };
-    function _fd_close(fd) {
-     try {
-      var stream = SYSCALLS.getStreamFromFD(fd);
-      FS.close(stream);
-      return 0;
-     } catch (e) {
-      if (typeof FS == "undefined" || !(e instanceof FS.ErrnoError)) throw e;
-      return e.errno;
-     }
-    }
+    var _fd_close = fd => {
+     abort("fd_close called without SYSCALLS_REQUIRE_FILESYSTEM");
+    };
     _fd_close.sig = "ii";
+    function convertI32PairToI53Checked(lo, hi) {
+     assert(lo == lo >>> 0 || lo == (lo | 0));
+     assert(hi === (hi | 0));
+     return hi + 2097152 >>> 0 < 4194305 - !!lo ? (lo >>> 0) + hi * 4294967296 : NaN;
+    }
     function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
-     try {
-      var stream = SYSCALLS.getStreamFromFD(fd);
-      var HIGH_OFFSET = 4294967296;
-      var offset = offset_high * HIGH_OFFSET + (offset_low >>> 0);
-      var DOUBLE_LIMIT = 9007199254740992;
-      if (offset <= -DOUBLE_LIMIT || offset >= DOUBLE_LIMIT) {
-       return -61;
+     var offset = convertI32PairToI53Checked(offset_low, offset_high);
+     return 70;
+    }
+    _fd_seek.sig = "iiiiip";
+    var printCharBuffers = [ null, [], [] ];
+    var printChar = (stream, curr) => {
+     var buffer = printCharBuffers[stream];
+     assert(buffer);
+     if (curr === 0 || curr === 10) {
+      (stream === 1 ? out : err)(UTF8ArrayToString(buffer, 0));
+      buffer.length = 0;
+     } else {
+      buffer.push(curr);
+     }
+    };
+    var flush_NO_FILESYSTEM = () => {
+     _fflush(0);
+     if (printCharBuffers[1].length) printChar(1, 10);
+     if (printCharBuffers[2].length) printChar(2, 10);
+    };
+    var _fd_write = (fd, iov, iovcnt, pnum) => {
+     var num = 0;
+     for (var i = 0; i < iovcnt; i++) {
+      var ptr = SAFE_HEAP_LOAD((iov >> 2) * 4, 4, 1);
+      var len = SAFE_HEAP_LOAD((iov + 4 >> 2) * 4, 4, 1);
+      iov += 8;
+      for (var j = 0; j < len; j++) {
+       printChar(fd, SAFE_HEAP_LOAD(ptr + j, 1, 1));
       }
-      FS.llseek(stream, offset, whence);
-      tempI64 = [ stream.position >>> 0, (tempDouble = stream.position, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0) ], 
-      SAFE_HEAP_STORE(newOffset | 0, tempI64[0] | 0, 4), SAFE_HEAP_STORE(newOffset + 4 | 0, tempI64[1] | 0, 4);
-      if (stream.getdents && offset === 0 && whence === 0) stream.getdents = null;
-      return 0;
-     } catch (e) {
-      if (typeof FS == "undefined" || !(e instanceof FS.ErrnoError)) throw e;
-      return e.errno;
+      num += len;
      }
-    }
-    function _fd_write(fd, iov, iovcnt, pnum) {
-     try {
-      var stream = SYSCALLS.getStreamFromFD(fd);
-      var num = SYSCALLS.doWritev(stream, iov, iovcnt);
-      SAFE_HEAP_STORE(pnum | 0, num | 0, 4);
-      return 0;
-     } catch (e) {
-      if (typeof FS == "undefined" || !(e instanceof FS.ErrnoError)) throw e;
-      return e.errno;
-     }
-    }
-    _fd_write.sig = "iiiii";
-    function _setTempRet0(val) {
-     setTempRet0(val);
-    }
-    _setTempRet0.sig = "vi";
+     SAFE_HEAP_STORE((pnum >> 2) * 4, num, 4);
+     return 0;
+    };
+    _fd_write.sig = "iippp";
     function _tree_sitter_log_callback(isLexMessage, messageAddress) {
      if (currentLogCallback) {
       const message = UTF8ToString(messageAddress);
       currentLogCallback(message, isLexMessage !== 0);
      }
     }
+    function _tree_sitter_markdown_external_scanner_create() {
+     if (!wasmImports["tree_sitter_markdown_external_scanner_create"] || wasmImports["tree_sitter_markdown_external_scanner_create"].stub) abort("external symbol 'tree_sitter_markdown_external_scanner_create' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_markdown_external_scanner_create"].apply(null, arguments);
+    }
+    _tree_sitter_markdown_external_scanner_create.stub = true;
+    function _tree_sitter_markdown_external_scanner_deserialize() {
+     if (!wasmImports["tree_sitter_markdown_external_scanner_deserialize"] || wasmImports["tree_sitter_markdown_external_scanner_deserialize"].stub) abort("external symbol 'tree_sitter_markdown_external_scanner_deserialize' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_markdown_external_scanner_deserialize"].apply(null, arguments);
+    }
+    _tree_sitter_markdown_external_scanner_deserialize.stub = true;
+    function _tree_sitter_markdown_external_scanner_destroy() {
+     if (!wasmImports["tree_sitter_markdown_external_scanner_destroy"] || wasmImports["tree_sitter_markdown_external_scanner_destroy"].stub) abort("external symbol 'tree_sitter_markdown_external_scanner_destroy' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_markdown_external_scanner_destroy"].apply(null, arguments);
+    }
+    _tree_sitter_markdown_external_scanner_destroy.stub = true;
+    function _tree_sitter_markdown_external_scanner_scan() {
+     if (!wasmImports["tree_sitter_markdown_external_scanner_scan"] || wasmImports["tree_sitter_markdown_external_scanner_scan"].stub) abort("external symbol 'tree_sitter_markdown_external_scanner_scan' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_markdown_external_scanner_scan"].apply(null, arguments);
+    }
+    _tree_sitter_markdown_external_scanner_scan.stub = true;
+    function _tree_sitter_markdown_external_scanner_serialize() {
+     if (!wasmImports["tree_sitter_markdown_external_scanner_serialize"] || wasmImports["tree_sitter_markdown_external_scanner_serialize"].stub) abort("external symbol 'tree_sitter_markdown_external_scanner_serialize' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_markdown_external_scanner_serialize"].apply(null, arguments);
+    }
+    _tree_sitter_markdown_external_scanner_serialize.stub = true;
     function _tree_sitter_parse_callback(inputBufferAddress, index, row, column, lengthAddress) {
      var INPUT_BUFFER_SIZE = 10 * 1024;
      var string = currentParseCallback(index, {
@@ -2110,63 +1736,240 @@ var TreeSitter = function() {
       setValue(lengthAddress, 0, "i32");
      }
     }
-    var ASSERTIONS = true;
-    function intArrayFromString(stringy, dontAddNull, length) {
-     var len = length > 0 ? length : lengthBytesUTF8(stringy) + 1;
-     var u8array = new Array(len);
-     var numBytesWritten = stringToUTF8Array(stringy, u8array, 0, u8array.length);
-     if (dontAddNull) u8array.length = numBytesWritten;
-     return u8array;
+    function _tree_sitter_ruby_external_scanner_create() {
+     if (!wasmImports["tree_sitter_ruby_external_scanner_create"] || wasmImports["tree_sitter_ruby_external_scanner_create"].stub) abort("external symbol 'tree_sitter_ruby_external_scanner_create' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_ruby_external_scanner_create"].apply(null, arguments);
     }
-    function intArrayToString(array) {
-     var ret = [];
-     for (var i = 0; i < array.length; i++) {
-      var chr = array[i];
-      if (chr > 255) {
-       if (ASSERTIONS) {
-        assert(false, "Character code " + chr + " (" + String.fromCharCode(chr) + ")  at offset " + i + " not in 0x00-0xFF.");
-       }
-       chr &= 255;
-      }
-      ret.push(String.fromCharCode(chr));
+    _tree_sitter_ruby_external_scanner_create.stub = true;
+    function _tree_sitter_ruby_external_scanner_deserialize() {
+     if (!wasmImports["tree_sitter_ruby_external_scanner_deserialize"] || wasmImports["tree_sitter_ruby_external_scanner_deserialize"].stub) abort("external symbol 'tree_sitter_ruby_external_scanner_deserialize' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_ruby_external_scanner_deserialize"].apply(null, arguments);
+    }
+    _tree_sitter_ruby_external_scanner_deserialize.stub = true;
+    function _tree_sitter_ruby_external_scanner_destroy() {
+     if (!wasmImports["tree_sitter_ruby_external_scanner_destroy"] || wasmImports["tree_sitter_ruby_external_scanner_destroy"].stub) abort("external symbol 'tree_sitter_ruby_external_scanner_destroy' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_ruby_external_scanner_destroy"].apply(null, arguments);
+    }
+    _tree_sitter_ruby_external_scanner_destroy.stub = true;
+    function _tree_sitter_ruby_external_scanner_scan() {
+     if (!wasmImports["tree_sitter_ruby_external_scanner_scan"] || wasmImports["tree_sitter_ruby_external_scanner_scan"].stub) abort("external symbol 'tree_sitter_ruby_external_scanner_scan' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_ruby_external_scanner_scan"].apply(null, arguments);
+    }
+    _tree_sitter_ruby_external_scanner_scan.stub = true;
+    function _tree_sitter_ruby_external_scanner_serialize() {
+     if (!wasmImports["tree_sitter_ruby_external_scanner_serialize"] || wasmImports["tree_sitter_ruby_external_scanner_serialize"].stub) abort("external symbol 'tree_sitter_ruby_external_scanner_serialize' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_ruby_external_scanner_serialize"].apply(null, arguments);
+    }
+    _tree_sitter_ruby_external_scanner_serialize.stub = true;
+    function _tree_sitter_svelte_external_scanner_create() {
+     if (!wasmImports["tree_sitter_svelte_external_scanner_create"] || wasmImports["tree_sitter_svelte_external_scanner_create"].stub) abort("external symbol 'tree_sitter_svelte_external_scanner_create' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_svelte_external_scanner_create"].apply(null, arguments);
+    }
+    _tree_sitter_svelte_external_scanner_create.stub = true;
+    function _tree_sitter_svelte_external_scanner_deserialize() {
+     if (!wasmImports["tree_sitter_svelte_external_scanner_deserialize"] || wasmImports["tree_sitter_svelte_external_scanner_deserialize"].stub) abort("external symbol 'tree_sitter_svelte_external_scanner_deserialize' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_svelte_external_scanner_deserialize"].apply(null, arguments);
+    }
+    _tree_sitter_svelte_external_scanner_deserialize.stub = true;
+    function _tree_sitter_svelte_external_scanner_destroy() {
+     if (!wasmImports["tree_sitter_svelte_external_scanner_destroy"] || wasmImports["tree_sitter_svelte_external_scanner_destroy"].stub) abort("external symbol 'tree_sitter_svelte_external_scanner_destroy' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_svelte_external_scanner_destroy"].apply(null, arguments);
+    }
+    _tree_sitter_svelte_external_scanner_destroy.stub = true;
+    function _tree_sitter_svelte_external_scanner_scan() {
+     if (!wasmImports["tree_sitter_svelte_external_scanner_scan"] || wasmImports["tree_sitter_svelte_external_scanner_scan"].stub) abort("external symbol 'tree_sitter_svelte_external_scanner_scan' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_svelte_external_scanner_scan"].apply(null, arguments);
+    }
+    _tree_sitter_svelte_external_scanner_scan.stub = true;
+    function _tree_sitter_svelte_external_scanner_serialize() {
+     if (!wasmImports["tree_sitter_svelte_external_scanner_serialize"] || wasmImports["tree_sitter_svelte_external_scanner_serialize"].stub) abort("external symbol 'tree_sitter_svelte_external_scanner_serialize' is missing. perhaps a side module was not linked in? if this function was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment");
+     return wasmImports["tree_sitter_svelte_external_scanner_serialize"].apply(null, arguments);
+    }
+    _tree_sitter_svelte_external_scanner_serialize.stub = true;
+    var _proc_exit = code => {
+     EXITSTATUS = code;
+     if (!keepRuntimeAlive()) {
+      if (Module["onExit"]) Module["onExit"](code);
+      ABORT = true;
      }
-     return ret.join("");
+     quit_(code, new ExitStatus(code));
+    };
+    _proc_exit.sig = "vi";
+    var exitJS = (status, implicit) => {
+     EXITSTATUS = status;
+     checkUnflushedContent();
+     if (keepRuntimeAlive() && !implicit) {
+      var msg = `program exited (with status: ${status}), but keepRuntimeAlive() is set (counter=${runtimeKeepaliveCounter}) due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)`;
+      err(msg);
+     }
+     _proc_exit(status);
+    };
+    var handleException = e => {
+     if (e instanceof ExitStatus || e == "unwind") {
+      return EXITSTATUS;
+     }
+     checkStackCookie();
+     if (e instanceof WebAssembly.RuntimeError) {
+      if (_emscripten_stack_get_current() <= 0) {
+       err("Stack overflow detected.  You can try increasing -sSTACK_SIZE (currently set to 65536)");
+      }
+     }
+     quit_(1, e);
+    };
+    var lengthBytesUTF8 = str => {
+     var len = 0;
+     for (var i = 0; i < str.length; ++i) {
+      var c = str.charCodeAt(i);
+      if (c <= 127) {
+       len++;
+      } else if (c <= 2047) {
+       len += 2;
+      } else if (c >= 55296 && c <= 57343) {
+       len += 4;
+       ++i;
+      } else {
+       len += 3;
+      }
+     }
+     return len;
+    };
+    var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
+     assert(typeof str === "string");
+     if (!(maxBytesToWrite > 0)) return 0;
+     var startIdx = outIdx;
+     var endIdx = outIdx + maxBytesToWrite - 1;
+     for (var i = 0; i < str.length; ++i) {
+      var u = str.charCodeAt(i);
+      if (u >= 55296 && u <= 57343) {
+       var u1 = str.charCodeAt(++i);
+       u = 65536 + ((u & 1023) << 10) | u1 & 1023;
+      }
+      if (u <= 127) {
+       if (outIdx >= endIdx) break;
+       heap[outIdx++] = u;
+      } else if (u <= 2047) {
+       if (outIdx + 1 >= endIdx) break;
+       heap[outIdx++] = 192 | u >> 6;
+       heap[outIdx++] = 128 | u & 63;
+      } else if (u <= 65535) {
+       if (outIdx + 2 >= endIdx) break;
+       heap[outIdx++] = 224 | u >> 12;
+       heap[outIdx++] = 128 | u >> 6 & 63;
+       heap[outIdx++] = 128 | u & 63;
+      } else {
+       if (outIdx + 3 >= endIdx) break;
+       if (u > 1114111) warnOnce("Invalid Unicode code point " + ptrToString(u) + " encountered when serializing a JS string to a UTF-8 string in wasm memory! (Valid unicode code points should be in range 0-0x10FFFF).");
+       heap[outIdx++] = 240 | u >> 18;
+       heap[outIdx++] = 128 | u >> 12 & 63;
+       heap[outIdx++] = 128 | u >> 6 & 63;
+       heap[outIdx++] = 128 | u & 63;
+      }
+     }
+     heap[outIdx] = 0;
+     return outIdx - startIdx;
+    };
+    var stringToUTF8 = (str, outPtr, maxBytesToWrite) => {
+     assert(typeof maxBytesToWrite == "number", "stringToUTF8(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!");
+     return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
+    };
+    var stringToUTF8OnStack = str => {
+     var size = lengthBytesUTF8(str) + 1;
+     var ret = stackAlloc(size);
+     stringToUTF8(str, ret, size);
+     return ret;
+    };
+    var stringToUTF16 = (str, outPtr, maxBytesToWrite) => {
+     assert(outPtr % 2 == 0, "Pointer passed to stringToUTF16 must be aligned to two bytes!");
+     assert(typeof maxBytesToWrite == "number", "stringToUTF16(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!");
+     if (maxBytesToWrite === undefined) {
+      maxBytesToWrite = 2147483647;
+     }
+     if (maxBytesToWrite < 2) return 0;
+     maxBytesToWrite -= 2;
+     var startPtr = outPtr;
+     var numCharsToWrite = maxBytesToWrite < str.length * 2 ? maxBytesToWrite / 2 : str.length;
+     for (var i = 0; i < numCharsToWrite; ++i) {
+      var codeUnit = str.charCodeAt(i);
+      SAFE_HEAP_STORE((outPtr >> 1) * 2, codeUnit, 2);
+      outPtr += 2;
+     }
+     SAFE_HEAP_STORE((outPtr >> 1) * 2, 0, 2);
+     return outPtr - startPtr;
+    };
+    var AsciiToString = ptr => {
+     var str = "";
+     while (1) {
+      var ch = SAFE_HEAP_LOAD(ptr++ >> 0, 1, 1);
+      if (!ch) return str;
+      str += String.fromCharCode(ch);
+     }
+    };
+    function checkIncomingModuleAPI() {
+     ignoredModuleProp("fetchSettings");
     }
-    var asmLibraryArg = {
-     "__heap_base": ___heap_base,
-     "__indirect_function_table": wasmTable,
-     "__memory_base": ___memory_base,
-     "__stack_pointer": ___stack_pointer,
-     "__table_base": ___table_base,
-     "abort": _abort,
-     "alignfault": alignfault,
-     "clock_gettime": _clock_gettime,
-     "emscripten_memcpy_big": _emscripten_memcpy_big,
-     "emscripten_resize_heap": _emscripten_resize_heap,
-     "exit": _exit,
-     "fd_close": _fd_close,
-     "fd_seek": _fd_seek,
-     "fd_write": _fd_write,
-     "memory": wasmMemory,
-     "segfault": segfault,
-     "setTempRet0": _setTempRet0,
-     "tree_sitter_log_callback": _tree_sitter_log_callback,
-     "tree_sitter_parse_callback": _tree_sitter_parse_callback
+    var wasmImports = {
+     __assert_fail: ___assert_fail,
+     __heap_base: ___heap_base,
+     __indirect_function_table: wasmTable,
+     __memory_base: ___memory_base,
+     __stack_high: ___stack_high,
+     __stack_low: ___stack_low,
+     __stack_pointer: ___stack_pointer,
+     __table_base: ___table_base,
+     _emscripten_get_now_is_monotonic: __emscripten_get_now_is_monotonic,
+     abort: _abort,
+     alignfault: alignfault,
+     deleter: _deleter,
+     emscripten_date_now: _emscripten_date_now,
+     emscripten_get_now: _emscripten_get_now,
+     emscripten_memcpy_big: _emscripten_memcpy_big,
+     emscripten_resize_heap: _emscripten_resize_heap,
+     fd_close: _fd_close,
+     fd_seek: _fd_seek,
+     fd_write: _fd_write,
+     memory: wasmMemory,
+     segfault: segfault,
+     tree_sitter_log_callback: _tree_sitter_log_callback,
+     tree_sitter_markdown_external_scanner_create: _tree_sitter_markdown_external_scanner_create,
+     tree_sitter_markdown_external_scanner_deserialize: _tree_sitter_markdown_external_scanner_deserialize,
+     tree_sitter_markdown_external_scanner_destroy: _tree_sitter_markdown_external_scanner_destroy,
+     tree_sitter_markdown_external_scanner_scan: _tree_sitter_markdown_external_scanner_scan,
+     tree_sitter_markdown_external_scanner_serialize: _tree_sitter_markdown_external_scanner_serialize,
+     tree_sitter_parse_callback: _tree_sitter_parse_callback,
+     tree_sitter_ruby_external_scanner_create: _tree_sitter_ruby_external_scanner_create,
+     tree_sitter_ruby_external_scanner_deserialize: _tree_sitter_ruby_external_scanner_deserialize,
+     tree_sitter_ruby_external_scanner_destroy: _tree_sitter_ruby_external_scanner_destroy,
+     tree_sitter_ruby_external_scanner_scan: _tree_sitter_ruby_external_scanner_scan,
+     tree_sitter_ruby_external_scanner_serialize: _tree_sitter_ruby_external_scanner_serialize,
+     tree_sitter_svelte_external_scanner_create: _tree_sitter_svelte_external_scanner_create,
+     tree_sitter_svelte_external_scanner_deserialize: _tree_sitter_svelte_external_scanner_deserialize,
+     tree_sitter_svelte_external_scanner_destroy: _tree_sitter_svelte_external_scanner_destroy,
+     tree_sitter_svelte_external_scanner_scan: _tree_sitter_svelte_external_scanner_scan,
+     tree_sitter_svelte_external_scanner_serialize: _tree_sitter_svelte_external_scanner_serialize
     };
     var asm = createWasm();
-    var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
+    var ___wasm_call_ctors = createExportWrapper("__wasm_call_ctors");
+    var ___wasm_apply_data_relocs = Module["___wasm_apply_data_relocs"] = createExportWrapper("__wasm_apply_data_relocs");
     var _malloc = Module["_malloc"] = createExportWrapper("malloc");
     var _calloc = Module["_calloc"] = createExportWrapper("calloc");
     var _realloc = Module["_realloc"] = createExportWrapper("realloc");
     var _free = Module["_free"] = createExportWrapper("free");
     var _ts_language_symbol_count = Module["_ts_language_symbol_count"] = createExportWrapper("ts_language_symbol_count");
+    var _ts_language_state_count = Module["_ts_language_state_count"] = createExportWrapper("ts_language_state_count");
     var _ts_language_version = Module["_ts_language_version"] = createExportWrapper("ts_language_version");
     var _ts_language_field_count = Module["_ts_language_field_count"] = createExportWrapper("ts_language_field_count");
+    var _ts_language_next_state = Module["_ts_language_next_state"] = createExportWrapper("ts_language_next_state");
     var _ts_language_symbol_name = Module["_ts_language_symbol_name"] = createExportWrapper("ts_language_symbol_name");
     var _ts_language_symbol_for_name = Module["_ts_language_symbol_for_name"] = createExportWrapper("ts_language_symbol_for_name");
     var _strncmp = Module["_strncmp"] = createExportWrapper("strncmp");
     var _ts_language_symbol_type = Module["_ts_language_symbol_type"] = createExportWrapper("ts_language_symbol_type");
     var _ts_language_field_name_for_id = Module["_ts_language_field_name_for_id"] = createExportWrapper("ts_language_field_name_for_id");
+    var _ts_lookahead_iterator_new = Module["_ts_lookahead_iterator_new"] = createExportWrapper("ts_lookahead_iterator_new");
+    var _ts_lookahead_iterator_delete = Module["_ts_lookahead_iterator_delete"] = createExportWrapper("ts_lookahead_iterator_delete");
+    var _ts_lookahead_iterator_reset_state = Module["_ts_lookahead_iterator_reset_state"] = createExportWrapper("ts_lookahead_iterator_reset_state");
+    var _ts_lookahead_iterator_reset = Module["_ts_lookahead_iterator_reset"] = createExportWrapper("ts_lookahead_iterator_reset");
+    var _ts_lookahead_iterator_next = Module["_ts_lookahead_iterator_next"] = createExportWrapper("ts_lookahead_iterator_next");
+    var _ts_lookahead_iterator_current_symbol = Module["_ts_lookahead_iterator_current_symbol"] = createExportWrapper("ts_lookahead_iterator_current_symbol");
     var _memset = Module["_memset"] = createExportWrapper("memset");
     var _memcpy = Module["_memcpy"] = createExportWrapper("memcpy");
     var _ts_parser_delete = Module["_ts_parser_delete"] = createExportWrapper("ts_parser_delete");
@@ -2200,10 +2003,14 @@ var TreeSitter = function() {
     var _ts_tree_cursor_new_wasm = Module["_ts_tree_cursor_new_wasm"] = createExportWrapper("ts_tree_cursor_new_wasm");
     var _ts_tree_cursor_delete_wasm = Module["_ts_tree_cursor_delete_wasm"] = createExportWrapper("ts_tree_cursor_delete_wasm");
     var _ts_tree_cursor_reset_wasm = Module["_ts_tree_cursor_reset_wasm"] = createExportWrapper("ts_tree_cursor_reset_wasm");
+    var _ts_tree_cursor_reset_to_wasm = Module["_ts_tree_cursor_reset_to_wasm"] = createExportWrapper("ts_tree_cursor_reset_to_wasm");
     var _ts_tree_cursor_goto_first_child_wasm = Module["_ts_tree_cursor_goto_first_child_wasm"] = createExportWrapper("ts_tree_cursor_goto_first_child_wasm");
+    var _ts_tree_cursor_goto_last_child_wasm = Module["_ts_tree_cursor_goto_last_child_wasm"] = createExportWrapper("ts_tree_cursor_goto_last_child_wasm");
     var _ts_tree_cursor_goto_next_sibling_wasm = Module["_ts_tree_cursor_goto_next_sibling_wasm"] = createExportWrapper("ts_tree_cursor_goto_next_sibling_wasm");
+    var _ts_tree_cursor_goto_previous_sibling_wasm = Module["_ts_tree_cursor_goto_previous_sibling_wasm"] = createExportWrapper("ts_tree_cursor_goto_previous_sibling_wasm");
     var _ts_tree_cursor_goto_parent_wasm = Module["_ts_tree_cursor_goto_parent_wasm"] = createExportWrapper("ts_tree_cursor_goto_parent_wasm");
     var _ts_tree_cursor_current_node_type_id_wasm = Module["_ts_tree_cursor_current_node_type_id_wasm"] = createExportWrapper("ts_tree_cursor_current_node_type_id_wasm");
+    var _ts_tree_cursor_current_node_state_id_wasm = Module["_ts_tree_cursor_current_node_state_id_wasm"] = createExportWrapper("ts_tree_cursor_current_node_state_id_wasm");
     var _ts_tree_cursor_current_node_is_named_wasm = Module["_ts_tree_cursor_current_node_is_named_wasm"] = createExportWrapper("ts_tree_cursor_current_node_is_named_wasm");
     var _ts_tree_cursor_current_node_is_missing_wasm = Module["_ts_tree_cursor_current_node_is_missing_wasm"] = createExportWrapper("ts_tree_cursor_current_node_is_missing_wasm");
     var _ts_tree_cursor_current_node_id_wasm = Module["_ts_tree_cursor_current_node_id_wasm"] = createExportWrapper("ts_tree_cursor_current_node_id_wasm");
@@ -2214,6 +2021,8 @@ var TreeSitter = function() {
     var _ts_tree_cursor_current_field_id_wasm = Module["_ts_tree_cursor_current_field_id_wasm"] = createExportWrapper("ts_tree_cursor_current_field_id_wasm");
     var _ts_tree_cursor_current_node_wasm = Module["_ts_tree_cursor_current_node_wasm"] = createExportWrapper("ts_tree_cursor_current_node_wasm");
     var _ts_node_symbol_wasm = Module["_ts_node_symbol_wasm"] = createExportWrapper("ts_node_symbol_wasm");
+    var _ts_node_field_name_for_child_wasm = Module["_ts_node_field_name_for_child_wasm"] = createExportWrapper("ts_node_field_name_for_child_wasm");
+    var _ts_node_grammar_symbol_wasm = Module["_ts_node_grammar_symbol_wasm"] = createExportWrapper("ts_node_grammar_symbol_wasm");
     var _ts_node_child_count_wasm = Module["_ts_node_child_count_wasm"] = createExportWrapper("ts_node_child_count_wasm");
     var _ts_node_named_child_count_wasm = Module["_ts_node_named_child_count_wasm"] = createExportWrapper("ts_node_named_child_count_wasm");
     var _ts_node_child_wasm = Module["_ts_node_child_wasm"] = createExportWrapper("ts_node_child_wasm");
@@ -2239,42 +2048,52 @@ var TreeSitter = function() {
     var _ts_node_is_named_wasm = Module["_ts_node_is_named_wasm"] = createExportWrapper("ts_node_is_named_wasm");
     var _ts_node_has_changes_wasm = Module["_ts_node_has_changes_wasm"] = createExportWrapper("ts_node_has_changes_wasm");
     var _ts_node_has_error_wasm = Module["_ts_node_has_error_wasm"] = createExportWrapper("ts_node_has_error_wasm");
+    var _ts_node_is_error_wasm = Module["_ts_node_is_error_wasm"] = createExportWrapper("ts_node_is_error_wasm");
     var _ts_node_is_missing_wasm = Module["_ts_node_is_missing_wasm"] = createExportWrapper("ts_node_is_missing_wasm");
+    var _ts_node_parse_state_wasm = Module["_ts_node_parse_state_wasm"] = createExportWrapper("ts_node_parse_state_wasm");
+    var _ts_node_next_parse_state_wasm = Module["_ts_node_next_parse_state_wasm"] = createExportWrapper("ts_node_next_parse_state_wasm");
     var _ts_query_matches_wasm = Module["_ts_query_matches_wasm"] = createExportWrapper("ts_query_matches_wasm");
     var _ts_query_captures_wasm = Module["_ts_query_captures_wasm"] = createExportWrapper("ts_query_captures_wasm");
     var ___cxa_atexit = Module["___cxa_atexit"] = createExportWrapper("__cxa_atexit");
-    var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
+    var ___errno_location = createExportWrapper("__errno_location");
     var _strchr = Module["_strchr"] = createExportWrapper("strchr");
-    var ___stdio_exit = Module["___stdio_exit"] = createExportWrapper("__stdio_exit");
     var _atoi = Module["_atoi"] = createExportWrapper("atoi");
+    var _fflush = Module["_fflush"] = createExportWrapper("fflush");
     var _strlen = Module["_strlen"] = createExportWrapper("strlen");
+    var _isalpha = Module["_isalpha"] = createExportWrapper("isalpha");
+    var _isspace = Module["_isspace"] = createExportWrapper("isspace");
     var _iswdigit = Module["_iswdigit"] = createExportWrapper("iswdigit");
     var _iswalpha = Module["_iswalpha"] = createExportWrapper("iswalpha");
+    var _iswblank = Module["_iswblank"] = createExportWrapper("iswblank");
     var _iswlower = Module["_iswlower"] = createExportWrapper("iswlower");
     var _iswupper = Module["_iswupper"] = createExportWrapper("iswupper");
     var _memchr = Module["_memchr"] = createExportWrapper("memchr");
+    var _emscripten_get_sbrk_ptr = createExportWrapper("emscripten_get_sbrk_ptr");
+    var _sbrk = createExportWrapper("sbrk");
     var _strcmp = Module["_strcmp"] = createExportWrapper("strcmp");
     var _strncpy = Module["_strncpy"] = createExportWrapper("strncpy");
+    var _tolower = Module["_tolower"] = createExportWrapper("tolower");
     var _towlower = Module["_towlower"] = createExportWrapper("towlower");
     var _towupper = Module["_towupper"] = createExportWrapper("towupper");
-    var _sbrk = Module["_sbrk"] = createExportWrapper("sbrk");
-    var _emscripten_get_sbrk_ptr = Module["_emscripten_get_sbrk_ptr"] = createExportWrapper("emscripten_get_sbrk_ptr");
-    var _setThrew = Module["_setThrew"] = createExportWrapper("setThrew");
-    var _emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = function() {
-     return (_emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = Module["asm"]["emscripten_stack_set_limits"]).apply(null, arguments);
+    var _setThrew = createExportWrapper("setThrew");
+    var _emscripten_stack_set_limits = function() {
+     return (_emscripten_stack_set_limits = Module["asm"]["emscripten_stack_set_limits"]).apply(null, arguments);
     };
-    var _emscripten_stack_get_free = Module["_emscripten_stack_get_free"] = function() {
-     return (_emscripten_stack_get_free = Module["_emscripten_stack_get_free"] = Module["asm"]["emscripten_stack_get_free"]).apply(null, arguments);
+    var _emscripten_stack_get_free = function() {
+     return (_emscripten_stack_get_free = Module["asm"]["emscripten_stack_get_free"]).apply(null, arguments);
     };
-    var _emscripten_stack_get_base = Module["_emscripten_stack_get_base"] = function() {
-     return (_emscripten_stack_get_base = Module["_emscripten_stack_get_base"] = Module["asm"]["emscripten_stack_get_base"]).apply(null, arguments);
+    var _emscripten_stack_get_base = function() {
+     return (_emscripten_stack_get_base = Module["asm"]["emscripten_stack_get_base"]).apply(null, arguments);
     };
-    var _emscripten_stack_get_end = Module["_emscripten_stack_get_end"] = function() {
-     return (_emscripten_stack_get_end = Module["_emscripten_stack_get_end"] = Module["asm"]["emscripten_stack_get_end"]).apply(null, arguments);
+    var _emscripten_stack_get_end = function() {
+     return (_emscripten_stack_get_end = Module["asm"]["emscripten_stack_get_end"]).apply(null, arguments);
     };
-    var stackSave = Module["stackSave"] = createExportWrapper("stackSave");
-    var stackRestore = Module["stackRestore"] = createExportWrapper("stackRestore");
-    var stackAlloc = Module["stackAlloc"] = createExportWrapper("stackAlloc");
+    var stackSave = createExportWrapper("stackSave");
+    var stackRestore = createExportWrapper("stackRestore");
+    var stackAlloc = createExportWrapper("stackAlloc");
+    var _emscripten_stack_get_current = function() {
+     return (_emscripten_stack_get_current = Module["asm"]["emscripten_stack_get_current"]).apply(null, arguments);
+    };
     var __Znwm = Module["__Znwm"] = createExportWrapper("_Znwm");
     var __ZdlPv = Module["__ZdlPv"] = createExportWrapper("_ZdlPv");
     var __ZNSt3__212basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEED2Ev = Module["__ZNSt3__212basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEED2Ev"] = createExportWrapper("_ZNSt3__212basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEED2Ev");
@@ -2293,313 +2112,48 @@ var TreeSitter = function() {
     var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
     var _orig$ts_parser_timeout_micros = Module["_orig$ts_parser_timeout_micros"] = createExportWrapper("orig$ts_parser_timeout_micros");
     var _orig$ts_parser_set_timeout_micros = Module["_orig$ts_parser_set_timeout_micros"] = createExportWrapper("orig$ts_parser_set_timeout_micros");
-    var _ts_current_malloc = Module["_ts_current_malloc"] = 11696;
-    var _ts_current_calloc = Module["_ts_current_calloc"] = 11700;
-    var _ts_current_realloc = Module["_ts_current_realloc"] = 11704;
-    var _ts_current_free = Module["_ts_current_free"] = 11708;
-    var _stderr = Module["_stderr"] = 11864;
-    var _TRANSFER_BUFFER = Module["_TRANSFER_BUFFER"] = 11888;
-    var ___THREW__ = Module["___THREW__"] = 12652;
-    var ___threwValue = Module["___threwValue"] = 12656;
-    var ___cxa_new_handler = Module["___cxa_new_handler"] = 12648;
-    var ___data_end = Module["___data_end"] = 12660;
-    if (!Object.getOwnPropertyDescriptor(Module, "intArrayFromString")) Module["intArrayFromString"] = (() => abort("'intArrayFromString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "intArrayToString")) Module["intArrayToString"] = (() => abort("'intArrayToString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "ccall")) Module["ccall"] = (() => abort("'ccall' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "cwrap")) Module["cwrap"] = (() => abort("'cwrap' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "setValue")) Module["setValue"] = (() => abort("'setValue' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getValue")) Module["getValue"] = (() => abort("'getValue' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    Module["allocate"] = allocate;
-    if (!Object.getOwnPropertyDescriptor(Module, "UTF8ArrayToString")) Module["UTF8ArrayToString"] = (() => abort("'UTF8ArrayToString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "UTF8ToString")) Module["UTF8ToString"] = (() => abort("'UTF8ToString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "stringToUTF8Array")) Module["stringToUTF8Array"] = (() => abort("'stringToUTF8Array' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "stringToUTF8")) Module["stringToUTF8"] = (() => abort("'stringToUTF8' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "lengthBytesUTF8")) Module["lengthBytesUTF8"] = (() => abort("'lengthBytesUTF8' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "stackTrace")) Module["stackTrace"] = (() => abort("'stackTrace' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "addOnPreRun")) Module["addOnPreRun"] = (() => abort("'addOnPreRun' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "addOnInit")) Module["addOnInit"] = (() => abort("'addOnInit' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "addOnPreMain")) Module["addOnPreMain"] = (() => abort("'addOnPreMain' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "addOnExit")) Module["addOnExit"] = (() => abort("'addOnExit' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "addOnPostRun")) Module["addOnPostRun"] = (() => abort("'addOnPostRun' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "writeStringToMemory")) Module["writeStringToMemory"] = (() => abort("'writeStringToMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "writeArrayToMemory")) Module["writeArrayToMemory"] = (() => abort("'writeArrayToMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "writeAsciiToMemory")) Module["writeAsciiToMemory"] = (() => abort("'writeAsciiToMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "addRunDependency")) Module["addRunDependency"] = (() => abort("'addRunDependency' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you"));
-    if (!Object.getOwnPropertyDescriptor(Module, "removeRunDependency")) Module["removeRunDependency"] = (() => abort("'removeRunDependency' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you"));
-    if (!Object.getOwnPropertyDescriptor(Module, "FS_createFolder")) Module["FS_createFolder"] = (() => abort("'FS_createFolder' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "FS_createPath")) Module["FS_createPath"] = (() => abort("'FS_createPath' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you"));
-    if (!Object.getOwnPropertyDescriptor(Module, "FS_createDataFile")) Module["FS_createDataFile"] = (() => abort("'FS_createDataFile' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you"));
-    if (!Object.getOwnPropertyDescriptor(Module, "FS_createPreloadedFile")) Module["FS_createPreloadedFile"] = (() => abort("'FS_createPreloadedFile' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you"));
-    if (!Object.getOwnPropertyDescriptor(Module, "FS_createLazyFile")) Module["FS_createLazyFile"] = (() => abort("'FS_createLazyFile' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you"));
-    if (!Object.getOwnPropertyDescriptor(Module, "FS_createLink")) Module["FS_createLink"] = (() => abort("'FS_createLink' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "FS_createDevice")) Module["FS_createDevice"] = (() => abort("'FS_createDevice' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you"));
-    if (!Object.getOwnPropertyDescriptor(Module, "FS_unlink")) Module["FS_unlink"] = (() => abort("'FS_unlink' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getLEB")) Module["getLEB"] = (() => abort("'getLEB' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getFunctionTables")) Module["getFunctionTables"] = (() => abort("'getFunctionTables' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "alignFunctionTables")) Module["alignFunctionTables"] = (() => abort("'alignFunctionTables' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerFunctions")) Module["registerFunctions"] = (() => abort("'registerFunctions' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "addFunction")) Module["addFunction"] = (() => abort("'addFunction' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "removeFunction")) Module["removeFunction"] = (() => abort("'removeFunction' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getFuncWrapper")) Module["getFuncWrapper"] = (() => abort("'getFuncWrapper' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "prettyPrint")) Module["prettyPrint"] = (() => abort("'prettyPrint' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "dynCall")) Module["dynCall"] = (() => abort("'dynCall' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getCompilerSetting")) Module["getCompilerSetting"] = (() => abort("'getCompilerSetting' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "print")) Module["print"] = (() => abort("'print' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "printErr")) Module["printErr"] = (() => abort("'printErr' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getTempRet0")) Module["getTempRet0"] = (() => abort("'getTempRet0' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "setTempRet0")) Module["setTempRet0"] = (() => abort("'setTempRet0' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "callMain")) Module["callMain"] = (() => abort("'callMain' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "abort")) Module["abort"] = (() => abort("'abort' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "keepRuntimeAlive")) Module["keepRuntimeAlive"] = (() => abort("'keepRuntimeAlive' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "zeroMemory")) Module["zeroMemory"] = (() => abort("'zeroMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "stringToNewUTF8")) Module["stringToNewUTF8"] = (() => abort("'stringToNewUTF8' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "emscripten_realloc_buffer")) Module["emscripten_realloc_buffer"] = (() => abort("'emscripten_realloc_buffer' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "ENV")) Module["ENV"] = (() => abort("'ENV' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "withStackSave")) Module["withStackSave"] = (() => abort("'withStackSave' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "ERRNO_CODES")) Module["ERRNO_CODES"] = (() => abort("'ERRNO_CODES' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "ERRNO_MESSAGES")) Module["ERRNO_MESSAGES"] = (() => abort("'ERRNO_MESSAGES' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "setErrNo")) Module["setErrNo"] = (() => abort("'setErrNo' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "inetPton4")) Module["inetPton4"] = (() => abort("'inetPton4' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "inetNtop4")) Module["inetNtop4"] = (() => abort("'inetNtop4' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "inetPton6")) Module["inetPton6"] = (() => abort("'inetPton6' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "inetNtop6")) Module["inetNtop6"] = (() => abort("'inetNtop6' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "readSockaddr")) Module["readSockaddr"] = (() => abort("'readSockaddr' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "writeSockaddr")) Module["writeSockaddr"] = (() => abort("'writeSockaddr' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "DNS")) Module["DNS"] = (() => abort("'DNS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getHostByName")) Module["getHostByName"] = (() => abort("'getHostByName' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "Protocols")) Module["Protocols"] = (() => abort("'Protocols' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "Sockets")) Module["Sockets"] = (() => abort("'Sockets' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getRandomDevice")) Module["getRandomDevice"] = (() => abort("'getRandomDevice' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "traverseStack")) Module["traverseStack"] = (() => abort("'traverseStack' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "convertFrameToPC")) Module["convertFrameToPC"] = (() => abort("'convertFrameToPC' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "UNWIND_CACHE")) Module["UNWIND_CACHE"] = (() => abort("'UNWIND_CACHE' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "saveInUnwindCache")) Module["saveInUnwindCache"] = (() => abort("'saveInUnwindCache' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "convertPCtoSourceLocation")) Module["convertPCtoSourceLocation"] = (() => abort("'convertPCtoSourceLocation' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "readAsmConstArgsArray")) Module["readAsmConstArgsArray"] = (() => abort("'readAsmConstArgsArray' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "readAsmConstArgs")) Module["readAsmConstArgs"] = (() => abort("'readAsmConstArgs' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "mainThreadEM_ASM")) Module["mainThreadEM_ASM"] = (() => abort("'mainThreadEM_ASM' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "jstoi_q")) Module["jstoi_q"] = (() => abort("'jstoi_q' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "jstoi_s")) Module["jstoi_s"] = (() => abort("'jstoi_s' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getExecutableName")) Module["getExecutableName"] = (() => abort("'getExecutableName' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "listenOnce")) Module["listenOnce"] = (() => abort("'listenOnce' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "autoResumeAudioContext")) Module["autoResumeAudioContext"] = (() => abort("'autoResumeAudioContext' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "dynCallLegacy")) Module["dynCallLegacy"] = (() => abort("'dynCallLegacy' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getDynCaller")) Module["getDynCaller"] = (() => abort("'getDynCaller' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "dynCall")) Module["dynCall"] = (() => abort("'dynCall' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "callRuntimeCallbacks")) Module["callRuntimeCallbacks"] = (() => abort("'callRuntimeCallbacks' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "wasmTableMirror")) Module["wasmTableMirror"] = (() => abort("'wasmTableMirror' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "setWasmTableEntry")) Module["setWasmTableEntry"] = (() => abort("'setWasmTableEntry' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getWasmTableEntry")) Module["getWasmTableEntry"] = (() => abort("'getWasmTableEntry' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "handleException")) Module["handleException"] = (() => abort("'handleException' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "runtimeKeepalivePush")) Module["runtimeKeepalivePush"] = (() => abort("'runtimeKeepalivePush' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "runtimeKeepalivePop")) Module["runtimeKeepalivePop"] = (() => abort("'runtimeKeepalivePop' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "callUserCallback")) Module["callUserCallback"] = (() => abort("'callUserCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "maybeExit")) Module["maybeExit"] = (() => abort("'maybeExit' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "safeSetTimeout")) Module["safeSetTimeout"] = (() => abort("'safeSetTimeout' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "asmjsMangle")) Module["asmjsMangle"] = (() => abort("'asmjsMangle' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "asyncLoad")) Module["asyncLoad"] = (() => abort("'asyncLoad' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "alignMemory")) Module["alignMemory"] = (() => abort("'alignMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "mmapAlloc")) Module["mmapAlloc"] = (() => abort("'mmapAlloc' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "reallyNegative")) Module["reallyNegative"] = (() => abort("'reallyNegative' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "unSign")) Module["unSign"] = (() => abort("'unSign' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "reSign")) Module["reSign"] = (() => abort("'reSign' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "formatString")) Module["formatString"] = (() => abort("'formatString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "PATH")) Module["PATH"] = (() => abort("'PATH' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "PATH_FS")) Module["PATH_FS"] = (() => abort("'PATH_FS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "SYSCALLS")) Module["SYSCALLS"] = (() => abort("'SYSCALLS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getSocketFromFD")) Module["getSocketFromFD"] = (() => abort("'getSocketFromFD' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getSocketAddress")) Module["getSocketAddress"] = (() => abort("'getSocketAddress' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "JSEvents")) Module["JSEvents"] = (() => abort("'JSEvents' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerKeyEventCallback")) Module["registerKeyEventCallback"] = (() => abort("'registerKeyEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "specialHTMLTargets")) Module["specialHTMLTargets"] = (() => abort("'specialHTMLTargets' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "maybeCStringToJsString")) Module["maybeCStringToJsString"] = (() => abort("'maybeCStringToJsString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "findEventTarget")) Module["findEventTarget"] = (() => abort("'findEventTarget' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "findCanvasEventTarget")) Module["findCanvasEventTarget"] = (() => abort("'findCanvasEventTarget' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getBoundingClientRect")) Module["getBoundingClientRect"] = (() => abort("'getBoundingClientRect' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "fillMouseEventData")) Module["fillMouseEventData"] = (() => abort("'fillMouseEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerMouseEventCallback")) Module["registerMouseEventCallback"] = (() => abort("'registerMouseEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerWheelEventCallback")) Module["registerWheelEventCallback"] = (() => abort("'registerWheelEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerUiEventCallback")) Module["registerUiEventCallback"] = (() => abort("'registerUiEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerFocusEventCallback")) Module["registerFocusEventCallback"] = (() => abort("'registerFocusEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "fillDeviceOrientationEventData")) Module["fillDeviceOrientationEventData"] = (() => abort("'fillDeviceOrientationEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerDeviceOrientationEventCallback")) Module["registerDeviceOrientationEventCallback"] = (() => abort("'registerDeviceOrientationEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "fillDeviceMotionEventData")) Module["fillDeviceMotionEventData"] = (() => abort("'fillDeviceMotionEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerDeviceMotionEventCallback")) Module["registerDeviceMotionEventCallback"] = (() => abort("'registerDeviceMotionEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "screenOrientation")) Module["screenOrientation"] = (() => abort("'screenOrientation' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "fillOrientationChangeEventData")) Module["fillOrientationChangeEventData"] = (() => abort("'fillOrientationChangeEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerOrientationChangeEventCallback")) Module["registerOrientationChangeEventCallback"] = (() => abort("'registerOrientationChangeEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "fillFullscreenChangeEventData")) Module["fillFullscreenChangeEventData"] = (() => abort("'fillFullscreenChangeEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerFullscreenChangeEventCallback")) Module["registerFullscreenChangeEventCallback"] = (() => abort("'registerFullscreenChangeEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerRestoreOldStyle")) Module["registerRestoreOldStyle"] = (() => abort("'registerRestoreOldStyle' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "hideEverythingExceptGivenElement")) Module["hideEverythingExceptGivenElement"] = (() => abort("'hideEverythingExceptGivenElement' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "restoreHiddenElements")) Module["restoreHiddenElements"] = (() => abort("'restoreHiddenElements' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "setLetterbox")) Module["setLetterbox"] = (() => abort("'setLetterbox' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "currentFullscreenStrategy")) Module["currentFullscreenStrategy"] = (() => abort("'currentFullscreenStrategy' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "restoreOldWindowedStyle")) Module["restoreOldWindowedStyle"] = (() => abort("'restoreOldWindowedStyle' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "softFullscreenResizeWebGLRenderTarget")) Module["softFullscreenResizeWebGLRenderTarget"] = (() => abort("'softFullscreenResizeWebGLRenderTarget' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "doRequestFullscreen")) Module["doRequestFullscreen"] = (() => abort("'doRequestFullscreen' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "fillPointerlockChangeEventData")) Module["fillPointerlockChangeEventData"] = (() => abort("'fillPointerlockChangeEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerPointerlockChangeEventCallback")) Module["registerPointerlockChangeEventCallback"] = (() => abort("'registerPointerlockChangeEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerPointerlockErrorEventCallback")) Module["registerPointerlockErrorEventCallback"] = (() => abort("'registerPointerlockErrorEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "requestPointerLock")) Module["requestPointerLock"] = (() => abort("'requestPointerLock' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "fillVisibilityChangeEventData")) Module["fillVisibilityChangeEventData"] = (() => abort("'fillVisibilityChangeEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerVisibilityChangeEventCallback")) Module["registerVisibilityChangeEventCallback"] = (() => abort("'registerVisibilityChangeEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerTouchEventCallback")) Module["registerTouchEventCallback"] = (() => abort("'registerTouchEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "fillGamepadEventData")) Module["fillGamepadEventData"] = (() => abort("'fillGamepadEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerGamepadEventCallback")) Module["registerGamepadEventCallback"] = (() => abort("'registerGamepadEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerBeforeUnloadEventCallback")) Module["registerBeforeUnloadEventCallback"] = (() => abort("'registerBeforeUnloadEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "fillBatteryEventData")) Module["fillBatteryEventData"] = (() => abort("'fillBatteryEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "battery")) Module["battery"] = (() => abort("'battery' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "registerBatteryEventCallback")) Module["registerBatteryEventCallback"] = (() => abort("'registerBatteryEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "setCanvasElementSize")) Module["setCanvasElementSize"] = (() => abort("'setCanvasElementSize' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getCanvasElementSize")) Module["getCanvasElementSize"] = (() => abort("'getCanvasElementSize' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "demangle")) Module["demangle"] = (() => abort("'demangle' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "demangleAll")) Module["demangleAll"] = (() => abort("'demangleAll' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "jsStackTrace")) Module["jsStackTrace"] = (() => abort("'jsStackTrace' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "stackTrace")) Module["stackTrace"] = (() => abort("'stackTrace' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getEnvStrings")) Module["getEnvStrings"] = (() => abort("'getEnvStrings' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "checkWasiClock")) Module["checkWasiClock"] = (() => abort("'checkWasiClock' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "writeI53ToI64")) Module["writeI53ToI64"] = (() => abort("'writeI53ToI64' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "writeI53ToI64Clamped")) Module["writeI53ToI64Clamped"] = (() => abort("'writeI53ToI64Clamped' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "writeI53ToI64Signaling")) Module["writeI53ToI64Signaling"] = (() => abort("'writeI53ToI64Signaling' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "writeI53ToU64Clamped")) Module["writeI53ToU64Clamped"] = (() => abort("'writeI53ToU64Clamped' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "writeI53ToU64Signaling")) Module["writeI53ToU64Signaling"] = (() => abort("'writeI53ToU64Signaling' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "readI53FromI64")) Module["readI53FromI64"] = (() => abort("'readI53FromI64' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "readI53FromU64")) Module["readI53FromU64"] = (() => abort("'readI53FromU64' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "convertI32PairToI53")) Module["convertI32PairToI53"] = (() => abort("'convertI32PairToI53' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "convertU32PairToI53")) Module["convertU32PairToI53"] = (() => abort("'convertU32PairToI53' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "resolveGlobalSymbol")) Module["resolveGlobalSymbol"] = (() => abort("'resolveGlobalSymbol' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "GOT")) Module["GOT"] = (() => abort("'GOT' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "GOTHandler")) Module["GOTHandler"] = (() => abort("'GOTHandler' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "isInternalSym")) Module["isInternalSym"] = (() => abort("'isInternalSym' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "updateGOT")) Module["updateGOT"] = (() => abort("'updateGOT' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "relocateExports")) Module["relocateExports"] = (() => abort("'relocateExports' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "reportUndefinedSymbols")) Module["reportUndefinedSymbols"] = (() => abort("'reportUndefinedSymbols' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "LDSO")) Module["LDSO"] = (() => abort("'LDSO' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "dlSetError")) Module["dlSetError"] = (() => abort("'dlSetError' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "createInvokeFunction")) Module["createInvokeFunction"] = (() => abort("'createInvokeFunction' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getMemory")) Module["getMemory"] = (() => abort("'getMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getDylinkMetadata")) Module["getDylinkMetadata"] = (() => abort("'getDylinkMetadata' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "mergeLibSymbols")) Module["mergeLibSymbols"] = (() => abort("'mergeLibSymbols' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "loadWebAssemblyModule")) Module["loadWebAssemblyModule"] = (() => abort("'loadWebAssemblyModule' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "loadDynamicLibrary")) Module["loadDynamicLibrary"] = (() => abort("'loadDynamicLibrary' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "preloadDylibs")) Module["preloadDylibs"] = (() => abort("'preloadDylibs' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "dlopenInternal")) Module["dlopenInternal"] = (() => abort("'dlopenInternal' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "setImmediateWrapped")) Module["setImmediateWrapped"] = (() => abort("'setImmediateWrapped' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "clearImmediateWrapped")) Module["clearImmediateWrapped"] = (() => abort("'clearImmediateWrapped' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "polyfillSetImmediate")) Module["polyfillSetImmediate"] = (() => abort("'polyfillSetImmediate' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "Browser")) Module["Browser"] = (() => abort("'Browser' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "funcWrappers")) Module["funcWrappers"] = (() => abort("'funcWrappers' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "getFuncWrapper")) Module["getFuncWrapper"] = (() => abort("'getFuncWrapper' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "setMainLoop")) Module["setMainLoop"] = (() => abort("'setMainLoop' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "wget")) Module["wget"] = (() => abort("'wget' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "tempFixedLengthArray")) Module["tempFixedLengthArray"] = (() => abort("'tempFixedLengthArray' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "miniTempWebGLFloatBuffers")) Module["miniTempWebGLFloatBuffers"] = (() => abort("'miniTempWebGLFloatBuffers' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "heapObjectForWebGLType")) Module["heapObjectForWebGLType"] = (() => abort("'heapObjectForWebGLType' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "heapAccessShiftForWebGLHeap")) Module["heapAccessShiftForWebGLHeap"] = (() => abort("'heapAccessShiftForWebGLHeap' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "GL")) Module["GL"] = (() => abort("'GL' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "emscriptenWebGLGet")) Module["emscriptenWebGLGet"] = (() => abort("'emscriptenWebGLGet' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "computeUnpackAlignedImageSize")) Module["computeUnpackAlignedImageSize"] = (() => abort("'computeUnpackAlignedImageSize' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "emscriptenWebGLGetTexPixelData")) Module["emscriptenWebGLGetTexPixelData"] = (() => abort("'emscriptenWebGLGetTexPixelData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "emscriptenWebGLGetUniform")) Module["emscriptenWebGLGetUniform"] = (() => abort("'emscriptenWebGLGetUniform' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "webglGetUniformLocation")) Module["webglGetUniformLocation"] = (() => abort("'webglGetUniformLocation' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "webglPrepareUniformLocationsBeforeFirstUse")) Module["webglPrepareUniformLocationsBeforeFirstUse"] = (() => abort("'webglPrepareUniformLocationsBeforeFirstUse' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "webglGetLeftBracePos")) Module["webglGetLeftBracePos"] = (() => abort("'webglGetLeftBracePos' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "emscriptenWebGLGetVertexAttrib")) Module["emscriptenWebGLGetVertexAttrib"] = (() => abort("'emscriptenWebGLGetVertexAttrib' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "writeGLArray")) Module["writeGLArray"] = (() => abort("'writeGLArray' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "AL")) Module["AL"] = (() => abort("'AL' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "SDL_unicode")) Module["SDL_unicode"] = (() => abort("'SDL_unicode' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "SDL_ttfContext")) Module["SDL_ttfContext"] = (() => abort("'SDL_ttfContext' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "SDL_audio")) Module["SDL_audio"] = (() => abort("'SDL_audio' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "SDL")) Module["SDL"] = (() => abort("'SDL' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "SDL_gfx")) Module["SDL_gfx"] = (() => abort("'SDL_gfx' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "GLUT")) Module["GLUT"] = (() => abort("'GLUT' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "EGL")) Module["EGL"] = (() => abort("'EGL' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "GLFW_Window")) Module["GLFW_Window"] = (() => abort("'GLFW_Window' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "GLFW")) Module["GLFW"] = (() => abort("'GLFW' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "GLEW")) Module["GLEW"] = (() => abort("'GLEW' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "IDBStore")) Module["IDBStore"] = (() => abort("'IDBStore' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "runAndAbortIfError")) Module["runAndAbortIfError"] = (() => abort("'runAndAbortIfError' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "warnOnce")) Module["warnOnce"] = (() => abort("'warnOnce' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "stackSave")) Module["stackSave"] = (() => abort("'stackSave' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "stackRestore")) Module["stackRestore"] = (() => abort("'stackRestore' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "stackAlloc")) Module["stackAlloc"] = (() => abort("'stackAlloc' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
+    var _stderr = Module["_stderr"] = 11792;
     Module["AsciiToString"] = AsciiToString;
-    if (!Object.getOwnPropertyDescriptor(Module, "stringToAscii")) Module["stringToAscii"] = (() => abort("'stringToAscii' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "UTF16ToString")) Module["UTF16ToString"] = (() => abort("'UTF16ToString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
     Module["stringToUTF16"] = stringToUTF16;
-    if (!Object.getOwnPropertyDescriptor(Module, "lengthBytesUTF16")) Module["lengthBytesUTF16"] = (() => abort("'lengthBytesUTF16' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "UTF32ToString")) Module["UTF32ToString"] = (() => abort("'UTF32ToString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "stringToUTF32")) Module["stringToUTF32"] = (() => abort("'stringToUTF32' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "lengthBytesUTF32")) Module["lengthBytesUTF32"] = (() => abort("'lengthBytesUTF32' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "allocateUTF8")) Module["allocateUTF8"] = (() => abort("'allocateUTF8' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    if (!Object.getOwnPropertyDescriptor(Module, "allocateUTF8OnStack")) Module["allocateUTF8OnStack"] = (() => abort("'allocateUTF8OnStack' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)"));
-    Module["writeStackCookie"] = writeStackCookie;
-    Module["checkStackCookie"] = checkStackCookie;
-    if (!Object.getOwnPropertyDescriptor(Module, "ALLOC_NORMAL")) Object.defineProperty(Module, "ALLOC_NORMAL", {
-     configurable: true,
-     get: function() {
-      abort("'ALLOC_NORMAL' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-     }
-    });
-    if (!Object.getOwnPropertyDescriptor(Module, "ALLOC_STACK")) Object.defineProperty(Module, "ALLOC_STACK", {
-     configurable: true,
-     get: function() {
-      abort("'ALLOC_STACK' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-     }
-    });
+    var missingLibrarySymbols = [ "writeI53ToI64", "writeI53ToI64Clamped", "writeI53ToI64Signaling", "writeI53ToU64Clamped", "writeI53ToU64Signaling", "readI53FromI64", "readI53FromU64", "convertI32PairToI53", "convertU32PairToI53", "isLeapYear", "ydayFromDate", "arraySum", "addDays", "setErrNo", "inetPton4", "inetNtop4", "inetPton6", "inetNtop6", "readSockaddr", "writeSockaddr", "getHostByName", "initRandomFill", "randomFill", "traverseStack", "getCallstack", "emscriptenLog", "convertPCtoSourceLocation", "readEmAsmArgs", "runEmAsmFunction", "runMainThreadEmAsm", "jstoi_q", "jstoi_s", "getExecutableName", "listenOnce", "autoResumeAudioContext", "getDynCaller", "runtimeKeepalivePush", "runtimeKeepalivePop", "callUserCallback", "maybeExit", "safeSetTimeout", "asmjsMangle", "mmapAlloc", "handleAllocatorInit", "HandleAllocator", "getNativeTypeSize", "STACK_SIZE", "STACK_ALIGN", "POINTER_SIZE", "ASSERTIONS", "getCFunc", "ccall", "cwrap", "removeFunction", "reallyNegative", "strLen", "reSign", "formatString", "intArrayFromString", "intArrayToString", "stringToAscii", "UTF16ToString", "lengthBytesUTF16", "UTF32ToString", "stringToUTF32", "lengthBytesUTF32", "stringToNewUTF8", "writeArrayToMemory", "registerKeyEventCallback", "maybeCStringToJsString", "findEventTarget", "findCanvasEventTarget", "getBoundingClientRect", "fillMouseEventData", "registerMouseEventCallback", "registerWheelEventCallback", "registerUiEventCallback", "registerFocusEventCallback", "fillDeviceOrientationEventData", "registerDeviceOrientationEventCallback", "fillDeviceMotionEventData", "registerDeviceMotionEventCallback", "screenOrientation", "fillOrientationChangeEventData", "registerOrientationChangeEventCallback", "fillFullscreenChangeEventData", "registerFullscreenChangeEventCallback", "JSEvents_requestFullscreen", "JSEvents_resizeCanvasForFullscreen", "registerRestoreOldStyle", "hideEverythingExceptGivenElement", "restoreHiddenElements", "setLetterbox", "softFullscreenResizeWebGLRenderTarget", "doRequestFullscreen", "fillPointerlockChangeEventData", "registerPointerlockChangeEventCallback", "registerPointerlockErrorEventCallback", "requestPointerLock", "fillVisibilityChangeEventData", "registerVisibilityChangeEventCallback", "registerTouchEventCallback", "fillGamepadEventData", "registerGamepadEventCallback", "registerBeforeUnloadEventCallback", "fillBatteryEventData", "battery", "registerBatteryEventCallback", "setCanvasElementSize", "getCanvasElementSize", "demangle", "demangleAll", "jsStackTrace", "stackTrace", "getEnvStrings", "checkWasiClock", "wasiRightsToMuslOFlags", "wasiOFlagsToMuslOFlags", "createDyncallWrapper", "setImmediateWrapped", "clearImmediateWrapped", "polyfillSetImmediate", "getPromise", "makePromise", "idsToPromises", "makePromiseCallback", "setMainLoop", "getSocketFromFD", "getSocketAddress", "dlopenInternal", "heapObjectForWebGLType", "heapAccessShiftForWebGLHeap", "webgl_enable_ANGLE_instanced_arrays", "webgl_enable_OES_vertex_array_object", "webgl_enable_WEBGL_draw_buffers", "webgl_enable_WEBGL_multi_draw", "emscriptenWebGLGet", "computeUnpackAlignedImageSize", "colorChannelsInGlTextureFormat", "emscriptenWebGLGetTexPixelData", "__glGenObject", "emscriptenWebGLGetUniform", "webglGetUniformLocation", "webglPrepareUniformLocationsBeforeFirstUse", "webglGetLeftBracePos", "emscriptenWebGLGetVertexAttrib", "__glGetActiveAttribOrUniform", "writeGLArray", "registerWebGlEventCallback", "runAndAbortIfError", "SDL_unicode", "SDL_ttfContext", "SDL_audio", "GLFW_Window", "ALLOC_NORMAL", "ALLOC_STACK", "allocate", "writeStringToMemory", "writeAsciiToMemory" ];
+    missingLibrarySymbols.forEach(missingLibrarySymbol);
+    var unexportedSymbols = [ "run", "addOnPreRun", "addOnInit", "addOnPreMain", "addOnExit", "addOnPostRun", "addRunDependency", "removeRunDependency", "FS_createFolder", "FS_createPath", "FS_createDataFile", "FS_createLazyFile", "FS_createLink", "FS_createDevice", "FS_unlink", "out", "err", "callMain", "abort", "keepRuntimeAlive", "wasmMemory", "stackAlloc", "stackSave", "stackRestore", "getTempRet0", "setTempRet0", "writeStackCookie", "checkStackCookie", "convertI32PairToI53Checked", "ptrToString", "zeroMemory", "exitJS", "getHeapMax", "growMemory", "ENV", "MONTH_DAYS_REGULAR", "MONTH_DAYS_LEAP", "MONTH_DAYS_REGULAR_CUMULATIVE", "MONTH_DAYS_LEAP_CUMULATIVE", "ERRNO_CODES", "ERRNO_MESSAGES", "DNS", "Protocols", "Sockets", "timers", "warnOnce", "UNWIND_CACHE", "readEmAsmArgsArray", "dynCallLegacy", "dynCall", "handleException", "asyncLoad", "alignMemory", "uleb128Encode", "sigToWasmTypes", "generateFuncType", "convertJsFunctionToWasm", "freeTableIndexes", "functionsInTableMap", "getEmptyTableSlot", "updateTableMap", "getFunctionAddress", "addFunction", "unSign", "setValue", "getValue", "PATH", "PATH_FS", "UTF8Decoder", "UTF8ArrayToString", "UTF8ToString", "stringToUTF8Array", "stringToUTF8", "lengthBytesUTF8", "UTF16Decoder", "stringToUTF8OnStack", "JSEvents", "specialHTMLTargets", "currentFullscreenStrategy", "restoreOldWindowedStyle", "ExitStatus", "flush_NO_FILESYSTEM", "promiseMap", "Browser", "wget", "SYSCALLS", "isSymbolDefined", "GOT", "currentModuleWeakSymbols", "LDSO", "getMemory", "mergeLibSymbols", "loadWebAssemblyModule", "newDSO", "loadDynamicLibrary", "tempFixedLengthArray", "miniTempWebGLFloatBuffers", "miniTempWebGLIntBuffers", "GL", "emscripten_webgl_power_preferences", "AL", "GLUT", "EGL", "GLEW", "IDBStore", "SDL", "SDL_gfx", "GLFW", "allocateUTF8", "allocateUTF8OnStack" ];
+    unexportedSymbols.forEach(unexportedRuntimeSymbol);
     var calledRun;
-    function ExitStatus(status) {
-     this.name = "ExitStatus";
-     this.message = "Program terminated with exit(" + status + ")";
-     this.status = status;
-    }
-    var calledMain = false;
     dependenciesFulfilled = function runCaller() {
      if (!calledRun) run();
      if (!calledRun) dependenciesFulfilled = runCaller;
     };
-    function callMain(args) {
+    function callMain(args = []) {
      assert(runDependencies == 0, 'cannot call main when async dependencies remain! (listen on Module["onRuntimeInitialized"])');
      assert(__ATPRERUN__.length == 0, "cannot call main when preRun functions remain to be called");
-     var entryFunction = Module["_main"];
+     var entryFunction = resolveGlobalSymbol("main").sym;
      if (!entryFunction) return;
-     args = args || [];
-     var argc = args.length + 1;
+     args.unshift(thisProgram);
+     var argc = args.length;
      var argv = stackAlloc((argc + 1) * 4);
-     SAFE_HEAP_STORE((argv >> 2) * 4, allocateUTF8OnStack(thisProgram), 4);
-     for (var i = 1; i < argc; i++) {
-      SAFE_HEAP_STORE(((argv >> 2) + i) * 4, allocateUTF8OnStack(args[i - 1]), 4);
-     }
-     SAFE_HEAP_STORE(((argv >> 2) + argc) * 4, 0, 4);
+     var argv_ptr = argv >> 2;
+     args.forEach((arg => {
+      SAFE_HEAP_STORE(argv_ptr++ * 4, stringToUTF8OnStack(arg), 4);
+     }));
+     SAFE_HEAP_STORE(argv_ptr * 4, 0, 4);
      try {
       var ret = entryFunction(argc, argv);
-      exit(ret, true);
+      exitJS(ret, true);
       return ret;
      } catch (e) {
       return handleException(e);
-     } finally {
-      calledMain = true;
      }
     }
     function stackCheckInit() {
-     _emscripten_stack_set_limits(5255552, 12672);
+     _emscripten_stack_set_limits(78144, 12608);
      writeStackCookie();
     }
-    var dylibsLoaded = false;
-    function run(args) {
-     args = args || arguments_;
+    function run(args = arguments_) {
      if (runDependencies > 0) {
       return;
      }
      stackCheckInit();
-     if (!dylibsLoaded) {
-      preloadDylibs();
-      dylibsLoaded = true;
-      if (runDependencies > 0) {
-       return;
-      }
-     }
      preRun();
      if (runDependencies > 0) {
       return;
@@ -2617,57 +2171,33 @@ var TreeSitter = function() {
      }
      if (Module["setStatus"]) {
       Module["setStatus"]("Running...");
-      setTimeout(function() {
-       setTimeout(function() {
+      setTimeout((function() {
+       setTimeout((function() {
         Module["setStatus"]("");
-       }, 1);
+       }), 1);
        doRun();
-      }, 1);
+      }), 1);
      } else {
       doRun();
      }
      checkStackCookie();
     }
-    Module["run"] = run;
     function checkUnflushedContent() {
      var oldOut = out;
      var oldErr = err;
      var has = false;
-     out = err = (x => {
+     out = err = x => {
       has = true;
-     });
+     };
      try {
-      ___stdio_exit();
+      flush_NO_FILESYSTEM();
      } catch (e) {}
      out = oldOut;
      err = oldErr;
      if (has) {
-      warnOnce("stdio streams had content in them that was not flushed. you should set EXIT_RUNTIME to 1 (see the FAQ), or make sure to emit a newline when you printf etc.");
-      warnOnce("(this may also be due to not including full filesystem support - try building with -s FORCE_FILESYSTEM=1)");
+      warnOnce("stdio streams had content in them that was not flushed. you should set EXIT_RUNTIME to 1 (see the Emscripten FAQ), or make sure to emit a newline when you printf etc.");
+      warnOnce("(this may also be due to not including full filesystem support - try building with -sFORCE_FILESYSTEM)");
      }
-    }
-    function exit(status, implicit) {
-     EXITSTATUS = status;
-     if (!runtimeKeepaliveCounter) {
-      checkUnflushedContent();
-     }
-     if (keepRuntimeAlive()) {
-      if (!implicit) {
-       var msg = "program exited (with status: " + status + "), but EXIT_RUNTIME is not set, so halting execution but not exiting the runtime or preventing further async execution (build with EXIT_RUNTIME=1, if you want a true shutdown)";
-       err(msg);
-      }
-     } else {
-      exitRuntime();
-     }
-     procExit(status);
-    }
-    function procExit(code) {
-     EXITSTATUS = code;
-     if (!keepRuntimeAlive()) {
-      if (Module["onExit"]) Module["onExit"](code);
-      ABORT = true;
-     }
-     quit_(code, new ExitStatus(code));
     }
     if (Module["preInit"]) {
      if (typeof Module["preInit"] == "function") Module["preInit"] = [ Module["preInit"] ];
@@ -2681,6 +2211,7 @@ var TreeSitter = function() {
     const C = Module;
     const INTERNAL = {};
     const SIZE_OF_INT = 4;
+    const SIZE_OF_CURSOR = 3 * SIZE_OF_INT;
     const SIZE_OF_NODE = 5 * SIZE_OF_INT;
     const SIZE_OF_POINT = 2 * SIZE_OF_INT;
     const SIZE_OF_RANGE = 2 * SIZE_OF_INT + 2 * SIZE_OF_POINT;
@@ -2737,7 +2268,7 @@ var TreeSitter = function() {
      }
      parse(callback, oldTree, options) {
       if (typeof callback === "string") {
-       currentParseCallback = ((index, _, endIndex) => callback.slice(index, endIndex));
+       currentParseCallback = (index, _, endIndex) => callback.slice(index, endIndex);
       } else if (typeof callback === "function") {
        currentParseCallback = callback;
       } else {
@@ -2851,8 +2382,15 @@ var TreeSitter = function() {
       marshalNode(this);
       return C._ts_node_symbol_wasm(this.tree[0]);
      }
+     get grammarId() {
+      marshalNode(this);
+      return C._ts_node_grammar_symbol_wasm(this.tree[0]);
+     }
      get type() {
       return this.tree.language.types[this.typeId] || "ERROR";
+     }
+     get grammarType() {
+      return this.tree.language.types[this.grammarId] || "ERROR";
      }
      get endPosition() {
       marshalNode(this);
@@ -2866,6 +2404,14 @@ var TreeSitter = function() {
      get text() {
       return getText(this.tree, this.startIndex, this.endIndex);
      }
+     get parseState() {
+      marshalNode(this);
+      return C._ts_node_parse_state_wasm(this.tree[0]);
+     }
+     get nextParseState() {
+      marshalNode(this);
+      return C._ts_node_next_parse_state_wasm(this.tree[0]);
+     }
      isNamed() {
       marshalNode(this);
       return C._ts_node_is_named_wasm(this.tree[0]) === 1;
@@ -2878,6 +2424,10 @@ var TreeSitter = function() {
       marshalNode(this);
       return C._ts_node_has_changes_wasm(this.tree[0]) === 1;
      }
+     isError() {
+      marshalNode(this);
+      return C._ts_node_is_error_wasm(this.tree[0]) === 1;
+     }
      isMissing() {
       marshalNode(this);
       return C._ts_node_is_missing_wasm(this.tree[0]) === 1;
@@ -2889,6 +2439,15 @@ var TreeSitter = function() {
       marshalNode(this);
       C._ts_node_child_wasm(this.tree[0], index);
       return unmarshalNode(this.tree);
+     }
+     fieldNameForChild(index) {
+      marshalNode(this);
+      const address = C._ts_node_field_name_for_child_wasm(this.tree[0], index);
+      if (!address) {
+       return null;
+      }
+      const result = AsciiToString(address);
+      return result;
      }
      namedChild(index) {
       marshalNode(this);
@@ -3090,12 +2649,22 @@ var TreeSitter = function() {
       C._ts_tree_cursor_reset_wasm(this.tree[0]);
       unmarshalTreeCursor(this);
      }
+     resetTo(cursor) {
+      marshalTreeCursor(this, TRANSFER_BUFFER);
+      marshalTreeCursor(cursor, TRANSFER_BUFFER + SIZE_OF_CURSOR);
+      C._ts_tree_cursor_reset_to_wasm(this.tree[0], cursor.tree[0]);
+      unmarshalTreeCursor(this);
+     }
      get nodeType() {
       return this.tree.language.types[this.nodeTypeId] || "ERROR";
      }
      get nodeTypeId() {
       marshalTreeCursor(this);
       return C._ts_tree_cursor_current_node_type_id_wasm(this.tree[0]);
+     }
+     get nodeStateId() {
+      marshalTreeCursor(this);
+      return C._ts_tree_cursor_current_node_state_id_wasm(this.tree[0]);
      }
      get nodeId() {
       marshalTreeCursor(this);
@@ -3151,9 +2720,21 @@ var TreeSitter = function() {
       unmarshalTreeCursor(this);
       return result === 1;
      }
+     gotoLastChild() {
+      marshalTreeCursor(this);
+      const result = C._ts_tree_cursor_goto_last_child_wasm(this.tree[0]);
+      unmarshalTreeCursor(this);
+      return result === 1;
+     }
      gotoNextSibling() {
       marshalTreeCursor(this);
       const result = C._ts_tree_cursor_goto_next_sibling_wasm(this.tree[0]);
+      unmarshalTreeCursor(this);
+      return result === 1;
+     }
+     gotoPreviousSibling() {
+      marshalTreeCursor(this);
+      const result = C._ts_tree_cursor_goto_previous_sibling_wasm(this.tree[0]);
       unmarshalTreeCursor(this);
       return result === 1;
      }
@@ -3190,6 +2771,9 @@ var TreeSitter = function() {
      get fieldCount() {
       return this.fields.length - 1;
      }
+     get stateCount() {
+      return C._ts_language_state_count(this[0]);
+     }
      fieldIdForName(fieldName) {
       const result = this.fields.indexOf(fieldName);
       if (result !== -1) {
@@ -3221,6 +2805,13 @@ var TreeSitter = function() {
      }
      nodeTypeIsVisible(typeId) {
       return C._ts_language_type_is_visible_wasm(this[0], typeId) ? true : false;
+     }
+     nextState(stateId, typeId) {
+      return C._ts_language_next_state(this[0], stateId, typeId);
+     }
+     lookaheadIterator(stateId) {
+      const address = C._ts_lookahead_iterator_new(this[0], stateId);
+      if (address) return new LookaheadIterable(INTERNAL, address, this);
      }
      query(source) {
       const sourceLength = lengthBytesUTF8(source);
@@ -3310,7 +2901,15 @@ var TreeSitter = function() {
          }
          const operator = steps[0].value;
          let isPositive = true;
+         let matchAll = true;
          switch (operator) {
+         case "any-not-eq?":
+          isPositive = false;
+          matchAll = false;
+
+         case "any-eq?":
+          matchAll = false;
+
          case "not-eq?":
           isPositive = false;
 
@@ -3320,28 +2919,34 @@ var TreeSitter = function() {
           if (steps[2].type === "capture") {
            const captureName1 = steps[1].name;
            const captureName2 = steps[2].name;
-           textPredicates[i].push(function(captures) {
-            let node1, node2;
+           textPredicates[i].push((function(captures) {
+            let nodes_1 = [];
+            let nodes_2 = [];
             for (const c of captures) {
-             if (c.name === captureName1) node1 = c.node;
-             if (c.name === captureName2) node2 = c.node;
+             if (c.name === captureName1) nodes_1.push(c.node);
+             if (c.name === captureName2) nodes_2.push(c.node);
             }
-            if (node1 === undefined || node2 === undefined) return true;
-            return node1.text === node2.text === isPositive;
-           });
+            return matchAll ? nodes_1.every((n1 => nodes_2.some((n2 => n1.text === n2.text)))) === isPositive : nodes_1.some((n1 => nodes_2.some((n2 => n1.text === n2.text)))) === isPositive;
+           }));
           } else {
            const captureName = steps[1].name;
            const stringValue = steps[2].value;
-           textPredicates[i].push(function(captures) {
+           textPredicates[i].push((function(captures) {
+            let nodes = [];
             for (const c of captures) {
-             if (c.name === captureName) {
-              return c.node.text === stringValue === isPositive;
-             }
+             if (c.name === captureName) nodes.push(c.node);
             }
-            return true;
-           });
+            return matchAll ? nodes.every((n => n.text === stringValue)) === isPositive : nodes.some((n => n.text === stringValue)) === isPositive;
+           }));
           }
           break;
+
+         case "not-any-match?":
+          isPositive = false;
+          matchAll = false;
+
+         case "any-match?":
+          matchAll = false;
 
          case "not-match?":
           isPositive = false;
@@ -3352,17 +2957,19 @@ var TreeSitter = function() {
           if (steps[2].type !== "string") throw new Error(`Second argument of \`#match?\` predicate must be a string. Got @${steps[2].value}.`);
           const captureName = steps[1].name;
           const regex = new RegExp(steps[2].value);
-          textPredicates[i].push(function(captures) {
+          textPredicates[i].push((function(captures) {
+           const nodes = [];
            for (const c of captures) {
-            if (c.name === captureName) return regex.test(c.node.text) === isPositive;
+            if (c.name === captureName) nodes.push(c.node.text);
            }
-           return true;
-          });
+           if (nodes.length === 0) return !isPositive;
+           return matchAll ? nodes.every((text => regex.test(text))) === isPositive : nodes.some((text => regex.test(text))) === isPositive;
+          }));
           break;
 
          case "set!":
           if (steps.length < 2 || steps.length > 3) throw new Error(`Wrong number of arguments to \`#set!\` predicate. Expected 1 or 2. Got ${steps.length - 1}.`);
-          if (steps.some(s => s.type !== "string")) throw new Error(`Arguments to \`#set!\` predicate must be a strings.".`);
+          if (steps.some((s => s.type !== "string"))) throw new Error(`Arguments to \`#set!\` predicate must be a strings.".`);
           if (!setProperties[i]) setProperties[i] = {};
           setProperties[i][steps[1].value] = steps[2] ? steps[2].value : null;
           break;
@@ -3370,10 +2977,31 @@ var TreeSitter = function() {
          case "is?":
          case "is-not?":
           if (steps.length < 2 || steps.length > 3) throw new Error(`Wrong number of arguments to \`#${operator}\` predicate. Expected 1 or 2. Got ${steps.length - 1}.`);
-          if (steps.some(s => s.type !== "string")) throw new Error(`Arguments to \`#${operator}\` predicate must be a strings.".`);
+          if (steps.some((s => s.type !== "string"))) throw new Error(`Arguments to \`#${operator}\` predicate must be a strings.".`);
           const properties = operator === "is?" ? assertedProperties : refutedProperties;
           if (!properties[i]) properties[i] = {};
           properties[i][steps[1].value] = steps[2] ? steps[2].value : null;
+          break;
+
+         case "not-any-of?":
+          isPositive = false;
+
+         case "any-of?":
+          if (steps.length < 2) throw new Error(`Wrong number of arguments to \`#${operator}\` predicate. Expected at least 1. Got ${steps.length - 1}.`);
+          if (steps[1].type !== "capture") throw new Error(`First argument of \`#${operator}\` predicate must be a capture. Got "${steps[1].value}".`);
+          for (let i = 2; i < steps.length; i++) {
+           if (steps[i].type !== "string") throw new Error(`Arguments to \`#${operator}\` predicate must be a strings.".`);
+          }
+          captureName = steps[1].name;
+          const values = steps.slice(2).map((s => s.value));
+          textPredicates[i].push((function(captures) {
+           const nodes = [];
+           for (const c of captures) {
+            if (c.name === captureName) nodes.push(c.node.text);
+           }
+           if (nodes.length === 0) return !isPositive;
+           return nodes.every((text => values.includes(text))) === isPositive;
+          }));
           break;
 
          default:
@@ -3408,31 +3036,75 @@ var TreeSitter = function() {
          browser = typeof window.alert === "function";
         } catch (e) {}
         if (browser) {
-         bytes = fetch(url).then(response => response.arrayBuffer().then(buffer => {
+         bytes = fetch(url).then((response => response.arrayBuffer().then((buffer => {
           if (response.ok) {
            return new Uint8Array(buffer);
           } else {
            const body = new TextDecoder("utf-8").decode(buffer);
            throw new Error(`Language.load failed with status ${response.status}.\n\n${body}`);
           }
-         }));
+         }))));
         } else {
          bytes = Promise.resolve(require("fs").readFileSync(url));
         }
        }
       }
       const loadModule = typeof loadSideModule === "function" ? loadSideModule : loadWebAssemblyModule;
-      return bytes.then(bytes => loadModule(bytes, {
+      return bytes.then((bytes => loadModule(bytes, {
        loadAsync: true
-      })).then(mod => {
+      }))).then((mod => {
        const symbolNames = Object.keys(mod);
-       const functionName = symbolNames.find(key => LANGUAGE_FUNCTION_REGEX.test(key) && !key.includes("external_scanner_"));
+       const functionName = symbolNames.find((key => LANGUAGE_FUNCTION_REGEX.test(key) && !key.includes("external_scanner_")));
        if (!functionName) {
         console.log(`Couldn't find language function in WASM file. Symbols:\n${JSON.stringify(symbolNames, null, 2)}`);
        }
        const languageAddress = mod[functionName]();
        return new Language(INTERNAL, languageAddress);
-      });
+      }));
+     }
+    }
+    class LookaheadIterable {
+     constructor(internal, address, language) {
+      assertInternal(internal);
+      this[0] = address;
+      this.language = language;
+     }
+     get currentTypeId() {
+      return C._ts_lookahead_iterator_current_symbol(this[0]);
+     }
+     get currentType() {
+      return this.language.types[this.currentTypeId] || "ERROR";
+     }
+     delete() {
+      C._ts_lookahead_iterator_delete(this[0]);
+      this[0] = 0;
+     }
+     resetState(stateId) {
+      return C._ts_lookahead_iterator_reset_state(this[0], stateId);
+     }
+     reset(language, stateId) {
+      if (C._ts_lookahead_iterator_reset(this[0], language[0], stateId)) {
+       this.language = language;
+       return true;
+      }
+      return false;
+     }
+     [Symbol.iterator]() {
+      const self = this;
+      return {
+       next() {
+        if (C._ts_lookahead_iterator_next(self[0])) {
+         return {
+          done: false,
+          value: self.currentType
+         };
+        }
+        return {
+         done: true,
+         value: ""
+        };
+       }
+      };
      }
     }
     class Query {
@@ -3477,7 +3149,7 @@ var TreeSitter = function() {
        address += SIZE_OF_INT;
        const captures = new Array(captureCount);
        address = unmarshalCaptures(this, node.tree, address, captures);
-       if (this.textPredicates[pattern].every(p => p(captures))) {
+       if (this.textPredicates[pattern].every((p => p(captures)))) {
         result[filteredCount++] = {
          pattern: pattern,
          captures: captures
@@ -3522,7 +3194,7 @@ var TreeSitter = function() {
        address += SIZE_OF_INT;
        captures.length = captureCount;
        address = unmarshalCaptures(this, node.tree, address, captures);
-       if (this.textPredicates[pattern].every(p => p(captures))) {
+       if (this.textPredicates[pattern].every((p => p(captures)))) {
         const capture = captures[captureIndex];
         const setProperties = this.setProperties[pattern];
         if (setProperties) capture.setProperties = setProperties;
@@ -3675,11 +3347,11 @@ var TreeSitter = function() {
      });
     }
     Parser.Language = Language;
-    Module.onRuntimeInitialized = (() => {
+    Module.onRuntimeInitialized = () => {
      ParserImpl.init();
      resolveInitPromise();
-    });
-   });
+    };
+   }));
   }
  }
  return Parser;
