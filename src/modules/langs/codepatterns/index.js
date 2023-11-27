@@ -2,6 +2,7 @@ let lang = {
 	code: "codepatterns",
 	name: "CodePatterns Query",
 	defaultExtension: "cp",
+	reparseOnEdit: true, // HACK
 	possibleInjections: ["tsq"],
 	
 	injections: [

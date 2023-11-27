@@ -96,6 +96,18 @@ module.exports = class Scope {
 	edit(edit, index, newRanges) {
 		this.setRanges(newRanges);
 		
+		/*
+		HACK reparseOnEdit - the codepatterns grammar for some reason doesn't
+		recognise a regex starting at col 0 if it's typed out character by
+		character, presumably because the parser/tree gets into a broken state
+		*/
+		
+		if (this.lang.reparseOnEdit) {
+			this.parse();
+			
+			return;
+		}
+		
 		if (!this.tree) {
 			this.parse();
 			
