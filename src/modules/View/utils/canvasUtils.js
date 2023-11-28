@@ -185,7 +185,7 @@ module.exports = {
 			rowIndex += wrappedLine.height;
 		}
 		
-		return null;
+		throw new Error("findFirstVisibleLine - no line found, scroll position possibly out of bounds");
 	},
 	
 	getLineStartingRow(lineIndex) {
