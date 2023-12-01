@@ -1,19 +1,12 @@
 let _typeof = require("utils/typeof");
+let groupBy = require("utils/array/groupBy");
 let mapArrayToObject = require("utils/mapArrayToObject");
 let Selection = require("modules/Selection");
 let Tree = require("modules/Tree");
 let Range = require("./Range");
 
-function getInjectionLang(injection, node) {
-	let langCode;
-	
-	if (_typeof(injection.lang) === "Function") {
-		langCode = injection.lang(node);
-	} else {
-		langCode = injection.lang;
-	}
-	
-	return base.langs.get(langCode);
+function getInjectionLangCode(injection, result) {
+	return _typeof(injection.lang) === "Function" ? injection.lang(result) : injection.lang;
 }
 
 module.exports = class Scope {
@@ -191,43 +184,47 @@ module.exports = class Scope {
 			}
 			
 			if (injection.combined) {
-				let nodes = results.map(result => result.injectionNode);
-				let injectionLang = getInjectionLang(injection, results[0]);
+				let resultsByLangCode = groupBy(results, result => getInjectionLangCode(injection, result));
 				
-				if (!injectionLang) {
-					continue;
-				}
-				
-				let nodeRanges = nodes.map(node => this.rangesFromNode(node, injection.excludeChildren));
-				let ranges = nodeRanges.flat();
-				
-				let existingScope;
-				let scope;
-				
-				if (findExistingScope) {
-					existingScope = findExistingScope(injectionLang, ranges);
-				}
-				
-				if (existingScope) {
-					editExistingScope(existingScope, ranges);
+				for (let [langCode, results] of Object.entries(resultsByLangCode)) {
+					let nodes = results.map(result => result.injectionNode);
+					let injectionLang = base.langs.get(langCode);
 					
-					scope = existingScope;
-				} else {
-					scope = new Scope(this.source, this, injectionLang, ranges);
-				}
-				
-				this.scopes.push(scope);
-				
-				for (let i = 0; i < nodes.length; i++) {
-					let node = nodes[i];
-					let ranges = nodeRanges[i];
+					if (!injectionLang) {
+						continue;
+					}
 					
-					this.scopesByNode[node.id] = scope;
+					let nodeRanges = nodes.map(node => this.rangesFromNode(node, injection.excludeChildren));
+					let ranges = nodeRanges.flat();
+					
+					let existingScope;
+					let scope;
+					
+					if (findExistingScope) {
+						existingScope = findExistingScope(injectionLang, ranges);
+					}
+					
+					if (existingScope) {
+						editExistingScope(existingScope, ranges);
+						
+						scope = existingScope;
+					} else {
+						scope = new Scope(this.source, this, injectionLang, ranges);
+					}
+					
+					this.scopes.push(scope);
+					
+					for (let i = 0; i < nodes.length; i++) {
+						let node = nodes[i];
+						let ranges = nodeRanges[i];
+						
+						this.scopesByNode[node.id] = scope;
+					}
 				}
 			} else {
 				for (let result of results) {
 					let node = result.injectionNode;
-					let injectionLang = getInjectionLang(injection, result);
+					let injectionLang = base.langs.get(getInjectionLangCode(injection, result));
 					
 					if (!injectionLang) {
 						continue;
