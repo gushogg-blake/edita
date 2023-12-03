@@ -1,5 +1,6 @@
 let _typeof = require("utils/typeof");
 let groupBy = require("utils/array/groupBy");
+let {removeInPlace} = require("utils/arrayMethods");
 let mapArrayToObject = require("utils/mapArrayToObject");
 let Selection = require("modules/Selection");
 let Tree = require("modules/Tree");
@@ -165,10 +166,12 @@ module.exports = class Scope {
 			});
 		}, function(existingScope, ranges) {
 			existingScope.edit(edit, index, ranges);
+			
+			removeInPlace(existingScopes, existingScope);
 		});
 	}
 	
-	processInjections(findExistingScope, editExistingScope) {
+	processInjections(findExistingScope, useExistingScope) {
 		this.scopes = [];
 		this.scopesByNode = {};
 		
@@ -205,7 +208,7 @@ module.exports = class Scope {
 					}
 					
 					if (existingScope) {
-						editExistingScope(existingScope, ranges);
+						useExistingScope(existingScope, ranges);
 						
 						scope = existingScope;
 					} else {
@@ -240,7 +243,7 @@ module.exports = class Scope {
 					}
 					
 					if (existingScope) {
-						editExistingScope(existingScope, ranges);
+						useExistingScope(existingScope, ranges);
 						
 						scope = existingScope;
 					} else {
