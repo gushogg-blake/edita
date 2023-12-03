@@ -722,10 +722,11 @@ class App extends Evented {
 	
 	async saveEphemeralUiState() {
 		await base.stores.ephemeralUiState.save({
-			selectedTabs: {
-				tools: this.tools.pane.selectedTab.url,
-				output: this.output.pane.selectedTab.url,
-			},
+			// TODO see comment in restoreEphemeralUiState
+			//selectedTabs: {
+			//	tools: this.tools.pane.selectedTab.url,
+			//	output: this.output.pane.selectedTab.url,
+			//},
 			
 			expandedDirs: [...this.fileTree.expandedDirs],
 		});
@@ -738,10 +739,12 @@ class App extends Evented {
 			return;
 		}
 		
-		let {selectedTabs, expandedDirs} = state;
+		let {expandedDirs} = state;
 		
-		this.tools.pane.selectTabByUrl(selectedTabs.tools);
-		this.output.pane.selectTabByUrl(selectedTabs.output);
+		// TODO for bottom panes, use a single object and pass it
+		// to bottomPanes - doing it piecemeal with selectTab will
+		// have the unwanted effect of also expanding whichever
+		// tab is selected, so it will always be open on init
 		
 		this.fileTree.setExpandedDirs(expandedDirs || []);
 	}
