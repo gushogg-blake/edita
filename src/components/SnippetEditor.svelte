@@ -1,7 +1,6 @@
 <script>
 import {createEventDispatcher, onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
-import importFromString from "utils/importFromString";
 import autoFocusAsync from "components/actions/autoFocusAsync";
 import Checkbox from "components/utils/Checkbox.svelte";
 import Editor from "components/Editor/Editor.svelte";
