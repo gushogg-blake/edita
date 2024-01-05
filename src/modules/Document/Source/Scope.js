@@ -108,9 +108,18 @@ module.exports = class Scope {
 			return;
 		}
 		
-		let existingScopes = this.scopes;
+		try {
+			this.tree.edit(edit, index);
+		} catch (e) {
+			console.log("Tree edit error");
+			console.error(e);
+			
+			this.parse();
+			
+			return;
+		}
 		
-		this.tree.edit(edit, index);
+		let existingScopes = this.scopes;
 			
 		this.parse(this.tree, function(injectionLang, ranges) {
 			/*
