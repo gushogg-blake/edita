@@ -107,7 +107,13 @@ let lang = {
 			return "comment";
 		}
 		
-		if (["string", "template_string", "`", "escape_sequence"].includes(type)) {
+		if ([
+			"string",
+			"template_string",
+			"`",
+			"string_fragment",
+			"escape_sequence",
+		].includes(type)) {
 			return "string";
 		}
 		
