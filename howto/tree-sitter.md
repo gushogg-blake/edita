@@ -9,6 +9,7 @@ Edita uses a fork of tree-sitter with the following changes:
 
 	- Ruby
 	- Svelte
+	- Markdown
 	
 	See:
 	
