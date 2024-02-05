@@ -4,7 +4,7 @@ let codeIntel = require("./codeIntel");
 let wordRe = /\w/;
 
 let lang = {
-	group: "typescript",
+	group: "javascript",
 	code: "typescript",
 	name: "TypeScript",
 	defaultExtension: "ts",
