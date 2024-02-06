@@ -1,4 +1,5 @@
 let lang = {
+	group: "html", // to get snippets
 	code: "markdown_inline",
 	name: "markdown_inline (sub-parser for markdown)",
 	util: true,
