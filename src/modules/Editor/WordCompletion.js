@@ -32,6 +32,15 @@ function findCompletions(code, wordAtCursor, index, extraWords=[]) {
 		let matchCaseTypes = getPossibleCaseTypes(word);
 		let caseTypesOverlap = matchCaseTypes.some(caseType => caseTypes.includes(caseType));
 		
+		// original case can sometimes be lost in case detection and conversion,
+		// so always include the exact word
+		
+		words.push({
+			word,
+			caseTypesOverlap,
+			isOriginal: true,
+		});
+		
 		for (let caseType of caseTypes) {
 			let converted = convertCase[caseType](word);
 			
@@ -67,7 +76,9 @@ function getPossibleCaseTypes(word) {
 	
 	word = word.substr(prefix.length);
 	
-	if (word.match(/^[a-z]/)) {
+	if (word.match(/^[A-Z]/) && !word.match(/[a-z]/)) {
+		return ["constant"];
+	} else if (word.match(/^[a-z]/)) {
 		if (word.includes("_")) {
 			return ["snake"];
 		} else if (word.match(/[A-Z]/)) {
@@ -75,11 +86,9 @@ function getPossibleCaseTypes(word) {
 		} else {
 			return ["snake", "camel"];
 		}
-	} else if (word.match(/^[A-Z]{2,}/)) {
-		return ["constant"];
 	} else if (word.match(/^[A-Z][a-z]/)) {
 		return ["title"];
-	} else { // single uppercase char
+	} else {
 		return ["constant", "title"];
 	}
 }
