@@ -148,6 +148,10 @@ let lang = {
 			return "general";
 		}
 		
+		if (type === "xml") {
+			return "alternate";
+		}
+		
 		return null;
 	},
 };
