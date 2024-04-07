@@ -675,10 +675,6 @@ class App extends Evented {
 				tabsToOpen = session.tabs;
 				fileToSelect = session.selectedTabUrl;
 			}
-			
-			window.addEventListener("beforeunload", () => {
-				this.saveSession();
-			});
 		}
 		
 		let filesToOpenOnStartup = platform.getFilesToOpenOnStartup().map(function(path) {
