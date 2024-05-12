@@ -8,7 +8,7 @@ let lang = {
 	defaultExtension: "md",
 	astMode,
 	codeIntel,
-	possibleInjections: ["html", "markdown_inline"],
+	possibleInjections: ["html", "markdown_inline", "typescript"],
 	
 	injections: [
 		{
