@@ -33,7 +33,7 @@ let lang = {
 			return "link";
 		}
 		
-		return "text";
+		return null;
 	},
 	
 	commentLines(document, startLineIndex, endLineIndex) {

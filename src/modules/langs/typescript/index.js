@@ -30,6 +30,7 @@ let lang = {
 			"template_string",
 			"variable_declarator",
 			"switch_body",
+			"object_type",
 		].includes(node.type);
 	},
 	

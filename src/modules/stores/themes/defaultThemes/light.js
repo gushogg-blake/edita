@@ -176,6 +176,7 @@ let theme = {
 		
 		markdown: {
 			link: "#0338ff underline",
+			heading: "#202020 bold",
 		},
 		
 		markdown_inline: {

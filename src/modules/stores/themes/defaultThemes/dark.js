@@ -182,6 +182,11 @@ let theme = {
 		
 		markdown: {
 			link: "#8dc4ff underline",
+			heading: "#e8f8fd bold",
+		},
+		
+		markdown_inline: {
+			link: "#8dc4ff underline",
 		},
 		
 		c: {
