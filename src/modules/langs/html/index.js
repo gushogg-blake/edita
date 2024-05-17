@@ -8,14 +8,24 @@ let lang = {
 	defaultExtension: "html",
 	astMode,
 	codeIntel,
-	possibleInjections: ["javascript", "css", "scss", "sass"],
+	possibleInjections: ["javascript", "typescript", "css", "scss", "sass"],
 	
 	injections: [
 		{
 			pattern: "(script_element (raw_text) @injectionNode)",
 			
-			lang(node) {
-				return "javascript";
+			lang({injectionNode}) {
+				let lang = "javascript";
+				
+				let startTag = injectionNode.parent.firstChild;
+				let [, ...attributes] = startTag.namedChildren;
+				let langAttribute = attributes.find(a => a.text.match(/^lang=/));
+				
+				if (langAttribute?.text.match(/^lang=["']?(ts|typescript)/)) {
+					lang = "typescript";
+				}
+				
+				return lang;
 			},
 		},
 		{
