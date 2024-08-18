@@ -1,11 +1,5 @@
 #!/bin/bash
 
-desktop=`xprop -root _NET_CURRENT_DESKTOP`
-
-#gus@mint ~$ wmctrl -lp
-#0x04400003  1 2869   mint colors.js (~/Documents/work/cambridge) - Edita
-#0x04400025  0 2869   mint edita (~/projects/edita/install/linux/files) - Edita
-
 path=`pwd`
 
 cd %path%
