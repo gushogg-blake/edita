@@ -381,25 +381,16 @@ function resize() {
 		let {devicePixelRatio} = window;
 		
 		for (let canvas of Object.values(canvases)) {
-			canvas.width = width;
-			canvas.height = height;
-			
-			// scale for retina screens
-			
-			if (devicePixelRatio !== 1) {
-				canvas.width = width * devicePixelRatio;
-				canvas.height = height * devicePixelRatio;
-				canvas.style.width = width + "px";
-				canvas.style.height = height + "px";
-			}
+			canvas.width = width * devicePixelRatio;
+			canvas.height = height * devicePixelRatio;
+			canvas.style.width = width + "px";
+			canvas.style.height = height + "px";
 		}
 		
 		// setting width/height resets the context, so need to init the context here
 		
 		for (let context of Object.values(contexts)) {
-			if (devicePixelRatio !== 1) {
-				context.scale(devicePixelRatio, devicePixelRatio);
-			}
+			context.scale(devicePixelRatio, devicePixelRatio);
 			
 			context.textBaseline = "bottom";
 		}
