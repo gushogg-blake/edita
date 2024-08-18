@@ -10,6 +10,7 @@ let path = require("path");
 let windowStateKeeper = require("electron-window-state");
 let {removeInPlace} = require("./utils/arrayMethods");
 let getConfig = require("./utils/getConfig");
+let cmdSync = require("./utils/cmdSync");
 let fs = require("./modules/fs");
 let ipcMain = require("./modules/ipcMain");
 let mimeTypes = require("./modules/mimeTypes");
@@ -161,8 +162,21 @@ class App {
 			let files = config.files.map(p => path.resolve(config.cwd, p));
 			
 			if (files.length > 0) {
-				if (config.currentWorkspaceHasWindow) {
-					ipcMain.sendToRenderer(this.lastFocusedWindow, "open", files);
+				// if there's a window on the current workspace, open the
+				// file in it - otherwise create a new window
+				
+				let currentWorkspace = this.getCurrentWorkspace();
+				let windowsToWorkspaces = this.mapWindowsToWorkspaces();
+				let openInExistingWindow = null;
+				
+				if (windowsToWorkspaces.get(this.lastFocusedWindow) === currentWorkspace) {
+					openInExistingWindow = this.lastFocusedWindow;
+				} else {
+					openInExistingWindow = this.appWindows.find(w => windowsToWorkspaces.get(w) === currentWorkspace);
+				}
+				
+				if (openInExistingWindow) {
+					ipcMain.sendToRenderer(openInExistingWindow, "open", files);
 				} else {
 					this.createAppWindow(files);
 				}
@@ -172,6 +186,81 @@ class App {
 		});
 		
 		await this.mkdirs();
+	}
+	
+	getCurrentWorkspace() {
+		let currentWorkspaceRaw = cmdSync(`xprop -root _NET_CURRENT_DESKTOP`);
+		
+		/*
+		e.g.
+		
+		_NET_CURRENT_DESKTOP(CARDINAL) = 0
+		*/
+		
+		return currentWorkspaceRaw.replace("_NET_CURRENT_DESKTOP(CARDINAL) = ", "").trim();
+	}
+	
+	getWindowId(window) {
+		/*
+		getNativeWindowHandle returns a Buffer containing window ID as an
+		unsigned long
+		
+		window IDs from wmctrl are in hex. we can convert the buffer to a
+		hex string with toString.
+		
+		trying this, it seems that the hex bytes are reversed so e.g.
+		0x05a00003 (actual ID) becomes 0300a005
+		
+		so we reverse them and add 0x to get our X window ID.
+		*/
+		
+		let handle = window.getNativeWindowHandle();
+		let str = handle.toString("hex");
+		let parts = str.match(/\w{2}/g);
+		
+		parts.reverse();
+		
+		let id = "0x" + parts.join("");
+		
+		return id;
+	}
+	
+	mapWindowsToWorkspaces() {
+		/*
+		list all X windows and the workspace they're on (second field below)
+		and match them to our windows using the id (first field)
+		*/
+		
+		let openWindowsRaw = cmdSync(`wmctrl -lp`);
+		
+		/*
+		e.g.
+		
+		0x00c00003 -1 1689   mint Bottom Panel
+		0x00e00006 -1 1716   mint Desktop
+		0x03400004  0 2304   mint Execute and get the output of a shell command in node.js - Stack Overflow - Brave
+		0x00e00430  0 1716   mint hogg-blake software ltd
+		0x03c00006  0 3255   mint gus@mint ~/Pictures/teeth/resize75
+		0x04400003  0 5414   mint currentWorkspaceHasWindow.js (~/projects/edita/src/platforms/electron/mainProcess/utils) - Edita
+		0x05200006  0 5658   mint gus@mint ~
+		0x05200192  0 5658   mint gus@mint ~/projects/edita
+		*/
+		
+		let windows = openWindowsRaw.trim().split("\n").map((line) => {
+			let [id, workspace] = line.split(/\s+/);
+			
+			let window = this.appWindows.find(w => this.getWindowId(w) === id);
+			
+			return {window, workspace};
+		}).filter(r => r.window);
+		
+		let map = new Map();
+		
+		for (let {window, workspace} of windows) {
+			map.set(window, workspace);
+		}
+		
+		return map;
 	}
 	
 	createAppWindow(openFiles=null) {

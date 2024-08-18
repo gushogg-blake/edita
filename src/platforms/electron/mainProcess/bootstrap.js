@@ -2,7 +2,6 @@ let os = require("os");
 let path = require("path");
 let child_process = require("child_process");
 let yargs = require("yargs/yargs");
-let currentWorkspaceHasWindow = require("./utils/currentWorkspaceHasWindow");
 
 /*
 parsing args is complicated once inside electron so we
@@ -47,7 +46,6 @@ let config = {
 	dev,
 	userDataDir,
 	forceNewInstance,
-	currentWorkspaceHasWindow: currentWorkspaceHasWindow(),
 };
 
 child_process.spawn("npx", [
