@@ -177,6 +177,8 @@ class App {
 				
 				if (openInExistingWindow) {
 					ipcMain.sendToRenderer(openInExistingWindow, "open", files);
+					
+					openInExistingWindow.show();
 				} else {
 					this.createAppWindow(files);
 				}
