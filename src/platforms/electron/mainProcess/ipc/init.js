@@ -1,11 +1,12 @@
 module.exports = function(app) {
 	return {
 		init(e) {
-			let {config} = app;
+			let window = app.browserWindowFromEvent(e);
+			let config = app.getPerWindowConfig(window);
 			
 			return {
 				config,
-				isMainWindow: app.browserWindowFromEvent(e) === app.mainWindow,
+				isMainWindow: window === app.mainWindow,
 			};
 		},
 	};

@@ -28,6 +28,7 @@ class App {
 		this.closeWithoutConfirming = new WeakSet();
 		this.dialogOpeners = new WeakMap();
 		this.dialogsByAppWindowAndName = new WeakMap();
+		this.perWindowConfig = new WeakMap();
 		
 		this.dataDir = fs(this.config.userDataDir);
 		this.buildDir = fs(__dirname, "..", "..", config.dev ? "electron-dev" : "electron");
@@ -52,6 +53,13 @@ class App {
 		}
 		
 		await this.init();
+	}
+	
+	getPerWindowConfig(window) {
+		return {
+			...this.config,
+			...this.perWindowConfig.get(window),
+		};
 	}
 	
 	async init() {
@@ -153,7 +161,11 @@ class App {
 			let files = config.files.map(p => path.resolve(config.cwd, p));
 			
 			if (files.length > 0) {
-				ipcMain.sendToRenderer(this.lastFocusedWindow, "open", files);
+				if (config.currentWorkspaceHasWindow) {
+					ipcMain.sendToRenderer(this.lastFocusedWindow, "open", files);
+				} else {
+					this.createAppWindow(files);
+				}
 			} else {
 				this.createAppWindow();
 			}
@@ -162,7 +174,7 @@ class App {
 		await this.mkdirs();
 	}
 	
-	createAppWindow() {
+	createAppWindow(openFiles=null) {
 		let {
 			x = 0,
 			y = 0,
@@ -184,6 +196,12 @@ class App {
 			
 			backgroundColor: "#edecea",
 		});
+		
+		if (openFiles) {
+			this.perWindowConfig.set(browserWindow, {
+				files: openFiles,
+			});
+		}
 		
 		winState.manage(browserWindow);
 		
