@@ -490,7 +490,7 @@ class App extends Evented {
 		let dir = this.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
 		let path = platform.fs(dir).child(name).path;
 		
-		let tab = await this.createEditorTab("", URL._new(path), format);
+		let tab = await this.createEditorTab("\n", URL._new(path), format);
 		
 		this.tabs.push(tab);
 		
