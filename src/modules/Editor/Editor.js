@@ -165,7 +165,7 @@ class Editor extends Evented {
 		let {index, positions} = this.snippetSession;
 		
 		for (let i = index + 1; i < positions.length; i++) {
-			if (positions[i].placeholder.type === "tabstop") {
+			if (positions[i].placeholder.type === "tabstop" && positions[i].selection) {
 				return true;
 			}
 		}
@@ -439,6 +439,10 @@ class Editor extends Evented {
 	}
 	
 	async normalKeydown(key, keyCombo, isModified) {
+		if (this.snippetSession && !this.snippetSessionHasMoreTabstops()) {
+			this.clearSnippetSession();
+		}
+		
 		let lang = this.document.langFromCursor(this.normalSelection.start);
 		let snippet = platform.snippets.findByLangAndKeyCombo(lang, keyCombo);
 		
