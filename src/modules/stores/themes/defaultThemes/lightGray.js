@@ -103,6 +103,10 @@ let theme = {
 			string: "#4d9d10",
 			regex: "#cc7030",
 			hashBang: "#202020",
+			jsx: "#c73700", // orange
+			jsx: "#09849f", // turquoise
+			//jsx: "#a7097d", // purple
+			//jsx: "#a75209", // orange
 		},
 		
 		typescript: {

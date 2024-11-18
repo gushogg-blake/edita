@@ -91,6 +91,22 @@ let lang = {
 			return null;
 		}
 		
+		if (["identifier", "<", "/", ">"].includes(type) && ["jsx_opening_element", "jsx_closing_element"].includes(parent?.type)) {
+			return "jsx";
+		}
+		
+		if (type === "property_identifier" && parent?.type === "jsx_attribute") {
+			return "jsx";
+		}
+		
+		if ("{}".includes(type) && parent?.type === "jsx_expression") {
+			return "jsx";
+		}
+		
+		if (type === "=" && parent?.type === "jsx_attribute") {
+			return "jsx";
+		}
+		
 		if ([
 			"identifier",
 			"property_identifier",
@@ -123,8 +139,14 @@ let lang = {
 			return "bracket";
 		}
 		
+		let keywords = "import export default function const let return for while do if else with async await".split(" ");
+		
 		if (type[0].match(wordRe)) {
-			return "keyword";
+			if (keywords.includes(type)) {
+				return "keyword";
+			} else {
+				return "id";
+			}
 		}
 		
 		if (type === "hash_bang_line") {
