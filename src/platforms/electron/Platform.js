@@ -5,6 +5,7 @@ let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");
 let promiseWithMethods = require("utils/promiseWithMethods");
+let lid = require("utils/lid");
 let contextMenu = require("modules/contextMenu");
 
 let fs = require("platform/modules/fs");
@@ -41,6 +42,8 @@ class Platform extends Evented {
 		
 		this.filesToOpenOnStartup = config.files.map(p => fs(config.cwd, p).path);
 		
+		this.dialogPromises = {};
+		
 		ipcRenderer.on("closeWindow", () => {
 			let defaultPrevented = false;
 			
@@ -60,13 +63,19 @@ class Platform extends Evented {
 			this.fire("openFromElectronSecondInstance", files);
 		});
 		
-		ipcRenderer.handle("messageBoxResponse", (e, response) => {
-			if (this.messageBoxPromise) {
-				this.messageBoxPromise.resolve(response);
-				
-				delete this.messageBoxPromise;
-			}
+		ipcRenderer.handle("dialogResponse", (e, {name, response}) => {
+			let promise = this.dialogPromises[name];
+			
+			promise?.resolve(response);
+			
+			delete this.dialogPromises[name];
 		});
+		
+		// the main process sends this to dialog windows to let them
+		// know they've been closed, so they can send e.g. a null response
+		// to the opener. (if the opener is still open, dialog windows are
+		// kept around for performance reasons, so they don't get e.g.
+		// window.onbeforeunload)
 		
 		ipcRenderer.on("dialogClosed", () => {
 			this.fire("dialogClosed");
@@ -78,18 +87,11 @@ class Platform extends Evented {
 	}
 	
 	async _open(dir, type) {
-		let defaultPath = dir || os.homedir();
+		let path = dir || os.homedir();
 		
-		let {
-			canceled,
-			filePaths,
-		} = await ipc.dialog.showOpen({
-			defaultPath,
-			
-			properties: [
-				type,
-				"multiSelections",
-			],
+		let {canceled, paths} = await this._dialogPromise("fileChooser", {
+			path,
+			type,
 		});
 		
 		if (canceled) {
@@ -104,13 +106,16 @@ class Platform extends Evented {
 	}
 	
 	chooseDir(startDir=null) {
-		return this._open(startDir, "openDirectory");
+		return this._open(startDir, "openDir");
 	}
 	
 	async saveAs(options) {
-		let {filePath} = await ipc.dialog.showSave(options);
+		let {canceled, path} = await this._dialogPromise("fileChooser", {
+			type: "save",
+			...options,
+		});
 		
-		return filePath || null;
+		return path || null;
 	}
 	
 	backup(document) {
@@ -140,14 +145,18 @@ class Platform extends Evented {
 		return this.filesToOpenOnStartup;
 	}
 	
-	showMessageBox(app, options) {
+	_dialogPromise(name, options) {
 		let promise = promiseWithMethods();
 		
-		ipc.openDialogWindow("messageBox", options);
+		ipc.openDialogWindow(name, options);
 		
-		this.messageBoxPromise = promise;
+		this.dialogPromises[name] = promise;
 		
 		return promise;
+	}
+	
+	showMessageBox(_app, options) {
+		return this._dialogPromise("messageBox", options);
 	}
 	
 	showContextMenu(e, app, items, options={}) {

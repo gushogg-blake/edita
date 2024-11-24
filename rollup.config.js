@@ -210,9 +210,17 @@ if (platform === "all" || platform === "electron") {
 					},
 				],
 			}),
-			
-			dev && markBuildComplete(dir),
 		],
+	}, {
+		input: "src/platforms/electron/dialogs/fileChooser/main.js",
+		
+		output: {
+			sourcemap: true,
+			format: "iife",
+			file: dir + "/js/dialogs/fileChooser/main.js",
+		},
+		
+		plugins: electronPlugins(),
 	}, {
 		input: "src/platforms/electron/dialogs/messageBox/main.js",
 		

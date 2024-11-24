@@ -203,13 +203,24 @@ module.exports = function(config) {
 			await fs.copy(this.path, dest);
 		}
 		
-		readdir() {
-			return fs.readdir(this.path);
+		readdir(dirents=false) {
+			return fs.readdir(this.path, {
+				withFileTypes: dirents,
+			});
 		}
 		
 		async ls() {
 			return (await this.readdir()).map((path) => {
 				return new Node(osPath.resolve(this.path, path));
+			});
+		}
+		
+		async lsWithTypes() {
+			return (await this.readdir(true)).map((dirent) => {
+				return {
+					isDir: dirent.isDirectory(),
+					node: new Node(osPath.resolve(this.path, dirent.name)),
+				};
 			});
 		}
 		

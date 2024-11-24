@@ -333,6 +333,11 @@ class App {
 		});
 		
 		this.dialogsByAppWindowAndName.set(browserWindow, {
+			fileChooser: this.createDialogWindow("fileChooser", {
+				width: 800,
+				height: 600,
+			}, browserWindow),
+			
 			findAndReplace: this.createDialogWindow("findAndReplace", {
 				width: 640,
 				height: 300,

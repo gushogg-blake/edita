@@ -66,7 +66,7 @@ function contextmenu(e) {
 	fire("contextmenu", {
 		e,
 		entry,
-	})
+	});
 }
 
 function select() {

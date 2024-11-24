@@ -12,7 +12,17 @@ module.exports = {
 	},
 	
 	async ls(dir) {
-		let entries = await bluebird.map(platform.fs(dir).ls(), node => this.createEntry(node.path));
+		let entries = await bluebird.map(
+			platform.fs(dir).lsWithTypes(),
+			({isDir, node}) => {
+				return {
+					isDir,
+					node,
+					path: node.path,
+				};
+			},
+		);
+		
 		let dirs = entries.filter(e => e.isDir);
 		let files = entries.filter(e => !e.isDir);
 		
