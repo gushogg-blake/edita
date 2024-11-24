@@ -3,6 +3,51 @@ let codeIntel = require("./codeIntel");
 
 let wordRe = /\w/;
 
+let keywords = new Set([
+	"async",
+	"await",
+	"break",
+	"case",
+	"catch",
+	"class",
+	"const",
+	"continue",
+	"debugger",
+	"default",
+	"delete",
+	"do",
+	"else",
+	"export",
+	"extends",
+	"false",
+	"finally",
+	"for",
+	"from",
+	"function",
+	"if",
+	"in",
+	"instanceof",
+	"import",
+	"let",
+	"new",
+	"null",
+	"of",
+	"return",
+	"super",
+	"switch",
+	"this",
+	"throw",
+	"true",
+	"try",
+	"typeof",
+	"undefined",
+	"var",
+	"void",
+	"while",
+	"with",
+	"yield",
+]);
+
 let lang = {
 	group: "javascript",
 	code: "javascript",
@@ -139,10 +184,8 @@ let lang = {
 			return "bracket";
 		}
 		
-		let keywords = "import export default function const let return for while do if else with async await".split(" ");
-		
 		if (type[0].match(wordRe)) {
-			if (keywords.includes(type)) {
+			if (keywords.has(type)) {
 				return "keyword";
 			} else {
 				return "id";
