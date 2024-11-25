@@ -220,7 +220,10 @@ if (platform === "all" || platform === "electron") {
 			file: dir + "/js/dialogs/fileChooser/main.js",
 		},
 		
-		plugins: electronPlugins(),
+		plugins: [
+			...electronPlugins(),
+			//watch && livereload(dir), // doesn't work for some reason
+		],
 	}, {
 		input: "src/platforms/electron/dialogs/messageBox/main.js",
 		
@@ -230,7 +233,10 @@ if (platform === "all" || platform === "electron") {
 			file: dir + "/js/dialogs/messageBox/main.js",
 		},
 		
-		plugins: electronPlugins(),
+		plugins: [
+			...electronPlugins(),
+			//watch && livereload(dir), // doesn't work for some reason
+		],
 	}, {
 		input: "src/platforms/electron/dialogs/snippetEditor/main.js",
 		
@@ -242,6 +248,7 @@ if (platform === "all" || platform === "electron") {
 		
 		plugins: [
 			...electronPlugins(),
+			//watch && livereload(dir), // doesn't work for some reason
 			dev && markBuildComplete(dir),
 		],
 	});

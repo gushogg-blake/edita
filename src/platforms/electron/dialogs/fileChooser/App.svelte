@@ -8,24 +8,24 @@ import themeStyle from "components/themeStyle";
 
 export let app;
 
+let {entries, selectedEntries} = app;
 let {mode} = app.options;
 
 let inputValue;
-let selectedEntry;
 
 let bookmarks = [];
-let entries = [];
-let loaded = false;
 let showHiddenFiles = base.getPref("fileChooser.showHiddenFiles");
 
 $: filteredEntries = entries.filter(function(entry) {
 	return showHiddenFiles || !entry.node.name.startsWith(".");
 });
 
-async function update() {
-	entries = await base.DirEntries.ls(app.path);
-	
-	loaded = true;
+function updateEntries() {
+	({entries, selectedEntry} = app);
+}
+
+function updateSelected() {
+	({selectedEntries} = app);
 }
 
 function cancel() {
@@ -61,22 +61,6 @@ function dblclick(entry) {
 
 function contextmenu(e) {
 	platform.showContextMenu(e, app, [
-		{
-			label: "Find...",
-			
-			onClick() {
-				app.findInFiles([path]);
-			},
-		},
-		
-		{
-			label: "Replace...",
-			
-			onClick() {
-				app.replaceInFiles([path]);
-			},
-		},
-		
 		!node.isRoot && {
 			label: "Delete...",
 			
@@ -86,7 +70,6 @@ function contextmenu(e) {
 				}
 				
 				platform.fs(path).rmrf();
-				fileTree.setRootDir(node.parent.path);
 			},
 		},
 	].filter(Boolean));
@@ -106,8 +89,8 @@ function ok() {
 
 onMount(async function() {
 	let teardown = [
-		app.on("select", entry => selectedEntry = entry),
-		app.on("nav", update),
+		app.on("updateSelected", updateSelected),
+		app.on("updateEntries", updateEntries),
 	];
 	
 	update();
@@ -216,7 +199,7 @@ onMount(async function() {
 				{#each filteredEntries as entry}
 					<div
 						class="entry"
-						class:selected={entry === selectedEntry}
+						class:selected={selectedEntries.includes(entry)}
 						on:mousedown={() => select(entry)}
 						on:dblclick={() => dblclick(entry)}
 						on:contextmenu={() => contextmenu(entry)}
@@ -237,10 +220,10 @@ onMount(async function() {
 	<div id="controls">
 		<Spacer/>
 		<button on:click={cancel}>
-			<!--<Accel label="%Cancel"/>-->
+			<Accel label="%Cancel"/>
 		</button>
 		<button on:click={ok}>
-			<!--<Accel label={mode === "save" ? "%Save" : "%Open"}/>-->
+			<Accel label={mode === "save" ? "%Save" : "%Open"}/>
 		</button>
 	</div>
 </div>

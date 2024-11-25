@@ -9,6 +9,10 @@ class App extends Evented {
 		this.mode = options.mode;
 		this.path = options.path;
 		
+		this.name = "";
+		this.entries = [];
+		this.selectedEntries = [];
+		
 		this.hasResponded = false;
 		
 		document.title = ({
@@ -16,8 +20,6 @@ class App extends Evented {
 			openDir: "Select a folder",
 			save: "Save as",
 		})[options.mode];
-		
-		this.selectedEntry = null;
 		
 		this.getBookmarks();
 		
@@ -41,16 +43,28 @@ class App extends Evented {
 		}
 	}
 	
-	nav(path) {
+	async load() {
+		this.entries = await base.DirEntries.ls(this.path);
+		this.selectedEntries = this.entries.length > 0 ? [this.entries[0]] : [];
+		
+		this.fire("updateEntries");
+		this.fire("updateSelected");
+	}
+	
+	setName(name) {
+		this.name = name;
+	}
+	
+	async nav(path) {
 		this.path = path;
 		
-		this.fire("nav", path);
+		await this.load();
 	}
 	
 	select(entry) {
-		this.selectedEntry = entry;
+		this.selectedEntries = [entry];
 		
-		this.fire("select", entry);
+		this.fire("updateSelected");
 	}
 	
 	//cancel() {
@@ -59,11 +73,21 @@ class App extends Evented {
 	
 	ok() {
 		if (this.mode === "openDir") {
-			
+			this.respond({
+				paths: [this.path],
+			});
 		} else if (this.mode === "openFile") {
-			
+			this.respond({
+				paths: this.selectedEntries.map(entry => entry.path),
+			});
 		} else if (this.mode === "save") {
+			if (!this.name.trim()) {
+				throw new Error("name required");
+			}
 			
+			this.respond({
+				path: platform.fs(this.path).child(this.name).path,
+			});
 		}
 	}
 	
@@ -73,7 +97,6 @@ class App extends Evented {
 		if (entry.isDir) {
 			this.nav(path);
 		} else {
-			debugger;
 			if (this.mode === "openDir") {
 				// TODO this should be disabled
 			} else if (this.mode === "openFile") {
@@ -81,13 +104,15 @@ class App extends Evented {
 					paths: [path],
 				});
 			} else if (this.mode === "save") {
-				
+				this.respond({
+					path,
+				});
 			}
 		}
 	}
 	
 	async init() {
-		
+		this.load();
 	}
 	
 	_respond(response) {
