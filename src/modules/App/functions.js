@@ -6,6 +6,8 @@ module.exports = {
 		for (let {path, code} of files) {
 			this.openPath(path, code);
 		}
+		
+		platform.showWindow();
 	},
 	
 	save() {

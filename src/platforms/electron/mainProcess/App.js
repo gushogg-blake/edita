@@ -70,6 +70,12 @@ class App {
 	async init() {
 		ipc(this);
 		
+		ipcMain.on("showWindow", (e) => {
+			let browserWindow = this.browserWindowFromEvent(e);
+			
+			browserWindow.show();
+		});
+		
 		ipcMain.on("closeWindow", (e) => {
 			let browserWindow = this.browserWindowFromEvent(e);
 			

@@ -238,6 +238,10 @@ class Platform extends Evented {
 		}
 	}
 	
+	showWindow() {
+		ipcRenderer.send("showWindow");
+	}
+	
 	closeWindow() {
 		ipcRenderer.send("closeWindow");
 	}
