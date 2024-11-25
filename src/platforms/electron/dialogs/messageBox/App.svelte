@@ -6,8 +6,6 @@ export let app;
 
 function respond({detail: response}) {
 	app.respond(response);
-	
-	window.close();
 }
 </script>
 

@@ -31,6 +31,10 @@ class App {
 		this.dialogsByAppWindowAndName = new WeakMap();
 		this.perWindowConfig = new WeakMap();
 		
+		this.dialogPositions = {
+			fileChooser: "centerOfScreen",
+		};
+		
 		this.dataDir = fs(this.config.userDataDir);
 		this.buildDir = fs(__dirname, "..", "..", config.dev ? "electron-dev" : "electron");
 		this.rootDir = this.buildDir.rel("..", "..");
@@ -334,8 +338,8 @@ class App {
 		
 		this.dialogsByAppWindowAndName.set(browserWindow, {
 			fileChooser: this.createDialogWindow("fileChooser", {
-				width: 800,
-				height: 600,
+				width: 900,
+				height: 670,
 			}, browserWindow),
 			
 			findAndReplace: this.createDialogWindow("findAndReplace", {
@@ -392,19 +396,25 @@ class App {
 		return browserWindow;
 	}
 	
-	calculateDialogPosition(dialogWindow, opener) {
-		let openerBounds = opener.getBounds();
-		let dialogBounds = dialogWindow.getBounds();
-		let x = Math.round(openerBounds.x + (openerBounds.width - dialogBounds.width) / 2);
-		let y = Math.round(openerBounds.y + (openerBounds.height - dialogBounds.height) / 2);
+	setDialogPosition(name, dialogWindow, opener) {
+		let mode = this.dialogPositions[name] || "centerOfOpener";
 		
-		return [x, y];
+		if (mode === "centerOfOpener") {
+			let openerBounds = opener.getBounds();
+			let dialogBounds = dialogWindow.getBounds();
+			let x = Math.round(openerBounds.x + (openerBounds.width - dialogBounds.width) / 2);
+			let y = Math.round(openerBounds.y + (openerBounds.height - dialogBounds.height) / 2);
+			
+			dialogWindow.setPosition(x, y);
+		} else if (mode === "centerOfScreen") {
+			dialogWindow.center();
+		}
 	}
 	
 	async openDialogWindow(name, dialogOptions, opener) {
 		let browserWindow = this.dialogsByAppWindowAndName.get(opener)[name];
 		
-		browserWindow.setPosition(...this.calculateDialogPosition(browserWindow, opener));
+		this.setDialogPosition(name, browserWindow, opener);
 		
 		let showOnTimeout = setTimeout(function() {
 			browserWindow.show();

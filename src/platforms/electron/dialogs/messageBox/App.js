@@ -20,6 +20,8 @@ class App extends Evented {
 			name: "messageBox",
 			response: buttonIndex,
 		});
+		
+		window.close();
 	}
 	
 	onDialogClosed() {

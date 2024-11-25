@@ -6,6 +6,8 @@ class App extends Evented {
 		
 		this.options = options;
 		
+		this.path = options.path;
+		
 		document.title = ({
 			openFile: "Select files",
 			openDir: "Select a folder",
@@ -14,9 +16,31 @@ class App extends Evented {
 		
 		this.selectedEntry = null;
 		
+		this.getBookmarks();
+		
 		this.teardownCallbacks = [
 			platform.on("dialogClosed", this.onDialogClosed.bind(this)),
 		];
+	}
+	
+	async getBookmarks() {
+		try {
+			let str = await platform.fs(platform.systemInfo.homeDir, ".config", "gtk-3.0", "bookmarks").read();
+			let lines = str.split("\n").map(s => s.trim()).filter(Boolean);
+			let normalDirs = lines.filter(line => line.startsWith("file://")).map(line => line.substr("file://".length));
+			
+			return normalDirs;
+		} catch (e) {
+			console.log(e);
+			
+			return [];
+		}
+	}
+	
+	nav(path) {
+		this.path = path;
+		
+		this.fire("nav", path);
 	}
 	
 	select(entry) {
@@ -25,12 +49,22 @@ class App extends Evented {
 		this.fire("select", entry);
 	}
 	
+	dblclick(entry) {
+		let {path} = entry.node;
 	
+		if (entry.isDir) {
+			this.nav(path);
+		} else {
+			if (this.mode === "openDir") {
+				
+			} else {
+				console.log("choose " + path);
+			}
+		}
+	}
 	
 	async init() {
-		let {type, path} = this.options;
 		
-		console.log(type, path);
 	}
 	
 	respond(response) {

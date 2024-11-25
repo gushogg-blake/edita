@@ -6,11 +6,12 @@ import themeStyle from "components/themeStyle";
 
 export let app;
 
-let {type, path} = app.options;
+let {type} = app.options;
 
 let inputValue;
 let selectedEntry;
 
+let bookmarks = [];
 let entries = [];
 let loaded = false;
 let showHiddenFiles = base.getPref("fileChooser.showHiddenFiles");
@@ -20,7 +21,7 @@ $: filteredEntries = entries.filter(function(entry) {
 });
 
 async function update() {
-	entries = await base.DirEntries.ls(path);
+	entries = await base.DirEntries.ls(app.path);
 	
 	loaded = true;
 }
@@ -53,11 +54,7 @@ function keydown(e) {
 }
 
 function dblclick(entry) {
-	if (entry.isDir) {
-		
-	} else {
-		
-	}
+	app.dblclick(entry);
 }
 
 function contextmenu(e) {
@@ -97,12 +94,19 @@ function select(entry) {
 	app.select(entry);
 }
 
-onMount(function() {
+function nav(path) {
+	app.nav(path);
+}
+
+onMount(async function() {
 	let teardown = [
 		app.on("select", entry => selectedEntry = entry),
+		app.on("nav", update),
 	];
 	
 	update();
+	
+	bookmarks = await app.getBookmarks();
 	
 	return function() {
 		for (let fn of teardown) {
@@ -146,7 +150,7 @@ onMount(function() {
 	padding-right: 5px;
 }
 
-#icon {
+.icon {
 	flex-shrink: 0;
 	width: 12px;
 	height: 12px;
@@ -161,7 +165,7 @@ onMount(function() {
 	background: var(--dirEntryFileBackground);
 }
 
-#name {
+.name {
 	@include ellipsis;
 }
 </style>
@@ -174,7 +178,14 @@ onMount(function() {
 	{/if}
 	<div id="cols">
 		<div id="left">
-			
+			{#each bookmarks as path}
+				<div class="entry" on:click={() => nav(path)}>
+					<div class="icon dirIcon"></div>
+					<div class="name">
+						{platform.fs(path).name}
+					</div>
+				</div>
+			{/each}
 		</div>
 		<div id="right">
 			{#each filteredEntries as entry}
@@ -186,11 +197,11 @@ onMount(function() {
 					on:contextmenu={() => contextmenu(entry)}
 				>
 					<div
-						id="icon"
+						class="icon"
 						class:dirIcon={entry.isDir}
 						class:fileIcon={!entry.isDir}
 					></div>
-					<div id="name">
+					<div class="name">
 						{entry.node.name}
 					</div>
 				</div>
