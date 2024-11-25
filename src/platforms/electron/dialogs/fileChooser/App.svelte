@@ -237,10 +237,10 @@ onMount(async function() {
 	<div id="controls">
 		<Spacer/>
 		<button on:click={cancel}>
-			<Accel label="&Cancel"/>
+			<!--<Accel label="%Cancel"/>-->
 		</button>
 		<button on:click={ok}>
-			<Accel label={mode === "save" ? "&Save" : "&Open"}/>
+			<!--<Accel label={mode === "save" ? "%Save" : "%Open"}/>-->
 		</button>
 	</div>
 </div>

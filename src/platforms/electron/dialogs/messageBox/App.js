@@ -6,6 +6,8 @@ class App extends Evented {
 		
 		this.options = options;
 		
+		this.hasResponded = false;
+		
 		this.teardownCallbacks = [
 			platform.on("dialogClosed", this.onDialogClosed.bind(this)),
 		];
@@ -15,17 +17,27 @@ class App extends Evented {
 		document.title = this.options.title || "";
 	}
 	
-	respond(buttonIndex) {
+	_respond(buttonIndex) {
+		if (this.hasResponded) {
+			return;
+		}
+		
 		platform.callOpener("dialogResponse", {
 			name: "messageBox",
 			response: buttonIndex,
 		});
 		
+		this.hasResponded = true;
+	}
+	
+	respond(response) {
+		this._respond(response);
+		
 		window.close();
 	}
 	
 	onDialogClosed() {
-		this.respond(null);
+		this._respond(null);
 	}
 	
 	teardown() {

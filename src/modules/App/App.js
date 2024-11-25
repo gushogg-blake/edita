@@ -132,7 +132,7 @@ class App extends Evented {
 		
 		if (document.isSaved) {
 			if (document.fileChangedWhileModified) {
-				if (!await confirm(tab.name + " has changed on disk since the last save.  Overwrite current version?")) {
+				if (!await confirm(tab.name + " has changed on disk since the last save. Overwrite current version?")) {
 					return;
 				}
 			}

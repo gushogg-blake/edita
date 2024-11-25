@@ -9,6 +9,8 @@ class App extends Evented {
 		this.mode = options.mode;
 		this.path = options.path;
 		
+		this.hasResponded = false;
+		
 		document.title = ({
 			openFile: "Select files",
 			openDir: "Select a folder",
@@ -26,6 +28,7 @@ class App extends Evented {
 	
 	async getBookmarks() {
 		try {
+			// PLATFORM - assumes GTK
 			let str = await platform.fs(platform.systemInfo.homeDir, ".config", "gtk-3.0", "bookmarks").read();
 			let lines = str.split("\n").map(s => s.trim()).filter(Boolean);
 			let normalDirs = lines.filter(line => line.startsWith("file://")).map(line => line.substr("file://".length));
@@ -87,17 +90,27 @@ class App extends Evented {
 		
 	}
 	
-	respond(response) {
+	_respond(response) {
+		if (this.hasResponded) {
+			return;
+		}
+		
 		platform.callOpener("dialogResponse", {
 			name: "fileChooser",
 			response,
 		});
 		
+		this.hasResponded = true;
+	}
+	
+	respond(response) {
+		this._respond(response);
+		
 		window.close();
 	}
 	
 	onDialogClosed() {
-		this.respond({
+		this._respond({
 			canceled: true,
 		});
 	}
