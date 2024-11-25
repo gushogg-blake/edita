@@ -6,13 +6,14 @@ class App extends Evented {
 		
 		this.options = options;
 		
+		this.mode = options.mode;
 		this.path = options.path;
 		
 		document.title = ({
 			openFile: "Select files",
 			openDir: "Select a folder",
 			save: "Save as",
-		})[options.type];
+		})[options.mode];
 		
 		this.selectedEntry = null;
 		
@@ -49,16 +50,35 @@ class App extends Evented {
 		this.fire("select", entry);
 	}
 	
+	//cancel() {
+	//	window.close();
+	//}
+	
+	ok() {
+		if (this.mode === "openDir") {
+			
+		} else if (this.mode === "openFile") {
+			
+		} else if (this.mode === "save") {
+			
+		}
+	}
+	
 	dblclick(entry) {
 		let {path} = entry.node;
-	
+		
 		if (entry.isDir) {
 			this.nav(path);
 		} else {
+			debugger;
 			if (this.mode === "openDir") {
+				// TODO this should be disabled
+			} else if (this.mode === "openFile") {
+				this.respond({
+					paths: [path],
+				});
+			} else if (this.mode === "save") {
 				
-			} else {
-				console.log("choose " + path);
 			}
 		}
 	}
@@ -72,6 +92,8 @@ class App extends Evented {
 			name: "fileChooser",
 			response,
 		});
+		
+		window.close();
 	}
 	
 	onDialogClosed() {

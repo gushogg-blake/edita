@@ -2,11 +2,13 @@
 import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import clickElementFromAccel from "utils/dom/clickElementFromAccel";
+import Accel from "components/utils/Accel.svelte";
+import Spacer from "components/utils/Spacer.svelte";
 import themeStyle from "components/themeStyle";
 
 export let app;
 
-let {type} = app.options;
+let {mode} = app.options;
 
 let inputValue;
 let selectedEntry;
@@ -98,6 +100,10 @@ function nav(path) {
 	app.nav(path);
 }
 
+function ok() {
+	app.ok();
+}
+
 onMount(async function() {
 	let teardown = [
 		app.on("select", entry => selectedEntry = entry),
@@ -122,12 +128,16 @@ onMount(async function() {
 @import "mixins/ellipsis";
 
 #main {
+	display: flex;
+	flex-direction: column;
 	width: 100%;
 	height: 100%;
 }
 
 #cols {
 	display: flex;
+	align-items: stretch;
+	flex-grow: 1;
 }
 
 #left {
@@ -136,6 +146,16 @@ onMount(async function() {
 
 #right {
 	flex-grow: 1;
+	background: var(--fileChooserBackground);
+}
+
+.scroll {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow-y: auto;
 }
 
 .selected {
@@ -146,7 +166,7 @@ onMount(async function() {
 	display: flex;
 	align-items: center;
 	gap: 2px;
-	padding: 2px 0;
+	padding: 4px 3px;
 	padding-right: 5px;
 }
 
@@ -168,10 +188,14 @@ onMount(async function() {
 .name {
 	@include ellipsis;
 }
+
+.scrollWrapper {
+	position: relative;
+}
 </style>
 
 <div id="main" class="edita" style={themeStyle(base.theme.app)}>
-	{#if type === "save"}
+	{#if mode === "save"}
 		<div id="top">
 			<input bind:value={inputValue}>
 		</div>
@@ -187,25 +211,36 @@ onMount(async function() {
 				</div>
 			{/each}
 		</div>
-		<div id="right">
-			{#each filteredEntries as entry}
-				<div
-					class="entry"
-					class:selected={entry === selectedEntry}
-					on:mousedown={() => select(entry)}
-					on:dblclick={() => dblclick(entry)}
-					on:contextmenu={() => contextmenu(entry)}
-				>
+		<div class="scrollWrapper" id="right">
+			<div class="scroll">
+				{#each filteredEntries as entry}
 					<div
-						class="icon"
-						class:dirIcon={entry.isDir}
-						class:fileIcon={!entry.isDir}
-					></div>
-					<div class="name">
-						{entry.node.name}
+						class="entry"
+						class:selected={entry === selectedEntry}
+						on:mousedown={() => select(entry)}
+						on:dblclick={() => dblclick(entry)}
+						on:contextmenu={() => contextmenu(entry)}
+					>
+						<div
+							class="icon"
+							class:dirIcon={entry.isDir}
+							class:fileIcon={!entry.isDir}
+						></div>
+						<div class="name">
+							{entry.node.name}
+						</div>
 					</div>
-				</div>
-			{/each}
+				{/each}
+			</div>
 		</div>
+	</div>
+	<div id="controls">
+		<Spacer/>
+		<button on:click={cancel}>
+			<Accel label="&Cancel"/>
+		</button>
+		<button on:click={ok}>
+			<Accel label={mode === "save" ? "&Save" : "&Open"}/>
+		</button>
 	</div>
 </div>

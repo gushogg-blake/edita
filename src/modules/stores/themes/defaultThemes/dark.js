@@ -69,6 +69,8 @@ let theme = {
 		scrollbarThumbBorder: "var(--scrollbarPadding) solid var(--scrollbarBackground)",
 		scrollbarThumbBackground: "#909090",
 		scrollbarSpacerBackground: "var(--appBackground)",
+		
+		fileChooserBackground: "var(--appBackground)",
 	},
 	
 	editor: {

@@ -66,6 +66,8 @@ class Platform extends Evented {
 		ipcRenderer.handle("dialogResponse", (e, {name, response}) => {
 			let promise = this.dialogPromises[name];
 			
+			console.log(name, response);
+			
 			promise?.resolve(response);
 			
 			delete this.dialogPromises[name];
@@ -86,19 +88,19 @@ class Platform extends Evented {
 		await this.snippets.init();
 	}
 	
-	async _open(dir, type) {
+	async _open(dir, mode) {
 		let path = dir || os.homedir();
 		
 		let {canceled, paths} = await this._dialogPromise("fileChooser", {
 			path,
-			type,
+			mode,
 		});
 		
 		if (canceled) {
 			return [];
 		}
 		
-		return filePaths;
+		return paths;
 	}
 	
 	open(dir=null) {
@@ -111,7 +113,7 @@ class Platform extends Evented {
 	
 	async saveAs(options) {
 		let {canceled, path} = await this._dialogPromise("fileChooser", {
-			type: "save",
+			mode: "save",
 			...options,
 		});
 		
