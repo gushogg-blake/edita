@@ -190,6 +190,10 @@ class Platform extends Evented {
 		}
 	}
 	
+	showWindow() {
+		// noop
+	}
+	
 	closeWindow() {
 		// noop
 	}
