@@ -17,6 +17,8 @@ module.exports = function(layers, view, offsets) {
 	
 	let underline = false;
 	
+	let styleKey = null;
+	
 	function setStyle(style) {
 		let {
 			color,
@@ -24,6 +26,8 @@ module.exports = function(layers, view, offsets) {
 			fontStyle = "normal",
 			textDecoration = "none",
 		} = style;
+		
+		//styleKey = color + "_" + fontWeight + "_" + fontStyle + "_" + textDecoration;
 		
 		context.font = [fontStyle, fontWeight, fontSize, fontFamily].join(" ");
 		context.fillStyle = color;

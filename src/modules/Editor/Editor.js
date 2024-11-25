@@ -534,6 +534,14 @@ class Editor extends Evented {
 		view.endBatch();
 	}
 	
+	keyup() {
+		if (this.needToUpdateAstSelection) {
+			this.view.updateAstSelectionFromNormalSelection();
+			
+			this.needToUpdateAstSelection = false;
+		}
+	}
+	
 	handleWheel(wheelCombo, cursor) {
 		let fnName = base.prefs.editorMouseMap[wheelCombo.wheelCombo];
 		
@@ -547,11 +555,13 @@ class Editor extends Evented {
 	}
 	
 	setSelectionFromNormalKeyboard(selection) {
-		this.setNormalSelection(selection);
+		this.setNormalSelection(selection, false);
 		this.setSelectionClipboard();
 		
 		this.clearBatchState();
 		this.astMode.clearMultiStepCommand();
+		
+		this.needToUpdateAstSelection = true;
 		
 		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
@@ -569,8 +579,8 @@ class Editor extends Evented {
 		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
 	
-	setNormalSelection(selection) {
-		this.view.setNormalSelection(selection);
+	setNormalSelection(selection, updateAstSelection=true) {
+		this.view.setNormalSelection(selection, updateAstSelection);
 		
 		this.wordCompletion.selectionChanged();
 		

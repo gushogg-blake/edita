@@ -344,7 +344,15 @@ function keydown(e) {
 	if (view.mode === "normal" && editor.willHandleNormalKeydown(key, keyCombo, isModified)) {
 		e.preventDefault();
 		
+		//if (base.getPref("dev.timing.keydown")) {
+		//	console.time("keydown");
+		//}
+		
 		editor.normalKeydown(key, keyCombo, isModified);
+		
+		//if (base.getPref("dev.timing.keydown")) {
+		//	console.timeEnd("keydown");
+		//}
 	} else if (view.mode === "ast" && editor.willHandleAstKeydown(keyCombo)) {
 		e.preventDefault();
 		
@@ -358,6 +366,10 @@ function keydown(e) {
 	if (base.getPref("dev.timing.keydown")) {
 		console.timeEnd("keydown");
 	}
+}
+
+function keyup(e) {
+	editor.keyup();
 }
 
 let prevWidth;
