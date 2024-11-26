@@ -15,3 +15,7 @@ The UI is written in Svelte and is in [src/components](./src/components). The ap
 Edita runs on Electron and the web. Platform-specific code is in [src/platforms](./src/platforms).
 
 This project uses the [ENTRYPOINT](https://gitlab.com/-/snippets/2431100) convention -- comments that start with `// ENTRYPOINT` indicate top-level entry points such as the `main` function and event handlers.
+
+## Hacks
+
+Hacky stuff is marked with either a `// HACK` or `// PLATFORM` comment (for stuff that makes platform assumptions).

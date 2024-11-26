@@ -172,8 +172,22 @@ module.exports = function(dbName) {
 		});
 	}
 	
-	function readdir(directoryName) {
-		return bluebird.map(readdirEntries(directoryName), e => e.path);
+	function readdir(directoryName, options={}) {
+		let {withFileTypes} = options;
+		
+		return bluebird.map(readdirEntries(directoryName), function({path, type}) {
+			return withFileTypes ? {
+				name: path.substr(path.lastIndexOf("/") + 1),
+				
+				isDirectory() {
+					return type === "directory";
+				},
+				
+				isFile() {
+					return type === "file";
+				},
+			} : path;
+		});
 	}
 	
 	function mkdir(path) {
