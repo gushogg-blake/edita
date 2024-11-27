@@ -211,6 +211,11 @@ let migrations = {
 		prefs.normalKeymap["Ctrl+End"] = "end";
 		prefs.normalKeymap["Ctrl+Home"] = "home";
 	},
+	
+	"28"(prefs) {
+		prefs.normalKeymap["Ctrl+ArrowUp"] = "up";
+		prefs.normalKeymap["Ctrl+ArrowDown"] = "down";
+	},
 };
 
 module.exports = function() {
@@ -243,6 +248,8 @@ module.exports = function() {
 		normalKeymap: {
 			"ArrowUp": "up",
 			"ArrowDown": "down",
+			"Ctrl+ArrowUp": "up",
+			"Ctrl+ArrowDown": "down",
 			"ArrowLeft": "left",
 			"ArrowRight": "right",
 			"PageUp": "pageUp",

@@ -16,8 +16,8 @@ class App extends Evented {
 		this.hasResponded = false;
 		
 		document.title = ({
-			openFile: "Select files",
-			openDir: "Select a folder",
+			selectFiles: "Select files",
+			selectDir: "Select a folder",
 			save: "Save as",
 		})[options.mode];
 		
@@ -32,7 +32,12 @@ class App extends Evented {
 		return ["/test", "/a/b/c"];
 	}
 	
+	async init() {
+		this.load();
+	}
+	
 	async load() {
+		debugger;
 		this.entries = await base.DirEntries.ls(this.path);
 		this.selectedEntries = this.entries.length > 0 ? [this.entries[0]] : [];
 		
@@ -61,11 +66,11 @@ class App extends Evented {
 	//}
 	
 	ok() {
-		if (this.mode === "openDir") {
+		if (this.mode === "selectDir") {
 			this.respond({
 				paths: [this.path],
 			});
-		} else if (this.mode === "openFile") {
+		} else if (this.mode === "selectFiles") {
 			this.respond({
 				paths: this.selectedEntries.map(entry => entry.path),
 			});
@@ -86,9 +91,9 @@ class App extends Evented {
 		if (entry.isDir) {
 			this.nav(path);
 		} else {
-			if (this.mode === "openDir") {
+			if (this.mode === "selectDir") {
 				// TODO this should be disabled
-			} else if (this.mode === "openFile") {
+			} else if (this.mode === "selectFiles") {
 				this.respond({
 					paths: [path],
 				});

@@ -107,6 +107,15 @@ module.exports = function(dbName) {
 			exists = true;
 		}, () => {});
 		
+		let dirs = path.substring(0, path.lastIndexOf("/")).split("/").filter(Boolean);
+		let mkdirPath = "";
+		
+		for (let dir of dirs) {
+			await mkdir(mkdirPath + "/" + dir);
+			
+			mkdirPath += "/" + dir;
+		}
+		
 		return new Promise(function(resolve, reject) {
 			initOS("readwrite", function(os) {
 				let req = os.put({

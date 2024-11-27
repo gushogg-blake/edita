@@ -27,7 +27,8 @@
 				});
 				
 				let app = new DevFileChooserApp({
-					mode: "open",
+					mode: "selectFiles",
+					path: "/",
 				});
 				
 				let fileChooser = new FileChooser({
@@ -37,6 +38,8 @@
 						app,
 					},
 				});
+				
+				await app.init();
 			})();
 		</script>
 	</body>
