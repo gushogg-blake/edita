@@ -19,6 +19,8 @@ import BottomPanes from "./BottomPanes.svelte";
 import FindBar from "./FindBar.svelte";
 import DevToolbar from "./DevToolbar/DevToolbar.svelte";
 
+import DevFileChooserTab from "./DevFileChooserTab.svelte";
+
 export let app;
 
 let main;
@@ -36,6 +38,7 @@ let {
 let tabComponents = {
 	editor: EditorTab,
 	refactorPreview: RefactorPreviewTab,
+	devFileChooser: DevFileChooserTab,
 };
 
 let showingFindBar = false;

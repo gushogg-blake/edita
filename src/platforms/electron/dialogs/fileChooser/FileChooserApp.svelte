@@ -69,5 +69,11 @@ onMount(async function() {
 </style>
 
 <div id="main" class="edita" style={themeStyle(base.theme.app)}>
-	<FileChooser {mode} {entries} {selectedEntries} {bookmarks}/>
+	<FileChooser
+		{mode}
+		{entries}
+		{selectedEntries}
+		{bookmarks}
+		{showHiddenFiles}
+	/>
 </div>

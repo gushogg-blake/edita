@@ -1,5 +1,5 @@
 import main from "platform/dialogs/main";
-import App from "./App";
-import AppComponent from "./App.svelte";
+import FileChooserApp from "./FileChooserApp";
+import AppComponent from "./FileChooserApp.svelte";
 
-main(App, AppComponent, false);
+main(FileChooserApp, AppComponent, false);

@@ -9,11 +9,11 @@ export let mode;
 export let entries;
 export let selectedEntries;
 export let bookmarks;
+export let showHiddenFiles;
 
 let fire = createEventDispatcher();
 
 let inputValue = "";
-let showHiddenFiles = base.getPref("fileChooser.showHiddenFiles");
 
 $: filteredEntries = entries.filter(function(entry) {
 	return showHiddenFiles || !entry.node.name.startsWith(".");

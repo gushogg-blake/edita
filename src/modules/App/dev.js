@@ -1,5 +1,6 @@
 let sleep = require("utils/sleep");
 let Selection = require("modules/Selection");
+let DevFileChooserTab = require("./DevFileChooserTab");
 
 function get(key) {
 	return base.getPref("dev." + key);
@@ -29,4 +30,12 @@ module.exports = async function(app) {
 		//refactor.editors.find.api.edit(Selection.start(), `let /\\w+/ = require\\((string)\\);`);
 		//refactor.editors.replaceWith.api.edit(Selection.start(), `@string`);
 	}
+	
+	let tab = new DevFileChooserTab(app);
+	
+	app.tabs.push(tab);
+	
+	app.fire("updateTabs");
+	
+	app.selectTab(tab);
 }

@@ -1,6 +1,6 @@
 let Evented = require("utils/Evented");
 
-class App extends Evented {
+class FileChooserApp extends Evented {
 	constructor(options) {
 		super();
 		
@@ -151,4 +151,4 @@ class App extends Evented {
 	}
 }
 
-module.exports = App;
+module.exports = FileChooserApp;
