@@ -49,8 +49,6 @@ onMount(async function() {
 		app.on("updateEntries", updateEntries),
 	];
 	
-	update();
-	
 	bookmarks = await app.getBookmarks();
 	
 	return function() {

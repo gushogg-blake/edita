@@ -5,6 +5,10 @@ import AppComponent from "components/App/App.svelte";
 import Textarea from "platform/components/Textarea.svelte";
 import Platform from "./Platform";
 
+// DEV
+import FileChooser from "platforms/electron/dialogs/fileChooser/App.svelte";
+import DevFileChooserApp from "platform/DevFileChooserApp";
+
 window.platform = new Platform();
 window.base = new Base();
 
@@ -50,5 +54,7 @@ export default async function(options) {
 		},
 		
 		Textarea,
+		FileChooser,
+		DevFileChooserApp,
 	};
 }

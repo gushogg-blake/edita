@@ -12,7 +12,7 @@ export let bookmarks;
 
 let fire = createEventDispatcher();
 
-let inputValue;
+let inputValue = "";
 let showHiddenFiles = base.getPref("fileChooser.showHiddenFiles");
 
 $: filteredEntries = entries.filter(function(entry) {
@@ -107,7 +107,7 @@ function keydown(e) {
 	<div id="cols">
 		<div id="left">
 			{#each bookmarks as path}
-				<div class="entry" on:click={() => nav(path)}>
+				<div class="entry" on:click={() => fire("nav", path)}>
 					<div class="icon dirIcon"></div>
 					<div class="name">
 						{platform.fs(path).name}
@@ -121,9 +121,9 @@ function keydown(e) {
 					<div
 						class="entry"
 						class:selected={selectedEntries.includes(entry)}
-						on:mousedown={() => select(entry)}
-						on:dblclick={() => dblclick(entry)}
-						on:contextmenu={() => contextmenu(entry)}
+						on:mousedown={() => fire("select", entry)}
+						on:dblclick={() => fire("dblclick", entry)}
+						on:contextmenu={(e) => fire("contextmenu", {e, entry})}
 					>
 						<div
 							class="icon"
@@ -140,10 +140,10 @@ function keydown(e) {
 	</div>
 	<div id="controls">
 		<Spacer/>
-		<button on:click={cancel}>
+		<button on:click={() => fire("cancel")}>
 			<Accel label="%Cancel"/>
 		</button>
-		<button on:click={ok}>
+		<button on:click={() => fire("ok", inputValue)}>
 			<Accel label={mode === "save" ? "%Save" : "%Open"}/>
 		</button>
 	</div>
