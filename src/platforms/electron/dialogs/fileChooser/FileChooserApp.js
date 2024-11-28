@@ -1,4 +1,5 @@
 let Evented = require("utils/Evented");
+let {removeInPlace} = require("utils/arrayMethods");
 
 class FileChooserApp extends Evented {
 	constructor(options) {
@@ -68,11 +69,23 @@ class FileChooserApp extends Evented {
 	async nav(path) {
 		this.path = path;
 		
+		this.fire("updatePath", path)
+		
 		await this.load();
 	}
 	
 	select(entry) {
 		this.selectedEntries = [entry];
+		
+		this.fire("updateSelected");
+	}
+	
+	toggleSelect(entry) {
+		if (this.selectedEntries.includes(entry)) {
+			removeInPlace(this.selectedEntries, entry);
+		} else {
+			this.selectedEntries.push(entry);
+		}
 		
 		this.fire("updateSelected");
 	}

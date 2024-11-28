@@ -31,13 +31,15 @@ module.exports = async function(app) {
 		//refactor.editors.replaceWith.api.edit(Selection.start(), `@string`);
 	}
 	
-	let tab = new DevFileChooserTab(app);
-	
-	app.tabs.push(tab);
-	
-	tab.init();
-	
-	app.fire("updateTabs");
-	
-	app.selectTab(tab);
+	if (get("openFileChooser")) {
+		let tab = new DevFileChooserTab(app);
+		
+		app.tabs.push(tab);
+		
+		tab.init();
+		
+		app.fire("updateTabs");
+		
+		app.selectTab(tab);
+	}
 }

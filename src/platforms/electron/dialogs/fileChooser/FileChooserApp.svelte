@@ -11,7 +11,7 @@ export let app;
 
 let inputValue = "";
 
-let {entries, selectedEntries, name, bookmarks} = app;
+let {path, entries, selectedEntries, name, bookmarks} = app;
 let {mode} = app.options;
 let showHiddenFiles = base.getPref("fileChooser.showHiddenFiles");
 
@@ -21,6 +21,10 @@ function updateEntries() {
 
 function updateSelected() {
 	({selectedEntries} = app);
+}
+
+function updatePath() {
+	({path} = app);
 }
 
 function updateBookmarks() {
@@ -38,7 +42,7 @@ let functions = {
 };
 
 let keymap = {
-	"Escape": "close",
+	//"Escape": "close",
 };
 
 function keydown(e) {
@@ -54,12 +58,21 @@ function keydown(e) {
 	}
 }
 
+function mousedown(e, entry) {
+	if (e.ctrlKey) {
+		app.toggleSelect(entry);
+	} else {
+		app.select(entry);
+	}
+}
+
 $: filteredEntries = entries.filter(function(entry) {
 	return showHiddenFiles || !entry.node.name.startsWith(".");
 });
 
 onMount(async function() {
 	let teardown = [
+		app.on("updatePath", updatePath),
 		app.on("updateSelected", updateSelected),
 		app.on("updateEntries", updateEntries),
 		app.on("updateBookmarks", updateBookmarks),
@@ -143,14 +156,33 @@ onMount(async function() {
 .scrollWrapper {
 	position: relative;
 }
+
+#breadcrumbs {
+	display: flex;
+	gap: 6px;
+	padding: 6px;
+}
+
+.breadcrumb {
+	border: 1px solid gray;
+	border-radius: 3px;
+	padding: 6px 12px;
+}
 </style>
 
 <div id="main" class="edita" style={themeStyle(base.theme.app)}>
 	{#if mode === "save"}
-		<div id="top">
+		<div id="input">
 			<input bind:value={inputValue}>
 		</div>
 	{/if}
+	<div id="breadcrumbs">
+		{#each platform.fs(path).parents.reverse() as node}
+			<div class="breadcrumb" on:click={() => app.nav(node.path)}>
+				{node.name}
+			</div>
+		{/each}
+	</div>
 	<div id="cols">
 		<div id="left">
 			{#each bookmarks as path}
@@ -168,7 +200,7 @@ onMount(async function() {
 					<div
 						class="entry"
 						class:selected={selectedEntries.includes(entry)}
-						on:mousedown={() => app.select(entry)}
+						on:mousedown={(e) => mousedown(e, entry)}
 						on:dblclick={() => app.dblclick(entry)}
 						on:contextmenu={(e) => contextmenu(e, entry)}
 					>

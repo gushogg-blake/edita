@@ -7,7 +7,7 @@ class DevFileChooserTab extends Tab {
 		
 		this.fileChooserApp = new FileChooserApp({
 			mode: "selectFiles",
-			path: "/",
+			path: "/home/gus",
 		});
 		
 		this.teardownCallbacks = [
