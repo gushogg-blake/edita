@@ -104,11 +104,11 @@ class Platform extends Evented {
 	}
 	
 	open(dir=null) {
-		return this._open(dir, "openFile");
+		return this._open(dir, "selectFiles");
 	}
 	
 	chooseDir(startDir=null) {
-		return this._open(startDir, "openDir");
+		return this._open(startDir, "selectDir");
 	}
 	
 	async saveAs(options) {

@@ -145,7 +145,7 @@ onMount(async function() {
 }
 </style>
 
-<div id="main">
+<div id="main" class="edita" style={themeStyle(base.theme.app)}>
 	{#if mode === "save"}
 		<div id="top">
 			<input bind:value={inputValue}>
