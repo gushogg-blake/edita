@@ -9,6 +9,7 @@ class FileChooserApp extends Evented {
 		
 		this.mode = options.mode;
 		this.path = options.path;
+		this.breadcrumbs = this.getBreadcrumbs();
 		
 		this.entries = [];
 		this.selectedEntries = [];
@@ -57,8 +58,17 @@ class FileChooserApp extends Evented {
 		this.entries = await base.DirEntries.ls(this.path);
 		this.selectedEntries = this.entries.length > 0 ? [this.entries[0]] : [];
 		
-		this.fire("updateEntries");
-		this.fire("updateSelected");
+		let newBreadcrumbs = this.getBreadcrumbs();
+		
+		if (!this.breadcrumbs.some(node => node.path === this.path)) {
+			this.breadcrumbs = newBreadcrumbs;
+		}
+		
+		this.fire("updateMain");
+	}
+	
+	getBreadcrumbs() {
+		return platform.fs(this.path).lineage;
 	}
 	
 	setName(name) {
@@ -67,8 +77,6 @@ class FileChooserApp extends Evented {
 	
 	async nav(path) {
 		this.path = path;
-		
-		this.fire("updatePath", path)
 		
 		await this.load();
 	}
@@ -146,10 +154,20 @@ class FileChooserApp extends Evented {
 		this.hasResponded = true;
 	}
 	
+	cancel() {
+		this.respond({
+			canceled: true,
+		});
+	}
+	
 	respond(response) {
-		this._respond(response);
-		
-		window.close();
+		if (location.href.endsWith("main.html")) { // DEV
+			console.log(response);
+		} else {
+			this._respond(response);
+			
+			window.close();
+		}
 	}
 	
 	onDialogClosed() {

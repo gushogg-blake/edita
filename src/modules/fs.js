@@ -52,6 +52,10 @@ module.exports = function(config) {
 			return parents;
 		}
 		
+		get lineage() {
+			return [...this.parents.reverse(), this];
+		}
+		
 		get homePath() {
 			let {path} = this;
 			

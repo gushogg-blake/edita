@@ -11,20 +11,24 @@ export let app;
 
 let inputValue = "";
 
-let {path, entries, selectedEntries, name, bookmarks} = app;
+let {
+	path,
+	entries,
+	selectedEntries,
+	name,
+	bookmarks,
+	breadcrumbs,
+} = app;
+
 let {mode} = app.options;
 let showHiddenFiles = base.getPref("fileChooser.showHiddenFiles");
 
-function updateEntries() {
-	({entries} = app);
+function updateMain() {
+	({path, entries, breadcrumbs, selectedEntries} = app);
 }
 
 function updateSelected() {
 	({selectedEntries} = app);
-}
-
-function updatePath() {
-	({path} = app);
 }
 
 function updateBookmarks() {
@@ -77,9 +81,8 @@ $: filteredEntries = entries.filter(function(entry) {
 
 onMount(async function() {
 	let teardown = [
-		app.on("updatePath", updatePath),
+		app.on("updateMain", updateMain),
 		app.on("updateSelected", updateSelected),
-		app.on("updateEntries", updateEntries),
 		app.on("updateBookmarks", updateBookmarks),
 	];
 	
@@ -173,6 +176,12 @@ onMount(async function() {
 	border-radius: 3px;
 	padding: 6px 12px;
 }
+
+#controls {
+	display: flex;
+	gap: 6px;
+	padding: 6px;
+}
 </style>
 
 <div id="main" class="edita" style={themeStyle(base.theme.app)}>
@@ -182,7 +191,7 @@ onMount(async function() {
 		</div>
 	{/if}
 	<div id="breadcrumbs">
-		{#each platform.fs(path).parents.reverse() as node}
+		{#each breadcrumbs as node}
 			<div class="breadcrumb" on:click={() => app.nav(node.path)}>
 				{node.name}
 			</div>
