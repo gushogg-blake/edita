@@ -142,7 +142,7 @@ class App extends Evented {
 			let dir = this.getCurrentDir(platform.systemInfo.homeDir);
 			
 			let path = await platform.saveAs({
-				defaultPath: platform.fs(dir, platform.fs(document.path).name).path,
+				path: platform.fs(dir, platform.fs(document.path).name).path,
 			});
 			
 			if (path) {
@@ -156,7 +156,7 @@ class App extends Evented {
 		let oldPath = tab.path;
 		
 		let path = await platform.saveAs({
-			defaultPath: oldPath,
+			path: oldPath,
 		});
 		
 		if (path && path !== oldPath) {

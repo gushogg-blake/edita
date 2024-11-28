@@ -32,7 +32,10 @@ module.exports = async function(app) {
 	}
 	
 	if (get("openFileChooser")) {
-		let tab = new DevFileChooserTab(app);
+		let tab = new DevFileChooserTab(app, {
+			mode: "save",
+			path: platform.systemInfo.homeDir + "/" + "test.js",
+		});
 		
 		app.tabs.push(tab);
 		

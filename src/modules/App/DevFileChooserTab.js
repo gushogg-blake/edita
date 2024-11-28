@@ -2,13 +2,10 @@ let Tab = require("modules/App/Tab");
 let FileChooserApp = require("platforms/electron/dialogs/fileChooser/FileChooserApp");
 
 class DevFileChooserTab extends Tab {
-	constructor(app) {
+	constructor(app, options) {
 		super(app, "devFileChooser");
 		
-		this.fileChooserApp = new FileChooserApp({
-			mode: "selectFiles",
-			path: "/home/gus",
-		});
+		this.fileChooserApp = new FileChooserApp(options);
 		
 		this.teardownCallbacks = [
 			

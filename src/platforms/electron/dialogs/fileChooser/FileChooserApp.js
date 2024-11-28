@@ -5,10 +5,20 @@ class FileChooserApp extends Evented {
 	constructor(options) {
 		super();
 		
-		this.options = options;
+		let {path, mode} = options;
 		
-		this.mode = options.mode;
-		this.path = options.path;
+		this.mode = mode;
+		
+		let node = platform.fs(path);
+		
+		if (mode === "save") {
+			this.dir = node.parent.path;
+			this.name = node.name;
+		} else {
+			this.dir = node.path;
+			this.name = "";
+		}
+		
 		this.breadcrumbs = this.getBreadcrumbs();
 		
 		this.entries = [];
@@ -21,7 +31,7 @@ class FileChooserApp extends Evented {
 			selectFiles: "Select files",
 			selectDir: "Select a folder",
 			save: "Save as",
-		})[options.mode];
+		})[mode];
 		
 		this.teardownCallbacks = [
 			platform.on("dialogClosed", this.onDialogClosed.bind(this)),
@@ -55,12 +65,13 @@ class FileChooserApp extends Evented {
 	}
 	
 	async load() {
-		this.entries = await base.DirEntries.ls(this.path);
+		this.node = platform.fs(this.dir);
+		this.entries = await base.DirEntries.ls(this.dir);
 		this.selectedEntries = this.entries.length > 0 ? [this.entries[0]] : [];
 		
 		let newBreadcrumbs = this.getBreadcrumbs();
 		
-		if (!this.breadcrumbs.some(node => node.path === this.path)) {
+		if (!this.breadcrumbs.some(node => node.path === this.dir)) {
 			this.breadcrumbs = newBreadcrumbs;
 		}
 		
@@ -68,15 +79,15 @@ class FileChooserApp extends Evented {
 	}
 	
 	getBreadcrumbs() {
-		return platform.fs(this.path).lineage;
+		return platform.fs(this.dir).lineage;
 	}
 	
 	setName(name) {
 		this.name = name;
 	}
 	
-	async nav(path) {
-		this.path = path;
+	async nav(dir) {
+		this.dir = dir;
 		
 		await this.load();
 	}
@@ -116,7 +127,7 @@ class FileChooserApp extends Evented {
 			}
 			
 			this.respond({
-				path: platform.fs(this.path).child(name).path,
+				path: platform.fs(this.dir).child(name).path,
 			});
 		}
 	}

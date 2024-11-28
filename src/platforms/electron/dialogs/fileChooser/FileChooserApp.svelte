@@ -1,6 +1,7 @@
 <script>
-import {onMount, createEventDispatcher, getContext} from "svelte";
+import {onMount, createEventDispatcher, getContext, tick} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
+import sleep from "utils/sleep";
 import clickElementFromAccel from "utils/dom/clickElementFromAccel";
 import themeStyle from "components/themeStyle";
 import Accel from "components/utils/Accel.svelte";
@@ -9,10 +10,9 @@ import Spacer from "components/utils/Spacer.svelte";
 
 export let app;
 
-let inputValue = "";
-
 let {
-	path,
+	mode,
+	dir,
 	entries,
 	selectedEntries,
 	name,
@@ -20,11 +20,13 @@ let {
 	breadcrumbs,
 } = app;
 
-let {mode} = app.options;
 let showHiddenFiles = base.getPref("fileChooser.showHiddenFiles");
 
+let input;
+let inputValue = name;
+
 function updateMain() {
-	({path, entries, breadcrumbs, selectedEntries} = app);
+	({dir, entries, breadcrumbs, selectedEntries} = app);
 }
 
 function updateSelected() {
@@ -86,6 +88,22 @@ onMount(async function() {
 		app.on("updateBookmarks", updateBookmarks),
 	];
 	
+	input?.focus();
+	
+	if (name) {
+		if (name.includes(".")) {
+			let i = name.indexOf(".");
+			
+			input.setSelectionRange(0, i);
+		} else {
+			input.select();
+		}
+	}
+	
+	await sleep(100);
+	
+	//input?.focus();
+	
 	return function() {
 		for (let fn of teardown) {
 			fn();
@@ -104,6 +122,21 @@ onMount(async function() {
 	flex-direction: column;
 	width: 100%;
 	height: 100%;
+}
+
+#top {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 6px;
+}
+
+#input {
+	
+}
+
+input {
+	width: 100%;
 }
 
 #cols {
@@ -168,7 +201,6 @@ onMount(async function() {
 #breadcrumbs {
 	display: flex;
 	gap: 6px;
-	padding: 6px;
 }
 
 .breadcrumb {
@@ -185,25 +217,27 @@ onMount(async function() {
 </style>
 
 <div id="main" class="edita" style={themeStyle(base.theme.app)}>
-	{#if mode === "save"}
-		<div id="input">
-			<input bind:value={inputValue}>
-		</div>
-	{/if}
-	<div id="breadcrumbs">
-		{#each breadcrumbs as node}
-			<div class="breadcrumb" on:click={() => app.nav(node.path)}>
-				{node.name}
+	<div id="top">
+		{#if mode === "save"}
+			<div id="input">
+				<input bind:value={inputValue} bind:this={input}>
 			</div>
-		{/each}
+		{/if}
+		<div id="breadcrumbs">
+			{#each breadcrumbs as node}
+				<div class="breadcrumb" on:click={() => app.nav(node.path)}>
+					{node.name}
+				</div>
+			{/each}
+		</div>
 	</div>
 	<div id="cols">
 		<div id="left">
-			{#each bookmarks as path}
-				<div class="entry" on:click={() => app.nav(path)}>
+			{#each bookmarks as dir}
+				<div class="entry" on:click={() => app.nav(dir)}>
 					<div class="icon dirIcon"></div>
 					<div class="name">
-						{platform.fs(path).name}
+						{platform.fs(dir).name}
 					</div>
 				</div>
 			{/each}
