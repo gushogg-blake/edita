@@ -1,5 +1,5 @@
 let Tab = require("modules/App/Tab");
-let FileChooserApp = require("platform/dialogs/fileChooser/FileChooserApp");
+let FileChooserApp = require("platforms/electron/dialogs/fileChooser/FileChooserApp");
 
 class DevFileChooserTab extends Tab {
 	constructor(app) {
@@ -16,7 +16,7 @@ class DevFileChooserTab extends Tab {
 	}
 	
 	async init() {
-		
+		await this.fileChooserApp.init();
 	}
 	
 	get label() {

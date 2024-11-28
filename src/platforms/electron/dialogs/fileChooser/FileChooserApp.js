@@ -12,6 +12,7 @@ class FileChooserApp extends Evented {
 		this.name = "";
 		this.entries = [];
 		this.selectedEntries = [];
+		this.bookmarks = [];
 		
 		this.hasResponded = false;
 		
@@ -21,30 +22,35 @@ class FileChooserApp extends Evented {
 			save: "Save as",
 		})[options.mode];
 		
-		this.getBookmarks();
-		
 		this.teardownCallbacks = [
 			platform.on("dialogClosed", this.onDialogClosed.bind(this)),
 		];
 	}
 	
-	async getBookmarks() {
+	async loadBookmarks() {
+		let bookmarks;
+		
 		try {
 			// PLATFORM - assumes GTK
 			let str = await platform.fs(platform.systemInfo.homeDir, ".config", "gtk-3.0", "bookmarks").read();
 			let lines = str.split("\n").map(s => s.trim()).filter(Boolean);
 			let normalDirs = lines.filter(line => line.startsWith("file://")).map(line => line.substr("file://".length));
 			
-			return normalDirs;
+			bookmarks = normalDirs;
 		} catch (e) {
 			console.log(e);
 			
-			return [];
+			bookmarks = [];
 		}
+		
+		this.bookmarks = bookmarks;
+		
+		this.fire("updateBookmarks", bookmarks);
 	}
 	
 	async init() {
 		this.load();
+		this.loadBookmarks();
 	}
 	
 	async load() {
@@ -113,10 +119,6 @@ class FileChooserApp extends Evented {
 				});
 			}
 		}
-	}
-	
-	async init() {
-		this.load();
 	}
 	
 	_respond(response) {

@@ -35,6 +35,8 @@ module.exports = async function(app) {
 	
 	app.tabs.push(tab);
 	
+	tab.init();
+	
 	app.fire("updateTabs");
 	
 	app.selectTab(tab);
