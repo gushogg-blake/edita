@@ -1,5 +1,9 @@
 let bluebird = require("bluebird");
 
+function compareEntries(a, b) {
+	return a.node.name.localeCompare(b.node.name);
+}
+
 module.exports = {
 	async createEntry(path) {
 		let node = platform.fs(path);
@@ -23,8 +27,8 @@ module.exports = {
 			},
 		);
 		
-		let dirs = entries.filter(e => e.isDir);
-		let files = entries.filter(e => !e.isDir);
+		let dirs = entries.filter(e => e.isDir).sort(compareEntries);
+		let files = entries.filter(e => !e.isDir).sort(compareEntries);
 		
 		return [...dirs, ...files];
 	},

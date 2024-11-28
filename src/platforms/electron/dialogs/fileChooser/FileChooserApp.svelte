@@ -39,10 +39,15 @@ let functions = {
 	close() {
 		window.close();
 	},
+	
+	ok() {
+		app.ok(inputValue);
+	},
 };
 
 let keymap = {
-	//"Escape": "close",
+	"Escape": "close",
+	"Enter": "ok",
 };
 
 function keydown(e) {

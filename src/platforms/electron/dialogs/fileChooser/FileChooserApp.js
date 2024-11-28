@@ -10,7 +10,6 @@ class FileChooserApp extends Evented {
 		this.mode = options.mode;
 		this.path = options.path;
 		
-		this.name = "";
 		this.entries = [];
 		this.selectedEntries = [];
 		this.bookmarks = [];
@@ -94,7 +93,7 @@ class FileChooserApp extends Evented {
 	//	window.close();
 	//}
 	
-	ok() {
+	ok(name) {
 		if (this.mode === "selectDir") {
 			this.respond({
 				path: this.path,
@@ -104,12 +103,12 @@ class FileChooserApp extends Evented {
 				paths: this.selectedEntries.map(entry => entry.path),
 			});
 		} else if (this.mode === "save") {
-			if (!this.name.trim()) {
+			if (!name.trim()) {
 				throw new Error("name required");
 			}
 			
 			this.respond({
-				path: platform.fs(this.path).child(this.name).path,
+				path: platform.fs(this.path).child(name).path,
 			});
 		}
 	}
