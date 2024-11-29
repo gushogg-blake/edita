@@ -159,24 +159,36 @@ class Node {
 		return this._delete(true);
 	}
 	
-	async rename(name) {
+	async rename(name, options={}) {
 		let newFile = this.sibling(name);
+		
+		if (options.mkdirs) {
+			await newFile.parent.mkdirp();
+		}
 		
 		await fs.rename(this.path, newFile.path);
 		
 		this.setPath(newFile.path);
 	}
 	
-	async move(dest) {
+	async move(dest, options={}) {
+		if (dest.endsWith("/")) {
+			dest += this.name;
+		}
+		
 		await this.rename(dest);
 	}
 	
-	async copy(dest) {
-		if (dest instanceof Node) {
-			dest = dest.path;
+	async copy(dest, options={}) {
+		if (!(dest instanceof Node)) {
+			dest = this.sibling(dest);
 		}
 		
-		await fs.copy(this.path, dest);
+		if (options.mkdirs) {
+			await dest.parent.mkdirp();
+		}
+		
+		await fs.copy(this.path, dest.path);
 	}
 	
 	readdir() {

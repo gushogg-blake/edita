@@ -1,0 +1,17 @@
+module.exports = {
+	codepatterns: "@gushogg-blake/tree-sitter-codepatterns",
+	query: "@gushogg-blake/tree-sitter-query",
+	markdown: "@tree-sitter-grammars/tree-sitter-markdown/tree-sitter-markdown",
+	markdown_inline: "@tree-sitter-grammars/tree-sitter-markdown/tree-sitter-markdown-inline",
+	svelte: "@tree-sitter-grammars/tree-sitter-svelte",
+	c: "tree-sitter-c",
+	cpp: "tree-sitter-cpp",
+	css: "tree-sitter-css",
+	html: "tree-sitter-html",
+	javascript: "tree-sitter-javascript",
+	php: "tree-sitter-php",
+	python: "tree-sitter-python",
+	ruby: "tree-sitter-ruby",
+	scss: "tree-sitter-scss",
+	typescript: "tree-sitter-typescript",
+};
