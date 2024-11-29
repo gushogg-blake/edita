@@ -1,35 +1,6 @@
-Tree-sitter
-===
+# Tree-sitter
 
-Edita uses a fork of tree-sitter with the following changes:
-
-- Fix environment detection in `lib/binding_web/binding.js` (the old check checked for node globals like `process`, which are available in the renderer process in Electron).
-
-- Statically link parsers in `script/build-wasm` to support the following langs, which use system libraries that aren't in the main `lib/binding_web/exports.json` list:
-
-	- Ruby
-	- Svelte
-	- Markdown
-	
-	See:
-	
-	- https://github.com/emscripten-core/emscripten/issues/8308
-	- https://emscripten.org/docs/compiling/Dynamic-Linking.html (System Libraries section)
-	- https://github.com/tree-sitter/tree-sitter/issues/949
-	
-	There are two other solutions suggested in the emscripten docs:
-	
-	- add `EMCC_FORCE_STDLIBS=1` and `-s EXPORT_ALL=1` to the `emcc` command in tree-sitter
-	
-	- add missing symbols to exports.json (as described in #949)
-	
-	but neither of these worked.
-	
-	The only disadvantage of static linking is that the langs will be loaded unconditionally on startup, taking up some of the startup time that we want to use for loading common langs.
-
-- Add support for statically linked modules to `Language.load` in `lib/binding_web/binding.js`.
-
-Fork: https://github.com/gushogg-blake/tree-sitter
+TODO sort out a way to build tree-sitter - or just get the wasm and binding and patch it not using npm (or publish my own package on npm just with the wasm... then the readme could explain how to get the wasm, and that repo could contain the patch, or something)
 
 ## emscripten/emsdk/llvm
 
