@@ -27,6 +27,8 @@ let inputValue = name;
 
 function updateMain() {
 	({dir, entries, breadcrumbs, selectedEntries} = app);
+	
+	input?.focus();
 }
 
 function updateSelected() {
