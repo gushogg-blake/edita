@@ -1,11 +1,10 @@
 let bluebird = require("bluebird");
-let minimatch = require("minimatch-browser");
-let createWalk = require("modules/walk");
+
+let queues = {};
 
 module.exports = function(config) {
 	let {
 		fs,
-		open,
 		path: osPath,
 		glob,
 		mkdirp,
@@ -13,12 +12,10 @@ module.exports = function(config) {
 		cwd,
 		fileIsBinary,
 		homeDir,
+		walk,
+		minimatch,
+		noBinaryFiles,
 	} = config;
-	
-	let walk = createWalk({
-		fs,
-		path: osPath,
-	});
 	
 	class FileIsBinary extends Error {}
 	
@@ -300,12 +297,46 @@ module.exports = function(config) {
 			return this.write(JSON.stringify(json, null, 4), options);
 		}
 		
-		async read() {
-			if (await this.isBinary()) {
-				throw new FileIsBinary("File is binary: " + this.path);
+		getQueue() {
+			if (!queues[this.path]) {
+				queues[this.path] = [];
+			}
+			
+			return queues[this.path];
+		}
+		
+		async _read() {
+			if (config.noBinaryFiles) {
+				if (await this.isBinary()) {
+					throw new FileIsBinary("File is binary: " + this.path);
+				}
 			}
 			
 			return (await fs.readFile(this.path)).toString();
+		}
+		
+		async _write(data) {
+			return await fs.writeFile(this.path, data);
+		}
+		
+		async read() {
+			let existingTask = queues[this.path]?.find(task => task.type === "read");
+			
+			if (existingTask) {
+				return existingTask.promise;
+			}
+			
+			let task = {
+				type: "read",
+				promise: promiseWithMethods(),
+				inProgress: false,
+			};
+			
+			this.getQueue().push(task);
+			
+			this.checkQueue();
+			
+			return task.promise;
 		}
 		
 		async write(data, options={}) {
@@ -318,7 +349,51 @@ module.exports = function(config) {
 				await this.parent.mkdirp();
 			}
 			
-			return fs.writeFile(this.path, data);
+			let task = {
+				type: "write",
+				data,
+				promise: promiseWithMethods(),
+				inProgress: false,
+			};
+			
+			this.getQueue().push(task);
+			
+			this.checkQueue();
+			
+			return task.promise;
+		}
+		
+		async checkQueue() {
+			let queue = queues[this.path];
+			let task = queue[0];
+			
+			if (task.inProgress) {
+				return;
+			}
+			
+			task.inProgress = true;
+			
+			try {
+				if (task.type === "read") {
+					task.promise.resolve(await this._read());
+				} else {
+					task.promise.resolve(await this._write(task.data));
+				}
+			} catch (e) {
+				task.promise.reject(e);
+			} finally {
+				queue.shift();
+				
+				if (queue.length > 0) {
+					this.checkQueue();
+				} else {
+					delete queues[this.path];
+				}
+			}
+		}
+		
+		createReadStream() {
+			return fs.createReadStream(this.path);
 		}
 		
 		exists() {

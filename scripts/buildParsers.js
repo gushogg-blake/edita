@@ -1,13 +1,19 @@
-let cmdSync = require("../src/platforms/electron/mainProcess/utils/cmdSync");
-let fs = require("../src/platforms/electron/mainProcess/modules/fs");
+let {cmdSync, fs} = require("../common/node");
 let langPackageMap = require("./langPackageMap");
 
 process.chdir(__dirname + "/..");
 
 (async function() {
 	for (let [langCode, packagePath] of Object.entries(langPackageMap)) {
-		cmdSync("npx tree-sitter build --wasm node_modules/" + packagePath);
-		
-		await fs("tree-sitter-" + langCode + ".wasm").move("vendor/public/tree-sitter/langs/");
+		try {
+			cmdSync("npx tree-sitter build --wasm node_modules/" + packagePath);
+			
+			await fs("tree-sitter-" + langCode + ".wasm").move("vendor/public/tree-sitter/langs/", {
+				mkdirs: true,
+			});
+		} catch (e) {
+			console.log("Error when building parser for " + langCode);
+			console.error(e);
+		}
 	}
 })();
