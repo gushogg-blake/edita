@@ -58,6 +58,7 @@ function commonPlugins(platform) {
 				"utils": path.join(root, "src/utils"),
 				"platforms": path.join(root, "src/platforms"),
 				"platform": path.join(root, "src/platforms/" + platform),
+				"common": path.join(root, "common"),
 				"vendor": path.join(root, "vendor"),
 				"test": path.join(root, "test"),
 			},

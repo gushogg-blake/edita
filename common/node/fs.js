@@ -1,25 +1,19 @@
 let os = require("os");
 let path = require("path");
 let fsExtra = require("fs-extra");
+let minimatch = require("minimatch-browser");
 let glob = require("glob");
 let mkdirp = require("mkdirp");
-let chokidar = require("chokidar");
-let fileIsBinary = require("vendor/fileIsBinary");
-let fs = require("common/fs");
-let createWalk = require("modules/walk");
+
+let fs = require("../fs");
 
 module.exports = fs({
 	fs: fsExtra,
-	path,
 	glob,
 	mkdirp,
-	fileIsBinary,
+	minimatch,
+	path,
 	homeDir: os.homedir(),
-	
-	walk: createWalk({
-		fs: fsExtra,
-		path,
-	}),
 	
 	cwd() {
 		return process.cwd();
