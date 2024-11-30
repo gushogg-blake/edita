@@ -1,6 +1,8 @@
 let minimatch = require("minimatch-browser");
 let bluebird = require("bluebird");
 
+let createFs = require("common/fs");
+
 let path = require("vendor/path-browser");
 let fsWeb = require("vendor/fs-web");
 
@@ -10,7 +12,6 @@ let {on} = require("utils/dom/domEvents");
 let loadScript = require("utils/dom/loadScript");
 let loadCss = require("utils/dom/loadCss");
 let contextMenu = require("modules/contextMenu");
-let createFs = require("modules/fs");
 
 let clipboard = require("platform/modules/clipboard");
 let jsonStore = require("platform/modules/jsonStore");
@@ -75,7 +76,8 @@ class Platform extends Evented {
 			fs,
 			path,
 			homeDir: this.systemInfo.homeDir,
-			
+			minimatch,
+						
 			async mkdirp(path) {
 				let dirs = path.substr(1).split("/").filter(Boolean);
 				

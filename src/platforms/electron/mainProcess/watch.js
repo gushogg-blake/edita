@@ -2,7 +2,6 @@ let {app: electronApp} = require("electron");
 let {spawn} = require("child_process");
 let path = require("path");
 let chokidar = require("chokidar");
-let fs = require("./modules/fs");
 
 function debounce(fn, delay) {
 	let timer;
