@@ -131,7 +131,9 @@ module.exports = function(editor, editorComponent) {
 		
 		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		
-		view.setInsertCursor(cursor);
+		requestAnimationFrame(function() {
+			view.setInsertCursor(cursor);
+		});
 	}
 	
 	function dragenter(e) {
