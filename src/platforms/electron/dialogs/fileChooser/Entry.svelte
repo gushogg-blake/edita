@@ -47,7 +47,6 @@ function mousedown(e, entry) {
 
 function onBlur() {
 	rename();
-	console.log("blur");
 }
 
 onMount(function() {
