@@ -87,17 +87,22 @@ class FileChooserApp extends Evented {
 		this.name = name;
 	}
 	
-	newFolder(parentDir) {
+	newFolder() {
+		let parentDir = this.dir;
 		let entry = new Entry(true);
 		
 		entry.on("create", async (name) => {
-			let newDir = platform.fs(parentDir).child(name)
+			let newDir = platform.fs(parentDir).child(name);
 			
 			await newDir.mkdirp();
 			
 			this.fire("newFolderCreated");
 			
 			this.nav(newDir.path);
+		});
+		
+		entry.on("cancel", () => {
+			this.fire("cancelNewFolder");
 		});
 		
 		this.fire("newFolder", entry);

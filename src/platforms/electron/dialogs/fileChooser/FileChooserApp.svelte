@@ -82,6 +82,10 @@ function onNewFolder(entry) {
 	newFolderEntry = entry;
 }
 
+function onCancelNewFolder(entry) {
+	newFolderEntry = null;
+}
+
 function onNewFolderCreated() {
 	newFolderEntry = null;
 }
@@ -97,6 +101,7 @@ onMount(async function() {
 		app.on("updateBookmarks", updateBookmarks),
 		app.on("newFolder", onNewFolder),
 		app.on("newFolderCreated", onNewFolderCreated),
+		app.on("cancelNewFolder", onCancelNewFolder),
 	];
 	
 	input?.focus();
@@ -253,7 +258,7 @@ input {
 	</div>
 	<div id="cols">
 		<div id="left">
-			{#each bookmarks as dir}
+			{#each bookmarks as dir (dir)}
 				<div class="entry" on:click={() => app.nav(dir)}>
 					<div class="icon dirIcon"></div>
 					<div class="name">
@@ -267,7 +272,7 @@ input {
 				{#if newFolderEntry}
 					<Entry {app} entry={newFolderEntry}/>
 				{/if}
-				{#each filteredEntries as entry}
+				{#each filteredEntries as entry (entry)}
 					<Entry {app} {entry} selected={selectedEntries.includes(entry)}/>
 				{/each}
 			</div>

@@ -32,6 +32,14 @@ module.exports = class extends Evented {
 		this.fire("rename", this.name);
 	}
 	
+	cancelRename() {
+		if (this.isNew) {
+			this.fire("cancel");
+		} else {
+			this.fire("cancelRename");
+		}
+	}
+	
 	requestRename() {
 		this.fire("requestRename");
 	}

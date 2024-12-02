@@ -17,7 +17,15 @@ function update() {
 
 function nameInputKeydown(e) {
 	if (e.key === "Enter") {
+		e.stopPropagation();
+		
 		rename();
+	}
+	
+	if (e.key === "Escape") {
+		e.stopPropagation();
+		
+		entry.cancelRename();
 	}
 }
 
@@ -25,7 +33,7 @@ function rename() {
 	if (nameInputValue.trim().length > 0) {
 		entry.rename(nameInputValue);
 	} else {
-		// TODO ?
+		
 	}
 }
 
@@ -37,6 +45,10 @@ async function onRequestRename() {
 	nameInput?.focus();
 }
 
+async function onCancelRename() {
+	renaming = false;
+}
+
 function mousedown(e, entry) {
 	if (e.ctrlKey) {
 		app.toggleSelect(entry);
@@ -46,7 +58,7 @@ function mousedown(e, entry) {
 }
 
 function onBlur() {
-	rename();
+	entry.cancelRename();
 }
 
 onMount(function() {
