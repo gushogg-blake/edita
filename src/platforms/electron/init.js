@@ -29,11 +29,13 @@ window.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
 
 export default async function(init, options={}) {
 	let {
-		isDialog = false,
+		isDialogWindow = false,
 		useLangs = true,
 	} = options;
 	
-	window.platform = new Platform();
+	window.platform = new Platform({
+		isDialogWindow,
+	});
 	
 	await platform.init();
 	
@@ -43,7 +45,7 @@ export default async function(init, options={}) {
 		useLangs,
 	});
 	
-	if (isDialog) {
+	if (isDialogWindow) {
 		ipcRenderer.handle("dialogInit", (e, ...args) => init(...args));
 	} else {
 		init();

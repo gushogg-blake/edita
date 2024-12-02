@@ -1,5 +1,6 @@
 let Evented = require("utils/Evented");
 let {removeInPlace} = require("utils/arrayMethods");
+let Entry = require("./Entry");
 
 class FileChooserApp extends Evented {
 	constructor(options) {
@@ -66,7 +67,7 @@ class FileChooserApp extends Evented {
 	
 	async load() {
 		this.node = platform.fs(this.dir);
-		this.entries = await base.DirEntries.ls(this.dir);
+		this.entries = (await base.DirEntries.ls(this.dir)).map(n => new Entry(false, n));
 		this.selectedEntries = this.entries.length > 0 ? [this.entries[0]] : [];
 		
 		let newBreadcrumbs = this.getBreadcrumbs();
@@ -84,6 +85,22 @@ class FileChooserApp extends Evented {
 	
 	setName(name) {
 		this.name = name;
+	}
+	
+	newFolder(parentDir) {
+		let entry = new Entry(true);
+		
+		entry.on("create", async (name) => {
+			let newDir = platform.fs(parentDir).child(name)
+			
+			await newDir.mkdirp();
+			
+			this.fire("newFolderCreated");
+			
+			this.nav(newDir.path);
+		});
+		
+		this.fire("newFolder", entry);
 	}
 	
 	async nav(dir) {

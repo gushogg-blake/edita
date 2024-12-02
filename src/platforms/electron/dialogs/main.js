@@ -28,7 +28,7 @@ export default function(App, AppComponent, useLangs=true) {
 		
 		window.app = app;
 	}, {
-		isDialog: true,
+		isDialogWindow: true,
 		useLangs,
 	});
 }

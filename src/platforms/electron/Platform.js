@@ -13,8 +13,13 @@ let ipcRenderer = require("platform/modules/ipcRenderer");
 let ipc = require("platform/modules/ipc");
 
 class Platform extends Evented {
-	constructor() {
+	constructor(options={}) {
 		super();
+		
+		options = {
+			isDialogWindow: false,
+			...options,
+		};
 		
 		this.isWeb = false;
 		
@@ -25,6 +30,7 @@ class Platform extends Evented {
 		
 		this.config = config;
 		this.isMainWindow = isMainWindow;
+		this.isDialogWindow = options.isDialogWindow;
 		
 		this.systemInfo = {
 			newline: os.EOL,

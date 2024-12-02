@@ -6,7 +6,7 @@ import clickElementFromAccel from "utils/dom/clickElementFromAccel";
 import themeStyle from "components/themeStyle";
 import Accel from "components/utils/Accel.svelte";
 import Spacer from "components/utils/Spacer.svelte";
-//import FileChooser from "components/FileChooser.svelte";
+import Entry from "./Entry.svelte";
 
 export let app;
 
@@ -24,6 +24,7 @@ let showHiddenFiles = base.getPref("fileChooser.showHiddenFiles");
 
 let input;
 let inputValue = name;
+let newFolderEntry = null;
 
 function updateMain() {
 	({dir, entries, breadcrumbs, selectedEntries} = app);
@@ -45,7 +46,9 @@ function cancel() {
 
 let functions = {
 	close() {
-		window.close();
+		if (platform.isDialogWindow) {
+			window.close();
+		}
 	},
 	
 	ok() {
@@ -71,12 +74,16 @@ function keydown(e) {
 	}
 }
 
-function mousedown(e, entry) {
-	if (e.ctrlKey) {
-		app.toggleSelect(entry);
-	} else {
-		app.select(entry);
-	}
+function newFolder() {
+	app.newFolder();
+}
+
+function onNewFolder(entry) {
+	newFolderEntry = entry;
+}
+
+function onNewFolderCreated() {
+	newFolderEntry = null;
 }
 
 $: filteredEntries = entries.filter(function(entry) {
@@ -88,6 +95,8 @@ onMount(async function() {
 		app.on("updateMain", updateMain),
 		app.on("updateSelected", updateSelected),
 		app.on("updateBookmarks", updateBookmarks),
+		app.on("newFolder", onNewFolder),
+		app.on("newFolderCreated", onNewFolderCreated),
 	];
 	
 	input?.focus();
@@ -216,6 +225,11 @@ input {
 	gap: 6px;
 	padding: 6px;
 }
+
+.flex {
+	display: flex;
+	gap: 6px;
+}
 </style>
 
 <div id="main" class="edita" style={themeStyle(base.theme.app)}>
@@ -225,12 +239,16 @@ input {
 				<input bind:value={inputValue} bind:this={input}>
 			</div>
 		{/if}
-		<div id="breadcrumbs">
-			{#each breadcrumbs as node}
-				<div class="breadcrumb" on:click={() => app.nav(node.path)}>
-					{node.name}
-				</div>
-			{/each}
+		<div class="flex">
+			<div id="breadcrumbs">
+				{#each breadcrumbs as node}
+					<div class="breadcrumb" on:click={() => app.nav(node.path)}>
+						{node.name}
+					</div>
+				{/each}
+			</div>
+			<Spacer/>
+			<button on:click={newFolder}>+</button>
 		</div>
 	</div>
 	<div id="cols">
@@ -246,23 +264,11 @@ input {
 		</div>
 		<div class="scrollWrapper" id="right">
 			<div class="scroll">
+				{#if newFolderEntry}
+					<Entry {app} entry={newFolderEntry}/>
+				{/if}
 				{#each filteredEntries as entry}
-					<div
-						class="entry"
-						class:selected={selectedEntries.includes(entry)}
-						on:mousedown={(e) => mousedown(e, entry)}
-						on:dblclick={() => app.dblclick(entry)}
-						on:contextmenu={(e) => contextmenu(e, entry)}
-					>
-						<div
-							class="icon"
-							class:dirIcon={entry.isDir}
-							class:fileIcon={!entry.isDir}
-						></div>
-						<div class="name">
-							{entry.node.name}
-						</div>
-					</div>
+					<Entry {app} {entry} selected={selectedEntries.includes(entry)}/>
 				{/each}
 			</div>
 		</div>
