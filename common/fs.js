@@ -1,4 +1,5 @@
 let bluebird = require("bluebird");
+let promiseWithMethods = require("./promiseWithMethods");
 
 let queues = {};
 
@@ -184,16 +185,29 @@ module.exports = function(config) {
 			return this._delete(true);
 		}
 		
-		async rename(name) {
+		async rename(name, options={}) {
+			options = {
+				mkdirs: false,
+				...options,
+			};
+			
 			let newFile = this.sibling(name);
+			
+			if (options.mkdirs) {
+				await newFile.parent.mkdirp();
+			}
 			
 			await fs.rename(this.path, newFile.path);
 			
 			this.setPath(newFile.path);
 		}
 		
-		async move(dest) {
-			await this.rename(dest);
+		async move(dest, options={}) {
+			if (dest.endsWith(osPath.sep)) {
+				dest += this.name;
+			}
+			
+			await this.rename(dest, options);
 		}
 		
 		async copy(dest) {
