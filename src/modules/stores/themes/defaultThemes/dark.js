@@ -108,6 +108,17 @@ let theme = {
 			hashBang: "#e8f8fd",
 		},
 		
+		vala: {
+			keyword: "#54b9ec",
+			id: "#e8f8fd",
+			comment: "#4686C1 italic",
+			symbol: "#e8f8fd",
+			bracket: "#54B9EC",
+			number: "#96defa",
+			string: "#89e14b",
+			regex: "#1ab3ec",
+		},
+		
 		typescript: {
 			keyword: "#54b9ec",
 			id: "#e8f8fd",

@@ -32,6 +32,6 @@ module.exports = {
 	},
 	
 	async isProjectRoot(dir) {
-		return (await platform.fs(dir).readdir()).includes("Makefile");
+		return (await platform.fs(dir).readdir()).includes(".git");
 	},
-};
+}

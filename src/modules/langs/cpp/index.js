@@ -14,9 +14,16 @@ let lang = {
 	codeIntel,
 	injections: [],
 	
+	init(env) {
+		env = {...env, lang: this};
+		
+		//this.astMode.init(env);
+		this.codeIntel.init(env);
+	},
+	
 	isBlock(node) {
 		return node.start.lineIndex !== node.end.lineIndex && [
-			
+			"function_definition",
 		].includes(node.type);
 	},
 	
@@ -112,6 +119,10 @@ let lang = {
 			"cc",
 		].includes(type)) {
 			return "general";
+		}
+		
+		if (type === "vala") {
+			return "alternate";
 		}
 		
 		return null;

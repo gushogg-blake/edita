@@ -3,7 +3,7 @@ let JsonStore = require("modules/JsonStore");
 let defaultThemes = require("./defaultThemes");
 
 let migrations = {
-	"16"(theme, key) {
+	"17"(theme, key) {
 		return defaultThemes[key] || undefined;
 	},
 };

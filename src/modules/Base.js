@@ -20,6 +20,7 @@ let Lang = require("modules/Lang");
 
 let javascript = require("modules/langs/javascript");
 let typescript = require("modules/langs/typescript");
+let vala = require("modules/langs/vala");
 let tsx = require("modules/langs/tsx");
 let svelte = require("modules/langs/svelte");
 let html = require("modules/langs/html");
@@ -114,6 +115,7 @@ class Base extends Evented {
 		let langs = [
 			javascript,
 			typescript,
+			vala,
 			tsx,
 			svelte,
 			html,

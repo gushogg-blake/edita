@@ -111,6 +111,17 @@ let theme = {
 			//jsx: "#a75209", // orange
 		},
 		
+		vala: {
+			keyword: "#004fc5",
+			id: "#202020",
+			comment: "#7f7f7f italic",
+			symbol: "#202020",
+			bracket: "#202020",
+			number: "#42b0c9",
+			string: "#4d9d10",
+			regex: "#cc7030",
+		},
+		
 		typescript: {
 			keyword: "#004fc5",
 			id: "#202020",
