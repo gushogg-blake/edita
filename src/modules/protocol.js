@@ -8,7 +8,9 @@ module.exports = function(url) {
 			},
 			
 			save(code) {
-				return platform.fs(path).write(code);
+				return platform.fs(path).write(code, {
+					mkdirp: true,
+				});
 			},
 			
 			delete() {

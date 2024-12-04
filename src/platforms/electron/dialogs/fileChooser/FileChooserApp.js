@@ -40,7 +40,9 @@ class FileChooserApp extends Evented {
 	}
 	
 	async loadBookmarks() {
-		let bookmarks;
+		let bookmarks = [
+			platform.systemInfo.homeDir,
+		];
 		
 		try {
 			// PLATFORM - assumes GTK
@@ -48,11 +50,9 @@ class FileChooserApp extends Evented {
 			let lines = str.split("\n").map(s => s.trim()).filter(Boolean);
 			let normalDirs = lines.filter(line => line.startsWith("file://")).map(line => line.substr("file://".length));
 			
-			bookmarks = normalDirs;
+			bookmarks = [...bookmarks, ...normalDirs];
 		} catch (e) {
 			console.log(e);
-			
-			bookmarks = [];
 		}
 		
 		this.bookmarks = bookmarks;
