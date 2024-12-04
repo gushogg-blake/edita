@@ -4,4 +4,4 @@ path=`pwd`
 
 cd %path%
 
-node build/electron-dev/mainProcess/bootstrap.js -- --start-args --cwd="$path" "$@"
+node build/electron/mainProcess/bootstrap.js -- --start-args --cwd="$path" "$@"
