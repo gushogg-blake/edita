@@ -77,6 +77,11 @@ let keywords = new Set([
 	"void",
 	"weak",
 	"while",
+	
+	// types are not always named after the word
+	
+	"this_access",
+	"type",
 ]);
 
 let lang = {
@@ -170,15 +175,21 @@ let lang = {
 			return null;
 		}
 		
-		if ([
-			"identifier",
-			"property_identifier",
-			"shorthand_property_identifier",
-			"shorthand_property_identifier_pattern",
-			"statement_identifier",
-			"type_identifier",
-			"predefined_type",
-		].includes(type)) {
+		if (
+			[
+				"identifier",
+				"property_identifier",
+				"shorthand_property_identifier",
+				"shorthand_property_identifier_pattern",
+				"statement_identifier",
+				"type_identifier",
+				"predefined_type",
+			].includes(type)
+			&& !(
+				parent?.parent?.type === "type"
+				&& keywords.has(text)
+			)
+		) {
 			return "id";
 		}
 		
@@ -202,8 +213,8 @@ let lang = {
 			return "bracket";
 		}
 		
-		if (text[0].match(wordRe)) {
-			if (keywords.has(text)) {
+		if (type[0].match(wordRe)) {
+			if (keywords.has(type) || keywords.has(text)) {
 				return "keyword";
 			} else {
 				return "id";
