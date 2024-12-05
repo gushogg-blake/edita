@@ -101,6 +101,7 @@ let lang = {
 			"class_declaration", // classes
 			"method_declaration", // functions
 			"initializer", // case blocks, arrays
+			"object_initializers",
 			//"for_statement",
 			//"while_statement",
 			//"do_statement",
@@ -160,7 +161,7 @@ let lang = {
 	},
 	
 	getHiliteClass(node) {
-		let {type, parent} = node;
+		let {type, parent, text} = node;
 		
 		if ([
 			"string",
@@ -201,8 +202,8 @@ let lang = {
 			return "bracket";
 		}
 		
-		if (type[0].match(wordRe)) {
-			if (keywords.has(type)) {
+		if (text[0].match(wordRe)) {
+			if (keywords.has(text)) {
 				return "keyword";
 			} else {
 				return "id";
