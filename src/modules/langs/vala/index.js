@@ -6,6 +6,7 @@ let wordRe = /\w/;
 let keywords = new Set([
 	"abstract",
 	"as",
+	"async",
 	"base",
 	"bool",
 	"break",
@@ -17,10 +18,12 @@ let keywords = new Set([
 	"construct",
 	"continue",
 	"default",
+	"delegate",
 	"delete",
 	"do",
 	"double",
 	"else",
+	"ensures",
 	"enum",
 	"export",
 	"false",
@@ -45,10 +48,13 @@ let keywords = new Set([
 	"null",
 	"override",
 	"owned",
+	"out",
 	"public",
 	"private",
 	"protected",
+	"ref",
 	"return",
+	"requires",
 	"set",
 	"short",
 	"signal",
@@ -58,6 +64,7 @@ let keywords = new Set([
 	"switch",
 	"this",
 	"throw",
+	"throws",
 	"true",
 	"try",
 	"typeof",
@@ -77,6 +84,7 @@ let keywords = new Set([
 	"void",
 	"weak",
 	"while",
+	"yield",
 	
 	// types are not always named after the word
 	
@@ -107,6 +115,8 @@ let lang = {
 			"method_declaration", // functions
 			"initializer", // case blocks, arrays
 			"object_initializers",
+			"method_call_expression",
+			"enum_declaration",
 			//"for_statement",
 			//"while_statement",
 			//"do_statement",
