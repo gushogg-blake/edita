@@ -211,7 +211,7 @@ let lang = {
 			return "string";
 		}
 		
-		if (type === "number") {
+		if (["integer", "real", "arithmetic_negation_expression"].includes(type)) {
 			return "number";
 		}
 		
