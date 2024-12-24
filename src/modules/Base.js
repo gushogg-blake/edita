@@ -21,6 +21,7 @@ let Lang = require("modules/Lang");
 let javascript = require("modules/langs/javascript");
 let typescript = require("modules/langs/typescript");
 let vala = require("modules/langs/vala");
+let haskell = require("modules/langs/haskell");
 let tsx = require("modules/langs/tsx");
 let svelte = require("modules/langs/svelte");
 let html = require("modules/langs/html");
@@ -116,6 +117,7 @@ class Base extends Evented {
 			javascript,
 			typescript,
 			vala,
+			haskell,
 			tsx,
 			svelte,
 			html,
