@@ -30,7 +30,7 @@ function openLanguages() {
 				// so we actually just want whatever lang the extension
 				// indicates
 				
-				tab.document.updateFormat();
+				await tab.document.updateFormat();
 			},
 		};
 	}));

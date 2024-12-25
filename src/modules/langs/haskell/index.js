@@ -37,10 +37,10 @@ let keywords = new Set([
 ]);
 
 let lang = {
-	group: "vala",
-	code: "vala",
-	name: "Vala",
-	defaultExtension: "vala",
+	group: "haskell",
+	code: "haskell",
+	name: "Haskell",
+	defaultExtension: "hs",
 	astMode,
 	codeIntel,
 	injections: [],

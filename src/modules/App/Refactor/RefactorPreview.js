@@ -118,7 +118,7 @@ class RefactorPreview extends Evented {
 		
 		editor.api.edit(document.selectAll(), code);
 		
-		document.setUrl(url);
+		await document.setUrl(url);
 		
 		view.endBatch();
 	}

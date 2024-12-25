@@ -410,14 +410,18 @@ class Document extends Evented {
 		this.fire("formatChanged");
 	}
 	
-	setUrl(url) {
+	async setUrl(url) {
 		this.url = url;
 		
-		this.updateFormat();
+		await this.updateFormat();
 	}
 	
-	updateFormat() {
-		this.setFormat(base.getFormat(this.string, this.url));
+	async updateFormat() {
+		let format = base.getFormat(this.string, this.url);
+		
+		await base.ensureRequiredLangsInitialised(format.lang);
+		
+		this.setFormat(format);
 	}
 	
 	setLang(lang) {
@@ -445,7 +449,7 @@ class Document extends Evented {
 		
 		platform.removeBackup(this);
 		
-		this.updateFormat();
+		await this.updateFormat();
 		
 		this.fire("save");
 	}

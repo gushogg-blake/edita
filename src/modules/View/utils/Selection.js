@@ -123,7 +123,7 @@ module.exports = {
 				return s(this.cursorFromRowCol(row, indentCols));
 			}
 		} else {
-			if (col === indentCols) {
+			if (!this.normalSelection.isFull() && col === indentCols) {
 				return s(this.cursorFromRowCol(row, 0));
 			} else {
 				return s(this.cursorFromRowCol(row, indentCols));
