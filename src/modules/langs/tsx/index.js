@@ -96,6 +96,10 @@ let lang = {
 			return "attribute";
 		}
 		
+		if (type === "jsx_text") {
+			return "text";
+		}
+		
 		if ([
 			"jsx_fragment",
 			"jsx_opening_element",
@@ -103,7 +107,7 @@ let lang = {
 			"jsx_self_closing_element",
 			"jsx_attribute",
 		].includes(parent?.type)) {
-			if (["identifier", "<", "/", ">"].includes(type)) {
+			if (["identifier", "<", "</", ">"].includes(type)) {
 				return "tag";
 			}
 			
