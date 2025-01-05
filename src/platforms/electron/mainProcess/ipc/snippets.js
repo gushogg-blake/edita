@@ -1,6 +1,5 @@
 let bluebird = require("bluebird");
-let lid = require("../utils/lid");
-let fs = require("../modules/fs");
+let {fs, lid} = require("utils/node/index");
 
 module.exports = function(app) {
 	let snippetsDir = fs(app.config.userDataDir, "snippets");

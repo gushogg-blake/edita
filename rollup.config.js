@@ -100,30 +100,33 @@ function commonPlugins(platform) {
 	];
 }
 
+let nodeIgnore = [
+	"os",
+	"child_process",
+	"fs",
+	"fs-extra",
+	"glob",
+	"path",
+	"constants",
+	"util",
+	"stream",
+	"assert",
+	"string_decoder",
+	"buffer",
+	"events",
+	"electron",
+	"query-string",
+	"chokidar",
+	"yargs",
+];
+
 function electronPlugins() {
 	return [
 		...commonPlugins("electron"),
 		
 		commonjs({
 			requireReturnsDefault: "preferred",
-			
-			ignore: [
-				"os",
-				"fs",
-				"fs-extra",
-				"glob",
-				"path",
-				"constants",
-				"util",
-				"stream",
-				"assert",
-				"string_decoder",
-				"buffer",
-				"events",
-				"electron",
-				"query-string",
-				"chokidar",
-			],
+			ignore: nodeIgnore,
 		}),
 	];
 }
@@ -173,86 +176,128 @@ let builds = [];
 if (platform === "all" || platform === "electron") {
 	let dir = "build/" + (dev ? "electron-dev" : "electron");
 	
-	addBuilds(globalCssBuild(dir + "/css/global.js"), {
-		input: "src/platforms/electron/main.js",
+	addBuilds(
+		globalCssBuild(dir + "/css/global.js"),
 		
-		output: {
-			sourcemap: true,
-			format: "iife",
-			file: dir + "/js/main.js",
-		},
-		
-		plugins: [
-			...electronPlugins(),
+		{
+			input: "src/platforms/electron/mainProcess/bootstrap.js",
 			
-			copy({
-				watch: watch && ["src/platforms/electron/public", "vendor/public"],
-				
-				targets: [
-					{
-						src: "src/platforms/electron/public/*",
-						dest: dir,
-					},
-					{
-						src: "vendor/public/*",
-						dest: dir + "/vendor",
-					},
-				],
-			}),
+			plugins: [
+				commonjs({
+					requireReturnsDefault: "preferred",
+					ignore: nodeIgnore,
+				}),
+			],
 			
-			copy({
-				copyOnce: true, // files are still re-copied on change - this stops the copy from happening again each time the build re-runs, ie. whenever any file is changed
-				watch: watch && "src/platforms/electron/mainProcess",
-				
-				targets: [
-					{
-						src: "src/platforms/electron/mainProcess",
-						dest: dir,
+			output: {
+				sourcemap: true,
+				format: "cjs",
+				file: dir + "/mainProcess/bootstrap.js",
+			},
+		},
+		
+		{
+			input: "src/platforms/electron/mainProcess/main.js",
+			
+			plugins: [
+				alias({
+					entries: {
+						"_common": path.join(root, "common"),
+						"vendor": path.join(root, "vendor"),
 					},
-				],
-			}),
-		],
-	}, {
-		input: "src/platforms/electron/dialogs/fileChooser/main.js",
-		
-		output: {
-			sourcemap: true,
-			format: "iife",
-			file: dir + "/js/dialogs/fileChooser/main.js",
+				}),
+				
+				commonjs({
+					requireReturnsDefault: "preferred",
+					ignore: nodeIgnore,
+				}),
+			],
+			
+			output: {
+				sourcemap: true,
+				format: "cjs",
+				file: dir + "/mainProcess/main.js",
+			},
 		},
 		
-		plugins: [
-			...electronPlugins(),
-			//watch && livereload(dir), // doesn't work for some reason
-		],
-	}, {
-		input: "src/platforms/electron/dialogs/messageBox/main.js",
-		
-		output: {
-			sourcemap: true,
-			format: "iife",
-			file: dir + "/js/dialogs/messageBox/main.js",
+		{
+			input: "src/platforms/electron/main.js",
+			
+			output: {
+				sourcemap: true,
+				format: "iife",
+				file: dir + "/js/main.js",
+			},
+			
+			plugins: [
+				...electronPlugins(),
+				
+				copy({
+					watch: watch && [
+						"src/platforms/electron/public",
+						"vendor/public",
+					],
+					
+					targets: [
+						{
+							src: "src/platforms/electron/public/*",
+							dest: dir,
+						},
+						{
+							src: "vendor/public/*",
+							dest: dir + "/vendor",
+						},
+					],
+				}),
+			],
 		},
 		
-		plugins: [
-			...electronPlugins(),
-			//watch && livereload(dir), // doesn't work for some reason
-		],
-	}, {
-		input: "src/platforms/electron/dialogs/snippetEditor/main.js",
-		
-		output: {
-			sourcemap: true,
-			format: "iife",
-			file: dir + "/js/dialogs/snippetEditor/main.js",
+		{
+			input: "src/platforms/electron/dialogs/fileChooser/main.js",
+			
+			output: {
+				sourcemap: true,
+				format: "iife",
+				file: dir + "/js/dialogs/fileChooser/main.js",
+			},
+			
+			plugins: [
+				...electronPlugins(),
+				//watch && livereload(dir), // doesn't work for some reason
+			],
 		},
 		
-		plugins: [
-			...electronPlugins(),
-			//watch && livereload(dir), // doesn't work for some reason
-			dev && markBuildComplete(dir),
-		],
-	});
+		{
+			input: "src/platforms/electron/dialogs/messageBox/main.js",
+			
+			output: {
+				sourcemap: true,
+				format: "iife",
+				file: dir + "/js/dialogs/messageBox/main.js",
+			},
+			
+			plugins: [
+				...electronPlugins(),
+				//watch && livereload(dir), // doesn't work for some reason
+			],
+		},
+		
+		{
+			input: "src/platforms/electron/dialogs/snippetEditor/main.js",
+			
+			output: {
+				sourcemap: true,
+				format: "iife",
+				file: dir + "/js/dialogs/snippetEditor/main.js",
+			},
+			
+			plugins: [
+				...electronPlugins(),
+				//watch && livereload(dir), // doesn't work for some reason
+				dev && markBuildComplete(dir),
+			],
+		},
+	);
 }
 
 if (platform === "all" || platform === "web") {

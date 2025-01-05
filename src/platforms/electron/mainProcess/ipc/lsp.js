@@ -1,5 +1,5 @@
-let lid = require("../utils/lid");
-let {removeInPlace} = require("../utils/arrayMethods");
+let {lid} = require("utils/node/index");
+let {removeInPlace} = require("utils/arrayMethods");
 let LspServer = require("../modules/lsp/LspServer");
 let config = require("../modules/lsp/config");
 

@@ -45,6 +45,7 @@
 		"mkdirp": "^2.1.3",
 		"typescript": "^4.8.4",
 		"typescript-language-server": "^2.1.0",
+		"utils": "file:src/utils",
 		"yargs": "^17.6.2"
 	},
 	"devDependencies": {

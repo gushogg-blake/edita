@@ -34,8 +34,8 @@ let markdown_inline = require("modules/langs/markdown_inline");
 let cpp = require("modules/langs/cpp");
 let python = require("modules/langs/python");
 let ruby = require("modules/langs/ruby");
-let codepatterns = require("modules/langs/codepatterns");
-let tsq = require("modules/langs/tsq");
+//let codepatterns = require("modules/langs/codepatterns");
+//let tsq = require("modules/langs/tsq");
 let plaintext = require("modules/langs/plaintext");
 
 /*
@@ -119,19 +119,19 @@ class Base extends Evented {
 			vala,
 			haskell,
 			tsx,
-			svelte,
+			//svelte,
 			html,
 			css,
 			scss,
 			php,
-			markdown,
-			markdown_inline,
+			//markdown,
+			//markdown_inline,
 			c,
 			cpp,
 			python,
 			ruby,
-			codepatterns,
-			tsq,
+			//codepatterns,
+			//tsq,
 			plaintext,
 		];
 		
@@ -158,7 +158,6 @@ class Base extends Evented {
 		]);
 		
 		await Promise.all([
-			options.useLangs && this.ensureRequiredLangsInitialised(this.langs.get("codepatterns")),
 			this.initPrefs(),
 			this.initThemes(),
 		]);

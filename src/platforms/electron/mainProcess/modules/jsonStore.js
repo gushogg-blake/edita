@@ -1,4 +1,4 @@
-let fs = require("./fs");
+let {fs} = require("utils/node/index");
 
 module.exports = function(app) {
 	function jsonStorageKey(name, key) {

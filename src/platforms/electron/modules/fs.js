@@ -6,7 +6,7 @@ let mkdirp = require("mkdirp");
 let chokidar = require("chokidar");
 let minimatch = require("minimatch-browser");
 let fileIsBinary = require("vendor/fileIsBinary");
-let fs = require("common/fs");
+let fs = require("utils/fs");
 let createWalk = require("modules/walk");
 
 module.exports = fs({
