@@ -28,7 +28,15 @@ The app can theoretically be instantiated with no UI, and the UI added later, an
 
 ### Tree-sitter and languages
 
-Tree-sitter and language .wasm files are in `vendor`. In the current version, I basically just generate the .wasm files -- which is sometimes tricky, depending on how well the grammar supports it -- and drop them in. I've started switching over to a more sensible system on a branch, where Tree-sitter and the grammars are tracked in package.json and everything needed to build the .wasm files is included in the project. This is a "non-obvious mechanism" that wants resolving.
+Tree-sitter and most languages (grammars) are listed as NPM dependencies and built with a script (`npm run build-parsers`). The Tree-sitter WASM file comes with the `web-tree-sitter` package so doesn't need to be built; parsers are built with `build-parsers`.
+
+Some grammar packages don't conform to the latest Tree-sitter, which requires a tree-sitter.json file. The WASMs for these are present but won't be built by the script. See [vendor/public/tree-sitter/langs/readme.md](vendor/public/tree-sitter/langs/readme.md) for details.
+
+All grammar WASM files are tracked in this repo, so you don't need to build them unless you're updating them.
+
+## Patches
+
+- web-tree-sitter is patched to fix an issue where environment detection thinks Electron (the renderer/browser process) is Node because it has access to Node APIs.
 
 ## Hacks
 
