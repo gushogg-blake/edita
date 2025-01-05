@@ -1,3 +1,4 @@
+let _typeof = require("utils/typeof");
 let Selection = require("modules/Selection");
 let Cursor = require("modules/Cursor");
 
