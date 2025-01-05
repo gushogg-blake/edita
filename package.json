@@ -28,7 +28,8 @@
 		"electron": "./scripts/await-build electron-dev; NODE_ENV=development npm start",
 		"web": "./scripts/await-build web-dev; sirv --dev --quiet --no-clear --port 5000 build/web-dev",
 		"test": "./scripts/await-build test; sirv --dev --quiet --no-clear --port 5001 build/test",
-		"build-parsers": "node ./scripts/buildParsers.js"
+		"build-parsers": "node ./scripts/buildParsers.js",
+		"postinstall": "patch-package"
 	},
 	"dependencies": {
 		"bluebird": "^3.7.2",
@@ -67,6 +68,7 @@
 		"electron": "^22.1.0",
 		"mocha": "^10.2.0",
 		"npm-run-all": "^4.1.5",
+		"patch-package": "^8.0.0",
 		"rollup": "^3.14.0",
 		"rollup-plugin-copy-watch": "^0.0.1",
 		"rollup-plugin-css-only": "^4.3.0",

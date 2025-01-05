@@ -75,7 +75,7 @@ class Tree {
 		can generate a bunch of empty matches, so we filter those out
 		*/
 		
-		return query.matches(this._tree.rootNode, startPosition).map((match) => {
+		return query.matches(this._tree.rootNode, startPosition ? {startPosition} : {}).map((match) => {
 			return match.captures.map(({node: treeSitterNode, name}) => {
 				return {
 					node: this.wrap(treeSitterNode),

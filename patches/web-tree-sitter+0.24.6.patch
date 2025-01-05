@@ -1,0 +1,29 @@
+diff --git a/node_modules/web-tree-sitter/tree-sitter.js b/node_modules/web-tree-sitter/tree-sitter.js
+index 8dce0bd..41aa72e 100644
+--- a/node_modules/web-tree-sitter/tree-sitter.js
++++ b/node_modules/web-tree-sitter/tree-sitter.js
+@@ -17,13 +17,13 @@ var Module = typeof Module != "undefined" ? Module : {};
+ // Determine the runtime environment we are in. You can customize this by
+ // setting the ENVIRONMENT setting at compile time (see settings.js).
+ // Attempt to auto-detect the environment
+-var ENVIRONMENT_IS_WEB = typeof window == "object";
++var ENVIRONMENT_IS_WEB = true;
+ 
+ var ENVIRONMENT_IS_WORKER = typeof importScripts == "function";
+ 
+ // N.b. Electron.js environment is simultaneously a NODE-environment, but
+ // also a web environment.
+-var ENVIRONMENT_IS_NODE = typeof process == "object" && typeof process.versions == "object" && typeof process.versions.node == "string";
++var ENVIRONMENT_IS_NODE = false;
+ 
+ if (ENVIRONMENT_IS_NODE) {}
+ 
+@@ -2949,7 +2949,7 @@ var TreeSitter = function() {
+               bytes = Promise.resolve(input);
+             } else {
+               const url = input;
+-              if (typeof process !== "undefined" && process.versions && process.versions.node) {
++              if (ENVIRONMENT_IS_NODE) {
+                 const fs = require("fs");
+                 bytes = Promise.resolve(fs.readFileSync(url));
+               } else {
