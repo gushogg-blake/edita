@@ -187,7 +187,7 @@ class Base extends Evented {
 	async initTreeSitter() {
 		await TreeSitter.init({
 			locateFile(file) {
-				return platform.resolveTreeSitterWasm(file);
+				return platform.locateTreeSitterWasm();
 			},
 		});
 	}

@@ -236,12 +236,8 @@ class Platform extends Evented {
 		return TreeSitter.Language.load("/vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
 	}
 	
-	resolveTreeSitterWasm(file) {
-		if (file === "tree-sitter.wasm") {
-			return "/vendor/tree-sitter/" + file;
-		} else {
-			return "/vendor/tree-sitter/langs/" + file;
-		}
+	locateTreeSitterWasm() {
+		return "/vendor/tree-sitter/tree-sitter.wasm";
 	}
 	
 	showWindow() {
