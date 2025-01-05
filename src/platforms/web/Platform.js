@@ -1,7 +1,7 @@
 let minimatch = require("minimatch-browser");
 let bluebird = require("bluebird");
 
-let createFs = require("common/fs");
+let createFs = require("utils/fs");
 
 let path = require("vendor/path-browser");
 let fsWeb = require("vendor/fs-web");

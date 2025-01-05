@@ -8,8 +8,8 @@ let {
 let {Readable} = require("stream");
 let path = require("path");
 let windowStateKeeper = require("electron-window-state");
-let {fs, cmdSync} = require("../../../../common/node");
-let {removeInPlace} = require("../../../../common/arrayMethods");
+let {fs, cmdSync} = require("utils/node/index");
+let {removeInPlace} = require("utils/arrayMethods");
 let getConfig = require("./utils/getConfig");
 let ipcMain = require("./modules/ipcMain");
 let mimeTypes = require("./modules/mimeTypes");

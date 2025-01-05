@@ -1,8 +1,4 @@
-let Evented = require("../../utils/Evented");
-let lid = require("../../utils/lid");
-let spawn = require("../../utils/spawn");
-let sleep = require("../../utils/sleep");
-let promiseWithMethods = require("../../utils/promiseWithMethods");
+let {Evented, lid, sleep, promiseWithMethods, spawn} = require("utils/node/index");
 let config = require("./config");
 
 class LspServer extends Evented {
