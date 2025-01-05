@@ -49,6 +49,8 @@ function watchOptions() {
 }
 
 function commonPlugins(platform) {
+	let dir = "build/" + (dev ? platform + "-dev" : platform);
+	
 	return [
 		alias({
 			entries: {
@@ -91,7 +93,18 @@ function commonPlugins(platform) {
 			targets: [
 				{
 					src: "package.json",
-					dest: "build/" + platform,
+					dest: dir,
+				},
+			],
+		}),
+		
+		copy({
+			watch: watch && "node_modules/web-tree-sitter/tree-sitter.js",
+			
+			targets: [
+				{
+					src: "node_modules/web-tree-sitter/tree-sitter.*",
+					dest: dir + "/vendor/tree-sitter",
 				},
 			],
 		}),
