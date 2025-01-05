@@ -1,5 +1,5 @@
 module.exports = {
-	shouldIndentOnNewline(document, line, cursor) {
+	indentOnNewline(document, line, cursor) {
 		
 	},
 	

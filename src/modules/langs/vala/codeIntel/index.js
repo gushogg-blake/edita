@@ -5,7 +5,7 @@ module.exports = {
 		({lang} = env);
 	},
 	
-	shouldIndentOnNewline(document, line, cursor) {
+	indentOnNewline(document, line, cursor) {
 		return line.string.substr(0, cursor.offset).match(/[\[{(]$/);
 	},
 	

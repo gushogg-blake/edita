@@ -119,13 +119,18 @@ module.exports = {
 		let {left} = selection;
 		let {lineIndex} = left;
 		let line = document.lines[lineIndex];
-		let {indentLevel} = line;
+		let {indent, indentLevel} = line;
+		let indentIntel = this.view.lang.codeIntel?.indentOnNewline(document, line, left);
 		
-		if (this.view.lang.codeIntel?.shouldIndentOnNewline(document, line, left)) {
-			indentLevel++;
+		if (indentIntel) {
+			if (_typeof(indentIntel) === "String") { // absolute
+				indent = indentIntel;
+			} else if (_typeof(indentIntel) === "Number") { // relative
+				indent = indentation.string.repeat(indentLevel + indentIntel);
+			} else { // true, add one
+				indent = indentation.string.repeat(indentLevel + 1);
+			}
 		}
-		
-		let indent = indentation.string.repeat(indentLevel);
 		
 		let {
 			edit,

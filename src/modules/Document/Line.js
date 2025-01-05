@@ -71,6 +71,10 @@ class Line {
 	get isBlank() {
 		return this.trimmed.length === 0;
 	}
+	
+	get indent() {
+		return this.string.substr(0, this.indentOffset);
+	}
 }
 
 module.exports = Line;
