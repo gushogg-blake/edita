@@ -44,6 +44,12 @@ function cancel() {
 	window.close();
 }
 
+function toggleShowHiddenFiles() {
+	showHiddenFiles = !showHiddenFiles;
+	
+	base.setPref("fileChooser.showHiddenFiles", showHiddenFiles);
+}
+
 let functions = {
 	close() {
 		if (platform.isDialogWindow) {
@@ -54,11 +60,14 @@ let functions = {
 	ok() {
 		app.ok(inputValue);
 	},
+	
+	toggleShowHiddenFiles,
 };
 
 let keymap = {
 	"Escape": "close",
 	"Enter": "ok",
+	"Ctrl+H": "toggleShowHiddenFiles",
 };
 
 function keydown(e) {
