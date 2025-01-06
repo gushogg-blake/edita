@@ -45,7 +45,7 @@ class Tree {
 		});
 	}
 	
-	*generateNodesOnLine(lineIndex, startOffset=0) {
+	*generateNodesStartingOnLine(lineIndex, startOffset=0) {
 		let node = this.firstOnOrAfter(c(lineIndex, startOffset));
 		
 		while (node?.start.lineIndex === lineIndex) {

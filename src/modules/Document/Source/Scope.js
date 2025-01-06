@@ -302,8 +302,9 @@ module.exports = class Scope {
 	the ranges we end up with will be the intersections of the node's
 	selection and our ranges.
 	
-	we can also exclude children of the node - added to support
-	https://github.com/MDeiml/tree-sitter-markdown/
+	we can also exclude children of the node - added to support markdown
+	as inline nodes (where markdown_inline is injected) can have children.
+	see langs/markdown/index.js for more details.
 	*/
 	
 	rangesFromNode(node, excludeChildren=false) {
@@ -347,26 +348,24 @@ module.exports = class Scope {
 	}
 	
 	/*
-	generate nodes on line
+	generate nodes starting on line
 	
-	child scopes that are encountered within our nodes are called immediately
-	so that the nodes are in order, then all child scopes are called in case
-	there are child scopes with nodes on the line and their parents are not
-	on the line (so they wouldn't be processed in the first step)
+	NOTE these may not be in lexical order when there are child scopes
 	
-	e.g.
+	a prev implementation tried yielding nodes from child scopes as they
+	were encountered, but since parent and child scopes don't always start
+	on the same line and there are situations where the parent scope
+	doesn't have any nodes on the same line as child scope nodes, we just
+	yield all our nodes then call down to child scopes. this means that
+	nodes won't always be in lexical order, but we'll definitely see all
+	the nodes once.
+	
+	in this case the prev approach would work fine (if implemented correctly...):
 	
 	<script>let a = 123;</script>
 	
-	the outermost (html) scope would yield the script tag, the start tag
-	& children, then the raw_text.  this would have a javascript child scope
-	associated with it, so we call down to it immediately and yield its nodes
-	starting at offset 8.  Then we come back out to the main scope and carry
-	on with the end tag & children.  Then we iterate over the child scopes
-	again, so call the javascript scope again but this time with startOffset
-	= 29, so it doesn't yield anything.
-	
-	An example where the child scopes are not found by our nodes:
+	but here, for the ${123} line, the outer HTML scope doesn't have any nodes
+	starting on the line so nothing would happen:
 	
 	<script>
 		let a = `
@@ -374,45 +373,27 @@ module.exports = class Scope {
 		`;
 	</script>
 	
-	generating for the ${123} line: the outer scope has no nodes on that line
-	(the raw_text for the script starts above).  startOffset is left at 0,
-	and we iterate over all scopes, calling the javascript scope with
-	startOffset = 0.
+	I tried a hacky solution of updating startOffset and going through the
+	child scopes after the main loop but it didn't really make sense
 	*/
 	
-	*_generateNodesOnLine(lineIndex, startOffset, lang=null) {
+	*_generateNodesStartingOnLine(lineIndex, startOffset, lang=null) {
 		if (!this.tree) {
 			return;
 		}
 		
-		for (let node of this.tree.generateNodesOnLine(lineIndex, startOffset)) {
+		for (let node of this.tree.generateNodesStartingOnLine(lineIndex, startOffset)) {
 			if (!lang || this.lang === lang) {
 				yield node;
-			}
-			
-			startOffset = node.end.offset;
-			
-			let scope = this.scopesByNode[node.id];
-			
-			if (scope) {
-				for (let childNode of scope.generateNodesOnLine(lineIndex, startOffset, lang)) {
-					yield childNode;
-					
-					startOffset = childNode.end.offset;
-				}
 			}
 		}
 		
 		for (let scope of this.scopes) {
-			for (let childNode of scope.generateNodesOnLine(lineIndex, startOffset, lang)) {
-				yield childNode;
-				
-				startOffset = childNode.end.offset;
-			}
+			yield* scope.generateNodesStartingOnLine(lineIndex, startOffset, lang);
 		}
 	}
 	
-	generateNodesOnLine(lineIndex, lang=null) {
-		return this._generateNodesOnLine(lineIndex, 0, lang);
+	generateNodesStartingOnLine(lineIndex, lang=null) {
+		return this._generateNodesStartingOnLine(lineIndex, 0, lang);
 	}
 }

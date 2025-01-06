@@ -1,5 +1,5 @@
 function getFooterLineIndex(document, lineIndex) {
-	for (let node of document.generateNodesOnLine(lineIndex)) {
+	for (let node of document.generateNodesStartingOnLine(lineIndex)) {
 		let footer = node.lang.getFooter(node);
 		
 		if (footer) {
@@ -11,7 +11,7 @@ function getFooterLineIndex(document, lineIndex) {
 }
 
 function getHeaderLineIndex(document, lineIndex) {
-	for (let node of document.generateNodesOnLine(lineIndex)) {
+	for (let node of document.generateNodesStartingOnLine(lineIndex)) {
 		let header = node.lang.getHeader(node);
 		
 		if (header) {
@@ -31,7 +31,7 @@ function isFooter(document, lineIndex) {
 }
 
 function getHeaders(document, lineIndex) {
-	let nodes = [...document.generateNodesOnLine(lineIndex)];
+	let nodes = [...document.generateNodesStartingOnLine(lineIndex)];
 	
 	return nodes.map(function(node) {
 		return {
@@ -42,7 +42,7 @@ function getHeaders(document, lineIndex) {
 }
 
 function getFooters(document, lineIndex) {
-	let nodes = [...document.generateNodesOnLine(lineIndex)];
+	let nodes = [...document.generateNodesStartingOnLine(lineIndex)];
 	
 	return nodes.map(function(node) {
 		return {

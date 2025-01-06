@@ -14,6 +14,20 @@ let lang = {
 		{
 			pattern: "(inline) @injectionNode",
 			lang: "markdown_inline",
+			/*
+			excludeChildren was added to support markdown as inline nodes -- where
+			markdown_inline is injected -- can contain children, which doesn't make
+			sense (can't remember but this probably resulted in a bug where certain
+			chars were rendered twice because both the markdown and markdown_inline
+			parsers were rendering them -- [] and () seem to be examples, e.g. in
+			a heading like # heading with [a link](...))
+			
+			the WASM is from https://github.com/MDeiml/tree-sitter-markdown/ which
+			now redirects to https://github.com/tree-sitter-grammars/tree-sitter-markdown
+			
+			the new version doesn't have a tree-sitter.json so keeping the legacy one
+			for now -- this may have been fixed in the latest version
+			*/
 			//combined: true,
 			//excludeChildren: true,
 		},

@@ -39,8 +39,8 @@ module.exports = class {
 		return this.rootScope.getVisibleScopes(selection);
 	}
 	
-	generateNodesOnLine(lineIndex, lang=null) {
-		return this.rootScope.generateNodesOnLine(lineIndex, lang);
+	generateNodesStartingOnLine(lineIndex, lang=null) {
+		return this.rootScope.generateNodesStartingOnLine(lineIndex, lang);
 	}
 	
 	getNodeAtCursor(cursor) {

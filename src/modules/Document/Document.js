@@ -621,12 +621,12 @@ class Document extends Evented {
 		return this.source.langFromCursor(cursor);
 	}
 	
-	generateNodesOnLine(lineIndex, lang=null) {
-		return this.source.generateNodesOnLine(lineIndex, lang);
+	generateNodesStartingOnLine(lineIndex, lang=null) {
+		return this.source.generateNodesStartingOnLine(lineIndex, lang);
 	}
 	
 	getNodesOnLine(lineIndex, lang=null) {
-		return [...this.generateNodesOnLine(lineIndex, lang)];
+		return [...this.generateNodesStartingOnLine(lineIndex, lang)];
 	}
 	
 	getNodeAtCursor(cursor) {
