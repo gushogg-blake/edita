@@ -92,10 +92,6 @@ let lang = {
 			return null;
 		}
 		
-		if (type === "jsx_attribute") {
-			return "attribute";
-		}
-		
 		if (type === "jsx_text") {
 			return "text";
 		}
@@ -108,27 +104,9 @@ let lang = {
 			"jsx_attribute",
 		].includes(parent?.type)) {
 			if (["identifier", "<", "</", ">", "/>"].includes(type)) {
-				return "tag";
+				return "jsx";
 			}
-			
-			return null;
 		}
-		
-		//if ([
-		//	"jsx_attribute",
-		//].includes(parent?.type)) {
-		//	if (type === "property_identifier") {
-		//		return "attribute";
-		//	}
-		//}
-		
-		//if ([
-		//	"jsx_expression",
-		//].includes(parent?.type)) {
-		//	if (type === "{") {
-		//		return "attribute";
-		//	}
-		//}
 		
 		if ([
 			"identifier",

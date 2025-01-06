@@ -96,15 +96,37 @@ let theme = {
 	
 	langs: {
 		javascript: {
-			keyword: "#aa33aa",
+			keyword: "#004fc5",
 			id: "#202020",
 			comment: "#7f7f7f italic",
 			symbol: "#202020",
 			bracket: "#202020",
-			number: "#cc2222",
-			string: "#2233bb",
+			number: "#42b0c9",
+			string: "#4d9d10",
 			regex: "#cc7030",
 			hashBang: "#202020",
+			jsx: "#c73700", // orange
+			jsx: "#09849f", // turquoise
+			//jsx: "#a7097d", // purple
+			//jsx: "#a75209", // orange
+			jsx: "#0032ff", // from html
+			text: "#202020",
+		},
+		
+		tsx: {
+			keyword: "#004fc5",
+			id: "#202020",
+			comment: "#7f7f7f italic",
+			symbol: "#202020",
+			bracket: "#202020",
+			//number: "#d30000",
+			number: "#42b0c9",
+			string: "#4d9d10",
+			regex: "#cc7030",
+			hashBang: "#202020",
+			jsx: "#09849f", // turquoise
+			jsx: "#0032ff", // from html
+			text: "#202020",
 		},
 		
 		vala: {
@@ -130,29 +152,16 @@ let theme = {
 		},
 		
 		typescript: {
-			keyword: "#aa33aa",
+			keyword: "#004fc5",
 			id: "#202020",
 			comment: "#7f7f7f italic",
 			symbol: "#202020",
 			bracket: "#202020",
-			number: "#cc2222",
-			string: "#2233bb",
+			//number: "#d30000",
+			number: "#42b0c9",
+			string: "#4d9d10",
 			regex: "#cc7030",
 			hashBang: "#202020",
-		},
-		
-		tsx: {
-			keyword: "#aa33aa",
-			id: "#202020",
-			comment: "#7f7f7f italic",
-			symbol: "#202020",
-			bracket: "#202020",
-			number: "#cc2222",
-			string: "#2233bb",
-			regex: "#cc7030",
-			hashBang: "#202020",
-			tag: "#0032ff",
-			attribute: "#871f78",
 		},
 		
 		html: {

@@ -138,19 +138,24 @@ let lang = {
 			return null;
 		}
 		
-		if (["identifier", "<", "</", ">", "/>"].includes(type) && ["jsx_opening_element", "jsx_closing_element", "jsx_self_closing_element"].includes(parent?.type)) {
+		if (["identifier", "<", "</", ">", "/>"].includes(type) && [
+			"jsx_opening_element",
+			"jsx_closing_element",
+			"jsx_self_closing_element",
+		].includes(parent?.type)) {
 			return "jsx";
 		}
 		
-		if (type === "property_identifier" && parent?.type === "jsx_attribute") {
-			return "jsx";
+		if (type === "jsx_text") {
+			return "text";
 		}
 		
-		if ("{}".includes(type) && parent?.type === "jsx_expression") {
-			return "jsx";
-		}
-		
-		if (type === "=" && parent?.type === "jsx_attribute") {
+		if (
+			false
+			//|| type === "string" && parent?.type === "jsx_attribute"
+			//|| ["property_identifier", "="].includes(type) && parent?.type === "jsx_attribute"
+			//|| "{}".includes(type) && parent?.type === "jsx_expression"
+		) {
 			return "jsx";
 		}
 		
