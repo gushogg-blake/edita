@@ -8,20 +8,20 @@ let theme = {
 		fontSize: "12.5px",
 		color: "#444444",
 		
-		appBorderColor: "#c5c3c1",
-		appBorderLightColor: "#d5d3d0",
-		appBorderMediumColor: "#d5d3d0",
+		appBorderColor: "#d3d3d3",
+		appBorderLightColor: "#d5d5d5",
+		appBorderMediumColor: "#d5d5d5",
 		appBorder: "1px solid var(--appBorderColor)",
 		appBorderLight: "1px solid var(--appBorderLightColor)",
 		appBorderMedium: "1px solid var(--appBorderMediumColor)",
-		appBackground: "#edecea",
+		appBackground: "#ededed",
 		
 		buttonColor: "#333333",
 		buttonBorder: "var(--inputBorder)",
-		buttonBackground: "#fbf9f6",
+		buttonBackground: "#f9f9f9",
 		buttonColorDisabled: "#555555",
 		buttonBorderDisabled: "var(--inputBorder)",
-		buttonBackgroundDisabled: "#fbf9f680",
+		buttonBackgroundDisabled: "#f9f9f980",
 		
 		labelColor: "var(--buttonColor)",
 		labelColorDisabled: "#777777",
@@ -29,17 +29,17 @@ let theme = {
 		tabBackground: "transparent",
 		tabSelectedBackground: "white",
 		tabSelectedBorder: "2px solid #adaba5",
-		toolbarBackground: "#f2f2f0",
+		toolbarBackground: "#f2f2f2",
 		
 		inputColor: "#444444",
-		inputBorder: "1px solid #adaba6",
+		inputBorder: "1px solid #adadad",
 		inputBorderRadius: "3px",
 		inputBackground: "white",
 		inputColorDisabled: "#666666",
-		inputBorderDisabled: "1px solid #adaba6",
+		inputBorderDisabled: "1px solid #adadad",
 		inputBackgroundDisabled: "#ffffff52",
 		
-		selectItemDivider: "1px solid #d1d0cc",
+		selectItemDivider: "1px solid #d1d1d1",
 		selectItemHoverBackground: "#f3f3f3",
 		
 		treeEntrySelectedBackground: "rgba(0, 0, 0, 0.1)",
@@ -56,7 +56,7 @@ let theme = {
 		messageBackground: "#cce3ff",
 		
 		contextMenuColor: "var(--appColor)",
-		contextMenuBorder: "1px solid #B4BBC1",
+		contextMenuBorder: "1px solid #bbbbbb",
 		contextMenuBackground: "white",
 		contextMenuHoverColor: "white",
 		contextMenuHoverBackground: "#71A339",
@@ -88,7 +88,7 @@ let theme = {
 		astInsertionHiliteBackground: "#606060",
 		
 		lineNumberColor: "#9f9f9f",
-		marginBackground: "#f3f2f1",
+		marginBackground: "#f3f3f3",
 		
 		foldHeaderBackground: "#f2f2f2",
 		foldHeaderBorder: "#a9a9a9",
