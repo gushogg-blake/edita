@@ -1,4 +1,4 @@
-let LruCache = require("utils/LruCache");
+let {LRUMap} = require("lru_map");
 
 /*
 node getters (node.parent etc) are slow, so keep the results in a cache
@@ -20,7 +20,7 @@ class NodeResultCache {
 	
 	set(node, value) {
 		if (!this.cacheByTree.has(node.tree)) {
-			this.cacheByTree.set(node.tree, new LruCache(this.size));
+			this.cacheByTree.set(node.tree, new LRUMap(this.size));
 		}
 		
 		this.cacheByTree.get(node.tree).set(node.id, value);
