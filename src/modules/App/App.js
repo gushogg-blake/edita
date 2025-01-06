@@ -186,7 +186,7 @@ class App extends Evented {
 		this.updateTitle();
 		
 		if (tab.isEditor) {
-			this.output.clippingsEditor.setLang(tab.editor.document.lang);
+			this.output.clippingsTab?.setLang(tab.editor.document.lang);
 		}
 		
 		this.fire("selectTab", tab);
@@ -533,7 +533,7 @@ class App extends Evented {
 		let tab = new EditorTab(this, editor);
 		
 		editor.on("cut copy", (str) => {
-			this.output.clippingsTab.addClipping(str);
+			this.output.clippingsTab?.addClipping(str);
 		});
 		
 		editor.on("normalSelectionChangedByMouseOrKeyboard", () => this.showAstHint(editor));

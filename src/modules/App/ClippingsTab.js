@@ -3,10 +3,10 @@ let URL = require("modules/URL");
 let Tab = require("./Tab");
 
 class ClippingsTab extends Tab {
-	constructor(app, editor) {
+	constructor(app) {
 		super(app, "clippings");
 		
-		this.editor = editor;
+		this.editor = app.createEditor();
 		
 		this._url = new URL("special://clippings");
 		
@@ -55,6 +55,10 @@ class ClippingsTab extends Tab {
 		let {newline} = document.format;
 		
 		editor.api.edit(Selection.start(), str + newline + newline);
+	}
+	
+	setLang(lang) {
+		this.editor.setLang(lang);
 	}
 }
 

@@ -8,10 +8,9 @@ class Output {
 		this.pane = app.panes.output;
 		
 		this.findResults = new FindResults(app);
-		this.clippingsEditor = app.createEditor();
 		
 		this.findResultsTab = new FindResultsTab(app, this.findResults);
-		this.clippingsTab = new ClippingsTab(app, this.clippingsEditor);
+		this.clippingsTab = new ClippingsTab(app);
 		
 		this.pane.setTabs([
 			this.findResultsTab,
