@@ -138,7 +138,7 @@ let lang = {
 			return null;
 		}
 		
-		if (["identifier", "<", "/", ">"].includes(type) && ["jsx_opening_element", "jsx_closing_element"].includes(parent?.type)) {
+		if (["identifier", "<", "</", ">", "/>"].includes(type) && ["jsx_opening_element", "jsx_closing_element", "jsx_self_closing_element"].includes(parent?.type)) {
 			return "jsx";
 		}
 		
