@@ -119,7 +119,7 @@ class Base extends Evented {
 			vala,
 			haskell,
 			tsx,
-			//svelte,
+			svelte,
 			html,
 			css,
 			scss,
