@@ -36,6 +36,7 @@ let python = require("modules/langs/python");
 let ruby = require("modules/langs/ruby");
 //let codepatterns = require("modules/langs/codepatterns");
 //let tsq = require("modules/langs/tsq");
+let prisma = require("modules/langs/prisma");
 let plaintext = require("modules/langs/plaintext");
 
 /*
@@ -132,6 +133,7 @@ class Base extends Evented {
 			ruby,
 			//codepatterns,
 			//tsq,
+			prisma,
 			plaintext,
 		];
 		
@@ -345,7 +347,13 @@ class Base extends Evented {
 		}
 		
 		if (lang.code !== "plaintext") {
-			await lang.initTreeSitterLanguage();
+			try {
+				await lang.initTreeSitterLanguage();
+			} catch (e) {
+				console.log("Could not load Tree-sitter language for " + lang.code);
+				
+				console.error(e);
+			}
 		}
 		
 		if (lang.init) {
