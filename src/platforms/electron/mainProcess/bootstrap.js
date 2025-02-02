@@ -8,7 +8,14 @@ parsing args is complicated once inside electron so we
 parse them here and pass them in as base64-encoded JSON.
 */
 
-let dev = process.env.NODE_ENV === "development";
+let {
+	NODE_ENV,
+	TMWUC_DEBUG_ENDPOINT,
+	USE_SOURCE, // run the electron code directly from src (to avoid building when debugging)
+	NODE_ONLY, // no window
+} = process.env;
+
+let dev = NODE_ENV === "development";
 
 function getArgs(argv) {
 	let start = argv.indexOf("--start-args");
@@ -46,11 +53,14 @@ let config = {
 	dev,
 	userDataDir,
 	forceNewInstance,
+	debugEndpoint: DEBUG_ENDPOINT || null,
+	nodeOnly: NODE_ONLY === "1",
+	useSource: USE_SOURCE === "1",
 };
 
 child_process.spawn("npx", [
 	"electron",
-	dev ? "build/electron-dev/mainProcess/main.js" : ".",
+	config.useSource ? "src/platforms/electron/mainProcess/main.js" : dev ? "build/electron-dev/mainProcess/main.js" : ".",
 	dev && "--inspect",
 	"--edita-config=" + Buffer.from(JSON.stringify(config)).toString("base64"),
 ].filter(Boolean), {

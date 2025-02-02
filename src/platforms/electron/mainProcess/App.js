@@ -158,8 +158,10 @@ class App {
 				}
 			});
 			
-			this.mainWindow = this.createAppWindow();
-			this.lastFocusedWindow = this.mainWindow;
+			if (!config.nodeOnly) {
+				this.mainWindow = this.createAppWindow();
+				this.lastFocusedWindow = this.mainWindow;
+			}
 			
 			electronApp.on("window-all-closed", () => {
 				electronApp.quit();
