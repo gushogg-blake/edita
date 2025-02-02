@@ -10,7 +10,7 @@ parse them here and pass them in as base64-encoded JSON.
 
 let {
 	NODE_ENV,
-	TMWUC_DEBUG_ENDPOINT,
+	DEBUG_ENDPOINT,
 	USE_SOURCE, // run the electron code directly from src (to avoid building when debugging)
 	NODE_ONLY, // no window
 } = process.env;
