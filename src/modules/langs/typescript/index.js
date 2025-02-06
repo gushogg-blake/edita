@@ -100,9 +100,12 @@ let lang = {
 			"shorthand_property_identifier_pattern",
 			"statement_identifier",
 			"type_identifier",
-			"predefined_type",
 		].includes(type)) {
 			return "id";
+		}
+		
+		if (type === "predefined_type") {
+			return "keyword";
 		}
 		
 		if (type === "comment") {

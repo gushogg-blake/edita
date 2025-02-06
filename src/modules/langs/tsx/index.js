@@ -108,6 +108,16 @@ let lang = {
 			}
 		}
 		
+		if (
+			[
+				"jsx_opening_element",
+				"jsx_closing_element",
+			].includes(parent?.parent?.type)
+			&& parent.type === "member_expression"
+		) {
+			return "jsx";
+		}
+		
 		if ([
 			"identifier",
 			"property_identifier",
@@ -115,9 +125,12 @@ let lang = {
 			"shorthand_property_identifier_pattern",
 			"statement_identifier",
 			"type_identifier",
-			"predefined_type",
 		].includes(type)) {
 			return "id";
+		}
+		
+		if (type === "predefined_type") {
+			return "keyword";
 		}
 		
 		if (type === "comment") {
