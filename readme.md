@@ -41,3 +41,7 @@ All grammar WASM files are tracked in this repo, so you don't need to build them
 ## Hacks
 
 Hacky stuff is marked with either a `// HACK` or `// PLATFORM` comment (for stuff that makes platform assumptions).
+
+### Dependencies
+
+- tree-sitter-prisma requires a different peer dep version for tree-sitter, but it seems to work. `--force` may be needed to install deps now. Lang packages aren't guaranteed to want the same versions so there's no way around this without forking them.

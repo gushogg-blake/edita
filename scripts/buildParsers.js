@@ -14,6 +14,7 @@ let packages = {
 	html: "tree-sitter-html",
 	javascript: "tree-sitter-javascript",
 	php: "tree-sitter-php/php", // TODO might need to do lang injection with php_only, not sure how they've set it up
+	//prisma: "tree-sitter-prisma",
 	python: "tree-sitter-python",
 	ruby: "tree-sitter-ruby",
 	//scss: "tree-sitter-scss",
