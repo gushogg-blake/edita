@@ -267,7 +267,7 @@ input {
 	</div>
 	<div id="cols">
 		<div id="left">
-			{#each bookmarks as dir (dir)}
+			{#each bookmarks as dir}
 				<div class="entry" on:click={() => app.nav(dir)}>
 					<div class="icon dirIcon"></div>
 					<div class="name">
