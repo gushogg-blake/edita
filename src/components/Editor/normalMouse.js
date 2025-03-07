@@ -131,7 +131,27 @@ module.exports = function(editor, editorComponent) {
 		
 		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		
+		let {historyIndex} = document;
+		
 		requestAnimationFrame(function() {
+			/*
+			the document might have been edited between requesting
+			this frame and it being scheduled, in which case the cursor
+			might be invalid. this will usually happen at the end of a
+			drag and drop (key events don't get through while we're
+			dragging, so the only other case I can think of is an auto-
+			update from the file being modified by another program).
+			since in the drag and drop case we'll be cancelling the insert
+			cursor anyway, we can safely ignore this case (and we should -
+			this change fixes a bug where the normal cursor renderer was
+			getting into an infinite loop due to it being off the end of
+			the line).
+			*/
+			
+			if (historyIndex !== document.historyIndex) {
+				return;
+			}
+			
 			view.setInsertCursor(cursor);
 		});
 	}
