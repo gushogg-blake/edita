@@ -1,5 +1,15 @@
 let {removeInPlace} = require("utils/arrayMethods");
 
+class Event {
+	constructor() {
+		this.defaultPrevented = false;
+	}
+	
+	preventDefault() {
+		this.defaultPrevented = true;
+	}
+}
+
 module.exports = class {
 	constructor() {
 		this._handlers = {};
@@ -40,7 +50,7 @@ module.exports = class {
 			return;
 		}
 		
-		let e = new CustomEvent(event);
+		let e = new Event();
 		
 		for (let handler of this._handlers[event]) {
 			handler(...args, e);
