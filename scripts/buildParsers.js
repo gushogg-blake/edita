@@ -1,7 +1,8 @@
 let {cmdSync, fs} = require("utils/node");
 
 let packages = {
-	// commented langs have no tree-sitter.json, need updating to conform to latest tree-sitter version
+	// commented langs have no tree-sitter.json, need updating to conform
+	// to latest tree-sitter version
 	//codepatterns: "@gushogg-blake/tree-sitter-codepatterns",
 	//query: "@gushogg-blake/tree-sitter-query",
 	//markdown: "@tree-sitter-grammars/tree-sitter-markdown/tree-sitter-markdown",
@@ -14,7 +15,8 @@ let packages = {
 	html: "tree-sitter-html",
 	javascript: "tree-sitter-javascript",
 	php: "tree-sitter-php/php", // TODO might need to do lang injection with php_only, not sure how they've set it up
-	//prisma: "tree-sitter-prisma",
+	// TODO we can add tree-sitter.json for this and uncomment now that we've forked it
+	//prisma: "@gushogg-blake/tree-sitter-prisma",
 	python: "tree-sitter-python",
 	ruby: "tree-sitter-ruby",
 	//scss: "tree-sitter-scss",

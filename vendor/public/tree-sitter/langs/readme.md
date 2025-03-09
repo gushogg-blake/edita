@@ -9,3 +9,4 @@ manually built:
 - svelte
 - vala
 - scss
+- prisma
