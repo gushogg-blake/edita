@@ -133,16 +133,34 @@ function mousedown(e) {
 	
 	let time = Date.now();
 	
+	/*
+	double click speed doesn't necessarily mean a double click, but it
+	is important on its own as the browser won't let us do a native drag
+	and drop if we're clicking quickly, even if the mousedown that starts
+	the drag isn't part of a double click - ie. if it's the third click in
+	a fast succession (in which case the first two are a double click and
+	the third is a normal mousedown).
+	
+	for actual double clicks we're interested in the speed, the pairing
+	of clicks, and whether the mouse moved significantly between clicks.
+	*/
+	
+	let isDoubleClickSpeed = (
+		lastClickMousedownTime
+		&& time - lastClickMousedownTime <= base.getPref("doubleClickSpeed")
+	);
+	
 	if (
 		!lastMousedownWasDoubleClick
 		&& lastClickMousedownEvent
 		&& getDistanceBetweenMouseEvents(e, lastClickMousedownEvent) <= clickDistanceThreshold
-		&& lastClickMousedownTime
-		&& time - lastClickMousedownTime <= base.getPref("doubleClickSpeed")
+		&& isDoubleClickSpeed
 	) {
 		fire("dblclick", e);
 		
 		lastMousedownWasDoubleClick = true;
+	} else {
+		lastMousedownWasDoubleClick = false;
 	}
 	
 	fire("mousedown", {
@@ -150,9 +168,9 @@ function mousedown(e) {
 		isDoubleClick: lastMousedownWasDoubleClick,
 		pickOptionType: selectedPickOption?.type,
 		
-		enableDrag(useSynthetic) {
+		enableDrag(forceSynthetic=false) {
 			draggable = true;
-			useSyntheticDrag = useSynthetic;
+			useSyntheticDrag = forceSynthetic || isDoubleClickSpeed;
 		},
 	});
 	
@@ -203,7 +221,6 @@ function mouseup(e) {
 	selectedPickOption = null;
 	draggable = false;
 	useSyntheticDrag = false;
-	lastMousedownWasDoubleClick = false;
 	
 	fire("mouseup", e);
 	

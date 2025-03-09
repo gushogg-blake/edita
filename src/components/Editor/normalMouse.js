@@ -8,8 +8,9 @@ let {s} = Selection;
 module.exports = function(editor, editorComponent) {
 	let {document, view} = editor;
 	let drawingSelection = false;
+	let origDoubleClickWordSelection = false;
 	
-	function mousedown(e, enableDrag) {
+	function mousedown(e, isDoubleClick, enableDrag) {
 		if (e.button === 2) {
 			return;
 		}
@@ -34,15 +35,17 @@ module.exports = function(editor, editorComponent) {
 			showingHorizontalScrollbar,
 		);
 		
-		if (view.normalSelection.containsCharCursor(charCursor)) {
-			if (e.button === 0) {
-				mousedownInSelection(e, enableDrag);
+		if (!isDoubleClick) {
+			if (view.normalSelection.containsCharCursor(charCursor)) {
+				if (e.button === 0) {
+					enableDrag();
+				}
+				
+				return;
 			}
 			
-			return;
+			editor.normalMouse.setSelectionAndStartCursorBlink(s(cursor));
 		}
-		
-		editor.normalMouse.setSelectionAndStartCursorBlink(s(cursor));
 		
 		drawingSelection = true;
 		
@@ -51,20 +54,18 @@ module.exports = function(editor, editorComponent) {
 		on(window, "dragend", dragend);
 	}
 	
-	function mousedownInSelection(e, enableDrag) {
-		if (e.button === 0) {
-			enableDrag();
-		}
-	}
-	
 	function drawSelection(e) {
 		requestAnimationFrame(function() {
 			let cursor = getCursor(e, view, editorComponent.canvasDiv);
 			
-			editor.normalMouse.drawSelection({
-				start: view.normalSelection.start,
-				end: cursor,
-			});
+			if (origDoubleClickWordSelection) {
+				editor.normalMouse.drawDoubleClickSelection(origDoubleClickWordSelection, cursor);
+			} else {
+				editor.normalMouse.drawSelection({
+					start: view.normalSelection.start,
+					end: cursor,
+				});
+			}
 		});
 	}
 	
@@ -82,6 +83,7 @@ module.exports = function(editor, editorComponent) {
 		editorComponent.mouseup(e);
 		
 		drawingSelection = false;
+		origDoubleClickWordSelection = null;
 		
 		off(window, "mousemove", drawSelection);
 		off(window, "mouseup", mouseup);
@@ -109,7 +111,9 @@ module.exports = function(editor, editorComponent) {
 	function dblclick(e) {
 		let cursor = getCharCursor(e, view, editorComponent.canvasDiv);
 		
-		editor.normalMouse.setSelectionAndStartCursorBlink(view.Selection.wordUnderCursor(cursor));
+		origDoubleClickWordSelection = view.Selection.wordUnderCursor(cursor);
+		
+		editor.normalMouse.setSelectionAndStartCursorBlink(origDoubleClickWordSelection);
 		
 		if (view.normalSelection.isFull()) {
 			platform.clipboard.writeSelection(editor.getSelectedText());

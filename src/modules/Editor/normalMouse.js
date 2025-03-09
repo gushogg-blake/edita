@@ -11,6 +11,21 @@ module.exports = {
 		});
 	},
 	
+	drawDoubleClickSelection(origWordSelection, cursor) {
+		let wordUnderCursor = this.view.Selection.wordUnderCursor(cursor);
+		let newSelection;
+		
+		if (wordUnderCursor.isBefore(origWordSelection)) {
+			newSelection = s(origWordSelection.right, wordUnderCursor.left);
+		} else {
+			newSelection = s(origWordSelection.left, wordUnderCursor.right);
+		}
+		
+		this.view.setNormalSelection(newSelection, {
+			updateAstSelection: false,
+		});
+	},
+	
 	finishDrawingSelection() {
 		this.setSelectionFromNormalMouse(this.view.normalSelection);
 	},

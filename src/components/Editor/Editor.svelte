@@ -137,18 +137,13 @@ function mousedown({detail}) {
 	editor.mousedown();
 	
 	if (view.mode === "normal") {
-		normalMouseHandler.mousedown(e, function() {
-			enableDrag(isDoubleClick);
-		});
+		normalMouseHandler.mousedown(e, isDoubleClick, enableDrag);
 	} else if (view.mode === "ast") {
 		astMouseHandler.mousedown(e, pickOptionType, function() {
 			enableDrag(
-				isDoubleClick
-				|| (
-					modeSwitchKey.isPeeking
-					&& !modeSwitchKey.keyPressedWhilePeeking
-					&& base.prefs.modeSwitchKey === "Escape"
-				)
+				modeSwitchKey.isPeeking
+				&& !modeSwitchKey.keyPressedWhilePeeking
+				&& base.prefs.modeSwitchKey === "Escape"
 			);
 		});
 	}
