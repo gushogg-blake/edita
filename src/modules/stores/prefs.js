@@ -394,7 +394,7 @@ module.exports = function() {
 			//"plaintext": ["*.js"],
 		},
 		
-		theme: "lightGray",
+		theme: "light",
 		
 		cursorBlinkPeriod: 700,
 		
