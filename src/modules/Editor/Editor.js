@@ -232,6 +232,26 @@ class Editor extends Evented {
 		return candidates;
 	}
 	
+	async goToDefinitionFromCursor(cursor) {
+		let word = this.wordUnderCursor(cursor);
+		
+		let {document} = this;
+		let {project} = document;
+		
+		let result = await project?.lspClient?.getDefinition(document, cursor) || null;
+	}
+	
+	wordUnderCursor(cursor) {
+		let wordSelection = this.view.Selection.wordUnderCursor(cursor);
+		let str = this.document.getSelectedText(wordSelection);
+		
+		if (!str.match(/^\w+$/)) {
+			return null;
+		}
+		
+		return str;
+	}
+	
 	onDocumentEdit(edits) {
 		let {view} = this;
 		

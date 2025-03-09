@@ -137,6 +137,33 @@ class LspClient extends Evented {
 		}, []);
 	}
 	
+	async getDefinition(document, cursor) {
+		let {scope} = document.rangeFromCursor(cursor);
+		let {lang} = scope;
+		let uri = this.urisByScope.get(scope);
+		
+		return await this.withServer(lang, async (server) => {
+			let {error, result} = await server.request("textDocument/definition", {
+				textDocument: {
+					uri,
+				},
+				
+				position: cursorToLspPosition(cursor),
+			});
+			
+			if (error) {
+				console.log("Error fetching definition for lang " + lang.code);
+				console.log(error);
+				
+				return [];
+			}
+			
+			console.log(result);
+			
+			return result;
+		}, []);
+	}
+	
 	registerDocument(document) {
 		let {scopes} = document;
 		

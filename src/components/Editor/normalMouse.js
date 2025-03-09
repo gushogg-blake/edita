@@ -15,6 +15,10 @@ module.exports = function(editor, editorComponent) {
 			return;
 		}
 		
+		if (e.ctrlKey) {
+			return;
+		}
+		
 		let {
 			canvasDiv,
 			showingHorizontalScrollbar,
@@ -37,9 +41,7 @@ module.exports = function(editor, editorComponent) {
 		
 		if (!isDoubleClick) {
 			if (view.normalSelection.containsCharCursor(charCursor)) {
-				if (e.button === 0) {
-					enableDrag();
-				}
+				enableDrag();
 				
 				return;
 			}
@@ -104,6 +106,12 @@ module.exports = function(editor, editorComponent) {
 		}
 		
 		let cursor = getCursor(e, view, editorComponent.canvasDiv);
+		
+		if (e.ctrlKey) {
+			editor.goToDefinitionFromCursor(cursor);
+			
+			return;
+		}
 		
 		editor.normalMouse.setSelectionAndStartCursorBlink(s(cursor));
 	}

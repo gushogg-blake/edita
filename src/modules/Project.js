@@ -23,9 +23,9 @@ class Project extends Evented {
 		this.config = config || defaultConfig();
 		this.isSaved = isSaved;
 		
-		//this.lspClient = new LspClient();
+		this.lspClient = new LspClient();
 		
-		//this.relayEvents(this.lspClient, ["notification", "error"], "lsp.");
+		this.relayEvents(this.lspClient, ["notification", "error"], "lsp.");
 	}
 	
 	get prefs() {
