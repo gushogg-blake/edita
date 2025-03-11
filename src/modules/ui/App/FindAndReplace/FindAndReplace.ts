@@ -27,10 +27,6 @@ function getMethod(action, options) {
 	return methods[action][options.searchIn];
 }
 
-function shouldShowResults(action, options) {
-	return options.showResults || action === "findAll";
-}
-
 let maxHistoryEntries = 100;
 
 class FindAndReplace extends Evented {
@@ -49,11 +45,6 @@ class FindAndReplace extends Evented {
 			caseMode: "caseSensitive",
 			word: false,
 			multiline: false,
-			paths: [],
-			searchInSubDirs: true,
-			includePatterns: [],
-			excludePatterns: [],
-			showResults: true,
 		};
 		
 		this.savedOptions = null;
@@ -185,7 +176,7 @@ class FindAndReplace extends Evented {
 	async run(action, options) {
 		let results = await this[getMethod(action, options)](options);
 		
-		if (results.length > 0 && shouldShowResults(action, options)) {
+		if (results.length > 0 && ["findAll", "replaceAll"].includes(action)) {
 			this.app.output.showFindResults(action, options, results);
 		}
 		

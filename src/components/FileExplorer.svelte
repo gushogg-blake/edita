@@ -122,14 +122,12 @@ onMount(async function() {
 
 #scroll {
 	@include utils.abs-sticky;
+	@include utils.scrollbar-on-hover;
 	
 	--scrollbarBackground: var(--appBackground);
 	
+	padding-bottom: 1em;
 	overflow: auto;
-	
-	&:not(:hover)::-webkit-scrollbar-thumb {
-		display: none;
-	}
 }
 </style>
 

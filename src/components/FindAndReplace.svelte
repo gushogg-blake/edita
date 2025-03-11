@@ -56,15 +56,12 @@ function onOptionsUpdated() {
 }
 
 function getFormOptions(options) {
-	let {caseMode, paths, includePatterns, excludePatterns} = options;
+	let {caseMode} = options;
 	
 	return {
 		...options,
 		smartCase: caseMode === "smart",
 		matchCase: caseMode === "caseSensitive",
-		paths: paths.join(multiPathSeparator),
-		includePatterns: includePatterns.join(multiPathSeparator),
-		excludePatterns: excludePatterns.join(multiPathSeparator),
 	};
 }
 
@@ -74,9 +71,6 @@ function getOptions(formOptions) {
 	return {
 		...formOptions,
 		caseMode: smartCase ? "smart" : matchCase ? "caseSensitive" : "caseInsensitive",
-		paths: paths.split(multiPathSeparator).filter(Boolean),
-		includePatterns: includePatterns.split(multiPathSeparator).filter(Boolean),
-		excludePatterns: excludePatterns.split(multiPathSeparator).filter(Boolean),
 	};
 }
 
@@ -95,18 +89,12 @@ $effect(() => {
 		regex,
 		caseMode,
 		word,
-		searchInSubDirs,
-		includePatterns,
-		excludePatterns,
 	} = options;
 	
 	findAndReplace.saveOptions({
 		regex,
 		caseMode,
 		word,
-		searchInSubDirs,
-		includePatterns,
-		excludePatterns,
 	});
 });
 
@@ -232,7 +220,11 @@ function onHistoryUpdated() {
 }
 
 async function applyHistoryEntry(options) {
-	formOptions = getFormOptions(options);
+	let optionsFromHistory = getFormOptions(options);
+	
+	delete optionsFromHistory.searchIn;
+	
+	formOptions = optionsFromHistory;
 	
 	await tick();
 	
@@ -294,6 +286,7 @@ onMount(function() {
 
 #history {
 	@include utils.abs-sticky;
+	@include utils.scrollbar-on-hover;
 	
 	border: var(--inputBorder);
 	border-radius: 3px;
@@ -306,12 +299,14 @@ onMount(function() {
 	text-overflow: ellipsis;
 	padding: 3px 5px;
 	overflow: hidden;
+	cursor: pointer;
 	
 	&:not(:last-child) {
 		border-bottom: var(--selectItemDivider);
 	}
 	
 	&:hover {
+		text-decoration: underline;
 		//background: var(--selectItemHoverBackground);
 	}
 }
@@ -395,7 +390,7 @@ onMount(function() {
 		<div id="history">
 			{#each history as {options}}
 				<div class="historyEntry" onclick={() => applyHistoryEntry(options)}>
-					{options.search}
+					{options.search.replaceAll(" ", "·")}
 				</div>
 			{/each}
 		</div>
@@ -457,7 +452,6 @@ onMount(function() {
 			<button onclick={actions.replaceAll} disabled={!formOptions.search}>
 				<Accel label="Replace %all"/>
 			</button>
-			<Checkbox bind:value={formOptions.showResults} label="Sh%ow results"/>
 		{:else}
 			<button onclick={actions.findPrevious} disabled={!formOptions.search}>
 				<Accel label="Find pre%vious"/>
@@ -469,9 +463,5 @@ onMount(function() {
 				<Accel label="Find %all"/>
 			</button>
 		{/if}
-		<Gap height={5}/>
-		<div id="message" class:visible={session.message}>
-			{session.message}
-		</div>
 	</div>
 </form>
