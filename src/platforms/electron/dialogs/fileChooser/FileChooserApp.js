@@ -134,7 +134,7 @@ class FileChooserApp extends Evented {
 	//	window.close();
 	//}
 	
-	ok(name) {
+	async ok(name) {
 		if (this.mode === "selectDir") {
 			this.respond({
 				path: this.path,
@@ -148,25 +148,40 @@ class FileChooserApp extends Evented {
 				throw new Error("name required");
 			}
 			
+			let node = platform.fs(this.dir).child(name);
+			
+			if (await node.exists()) {
+				if (!confirm("Overwrite existing file?")) {
+					return;
+				}
+			}
+			
 			this.respond({
-				path: platform.fs(this.dir).child(name).path,
+				path: node.path,
 			});
 		}
 	}
 	
-	dblclick(entry) {
-		let {path} = entry.node;
+	async dblclick(entry) {
+		let {node} = entry;
+		let {path} = node;
 		
 		if (entry.isDir) {
 			this.nav(path);
 		} else {
-			if (this.mode === "select") {
+			if (this.mode === "selectDir") {
 				// TODO this should be disabled
 			} else if (this.mode === "selectFiles") {
 				this.respond({
 					paths: [path],
 				});
 			} else if (this.mode === "save") {
+				if (await node.exists()) {
+					if (!confirm("Overwrite existing file?")) {
+						return;
+					}
+				}
+				
 				this.respond({
 					path,
 				});
