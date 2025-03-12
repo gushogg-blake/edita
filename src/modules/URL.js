@@ -1,34 +1,40 @@
 function pathToUrl(path) {
+	let encoded = "/" + path.split("/").slice(1).map(p => encodeURIComponent(p)).join("/");
+	
 	if (platform.isWindows) {
-		return "/" + path.replaceAll("\\", "/").toLowerCase();
+		return "/" + encoded.replaceAll("\\", "/").toLowerCase();
 	} else {
-		return path;
+		return encoded;
 	}
 }
 
 function urlToPath(urlPath) {
+	let decoded = "/" + urlPath.split("/").slice(1).map(p => decodeURIComponent(p)).join("/");
+	
 	if (platform.isWindows) {
-		return urlPath.substr(1).replaceAll("/", "\\");
+		return decoded.substr(1).replaceAll("/", "\\");
 	} else {
-		return urlPath;
+		return decoded;
 	}
 }
 
-class URL {
+class CustomURL {
 	constructor(url) {
-		if (url instanceof URL) {
+		if (url instanceof CustomURL) {
 			url = url.toString();
 		}
 		
-		this.url = url;
+		this.url = new URL(url);
 	}
 	
 	get path() {
-		return urlToPath(this.url.substr(this.url.indexOf("://") + 3));
+		return urlToPath(this.url.pathname);
 	}
 	
 	get protocol() {
-		return this.url.substr(0, this.url.indexOf(":"));
+		let {protocol} = this.url;
+		
+		return protocol.substr(0, protocol.length - 1);
 	}
 	
 	get isNew() {
@@ -40,15 +46,15 @@ class URL {
 	}
 	
 	static file(path) {
-		return new URL("file://" + pathToUrl(path));
+		return new CustomURL("file://" + pathToUrl(path));
 	}
 	
 	static _new(path) {
-		return new URL("new://" + pathToUrl(path));
+		return new CustomURL("new://" + pathToUrl(path));
 	}
 	
 	toString() {
-		return this.url;
+		return this.url.toString();
 	}
 	
 	toJSON() {
@@ -56,4 +62,4 @@ class URL {
 	}
 }
 
-module.exports = URL;
+module.exports = CustomURL;

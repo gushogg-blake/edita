@@ -12,6 +12,33 @@ let migrations = {
 			return session;
 		}
 	},
+	
+	"2"(session) {
+		if (!session) {
+			return session;
+		}
+		
+		function encodePathParts(url) {
+			if (!url.startsWith("file://")) {
+				return url;
+			}
+			
+			let path = url.substr("file://".length);
+			let encoded = "/" + path.split("/").slice(1).map(p => encodeURIComponent(p)).join("/");
+			
+			return "file://" + encoded;
+		}
+		
+		if (session.selectedTabUrl) {
+			session.selectedTabUrl = encodePathParts(session.selectedTabUrl);
+		}
+		
+		if (session.tabs) {
+			session.tabs = session.tabs.map(function(tab) {
+				return {...tab, url: encodePathParts(tab.url)};
+			});
+		}
+	},
 };
 
 module.exports = function() {
