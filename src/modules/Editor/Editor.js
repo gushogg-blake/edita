@@ -238,7 +238,15 @@ class Editor extends Evented {
 		let {document} = this;
 		let {project} = document;
 		
-		let result = await project?.lspClient?.getDefinition(document, cursor) || null;
+		let results = await project?.lspClient?.getDefinitions(document, cursor) || [];
+		
+		if (results.length === 0) {
+			return;
+		}
+		
+		// TODO if multiple, bring up a list
+		
+		this.fire("requestGoToDefinition", results[0]);
 	}
 	
 	wordUnderCursor(cursor) {

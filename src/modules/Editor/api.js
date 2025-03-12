@@ -2,6 +2,22 @@ let Selection = require("modules/Selection");
 let FindAndReplaceSession = require("./FindAndReplaceSession");
 
 module.exports = {
+	centerSelection(selection) {
+		let {view} = this;
+		
+		view.startBatch();
+		
+		let {rows} = view.sizes;
+		let {rowHeight} = view.measurements;
+		let [selectionRow] = view.rowColFromCursor(selection.start);
+		let scrollToRow = selectionRow - Math.ceil(rows / 2);
+		let scrollTop = scrollToRow * rowHeight;
+		
+		view.setVerticalScrollNoValidate(Math.max(0, scrollTop));
+		
+		view.endBatch();
+	},
+	
 	setNormalSelectionAndCenter(selection) {
 		let {view} = this;
 		
@@ -9,11 +25,7 @@ module.exports = {
 		
 		this.setNormalSelection(selection);
 		
-		let {rows} = view.sizes;
-		let {rowHeight} = view.measurements;
-		let [selectionRow] = view.rowColFromCursor(selection.start);
-		let scrollToRow = selectionRow - Math.ceil(rows / 2);
-		let scrollTop = scrollToRow * rowHeight;
+		this.centerSelection(selection);
 		
 		view.setVerticalScrollNoValidate(Math.max(0, scrollTop));
 		

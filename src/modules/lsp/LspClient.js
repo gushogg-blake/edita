@@ -1,10 +1,14 @@
 let Evented = require("utils/Evented");
 let lid = require("utils/lid");
 let URL = require("modules/URL");
-let normaliseLangCode = require("modules/lsp/utils/normaliseLangCode");
-let cursorToLspPosition = require("modules/lsp/utils/cursorToLspPosition");
-let maskOtherRegions = require("modules/lsp/utils/maskOtherRegions");
 let LspError = require("modules/lsp/LspError");
+
+let {
+	cursorToLspPosition,
+	lspRangeToSelection,
+	maskOtherRegions,
+	normaliseLangCode,
+} = require("modules/lsp/utils");
 
 class LspClient extends Evented {
 	constructor() {
@@ -137,7 +141,7 @@ class LspClient extends Evented {
 		}, []);
 	}
 	
-	async getDefinition(document, cursor) {
+	async getDefinitions(document, cursor) {
 		let {scope} = document.rangeFromCursor(cursor);
 		let {lang} = scope;
 		let uri = this.urisByScope.get(scope);
@@ -158,9 +162,19 @@ class LspClient extends Evented {
 				return [];
 			}
 			
-			console.log(result);
-			
-			return result;
+			return result.map(function(definition) {
+				let {uri, range} = definition;
+				let url = new URL(uri);
+				
+				if (url.protocol !== "file") {
+					return null;
+				}
+				
+				return {
+					path: url.path,
+					selection: lspRangeToSelection(range),
+				};
+			}).filter(Boolean);
 		}, []);
 	}
 	

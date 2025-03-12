@@ -616,6 +616,14 @@ class App extends Evented {
 		
 		editor.on("normalSelectionChangedByMouseOrKeyboard", () => this.showAstHint(editor));
 		
+		editor.on("requestGoToDefinition", async ({path, selection}) => {
+			let tab = await this.openPath(path);
+			let {api} = tab.editor;
+			
+			api.setNormalHilites([selection]);
+			api.centerSelection(selection);
+		});
+		
 		await tab.init();
 		
 		tab.on("focus", this.onTabFocus.bind(this));
