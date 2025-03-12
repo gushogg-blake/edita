@@ -133,7 +133,13 @@ module.exports = {
 		this.view.ensureScrollIsWithinBounds();
 	},
 	
-	setNormalHilites(selections) {
+	setNormalHilites(selections, clearAfter=null) {
 		this.view.setNormalHilites(selections);
+		
+		if (clearAfter !== null) {
+			setTimeout(() => {
+				this.api.setNormalHilites([]);
+			}, clearAfter);
+		}
 	},
 };

@@ -620,7 +620,7 @@ class App extends Evented {
 			let tab = await this.openPath(path);
 			let {api} = tab.editor;
 			
-			api.setNormalHilites([selection]);
+			api.setNormalHilites([selection], 700);
 			api.centerSelection(selection);
 		});
 		
