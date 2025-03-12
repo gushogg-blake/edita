@@ -8,7 +8,7 @@ module.exports = {
 			return {
 				command: [
 					"node",
-					nodeModules.child("typescript-language-server", "lib", "cli.js").path,
+					nodeModules.child("typescript-language-server", "lib", "cli.mjs").path,
 					"--stdio",
 					"--log-level=4",
 				],
