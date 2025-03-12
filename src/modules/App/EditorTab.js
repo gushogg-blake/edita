@@ -76,7 +76,7 @@ class EditorTab extends Tab {
 	}
 	
 	get windowTitle() {
-		let title = this.name;
+		let title = platform.fs(this.path).name;
 		
 		if (this.isSaved) {
 			title += " (" + platform.fs(this.path).parent.homePath + ")";
