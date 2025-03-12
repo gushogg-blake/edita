@@ -223,6 +223,24 @@ class App extends Evented {
 	}
 	
 	getEditorTabName(tab) {
+		let sep = platform.systemInfo.pathSeparator;
+		let node = platform.fs(tab.path);
+		let {name, basename, extension} = node;
+		let shortenedName = name;
+		let prefixWithParentByConvention = "";
+		
+		// shorten
+		
+		if (basename.length > 20) {
+			shortenedName = basename.substr(0, 8).trim() + "..." + basename.substr(-8).trim() + extension;
+		}
+		
+		// conventions - always include dir for generic names like index.js
+		
+		if (multimatch(conventions.alwaysIncludeDirInTabTitle, node.name)) {
+			prefixWithParentByConvention = node.parent.name + sep;
+		}
+		
 		/*
 		disambiguation
 		
@@ -235,9 +253,6 @@ class App extends Evented {
 		representing path parts that are the same between tabs)
 		*/
 		
-		let sep = platform.systemInfo.pathSeparator;
-		let node = platform.fs(tab.path);
-		
 		let others = this.tabs.map(other => platform.fs(other.path)).filter(function(other) {
 			return (
 				other.path !== node.path
@@ -245,20 +260,8 @@ class App extends Evented {
 			);
 		});
 		
-		let {name, basename, extension} = node;
-		
-		// shorten
-		
-		if (basename.length > 20) {
-			name = basename.substr(0, 8).trim() + "..." + basename.substr(-8).trim() + extension;
-		}
-		
-		if (multimatch(conventions.alwaysIncludeDirInTabTitle, node.name)) {
-			name = node.parent.name + sep + name;
-		}
-		
 		if (others.length === 0) {
-			return name;
+			return prefixWithParentByConvention + shortenedName;
 		}
 		
 		let startNode = node;
@@ -266,12 +269,12 @@ class App extends Evented {
 		do {
 			startNode = startNode.parent;
 			others = others.map(other => other.parent);
-		} while(others.some(other => other.name === startNode.name));
+		} while (others.some(other => other.name === startNode.name));
 		
 		if (startNode.path === node.parent.path) {
-			return startNode.name + sep + node.name;
+			return startNode.name + sep + shortenedName;
 		} else {
-			return startNode.name + sep + "..." + sep + name;
+			return startNode.name + sep + "..." + sep + prefixWithParentByConvention + shortenedName;
 		}
 	}
 	
