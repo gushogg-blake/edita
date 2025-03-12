@@ -6,12 +6,14 @@ let Evented = require("utils/Evented");
 let bindFunctions = require("utils/bindFunctions");
 let promiseWithMethods = require("utils/promiseWithMethods");
 let nextName = require("utils/nextName");
+let multimatch = require("utils/multimatch");
 
 let URL = require("modules/URL");
 let protocol = require("modules/protocol");
 let Document = require("modules/Document");
 let Editor = require("modules/Editor");
 let View = require("modules/View");
+let conventions = require("modules/conventions");
 
 let EditorTab = require("./EditorTab");
 let RefactorPreviewTab = require("./RefactorPreviewTab");
@@ -220,11 +222,60 @@ class App extends Evented {
 		}, 0);
 	}
 	
-	getTabName(tab) {
-		return platform.fs(tab.path).name;
+	getEditorTabName(tab) {
+		/*
+		disambiguation
+		
+		start with the filename and for all tabs with same filename,
+		step back until we find an ancestor dir that's different
+		
+		then, if we just stepped back one dir just prepend it
+		
+		otherwise, prepend the dir, /.../, then the filename (the dots
+		representing path parts that are the same between tabs)
+		*/
+		
+		let sep = platform.systemInfo.pathSeparator;
+		let node = platform.fs(tab.path);
+		
+		let others = this.tabs.map(other => platform.fs(other.path)).filter(function(other) {
+			return (
+				other.path !== node.path
+				&& other.name === node.name
+			);
+		});
+		
+		let {name, basename, extension} = node;
+		
+		// shorten
+		
+		if (basename.length > 20) {
+			name = basename.substr(0, 8).trim() + "..." + basename.substr(-8).trim() + extension;
+		}
+		
+		if (multimatch(conventions.alwaysIncludeDirInTabTitle, node.name)) {
+			name = node.parent.name + sep + name;
+		}
+		
+		if (others.length === 0) {
+			return name;
+		}
+		
+		let startNode = node;
+		
+		do {
+			startNode = startNode.parent;
+			others = others.map(other => other.parent);
+		} while(others.some(other => other.name === startNode.name));
+		
+		if (startNode.path === node.parent.path) {
+			return startNode.name + sep + node.name;
+		} else {
+			return startNode.name + sep + "..." + sep + name;
+		}
 	}
 	
-	getTabLabel(tab) {
+	getEditorTabLabel(tab) {
 		return tab.name + (tab.modified ? " *" : "");
 	}
 	

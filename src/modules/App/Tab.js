@@ -28,7 +28,7 @@ class Tab extends Evented {
 	}
 	
 	get name() {
-		return this.app.getTabName(this);
+		throw new Error("tab name must be overridden");
 	}
 	
 	get windowTitle() {
@@ -36,7 +36,7 @@ class Tab extends Evented {
 	}
 	
 	get label() {
-		return this.app.getTabLabel(this);
+		return this.name;
 	}
 	
 	get modified() {

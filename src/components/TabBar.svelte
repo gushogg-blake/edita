@@ -235,6 +235,7 @@ button {
 			</div>
 		{/if}
 		<div
+			title={getDetails(tabs, tab).tooltip}
 			class="tabButton"
 			class:border
 			class:closeable={getDetails(tabs, tab).closeable}

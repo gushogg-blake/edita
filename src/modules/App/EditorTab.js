@@ -63,6 +63,18 @@ class EditorTab extends Tab {
 		return this.editor.view;
 	}
 	
+	get name() {
+		return this.app.getEditorTabName(this);
+	}
+	
+	get label() {
+		return this.app.getEditorTabLabel(this);
+	}
+	
+	get tooltip() {
+		return this.path;
+	}
+	
 	get windowTitle() {
 		let title = this.name;
 		
