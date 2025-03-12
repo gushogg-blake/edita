@@ -117,18 +117,18 @@ class App extends Evented {
 	
 	async save(tab) {
 		// HACK
-		let {editor} = tab;
-		
-		if (base.getPref("removeTrailingWhitespacePrefixes")?.some(prefix => tab.path?.startsWith(prefix))) {
-			tab.editor.api.replaceAll({
-				type: "regex",
-				search: "^ +$",
-				replaceWith: "",
-				word: false,
-				enumerate: true,
-				caseMode: "caseSensitive",
-			});
-		}
+		//let {editor} = tab;
+		//
+		//if (base.getPref("removeTrailingWhitespacePrefixes")?.some(prefix => tab.path?.startsWith(prefix))) {
+		//	tab.editor.api.replaceAll({
+		//		type: "regex",
+		//		search: "^ +$",
+		//		replaceWith: "",
+		//		word: false,
+		//		enumerate: true,
+		//		caseMode: "caseSensitive",
+		//	});
+		//}
 		
 		let {document} = tab;
 		

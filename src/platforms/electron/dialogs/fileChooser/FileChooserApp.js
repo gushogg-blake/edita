@@ -209,13 +209,9 @@ class FileChooserApp extends Evented {
 	}
 	
 	respond(response) {
-		if (location.href.endsWith("main.html")) { // DEV
-			console.log(response);
-		} else {
-			this._respond(response);
-			
-			window.close();
-		}
+		this._respond(response);
+		
+		window.close();
 	}
 	
 	onDialogClosed() {
