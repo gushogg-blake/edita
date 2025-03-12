@@ -3,24 +3,7 @@ let Evented = require("utils/Evented");
 let unique = require("utils/array/unique");
 let {removeInPlace} = require("utils/arrayMethods");
 let Project = require("modules/Project");
-
-let projectRootFiles = [
-	".git",
-	"src",
-	"license",
-	"licence",
-	"changelog",
-	"contributing",
-	"contributing.md",
-	"cargo.toml",
-	"package.json",
-	"gradle.properties",
-	"cmakelists.txt",
-	"makefile",
-	"composer.json",
-	"rakefile",
-	"gemfile",
-];
+let {projectRootFiles} = require("modules/conventions");
 
 class Projects extends Evented {
 	constructor(app) {
