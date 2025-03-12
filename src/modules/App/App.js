@@ -581,10 +581,21 @@ class App extends Evented {
 			format = base.getFormat(code, url);
 		}
 		
+		let newlinesNormalised = false;
+		
 		if (format.hasMixedNewlines) {
-			// TODO prompt to change all newlines
+			let {newline} = platform.systemInfo;
+			let displayNewline = newline.replace("\n", "\\n").replace("\r", "\\r");
 			
-			throw new Error("File " + url.path + " has mixed newlines");
+			alert("Warning: normalising mixed newlines to " + displayNewline + " to edit " + url.path);
+			
+			code = code.replaceAll("\r\n", newline);
+			code = code.replaceAll("\r", newline);
+			code = code.replaceAll("\n", newline);
+			
+			format.hasMixedNewlines = false;
+			
+			newlinesNormalised = true;
 		}
 		
 		await base.ensureRequiredLangsInitialised(format.lang);
@@ -592,6 +603,7 @@ class App extends Evented {
 		let document = this.createDocument(code, url, {
 			project: await this.projects.findOrCreateProjectForUrl(url),
 			format,
+			newlinesNormalised,
 		});
 		
 		let view = new View(document);

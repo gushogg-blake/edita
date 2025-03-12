@@ -21,6 +21,8 @@ class Document extends Evented {
 			project: null,
 			format: base.getFormat(string, url),
 			noParse: false,
+			// if the file has mixed newlines, we normalise them on open
+			newlinesNormalised: false,
 			...options,
 		};
 		
@@ -33,7 +35,7 @@ class Document extends Evented {
 		this.history = [];
 		this.historyIndex = 0;
 		this.historyIndexAtSave = 0;
-		this.modified = false;
+		this.modified = options.newlinesNormalised;
 		
 		this.createLines();
 		
