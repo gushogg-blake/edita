@@ -253,6 +253,10 @@ class App extends Evented {
 		representing path parts that are the same between tabs)
 		*/
 		
+		if (node.parent.isRoot) {
+			return shortenedName;
+		}
+		
 		let others = this.tabs.map(other => platform.fs(other.path)).filter(function(other) {
 			return (
 				other.path !== node.path
@@ -271,7 +275,15 @@ class App extends Evented {
 			others = others.map(other => other.parent);
 		} while (others.some(other => other.name === startNode.name));
 		
-		if (startNode.path === node.parent.path) {
+		if (startNode.isRoot) {
+			/*
+			other tabs' paths are our full path with a prefix -
+			handle this case specially to avoid disambiguating it
+			as //.../filename
+			*/
+			
+			return prefixWithParentByConvention + shortenedName;
+		} else if (startNode.path === node.parent.path) {
 			return startNode.name + sep + shortenedName;
 		} else {
 			return startNode.name + sep + "..." + sep + prefixWithParentByConvention + shortenedName;
