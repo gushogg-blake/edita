@@ -53,6 +53,8 @@ class LspServer extends Evented {
 		
 		let message = "Content-Length: " + json.length + "\r\n\r\n" + json;
 		
+		//console.log(this.process.pid, message);
+		
 		this.process.stdin.write(message);
 		
 		let promise = promiseWithMethods();
@@ -81,6 +83,8 @@ class LspServer extends Evented {
 		
 		let message = "Content-Length: " + json.length + "\r\n\r\n" + json;
 		
+		//console.log(this.process.pid, message.substr(0, 150));
+		
 		this.process.stdin.write(message);
 	}
 	
@@ -97,6 +101,8 @@ class LspServer extends Evented {
 		this.responseBuffer = Buffer.alloc(responseBuffer.length + data.length);
 		this.responseBuffer.set(responseBuffer);
 		this.responseBuffer.set(data, responseBuffer.length);
+		
+		//console.log(this.process.pid, data.toString());
 		
 		this.checkResponseBuffer();
 	}
