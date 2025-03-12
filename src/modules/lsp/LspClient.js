@@ -14,6 +14,7 @@ class LspClient extends Evented {
 	constructor() {
 		super();
 		
+		this.key = lid();
 		this.servers = {};
 		this.unavailableLangCodes = new Set();
 		
