@@ -27,8 +27,6 @@ module.exports = {
 		
 		this.api.centerSelection(selection);
 		
-		view.setVerticalScrollNoValidate(Math.max(0, scrollTop));
-		
 		view.endBatch();
 	},
 	
