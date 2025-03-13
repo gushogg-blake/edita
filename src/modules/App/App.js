@@ -674,9 +674,8 @@ class App extends Evented {
 	}
 	
 	async findReferencesToFile(tab) {
-		let symbols = await tab.document.lsp.listSymbols() || [];
-		
-		console.log(symbols);
+		// TODO not implemented by LSP yet
+		// see https://github.com/microsoft/language-server-protocol/issues/2047
 	}
 	
 	showAstHint(editor) {
