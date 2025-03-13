@@ -396,4 +396,8 @@ module.exports = class Scope {
 	generateNodesStartingOnLine(lineIndex, lang=null) {
 		return this._generateNodesStartingOnLine(lineIndex, 0, lang);
 	}
+	
+	allScopes() {
+		return this.scopes.concat(...this.scopes.map(scope => scope.allScopes()));
+	}
 }

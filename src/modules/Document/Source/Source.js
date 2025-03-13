@@ -113,14 +113,7 @@ module.exports = class {
 		return this.rangeFromCursor(cursor).lang;
 	}
 	
-	getScopes(parent) {
-		return [
-			...parent.scopes,
-			...parent.scopes.reduce((scopes, scope) => [...scopes, ...this.getScopes(scope)], []),
-		];
-	}
-	
 	get scopes() {
-		return [this.rootScope, ...this.getScopes(this.rootScope)];
+		return [this.rootScope, ...this.rootScope.allScopes()];
 	}
 }
