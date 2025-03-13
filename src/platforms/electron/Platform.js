@@ -176,7 +176,7 @@ class Platform extends Evented {
 		items = items.map(function(item) {
 			return {
 				...item,
-				label: item.label.replaceAll("%", "&"),
+				label: item.label?.replaceAll("%", "&"),
 			};
 		});
 		

@@ -52,6 +52,24 @@ class Document extends Evented {
 		this.fileChangedWhileModified = false;
 		
 		this.setupWatch();
+		
+		this.lsp = {
+			listSymbols() {
+				return this.project?.lspClient?.listSymbols(this);
+			},
+			
+			getCompletions(cursor) {
+				return this.project?.lspClient?.getCompletions(this, cursor);
+			},
+			
+			getDefinitions(cursor) {
+				return this.project?.lspClient?.getDefinitions(this, cursor);
+			},
+		};
+		
+		for (let [k, fn] of Object.entries(this.lsp)) {
+			this.lsp[k] = fn.bind(this);
+		}
 	}
 	
 	static maxEditsToApplyIndividually = 2;

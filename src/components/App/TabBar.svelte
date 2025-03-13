@@ -37,6 +37,19 @@ let _getContextMenuItems = {
 		
 		return [
 			{
+				label: "%Find references",
+				enabled: isSaved,
+				
+				onClick() {
+					app.findReferencesToFile(tab);
+				},
+			},
+			
+			{
+				type: "separator",
+			},
+			
+			{
 				label: "%Rename...",
 				enabled: isSaved,
 				
@@ -52,6 +65,10 @@ let _getContextMenuItems = {
 				onClick() {
 					app.deleteTab(tab);
 				},
+			},
+			
+			{
+				type: "separator",
 			},
 			
 			{

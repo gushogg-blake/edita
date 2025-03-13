@@ -179,6 +179,30 @@ class LspClient extends Evented {
 		}, []);
 	}
 	
+	async listSymbols(document) {
+		let {scopes} = document;
+		let symbols = [];
+		
+		await Promise.all(scopes.map((scope) => {
+			let {lang} = scope;
+			let uri = this.urisByScope.get(scope);
+			
+			return this.withServer(lang, async (server) => {
+				let {error, result} = await server.request("textDocument/documentSymbol", {
+					textDocument: {
+						uri,
+					},
+				});
+				
+				if (result) {
+					symbols = [...symbols, ...result];
+				}
+			});
+		}));
+		
+		return symbols;
+	}
+	
 	registerDocument(document) {
 		let {scopes} = document;
 		

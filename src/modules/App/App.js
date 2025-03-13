@@ -673,6 +673,12 @@ class App extends Evented {
 		return this._createEditor(document, view);
 	}
 	
+	async findReferencesToFile(tab) {
+		let symbols = await tab.document.lsp.listSymbols() || [];
+		
+		console.log(symbols);
+	}
+	
 	showAstHint(editor) {
 		if (!base.getPref("dev.showAstHints")) {
 			return;

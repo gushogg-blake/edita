@@ -179,10 +179,8 @@ class Editor extends Evented {
 		}
 		
 		let cursor = this.normalSelection.left;
-		let {document} = this;
-		let {project} = document;
 		
-		let completions = await project?.lspClient?.getCompletions(document, cursor) || [];
+		let completions = await this.document.lsp.getCompletions(cursor) || [];
 		
 		console.log(completions);
 		
@@ -235,10 +233,7 @@ class Editor extends Evented {
 	async goToDefinitionFromCursor(cursor) {
 		let word = this.wordUnderCursor(cursor);
 		
-		let {document} = this;
-		let {project} = document;
-		
-		let results = await project?.lspClient?.getDefinitions(document, cursor) || [];
+		let results = await this.document.lsp.getDefinitions(cursor) || [];
 		
 		if (results.length === 0) {
 			return;
