@@ -11,10 +11,6 @@ module.exports = function(editor, editorComponent) {
 	let origDoubleClickWordSelection = false;
 	
 	function mousedown(e, isDoubleClick, enableDrag) {
-		if (e.button === 2) {
-			return;
-		}
-		
 		if (e.ctrlKey) {
 			return;
 		}
@@ -26,12 +22,6 @@ module.exports = function(editor, editorComponent) {
 		
 		let cursor = getCursor(e, view, canvasDiv);
 		let charCursor = getCharCursor(e, view, canvasDiv);
-		
-		if (e.button === 1) {
-			editor.normalMouse.insertSelectionClipboard(cursor);
-			
-			return;
-		}
 		
 		autoScroll(
 			canvasDiv,
@@ -101,10 +91,6 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function click(e) {
-		if (e.button !== 0) {
-			return;
-		}
-		
 		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		
 		if (e.ctrlKey) {
@@ -126,6 +112,35 @@ module.exports = function(editor, editorComponent) {
 		if (view.normalSelection.isFull()) {
 			platform.clipboard.writeSelection(editor.getSelectedText());
 		}
+	}
+	
+	function middlepress(e) {
+		let cursor = getCursor(e, view, editorComponent.canvasDiv);
+		
+		editor.normalMouse.insertSelectionClipboard(cursor);
+	}
+	
+	function contextmenu(e) {
+		let cursor = getCursor(e, view, editorComponent.canvasDiv);
+		
+		let items = [
+			{
+				label: "Go to definition",
+				
+				onClick() {
+					editor.goToDefinitionFromCursor(cursor);
+				},
+			},
+			{
+				label: "Find references",
+				
+				onClick() {
+					editor.findReferencesFromCursor(cursor);
+				},
+			},
+		];
+		
+		platform.showContextMenu(e, editorComponent.app, items);
 	}
 	
 	function dragstart(e) {
@@ -208,6 +223,8 @@ module.exports = function(editor, editorComponent) {
 		mouseleave,
 		click,
 		dblclick,
+		middlepress,
+		contextmenu,
 		dragstart,
 		dragover,
 		dragenter,

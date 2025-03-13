@@ -104,16 +104,6 @@ module.exports = function(editor, editorComponent) {
 	function mousedown(e, pickOptionType, enableDrag) {
 		mouseIsDown = true;
 		
-		if (e.button === 0) {
-			mousedownLeft(e, pickOptionType, enableDrag);
-		} else if (e.button === 1) {
-			mousedownMiddle(e, pickOptionType);
-		} else if (e.button === 2) {
-			mousedownRight(e, pickOptionType);
-		}
-	}
-	
-	function mousedownLeft(e, pickOptionType, enableDrag) {
 		let {
 			canvasDiv,
 			showingHorizontalScrollbar,
@@ -145,34 +135,6 @@ module.exports = function(editor, editorComponent) {
 			on(window, "mouseup", mouseup);
 			on(window, "dragend", dragend);
 		}
-	}
-	
-	function mousedownMiddle() {
-		
-	}
-	
-	function mousedownRight(e, pickOptionType) {
-		let selection = hiliteFromEvent(e, pickOptionType);
-		
-		if (!selection) {
-			return;
-		}
-		
-		editor.astMouse.setSelection(selection);
-		
-		let items = editor.getAvailableAstManipulations().map(function({code, name}) {
-			return {
-				label: name,
-				
-				onClick() {
-					editor.doAstManipulation(code);
-				},
-			};
-		});
-		
-		platform.showContextMenu(e, editorComponent.app, items, {
-			noCancel: true,
-		});
 	}
 	
 	function drawSelection(e) {
@@ -237,6 +199,34 @@ module.exports = function(editor, editorComponent) {
 	}
 	
 	function dblclick(e) {
+		
+	}
+	
+	function contextmenu(e, pickOptionType) {
+		let selection = hiliteFromEvent(e, pickOptionType);
+		
+		if (!selection) {
+			return;
+		}
+		
+		editor.astMouse.setSelection(selection);
+		
+		let items = editor.getAvailableAstManipulations().map(function({code, name}) {
+			return {
+				label: name,
+				
+				onClick() {
+					editor.doAstManipulation(code);
+				},
+			};
+		});
+		
+		platform.showContextMenu(e, editorComponent.app, items, {
+			noCancel: true,
+		});
+	}
+	
+	function middlepress(e, pickOptionType) {
 		
 	}
 	
@@ -381,6 +371,8 @@ module.exports = function(editor, editorComponent) {
 		mouseleave,
 		click,
 		dblclick,
+		contextmenu,
+		middlepress,
 		dragstart,
 		dragover,
 		dragenter,

@@ -83,6 +83,10 @@ let lastMouseEvent;
 let inAstModeForDrop = false;
 
 let normalMouseHandler = normalMouse(editor, {
+	get app() {
+		return app;
+	},
+	
 	get canvasDiv() {
 		return canvasDiv;
 	},
@@ -208,6 +212,22 @@ function dblclick({detail: e}) {
 		normalMouseHandler.dblclick(e);
 	} else if (view.mode === "ast") {
 		astMouseHandler.dblclick(e);
+	}
+}
+
+function contextmenu({detail: {e, pickOptionType}}) {
+	if (view.mode === "normal") {
+		normalMouseHandler.contextmenu(e, pickOptionType);
+	} else if (view.mode === "ast") {
+		astMouseHandler.contextmenu(e, pickOptionType);
+	}
+}
+
+function middlepress({detail: {e, pickOptionType}}) {
+	if (view.mode === "normal") {
+		normalMouseHandler.middlepress(e, pickOptionType);
+	} else if (view.mode === "ast") {
+		astMouseHandler.middlepress(e, pickOptionType);
 	}
 }
 
@@ -724,6 +744,8 @@ canvas {
 				on:mouseleave={mouseleave}
 				on:mousemove={mousemove}
 				on:mouseup={mouseup}
+				on:contextmenu={contextmenu}
+				on:middlepress={middlepress}
 				on:click={click}
 				on:dblclick={dblclick}
 				on:dragstart={dragstart}

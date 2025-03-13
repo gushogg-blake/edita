@@ -142,6 +142,10 @@ class LspClient extends Evented {
 		}, []);
 	}
 	
+	/*
+	NOTE loads of repetition in these calls
+	*/
+	
 	async getDefinitions(document, cursor) {
 		let {scope} = document.rangeFromCursor(cursor);
 		let {lang} = scope;
@@ -158,6 +162,47 @@ class LspClient extends Evented {
 			
 			if (error) {
 				console.log("Error fetching definition for lang " + lang.code);
+				console.log(error);
+				
+				return [];
+			}
+			
+			return result.map(function(definition) {
+				let {uri, range} = definition;
+				let url = new URL(uri);
+				
+				if (url.protocol !== "file") {
+					return null;
+				}
+				
+				return {
+					path: url.path,
+					selection: lspRangeToSelection(range),
+				};
+			}).filter(Boolean);
+		}, []);
+	}
+	
+	async findReferences(document, cursor) {
+		let {scope} = document.rangeFromCursor(cursor);
+		let {lang} = scope;
+		let uri = this.urisByScope.get(scope);
+		
+		return await this.withServer(lang, async (server) => {
+			let {error, result} = await server.request("textDocument/references", {
+				textDocument: {
+					uri,
+				},
+				
+				position: cursorToLspPosition(cursor),
+				
+				context: {
+					includeDeclaration: false,
+				},
+			});
+			
+			if (error) {
+				console.log("Error fetching references for lang " + lang.code);
 				console.log(error);
 				
 				return [];

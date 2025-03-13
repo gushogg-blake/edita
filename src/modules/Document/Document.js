@@ -65,6 +65,10 @@ class Document extends Evented {
 			getDefinitions(cursor) {
 				return this.project?.lspClient?.getDefinitions(this, cursor);
 			},
+			
+			findReferences(cursor) {
+				return this.project?.lspClient?.findReferences(this, cursor);
+			},
 		};
 		
 		for (let [k, fn] of Object.entries(this.lsp)) {

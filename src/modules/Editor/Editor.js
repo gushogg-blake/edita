@@ -244,6 +244,20 @@ class Editor extends Evented {
 		this.fire("requestGoToDefinition", results[0]);
 	}
 	
+	async findReferencesFromCursor(cursor) {
+		let word = this.wordUnderCursor(cursor);
+		
+		let results = await this.document.lsp.findReferences(cursor) || [];
+		
+		if (results.length === 0) {
+			return;
+		}
+		
+		console.log(results);
+		
+		this.fire("requestShowReferences", results);
+	}
+	
 	wordUnderCursor(cursor) {
 		let wordSelection = this.view.Selection.wordUnderCursor(cursor);
 		let str = this.document.getSelectedText(wordSelection);

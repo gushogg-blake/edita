@@ -125,11 +125,36 @@ let syntheticDragHandler = drag({
 });
 
 function mousedown(e) {
-	lastMousedownEvent = e;
+	if (e.button === 2) {
+		/*
+		opening the context menu causes a mouseleave, so ignore the next one
+		*/
+		
+		if (e.button === 2) {
+			ignoreMouseLeave = true;
+			
+			setTimeout(function() {
+				ignoreMouseLeave = false;
+			}, 0);
+		}
+		
+		return;
+	}
+	
+	selectedPickOption = pickOptionFromMouseEvent(e);
+	
+	if (e.button === 1) {
+		fire("middlepress", {
+			e,
+			pickOptionType: selectedPickOption?.type,
+		});
+		
+		return;
+	}
 	
 	on(window, "mouseup", mouseup);
 	
-	selectedPickOption = pickOptionFromMouseEvent(e);
+	lastMousedownEvent = e;
 	
 	let time = Date.now();
 	
@@ -179,17 +204,6 @@ function mousedown(e) {
 	}
 	
 	lastMousedownTime = time;
-	
-	/*
-	opening the context menu causes a mouseleave, so ignore the next one
-	if we've just clicked on the editor
-	*/
-	
-	ignoreMouseLeave = true;
-	
-	setTimeout(function() {
-		ignoreMouseLeave = false;
-	}, 0);
 }
 
 function mousemove(e) {
@@ -257,6 +271,13 @@ function mouseleave(e) {
 
 function contextmenu(e) {
 	e.preventDefault();
+	
+	selectedPickOption = pickOptionFromMouseEvent(e);
+	
+	fire("contextmenu", {
+		e,
+		pickOptionType: selectedPickOption?.type,
+	});
 	
 	return false;
 }
