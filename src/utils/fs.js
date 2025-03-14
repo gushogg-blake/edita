@@ -191,7 +191,7 @@ module.exports = function(config) {
 				...options,
 			};
 			
-			let newFile = this.sibling(name);
+			let newFile = this.parent.rel(name);
 			
 			if (options.mkdirs) {
 				await newFile.parent.mkdirp();
