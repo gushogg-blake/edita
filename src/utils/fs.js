@@ -203,6 +203,10 @@ module.exports = function(config) {
 		}
 		
 		async move(dest, options={}) {
+			if (dest instanceof Node) {
+				dest = dest.path + osPath.sep;
+			}
+			
 			if (dest.endsWith(osPath.sep)) {
 				dest += this.name;
 			}
@@ -210,9 +214,22 @@ module.exports = function(config) {
 			await this.rename(dest, options);
 		}
 		
-		async copy(dest) {
+		async copy(dest, options={}) {
+			options = {
+				mkdirs: false,
+				...options,
+			};
+			
 			if (dest instanceof Node) {
-				dest = dest.path;
+				dest = dest.path + osPath.sep;
+			}
+			
+			if (dest.endsWith(osPath.sep)) {
+				dest += this.name;
+			}
+			
+			if (options.mkdirs) {
+				await (new Node(dest)).parent.mkdirp();
 			}
 			
 			await fs.copy(this.path, dest);

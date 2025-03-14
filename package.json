@@ -28,11 +28,10 @@
 		"electron": "./scripts/await-build electron-dev; NODE_ENV=development npm start",
 		"web": "./scripts/await-build web-dev; sirv --dev --quiet --no-clear --port 5000 build/web-dev",
 		"test": "./scripts/await-build test; sirv --dev --quiet --no-clear --port 5001 build/test",
-		"build-parsers": "node ./scripts/buildParsers.js",
+		"build-parsers": "node ./scripts/tree-sitter/buildParsers.js",
 		"postinstall": "patch-package"
 	},
 	"dependencies": {
-		"@gushogg-blake/tree-sitter-prisma": "^1.5.1",
 		"bluebird": "^3.7.2",
 		"chokidar": "^3.5.3",
 		"detect-indent": "^7.0.1",
@@ -55,16 +54,12 @@
 	"devDependencies": {
 		"@gushogg-blake/rollup-plugin-scss": "^3.0.0",
 		"@gushogg-blake/svelte-preprocess": "^4.10.7",
-		"@gushogg-blake/tree-sitter-codepatterns": "^1.0.0",
-		"@gushogg-blake/tree-sitter-query": "^0.4.0",
 		"@rollup/plugin-alias": "^4.0.3",
 		"@rollup/plugin-commonjs": "^24.0.1",
 		"@rollup/plugin-json": "^6.0.0",
 		"@rollup/plugin-multi-entry": "^6.0.0",
 		"@rollup/plugin-node-resolve": "^15.0.1",
 		"@rollup/plugin-terser": "^0.4.0",
-		"@tree-sitter-grammars/tree-sitter-markdown": "^0.3.2",
-		"@tree-sitter-grammars/tree-sitter-svelte": "^1.0.2",
 		"chai": "^4.3.4",
 		"chai-subset": "^1.6.0",
 		"electron": "^22.1.0",
@@ -79,18 +74,6 @@
 		"rollup-plugin-svelte": "^7.1.0",
 		"sass": "^1.54.4",
 		"sirv-cli": "^1.0.14",
-		"svelte": "^3.55.1",
-		"tree-sitter-c": "^0.23.2",
-		"tree-sitter-cli": "^0.24.4",
-		"tree-sitter-cpp": "^0.23.4",
-		"tree-sitter-css": "^0.23.1",
-		"tree-sitter-haskell": "^0.23.1",
-		"tree-sitter-html": "^0.23.2",
-		"tree-sitter-javascript": "^0.23.1",
-		"tree-sitter-php": "^0.23.11",
-		"tree-sitter-python": "^0.23.4",
-		"tree-sitter-ruby": "^0.23.1",
-		"tree-sitter-scss": "^1.0.0",
-		"tree-sitter-typescript": "^0.23.2"
+		"svelte": "^3.55.1"
 	}
 }
