@@ -2,6 +2,7 @@ let bluebird = require("bluebird");
 let get = require("lodash.get");
 let set = require("lodash.set");
 let merge = require("lodash.merge");
+let TreeSitter = require("web-tree-sitter");
 
 let Evented = require("utils/Evented");
 

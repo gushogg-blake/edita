@@ -63,9 +63,7 @@ let langsDir = root.child("vendor/public/tree-sitter/langs");
 			console.log("Copying " + langCode + " from " + prebuiltWasm.path);
 			console.log("");
 			
-			await prebuiltWasm.copy(langsDir, {
-				mkdirs: true,
-			});
+			await prebuiltWasm.copy(langsDir);
 		} else {
 			console.log("Building " + langCode);
 			console.log("");
@@ -73,9 +71,7 @@ let langsDir = root.child("vendor/public/tree-sitter/langs");
 			try {
 				cmdSync("npx tree-sitter build --wasm node_modules/" + path);
 				
-				await fs(filename).move(langsDir, {
-					mkdirs: true,
-				});
+				await fs(filename).move(langsDir);
 			} catch (e) {
 				console.log("Error when building parser for " + langCode);
 				console.error(e);

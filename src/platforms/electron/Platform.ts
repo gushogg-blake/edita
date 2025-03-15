@@ -1,6 +1,7 @@
 let os = require("os");
 let path = require("path");
 let bluebird = require("bluebird");
+let TreeSitter = require("web-tree-sitter");
 
 let Evented = require("utils/Evented");
 let screenOffsets = require("utils/dom/screenOffsets");

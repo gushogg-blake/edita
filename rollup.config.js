@@ -1,4 +1,5 @@
 import {spawnSync} from "node:child_process";
+import fs from "node:fs";
 
 import typescript from "@rollup/plugin-typescript";
 import scss from "rollup-plugin-scss";
@@ -73,7 +74,9 @@ function commonPlugins(platform) {
 			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
 		}),
 		
-		typescript(),
+		typescript({
+			
+		}),
 		
 		copy({
 			watch: watch && "package.json",
@@ -87,11 +90,11 @@ function commonPlugins(platform) {
 		}),
 		
 		copy({
-			watch: watch && "node_modules/web-tree-sitter/tree-sitter.js",
+			watch: watch && "node_modules/web-tree-sitter/tree-sitter.wasm",
 			
 			targets: [
 				{
-					src: "node_modules/web-tree-sitter/tree-sitter.*",
+					src: "node_modules/web-tree-sitter/tree-sitter.wasm",
 					dest: dir + "/vendor/tree-sitter",
 				},
 			],
@@ -158,14 +161,13 @@ function addBuilds(...configs) {
 
 function globalCssBuild(path) {
 	return {
-		input: "src/css/globalCss.ts",
+		input: "src/css/globalCss.js",
 		
 		output: {
 			file: path,
 		},
 		
 		plugins: [
-			typescript(),
 			scss(),
 			
 			_delete({

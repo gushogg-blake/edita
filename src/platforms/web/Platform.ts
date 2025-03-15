@@ -1,5 +1,6 @@
 let minimatch = require("minimatch-browser");
 let bluebird = require("bluebird");
+let TreeSitter = require("web-tree-sitter");
 
 let createFs = require("utils/fs");
 

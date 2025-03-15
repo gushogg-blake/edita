@@ -1,3 +1,4 @@
+let TreeSitter = require("web-tree-sitter");
 let mapArrayToObject = require("utils/mapArrayToObject");
 let Cursor = require("modules/Cursor");
 let Node = require("./Node");
