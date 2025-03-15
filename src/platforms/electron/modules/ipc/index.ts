@@ -1,4 +1,4 @@
-let ipcRenderer = require("platform/modules/ipcRenderer");
+let ipcRenderer = require("platforms/electron/modules/ipcRenderer");
 let dialog = require("./dialog");
 let clipboard = require("./clipboard");
 let jsonStore = require("./jsonStore");

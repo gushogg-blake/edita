@@ -13,10 +13,10 @@ let loadScript = require("utils/dom/loadScript");
 let loadCss = require("utils/dom/loadCss");
 let contextMenu = require("modules/contextMenu");
 
-let clipboard = require("platform/modules/clipboard");
-let jsonStore = require("platform/modules/jsonStore");
-let Snippets = require("platform/modules/Snippets");
-let lsp = require("platform/modules/lsp");
+let clipboard = require("platforms/web/modules/clipboard");
+let jsonStore = require("platforms/web/modules/jsonStore");
+let Snippets = require("platforms/web/modules/Snippets");
+let lsp = require("platforms/web/modules/lsp");
 
 class Platform extends Evented {
 	constructor() {

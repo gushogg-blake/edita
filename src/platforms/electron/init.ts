@@ -1,7 +1,7 @@
 import getKeyCombo from "utils/getKeyCombo";
 import Base from "modules/Base";
 import components from "components";
-import ipcRenderer from "platform/modules/ipcRenderer";
+import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 import Platform from "./Platform";
 
 // misc shims etc:

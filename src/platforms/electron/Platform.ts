@@ -8,9 +8,9 @@ let promiseWithMethods = require("utils/promiseWithMethods");
 let lid = require("utils/lid");
 let contextMenu = require("modules/contextMenu");
 
-let fs = require("platform/modules/fs");
-let ipcRenderer = require("platform/modules/ipcRenderer");
-let ipc = require("platform/modules/ipc");
+let fs = require("platforms/electron/modules/fs");
+let ipcRenderer = require("platforms/electron/modules/ipcRenderer");
+let ipc = require("platforms/electron/modules/ipc");
 
 class Platform extends Evented {
 	constructor(options={}) {

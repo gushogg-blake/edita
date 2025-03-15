@@ -2,7 +2,7 @@ import Base from "modules/Base";
 import App from "modules/App";
 import components from "components";
 import AppComponent from "components/App/App.svelte";
-import Textarea from "platform/components/Textarea.svelte";
+import Textarea from "platforms/web/components/Textarea.svelte";
 import Platform from "./Platform";
 
 window.platform = new Platform();
