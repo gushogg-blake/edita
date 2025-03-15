@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import Accel from "components/utils/Accel.svelte";
 
 export let value = false;

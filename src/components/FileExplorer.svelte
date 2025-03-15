@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, getContext} from "svelte";
 import FileTree from "components/FileTree/FileTree.svelte";
 

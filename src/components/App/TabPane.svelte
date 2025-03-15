@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, getContext} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import TabBar from "components/TabBar.svelte";

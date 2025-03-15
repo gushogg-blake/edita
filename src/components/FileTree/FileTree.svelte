@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {getContext, onMount, tick} from "svelte";
 import Entry from "./Entry.svelte";
 

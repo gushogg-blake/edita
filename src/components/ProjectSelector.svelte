@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, getContext} from "svelte";
 import {on, off} from "utils/dom/domEvents";
 import lineage from "utils/dom/lineage";

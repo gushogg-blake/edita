@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, tick, getContext} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import Gap from "components/utils/Gap.svelte";

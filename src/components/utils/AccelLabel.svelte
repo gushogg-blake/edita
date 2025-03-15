@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import _typeof from "utils/typeof";
 import Accel from "components/utils/Accel.svelte";
 

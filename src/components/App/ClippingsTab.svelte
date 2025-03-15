@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import Editor from "components/Editor/Editor.svelte";
 
 export let tab;

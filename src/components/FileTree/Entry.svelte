@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {getContext, onMount, tick, createEventDispatcher} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 

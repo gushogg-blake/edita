@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import FileExplorer from "components/FileExplorer.svelte";
 import ProjectSelector from "components/ProjectSelector.svelte";
 </script>

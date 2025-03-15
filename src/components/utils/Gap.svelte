@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import _typeof from "utils/typeof";
 import inlineStyle from "utils/dom/inlineStyle";
 

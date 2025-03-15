@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {createEventDispatcher} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import {on, off} from "utils/dom/domEvents";

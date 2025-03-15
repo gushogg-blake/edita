@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, getContext, tick} from "svelte";
 import TabBar from "components/TabBar.svelte";
 

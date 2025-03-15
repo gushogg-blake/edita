@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, tick, getContext, createEventDispatcher} from "svelte";
 import mapObject from "utils/mapObject";
 import getKeyCombo from "utils/getKeyCombo";

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, getContext} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import Spacer from "components/utils/Spacer.svelte";

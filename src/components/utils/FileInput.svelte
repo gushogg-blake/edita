@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {createEventDispatcher} from "svelte";
 import bluebird from "bluebird";
 import lid from "utils/lid";

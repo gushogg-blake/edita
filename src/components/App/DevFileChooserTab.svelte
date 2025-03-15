@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import FileChooserApp from "platforms/electron/dialogs/fileChooser/FileChooserApp.svelte";
 
 export let tab;

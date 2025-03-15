@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import FindResults from "components/FindResults.svelte";
 
 export let tab;

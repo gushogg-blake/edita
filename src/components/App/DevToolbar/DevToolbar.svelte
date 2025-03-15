@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, getContext} from "svelte";
 import Spacer from "components/utils/Spacer.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";

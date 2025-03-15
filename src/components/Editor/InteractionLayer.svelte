@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, createEventDispatcher} from "svelte";
 import unique from "utils/array/unique";
 import {on, off} from "utils/dom/domEvents";

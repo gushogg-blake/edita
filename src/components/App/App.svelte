@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, setContext, tick} from "svelte";
 
 import getKeyCombo from "utils/getKeyCombo";

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, createEventDispatcher, getContext, tick} from "svelte";
 import screenOffsets from "utils/dom/screenOffsets";
 import scrollIntoView from "utils/dom/scrollIntoView";

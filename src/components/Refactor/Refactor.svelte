@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount, getContext, createEventDispatcher} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import accels from "components/actions/accels";

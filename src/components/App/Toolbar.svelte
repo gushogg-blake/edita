@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {getContext, onMount} from "svelte";
 import FileInput from "components/utils/FileInput.svelte";
 import Spacer from "components/utils/Spacer.svelte";

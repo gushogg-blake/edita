@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount} from "svelte";
 import themeStyle from "components/themeStyle";
 import Editor from "components/Editor/Editor.svelte";

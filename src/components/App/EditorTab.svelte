@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {onMount} from "svelte";
 import getWheelCombo from "utils/getWheelCombo";
 import Editor from "components/Editor/Editor.svelte";
