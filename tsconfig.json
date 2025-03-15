@@ -23,6 +23,11 @@ what it is because it's not actually writing the TS anywhere?)
 */
 
 {
+	"include": [
+		"src/**/*",
+		"test/**/*",
+	],
+	
 	// latest
 	"target": "es2024",
 	

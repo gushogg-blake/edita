@@ -1,7 +1,5 @@
-import arrayMethods from "./arrayMethods";
-import Evented from "./Evented";
-import lid from "./lid";
-import sleep from "./sleep";
-import promiseWithMethods from "./promiseWithMethods";
-
-export default {arrayMethods, Evented, lid, sleep, promiseWithMethods};
+export * from "./arrayMethods";
+export {default as Evented} from "./Evented";
+export {default as lid} from "./lid";
+export {default as sleep} from "./sleep";
+export {default as promiseWithMethods} from "./promiseWithMethods";

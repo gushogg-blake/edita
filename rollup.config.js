@@ -51,15 +51,10 @@ function watchOptions() {
 	};
 }
 
-let commonTsConfig = {
-};
-
-function commonPlugins(platform) {
-	let dir = "build/" + (dev ? platform + "-dev" : platform);
-	
-	return [
+let common = {
+	alias() {
 		// SYNC keep these in sync with tsconfig.json
-		alias({
+		return alias({
 			entries: {
 				"root": root,
 				"components": path.join(root, "src/components"),
@@ -69,7 +64,35 @@ function commonPlugins(platform) {
 				"vendor": path.join(root, "vendor"),
 				"test": path.join(root, "test"),
 			},
-		}),
+		});
+	},
+	
+	resolve(opts={}) {
+		return resolve({
+			extensions: [".js", ".ts", ".svelte"],
+			...opts,
+		});
+	},
+	
+	typescript(opts={}) {
+		return typescript({
+			compilerOptions: {
+				// going by https://www.typescriptlang.org/tsconfig/#module
+				// which says we probably want esnext for bundled code
+				// this affects the kind of import/export statements that
+				// are emitted
+				module: "esnext",
+				...opts,
+			},
+		});
+	},
+};
+
+function commonPlugins(platform) {
+	let dir = "build/" + (dev ? platform + "-dev" : platform);
+	
+	return [
+		common.alias(),
 		
 		svelte({
 			preprocess: preprocess({
@@ -87,20 +110,12 @@ function commonPlugins(platform) {
 			output: "main.css",
 		}),
 		
-		resolve({
+		common.resolve({
 			browser: true,
 			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
 		}),
 		
-		typescript({
-			compilerOptions: {
-				// going by https://www.typescriptlang.org/tsconfig/#module
-				// which says we probably want esnext for bundled code
-				// this affects the kind of import/export statements that
-				// are emitted
-				module: "esnext",
-			},
-		}),
+		common.typescript(),
 		
 		copy({
 			watch: watch && "package.json",
@@ -130,6 +145,9 @@ function commonPlugins(platform) {
 
 /*
 TODO do we need to add node: to these?
+
+(are they even needed anymore? -- probably not, if we're using
+esm imports -- yeah, definitely not.)
 */
 
 let nodeIgnore = [
@@ -173,6 +191,21 @@ function webPlugins() {
 	];
 }
 
+function mainProcessPlugins() {
+	return [
+		common.alias(),
+		
+		common.resolve(),
+		
+		commonjs({
+			requireReturnsDefault: "preferred",
+			//ignore: nodeIgnore,
+		}),
+		
+		common.typescript(),
+	];
+}
+
 function addBuilds(...configs) {
 	builds.push(...configs.map(config => ({
 		onwarn() {},
@@ -212,13 +245,7 @@ if (platform === "all" || platform === "electron") {
 		
 		{
 			input: "src/platforms/electron/mainProcess/bootstrap.ts",
-			
-			plugins: [
-				commonjs({
-					requireReturnsDefault: "preferred",
-					ignore: nodeIgnore,
-				}),
-			],
+			plugins: mainProcessPlugins(),
 			
 			output: {
 				sourcemap: true,
@@ -228,17 +255,10 @@ if (platform === "all" || platform === "electron") {
 		
 		{
 			input: "src/platforms/electron/mainProcess/main.ts",
-			
-			plugins: [
-				commonjs({
-					requireReturnsDefault: "preferred",
-					ignore: nodeIgnore,
-				}),
-			],
+			plugins: mainProcessPlugins(),
 			
 			output: {
 				sourcemap: true,
-				format: "cjs",
 				file: dir + "/mainProcess/main.js",
 			},
 		},
@@ -249,7 +269,6 @@ if (platform === "all" || platform === "electron") {
 			output: {
 				sourcemap: true,
 				file: dir + "/js/main.js",
-				format: "iife",
 			},
 			
 			plugins: [
