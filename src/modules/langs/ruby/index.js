@@ -144,7 +144,7 @@ let lang = {
 		
 		let type = platform.fs(path).lastType;
 		
-		 if ([
+		if ([
 			"rb",
 			"erb",
 		].includes(type)) {

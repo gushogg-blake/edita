@@ -259,7 +259,7 @@ let lang = {
 		
 		let type = platform.fs(path).lastType;
 		
-		 if ([
+		if ([
 			"vala",
 		].includes(type)) {
 			return "general";

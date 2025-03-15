@@ -232,7 +232,7 @@ let lang = {
 		
 		let type = platform.fs(path).lastType;
 		
-		 if ([
+		if ([
 			"js",
 			"cjs",
 			"es",

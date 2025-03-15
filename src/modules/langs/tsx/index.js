@@ -189,10 +189,16 @@ let lang = {
 		
 		let type = platform.fs(path).lastType;
 		
-		 if ([
+		if ([
 			"tsx",
 		].includes(type)) {
 			return "general";
+		}
+		
+		if ([
+			"jsx",
+		].includes(type)) {
+			return "alternate";
 		}
 		
 		return null;

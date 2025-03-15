@@ -164,8 +164,10 @@ let lang = {
 		
 		let type = platform.fs(path).lastType;
 		
-		 if ([
+		if ([
 			"ts",
+			"mts",
+			"cts",
 		].includes(type)) {
 			return "general";
 		}
