@@ -594,6 +594,7 @@ class App extends Evented {
 			code = code.replaceAll("\n", newline);
 			
 			format.hasMixedNewlines = false;
+			format.newline = newline;
 			
 			newlinesNormalised = true;
 		}
