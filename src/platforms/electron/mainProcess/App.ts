@@ -307,7 +307,7 @@ class App {
 		
 		winState.manage(browserWindow);
 		
-		browserWindow.loadURL("app://-/main.html");
+		browserWindow.loadURL("app://-/main.html?p=main");
 		
 		if (config.dev) {
 			browserWindow.webContents.openDevTools();
@@ -371,7 +371,7 @@ class App {
 	}
 	
 	createDialogWindow(name, windowOptions, opener) {
-		let url = "app://-/dialogs/" + name + ".html";
+		let url = "app://-/main.html?p=" + name;
 		
 		let browserWindow = new BrowserWindow({
 			show: false,

@@ -21,7 +21,7 @@ window.addEventListener("keydown", function(e) {
 	}
 	
 	if (keyCombo === "Ctrl+Shift+J") {
-		require("electron").ipcRenderer.invoke("devTools", "open");
+		ipcRenderer.invoke("devTools", "open");
 	}
 });
 

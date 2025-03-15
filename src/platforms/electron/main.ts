@@ -1,17 +1,34 @@
-import App from "modules/App";
-import AppComponent from "components/App/App.svelte";
-import init from "./init";
+import pages from "platforms/electron/pages";
+import init from "platforms/electron/init";
 
 // ENTRYPOINT main (renderer) process for Electron
 
-console.time("init");
+let [, p] = location.href.match(/p=(\w+)/);
+let page = pages[p];
+let {App, AppComponent, useLangs=true} = page;
+let isDialogWindow = page !== "main";
 
-init(async function() {
-	let app = new App();
+let app;
+let appComponent;
+
+init(async function(options) {
+	// dialogs are re-inited every time they're invoked
+	if (app) {
+		app.teardown();
+		appComponent.$destroy();
+		
+		document.body.innerHTML = "";
+	}
+	
+	if (isDialogWindow) {
+		app = new App(options);
+	} else {
+		app = new App();
+	}
 	
 	await app.init();
 	
-	new AppComponent({
+	appComponent = new AppComponent({
 		target: document.body,
 		
 		props: {
@@ -19,9 +36,10 @@ init(async function() {
 		},
 	});
 	
-	console.timeEnd("init");
-	
 	// DEV:
 	
 	window.app = app;
+}, {
+	isDialogWindow,
+	useLangs,
 });
