@@ -28,19 +28,27 @@ The app can theoretically be instantiated with no UI, and the UI added later, an
 
 ### Tree-sitter and languages
 
-Tree-sitter and most languages (grammars) are listed as NPM dependencies and built with a script (`npm run build-parsers`). The Tree-sitter WASM file comes with the `web-tree-sitter` package so doesn't need to be built; parsers are built with `build-parsers`.
+Tree-sitter and most languages (grammars) are listed as NPM dependencies in the scripts/tree-sitter package* and built with a script (`npm run build-parsers` from the main package). The Tree-sitter WASM file comes with the `web-tree-sitter` package so doesn't need to be built; parsers are built with `build-parsers`.
+
+\* This isn't a full-fledged monorepo or anything; see the readme for why tree-sitter was split out.
 
 Some grammar packages don't conform to the latest Tree-sitter, which requires a tree-sitter.json file. The WASMs for these are present but won't be built by the script. See [vendor/public/tree-sitter/langs/readme.md](vendor/public/tree-sitter/langs/readme.md) for details.
 
 All grammar WASM files are tracked in this repo, so you don't need to build them unless you're updating them.
 
-## Patches
-
-- web-tree-sitter is patched to fix an issue where environment detection thinks Electron (the renderer/browser process) is Node because it has access to Node APIs.
-
 ## Hacks
 
 Hacky stuff is marked with either a `// HACK` or `// PLATFORM` comment (for stuff that makes platform assumptions).
+
+## Plugins?
+
+Normally things like language support would be implemented as plugins. I haven't done a plugin system here because it never seemed necessary and would add a layer of complexity.
+
+This means that everything is baked in and not much can be configured without changing the code. One of the aims when building Edita was to keep it as easy to hack on as possible, but as with any non-trivial project this isn't really attainable. I do think it's the right trade-off for the project as it stands, though, because the target user is me and anyone else who cares enough about the kinds of thing I do to write their own editor or try a niche one.
+
+I also think this might be the right way to go for an editor project in general. I think there's a case to be made for one person or team making something and just getting it right. This will always limit it to a small market, of course, but maybe that's OK.
+
+This "one person" approach is also how I like to approach software projects. I've always felt that working with other developers was a bit like having two artists painting on the same canvas, in the sense that you wouldn't expect that to go very well or be very satisfying for anyone involved, and the less so the more the people cared about their craft.
 
 ## Stack
 
