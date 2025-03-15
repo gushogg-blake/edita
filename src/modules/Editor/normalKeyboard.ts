@@ -487,6 +487,8 @@ module.exports = {
 	},
 	
 	paste(str) {
+		str = normaliseNewlines(str, this.document.format.newline);
+		
 		let {
 			edit,
 			newSelection,
@@ -505,7 +507,16 @@ module.exports = {
 	},
 	
 	pasteAndIndent(str) {
+		//let {document} = this;
+		//let {newline} = document.format;
+		//
+		//str = normaliseNewlines(str, newline);
+		//
+		//let lines = 
 		//let {indentLevel} = this.document.lines[this.view.normalSelection.start.lineIndex];
+		//
+		
+		// TODO use LSP for this
 	},
 	
 	insert(key) {
