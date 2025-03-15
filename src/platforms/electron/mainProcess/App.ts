@@ -104,6 +104,8 @@ class App {
 				console.error(e);
 			}
 			
+			// TODO see if we still need all this bollocks
+			
 			protocol.registerStreamProtocol("app", async (request, callback) => {
 				let requestPath = decodeURIComponent(new URL(request.url).pathname);
 				let {name, type} = fs(requestPath);
@@ -201,6 +203,7 @@ class App {
 		await this.mkdirs();
 	}
 	
+	// PLATFORM
 	getCurrentWorkspace() {
 		let currentWorkspaceRaw = cmdSync(`xprop -root _NET_CURRENT_DESKTOP`);
 		
@@ -213,6 +216,7 @@ class App {
 		return currentWorkspaceRaw.replace("_NET_CURRENT_DESKTOP(CARDINAL) = ", "").trim();
 	}
 	
+	// PLATFORM
 	getWindowId(window) {
 		/*
 		getNativeWindowHandle returns a Buffer containing window ID as an
@@ -238,6 +242,7 @@ class App {
 		return id;
 	}
 	
+	// PLATFORM
 	mapWindowsToWorkspaces() {
 		/*
 		list all X windows and the workspace they're on (second field below)
