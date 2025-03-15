@@ -1,0 +1,40 @@
+/*
+base tsconfig suitable for scripting with runtimes that can run
+TS directly.
+
+for app code we can override options as necessary in the rollup
+config.
+
+(this may not even be necessary, as the "module" option is the one
+I'm thinking might need to be different, but maybe Bun doesn't care
+what it is because it's not actually writing the TS anywhere?)
+*/
+
+/*
+"root": root,
+				"components": "./src/components",
+				"modules": "./src/modules",
+				"utils": "./src/utils",
+				"platforms": "./src/platforms",
+				"platform": "./src/platforms/" + platform,
+				"common": "./common",
+				"vendor": "./vendor",
+				"test": "./test",
+*/
+
+{
+	"target": "es2024",
+	"verbatimModuleSyntax": true,
+	"sourceMap": true,
+	
+	// SYNC keep these in sync with rollup aliases
+	"paths": {
+		"root/*": ["./*"],
+		"components/*": ["./src/components/*"],
+		"modules/*": ["./src/modules/*"],
+		"utils/*": ["./src/utils/*"],
+		"platforms/*": ["./src/platforms/*"],
+		"vendor/*": ["./vendor/*"],
+		"test/*": ["./test/*"],
+	},
+}

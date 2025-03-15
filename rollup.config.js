@@ -1,7 +1,9 @@
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import path from "node:path";
 
 import typescript from "@rollup/plugin-typescript";
+import alias from "@rollup/plugin-alias";
 import scss from "rollup-plugin-scss";
 import preprocess from "svelte-preprocess";
 import multi from "@rollup/plugin-multi-entry";
@@ -49,10 +51,26 @@ function watchOptions() {
 	};
 }
 
+let commonTsConfig = {
+};
+
 function commonPlugins(platform) {
 	let dir = "build/" + (dev ? platform + "-dev" : platform);
 	
 	return [
+		// SYNC keep these in sync with tsconfig.json
+		alias({
+			entries: {
+				"root": root,
+				"components": path.join(root, "src/components"),
+				"modules": path.join(root, "src/modules"),
+				"utils": path.join(root, "src/utils"),
+				"platforms": path.join(root, "src/platforms"),
+				"vendor": path.join(root, "vendor"),
+				"test": path.join(root, "test"),
+			},
+		}),
+		
 		svelte({
 			preprocess: preprocess({
 				scss: {
@@ -75,7 +93,11 @@ function commonPlugins(platform) {
 		}),
 		
 		typescript({
-			
+			compilerOptions: {
+				module: "esnext",
+				moduleResolution: "bundler",
+				
+			},
 		}),
 		
 		copy({
