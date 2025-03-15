@@ -4,4 +4,4 @@ function cmd(c) {
 	return child_process.execSync(c).toString();
 }
 
-module.exports = cmd;
+export default cmd;

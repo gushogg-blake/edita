@@ -10,7 +10,7 @@ function getInjectionLangCode(injection, result) {
 	return _typeof(injection.lang) === "Function" ? injection.lang(result) : injection.lang;
 }
 
-module.exports = class Scope {
+export default class Scope {
 	constructor(source, parent, lang, ranges) {
 		this.source = source;
 		this.parent = parent;

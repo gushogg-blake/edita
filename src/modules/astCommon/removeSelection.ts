@@ -1,6 +1,6 @@
 let {createSpaces, findSiblingIndex, countSpace} = require("./utils");
 
-module.exports = function(document, selection) {
+export default function(document, selection) {
 	let indentStr = document.format.indentation.string;
 	let {startLineIndex, endLineIndex} = selection;
 	let selectionHeaderLine = document.lines[startLineIndex];

@@ -53,4 +53,4 @@ class DevFileChooserTab extends Tab {
 	}
 }
 
-module.exports = DevFileChooserTab;
+export default DevFileChooserTab;

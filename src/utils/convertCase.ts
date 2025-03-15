@@ -53,7 +53,7 @@ function convert(str, type) {
 	return prefix + convertWords[type](words) + suffix;
 }
 
-module.exports = {
+export default {
 	camel(str) {
 		return convert(str, "camel");
 	},

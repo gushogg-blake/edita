@@ -376,4 +376,4 @@ function tokenise(string) {
 	return tokens;
 }
 
-module.exports = tokenise;
+export default tokenise;

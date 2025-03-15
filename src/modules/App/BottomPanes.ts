@@ -279,4 +279,4 @@ class BottomPanes extends Evented {
 	}
 }
 
-module.exports = BottomPanes;
+export default BottomPanes;

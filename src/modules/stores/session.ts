@@ -41,7 +41,7 @@ let migrations = {
 	},
 };
 
-module.exports = function() {
+export default function() {
 	let defaultSession = null;
 	
 	return new JsonStore("session", defaultSession, migrations);

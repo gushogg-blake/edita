@@ -1,6 +1,6 @@
 let {dialog} = require("electron");
 
-module.exports = function(app) {
+export default function(app) {
 	return {
 		showOpen(e, options) {
 			return dialog.showOpenDialog(app.browserWindowFromEvent(e), options);

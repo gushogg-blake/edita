@@ -1,6 +1,6 @@
 let threshold = 2;
 
-module.exports = function(callbacks) {
+export default function(callbacks) {
 	let mouseIsDown = false;
 	let dragging = false;
 	let distance = 0;

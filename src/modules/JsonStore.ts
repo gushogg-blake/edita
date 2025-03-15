@@ -71,4 +71,4 @@ class JsonStore extends Evented {
 	}
 }
 
-module.exports = JsonStore;
+export default JsonStore;

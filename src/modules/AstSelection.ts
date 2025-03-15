@@ -129,4 +129,4 @@ class AstSelection {
 	}
 }
 
-module.exports = AstSelection;
+export default AstSelection;

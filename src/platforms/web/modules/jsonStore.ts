@@ -1,7 +1,7 @@
 let {removeInPlace} = require("utils/arrayMethods");
 let localStorage = require("platform/modules/localStorage");
 
-module.exports = function(localStoragePrefix) {
+export default function(localStoragePrefix) {
 	function storageKey(name, key) {
 		let parts = [encodeURIComponent(name)];
 		

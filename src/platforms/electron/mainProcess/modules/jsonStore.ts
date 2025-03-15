@@ -1,6 +1,6 @@
 let {fs} = require("utils/node/index");
 
-module.exports = function(app) {
+export default function(app) {
 	function jsonStorageKey(name, key) {
 		let path = [encodeURIComponent(name)];
 		

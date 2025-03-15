@@ -56,4 +56,4 @@ class Tools {
 	}
 }
 
-module.exports = Tools;
+export default Tools;

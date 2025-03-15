@@ -91,4 +91,4 @@ class AstMode extends Evented {
 	}
 }
 
-module.exports = AstMode;
+export default AstMode;

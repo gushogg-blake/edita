@@ -6,7 +6,7 @@ let contextMenu = require("./contextMenu");
 let Snippets = require("./Snippets");
 let lsp = require("./lsp");
 
-module.exports = {
+export default {
 	init: ipcRenderer.sendSync("init", "init"),
 	
 	dialog,

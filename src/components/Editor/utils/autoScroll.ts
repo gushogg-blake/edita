@@ -1,7 +1,7 @@
 let autoScroll = require("utils/dom/autoScroll");
 let screenOffsets = require("utils/dom/screenOffsets");
 
-module.exports = function(
+export default function(
 	canvas,
 	view,
 	showingHorizontalScrollbar,

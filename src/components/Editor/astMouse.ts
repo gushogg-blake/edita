@@ -6,7 +6,7 @@ let astDragData = require("./astDragData");
 
 let {s} = AstSelection;
 
-module.exports = function(editor, editorComponent) {
+export default function(editor, editorComponent) {
 	let {document, view} = editor;
 	let drag = null;
 	let drawingSelection = false;

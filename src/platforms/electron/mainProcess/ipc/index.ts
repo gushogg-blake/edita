@@ -26,7 +26,7 @@ let syncModules = {
 	clipboard,
 };
 
-module.exports = function(app) {
+export default function(app) {
 	for (let [key, module] of Object.entries(asyncModules)) {
 		let fns = module(app);
 		

@@ -1,6 +1,6 @@
 let {getCursor, getCharCursor} = require("./utils/cursorFromEvent");
 
-module.exports = function(editor, editorComponent) {
+export default function(editor, editorComponent) {
 	let {document, view} = editor;
 	
 	function mousedown(e) {

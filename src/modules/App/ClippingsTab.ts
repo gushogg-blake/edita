@@ -62,4 +62,4 @@ class ClippingsTab extends Tab {
 	}
 }
 
-module.exports = ClippingsTab;
+export default ClippingsTab;

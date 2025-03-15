@@ -402,4 +402,4 @@ class Base extends Evented {
 	}
 }
 
-module.exports = Base;
+export default Base;

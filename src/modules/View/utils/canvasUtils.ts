@@ -4,7 +4,7 @@ let expandTabs = require("modules/utils/expandTabs");
 
 let {c} = Cursor;
 
-module.exports = {
+export default {
 	countLineRowsFolded() {
 		let rows = 0;
 		

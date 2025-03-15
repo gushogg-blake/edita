@@ -132,4 +132,4 @@ class Projects extends Evented {
 	}
 }
 
-module.exports = Projects;
+export default Projects;

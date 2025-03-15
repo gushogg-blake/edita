@@ -1,7 +1,7 @@
 let LspServer = require("modules/lsp/LspServer");
 let webSocket = require("platforms/web/modules/webSocket");
 
-module.exports = function(url) {
+export default function(url) {
 	let socket = webSocket(url, {
 		notification(message) {
 			let {serverId, notification} = message;

@@ -5,7 +5,7 @@ function keydown(e) {
 	clickElementFromAccel(e, {el: e.currentTarget});
 }
 
-module.exports = function(node) {
+export default function(node) {
 	on(node, "keydown", keydown);
 	
 	return {

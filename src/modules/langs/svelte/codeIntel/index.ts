@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	indentOnNewline(line, lines, lineIndex) {
 		
 	},

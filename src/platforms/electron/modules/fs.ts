@@ -9,7 +9,7 @@ let fileIsBinary = require("vendor/fileIsBinary");
 let fs = require("utils/fs");
 let createWalk = require("modules/walk");
 
-module.exports = fs({
+export default fs({
 	fs: fsExtra,
 	path,
 	glob,

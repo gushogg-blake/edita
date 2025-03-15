@@ -29,4 +29,4 @@ class SidePanes {
 	}
 }
 
-module.exports = SidePanes;
+export default SidePanes;

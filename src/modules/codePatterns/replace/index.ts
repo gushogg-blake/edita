@@ -222,7 +222,7 @@ function getReplacedLines(document, lines, result) {
 	return replacedLines;
 }
 
-module.exports = function(code, results, replaceWith) {
+export default function(code, results, replaceWith) {
 	let original = new Document(code);
 	let document = new Document(code);
 	let lines = parseReplaceWith(replaceWith);

@@ -1,1 +1,1 @@
-module.exports = require("./Editor");
+export default require("./Editor");

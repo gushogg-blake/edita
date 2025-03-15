@@ -1,4 +1,4 @@
-module.exports = function(layers, view, offsets, style) {
+export default function(layers, view, offsets, style) {
 	let {
 		sizes: {width},
 		measurements: {rowHeight},

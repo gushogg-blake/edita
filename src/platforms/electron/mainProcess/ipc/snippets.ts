@@ -1,7 +1,7 @@
 let bluebird = require("bluebird");
 let {fs, lid} = require("utils/node/index");
 
-module.exports = function(app) {
+export default function(app) {
 	let snippetsDir = fs(app.config.userDataDir, "snippets");
 	
 	function generateFilename(snippet) {

@@ -1,6 +1,6 @@
 let checkNewlines = require("modules/utils/checkNewlines");
 
-module.exports = function(str) {
+export default function(str) {
 	let {
 		mostCommon,
 		mixed,

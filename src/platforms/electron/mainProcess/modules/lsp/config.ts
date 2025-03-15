@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	requestTimeout: 5000,
 	
 	perLang: {

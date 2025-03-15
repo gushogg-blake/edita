@@ -3,7 +3,7 @@ let prefs = require("./prefs");
 let themes = require("./themes");
 let session = require("./session");
 
-module.exports = async function() {
+export default async function() {
 	return {
 		prefs: prefs(),
 		themes: await themes(),

@@ -3,7 +3,7 @@ let matchers = require("./matchers");
 
 let {s} = Selection;
 
-module.exports = function(context, document, tokens, cursor) {
+export default function(context, document, tokens, cursor) {
 	let {getRegex, query} = context;
 	
 	context = {

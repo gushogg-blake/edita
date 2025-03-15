@@ -13,7 +13,7 @@ let wordUnderCursorRe = {
 	symbol: /^[^\w\s_]+/,
 };
 
-module.exports = {
+export default {
 	up() {
 		let [startRow, startCol] = this.rowColFromCursor(this.normalSelection.left);
 		

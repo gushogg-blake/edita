@@ -45,4 +45,4 @@ class RefactorPreviewTab extends Tab {
 	}
 }
 
-module.exports = RefactorPreviewTab;
+export default RefactorPreviewTab;

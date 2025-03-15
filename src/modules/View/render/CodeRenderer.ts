@@ -5,7 +5,7 @@ let LineRowRenderer = require("./LineRowRenderer");
 LIFECYCLE: per-frame.
 */
 
-module.exports = class extends LineRowRenderer {
+export default class extends LineRowRenderer {
 	constructor(renderer, scope, ranges, injectionRanges) {
 		super(renderer);
 		

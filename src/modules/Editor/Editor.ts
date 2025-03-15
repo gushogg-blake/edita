@@ -805,4 +805,4 @@ class Editor extends Evented {
 	}
 }
 
-module.exports = Editor;
+export default Editor;

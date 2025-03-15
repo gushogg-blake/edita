@@ -14,7 +14,7 @@ handleMessages("contextMenu", {
 	},
 });
 
-module.exports = function(items, coords=null) {
+export default function(items, coords=null) {
 	let id = lid();
 	
 	clickHandlers[id] = {};

@@ -3,7 +3,7 @@ let Cursor = require("modules/Cursor");
 
 let {c} = Cursor;
 
-module.exports = class {
+export default class {
 	constructor(renderer) {
 		this.renderer = renderer;
 		this.foldedLineRow = null;

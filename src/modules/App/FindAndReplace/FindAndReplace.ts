@@ -293,4 +293,4 @@ class FindAndReplace extends Evented {
 	}
 }
 
-module.exports = FindAndReplace;
+export default FindAndReplace;

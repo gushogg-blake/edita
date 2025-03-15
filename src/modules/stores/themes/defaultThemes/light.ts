@@ -282,4 +282,4 @@ let theme = {
 
 expandHiliteClasses(theme);
 
-module.exports = theme;
+export default theme;

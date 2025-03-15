@@ -1,6 +1,6 @@
 let AstSelection = require("modules/AstSelection");
 
-module.exports = {
+export default {
 	wrap: {
 		code: "wrap",
 		name: "Wrap",

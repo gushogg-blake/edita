@@ -14,7 +14,7 @@ function off(el, e, handler) {
 	}
 }
 
-module.exports = {
+export default {
 	on,
 	off,
 };

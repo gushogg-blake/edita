@@ -1,4 +1,4 @@
-module.exports = function(string) {
+export default function(string) {
 	let {tabWidth} = base.prefs;
 	
 	let colsAdded = 0;

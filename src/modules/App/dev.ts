@@ -6,7 +6,7 @@ function get(key) {
 	return base.getPref("dev." + key);
 }
 
-module.exports = async function(app) {
+export default async function(app) {
 	await sleep(0);
 	
 	setInterval(() => {

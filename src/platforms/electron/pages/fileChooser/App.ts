@@ -227,4 +227,4 @@ class FileChooserApp extends Evented {
 	}
 }
 
-module.exports = FileChooserApp;
+export default FileChooserApp;

@@ -69,4 +69,4 @@ class SelectionContents {
 	}
 }
 
-module.exports = SelectionContents;
+export default SelectionContents;

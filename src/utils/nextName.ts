@@ -1,4 +1,4 @@
-module.exports = function(generateName, nameIsAvailable) {
+export default function(generateName, nameIsAvailable) {
 	let i = 0;
 	let name;
 	

@@ -131,4 +131,4 @@ class MultiStepCommand extends Evented {
 	}
 }
 
-module.exports = MultiStepCommand;
+export default MultiStepCommand;

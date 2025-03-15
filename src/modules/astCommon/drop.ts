@@ -4,7 +4,7 @@ let {createSpaces, findIndentLevel, findSiblingIndex} = require("./utils");
 
 let {s} = AstSelection;
 
-module.exports = function(
+export default function(
 	astMode,
 	document,
 	fromSelection,

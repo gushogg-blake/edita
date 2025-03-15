@@ -1,4 +1,4 @@
-module.exports = function(url) {
+export default function(url) {
 	let {protocol, path} = url;
 	
 	return {

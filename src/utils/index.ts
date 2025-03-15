@@ -4,4 +4,4 @@ let lid = require("./lid");
 let sleep = require("./sleep");
 let promiseWithMethods = require("./promiseWithMethods");
 
-module.exports = {arrayMethods, Evented, lid, sleep, promiseWithMethods};
+export default {arrayMethods, Evented, lid, sleep, promiseWithMethods};

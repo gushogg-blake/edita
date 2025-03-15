@@ -218,7 +218,7 @@ let migrations = {
 	},
 };
 
-module.exports = function() {
+export default function() {
 	let defaultPrefs = {
 		tabWidth: 4,
 		defaultIndent: "\t",

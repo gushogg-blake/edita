@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	async open() {
 		let dir = this.getCurrentDir();
 		let files = await this.readFilesForOpen(await platform.open(dir));

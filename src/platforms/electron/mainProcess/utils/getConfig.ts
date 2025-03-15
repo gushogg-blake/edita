@@ -2,7 +2,7 @@ let os = require("os");
 let path = require("path");
 let yargs = require("yargs");
 
-module.exports = function(argv) {
+export default function(argv) {
 	let config = {
 		dev: false,
 		files: [],

@@ -7,7 +7,7 @@ let mkdirp = require("mkdirp");
 
 let fs = require("../fs");
 
-module.exports = fs({
+export default fs({
 	fs: fsExtra,
 	glob,
 	mkdirp,

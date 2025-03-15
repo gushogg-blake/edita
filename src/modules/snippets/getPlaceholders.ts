@@ -7,7 +7,7 @@ let RegexReference = require("./RegexReference");
 let AtLiteral = require("./AtLiteral");
 let EndMarker = require("./EndMarker");
 
-module.exports = function(string, createTabstops=true) {
+export default function(string, createTabstops=true) {
 	let placeholders = [];
 	let encounteredTabstops = {};
 	

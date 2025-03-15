@@ -1,6 +1,6 @@
 let Evented = require("utils/Evented");
 
-module.exports = class extends Evented {
+export default class extends Evented {
 	constructor(isNew, dirEntry) {
 		super();
 		

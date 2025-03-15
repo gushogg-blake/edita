@@ -1,6 +1,6 @@
 let getKeyCombo = require("utils/getKeyCombo");
 
-module.exports = function(e, options) {
+export default function(e, options) {
 	options = {
 		noAlt: false,
 		el: document.body,

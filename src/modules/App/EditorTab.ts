@@ -315,4 +315,4 @@ class EditorTab extends Tab {
 	}
 }
 
-module.exports = EditorTab;
+export default EditorTab;

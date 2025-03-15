@@ -1,7 +1,7 @@
 let inlineStyle = require("utils/dom/inlineStyle");
 let {on, off} = require("utils/dom/domEvents");
 
-module.exports = function(app, createDialogComponent) {
+export default function(app, createDialogComponent) {
 	return async function(dialog, dialogOptions, windowOptions) {
 		let container = document.createElement("div");
 		let toolbar = document.createElement("div");

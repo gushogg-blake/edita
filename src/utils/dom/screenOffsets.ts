@@ -1,4 +1,4 @@
-module.exports = function(el) {
+export default function(el) {
 	let {x, y, width, height} = el.getBoundingClientRect();
 	
 	return {

@@ -4,7 +4,7 @@ let astManipulations = require("./astManipulations");
 let removeSelection = require("./removeSelection");
 let {getHeaderLineIndex, getFooterLineIndex} = require("./utils");
 
-module.exports = {
+export default {
 	selection,
 	drop,
 	astManipulations,

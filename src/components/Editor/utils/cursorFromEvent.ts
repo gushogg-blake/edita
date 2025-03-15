@@ -35,7 +35,7 @@ function getCharCursor(e, view, canvasDiv) {
 	return view.cursorFromRowCol(row, col, true);
 }
 
-module.exports = {
+export default {
 	getCursor,
 	getCharCursor,
 };

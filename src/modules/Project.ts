@@ -71,4 +71,4 @@ class Project extends Evented {
 	}
 }
 
-module.exports = Project;
+export default Project;

@@ -1,6 +1,6 @@
 let {Menu} = require("electron");
 
-module.exports = function(app) {
+export default function(app) {
 	return {
 		show(e, id, items, coords=null) {
 			let menu = Menu.buildFromTemplate(items.map(function(item) {

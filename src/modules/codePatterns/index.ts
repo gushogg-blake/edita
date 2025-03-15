@@ -2,7 +2,7 @@ let find = require("./find");
 let ParseError = require("./find/ParseError");
 let replace = require("./replace");
 
-module.exports = {
+export default {
 	find,
 	replace,
 	ParseError,

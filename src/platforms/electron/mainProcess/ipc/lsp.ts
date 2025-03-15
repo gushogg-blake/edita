@@ -3,7 +3,7 @@ let {removeInPlace} = require("utils/arrayMethods");
 let LspServer = require("../modules/lsp/LspServer");
 let config = require("../modules/lsp/config");
 
-module.exports = function(app) {
+export default function(app) {
 	function langIsSupported(langCode) {
 		return !!config.perLang[langCode];
 	}

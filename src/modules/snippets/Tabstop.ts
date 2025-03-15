@@ -16,4 +16,4 @@ class Tabstop {
 	}
 }
 
-module.exports = Tabstop;
+export default Tabstop;

@@ -174,4 +174,4 @@ class LspServer extends Evented {
 	}
 }
 
-module.exports = LspServer;
+export default LspServer;

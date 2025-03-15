@@ -27,7 +27,7 @@ class NodeResultCache {
 	}
 }
 
-module.exports = function(fn) {
+export default function(fn) {
 	let cache = new NodeResultCache();
 	
 	return function(node) {

@@ -1,1 +1,1 @@
-module.exports = v => ({}).toString.call(v).slice(8, -1);
+export default v => ({}).toString.call(v).slice(8, -1);

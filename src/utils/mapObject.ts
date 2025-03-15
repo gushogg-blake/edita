@@ -1,4 +1,4 @@
-module.exports = function(obj, fn) {
+export default function(obj, fn) {
 	let result = {};
 	
 	for (let k in obj) {

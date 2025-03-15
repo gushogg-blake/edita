@@ -4,7 +4,7 @@ let removeSelection = require("modules/astCommon/removeSelection");
 
 let {s} = AstSelection;
 
-module.exports = {
+export default {
 	addSelectionToNewRule: {
 		type: "addSelectionToNewRule",
 		label: "New rule",

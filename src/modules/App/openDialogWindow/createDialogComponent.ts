@@ -4,7 +4,7 @@ NOTE a lot of the logic here is duplicated in electron/dialogs/[dialog]/App.js
 could be made generic and moved to Base maybe
 */
 
-module.exports = {
+export default {
 	async snippetEditor(el, dialogOptions, close) {
 		let {id} = dialogOptions;
 		let isNew = !id;

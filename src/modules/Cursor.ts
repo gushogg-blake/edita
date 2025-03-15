@@ -93,4 +93,4 @@ class Cursor {
 	}
 }
 
-module.exports = Cursor;
+export default Cursor;

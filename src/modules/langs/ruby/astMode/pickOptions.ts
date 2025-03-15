@@ -3,7 +3,7 @@ let {isHeader, getHeaders} = require("modules/astCommon/utils");
 
 let {s: a} = AstSelection;
 
-module.exports = {
+export default {
 	contents: {
 		type: "contents",
 		label: "Contents",

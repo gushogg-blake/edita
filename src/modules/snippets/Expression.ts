@@ -30,4 +30,4 @@ class Expression {
 	}
 }
 
-module.exports = Expression;
+export default Expression;

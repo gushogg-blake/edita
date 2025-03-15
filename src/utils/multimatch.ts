@@ -1,6 +1,6 @@
 let _typeof = require("utils/typeof");
 
-module.exports = function(patterns, str) {
+export default function(patterns, str) {
 	return patterns.some(function(pattern) {
 		if (str === pattern) {
 			return true;

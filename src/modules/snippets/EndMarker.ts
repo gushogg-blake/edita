@@ -14,4 +14,4 @@ class EndMarker {
 	}
 }
 
-module.exports = EndMarker;
+export default EndMarker;

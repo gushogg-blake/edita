@@ -48,7 +48,7 @@ function lspRangeToSelection(range) {
 	return s(lspPositionToCursor(start), lspPositionToCursor(end));
 }
 
-module.exports = {
+export default {
 	normaliseLangCode,
 	maskOtherRegions,
 	lspPositionToCursor,

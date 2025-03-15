@@ -1,4 +1,4 @@
-module.exports = function(e) {
+export default function(e) {
 	let wheelCombo = "";
 	let dir = e.deltaY > 0 || e.deltaX > 0 ? "down" : "up";
 	let isModified = false;

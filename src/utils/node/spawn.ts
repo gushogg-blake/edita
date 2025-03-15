@@ -1,6 +1,6 @@
 let {spawn} = require("child_process");
 
-module.exports = function(cmd, args) {
+export default function(cmd, args) {
 	return new Promise((resolve, reject) => {
 		let childProcess = spawn(cmd, args);
 		

@@ -111,4 +111,4 @@ class Snippets extends Evented {
 	}
 }
 
-module.exports = Snippets;
+export default Snippets;

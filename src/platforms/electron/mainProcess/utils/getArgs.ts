@@ -31,7 +31,7 @@ let filters = [
 	},
 ];
 
-module.exports = function(argv) {
+export default function(argv) {
 	argv = [...argv];
 	
 	for (let fn of filters) {

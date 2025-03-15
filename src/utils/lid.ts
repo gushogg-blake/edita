@@ -4,6 +4,6 @@ Generate locally unique ids
 
 let id = Date.now();
 
-module.exports = function() {
+export default function() {
 	return (++id).toString(36);
 }

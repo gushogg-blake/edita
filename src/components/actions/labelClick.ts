@@ -24,7 +24,7 @@ function click(e) {
 	}
 }
 
-module.exports = function(node) {
+export default function(node) {
 	on(node, "click", click);
 	
 	return {

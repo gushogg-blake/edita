@@ -1,1 +1,1 @@
-module.exports = class LspError extends Error {}
+export default class LspError extends Error {}

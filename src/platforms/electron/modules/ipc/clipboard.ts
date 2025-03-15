@@ -5,7 +5,7 @@ note - these methods are sync, but code should treat platform.clipboard
 methods as async as they are async on web
 */
 
-module.exports = {
+export default {
 	read() {
 		return ipcRenderer.sendSync("clipboard", "read");
 	},

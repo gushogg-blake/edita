@@ -10,7 +10,7 @@ to be un-cancelable (if we're holding Esc and don't want the repeat to
 close the menu); web can't display native ones so needs a custom solution
 */
 
-module.exports = function(app, items, coords, options={}) {
+export default function(app, items, coords, options={}) {
 	options = {
 		noCancel: false,
 		...options,

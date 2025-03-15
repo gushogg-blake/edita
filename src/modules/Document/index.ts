@@ -1,1 +1,1 @@
-module.exports = require("./Document");
+export default require("./Document");

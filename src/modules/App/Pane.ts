@@ -41,4 +41,4 @@ class Pane extends Evented {
 	}
 }
 
-module.exports = Pane;
+export default Pane;

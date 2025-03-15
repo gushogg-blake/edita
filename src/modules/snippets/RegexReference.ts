@@ -15,4 +15,4 @@ class RegexReference {
 	}
 }
 
-module.exports = RegexReference;
+export default RegexReference;

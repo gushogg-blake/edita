@@ -62,4 +62,4 @@ class CustomURL {
 	}
 }
 
-module.exports = CustomURL;
+export default CustomURL;

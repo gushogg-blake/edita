@@ -1,6 +1,6 @@
 let _typeof = require("utils/typeof");
 
-module.exports = function(array, field, _default=null) {
+export default function(array, field, _default=null) {
 	let obj = {};
 		
 	for (let item of array) {

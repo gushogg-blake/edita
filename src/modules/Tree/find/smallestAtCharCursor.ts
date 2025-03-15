@@ -8,7 +8,7 @@ if the cursor is not directly before or within the given node, null is
 returned.
 */
 
-module.exports = function(node, cursor) {
+export default function(node, cursor) {
 	if (!node.containsCharCursor(cursor)) {
 		return null;
 	}

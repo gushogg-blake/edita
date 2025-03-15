@@ -29,7 +29,7 @@ function skipEmptyLines(document, cursor) {
 	return cursor;
 }
 
-module.exports = function(document, codePattern) {
+export default function(document, codePattern) {
 	if (!codePattern.trim() || !document.string.trim()) {
 		return [];
 	}

@@ -2,7 +2,7 @@ let bluebird = require("bluebird");
 let Document = require("modules/Document");
 let URL = require("modules/URL");
 
-module.exports = async function(paths) {
+export default async function(paths) {
 	return bluebird.map(paths, async function(path) {
 		try {
 			let code = await platform.fs(path).read();

@@ -14,4 +14,4 @@ class AtLiteral {
 	}
 }
 
-module.exports = AtLiteral;
+export default AtLiteral;

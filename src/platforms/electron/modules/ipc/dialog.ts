@@ -1,6 +1,6 @@
 let ipcRenderer = require("platforms/electron/modules/ipcRenderer");
 
-module.exports = {
+export default {
 	showSave(options) {
 		return ipcRenderer.invoke("dialog", "showSave", options);
 	},

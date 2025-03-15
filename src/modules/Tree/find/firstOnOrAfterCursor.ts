@@ -1,6 +1,6 @@
 let middle = require("utils/middle");
 
-module.exports = function(node, cursor) {
+export default function(node, cursor) {
 	if (node.isOnOrAfter(cursor)) {
 		return node;
 	}

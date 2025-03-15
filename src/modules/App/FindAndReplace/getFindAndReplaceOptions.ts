@@ -1,4 +1,4 @@
-module.exports = function(options) {
+export default function(options) {
 	let {
 		search,
 		replaceWith,

@@ -228,4 +228,4 @@ function parse(string, startIndex) {
 	return i;
 }
 
-module.exports = parse;
+export default parse;

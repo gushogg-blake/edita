@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	read() {
 		return navigator.clipboard.readText();
 	},

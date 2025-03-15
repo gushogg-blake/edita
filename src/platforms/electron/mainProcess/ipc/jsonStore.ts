@@ -1,4 +1,4 @@
-module.exports = function(app) {
+export default function(app) {
 	return {
 		load(e, name, key) {
 			return app.jsonStore.load(name, key);

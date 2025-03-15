@@ -140,4 +140,4 @@ let api = {
 	},
 };
 
-module.exports = api;
+export default api;

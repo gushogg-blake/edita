@@ -1,4 +1,4 @@
-module.exports = async function(asyncGenerator) {
+export default async function(asyncGenerator) {
 	let results = [];
 	
 	for await (let result of asyncGenerator) {

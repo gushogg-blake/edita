@@ -16,4 +16,4 @@ function *generateRequiredLangs(lang, seen=[]) {
 	}
 }
 
-module.exports = generateRequiredLangs;
+export default generateRequiredLangs;

@@ -2,7 +2,7 @@ let lid = require("utils/lid");
 let throttle = require("utils/throttle");
 let promiseWithMethods = require("utils/promiseWithMethods");
 
-module.exports = function(url, handlers) {
+export default function(url, handlers) {
 	let socket;
 	
 	let reconnect = throttle(createSocket, 3000);

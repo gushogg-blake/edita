@@ -198,4 +198,4 @@ class Platform extends Evented {
 	}
 }
 
-module.exports = Platform;
+export default Platform;

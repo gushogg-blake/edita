@@ -325,4 +325,4 @@ class LspClient extends Evented {
 	}
 }
 
-module.exports = LspClient;
+export default LspClient;

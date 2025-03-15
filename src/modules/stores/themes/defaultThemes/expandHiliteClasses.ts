@@ -17,7 +17,7 @@ function expand(value) {
 	return value;
 }
 
-module.exports = function(theme) {
+export default function(theme) {
 	for (let hiliteClasses of Object.values(theme.langs)) {
 		mapObjectInPlace(hiliteClasses, expand);
 	}

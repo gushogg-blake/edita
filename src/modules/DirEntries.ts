@@ -4,7 +4,7 @@ function compareEntries(a, b) {
 	return a.node.name.localeCompare(b.node.name);
 }
 
-module.exports = {
+export default {
 	async createEntry(path) {
 		let node = platform.fs(path);
 		

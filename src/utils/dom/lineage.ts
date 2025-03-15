@@ -1,4 +1,4 @@
-module.exports = function(node) {
+export default function(node) {
 	let nodes = [];
 	
 	do {

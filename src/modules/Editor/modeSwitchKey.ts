@@ -1,4 +1,4 @@
-module.exports = function(editor) {
+export default function(editor) {
 	let {view} = editor;
 	
 	let mouseIsDown = false;

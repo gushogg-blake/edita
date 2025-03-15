@@ -1,6 +1,6 @@
 let ipcRenderer = require("platform/modules/ipcRenderer");
 
-module.exports = {
+export default {
 	load(name, key) {
 		return ipcRenderer.invoke("jsonStore", "load", name, key);
 	},

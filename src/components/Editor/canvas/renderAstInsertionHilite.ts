@@ -2,7 +2,7 @@ let lineThickness = 2;
 let lineWidth = 35;
 let yHint = 2;
 
-module.exports = function(layers, view, offsets) {
+export default function(layers, view, offsets) {
 	let {
 		measurements: {colWidth, rowHeight},
 		sizes: {marginOffset},

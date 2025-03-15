@@ -3,7 +3,7 @@ call asyncFn and then call run with the result, but only
 if the asyncFn call was the latest one
 */
 
-module.exports = function() {
+export default function() {
 	let ids = {};
 	
 	return async function(name, asyncFn, run) {

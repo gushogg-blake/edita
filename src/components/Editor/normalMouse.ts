@@ -5,7 +5,7 @@ let {getCursor, getCharCursor} = require("./utils/cursorFromEvent");
 
 let {s} = Selection;
 
-module.exports = function(editor, editorComponent) {
+export default function(editor, editorComponent) {
 	let {document, view} = editor;
 	let drawingSelection = false;
 	let origDoubleClickWordSelection = false;

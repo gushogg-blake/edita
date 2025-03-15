@@ -177,7 +177,7 @@ class LineWrapper {
 	}
 }
 
-module.exports = function(wrap, line, isFoldHeader, indentation, measurements, availableWidth) {
+export default function(wrap, line, isFoldHeader, indentation, measurements, availableWidth) {
 	let wrapper = new LineWrapper(line, indentation, measurements, availableWidth);
 	
 	return wrapper.wrap(wrap, isFoldHeader);

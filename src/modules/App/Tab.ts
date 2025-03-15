@@ -78,4 +78,4 @@ class Tab extends Evented {
 	}
 }
 
-module.exports = Tab;
+export default Tab;

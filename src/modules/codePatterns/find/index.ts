@@ -1,1 +1,1 @@
-module.exports = require("./find");
+export default require("./find");

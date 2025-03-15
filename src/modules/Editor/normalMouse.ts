@@ -4,7 +4,7 @@ let Cursor = require("modules/Cursor");
 let {s} = Selection;
 let {c} = Cursor;
 
-module.exports = {
+export default {
 	drawSelection(selection) {
 		this.view.setNormalSelection(selection, {
 			updateAstSelection: false,

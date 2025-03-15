@@ -7,7 +7,7 @@ let renderFoldHilites = require("./renderFoldHilites");
 let renderCode = require("./renderCode");
 let renderNormalCursor = require("./renderNormalCursor");
 
-module.exports = function(layers, view, isPeekingAstMode, windowHasFocus) {
+export default function(layers, view, isPeekingAstMode, windowHasFocus) {
 	let {
 		sizes: {width, height, topMargin, marginOffset},
 		measurements: {rowHeight},

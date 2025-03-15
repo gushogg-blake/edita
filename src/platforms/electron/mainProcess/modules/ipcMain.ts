@@ -32,4 +32,4 @@ Object.assign(ipc, {
 	},
 });
 
-module.exports = ipc;
+export default ipc;

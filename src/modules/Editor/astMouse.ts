@@ -4,7 +4,7 @@ let astCommon = require("modules/astCommon");
 
 let {s: a} = AstSelection;
 
-module.exports = {
+export default {
 	setSelection(selection) {
 		this.view.setAstSelection(selection);
 	},

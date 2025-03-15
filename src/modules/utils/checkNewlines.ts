@@ -1,4 +1,4 @@
-module.exports = function(str) {
+export default function(str) {
 	let mixed = false;
 	let mostCommon = null;
 	let all = str.match(/(\r\n|\r|\n)/g);

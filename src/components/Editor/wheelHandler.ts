@@ -1,7 +1,7 @@
 let getWheelCombo = require("utils/getWheelCombo");
 let {getCursor} = require("./utils/cursorFromEvent");
 
-module.exports = function(editor, editorComponent) {
+export default function(editor, editorComponent) {
 	let {view} = editor;
 	
 	function wheel(e) {

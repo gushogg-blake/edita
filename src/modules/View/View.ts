@@ -867,4 +867,4 @@ class View extends Evented {
 	}
 }
 
-module.exports = View;
+export default View;

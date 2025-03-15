@@ -266,4 +266,4 @@ let findAndReplace = {
 	},
 };
 
-module.exports = findAndReplace;
+export default findAndReplace;

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	dragstart(details, dataTransfer) {
 		let e = new MouseEvent("dragstart", details);
 		

@@ -5,7 +5,7 @@ let isIfFooter = require("./utils/isIfFooter");
 
 let {s} = AstSelection;
 
-module.exports = {
+export default {
 	addSelectionToNewElse: {
 		type: "addSelectionToNewElse",
 		label: "+ else",

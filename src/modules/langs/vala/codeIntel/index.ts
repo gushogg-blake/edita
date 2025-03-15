@@ -1,6 +1,6 @@
 let lang;
 
-module.exports = {
+export default {
 	init(env) {
 		({lang} = env);
 	},

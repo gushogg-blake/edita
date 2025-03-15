@@ -3,7 +3,7 @@ let promiseWithMethods = require("./promiseWithMethods");
 
 let queues = {};
 
-module.exports = function(config) {
+export default function(config) {
 	let {
 		fs,
 		path: osPath,

@@ -8,7 +8,7 @@ let migrations = {
 	},
 };
 
-module.exports = async function() {
+export default async function() {
 	let store = new JsonStore("themes", null, migrations);
 	
 	await bluebird.map(Object.entries(defaultThemes), async function([key, theme]) {

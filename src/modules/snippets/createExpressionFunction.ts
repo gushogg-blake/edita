@@ -1,4 +1,4 @@
-module.exports = function(code) {
+export default function(code) {
 	try {
 		return new Function("util", "context", `
 			with (util) {

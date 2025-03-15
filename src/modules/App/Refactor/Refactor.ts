@@ -144,4 +144,4 @@ class Refactor extends Evented {
 	}
 }
 
-module.exports = Refactor;
+export default Refactor;

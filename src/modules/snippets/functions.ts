@@ -1,6 +1,6 @@
 let convertCase = require("utils/convertCase");
 
-module.exports = {
+export default {
 	...convertCase,
 	
 	quote(str) {

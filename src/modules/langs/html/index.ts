@@ -166,4 +166,4 @@ let lang = {
 	},
 };
 
-module.exports = lang;
+export default lang;

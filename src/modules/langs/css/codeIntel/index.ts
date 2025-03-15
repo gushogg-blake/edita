@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	indentOnNewline(document, line, cursor) {
 		return line.string.substr(0, cursor.offset).match(/[\[{(]$/);
 	},

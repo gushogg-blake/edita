@@ -1,1 +1,1 @@
-module.exports = require("./Refactor");
+export default require("./Refactor");

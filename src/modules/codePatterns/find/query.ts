@@ -57,7 +57,7 @@ function addCaptureLabel(queryString) {
 	return queryString;
 }
 
-module.exports = function(scope) {
+export default function(scope) {
 	let {lang} = scope;
 	let cache = {};
 	

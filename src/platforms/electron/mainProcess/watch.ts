@@ -17,7 +17,7 @@ let watchOptions = {
 	ignoreInitial: true,
 };
 
-module.exports = async function(app) {
+export default async function(app) {
 	let {buildDir} = app;
 	
 	let watchRenderer = chokidar.watch([

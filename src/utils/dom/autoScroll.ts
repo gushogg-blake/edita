@@ -1,6 +1,6 @@
 let {on, off} = require("./domEvents");
 
-module.exports = function(offsets, handler) {
+export default function(offsets, handler) {
 	let ticker;
 	let top;
 	let right;

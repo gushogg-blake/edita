@@ -967,4 +967,4 @@ class App extends Evented {
 	}
 }
 
-module.exports = App;
+export default App;

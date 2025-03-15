@@ -21,7 +21,7 @@ function getReplacedString(string, placeholders) {
 	return replacedString;
 }
 
-module.exports = function(string, baseLineIndex=0, baseOffset=0) {
+export default function(string, baseLineIndex=0, baseOffset=0) {
 	let placeholders = getPlaceholders(string);
 	let replacedString = getReplacedString(string, placeholders);
 	

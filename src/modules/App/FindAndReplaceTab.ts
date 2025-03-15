@@ -42,4 +42,4 @@ class FindAndReplaceTab extends Tab {
 	}
 }
 
-module.exports = FindAndReplaceTab;
+export default FindAndReplaceTab;

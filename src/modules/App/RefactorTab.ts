@@ -51,4 +51,4 @@ class RefactorTab extends Tab {
 	}
 }
 
-module.exports = RefactorTab;
+export default RefactorTab;

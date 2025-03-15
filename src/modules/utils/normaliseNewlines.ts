@@ -1,4 +1,4 @@
-module.exports = function(str, newline) {
+export default function(str, newline) {
 	str = str.replaceAll("\r\n", newline)
 	str = str.replaceAll("\r", newline);
 	str = str.replaceAll("\n", newline);

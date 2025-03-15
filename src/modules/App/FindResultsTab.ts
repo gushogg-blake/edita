@@ -25,4 +25,4 @@ class FindResultsTab extends Tab {
 	}
 }
 
-module.exports = FindResultsTab;
+export default FindResultsTab;

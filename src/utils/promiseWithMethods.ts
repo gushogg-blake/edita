@@ -2,7 +2,7 @@
 Promise that can be resolved/rejected from outside
 */
 
-module.exports = function() {
+export default function() {
 	let resolve;
 	let reject;
 	

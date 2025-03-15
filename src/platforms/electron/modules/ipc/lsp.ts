@@ -12,7 +12,7 @@ ipcRenderer.on("lspServerError", function(e, key, error) {
 	servers[key]?.onError(error);
 });
 
-module.exports = {
+export default {
 	start(key, langCode, initializeParams) {
 		initializeParams = {
 			...baseInitializeParams.common,

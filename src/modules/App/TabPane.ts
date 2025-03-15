@@ -136,4 +136,4 @@ class TabPane extends Evented {
 	}
 }
 
-module.exports = TabPane;
+export default TabPane;

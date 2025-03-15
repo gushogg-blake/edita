@@ -1,4 +1,4 @@
-module.exports = function(app) {
+export default function(app) {
 	return {
 		init(e) {
 			let window = app.browserWindowFromEvent(e);

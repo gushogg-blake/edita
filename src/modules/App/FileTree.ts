@@ -1,7 +1,7 @@
 let bluebird = require("bluebird");
 let Evented = require("utils/Evented");
 
-module.exports = class extends Evented {
+export default class extends Evented {
 	constructor(app) {
 		super();
 		

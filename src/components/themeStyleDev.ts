@@ -86,7 +86,7 @@ function getThemeValues(node) {
 	return theme;
 }
 
-module.exports = function(node, {app, update}) {
+export default function(node, {app, update}) {
 	function updateTheme() {
 		update(getThemeValues(node));
 	}

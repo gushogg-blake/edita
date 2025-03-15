@@ -5,7 +5,7 @@ you can't see the data (only the types) on dragover, and types can't contain
 uppercase chars, so we encode all the data into a string of char codes.
 */
 
-module.exports = {
+export default {
 	get(e) {
 		for (let encodedStr of e.dataTransfer.types) {
 			try {

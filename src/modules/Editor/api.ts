@@ -1,7 +1,7 @@
 let Selection = require("modules/Selection");
 let FindAndReplaceSession = require("./FindAndReplaceSession");
 
-module.exports = {
+export default {
 	centerSelection(selection) {
 		let {view} = this;
 		

@@ -668,4 +668,4 @@ class Document extends Evented {
 	}
 }
 
-module.exports = Document;
+export default Document;

@@ -1,6 +1,6 @@
 let middle = require("utils/middle");
 
-module.exports = function(node, cursor) {
+export default function(node, cursor) {
 	let {children} = node;
 	let startIndex = 0;
 	let endIndex = children.length;

@@ -2,7 +2,7 @@ let AstSelection = require("modules/AstSelection");
 
 let {s} = AstSelection;
 
-module.exports = {
+export default {
 	...AstSelection,
 	
 	validate(selection) {

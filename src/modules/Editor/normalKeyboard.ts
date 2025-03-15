@@ -5,7 +5,7 @@ let Cursor = require("modules/Cursor");
 let {s} = Selection;
 let {c} = Cursor;
 
-module.exports = {
+export default {
 	up() {
 		this.setSelectionFromNormalKeyboard(this.view.Selection.up());
 		this.clearSnippetSession();

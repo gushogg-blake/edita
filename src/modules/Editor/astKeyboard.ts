@@ -1,6 +1,6 @@
 let astCommon = require("modules/astCommon");
 
-module.exports = {
+export default {
 	up() {
 		this.setAstSelection(astCommon.selection.up(this.document, this.view.astSelection));
 	},

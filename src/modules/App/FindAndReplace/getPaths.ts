@@ -1,4 +1,4 @@
-module.exports = async function(options) {
+export default async function(options) {
 	let {
 		paths,
 		includePatterns,

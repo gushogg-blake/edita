@@ -3,7 +3,7 @@ pass parent for more precise scroll behaviour, e.g. to prevent the whole page
 from scrolling
 */
 
-module.exports = function(node, parent=null) {
+export default function(node, parent=null) {
 	if (!parent) {
 		node.scrollIntoView();
 		

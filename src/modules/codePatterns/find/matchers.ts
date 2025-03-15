@@ -265,4 +265,4 @@ let matchers = {
 	},
 };
 
-module.exports = matchers;
+export default matchers;

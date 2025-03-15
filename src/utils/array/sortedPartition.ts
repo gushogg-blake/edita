@@ -2,7 +2,7 @@
 split an array at the point that the condition stops being true
 */
 
-module.exports = function(array, fn) {
+export default function(array, fn) {
 	let index = array.length;
 	
 	for (let i = 0; i < array.length; i++) {

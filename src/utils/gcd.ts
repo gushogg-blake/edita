@@ -14,4 +14,4 @@ function gcd(n, ...rest) {
 	}
 }
 
-module.exports = gcd;
+export default gcd;

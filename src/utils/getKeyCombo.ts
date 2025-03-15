@@ -1,4 +1,4 @@
-module.exports = function(e) {
+export default function(e) {
 	let keyCombo = "";
 	let isModified = false;
 	

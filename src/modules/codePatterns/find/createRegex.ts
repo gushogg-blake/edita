@@ -1,6 +1,6 @@
 let ParseError = require("./ParseError");
 
-module.exports = function() {
+export default function() {
 	let cache = {};
 	
 	return function(pattern, flags) {

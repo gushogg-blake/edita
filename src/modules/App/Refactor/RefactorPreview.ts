@@ -140,4 +140,4 @@ class RefactorPreview extends Evented {
 	}
 }
 
-module.exports = RefactorPreview;
+export default RefactorPreview;

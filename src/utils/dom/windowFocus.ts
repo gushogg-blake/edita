@@ -25,7 +25,7 @@ function update() {
 window.addEventListener("focus", focus);
 window.addEventListener("blur", blur);
 
-module.exports = {
+export default {
 	listen(handler, init=true) {
 		handlers.push(handler);
 		

@@ -1,7 +1,7 @@
 let minimatch = require("minimatch-browser");
 let asyncGenerateArray = require("utils/asyncGenerateArray");
 
-module.exports = function(backends) {
+export default function(backends) {
 	let {
 		fs,
 		path: osPath,

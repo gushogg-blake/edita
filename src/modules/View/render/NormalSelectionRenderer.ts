@@ -28,7 +28,7 @@ function findFirstVisibleSelectionIndex(visibleSelection, selections) {
 	return first;
 }
 
-module.exports = class extends LineRowRenderer {
+export default class extends LineRowRenderer {
 	constructor(renderer, selections, canvasRenderer) {
 		super(renderer);
 		

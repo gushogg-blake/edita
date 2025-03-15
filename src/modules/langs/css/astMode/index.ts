@@ -2,7 +2,7 @@ let pickOptions = require("./pickOptions");
 let dropTargets = require("./dropTargets");
 let astManipulations = require("./astManipulations");
 
-module.exports = {
+export default {
 	pickOptions,
 	dropTargets,
 	astManipulations,

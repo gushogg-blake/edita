@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	foldZoom(wheelCombo, cursor) {
 		let {document, view} = this;
 		

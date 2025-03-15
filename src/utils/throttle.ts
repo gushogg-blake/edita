@@ -1,4 +1,4 @@
-module.exports = function(fn, minDelay) {
+export default function(fn, minDelay) {
 	let timer = null;
 	let lastCall = null;
 	

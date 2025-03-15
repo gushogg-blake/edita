@@ -1,4 +1,4 @@
-module.exports = function(array) {
+export default function(array) {
 	let result = [];
 	
 	for (let item of array) {

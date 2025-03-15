@@ -75,4 +75,4 @@ class FindResults extends Evented {
 	}
 }
 
-module.exports = FindResults;
+export default FindResults;

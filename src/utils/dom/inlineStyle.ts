@@ -46,4 +46,4 @@ inlineStyle.assign = function(node, ...styles) {
 	}
 }
 
-module.exports = inlineStyle;
+export default inlineStyle;

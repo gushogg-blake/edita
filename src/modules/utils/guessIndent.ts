@@ -1,5 +1,5 @@
 let detectIndent = require("detect-indent");
 
-module.exports = function(code) {
+export default function(code) {
 	return detectIndent(code).indent || null;
 }

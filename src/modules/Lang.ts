@@ -25,4 +25,4 @@ class Lang {
 	}
 }
 
-module.exports = Lang;
+export default Lang;

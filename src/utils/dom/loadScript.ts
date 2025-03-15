@@ -1,4 +1,4 @@
-module.exports = function(url, callback) {
+export default function(url, callback) {
 	return new Promise(function(resolve, reject) {
 		let script = document.createElement("script");
 		

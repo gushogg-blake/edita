@@ -1,6 +1,6 @@
 let {clipboard} = require("electron");
 
-module.exports = function(app) {
+export default function(app) {
 	return {
 		read() {
 			return clipboard.readText();

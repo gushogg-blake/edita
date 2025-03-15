@@ -6,7 +6,7 @@ let Range = require("./Range");
 let {s} = Selection;
 let {c} = Cursor;
 
-module.exports = class {
+export default class {
 	constructor(document) {
 		this.document = document;
 	}

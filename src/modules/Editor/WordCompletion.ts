@@ -229,4 +229,4 @@ class WordCompletion {
 	}
 }
 
-module.exports = WordCompletion;
+export default WordCompletion;
