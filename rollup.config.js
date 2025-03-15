@@ -1,13 +1,13 @@
-import path from "path";
+import {spawnSync} from "node:child_process";
 
-import scss from "@gushogg-blake/rollup-plugin-scss";
-import preprocess from "@gushogg-blake/svelte-preprocess";
+import typescript from "@rollup/plugin-typescript";
+import scss from "rollup-plugin-scss";
+import preprocess from "svelte-preprocess";
 import multi from "@rollup/plugin-multi-entry";
 import livereload from "rollup-plugin-livereload";
 import copy from "rollup-plugin-copy-watch";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import alias from "@rollup/plugin-alias";
 import json from "@rollup/plugin-json";
 import terser from "@rollup/plugin-terser";
 import svelte from "rollup-plugin-svelte";
@@ -17,7 +17,7 @@ import _delete from "rollup-plugin-delete";
 let dev = process.env.NODE_ENV === "development";
 let prod = !dev;
 let watch = process.env.ROLLUP_WATCH;
-let root = __dirname;
+let root = import.meta.dirname;
 let platform = process.env.PLATFORM || "all";
 
 /*
@@ -29,7 +29,7 @@ function markBuildComplete(dir) {
 		name: "internal-mark-build-complete",
 		
 		generateBundle() {
-			require("child_process").spawnSync("touch", [dir + "/.build-complete"], {
+			spawnSync("touch", [dir + "/.build-complete"], {
 				stdio: "inherit",
 				shell: true,
 			});
@@ -52,20 +52,6 @@ function commonPlugins(platform) {
 	let dir = "build/" + (dev ? platform + "-dev" : platform);
 	
 	return [
-		alias({
-			entries: {
-				"root": root,
-				"components": path.join(root, "src/components"),
-				"modules": path.join(root, "src/modules"),
-				"utils": path.join(root, "src/utils"),
-				"platforms": path.join(root, "src/platforms"),
-				"platform": path.join(root, "src/platforms/" + platform),
-				"common": path.join(root, "common"),
-				"vendor": path.join(root, "vendor"),
-				"test": path.join(root, "test"),
-			},
-		}),
-		
 		svelte({
 			preprocess: preprocess({
 				scss: {
@@ -86,6 +72,8 @@ function commonPlugins(platform) {
 			browser: true,
 			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
 		}),
+		
+		typescript(),
 		
 		copy({
 			watch: watch && "package.json",
@@ -112,6 +100,10 @@ function commonPlugins(platform) {
 		json(),
 	];
 }
+
+/*
+TODO do we need to add node: to these?
+*/
 
 let nodeIgnore = [
 	"os",
@@ -166,14 +158,14 @@ function addBuilds(...configs) {
 
 function globalCssBuild(path) {
 	return {
-		input: "src/css/globalCss.js",
+		input: "src/css/globalCss.ts",
 		
 		output: {
-			format: "iife",
 			file: path,
 		},
 		
 		plugins: [
+			typescript(),
 			scss(),
 			
 			_delete({
@@ -193,7 +185,7 @@ if (platform === "all" || platform === "electron") {
 		globalCssBuild(dir + "/css/global.js"),
 		
 		{
-			input: "src/platforms/electron/mainProcess/bootstrap.js",
+			input: "src/platforms/electron/mainProcess/bootstrap.ts",
 			
 			plugins: [
 				commonjs({
@@ -204,22 +196,14 @@ if (platform === "all" || platform === "electron") {
 			
 			output: {
 				sourcemap: true,
-				format: "cjs",
 				file: dir + "/mainProcess/bootstrap.js",
 			},
 		},
 		
 		{
-			input: "src/platforms/electron/mainProcess/main.js",
+			input: "src/platforms/electron/mainProcess/main.ts",
 			
 			plugins: [
-				alias({
-					entries: {
-						"_common": path.join(root, "common"),
-						"vendor": path.join(root, "vendor"),
-					},
-				}),
-				
 				commonjs({
 					requireReturnsDefault: "preferred",
 					ignore: nodeIgnore,
@@ -234,12 +218,12 @@ if (platform === "all" || platform === "electron") {
 		},
 		
 		{
-			input: "src/platforms/electron/main.js",
+			input: "src/platforms/electron/main.ts",
 			
 			output: {
 				sourcemap: true,
-				format: "iife",
 				file: dir + "/js/main.js",
+				format: "iife",
 			},
 			
 			plugins: [
@@ -264,52 +248,6 @@ if (platform === "all" || platform === "electron") {
 				}),
 			],
 		},
-		
-		{
-			input: "src/platforms/electron/dialogs/fileChooser/main.js",
-			
-			output: {
-				sourcemap: true,
-				format: "iife",
-				file: dir + "/js/dialogs/fileChooser/main.js",
-			},
-			
-			plugins: [
-				...electronPlugins(),
-				//watch && livereload(dir), // doesn't work for some reason
-			],
-		},
-		
-		{
-			input: "src/platforms/electron/dialogs/messageBox/main.js",
-			
-			output: {
-				sourcemap: true,
-				format: "iife",
-				file: dir + "/js/dialogs/messageBox/main.js",
-			},
-			
-			plugins: [
-				...electronPlugins(),
-				//watch && livereload(dir), // doesn't work for some reason
-			],
-		},
-		
-		{
-			input: "src/platforms/electron/dialogs/snippetEditor/main.js",
-			
-			output: {
-				sourcemap: true,
-				format: "iife",
-				file: dir + "/js/dialogs/snippetEditor/main.js",
-			},
-			
-			plugins: [
-				...electronPlugins(),
-				//watch && livereload(dir), // doesn't work for some reason
-				dev && markBuildComplete(dir),
-			],
-		},
 	);
 }
 
@@ -317,12 +255,10 @@ if (platform === "all" || platform === "web") {
 	let dir = "build/" + (dev ? "web-dev" : "web");
 	
 	addBuilds(globalCssBuild(dir + "/css/global.js"), {
-		input: "src/platforms/web/main.js",
+		input: "src/platforms/web/main.ts",
 		
 		output: {
 			sourcemap: dev,
-			format: "iife",
-			name: "Edita",
 			file: dir + "/js/main.js",
 		},
 		
@@ -355,12 +291,10 @@ if (platform === "all" || platform === "test") {
 	let dir = "build/test";
 	
 	addBuilds({
-		input: "test/main.js",
+		input: "test/main.ts",
 		
 		output: {
-			format: "iife",
 			file: dir + "/js/main.js",
-			name: "main",
 		},
 		
 		plugins: [
@@ -390,11 +324,10 @@ if (platform === "all" || platform === "test") {
 			}),
 		],
 	}, {
-		input: "test/tests/**/*.test.js",
+		input: "test/tests/**/*.test.ts",
 		
 		output: {
 			sourcemap: true,
-			format: "iife",
 			file: dir + "/js/tests.js",
 		},
 		
