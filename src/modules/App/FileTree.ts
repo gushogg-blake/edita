@@ -1,5 +1,5 @@
-let bluebird = require("bluebird");
-let Evented = require("utils/Evented");
+import bluebird from "bluebird";
+import Evented from "utils/Evented";
 
 export default class extends Evented {
 	constructor(app) {

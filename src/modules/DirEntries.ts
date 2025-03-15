@@ -1,4 +1,4 @@
-let bluebird = require("bluebird");
+import bluebird from "bluebird";
 
 function compareEntries(a, b) {
 	return a.node.name.localeCompare(b.node.name);

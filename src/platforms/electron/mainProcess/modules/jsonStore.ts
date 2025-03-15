@@ -1,4 +1,4 @@
-let {fs} = require("utils/node/index");
+import {fs} from "utils/node/index";
 
 export default function(app) {
 	function jsonStorageKey(name, key) {

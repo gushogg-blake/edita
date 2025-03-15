@@ -1,6 +1,6 @@
-let LspServer = require("modules/lsp/LspServer");
-let ipcRenderer = require("platforms/electron/modules/ipcRenderer");
-let baseInitializeParams = require("modules/lsp/baseInitializeParams");
+import LspServer from "modules/lsp/LspServer";
+import ipcRenderer from "platforms/electron/modules/ipcRenderer";
+import baseInitializeParams from "modules/lsp/baseInitializeParams";
 
 let servers = {};
 

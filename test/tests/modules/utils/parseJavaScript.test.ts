@@ -1,7 +1,7 @@
 let {is, deep} = require("test/utils/assertions");
-let dedent = require("test/utils/dedent");
+import dedent from "test/utils/dedent";
 
-let parseJavaScript = require("modules/snippets/parseJavaScript");
+import parseJavaScript from "modules/snippets/parseJavaScript";
 
 let tests = [
 	[

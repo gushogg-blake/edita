@@ -1,7 +1,7 @@
-let {app: electronApp} = require("electron");
-let {spawn} = require("child_process");
-let path = require("path");
-let chokidar = require("chokidar");
+import {app: electronApp} from "electron";
+import {spawn} from "child_process";
+import path from "path";
+import chokidar from "chokidar";
 
 function debounce(fn, delay) {
 	let timer;

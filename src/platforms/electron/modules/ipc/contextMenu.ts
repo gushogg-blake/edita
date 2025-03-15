@@ -1,6 +1,6 @@
-let ipcRenderer = require("platforms/electron/modules/ipcRenderer");
-let lid = require("utils/lid");
-let handleMessages = require("./utils/handleMessages");
+import ipcRenderer from "platforms/electron/modules/ipcRenderer";
+import lid from "utils/lid";
+import handleMessages from "./utils/handleMessages";
 
 let clickHandlers = {};
 

@@ -1,7 +1,7 @@
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
-let SelectionContents = require("modules/SelectionContents");
-let createPositions = require("modules/snippets/createPositions");
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
+import SelectionContents from "modules/SelectionContents";
+import createPositions from "modules/snippets/createPositions";
 
 let {s} = Selection;
 let {c} = Cursor;

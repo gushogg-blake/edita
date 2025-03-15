@@ -1,6 +1,6 @@
-let bluebird = require("bluebird");
-let Document = require("modules/Document");
-let URL = require("modules/URL");
+import bluebird from "bluebird";
+import Document from "modules/Document";
+import URL from "modules/URL";
 
 export default async function(paths) {
 	return bluebird.map(paths, async function(path) {

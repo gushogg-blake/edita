@@ -1,7 +1,7 @@
-let {lid} = require("utils/node/index");
-let {removeInPlace} = require("utils/arrayMethods");
-let LspServer = require("../modules/lsp/LspServer");
-let config = require("../modules/lsp/config");
+import {lid} from "utils/node/index";
+import {removeInPlace} from "utils/arrayMethods";
+import LspServer from "../modules/lsp/LspServer";
+import config from "../modules/lsp/config";
 
 export default function(app) {
 	function langIsSupported(langCode) {

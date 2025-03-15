@@ -1,4 +1,4 @@
-let {removeInPlace} = require("utils/arrayMethods");
+import {removeInPlace} from "utils/arrayMethods";
 
 class Event {
 	constructor() {

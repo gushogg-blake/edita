@@ -1,6 +1,6 @@
 let {is, deep, expect} = require("test/utils/assertions");
-let dedent = require("test/utils/dedent");
-let tokenise = require("modules/codePatterns/find/tokenise");
+import dedent from "test/utils/dedent";
+import tokenise from "modules/codePatterns/find/tokenise";
 
 describe("codePatterns", function() {
 	describe("tokenise", function() {

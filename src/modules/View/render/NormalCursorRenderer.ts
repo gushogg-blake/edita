@@ -1,4 +1,4 @@
-let LineRowRenderer = require("./LineRowRenderer");
+import LineRowRenderer from "./LineRowRenderer";
 
 export default class extends LineRowRenderer {
 	constructor(renderer, cursor) {

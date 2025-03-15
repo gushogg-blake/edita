@@ -1,7 +1,7 @@
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
-let Document = require("modules/Document");
-let getPlaceholders = require("./getPlaceholders");
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
+import Document from "modules/Document";
+import getPlaceholders from "./getPlaceholders";
 
 let {s} = Selection;
 let {c} = Cursor;

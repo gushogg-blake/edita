@@ -2,7 +2,7 @@
 dedent template strings
 */
 
-module.exports = function(str) {
+export default function(str) {
 	str = str.substr(1);
 	
 	let minIndent = str.split("\n").reduce(function(min, line) {

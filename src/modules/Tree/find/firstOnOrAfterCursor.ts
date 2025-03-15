@@ -1,4 +1,4 @@
-let middle = require("utils/middle");
+import middle from "utils/middle";
 
 export default function(node, cursor) {
 	if (node.isOnOrAfter(cursor)) {

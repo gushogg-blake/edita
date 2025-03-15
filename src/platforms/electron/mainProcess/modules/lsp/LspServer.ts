@@ -1,5 +1,5 @@
-let {Evented, lid, sleep, promiseWithMethods, spawn} = require("utils/node/index");
-let config = require("./config");
+import {Evented, lid, sleep, promiseWithMethods, spawn} from "utils/node/index";
+import config from "./config";
 
 class LspServer extends Evented {
 	constructor(app, langCode, initializeParams) {

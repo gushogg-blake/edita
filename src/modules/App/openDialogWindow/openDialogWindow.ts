@@ -1,5 +1,5 @@
-let inlineStyle = require("utils/dom/inlineStyle");
-let {on, off} = require("utils/dom/domEvents");
+import inlineStyle from "utils/dom/inlineStyle";
+import {on, off} from "utils/dom/domEvents";
 
 export default function(app, createDialogComponent) {
 	return async function(dialog, dialogOptions, windowOptions) {

@@ -1,4 +1,4 @@
-let Evented = require("utils/Evented");
+import Evented from "utils/Evented";
 
 class Tab extends Evented {
 	constructor(app, type) {

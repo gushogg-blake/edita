@@ -1,6 +1,6 @@
-let inlineStyle = require("utils/dom/inlineStyle");
-let {on, off} = require("utils/dom/domEvents");
-let screenOffsets = require("utils/dom/screenOffsets");
+import inlineStyle from "utils/dom/inlineStyle";
+import {on, off} from "utils/dom/domEvents";
+import screenOffsets from "utils/dom/screenOffsets";
 
 /*
 RUNS: once, to display a synthetic (non-native) context menu

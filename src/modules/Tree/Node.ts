@@ -1,5 +1,5 @@
-let {nodeGetters, cachedNodeFunction} = require("./treeSitterUtils");
-let find = require("./find");
+import {nodeGetters, cachedNodeFunction} from "./treeSitterUtils";
+import find from "./find";
 
 class Node {
 	constructor(tree, treeSitterNode) {

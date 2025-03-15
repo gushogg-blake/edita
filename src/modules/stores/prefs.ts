@@ -1,4 +1,4 @@
-let JsonStore = require("modules/JsonStore");
+import JsonStore from "modules/JsonStore";
 
 let migrations = {
 	"1"(prefs) {

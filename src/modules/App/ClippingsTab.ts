@@ -1,6 +1,6 @@
-let Selection = require("modules/Selection");
-let URL = require("modules/URL");
-let Tab = require("./Tab");
+import Selection from "modules/Selection";
+import URL from "modules/URL";
+import Tab from "./Tab";
 
 class ClippingsTab extends Tab {
 	constructor(app) {

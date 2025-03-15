@@ -1,7 +1,7 @@
-let getNewline = require("modules/utils/getNewline");
-let guessIndent = require("modules/utils/guessIndent");
-let getIndentationDetails = require("modules/utils/getIndentationDetails");
-let getIndentLevel = require("modules/utils/getIndentLevel");
+import getNewline from "modules/utils/getNewline";
+import guessIndent from "modules/utils/guessIndent";
+import getIndentationDetails from "modules/utils/getIndentationDetails";
+import getIndentLevel from "modules/utils/getIndentLevel";
 
 class SelectionContents {
 	constructor(lines) {

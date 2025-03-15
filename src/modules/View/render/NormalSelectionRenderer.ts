@@ -1,6 +1,6 @@
-let middle = require("utils/middle");
-let Selection = require("modules/Selection");
-let LineRowRenderer = require("./LineRowRenderer");
+import middle from "utils/middle";
+import Selection from "modules/Selection";
+import LineRowRenderer from "./LineRowRenderer";
 
 function findFirstVisibleSelectionIndex(visibleSelection, selections) {
 	let startIndex = 0;

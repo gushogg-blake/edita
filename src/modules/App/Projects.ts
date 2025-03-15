@@ -1,9 +1,9 @@
-let bluebird = require("bluebird");
-let Evented = require("utils/Evented");
-let unique = require("utils/array/unique");
-let {removeInPlace} = require("utils/arrayMethods");
-let Project = require("modules/Project");
-let {projectRootFiles} = require("modules/conventions");
+import bluebird from "bluebird";
+import Evented from "utils/Evented";
+import unique from "utils/array/unique";
+import {removeInPlace} from "utils/arrayMethods";
+import Project from "modules/Project";
+import {projectRootFiles} from "modules/conventions";
 
 class Projects extends Evented {
 	constructor(app) {

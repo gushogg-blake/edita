@@ -1,5 +1,5 @@
-let findAndReplace = require("modules/findAndReplace");
-let Cursor = require("modules/Cursor");
+import findAndReplace from "modules/findAndReplace";
+import Cursor from "modules/Cursor";
 
 let {c} = Cursor;
 

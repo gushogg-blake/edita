@@ -1,6 +1,6 @@
-let URL = require("modules/URL");
-let getPaths = require("./getPaths");
-let getFindAndReplaceOptions = require("./getFindAndReplaceOptions");
+import URL from "modules/URL";
+import getPaths from "./getPaths";
+import getFindAndReplaceOptions from "./getFindAndReplaceOptions";
 
 class Session {
 	constructor(app, options) {

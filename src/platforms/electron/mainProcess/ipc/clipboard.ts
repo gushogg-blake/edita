@@ -1,4 +1,4 @@
-let {clipboard} = require("electron");
+import {clipboard} from "electron";
 
 export default function(app) {
 	return {

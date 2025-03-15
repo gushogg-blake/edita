@@ -1,4 +1,4 @@
-let {ipcRenderer} = require("electron");
+import {ipcRenderer} from "electron";
 
 let ipc = Object.create(ipcRenderer);
 

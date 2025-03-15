@@ -1,7 +1,7 @@
-let Evented = require("utils/Evented");
-let sortedPartition = require("utils/array/sortedPartition");
-let URL = require("modules/URL");
-let codePatterns = require("modules/codePatterns");
+import Evented from "utils/Evented";
+import sortedPartition from "utils/array/sortedPartition";
+import URL from "modules/URL";
+import codePatterns from "modules/codePatterns";
 
 class RefactorPreview extends Evented {
 	constructor(app, refactor) {

@@ -1,5 +1,5 @@
-let {removeInPlace} = require("utils/arrayMethods");
-let localStorage = require("platform/modules/localStorage");
+import {removeInPlace} from "utils/arrayMethods";
+import localStorage from "platform/modules/localStorage";
 
 export default function(localStoragePrefix) {
 	function storageKey(name, key) {

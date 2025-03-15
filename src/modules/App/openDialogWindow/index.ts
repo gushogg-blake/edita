@@ -1,6 +1,6 @@
-let bindFunctions = require("utils/bindFunctions");
-let createDialogComponent = require("./createDialogComponent");
-let openDialogWindow = require("./openDialogWindow");
+import bindFunctions from "utils/bindFunctions";
+import createDialogComponent from "./createDialogComponent";
+import openDialogWindow from "./openDialogWindow";
 
 export default function(app) {
 	let _createDialogComponent = bindFunctions(app, createDialogComponent);

@@ -1,4 +1,4 @@
-let {getCursor, getCharCursor} = require("./utils/cursorFromEvent");
+import {getCursor, getCharCursor} from "./utils/cursorFromEvent";
 
 export default function(editor, editorComponent) {
 	let {document, view} = editor;

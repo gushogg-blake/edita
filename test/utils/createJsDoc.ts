@@ -1,7 +1,7 @@
-let Document = require("modules/Document");
-let URL = require("modules/URL");
-let dedent = require("test/utils/dedent");
+import Document from "modules/Document";
+import URL from "modules/URL";
+import dedent from "test/utils/dedent";
 
-module.exports = function(code) {
+export default function(code) {
 	return new Document(dedent(code), new URL("new:///a.js"));
 }

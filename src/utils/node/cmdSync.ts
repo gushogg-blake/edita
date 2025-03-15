@@ -1,4 +1,4 @@
-let child_process = require("child_process");
+import child_process from "child_process";
 
 function cmd(c) {
 	return child_process.execSync(c).toString();

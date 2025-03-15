@@ -1,5 +1,5 @@
-let {ipcMain} = require("electron");
-let {lid} = require("utils/node/index");
+import {ipcMain} from "electron";
+import {lid} from "utils/node/index";
 
 let ipc = Object.create(ipcMain);
 

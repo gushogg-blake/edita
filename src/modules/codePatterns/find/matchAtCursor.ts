@@ -1,5 +1,5 @@
-let Selection = require("modules/Selection");
-let matchers = require("./matchers");
+import Selection from "modules/Selection";
+import matchers from "./matchers";
 
 let {s} = Selection;
 

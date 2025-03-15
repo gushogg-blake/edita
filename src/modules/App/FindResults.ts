@@ -1,4 +1,4 @@
-let Evented = require("utils/Evented");
+import Evented from "utils/Evented";
 
 let maxPages = 12;
 

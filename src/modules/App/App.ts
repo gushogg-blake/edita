@@ -1,32 +1,32 @@
-let bluebird = require("bluebird");
+import bluebird from "bluebird";
 
-let {removeInPlace, moveInPlace} = require("utils/arrayMethods");
-let sortedPartition = require("utils/array/sortedPartition");
-let Evented = require("utils/Evented");
-let bindFunctions = require("utils/bindFunctions");
-let promiseWithMethods = require("utils/promiseWithMethods");
-let nextName = require("utils/nextName");
-let multimatch = require("utils/multimatch");
+import {removeInPlace, moveInPlace} from "utils/arrayMethods";
+import sortedPartition from "utils/array/sortedPartition";
+import Evented from "utils/Evented";
+import bindFunctions from "utils/bindFunctions";
+import promiseWithMethods from "utils/promiseWithMethods";
+import nextName from "utils/nextName";
+import multimatch from "utils/multimatch";
 
-let URL = require("modules/URL");
-let protocol = require("modules/protocol");
-let Document = require("modules/Document");
-let Editor = require("modules/Editor");
-let View = require("modules/View");
-let conventions = require("modules/conventions");
+import URL from "modules/URL";
+import protocol from "modules/protocol";
+import Document from "modules/Document";
+import Editor from "modules/Editor";
+import View from "modules/View";
+import conventions from "modules/conventions";
 
-let EditorTab = require("./EditorTab");
-let RefactorPreviewTab = require("./RefactorPreviewTab");
-let Projects = require("./Projects");
-let FileTree = require("./FileTree");
-let Tools = require("./Tools");
-let Output = require("./Output");
-let SidePanes = require("./SidePanes");
-let BottomPanes = require("./BottomPanes");
-let FindAndReplace = require("./FindAndReplace");
-let openDialogWindow = require("./openDialogWindow");
-let functions = require("./functions");
-let dev = require("./dev");
+import EditorTab from "./EditorTab";
+import RefactorPreviewTab from "./RefactorPreviewTab";
+import Projects from "./Projects";
+import FileTree from "./FileTree";
+import Tools from "./Tools";
+import Output from "./Output";
+import SidePanes from "./SidePanes";
+import BottomPanes from "./BottomPanes";
+import FindAndReplace from "./FindAndReplace";
+import openDialogWindow from "./openDialogWindow";
+import functions from "./functions";
+import dev from "./dev";
 
 class App extends Evented {
 	constructor() {

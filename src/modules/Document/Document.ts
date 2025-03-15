@@ -1,14 +1,14 @@
-let throttle = require("utils/throttle");
-let sleep = require("utils/sleep");
-let Evented = require("utils/Evented");
-let AstSelection = require("modules/AstSelection");
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
-let protocol = require("modules/protocol");
-let findAndReplace = require("modules/findAndReplace");
+import throttle from "utils/throttle";
+import sleep from "utils/sleep";
+import Evented from "utils/Evented";
+import AstSelection from "modules/AstSelection";
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
+import protocol from "modules/protocol";
+import findAndReplace from "modules/findAndReplace";
 
-let Source = require("./Source");
-let Line = require("./Line");
+import Source from "./Source";
+import Line from "./Line";
 
 let {s} = Selection;
 let {c} = Cursor;

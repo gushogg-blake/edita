@@ -23,8 +23,18 @@ what it is because it's not actually writing the TS anywhere?)
 */
 
 {
+	// latest
 	"target": "es2024",
+	
+	// simpler logic for whether to include imports in emitted code
+	// if import type, drop, otherwise keep.
+	// required for Svelte
 	"verbatimModuleSyntax": true,
+	
+	// allow extensionless relative imports (otherwise requires .js)
+	// Bun supports this when running directly
+	"moduleResolution": "bundler",
+	
 	"sourceMap": true,
 	
 	// SYNC keep these in sync with rollup aliases

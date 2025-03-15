@@ -14,7 +14,7 @@ e.g.
 }
 */
 
-module.exports = function(str) {
+export default function(str) {
 	let marks = {};
 	let offset = 0;
 	

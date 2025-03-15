@@ -3,7 +3,7 @@ get insert cursor from mouse event (the cursor either side of the clicked
 char, depending on position within the char)
 */
 
-function getCursor(e, view, canvasDiv) {
+export function getCursor(e, view, canvasDiv) {
 	let {
 		x: left,
 		y: top,
@@ -21,7 +21,7 @@ function getCursor(e, view, canvasDiv) {
 get char cursor (the cursor before the clicked char)
 */
 
-function getCharCursor(e, view, canvasDiv) {
+export function getCharCursor(e, view, canvasDiv) {
 	let {
 		x: left,
 		y: top,
@@ -34,8 +34,3 @@ function getCharCursor(e, view, canvasDiv) {
 	
 	return view.cursorFromRowCol(row, col, true);
 }
-
-export default {
-	getCursor,
-	getCharCursor,
-};

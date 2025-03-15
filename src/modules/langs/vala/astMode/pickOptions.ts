@@ -1,5 +1,5 @@
-let AstSelection = require("modules/AstSelection");
-let {isHeader, getHeaders} = require("modules/astCommon/utils");
+import AstSelection from "modules/AstSelection";
+import {isHeader, getHeaders} from "modules/astCommon/utils";
 
 let {s: a} = AstSelection;
 

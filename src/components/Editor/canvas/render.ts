@@ -1,11 +1,11 @@
-let renderCurrentLineHilite = require("./renderCurrentLineHilite");
-let renderNormalSelections = require("./renderNormalSelections");
-let renderAstSelection = require("./renderAstSelection");
-let renderAstInsertionHilite = require("./renderAstInsertionHilite");
-let renderMargin = require("./renderMargin");
-let renderFoldHilites = require("./renderFoldHilites");
-let renderCode = require("./renderCode");
-let renderNormalCursor = require("./renderNormalCursor");
+import renderCurrentLineHilite from "./renderCurrentLineHilite";
+import renderNormalSelections from "./renderNormalSelections";
+import renderAstSelection from "./renderAstSelection";
+import renderAstInsertionHilite from "./renderAstInsertionHilite";
+import renderMargin from "./renderMargin";
+import renderFoldHilites from "./renderFoldHilites";
+import renderCode from "./renderCode";
+import renderNormalCursor from "./renderNormalCursor";
 
 export default function(layers, view, isPeekingAstMode, windowHasFocus) {
 	let {

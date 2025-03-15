@@ -1,7 +1,7 @@
-let get = require("lodash.get");
-let set = require("lodash.set");
-let Evented = require("utils/Evented");
-let LspClient = require("modules/lsp/LspClient");
+import get from "lodash.get";
+import set from "lodash.set";
+import Evented from "utils/Evented";
+import LspClient from "modules/lsp/LspClient";
 
 function defaultConfig() {
 	return {

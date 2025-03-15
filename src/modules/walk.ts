@@ -1,5 +1,5 @@
-let minimatch = require("minimatch-browser");
-let asyncGenerateArray = require("utils/asyncGenerateArray");
+import minimatch from "minimatch-browser";
+import asyncGenerateArray from "utils/asyncGenerateArray";
 
 export default function(backends) {
 	let {

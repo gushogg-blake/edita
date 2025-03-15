@@ -1,9 +1,3 @@
-let conversions = require("./conversions");
-let nodeGetters = require("./nodeGetters");
-let cachedNodeFunction = require("./utils/cachedNodeFunction");
-
-export default {
-	...conversions,
-	nodeGetters,
-	cachedNodeFunction,
-};
+export * from "./conversions";
+export {default as nodeGetters} from "./nodeGetters";
+export {default as cachedNodeFunction} from "./utils/cachedNodeFunction";

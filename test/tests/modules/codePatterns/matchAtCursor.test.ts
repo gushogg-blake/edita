@@ -1,12 +1,12 @@
 let {is, deep, subset} = require("test/utils/assertions");
-let dedent = require("test/utils/dedent");
-let createJsDoc = require("test/utils/createJsDoc");
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
-let query = require("modules/codePatterns/find/query");
-let createRegex = require("modules/codePatterns/find/createRegex");
-let tokenise = require("modules/codePatterns/find/tokenise");
-let matchAtCursor = require("modules/codePatterns/find/matchAtCursor");
+import dedent from "test/utils/dedent";
+import createJsDoc from "test/utils/createJsDoc";
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
+import query from "modules/codePatterns/find/query";
+import createRegex from "modules/codePatterns/find/createRegex";
+import tokenise from "modules/codePatterns/find/tokenise";
+import matchAtCursor from "modules/codePatterns/find/matchAtCursor";
 
 let {c} = Cursor;
 let {s} = Selection;

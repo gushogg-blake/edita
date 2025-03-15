@@ -1,15 +1,15 @@
-let Cursor = require("modules/Cursor");
-let Selection = require("modules/Selection");
-let AstSelection = require("modules/AstSelection");
+import Cursor from "modules/Cursor";
+import Selection from "modules/Selection";
+import AstSelection from "modules/AstSelection";
 
-let CurrentLineHiliteRenderer = require("./CurrentLineHiliteRenderer");
-let NormalSelectionRenderer = require("./NormalSelectionRenderer");
-let AstSelectionRenderer = require("./AstSelectionRenderer");
-let AstInsertionHiliteRenderer = require("./AstInsertionHiliteRenderer");
-let MarginRenderer = require("./MarginRenderer");
-let FoldHiliteRenderer = require("./FoldHiliteRenderer");
-let CodeRenderer = require("./CodeRenderer");
-let NormalCursorRenderer = require("./NormalCursorRenderer");
+import CurrentLineHiliteRenderer from "./CurrentLineHiliteRenderer";
+import NormalSelectionRenderer from "./NormalSelectionRenderer";
+import AstSelectionRenderer from "./AstSelectionRenderer";
+import AstInsertionHiliteRenderer from "./AstInsertionHiliteRenderer";
+import MarginRenderer from "./MarginRenderer";
+import FoldHiliteRenderer from "./FoldHiliteRenderer";
+import CodeRenderer from "./CodeRenderer";
+import NormalCursorRenderer from "./NormalCursorRenderer";
 
 let {s} = Selection;
 let {c} = Cursor;

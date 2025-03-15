@@ -1,4 +1,4 @@
-let astCommon = require("modules/astCommon");
+import astCommon from "modules/astCommon";
 
 export default {
 	up() {

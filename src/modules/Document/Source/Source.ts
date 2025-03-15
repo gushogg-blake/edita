@@ -1,7 +1,7 @@
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
-let Scope = require("./Scope");
-let Range = require("./Range");
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
+import Scope from "./Scope";
+import Range from "./Range";
 
 let {s} = Selection;
 let {c} = Cursor;

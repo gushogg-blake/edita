@@ -1,6 +1,6 @@
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
-let expandTabs = require("modules/utils/expandTabs");
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
+import expandTabs from "modules/utils/expandTabs";
 
 let {c} = Cursor;
 

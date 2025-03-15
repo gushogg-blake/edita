@@ -1,5 +1,5 @@
-let bluebird = require("bluebird");
-let Evented = require("utils/Evented");
+import bluebird from "bluebird";
+import Evented from "utils/Evented";
 
 class JsonStore extends Evented {
 	constructor(name, defaultValue, migrations={}) {

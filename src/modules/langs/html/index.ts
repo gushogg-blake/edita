@@ -1,5 +1,5 @@
-let astMode = require("./astMode");
-let codeIntel = require("./codeIntel");
+import astMode from "./astMode";
+import codeIntel from "./codeIntel";
 
 let lang = {
 	group: "html",

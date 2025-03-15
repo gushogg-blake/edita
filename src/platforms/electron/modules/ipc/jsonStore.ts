@@ -1,4 +1,4 @@
-let ipcRenderer = require("platform/modules/ipcRenderer");
+import ipcRenderer from "platform/modules/ipcRenderer";
 
 export default {
 	load(name, key) {

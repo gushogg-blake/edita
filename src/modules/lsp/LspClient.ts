@@ -1,14 +1,14 @@
-let Evented = require("utils/Evented");
-let lid = require("utils/lid");
-let URL = require("modules/URL");
-let LspError = require("modules/lsp/LspError");
+import Evented from "utils/Evented";
+import lid from "utils/lid";
+import URL from "modules/URL";
+import LspError from "modules/lsp/LspError";
 
-let {
+import {
 	cursorToLspPosition,
 	lspRangeToSelection,
 	maskOtherRegions,
 	normaliseLangCode,
-} = require("modules/lsp/utils");
+} from "modules/lsp/utils";
 
 class LspClient extends Evented {
 	constructor() {

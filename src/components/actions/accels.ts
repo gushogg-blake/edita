@@ -1,5 +1,5 @@
-let {on, off} = require("utils/dom/domEvents");
-let clickElementFromAccel = require("utils/dom/clickElementFromAccel");
+import {on, off} from "utils/dom/domEvents";
+import clickElementFromAccel from "utils/dom/clickElementFromAccel";
 
 function keydown(e) {
 	clickElementFromAccel(e, {el: e.currentTarget});

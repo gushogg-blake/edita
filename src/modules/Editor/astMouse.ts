@@ -1,6 +1,6 @@
-let Selection = require("modules/Selection");
-let AstSelection = require("modules/AstSelection");
-let astCommon = require("modules/astCommon");
+import Selection from "modules/Selection";
+import AstSelection from "modules/AstSelection";
+import astCommon from "modules/astCommon";
 
 let {s: a} = AstSelection;
 

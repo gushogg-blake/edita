@@ -1,4 +1,4 @@
-let {Menu} = require("electron");
+import {Menu} from "electron";
 
 export default function(app) {
 	return {

@@ -1,7 +1,7 @@
-let Document = require("modules/Document");
+import Document from "modules/Document";
 let {is, deep} = require("test/utils/assertions");
-let dedent = require("test/utils/dedent");
-let parseIndexMarks = require("test/utils/parseIndexMarks");
+import dedent from "test/utils/dedent";
+import parseIndexMarks from "test/utils/parseIndexMarks";
 
 function createJsDoc(code) {
 	return new Document(code, "new:///a.js");

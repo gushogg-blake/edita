@@ -1,4 +1,4 @@
-let middle = require("utils/middle");
+import middle from "utils/middle";
 
 /*
 given a node and a cursor, find the smallest node within the given node

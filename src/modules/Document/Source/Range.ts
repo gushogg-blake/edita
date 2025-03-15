@@ -1,5 +1,5 @@
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
 
 let {s} = Selection;
 

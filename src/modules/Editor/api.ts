@@ -1,5 +1,5 @@
-let Selection = require("modules/Selection");
-let FindAndReplaceSession = require("./FindAndReplaceSession");
+import Selection from "modules/Selection";
+import FindAndReplaceSession from "./FindAndReplaceSession";
 
 export default {
 	centerSelection(selection) {

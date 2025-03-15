@@ -1,9 +1,9 @@
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
-let createRegex = require("./createRegex");
-let query = require("./query");
-let tokenise = require("./tokenise");
-let matchAtCursor = require("./matchAtCursor");
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
+import createRegex from "./createRegex";
+import query from "./query";
+import tokenise from "./tokenise";
+import matchAtCursor from "./matchAtCursor";
 
 let {s} = Selection;
 let {c} = Cursor;

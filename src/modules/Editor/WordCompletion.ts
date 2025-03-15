@@ -1,9 +1,9 @@
-let regexMatches = require("utils/regexMatches");
-let regexMatch = require("utils/regexMatch");
-let unique = require("utils/array/unique");
-let convertCase = require("utils/convertCase");
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
+import regexMatches from "utils/regexMatches";
+import regexMatch from "utils/regexMatch";
+import unique from "utils/array/unique";
+import convertCase from "utils/convertCase";
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
 
 let {s} = Selection;
 let {c} = Cursor;

@@ -1,4 +1,4 @@
-let {on, off} = require("./domEvents");
+import {on, off} from "./domEvents";
 
 export default function(offsets, handler) {
 	let ticker;

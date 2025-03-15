@@ -1,4 +1,4 @@
-let Evented = require("utils/Evented");
+import Evented from "utils/Evented";
 
 class LspServer extends Evented {
 	constructor(options, backend) {

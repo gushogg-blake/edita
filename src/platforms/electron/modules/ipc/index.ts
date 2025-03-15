@@ -1,10 +1,10 @@
-let ipcRenderer = require("platforms/electron/modules/ipcRenderer");
-let dialog = require("./dialog");
-let clipboard = require("./clipboard");
-let jsonStore = require("./jsonStore");
-let contextMenu = require("./contextMenu");
-let Snippets = require("./Snippets");
-let lsp = require("./lsp");
+import ipcRenderer from "platforms/electron/modules/ipcRenderer";
+import dialog from "./dialog";
+import clipboard from "./clipboard";
+import jsonStore from "./jsonStore";
+import contextMenu from "./contextMenu";
+import Snippets from "./Snippets";
+import lsp from "./lsp";
 
 export default {
 	init: ipcRenderer.sendSync("init", "init"),

@@ -1,6 +1,6 @@
-let os = require("os");
-let path = require("path");
-let yargs = require("yargs");
+import os from "os";
+import path from "path";
+import yargs from "yargs";
 
 export default function(argv) {
 	let config = {

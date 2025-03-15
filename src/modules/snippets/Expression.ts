@@ -1,4 +1,4 @@
-let functions = require("./functions");
+import functions from "./functions";
 
 class Expression {
 	constructor(start, end, fn, name=null) {

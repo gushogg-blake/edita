@@ -1,5 +1,5 @@
-let bluebird = require("bluebird");
-let promiseWithMethods = require("./promiseWithMethods");
+import bluebird from "bluebird";
+import promiseWithMethods from "./promiseWithMethods";
 
 let queues = {};
 

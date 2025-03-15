@@ -1,17 +1,17 @@
-let os = require("os");
-let path = require("path");
-let bluebird = require("bluebird");
-let TreeSitter = require("web-tree-sitter");
+import os from "os";
+import path from "path";
+import bluebird from "bluebird";
+import TreeSitter from "web-tree-sitter";
 
-let Evented = require("utils/Evented");
-let screenOffsets = require("utils/dom/screenOffsets");
-let promiseWithMethods = require("utils/promiseWithMethods");
-let lid = require("utils/lid");
-let contextMenu = require("modules/contextMenu");
+import Evented from "utils/Evented";
+import screenOffsets from "utils/dom/screenOffsets";
+import promiseWithMethods from "utils/promiseWithMethods";
+import lid from "utils/lid";
+import contextMenu from "modules/contextMenu";
 
-let fs = require("platforms/electron/modules/fs");
-let ipcRenderer = require("platforms/electron/modules/ipcRenderer");
-let ipc = require("platforms/electron/modules/ipc");
+import fs from "platforms/electron/modules/fs";
+import ipcRenderer from "platforms/electron/modules/ipcRenderer";
+import ipc from "platforms/electron/modules/ipc";
 
 class Platform extends Evented {
 	constructor(options={}) {

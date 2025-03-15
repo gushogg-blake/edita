@@ -94,9 +94,11 @@ function commonPlugins(platform) {
 		
 		typescript({
 			compilerOptions: {
+				// going by https://www.typescriptlang.org/tsconfig/#module
+				// which says we probably want esnext for bundled code
+				// this affects the kind of import/export statements that
+				// are emitted
 				module: "esnext",
-				moduleResolution: "bundler",
-				
 			},
 		}),
 		

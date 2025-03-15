@@ -1,6 +1,6 @@
-let find = require("./find");
-let ParseError = require("./find/ParseError");
-let replace = require("./replace");
+import find from "./find";
+import ParseError from "./find/ParseError";
+import replace from "./replace";
 
 export default {
 	find,

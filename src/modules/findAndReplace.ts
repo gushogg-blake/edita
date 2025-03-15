@@ -1,7 +1,7 @@
-let escapeRe = require("utils/escapeRe");
-let mapArrayToObject = require("utils/mapArrayToObject");
-let createPlaceholderString = require("utils/createPlaceholderString");
-let getPlaceholders = require("modules/snippets/getPlaceholders");
+import escapeRe from "utils/escapeRe";
+import mapArrayToObject from "utils/mapArrayToObject";
+import createPlaceholderString from "utils/createPlaceholderString";
+import getPlaceholders from "modules/snippets/getPlaceholders";
 
 function containsWordBoundary(str) {
 	return !!str.match(/\W/);

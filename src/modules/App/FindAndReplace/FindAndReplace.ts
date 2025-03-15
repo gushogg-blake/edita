@@ -1,11 +1,11 @@
-let bluebird = require("bluebird");
-let fastStableStringify = require("fast-stable-stringify");
-let Evented = require("utils/Evented");
-let findAndReplace = require("modules/findAndReplace");
-let getPaths = require("./getPaths");
-let getFindAndReplaceOptions = require("./getFindAndReplaceOptions");
-let getDocuments = require("./getDocuments");
-let Session = require("./Session");
+import bluebird from "bluebird";
+import fastStableStringify from "fast-stable-stringify";
+import Evented from "utils/Evented";
+import findAndReplace from "modules/findAndReplace";
+import getPaths from "./getPaths";
+import getFindAndReplaceOptions from "./getFindAndReplaceOptions";
+import getDocuments from "./getDocuments";
+import Session from "./Session";
 
 let methods = {
 	findAll: {

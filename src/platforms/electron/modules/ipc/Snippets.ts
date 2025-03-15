@@ -1,6 +1,6 @@
-let Evented = require("utils/Evented");
-let {removeInPlace} = require("utils/arrayMethods");
-let ipcRenderer = require("platforms/electron/modules/ipcRenderer");
+import Evented from "utils/Evented";
+import {removeInPlace} from "utils/arrayMethods";
+import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 
 class Snippets extends Evented {
 	constructor() {

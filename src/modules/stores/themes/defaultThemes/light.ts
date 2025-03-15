@@ -1,4 +1,4 @@
-let expandHiliteClasses = require("./expandHiliteClasses");
+import expandHiliteClasses from "./expandHiliteClasses";
 
 let theme = {
 	name: "Light",

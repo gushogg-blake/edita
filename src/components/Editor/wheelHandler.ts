@@ -1,5 +1,5 @@
-let getWheelCombo = require("utils/getWheelCombo");
-let {getCursor} = require("./utils/cursorFromEvent");
+import getWheelCombo from "utils/getWheelCombo";
+import {getCursor} from "./utils/cursorFromEvent";
 
 export default function(editor, editorComponent) {
 	let {view} = editor;

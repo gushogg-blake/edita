@@ -1,10 +1,10 @@
-let _typeof = require("utils/typeof");
-let groupBy = require("utils/array/groupBy");
-let {removeInPlace} = require("utils/arrayMethods");
-let mapArrayToObject = require("utils/mapArrayToObject");
-let Selection = require("modules/Selection");
-let Tree = require("modules/Tree");
-let Range = require("./Range");
+import _typeof from "utils/typeof";
+import groupBy from "utils/array/groupBy";
+import {removeInPlace} from "utils/arrayMethods";
+import mapArrayToObject from "utils/mapArrayToObject";
+import Selection from "modules/Selection";
+import Tree from "modules/Tree";
+import Range from "./Range";
 
 function getInjectionLangCode(injection, result) {
 	return _typeof(injection.lang) === "Function" ? injection.lang(result) : injection.lang;

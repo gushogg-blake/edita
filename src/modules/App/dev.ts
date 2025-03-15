@@ -1,6 +1,6 @@
-let sleep = require("utils/sleep");
-let Selection = require("modules/Selection");
-let DevFileChooserTab = require("./DevFileChooserTab");
+import sleep from "utils/sleep";
+import Selection from "modules/Selection";
+import DevFileChooserTab from "./DevFileChooserTab";
 
 function get(key) {
 	return base.getPref("dev." + key);

@@ -1,4 +1,4 @@
-let ParseError = require("./ParseError");
+import ParseError from "./ParseError";
 
 /*
 tokenise a codePattern expression

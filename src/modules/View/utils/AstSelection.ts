@@ -1,4 +1,4 @@
-let AstSelection = require("modules/AstSelection");
+import AstSelection from "modules/AstSelection";
 
 let {s} = AstSelection;
 

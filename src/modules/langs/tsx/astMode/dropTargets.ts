@@ -1,7 +1,7 @@
-let indentLines = require("modules/utils/indentLines");
-let AstSelection = require("modules/AstSelection");
-let removeSelection = require("modules/astCommon/removeSelection");
-let isIfFooter = require("./utils/isIfFooter");
+import indentLines from "modules/utils/indentLines";
+import AstSelection from "modules/AstSelection";
+import removeSelection from "modules/astCommon/removeSelection";
+import isIfFooter from "./utils/isIfFooter";
 
 let {s} = AstSelection;
 

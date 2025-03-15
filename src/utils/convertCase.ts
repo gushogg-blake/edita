@@ -1,4 +1,4 @@
-let regexMatch = require("utils/regexMatch");
+import regexMatch from "utils/regexMatch";
 
 function split(str) {
 	let prefix = regexMatch(str, /^[_\W]+/);

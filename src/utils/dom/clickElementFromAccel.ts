@@ -1,4 +1,4 @@
-let getKeyCombo = require("utils/getKeyCombo");
+import getKeyCombo from "utils/getKeyCombo";
 
 export default function(e, options) {
 	options = {

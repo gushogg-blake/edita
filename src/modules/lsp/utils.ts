@@ -1,6 +1,7 @@
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
 
+// TODO import Selection, {s}
 let {s} = Selection;
 let {c} = Cursor;
 
@@ -8,7 +9,7 @@ let langCodeMap = {
 	"javascript": "typescript",
 };
 
-function normaliseLangCode(langCode) {
+export function normaliseLangCode(langCode) {
 	return langCodeMap[langCode] || langCode;
 }
 
@@ -17,7 +18,7 @@ replace everything outside the scope with spaces to use language servers
 with embedded languages
 */
 
-function maskOtherRegions(scope) {
+export function maskOtherRegions(scope) {
 	let str = "";
 	let {string} = scope;
 	let prevRangeEnd = 0;
@@ -34,24 +35,16 @@ function maskOtherRegions(scope) {
 	return str;
 }
 
-function cursorToLspPosition({lineIndex, offset}) {
+export function cursorToLspPosition({lineIndex, offset}) {
 	return {line: lineIndex, character: offset};
 }
 
-function lspPositionToCursor(position) {
+export function lspPositionToCursor(position) {
 	return c(position.line, position.character);
 }
 
-function lspRangeToSelection(range) {
+export function lspRangeToSelection(range) {
 	let {start, end} = range;
 	
 	return s(lspPositionToCursor(start), lspPositionToCursor(end));
 }
-
-export default {
-	normaliseLangCode,
-	maskOtherRegions,
-	lspPositionToCursor,
-	lspRangeToSelection,
-	cursorToLspPosition,
-};

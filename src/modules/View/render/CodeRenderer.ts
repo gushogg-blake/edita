@@ -1,5 +1,5 @@
-let Cursor = require("modules/Cursor");
-let LineRowRenderer = require("./LineRowRenderer");
+import Cursor from "modules/Cursor";
+import LineRowRenderer from "./LineRowRenderer";
 
 /*
 LIFECYCLE: per-frame.

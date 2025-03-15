@@ -1,14 +1,14 @@
-let ipcMain = require("../modules/ipcMain");
-let init = require("./init");
-let clipboard = require("./clipboard");
-let dialog = require("./dialog");
-let contextMenu = require("./contextMenu");
-let openDialogWindow = require("./openDialogWindow");
-let callOpener = require("./callOpener");
-let jsonStore = require("./jsonStore");
-let snippets = require("./snippets");
-let devTools = require("./devTools");
-let lsp = require("./lsp");
+import ipcMain from "../modules/ipcMain";
+import init from "./init";
+import clipboard from "./clipboard";
+import dialog from "./dialog";
+import contextMenu from "./contextMenu";
+import openDialogWindow from "./openDialogWindow";
+import callOpener from "./callOpener";
+import jsonStore from "./jsonStore";
+import snippets from "./snippets";
+import devTools from "./devTools";
+import lsp from "./lsp";
 
 let asyncModules = {
 	dialog,

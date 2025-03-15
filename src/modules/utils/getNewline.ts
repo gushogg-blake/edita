@@ -1,4 +1,4 @@
-let checkNewlines = require("modules/utils/checkNewlines");
+import checkNewlines from "modules/utils/checkNewlines";
 
 export default function(str) {
 	let {

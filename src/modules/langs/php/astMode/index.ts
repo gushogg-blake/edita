@@ -1,6 +1,6 @@
-let pickOptions = require("./pickOptions");
-let dropTargets = require("./dropTargets");
-let astManipulations = require("./astManipulations");
+import pickOptions from "./pickOptions";
+import dropTargets from "./dropTargets";
+import astManipulations from "./astManipulations";
 
 export default {
 	pickOptions,

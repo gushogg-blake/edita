@@ -1,13 +1,13 @@
-let TreeSitter = require("web-tree-sitter");
-let mapArrayToObject = require("utils/mapArrayToObject");
-let Cursor = require("modules/Cursor");
-let Node = require("./Node");
-let find = require("./find");
+import TreeSitter from "web-tree-sitter";
+import mapArrayToObject from "utils/mapArrayToObject";
+import Cursor from "modules/Cursor";
+import Node from "./Node";
+import find from "./find";
 
-let {
+import {
 	cursorToTreeSitterPoint,
 	rangeToTreeSitterRange,
-} = require("./treeSitterUtils");
+} from "./treeSitterUtils";
 
 let {c} = Cursor;
 

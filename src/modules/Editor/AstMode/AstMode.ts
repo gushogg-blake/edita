@@ -1,8 +1,8 @@
-let Evented = require("utils/Evented");
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
-let AstSelection = require("modules/AstSelection");
-let MultiStepCommand = require("./MultiStepCommand");
+import Evented from "utils/Evented";
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
+import AstSelection from "modules/AstSelection";
+import MultiStepCommand from "./MultiStepCommand";
 
 let {s} = AstSelection;
 let {c} = Cursor;

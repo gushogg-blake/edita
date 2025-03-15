@@ -1,11 +1,11 @@
-let os = require("os");
-let path = require("path");
-let fsExtra = require("fs-extra");
-let minimatch = require("minimatch-browser");
-let glob = require("glob");
-let mkdirp = require("mkdirp");
+import os from "os";
+import path from "path";
+import fsExtra from "fs-extra";
+import minimatch from "minimatch-browser";
+import glob from "glob";
+import mkdirp from "mkdirp";
 
-let fs = require("../fs");
+import fs from "../fs";
 
 export default fs({
 	fs: fsExtra,

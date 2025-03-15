@@ -1,16 +1,16 @@
-let Evented = require("utils/Evented");
-let bindFunctions = require("utils/bindFunctions");
-let mapArrayToObject = require("utils/mapArrayToObject");
-let Cursor = require("modules/Cursor");
-let Selection = require("modules/Selection");
-let AstSelection = require("modules/AstSelection");
-let astCommon = require("modules/astCommon");
+import Evented from "utils/Evented";
+import bindFunctions from "utils/bindFunctions";
+import mapArrayToObject from "utils/mapArrayToObject";
+import Cursor from "modules/Cursor";
+import Selection from "modules/Selection";
+import AstSelection from "modules/AstSelection";
+import astCommon from "modules/astCommon";
 
-let SelectionUtils = require("./utils/Selection");
-let AstSelectionUtils = require("./utils/AstSelection");
-let wrapLine = require("./utils/wrapLine");
-let canvasUtils = require("./utils/canvasUtils");
-let Renderer = require("./render/Renderer");
+import SelectionUtils from "./utils/Selection";
+import AstSelectionUtils from "./utils/AstSelection";
+import wrapLine from "./utils/wrapLine";
+import canvasUtils from "./utils/canvasUtils";
+import Renderer from "./render/Renderer";
 
 let {s: a} = AstSelection;
 let {c} = Cursor;

@@ -1,3 +1,3 @@
-let getConfig = require("./utils/getConfig");
+import getConfig from "./utils/getConfig";
 
 export default getConfig(process.argv);

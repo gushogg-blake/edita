@@ -1,5 +1,5 @@
-let Evented = require("utils/Evented");
-let AstSelection = require("modules/AstSelection");
+import Evented from "utils/Evented";
+import AstSelection from "modules/AstSelection";
 
 let {s} = AstSelection;
 

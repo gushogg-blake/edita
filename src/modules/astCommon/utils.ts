@@ -1,4 +1,4 @@
-function getFooterLineIndex(document, lineIndex) {
+export function getFooterLineIndex(document, lineIndex) {
 	for (let node of document.generateNodesStartingOnLine(lineIndex)) {
 		let footer = node.lang.getFooter(node);
 		
@@ -10,7 +10,7 @@ function getFooterLineIndex(document, lineIndex) {
 	return null;
 }
 
-function getHeaderLineIndex(document, lineIndex) {
+export function getHeaderLineIndex(document, lineIndex) {
 	for (let node of document.generateNodesStartingOnLine(lineIndex)) {
 		let header = node.lang.getHeader(node);
 		
@@ -22,15 +22,15 @@ function getHeaderLineIndex(document, lineIndex) {
 	return null;
 }
 
-function isHeader(document, lineIndex) {
+export function isHeader(document, lineIndex) {
 	return getFooterLineIndex(document, lineIndex) !== null;
 }
 
-function isFooter(document, lineIndex) {
+export function isFooter(document, lineIndex) {
 	return getHeaderLineIndex(document, lineIndex) !== null;
 }
 
-function getHeaders(document, lineIndex) {
+export function getHeaders(document, lineIndex) {
 	let nodes = [...document.generateNodesStartingOnLine(lineIndex)];
 	
 	return nodes.map(function(node) {
@@ -41,7 +41,7 @@ function getHeaders(document, lineIndex) {
 	}).filter(r => r.footer);
 }
 
-function getFooters(document, lineIndex) {
+export function getFooters(document, lineIndex) {
 	let nodes = [...document.generateNodesStartingOnLine(lineIndex)];
 	
 	return nodes.map(function(node) {
@@ -59,7 +59,7 @@ extending to that header's footer and so on (to get e.g. a full if-
 else ladder).
 */
 
-function extendDown(document, lineIndex, followHeaderFooters=true) {
+export function extendDown(document, lineIndex, followHeaderFooters=true) {
 	let footerLineIndex = getFooterLineIndex(document, lineIndex);
 	
 	if (footerLineIndex !== null) {
@@ -69,7 +69,7 @@ function extendDown(document, lineIndex, followHeaderFooters=true) {
 	}
 }
 
-function extendUp(document, lineIndex, followHeaderFooters=true) {
+export function extendUp(document, lineIndex, followHeaderFooters=true) {
 	let headerLineIndex = getHeaderLineIndex(document, lineIndex);
 	
 	if (headerLineIndex !== null) {
@@ -79,120 +79,107 @@ function extendUp(document, lineIndex, followHeaderFooters=true) {
 	}
 }
 
-let api = {
-	isHeader,
-	isFooter,
-	getFooterLineIndex,
-	getHeaderLineIndex,
-	getHeaders,
-	getFooters,
-	extendUp,
-	extendDown,
+export function countSpace(document, lineIndex, dir) {
+	let {lines} = document;
+	let space = 0;
+	let line;
 	
-	countSpace(document, lineIndex, dir) {
-		let {lines} = document;
-		let space = 0;
-		let line;
-		
-		while (line = lines[lineIndex]) {
-			if (line.isBlank) {
-				space++;
-			} else {
-				break;
-			}
-			
-			lineIndex += dir;
+	while (line = lines[lineIndex]) {
+		if (line.isBlank) {
+			space++;
+		} else {
+			break;
 		}
 		
-		return space;
-	},
+		lineIndex += dir;
+	}
 	
-	createSpaces(n, indentLevel, indentStr) {
-		let spaces = [];
-		
-		for (let i = 0; i < n; i++) {
-			spaces.push(indentStr.repeat(indentLevel));
-		}
-		
-		return spaces;
-	},
-	
-	findIndentLevel(document, lineIndex) {
-		let {lines} = document;
-		let prev = 0;
-		let next = 0;
-		let prevLineIndex = lineIndex - 1;
-		let nextLineIndex = lineIndex;
-		
-		while (prevLineIndex >= 0) {
-			if (lines[prevLineIndex].trimmed.length > 0) {
-				prev = lines[prevLineIndex].indentLevel;
-				
-				if (isHeader(document, prevLineIndex)) {
-					prev++;
-				}
-				
-				break;
-			}
-			
-			prevLineIndex--;
-		}
-		
-		while (nextLineIndex < lines.length) {
-			if (lines[nextLineIndex].trimmed.length > 0) {
-				next = lines[nextLineIndex].indentLevel;
-				
-				break;
-			}
-			
-			nextLineIndex++;
-		}
-		
-		return Math.max(next, prev);
-	},
-	
-	findSiblingIndex(document, lineIndex, indentLevel, dir) {
-		let {lines} = document;
-		let line;
-		
-		while (line = lines[lineIndex]) {
-			if (line.indentLevel < indentLevel) {
-				return null;
-			}
-			
-			if (line.indentLevel === indentLevel && line.trimmed.length > 0) {
-				return lineIndex;
-			}
-			
-			lineIndex += dir;
-		}
-		
-		return null;
-	},
-	
-	findNextLineIndexAtIndentLevel(document, lineIndex, indentLevel) {
-		let {lines} = document;
-		
-		for (let i = lineIndex + 1; i < lines.length; i++) {
-			if (lines[i].indentLevel === indentLevel) {
-				return i;
-			}
-		}
-		
-		return null;
-	},
-	
-	findPrevLineIndexAtIndentLevel(document, lineIndex, indentLevel) {
-		let {lines} = document;
-		
-		for (let i = lineIndex - 1; i >= 0; i--) {
-			if (lines[i].indentLevel === indentLevel) {
-				return i;
-			}
-		}
-		
-		return null;
-	},
-};
+	return space;
+},
 
-export default api;
+export function createSpaces(n, indentLevel, indentStr) {
+	let spaces = [];
+	
+	for (let i = 0; i < n; i++) {
+		spaces.push(indentStr.repeat(indentLevel));
+	}
+	
+	return spaces;
+},
+
+export function findIndentLevel(document, lineIndex) {
+	let {lines} = document;
+	let prev = 0;
+	let next = 0;
+	let prevLineIndex = lineIndex - 1;
+	let nextLineIndex = lineIndex;
+	
+	while (prevLineIndex >= 0) {
+		if (lines[prevLineIndex].trimmed.length > 0) {
+			prev = lines[prevLineIndex].indentLevel;
+			
+			if (isHeader(document, prevLineIndex)) {
+				prev++;
+			}
+			
+			break;
+		}
+		
+		prevLineIndex--;
+	}
+	
+	while (nextLineIndex < lines.length) {
+		if (lines[nextLineIndex].trimmed.length > 0) {
+			next = lines[nextLineIndex].indentLevel;
+			
+			break;
+		}
+		
+		nextLineIndex++;
+	}
+	
+	return Math.max(next, prev);
+},
+
+export function findSiblingIndex(document, lineIndex, indentLevel, dir) {
+	let {lines} = document;
+	let line;
+	
+	while (line = lines[lineIndex]) {
+		if (line.indentLevel < indentLevel) {
+			return null;
+		}
+		
+		if (line.indentLevel === indentLevel && line.trimmed.length > 0) {
+			return lineIndex;
+		}
+		
+		lineIndex += dir;
+	}
+	
+	return null;
+},
+
+export function findNextLineIndexAtIndentLevel(document, lineIndex, indentLevel) {
+	let {lines} = document;
+	
+	for (let i = lineIndex + 1; i < lines.length; i++) {
+		if (lines[i].indentLevel === indentLevel) {
+			return i;
+		}
+	}
+	
+	return null;
+},
+
+export function findPrevLineIndexAtIndentLevel(document, lineIndex, indentLevel) {
+	let {lines} = document;
+	
+	for (let i = lineIndex - 1; i >= 0; i--) {
+		if (lines[i].indentLevel === indentLevel) {
+			return i;
+		}
+	}
+	
+	return null;
+}

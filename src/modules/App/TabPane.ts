@@ -1,5 +1,5 @@
-let {removeInPlace} = require("utils/arrayMethods");
-let Evented = require("utils/Evented");
+import {removeInPlace} from "utils/arrayMethods";
+import Evented from "utils/Evented";
 
 class TabPane extends Evented {
 	constructor() {

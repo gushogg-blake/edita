@@ -1,4 +1,4 @@
-let {dialog} = require("electron");
+import {dialog} from "electron";
 
 export default function(app) {
 	return {

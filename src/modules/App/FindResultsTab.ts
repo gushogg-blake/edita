@@ -1,5 +1,5 @@
-let URL = require("modules/URL");
-let Tab = require("./Tab");
+import URL from "modules/URL";
+import Tab from "./Tab";
 
 class FindResultsTab extends Tab {
 	constructor(app, findResults) {

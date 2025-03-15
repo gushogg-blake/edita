@@ -1,6 +1,6 @@
-let set = require("lodash.set");
-let getDefaultPerFilePrefs = require("modules/getDefaultPerFilePrefs");
-let Tab = require("./Tab");
+import set from "lodash.set";
+import getDefaultPerFilePrefs from "modules/getDefaultPerFilePrefs";
+import Tab from "./Tab";
 
 function fs(...args) {
 	return platform.fs(...args);

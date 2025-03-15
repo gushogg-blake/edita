@@ -1,4 +1,4 @@
-let parseJson = require("utils/parseJson");
+import parseJson from "utils/parseJson";
 
 /*
 you can't see the data (only the types) on dragover, and types can't contain

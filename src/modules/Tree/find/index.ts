@@ -1,6 +1,6 @@
-let firstChildAfterCursor = require("./firstChildAfterCursor");
-let firstOnOrAfterCursor = require("./firstOnOrAfterCursor");
-let smallestAtCharCursor = require("./smallestAtCharCursor");
+import firstChildAfterCursor from "./firstChildAfterCursor";
+import firstOnOrAfterCursor from "./firstOnOrAfterCursor";
+import smallestAtCharCursor from "./smallestAtCharCursor";
 
 export default  {
 	firstChildAfterCursor,

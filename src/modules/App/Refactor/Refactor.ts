@@ -1,9 +1,9 @@
-let bluebird = require("bluebird");
-let Evented = require("utils/Evented");
-let URL = require("modules/URL");
-let Document = require("modules/Document");
-let codePatterns = require("modules/codePatterns");
-let RefactorPreview = require("./RefactorPreview");
+import bluebird from "bluebird";
+import Evented from "utils/Evented";
+import URL from "modules/URL";
+import Document from "modules/Document";
+import codePatterns from "modules/codePatterns";
+import RefactorPreview from "./RefactorPreview";
 
 class Refactor extends Evented {
 	constructor(app, options) {

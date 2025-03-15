@@ -1,23 +1,23 @@
-let minimatch = require("minimatch-browser");
-let bluebird = require("bluebird");
-let TreeSitter = require("web-tree-sitter");
+import minimatch from "minimatch-browser";
+import bluebird from "bluebird";
+import TreeSitter from "web-tree-sitter";
 
-let createFs = require("utils/fs");
+import createFs from "utils/fs";
 
-let path = require("vendor/path-browser");
-let fsWeb = require("vendor/fs-web");
+import path from "vendor/path-browser";
+import fsWeb from "vendor/fs-web";
 
-let Evented = require("utils/Evented");
-let screenOffsets = require("utils/dom/screenOffsets");
-let {on} = require("utils/dom/domEvents");
-let loadScript = require("utils/dom/loadScript");
-let loadCss = require("utils/dom/loadCss");
-let contextMenu = require("modules/contextMenu");
+import Evented from "utils/Evented";
+import screenOffsets from "utils/dom/screenOffsets";
+import {on} from "utils/dom/domEvents";
+import loadScript from "utils/dom/loadScript";
+import loadCss from "utils/dom/loadCss";
+import contextMenu from "modules/contextMenu";
 
-let clipboard = require("platforms/web/modules/clipboard");
-let jsonStore = require("platforms/web/modules/jsonStore");
-let Snippets = require("platforms/web/modules/Snippets");
-let lsp = require("platforms/web/modules/lsp");
+import clipboard from "platforms/web/modules/clipboard";
+import jsonStore from "platforms/web/modules/jsonStore";
+import Snippets from "platforms/web/modules/Snippets";
+import lsp from "platforms/web/modules/lsp";
 
 class Platform extends Evented {
 	constructor() {

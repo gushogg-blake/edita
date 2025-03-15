@@ -1,7 +1,7 @@
-let {isHeader, isFooter} = require("modules/astCommon/utils");
-let pickOptions = require("./pickOptions");
-let dropTargets = require("./dropTargets");
-let astManipulations = require("./astManipulations");
+import {isHeader, isFooter} from "modules/astCommon/utils";
+import pickOptions from "./pickOptions";
+import dropTargets from "./dropTargets";
+import astManipulations from "./astManipulations";
 
 export default {
 	init(env) {

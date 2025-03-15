@@ -1,23 +1,23 @@
-let Evented = require("utils/Evented");
-let bindFunctions = require("utils/bindFunctions");
-let {removeInPlace} = require("utils/arrayMethods");
+import Evented from "utils/Evented";
+import bindFunctions from "utils/bindFunctions";
+import {removeInPlace} from "utils/arrayMethods";
 
-let astCommon = require("modules/astCommon");
-let AstSelection = require("modules/AstSelection");
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
+import astCommon from "modules/astCommon";
+import AstSelection from "modules/AstSelection";
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
 
-let AstMode = require("./AstMode");
-let normalMouse = require("./normalMouse");
-let normalKeyboard = require("./normalKeyboard");
-let astMouse = require("./astMouse");
-let astKeyboard = require("./astKeyboard");
-let commonKeyboard = require("./commonKeyboard");
-let WordCompletion = require("./WordCompletion");
-let commonWheel = require("./commonWheel");
-let modeSwitchKey = require("./modeSwitchKey");
-let snippets = require("./snippets");
-let api = require("./api");
+import AstMode from "./AstMode";
+import normalMouse from "./normalMouse";
+import normalKeyboard from "./normalKeyboard";
+import astMouse from "./astMouse";
+import astKeyboard from "./astKeyboard";
+import commonKeyboard from "./commonKeyboard";
+import WordCompletion from "./WordCompletion";
+import commonWheel from "./commonWheel";
+import modeSwitchKey from "./modeSwitchKey";
+import snippets from "./snippets";
+import api from "./api";
 
 let {s: a} = AstSelection;
 let {s} = Selection;

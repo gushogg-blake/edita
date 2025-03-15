@@ -1,6 +1,6 @@
-let Evented = require("utils/Evented");
-let {removeInPlace} = require("utils/arrayMethods");
-let Entry = require("./Entry");
+import Evented from "utils/Evented";
+import {removeInPlace} from "utils/arrayMethods";
+import Entry from "./Entry";
 
 class FileChooserApp extends Evented {
 	constructor(options) {

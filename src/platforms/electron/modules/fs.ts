@@ -1,13 +1,13 @@
-let os = require("os");
-let path = require("path");
-let fsExtra = require("fs-extra");
-let glob = require("glob");
-let mkdirp = require("mkdirp");
-let chokidar = require("chokidar");
-let minimatch = require("minimatch-browser");
-let fileIsBinary = require("vendor/fileIsBinary");
-let fs = require("utils/fs");
-let createWalk = require("modules/walk");
+import os from "os";
+import path from "path";
+import fsExtra from "fs-extra";
+import glob from "glob";
+import mkdirp from "mkdirp";
+import chokidar from "chokidar";
+import minimatch from "minimatch-browser";
+import fileIsBinary from "vendor/fileIsBinary";
+import fs from "utils/fs";
+import createWalk from "modules/walk";
 
 export default fs({
 	fs: fsExtra,

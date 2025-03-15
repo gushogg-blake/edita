@@ -1,4 +1,4 @@
-let convertCase = require("utils/convertCase");
+import convertCase from "utils/convertCase";
 
 export default {
 	...convertCase,

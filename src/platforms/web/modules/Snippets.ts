@@ -1,7 +1,7 @@
-let bluebird = require("bluebird");
-let lid = require("utils/lid");
-let Evented = require("utils/Evented");
-let {removeInPlace} = require("utils/arrayMethods");
+import bluebird from "bluebird";
+import lid from "utils/lid";
+import Evented from "utils/Evented";
+import {removeInPlace} from "utils/arrayMethods";
 
 class Snippets extends Evented {
 	constructor(fs) {

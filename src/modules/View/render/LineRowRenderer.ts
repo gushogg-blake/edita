@@ -1,5 +1,5 @@
-let generatorFromArray = require("utils/generatorFromArray");
-let Cursor = require("modules/Cursor");
+import generatorFromArray from "utils/generatorFromArray";
+import Cursor from "modules/Cursor";
 
 let {c} = Cursor;
 

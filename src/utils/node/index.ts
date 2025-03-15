@@ -1,6 +1,4 @@
-let common = require("..");
-let cmdSync = require("./cmdSync");
-let spawn = require("./spawn");
-let fs = require("./fs");
-
-export default {...common, cmdSync, spawn, fs};
+export * from from "..";
+export {default as cmdSync} from "./cmdSync";
+export {default as spawn} from "./spawn";
+export {default as fs} from "./fs";

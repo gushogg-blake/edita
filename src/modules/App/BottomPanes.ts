@@ -1,5 +1,5 @@
-let Evented = require("utils/Evented");
-let TabPane = require("./TabPane");
+import Evented from "utils/Evented";
+import TabPane from "./TabPane";
 
 /*
 bottom pane sizing

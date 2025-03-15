@@ -1,7 +1,7 @@
-let {app: electronApp} = require("electron");
-let path = require("path");
-let App = require("./App");
-let config = require("./config");
+import {app as electronApp} from "electron";
+import path from "path";
+import App from "./App";
+import config from "./config";
 
 // ENTRYPOINT main (node) process for electron
 

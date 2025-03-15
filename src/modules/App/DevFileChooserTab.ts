@@ -1,5 +1,5 @@
-let Tab = require("modules/App/Tab");
-let FileChooserApp = require("platforms/electron/dialogs/fileChooser/FileChooserApp");
+import Tab from "modules/App/Tab";
+import FileChooserApp from "platforms/electron/dialogs/fileChooser/FileChooserApp";
 
 class DevFileChooserTab extends Tab {
 	constructor(app, options) {

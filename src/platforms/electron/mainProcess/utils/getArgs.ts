@@ -1,4 +1,4 @@
-let yargs = require("yargs/yargs");
+import yargs from "yargs/yargs";
 
 /*
 remove args inserted by node/npm/electron/chromium/etc for

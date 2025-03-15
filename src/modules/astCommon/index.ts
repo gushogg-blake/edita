@@ -1,8 +1,8 @@
-let selection = require("./selection");
-let drop = require("./drop");
-let astManipulations = require("./astManipulations");
-let removeSelection = require("./removeSelection");
-let {getHeaderLineIndex, getFooterLineIndex} = require("./utils");
+import selection from "./selection";
+import drop from "./drop";
+import astManipulations from "./astManipulations";
+import removeSelection from "./removeSelection";
+import {getHeaderLineIndex, getFooterLineIndex} from "./utils";
 
 export default {
 	selection,

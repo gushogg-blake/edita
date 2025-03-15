@@ -1,5 +1,5 @@
-let mapObjectInPlace = require("utils/mapObjectInPlace");
-let _typeof = require("utils/typeof");
+import mapObjectInPlace from "utils/mapObjectInPlace";
+import _typeof from "utils/typeof";
 
 function expand(value) {
 	if (_typeof(value) === "String") {

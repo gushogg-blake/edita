@@ -1,8 +1,8 @@
-let chai = require("chai");
-let chaiSubset = require("chai-subset");
+import chai from "chai";
+import chaiSubset from "chai-subset";
 
 chai.use(chaiSubset);
 
 chai.config.truncateThreshold = 0;
 
-module.exports = chai;
+export default chai;

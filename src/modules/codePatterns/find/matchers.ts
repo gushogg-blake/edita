@@ -1,7 +1,7 @@
-let Cursor = require("modules/Cursor");
-let Selection = require("modules/Selection");
-let AstSelection = require("modules/AstSelection");
-let {extendDown} = require("modules/astCommon/utils");
+import Cursor from "modules/Cursor";
+import Selection from "modules/Selection";
+import AstSelection from "modules/AstSelection";
+import {extendDown} from "modules/astCommon/utils";
 
 let {c} = Cursor;
 let {s} = Selection;

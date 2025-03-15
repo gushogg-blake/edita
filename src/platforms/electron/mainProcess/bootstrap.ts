@@ -1,7 +1,7 @@
-let os = require("os");
-let path = require("path");
-let child_process = require("child_process");
-let yargs = require("yargs/yargs");
+import os from "os";
+import path from "path";
+import child_process from "child_process";
+import yargs from "yargs/yargs";
 
 /*
 parsing args is complicated once inside electron so we

@@ -1,21 +1,21 @@
-let {
-	app: electronApp,
+import {
+	app as electronApp,
 	protocol,
 	BrowserWindow,
 	Menu,
-} = require("electron");
+} from "electron";
 
-let {Readable} = require("stream");
-let path = require("path");
-let windowStateKeeper = require("electron-window-state");
-let {fs, cmdSync} = require("utils/node/index");
-let {removeInPlace} = require("utils/arrayMethods");
-let getConfig = require("./utils/getConfig");
-let ipcMain = require("./modules/ipcMain");
-let mimeTypes = require("./modules/mimeTypes");
-let jsonStore = require("./modules/jsonStore");
-let ipc = require("./ipc");
-let config = require("./config");
+import {Readable} from "stream";
+import path from "path";
+import windowStateKeeper from "electron-window-state";
+import {fs, cmdSync} from "utils/node/index";
+import {removeInPlace} from "utils/arrayMethods";
+import getConfig from "./utils/getConfig";
+import ipcMain from "./modules/ipcMain";
+import mimeTypes from "./modules/mimeTypes";
+import jsonStore from "./modules/jsonStore";
+import ipc from "./ipc";
+import config from "./config";
 
 class App {
 	constructor() {

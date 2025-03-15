@@ -1,7 +1,7 @@
-let JsonStore = require("modules/JsonStore");
-let prefs = require("./prefs");
-let themes = require("./themes");
-let session = require("./session");
+import JsonStore from "modules/JsonStore";
+import prefs from "./prefs";
+import themes from "./themes";
+import session from "./session";
 
 export default async function() {
 	return {

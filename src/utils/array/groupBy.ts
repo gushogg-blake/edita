@@ -1,4 +1,4 @@
-let _typeof = require("utils/typeof");
+import _typeof from "utils/typeof";
 
 export default function(array, field, _default=null) {
 	let obj = {};

@@ -1,5 +1,5 @@
-let getVariableName = require("./getVariableName");
-let functions = require("./functions");
+import getVariableName from "./getVariableName";
+import functions from "./functions";
 
 class Tabstop {
 	constructor(start, end, name, defaultFn) {

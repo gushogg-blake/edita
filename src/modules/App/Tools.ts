@@ -1,7 +1,7 @@
-let bluebird = require("bluebird");
-let FindAndReplaceTab = require("./FindAndReplaceTab");
-let Refactor = require("./Refactor");
-let RefactorTab = require("./RefactorTab");
+import bluebird from "bluebird";
+import FindAndReplaceTab from "./FindAndReplaceTab";
+import Refactor from "./Refactor";
+import RefactorTab from "./RefactorTab";
 
 class Tools {
 	constructor(app) {

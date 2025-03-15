@@ -1,9 +1,9 @@
-let _typeof = require("utils/typeof");
-let chai = require("./chai");
+import _typeof from "utils/typeof";
+import chai from "./chai";
 
 let {assert, expect} = chai;
 
-module.exports = {
+export default {
 	expect,
 	
 	is(a, b) {

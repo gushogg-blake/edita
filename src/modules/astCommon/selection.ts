@@ -1,11 +1,11 @@
-let AstSelection = require("modules/AstSelection");
+import AstSelection from "modules/AstSelection";
 
-let {
+import {
 	findPrevLineIndexAtIndentLevel,
 	findSiblingIndex,
 	extendUp,
 	extendDown,
-} = require("./utils");
+} from "./utils";
 
 let {s} = AstSelection;
 

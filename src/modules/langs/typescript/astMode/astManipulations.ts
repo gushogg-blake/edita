@@ -1,6 +1,6 @@
-let AstSelection = require("modules/AstSelection");
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
+import AstSelection from "modules/AstSelection";
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
 
 let {s} = Selection;
 let {c} = Cursor;

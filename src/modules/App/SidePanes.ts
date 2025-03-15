@@ -1,4 +1,4 @@
-let Pane = require("./Pane");
+import Pane from "./Pane";
 
 class SidePanes {
 	constructor(app) {

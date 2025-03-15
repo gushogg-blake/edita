@@ -1,8 +1,8 @@
-let {on, off} = require("utils/dom/domEvents");
-let AstSelection = require("modules/AstSelection");
-let astCommon = require("modules/astCommon");
-let autoScroll = require("./utils/autoScroll");
-let astDragData = require("./astDragData");
+import {on, off} from "utils/dom/domEvents";
+import AstSelection from "modules/AstSelection";
+import astCommon from "modules/astCommon";
+import autoScroll from "./utils/autoScroll";
+import astDragData from "./astDragData";
 
 let {s} = AstSelection;
 

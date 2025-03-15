@@ -1,3 +1,3 @@
-let AstMode = require("./AstMode");
+import AstMode from "./AstMode";
 
 export default AstMode;

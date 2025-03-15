@@ -1,7 +1,7 @@
-let {on, off} = require("utils/dom/domEvents");
-let Selection = require("modules/Selection");
-let autoScroll = require("./utils/autoScroll");
-let {getCursor, getCharCursor} = require("./utils/cursorFromEvent");
+import {on, off} from "utils/dom/domEvents";
+import Selection from "modules/Selection";
+import autoScroll from "./utils/autoScroll";
+import {getCursor, getCharCursor} from "./utils/cursorFromEvent";
 
 let {s} = Selection;
 

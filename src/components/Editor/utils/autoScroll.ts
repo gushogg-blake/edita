@@ -1,5 +1,5 @@
-let autoScroll = require("utils/dom/autoScroll");
-let screenOffsets = require("utils/dom/screenOffsets");
+import autoScroll from "utils/dom/autoScroll";
+import screenOffsets from "utils/dom/screenOffsets";
 
 export default function(
 	canvas,

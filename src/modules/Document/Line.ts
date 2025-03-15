@@ -1,5 +1,5 @@
-let expandTabs = require("modules/utils/expandTabs");
-let getIndentLevel = require("modules/utils/getIndentLevel");
+import expandTabs from "modules/utils/expandTabs";
+import getIndentLevel from "modules/utils/getIndentLevel";
 
 class Line {
 	constructor(string, format, startIndex, lineIndex) {

@@ -1,4 +1,4 @@
-let ipcRenderer = require("platforms/electron/modules/ipcRenderer");
+import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 
 export default {
 	showSave(options) {

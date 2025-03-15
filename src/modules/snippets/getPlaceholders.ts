@@ -1,11 +1,11 @@
-let parseJavaScript = require("./parseJavaScript");
-let createExpressionFunction = require("./createExpressionFunction");
-let getVariableName = require("./getVariableName");
-let Tabstop = require("./Tabstop");
-let Expression = require("./Expression");
-let RegexReference = require("./RegexReference");
-let AtLiteral = require("./AtLiteral");
-let EndMarker = require("./EndMarker");
+import parseJavaScript from "./parseJavaScript";
+import createExpressionFunction from "./createExpressionFunction";
+import getVariableName from "./getVariableName";
+import Tabstop from "./Tabstop";
+import Expression from "./Expression";
+import RegexReference from "./RegexReference";
+import AtLiteral from "./AtLiteral";
+import EndMarker from "./EndMarker";
 
 export default function(string, createTabstops=true) {
 	let placeholders = [];

@@ -1,42 +1,38 @@
-let Cursor = require("modules/Cursor");
+import Cursor from "modules/Cursor";
 
 let {c} = Cursor;
 
-let api = {
-	treeSitterPointToCursor(point) {
-		return c(point.row, point.column);
-	},
-	
-	cursorToTreeSitterPoint(cursor) {
-		return {
-			row: cursor.lineIndex,
-			column: cursor.offset,
-		};
-	},
-	
-	rangeToTreeSitterRange(range) {
-		let {
-			startIndex,
-			endIndex,
-			start,
-			end,
-		} = range;
-		
-		return {
-			startIndex,
-			endIndex,
-			
-			startPosition: {
-				row: start.lineIndex,
-				column: start.offset,
-			},
-			
-			endPosition: {
-				row: end.lineIndex,
-				column: end.offset,
-			},
-		};
-	},
-};
+export function treeSitterPointToCursor(point) {
+	return c(point.row, point.column);
+},
 
-export default api;
+export function cursorToTreeSitterPoint(cursor) {
+	return {
+		row: cursor.lineIndex,
+		column: cursor.offset,
+	};
+},
+
+export function rangeToTreeSitterRange(range) {
+	let {
+		startIndex,
+		endIndex,
+		start,
+		end,
+	} = range;
+	
+	return {
+		startIndex,
+		endIndex,
+		
+		startPosition: {
+			row: start.lineIndex,
+			column: start.offset,
+		},
+		
+		endPosition: {
+			row: end.lineIndex,
+			column: end.offset,
+		},
+	};
+}

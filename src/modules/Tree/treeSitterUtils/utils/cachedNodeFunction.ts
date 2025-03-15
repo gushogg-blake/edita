@@ -1,4 +1,4 @@
-let {LRUMap} = require("lru_map");
+import {LRUMap} from "lru_map";
 
 /*
 node getters (node.parent etc) are slow, so keep the results in a cache

@@ -1,6 +1,6 @@
-let mapObject = require("utils/mapObject");
-let _typeof = require("utils/typeof");
-let inlineStyle = require("utils/dom/inlineStyle");
+import mapObject from "utils/mapObject";
+import _typeof from "utils/typeof";
+import inlineStyle from "utils/dom/inlineStyle";
 
 /*
 write theme variables to the node's style (and update them when the

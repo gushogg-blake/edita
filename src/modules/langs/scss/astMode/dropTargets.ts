@@ -1,6 +1,6 @@
-let indentLines = require("modules/utils/indentLines");
-let AstSelection = require("modules/AstSelection");
-let removeSelection = require("modules/astCommon/removeSelection");
+import indentLines from "modules/utils/indentLines";
+import AstSelection from "modules/AstSelection";
+import removeSelection from "modules/astCommon/removeSelection";
 
 let {s} = AstSelection;
 

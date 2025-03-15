@@ -1,6 +1,6 @@
-let bluebird = require("bluebird");
-let JsonStore = require("modules/JsonStore");
-let defaultThemes = require("./defaultThemes");
+import bluebird from "bluebird";
+import JsonStore from "modules/JsonStore";
+import defaultThemes from "./defaultThemes";
 
 let migrations = {
 	"18"(theme, key) {

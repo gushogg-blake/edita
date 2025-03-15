@@ -1,6 +1,6 @@
-let lid = require("utils/lid");
-let throttle = require("utils/throttle");
-let promiseWithMethods = require("utils/promiseWithMethods");
+import lid from "utils/lid";
+import throttle from "utils/throttle";
+import promiseWithMethods from "utils/promiseWithMethods";
 
 export default function(url, handlers) {
 	let socket;

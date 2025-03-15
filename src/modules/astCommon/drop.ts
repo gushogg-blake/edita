@@ -1,6 +1,6 @@
-let AstSelection = require("modules/AstSelection");
-let removeSelection = require("./removeSelection");
-let {createSpaces, findIndentLevel, findSiblingIndex} = require("./utils");
+import AstSelection from "modules/AstSelection";
+import removeSelection from "./removeSelection";
+import {createSpaces, findIndentLevel, findSiblingIndex} from "./utils";
 
 let {s} = AstSelection;
 

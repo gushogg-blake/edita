@@ -1,4 +1,4 @@
-let regexMatch = require("utils/regexMatch");
+import regexMatch from "utils/regexMatch";
 
 let endWordRe = /[\S\w]+\s*$/;
 let wordRe = /[\S\w]+\s*/g;

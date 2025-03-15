@@ -1,6 +1,6 @@
-let _typeof = require("utils/typeof");
-let Selection = require("modules/Selection");
-let Cursor = require("modules/Cursor");
+import _typeof from "utils/typeof";
+import Selection from "modules/Selection";
+import Cursor from "modules/Cursor";
 
 let {s} = Selection;
 let {c} = Cursor;

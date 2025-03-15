@@ -1,6 +1,6 @@
-let FindResults = require("./FindResults");
-let FindResultsTab = require("./FindResultsTab");
-let ClippingsTab = require("./ClippingsTab");
+import FindResults from "./FindResults";
+import FindResultsTab from "./FindResultsTab";
+import ClippingsTab from "./ClippingsTab";
 
 class Output {
 	constructor(app) {

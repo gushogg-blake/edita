@@ -1,4 +1,4 @@
-let {createSpaces, findSiblingIndex, countSpace} = require("./utils");
+import {createSpaces, findSiblingIndex, countSpace} from "./utils";
 
 export default function(document, selection) {
 	let indentStr = document.format.indentation.string;
