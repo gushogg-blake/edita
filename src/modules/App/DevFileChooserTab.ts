@@ -1,5 +1,5 @@
 import Tab from "modules/App/Tab";
-import FileChooserApp from "platforms/electron/dialogs/fileChooser/FileChooserApp";
+import FileChooserApp from "platforms/electron/pages/fileChooser/App";
 
 class DevFileChooserTab extends Tab {
 	constructor(app, options) {

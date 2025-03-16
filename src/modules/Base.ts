@@ -2,7 +2,7 @@ import bluebird from "bluebird";
 import get from "lodash.get";
 import set from "lodash.set";
 import merge from "lodash.merge";
-import TreeSitter from "web-tree-sitter";
+import {Parser} from "web-tree-sitter";
 
 import Evented from "utils/Evented";
 
@@ -188,7 +188,7 @@ class Base extends Evented {
 	}
 	
 	async initTreeSitter() {
-		await TreeSitter.init({
+		await Parser.init({
 			locateFile(file) {
 				return platform.locateTreeSitterWasm();
 			},

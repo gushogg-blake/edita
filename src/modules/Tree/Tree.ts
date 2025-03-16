@@ -1,4 +1,4 @@
-import TreeSitter from "web-tree-sitter";
+import {Parser} from "web-tree-sitter";
 import mapArrayToObject from "utils/mapArrayToObject";
 import Cursor from "modules/Cursor";
 import Node from "./Node";
@@ -95,7 +95,7 @@ class Tree {
 	}
 	
 	static createTreeSitterParser(lang) {
-		let parser = new TreeSitter();
+		let parser = new Parser();
 		let {treeSitterLanguage} = lang;
 		
 		if (!treeSitterLanguage) {

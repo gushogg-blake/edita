@@ -13,7 +13,7 @@ import protocol from "modules/protocol";
 import Document from "modules/Document";
 import Editor from "modules/Editor";
 import View from "modules/View";
-import conventions from "modules/conventions";
+import {alwaysIncludeDirInTabTitle} from "modules/conventions";
 
 import EditorTab from "./EditorTab";
 import RefactorPreviewTab from "./RefactorPreviewTab";
@@ -237,7 +237,7 @@ class App extends Evented {
 		
 		// conventions - always include dir for generic names like index.js
 		
-		if (multimatch(conventions.alwaysIncludeDirInTabTitle, node.name)) {
+		if (multimatch(alwaysIncludeDirInTabTitle, node.name)) {
 			prefixWithParentByConvention = node.parent.name + sep;
 		}
 		

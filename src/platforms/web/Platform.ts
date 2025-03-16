@@ -1,6 +1,6 @@
 import minimatch from "minimatch-browser";
 import bluebird from "bluebird";
-import TreeSitter from "web-tree-sitter";
+import {Language} from "web-tree-sitter";
 
 import createFs from "utils/fs";
 
@@ -182,7 +182,7 @@ class Platform extends Evented {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load(this.config.resourcePrefix + "vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
+		return Language.load(this.config.resourcePrefix + "vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
 	}
 	
 	locateTreeSitterWasm() {

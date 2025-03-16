@@ -3,7 +3,7 @@ import path from "path";
 import fsExtra from "fs-extra";
 import minimatch from "minimatch-browser";
 import {glob} from "glob";
-import mkdirp from "mkdirp";
+import {mkdirp} from "mkdirp";
 
 import fs from "../fs";
 

@@ -1,7 +1,7 @@
 import os from "os";
 import path from "path";
 import bluebird from "bluebird";
-import TreeSitter from "web-tree-sitter";
+import {Language} from "web-tree-sitter";
 
 import Evented from "utils/Evented";
 import screenOffsets from "utils/dom/screenOffsets";
@@ -234,7 +234,7 @@ class Platform extends Evented {
 	}
 	
 	loadTreeSitterLanguage(name) {
-		return TreeSitter.Language.load("/vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
+		return Language.load("/vendor/tree-sitter/langs/tree-sitter-" + name + ".wasm");
 	}
 	
 	locateTreeSitterWasm() {

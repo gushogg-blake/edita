@@ -1,5 +1,5 @@
 <script lang="ts">
-import FileChooserApp from "platforms/electron/dialogs/fileChooser/FileChooserApp.svelte";
+import FileChooserApp from "platforms/electron/pages/fileChooser/App.svelte";
 
 export let tab;
 
