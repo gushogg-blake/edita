@@ -105,7 +105,7 @@ onMount(function() {
 	
 	&:not(.autoSize) {
 		.tab {
-			@include abs-sticky;
+			@include utils.abs-sticky;
 			
 			contain: strict;
 		}

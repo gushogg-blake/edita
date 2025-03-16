@@ -15,5 +15,5 @@ function click() {
 </script>
 
 <label for={forType === "id" ? _for : null} {...props} onclick={click}>
-	<Accel {props.label}/>
+	<Accel label={props.label}/>
 </label>
