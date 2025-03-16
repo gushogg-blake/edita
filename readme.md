@@ -44,19 +44,13 @@ Hacky stuff is marked with either a `// HACK` or `// PLATFORM` comment (for stuf
 
 Normally things like language support would be implemented as plugins. I haven't done a plugin system here because it never seemed necessary and would add a layer of complexity.
 
-This means that everything is baked in and not much can be configured without changing the code. One of the aims when building Edita was to keep it as easy to hack on as possible, but as with any non-trivial project this isn't really attainable. I do think it's the right trade-off for the project as it stands, though, because the target user is me and anyone else who cares enough about the kinds of thing I do to write their own editor or try a niche one.
-
-I also think this might be the right way to go for an editor project in general. I think there's a case to be made for one person or team making something and just getting it right. This will always limit it to a small market, of course, but maybe that's OK.
-
-This "one person" approach is also how I like to approach software projects. I've always felt that working with other developers was a bit like having two artists painting on the same canvas, in the sense that you wouldn't expect that to go very well or be very satisfying for anyone involved, and the less so the more the people cared about their craft.
+This means that everything is baked in and not much can be configured without changing the code. One of the aims when building Edita was to keep it as easy to hack on as possible. As with any non-trivial project this has become less of a reality in practice, but I hope the relative simplicity makes it more approachable than average.
 
 ## Stack
 
 ### Electron
 
-Electron now strongly discourages using `ipcRenderer` directly from the renderer and instead recommends preload scripts. Not sure how much of an issue this is.
-
-Imports: there's some complexity around how imports work. With a bundler this shouldn't be an issue, but you never know. Later versions might have made it harder to require Node imports directly in the renderer. See caveats here: https://www.electronjs.org/docs/latest/tutorial/esm. You can't `import` Node stuff from the renderer, apparently. So we might need to use a preload script and totally refactor the IPC stuff.
+Electron now strongly discourages using `ipcRenderer` directly from the renderer and instead recommends preload scripts. We are still using nodeIntegration and require()ing electron imports directly from the renderer for now.
 
 ### Building
 
@@ -74,7 +68,7 @@ I don't think it's a good idea to use these, at least not yet:
 
 On the pros side, these projects are more likely to be up-to-date with how Electron works these days (going from 22 to 35) and have likely put a lot of effort into making it work and getting good DX.
 
-If getting the rollup build working is a pain anyway then it might be worth just taking the plunge. With a single entrypoint, maybe we could make the entrypoint able to display all the dialogs? That would reduce build complexity anyway, even if implemented in current rollup config, as there's a build for each dialog. If we did a dynamic import we could avoid loading the entire JS where not necessary... probs best not to worry about this and let Vite handle it -- treat the renderer main as a bootstrap that uses dynamic import to load a diff main file per page. Or just include everything, probably simpler. I think from doing SK stuff that Vite can build different entrypoints for dynamic imports if the path isn't too dynamic (fixed number of parts), so that is probs an option though.
+If getting the rollup build working is a pain anyway then it might be worth just taking the plunge.
 
 ### Svelte
 
