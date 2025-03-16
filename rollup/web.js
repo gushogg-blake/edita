@@ -1,9 +1,15 @@
+import scss from "rollup-plugin-scss";
+import livereload from "rollup-plugin-livereload";
+import copy from "rollup-plugin-copy-watch";
+import terser from "@rollup/plugin-terser";
+import html from "@rollup/plugin-html";
+
 import {dev, prod, watch} from "./env.js";
 import {markBuildComplete} from "./utils.js";
-import webCommonPlugins from "./webCommonPlugins.js";
+import platformCommonPlugins, {copyTreeSitterWasm, copyPackageJson} from "./platformCommonPlugins.js";
 
 let dir = "build/" + (dev ? "web-dev" : "web");
-	
+
 export default [
 	{
 		input: "src/platforms/web/main.ts",
@@ -14,27 +20,27 @@ export default [
 		},
 		
 		plugins: [
-			...webCommonPlugins(),
-			
-			copy({
-				watch: watch && ["src/platforms/web/public", "vendor/public"],
-				
-				targets: [
-					{
-						src: "src/platforms/web/public/*",
-						dest: dir,
-					},
-					{
-						src: "vendor/public/*",
-						dest: dir + "/vendor",
-					},
-				],
-			}),
-			
+			...platformCommonPlugins("web"),
 			watch && livereload(dir),
+			prod && copyPackageJson(dir),
+			copyTreeSitterWasm(dir),
+			copyVendorPublic(),
 			prod && terser(),
 			html(),
 			dev && markBuildComplete(dir),
 		],
 	},
 ];
+
+function copyVendorPublic() {
+	return copy({
+		watch: watch && "vendor/public",
+		
+		targets: [
+			{
+				src: "vendor/public/*",
+				dest: dir + "/vendor",
+			},
+		],
+	});
+}

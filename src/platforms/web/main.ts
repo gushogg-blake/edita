@@ -1,4 +1,5 @@
 import {mount} from "svelte";
+import "css/global.scss";
 import Base from "modules/Base";
 import App from "modules/App";
 import components from "components";

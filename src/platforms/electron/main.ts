@@ -1,4 +1,6 @@
 import {mount, unmount} from "svelte";
+import "css/global.scss";
+import "platforms/electron/css/app.scss";
 import pages from "platforms/electron/pages";
 import init from "platforms/electron/init";
 

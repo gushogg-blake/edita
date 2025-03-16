@@ -16,7 +16,7 @@ if (platform === "all" || platform === "web") {
 }
 
 if (platform === "all" || platform === "test") {
-	buids = builds.concat(test);
+	builds = builds.concat(test);
 }
 
 export default builds;

@@ -34,6 +34,7 @@ config.
 			"components/*": ["./src/components/*"],
 			"modules/*": ["./src/modules/*"],
 			"utils/*": ["./src/utils/*"],
+			"css/*": ["./src/css/*"],
 			"platforms/*": ["./src/platforms/*"],
 			"vendor/*": ["./vendor/*"],
 			"test/*": ["./test/*"],

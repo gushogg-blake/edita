@@ -1,23 +1,72 @@
+import path from "node:path";
+
+import typescript from "@rollup/plugin-typescript";
+import alias from "@rollup/plugin-alias";
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import externals from "rollup-plugin-node-externals";
+
+import {root} from "./env.js";
+
+// SYNC keep these in sync with tsconfig.json
+
+let aliasEntries = {
+	"root": root,
+	"components": path.join(root, "src/components"),
+	"modules": path.join(root, "src/modules"),
+	"utils": path.join(root, "src/utils"),
+	"css": path.join(root, "src/css"),
+	"platforms": path.join(root, "src/platforms"),
+	"vendor": path.join(root, "vendor"),
+	"test": path.join(root, "test"),
+};
+
+/*
+externals - needed for both main and renderer, to avoid bundling node
+builtins.
+
+included in the web build for config simplicity, even though it won't
+be needed.
+
+NOTE not sure if commonjs needs the ignore list now that externals is
+doing it
+*/
+
+let nodeIgnore = [
+	"glob",
+	"fs-extra",
+	"electron",
+	"electron-window-state",
+	"chokidar",
+	"yargs",
+];
+
+let commonjsIgnore = [
+	...nodeIgnore,
+	"node:*",
+];
+
+let externalsIgnore = [
+	...nodeIgnore,
+	/^node:/,
+];
+
 export default {
 	alias() {
-		// SYNC keep these in sync with tsconfig.json
 		return alias({
-			entries: {
-				"root": root,
-				"components": path.join(root, "src/components"),
-				"modules": path.join(root, "src/modules"),
-				"utils": path.join(root, "src/utils"),
-				"platforms": path.join(root, "src/platforms"),
-				"vendor": path.join(root, "vendor"),
-				"test": path.join(root, "test"),
-			},
+			entries: aliasEntries,
 		});
 	},
 	
-	resolve(opts={}) {
+	resolve() {
+		return resolve();
+	},
+	
+	resolveBrowser() {
 		return resolve({
 			extensions: [".js", ".ts", ".svelte"],
-			...opts,
+			browser: true,
+			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
 		});
 	},
 	
@@ -45,6 +94,13 @@ export default {
 			optDeps: false,
 			
 			include: externalsIgnore,
+		});
+	},
+	
+	commonjs() {
+		return commonjs({
+			requireReturnsDefault: "preferred",
+			ignore: commonjsIgnore,
 		});
 	},
 };
