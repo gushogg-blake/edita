@@ -12,21 +12,6 @@ config.
 		"test/**/*",
 	],
 	
-	// latest
-	"target": "es2024",
-	
-	// simpler logic for whether to include imports in emitted code
-	// if import type, drop, otherwise keep.
-	// required for Svelte
-	// NOTE Svelte only seems to pick this up if it's defined in rollup...
-	"verbatimModuleSyntax": true,
-	
-	// allow extensionless relative imports (otherwise requires .js)
-	// Bun supports this when running directly
-	"moduleResolution": "bundler",
-	
-	"sourceMap": true,
-	
 	// SYNC keep these in sync with rollup aliases
 	"paths": {
 		"root/*": ["./*"],
@@ -36,5 +21,22 @@ config.
 		"platforms/*": ["./src/platforms/*"],
 		"vendor/*": ["./vendor/*"],
 		"test/*": ["./test/*"],
+	},
+	
+	"compilerOptions": {
+		// latest
+		"target": "es2024",
+		
+		// simpler logic for whether to include imports in emitted code
+		// if import type, drop, otherwise keep.
+		// required for Svelte
+		// NOTE Svelte only seems to pick this up if it's defined in rollup...
+		"verbatimModuleSyntax": true,
+		
+		// allow extensionless relative imports (otherwise requires .js)
+		// Bun supports this when running directly
+		"moduleResolution": "bundler",
+		
+		"sourceMap": true,
 	},
 }
