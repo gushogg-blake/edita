@@ -6,6 +6,7 @@
 	},
 	"private": true,
 	"version": "0.101.0",
+	"type": "module",
 	"scripts": {
 		"start": "node ./build/electron-dev/mainProcess/bootstrap.js",
 		"build": "rollup -c",

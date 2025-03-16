@@ -83,7 +83,6 @@ let common = {
 				// this affects the kind of import/export statements that
 				// are emitted
 				module: "esnext",
-				verbatimModuleSyntax: true,
 				...opts,
 			},
 		});
@@ -147,6 +146,13 @@ function commonPlugins(platform) {
 		
 		common.externals(),
 		
+		common.resolve({
+			browser: true,
+			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
+		}),
+		
+		common.typescript(),
+		
 		svelte({
 			preprocess: preprocess({
 				scss: {
@@ -162,13 +168,6 @@ function commonPlugins(platform) {
 		cssOnly({
 			output: "main.css",
 		}),
-		
-		common.resolve({
-			browser: true,
-			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
-		}),
-		
-		common.typescript(),
 		
 		copy({
 			watch: watch && "package.json",
