@@ -7,7 +7,7 @@ import init from "platforms/electron/init";
 let [, p] = location.href.match(/p=(\w+)/);
 let page = pages[p];
 let {App, AppComponent, useLangs=true} = page;
-let isDialogWindow = page !== "main";
+let isDialogWindow = p !== "main";
 
 let app;
 let appComponent;

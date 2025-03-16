@@ -83,6 +83,7 @@ let common = {
 				// this affects the kind of import/export statements that
 				// are emitted
 				module: "esnext",
+				verbatimModuleSyntax: true,
 				...opts,
 			},
 		});
