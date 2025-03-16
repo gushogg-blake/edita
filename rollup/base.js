@@ -8,8 +8,7 @@ import externals from "rollup-plugin-node-externals";
 
 import {root} from "./env.js";
 
-// SYNC keep these in sync with tsconfig.json
-
+// SYNC tsconfig, rollup aliases
 let aliasEntries = {
 	"root": root,
 	"components": path.join(root, "src/components"),

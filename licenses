@@ -2,7 +2,7 @@ Edita includes code from the following projects:
 
 svelte-electron-starter (https://github.com/nye/svelte-electron-starter):
 
-	Files: package.json, rollup.config.js.
+	Files: package.json, rollup/*.
 	
 	MIT License
 	
@@ -67,7 +67,7 @@ path-browser:
 
 isBinaryFile (https://github.com/gjtorikian/isBinaryFile):
 
-	Files: vendor/fileIsBinary.js
+	Files: vendor/fileIsBinary.ts
 	
 	Copyright (c) 2019 Garen J. Torikian
 	

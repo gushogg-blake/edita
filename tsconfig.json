@@ -28,7 +28,7 @@ config.
 		
 		"sourceMap": true,
 		
-		// SYNC keep these in sync with rollup aliases
+		// SYNC tsconfig, rollup aliases
 		"paths": {
 			"root/*": ["./*"],
 			"components/*": ["./src/components/*"],
