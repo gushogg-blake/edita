@@ -129,8 +129,7 @@ onMount(function() {
 <svelte:window on:resize={() => app.resize()}/>
 
 <style lang="scss">
-@import "classes/hide";
-@import "mixins/abs-sticky";
+@use "utils";
 
 #main {
 	display: grid;
@@ -180,7 +179,7 @@ onMount(function() {
 }
 
 .tab {
-	@include abs-sticky;
+	@include utils.abs-sticky;
 	
 	z-index: -1;
 	background: var(--appBackground);

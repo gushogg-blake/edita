@@ -140,7 +140,7 @@ onMount(async function() {
 <svelte:window on:keydown={keydown}/>
 
 <style lang="scss">
-@import "mixins/ellipsis";
+@use "utils";
 
 #main {
 	display: flex;
@@ -216,7 +216,7 @@ input {
 }
 
 .name {
-	@include ellipsis;
+	@include utils.ellipsis;
 }
 
 .scrollWrapper {

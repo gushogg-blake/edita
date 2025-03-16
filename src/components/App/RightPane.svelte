@@ -65,7 +65,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-@import "mixins/abs-sticky";
+@use "utils";
 
 #main {
 	display: flex;
@@ -84,7 +84,7 @@ onMount(function() {
 }
 
 #scroll {
-	@include abs-sticky;
+	@include utils.abs-sticky;
 	
 	--scrollbarBackground: var(--appBackground);
 	

@@ -42,7 +42,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-@import "classes/hide";
+@use "utils";
 
 #main {
 	position: relative;

@@ -140,7 +140,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-@import "classes/hide";
+@use "utils";
 
 #main {
 	padding: 2px;

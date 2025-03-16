@@ -507,10 +507,10 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-@import "mixins/abs-sticky";
+@use "utils";
 
 #main {
-	@include abs-sticky;
+	@include utils.abs-sticky;
 }
 
 #margin {
@@ -527,7 +527,7 @@ onMount(function() {
 }
 
 #interactionLayer {
-	@include abs-sticky;
+	@include utils.abs-sticky;
 }
 
 .row {

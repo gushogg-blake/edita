@@ -40,9 +40,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-@import "classes/hide";
-@import "mixins/abs-sticky";
-@import "mixins/ellipsis";
+@use "utils";
 
 #main {
 	display: flex;
@@ -66,7 +64,7 @@ onMount(function() {
 }
 
 #scroll {
-	@include abs-sticky;
+	@include utils.abs-sticky;
 	
 	overflow-y: auto;
 }
@@ -90,7 +88,7 @@ onMount(function() {
 	display: flex;
 	
 	.path {
-		@include ellipsis;
+		@include utils.ellipsis;
 	}
 	
 	.name {

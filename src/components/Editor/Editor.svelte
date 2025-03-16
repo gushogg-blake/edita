@@ -640,8 +640,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-@import "mixins/abs-sticky";
-@import "classes/hide";
+@use "utils";
 
 #main {
 	position: relative;
@@ -670,13 +669,13 @@ onMount(function() {
 }
 
 .layer {
-	@include abs-sticky;
+	@include utils.abs-sticky;
 	
 	//z-index: 1;
 }
 
 canvas {
-	@include abs-sticky;
+	@include utils.abs-sticky;
 }
 
 #verticalScrollbar {

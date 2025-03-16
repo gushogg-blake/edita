@@ -99,7 +99,7 @@ onMount(async function() {
 </script>
 
 <style lang="scss">
-@import "mixins/abs-sticky";
+@use "utils";
 
 #main {
 	display: grid;
@@ -121,7 +121,7 @@ onMount(async function() {
 }
 
 #scroll {
-	@include abs-sticky;
+	@include utils.abs-sticky;
 	
 	--scrollbarBackground: var(--appBackground);
 	

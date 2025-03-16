@@ -78,7 +78,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-@import "mixins/ellipsis";
+@use "utils";
 
 #main {
 	display: flex;
@@ -108,7 +108,7 @@ onMount(function() {
 }
 
 #name {
-	@include ellipsis;
+	@include utils.ellipsis;
 }
 </style>
 

@@ -84,8 +84,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-@import "classes/hide";
-@import "mixins/abs-sticky";
+ "utils";
 
 #main {
 	position: relative;

@@ -111,7 +111,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-@import "mixins/ellipsis";
+@use "utils";
 
 #main {
 	
@@ -145,7 +145,7 @@ onMount(function() {
 }
 
 #name {
-	@include ellipsis;
+	@include utils.ellipsis;
 }
 
 #entries {

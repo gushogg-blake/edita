@@ -270,8 +270,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
-@import "classes/hide";
-@import "mixins/abs-sticky";
+@use "utils";
 
 #main {
 	display: grid;
@@ -286,7 +285,7 @@ onMount(function() {
 }
 
 #history {
-	@include abs-sticky;
+	@include utils.abs-sticky;
 	
 	border: var(--inputBorder);
 	border-radius: 3px;
