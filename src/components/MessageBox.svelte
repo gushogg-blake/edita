@@ -1,5 +1,5 @@
 <script lang="ts">
-import {onMount, createEventDispatcher} from "svelte";
+import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import clickElementFromAccel from "utils/dom/clickElementFromAccel";
 import Accel from "components/utils/Accel.svelte";
@@ -9,8 +9,6 @@ let {
 	options,
 	onresponse = () => {},
 } = $props();
-
-let fire = createEventDispatcher();
 
 let {message, buttons} = options;
 

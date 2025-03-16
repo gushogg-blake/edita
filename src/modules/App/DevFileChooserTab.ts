@@ -16,7 +16,7 @@ class DevFileChooserTab extends Tab {
 		await this.fileChooserApp.init();
 	}
 	
-	get label() {
+	get name() {
 		return "File chooser";
 	}
 	

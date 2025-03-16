@@ -73,6 +73,8 @@ class App extends Evented {
 			platform.on("closeWindow", this.onCloseWindow.bind(this)),
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
 			this.on("document.save", this.onDocumentSave.bind(this)),
+			// update tab labels before any other handlers see updateTabs
+			this.on("updateTabs", () => this.fire("updateTabLabels")),
 			...[this.panes.left, this.panes.right, this.bottomPanes].map(pane => this.relayEvents(pane, ["update"], "pane.")).flat(),
 		];
 	}
@@ -222,7 +224,7 @@ class App extends Evented {
 		}, 0);
 	}
 	
-	getEditorTabName(tab) {
+	getEditorTabLabel(tab) {
 		let sep = platform.systemInfo.pathSeparator;
 		let node = platform.fs(tab.path);
 		let {name, basename, extension} = node;
@@ -265,7 +267,9 @@ class App extends Evented {
 		});
 		
 		if (others.length === 0) {
-			return prefixWithParentByConvention + shortenedName;
+			return {
+				label: prefixWithParentByConvention + shortenedName,
+			};
 		}
 		
 		let startNode = node;
@@ -282,16 +286,23 @@ class App extends Evented {
 			as //.../filename
 			*/
 			
-			return prefixWithParentByConvention + shortenedName;
-		} else if (startNode.path === node.parent.path) {
-			return startNode.name + sep + shortenedName;
-		} else {
-			return startNode.name + sep + "..." + sep + prefixWithParentByConvention + shortenedName;
+			return {
+				label: prefixWithParentByConvention + shortenedName,
+			};
 		}
-	}
-	
-	getEditorTabLabel(tab) {
-		return tab.name + (tab.modified ? " *" : "");
+		
+		let disambiguator = "";
+		
+		if (startNode.path === node.parent.path) {
+			disambiguator = prefixWithParentByConvention ? "" : startNode.name + sep;
+		} else {
+			disambiguator = startNode.name + sep + "..." + sep;
+		}
+		
+		return {
+			label: prefixWithParentByConvention + shortenedName,
+			disambiguator,
+		};
 	}
 	
 	async closeTab(tab, noSave=false) {
@@ -805,6 +816,8 @@ class App extends Evented {
 		} else {
 			this.initialNewFileTab = await this.newFile();
 		}
+		
+		this.fire("updateTabs");
 	}
 	
 	async saveSession() {

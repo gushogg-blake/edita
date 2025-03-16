@@ -1,5 +1,5 @@
 <script lang="ts">
-import {run} from 'svelte/legacy';
+import {run} from "svelte/legacy";
 import {onMount, createEventDispatcher, getContext, tick} from "svelte";
 import screenOffsets from "utils/dom/screenOffsets";
 import scrollIntoView from "utils/dom/scrollIntoView";
@@ -22,8 +22,6 @@ let {
 } = $props();
 
 let app = getContext("app");
-
-let fire = createEventDispatcher();
 
 let main = $state();
 let mounted = false;
@@ -229,6 +227,10 @@ button {
 	border: 0;
 	background: transparent;
 }
+
+span.disambiguator {
+	opacity: .75;
+}
 </style>
 
 <div
@@ -239,16 +241,24 @@ button {
 	ondrop={drop}
 >
 	{#each tabs as tab, i (tab)}
+		{@const {
+			name,
+			disambiguator,
+			modified,
+			tooltip,
+			closeable,
+		} = getDetails(tabs, tab)}
+		
 		{#if dropIndex === i}
 			<div id="dropMarker">
 				<div></div>
 			</div>
 		{/if}
 		<div
-			title={getDetails(tabs, tab).tooltip}
+			title={tooltip}
 			class="tabButton"
 			class:border
-			class:closeable={getDetails(tabs, tab).closeable}
+			class:closeable
 			class:isSelected={tabIsSelected(tab, selectedTab)}
 			onmousedown={(e) => mousedownTab(e, tab)}
 			ondblclick={(e) => dblclickTab(e, tab)}
@@ -260,9 +270,14 @@ button {
 			use:registerTabButton={tab}
 		>
 			<div class="name">
-				{getDetails(tabs, tab).label}
+				{#if disambiguator}
+					<span class="disambiguator">{disambiguator}</span>
+				{/if}{name}
+				{#if modified}
+					*
+				{/if}
 			</div>
-			{#if getDetails(tabs, tab).closeable}
+			{#if closeable}
 				<div class="controls">
 					<button onclick={() => closeTab(tab)}>x</button>
 				</div>

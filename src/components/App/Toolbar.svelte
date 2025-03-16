@@ -13,7 +13,7 @@ let {
 
 let langButton = $state();
 
-function upload({detail: files}) {
+function upload(files) {
 	app.openFilesFromUpload(files);
 }
 
@@ -25,7 +25,8 @@ function openLanguages() {
 			async onClick() {
 				let tab = await app.newFile(lang);
 				
-				// hack - Svelte grammar is broken so we actually want
+				// TODO see if this is still necessary
+				// HACK - Svelte grammar is broken so we actually want
 				// HTML (HTML lang module supports .svelte)
 				// so we actually just want whatever lang the extension
 				// indicates

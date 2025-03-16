@@ -10,18 +10,8 @@ config.
 	"include": [
 		"src/**/*",
 		"test/**/*",
+		"vendor/**/*",
 	],
-	
-	// SYNC keep these in sync with rollup aliases
-	"paths": {
-		"root/*": ["./*"],
-		"components/*": ["./src/components/*"],
-		"modules/*": ["./src/modules/*"],
-		"utils/*": ["./src/utils/*"],
-		"platforms/*": ["./src/platforms/*"],
-		"vendor/*": ["./vendor/*"],
-		"test/*": ["./test/*"],
-	},
 	
 	"compilerOptions": {
 		// latest
@@ -30,7 +20,6 @@ config.
 		// simpler logic for whether to include imports in emitted code
 		// if import type, drop, otherwise keep.
 		// required for Svelte
-		// NOTE Svelte only seems to pick this up if it's defined in rollup...
 		"verbatimModuleSyntax": true,
 		
 		// allow extensionless relative imports (otherwise requires .js)
@@ -38,5 +27,16 @@ config.
 		"moduleResolution": "bundler",
 		
 		"sourceMap": true,
+		
+		// SYNC keep these in sync with rollup aliases
+		"paths": {
+			"root/*": ["./*"],
+			"components/*": ["./src/components/*"],
+			"modules/*": ["./src/modules/*"],
+			"utils/*": ["./src/utils/*"],
+			"platforms/*": ["./src/platforms/*"],
+			"vendor/*": ["./vendor/*"],
+			"test/*": ["./test/*"],
+		},
 	},
 }

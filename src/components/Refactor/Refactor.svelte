@@ -1,7 +1,6 @@
 <script lang="ts">
-	import {run, preventDefault} from 'svelte/legacy';
-
-import {onMount, getContext, createEventDispatcher} from "svelte";
+import {run, preventDefault} from "svelte/legacy";
+import {onMount, getContext} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import accels from "components/actions/accels";
 import Accel from "components/utils/Accel.svelte";
@@ -13,8 +12,6 @@ import Editor from "components/Editor/Editor.svelte";
 let {
 	refactor,
 } = $props();
-
-let fire = createEventDispatcher();
 
 let app = getContext("app");
 

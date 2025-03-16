@@ -4,30 +4,28 @@ import TabBar from "components/TabBar.svelte";
 
 let app = getContext("app");
 
-let {
-	tabs,
-	selectedTab,
-} = $state(app);
+let tabs = $state(app.tabs);
+let selectedTab = $state(app.selectedTab);
 
 function getDetails(tabs, tab) {
 	return tab;
 }
 
-function select({detail: tab}) {
+function select(tab) {
 	app.selectTab(tab);
 }
 
-function dblclick({detail: tab}) {
+function dblclick(tab) {
 	if (tab.project) {
 		app.projects.select(tab.project);
 	}
 }
 
-function close({detail: tab}) {
+function close(tab) {
 	app.closeTab(tab);
 }
 
-function reorder({detail: {tab, index}}) {
+function reorder({tab, index}) {
 	app.reorderTab(tab, index);
 }
 

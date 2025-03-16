@@ -132,14 +132,7 @@ let _wheelHandler = wheelHandler(editor, {
 	},
 });
 
-function mousedown({detail}) {
-	let {
-		e,
-		isDoubleClick,
-		pickOptionType,
-		enableDrag,
-	} = detail;
-	
+function mousedown({e, isDoubleClick, pickOptionType, enableDrag}) {
 	editor.mousedown();
 	
 	if (view.mode === "normal") {
@@ -155,7 +148,7 @@ function mousedown({detail}) {
 	}
 }
 
-function mousemove({detail: {e, pickOptionType}}) {
+function mousemove({e, pickOptionType}) {
 	if (isDragging) {
 		return;
 	}
@@ -169,7 +162,7 @@ function mousemove({detail: {e, pickOptionType}}) {
 	}
 }
 
-function mouseenter({detail: e}) {
+function mouseenter(e) {
 	if (isDragging) {
 		return;
 	}
@@ -181,7 +174,7 @@ function mouseenter({detail: e}) {
 	}
 }
 
-function mouseleave({detail: e}) {
+function mouseleave(e) {
 	if (isDragging) {
 		return;
 	}
@@ -197,11 +190,11 @@ function _mouseup(e) {
 	editor.mouseup();
 }
 
-function mouseup({detail: e}) {
+function mouseup(e) {
 	_mouseup(e);
 }
 
-function click({detail: {e, pickOptionType}}) {
+function click({e, pickOptionType}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.click(e);
 	} else if (view.mode === "ast") {
@@ -209,7 +202,7 @@ function click({detail: {e, pickOptionType}}) {
 	}
 }
 
-function dblclick({detail: e}) {
+function dblclick(e) {
 	if (view.mode === "normal") {
 		normalMouseHandler.dblclick(e);
 	} else if (view.mode === "ast") {
@@ -217,7 +210,7 @@ function dblclick({detail: e}) {
 	}
 }
 
-function contextmenu({detail: {e, pickOptionType}}) {
+function contextmenu({e, pickOptionType}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.contextmenu(e, pickOptionType);
 	} else if (view.mode === "ast") {
@@ -225,7 +218,7 @@ function contextmenu({detail: {e, pickOptionType}}) {
 	}
 }
 
-function middlepress({detail: {e, pickOptionType}}) {
+function middlepress({e, pickOptionType}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.middlepress(e, pickOptionType);
 	} else if (view.mode === "ast") {
@@ -233,7 +226,7 @@ function middlepress({detail: {e, pickOptionType}}) {
 	}
 }
 
-function dragstart({detail: {e, pickOptionType}}) {
+function dragstart({e, pickOptionType}) {
 	isDragging = true;
 	
 	if (view.mode === "normal") {
@@ -245,7 +238,7 @@ function dragstart({detail: {e, pickOptionType}}) {
 	lastMouseEvent = e;
 }
 
-function dragover({detail: {e, dropTargetType}}) {
+function dragover({e, dropTargetType}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.dragover(e);
 	} else if (view.mode === "ast") {
@@ -255,7 +248,7 @@ function dragover({detail: {e, dropTargetType}}) {
 	lastMouseEvent = e;
 }
 
-function dragend({detail: e}) {
+function dragend(e) {
 	isDragging = false;
 	
 	if (view.mode === "normal") {
@@ -267,7 +260,7 @@ function dragend({detail: e}) {
 	lastMouseEvent = e;
 }
 
-function dragenter({detail: e}) {
+function dragenter(e) {
 	if (view.mode === "normal" && astDragData.get(e)) {
 		editor.switchToAstMode();
 		
@@ -283,7 +276,7 @@ function dragenter({detail: e}) {
 	lastMouseEvent = e;
 }
 
-function dragleave({detail: e}) {
+function dragleave(e) {
 	if (view.mode === "normal") {
 		normalMouseHandler.dragleave(e);
 	} else if (view.mode === "ast") {
@@ -299,14 +292,7 @@ function dragleave({detail: e}) {
 	lastMouseEvent = e;
 }
 
-function drop({detail}) {
-	let {
-		e,
-		fromUs,
-		toUs,
-		extra,
-	} = detail;
-	
+function drop({e, fromUs, toUs, extra}) {
 	if (view.mode === "normal") {
 		normalMouseHandler.drop(e, fromUs, toUs, extra);
 	} else if (view.mode === "ast") {
@@ -326,7 +312,7 @@ function drop({detail}) {
 	lastMouseEvent = e;
 }
 
-function marginMousedown({detail: e}) {
+function marginMousedown(e) {
 	marginMouseHandler.mousedown(e);
 }
 
@@ -492,11 +478,11 @@ function updateHorizontalScrollbar() {
 	horizontalScrollbar.update(scrollWidth, width, position);
 }
 
-function verticalScroll({detail: position}) {
+function verticalScroll(position) {
 	view.setVerticalScrollPosition(position);
 }
 
-function horizontalScroll({detail: position}) {
+function horizontalScroll(position) {
 	view.setHorizontalScrollPosition(position);
 }
 

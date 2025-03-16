@@ -19,6 +19,8 @@ class EditorTab extends Tab {
 		
 		let {document, view} = editor;
 		
+		this._label = app.getEditorTabLabel(this);
+		
 		this.teardownCallbacks = [
 			() => {
 				this.editor.teardown();
@@ -28,6 +30,7 @@ class EditorTab extends Tab {
 			document.on("urlChanged", this.onDocumentUrlChanged.bind(this)),
 			view.on("wrapChanged", this.onWrapChanged.bind(this)),
 			app.on("pane.update", this.onAppPaneUpdate.bind(this)),
+			app.on("updateTabLabels", this.onAppUpdateTabLabels.bind(this)),
 			...this.relayEvents(editor, ["focus", "blur"]),
 		];
 	}
@@ -64,11 +67,11 @@ class EditorTab extends Tab {
 	}
 	
 	get name() {
-		return this.app.getEditorTabName(this);
+		return this._label.label;
 	}
 	
-	get label() {
-		return this.app.getEditorTabLabel(this);
+	get disambiguator() {
+		return this._label.disambiguator;
 	}
 	
 	get tooltip() {
@@ -203,6 +206,10 @@ class EditorTab extends Tab {
 	
 	async onWrapChanged(wrap) {
 		await this.setPerFilePref("wrap", wrap);
+	}
+	
+	onAppUpdateTabLabels() {
+		this._label = this.app.getEditorTabLabel(this);
 	}
 	
 	onAppPaneUpdate() {

@@ -1,4 +1,4 @@
-let {is, deep, subset} = require("test/utils/assertions");
+import {is, deep, expect} from "test/utils/assertions";
 import dedent from "test/utils/dedent";
 import createJsDoc from "test/utils/createJsDoc";
 import Selection from "modules/Selection";

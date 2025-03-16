@@ -9,15 +9,15 @@ let {fileTree} = app;
 let {rootEntry} = $state(fileTree);
 let selectedEntry = $state(null);
 
-function select({detail: entry}) {
+function select(entry) {
 	selectedEntry = entry;
 }
 
-function open({detail: entry}) {
+function open(entry) {
 	app.openPath(entry.path);
 }
 
-function contextmenu({detail: {e, entry}}) {
+function contextmenu({e, entry}) {
 	let {path, isDir} = entry;
 	
 	platform.showContextMenu(e, app, [
@@ -75,7 +75,7 @@ async function onUpdateRootDir() {
 	({rootEntry} = fileTree);
 }
 
-function onMakeRoot({detail: entry}) {
+function onMakeRoot(entry) {
 	fileTree.setRootDir(entry.path);
 }
 

@@ -1,4 +1,4 @@
-let {is, deep, expect} = require("test/utils/assertions");
+import {is, deep, expect} from "test/utils/assertions";
 import dedent from "test/utils/dedent";
 import tokenise from "modules/codePatterns/find/tokenise";
 

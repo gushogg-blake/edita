@@ -1,5 +1,5 @@
-import os from "os";
-import path from "path";
+import os from "node:os";
+import path from "node:path";
 import fsExtra from "fs-extra";
 import minimatch from "minimatch-browser";
 import {glob} from "glob";

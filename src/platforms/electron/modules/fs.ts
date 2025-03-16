@@ -1,9 +1,9 @@
-let os = require("os");
-let path = require("path");
+let os = require("node:os");
+let path = require("node:path");
 let fsExtra = require("fs-extra");
 let {glob} = require("glob");
-let {mkdirp} = require("mkdirp");
 let chokidar = require("chokidar");
+let {mkdirp} = require("mkdirp");
 
 import minimatch from "minimatch-browser";
 import fileIsBinary from "vendor/fileIsBinary";

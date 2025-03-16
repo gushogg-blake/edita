@@ -68,6 +68,7 @@ export default function(app, items, coords, options={}) {
 	}
 	
 	function close() {
+		// MIGRATE svelte 5
 		contextMenu.$destroy();
 		
 		overlay.parentNode.removeChild(overlay);
@@ -81,7 +82,8 @@ export default function(app, items, coords, options={}) {
 		off(container, "keydown", keydown);
 	}
 	
-	contextMenu.$on("click", function({detail: item}) {
+	// MIGRATE svelte 5
+	contextMenu.$on("click", function(item) {
 		click(item);
 	});
 	

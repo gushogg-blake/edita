@@ -61,7 +61,7 @@ onMount(function() {
 	{@render children?.()}
 	<ResizeHandle
 		position={borderAndResizeHandlePosition}
-		onresize={({detail: diff}) => pane.resize(diff)}
-		onresizeEnd={({detail: diff}) => pane.resizeAndSave(diff)}
+		onresize={(diff) => pane.resize(diff)}
+		onresizeEnd={(diff) => pane.resizeAndSave(diff)}
 	/>
 </div>

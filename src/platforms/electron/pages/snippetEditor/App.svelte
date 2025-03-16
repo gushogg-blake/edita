@@ -9,7 +9,7 @@ let {
 	app
 } = $props();
 
-async function saveAndExit({detail: snippet}) {
+async function saveAndExit(snippet) {
 	await app.save(snippet);
 	
 	window.close();

@@ -5,8 +5,8 @@ import {
 	Menu,
 } from "electron";
 
-import {Readable} from "stream";
-import path from "path";
+import {Readable} from "node:stream";
+import path from "node:path";
 import windowStateKeeper from "electron-window-state";
 import {fs, cmdSync} from "utils/node/index";
 import {removeInPlace} from "utils/arrayMethods";
@@ -122,34 +122,13 @@ class App {
 					return stream;
 				}
 				
-				if (name === "tree-sitter.wasm") {
-					// tree-sitter.js requests an incorrect absolute path for some reason
-					
-					path = "vendor/tree-sitter/tree-sitter.wasm";
-				} else if (name.match(/^tree-sitter-.+\.wasm$/)) {
-					/*
-					parsers that are linked into the tree-sitter wasm at compile time
-					(to solve system library linking issues) are requested as just
-					"tree-sitter-*.wasm"
-					
-					See:
-					
-					- https://github.com/emscripten-core/emscripten/issues/8308
-					- https://emscripten.org/docs/compiling/Dynamic-Linking.html (System Libraries section)
-					- https://github.com/tree-sitter/tree-sitter/issues/949
-					- howto/tree-sitter.md
-					
-					for more on why some parsers are linked in like this.
-					*/
-					
-					path = "vendor/tree-sitter/langs/" + name;
-				} else {
-					path = requestPath.substr(1);
-				}
+				path = requestPath.substr(1);
 				
-				let node = this.buildDir.child(...path.split("/"));
+				let built = this.buildDir.child(...path.split("/"));
+				let src = this.rootDir.child(...path.split("/"));
+				let node = await built.exists() ? built : await src.exists() ? src : null;
 				
-				if (await node.exists()) {
+				if (node) {
 					callback({
 						mimeType,
 						data: request.method === "HEAD" ? emptyStream() : node.createReadStream(),

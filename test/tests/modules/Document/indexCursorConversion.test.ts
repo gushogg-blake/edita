@@ -1,5 +1,5 @@
 import Document from "modules/Document";
-let {is, deep} = require("test/utils/assertions");
+import {is, deep} from "test/utils/assertions";
 import dedent from "test/utils/dedent";
 import parseIndexMarks from "test/utils/parseIndexMarks";
 

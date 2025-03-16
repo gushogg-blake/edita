@@ -52,6 +52,36 @@ function watchOptions() {
 	};
 }
 
+/*
+externals - needed for both main and renderer, to avoid bundling node
+builtins.
+
+included in the web build for config simplicity, even though it won't
+be needed.
+
+NOTE not sure if commonjs needs the ignore list now that externals is
+doing it
+*/
+
+let nodeIgnore = [
+	"glob",
+	"fs-extra",
+	"electron",
+	"electron-window-state",
+	"chokidar",
+	"yargs",
+];
+
+let commonjsIgnore = [
+	...nodeIgnore,
+	"node:*",
+];
+
+let externalsIgnore = [
+	...nodeIgnore,
+	/^node:/,
+];
+
 let common = {
 	alias() {
 		// SYNC keep these in sync with tsconfig.json
@@ -88,7 +118,6 @@ let common = {
 		});
 	},
 	
-	// NOTE this might only be needed in main process and preload builds
 	externals() {
 		return externals({
 			// it can add/strip the node: prefix -- don't want to mess with them
@@ -99,41 +128,7 @@ let common = {
 			peerDeps: false,
 			optDeps: false,
 			
-			include: [
-				"os",
-				"child_process",
-				"fs",
-				"path",
-				"constants",
-				"util",
-				"stream",
-				"assert",
-				"string_decoder",
-				"buffer",
-				"events",
-				
-				// NOTE not sure if these need repeating, maybe that's
-				// what the strip/add default is for... in any case
-				// probs best to just always use them in our code and
-				// keep the auto add/strip off
-				"node:os",
-				"node:child_process",
-				"node:fs",
-				"node:path",
-				"node:constants",
-				"node:util",
-				"node:stream",
-				"node:assert",
-				"node:string_decoder",
-				"node:buffer",
-				"node:events",
-				
-				"glob",
-				"fs-extra",
-				"electron",
-				"chokidar",
-				"yargs",
-			],
+			include: externalsIgnore,
 		});
 	},
 };
@@ -197,40 +192,13 @@ function commonPlugins(platform) {
 	];
 }
 
-/*
-TODO do we need to add node: to these?
-
-(are they even needed anymore? -- probably not, if we're using
-esm imports -- yeah, definitely not.)
-*/
-
-let nodeIgnore = [
-	"os",
-	"child_process",
-	"fs",
-	"fs-extra",
-	"glob",
-	"path",
-	"constants",
-	"util",
-	"stream",
-	"assert",
-	"string_decoder",
-	"buffer",
-	"events",
-	"electron",
-	"query-string",
-	"chokidar",
-	"yargs",
-];
-
 function electronPlugins() {
 	return [
 		...commonPlugins("electron"),
 		
 		commonjs({
 			requireReturnsDefault: "preferred",
-			ignore: nodeIgnore,
+			ignore: commonjsIgnore,
 		}),
 	];
 }
@@ -255,7 +223,7 @@ function mainProcessPlugins() {
 		
 		commonjs({
 			requireReturnsDefault: "preferred",
-			//ignore: nodeIgnore,
+			ignore: commonjsIgnore,
 		}),
 		
 		common.typescript(),
@@ -278,13 +246,12 @@ function globalCssBuild(path) {
 		
 		output: {
 			file: path,
+			assetFileNames: "[name].[ext]",
 		},
 		
 		plugins: [
-			scss(),
-			
-			cssOnly({
-				output: "global.css",
+			scss({
+				name: "global.css",
 			}),
 			
 			_delete({

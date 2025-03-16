@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: can't migrate `let {tabs, selectedTab} = pane;` to `$state` because there's a variable named state.
-     Rename the variable and try again or migrate by hand. -->
 <script lang="ts">
 import {onMount, getContext} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
@@ -10,14 +8,18 @@ import FindResultsTab from "./FindResultsTab.svelte";
 import RefactorTab from "./RefactorTab.svelte";
 import ClippingsTab from "./ClippingsTab.svelte";
 
-export let pane;
-export let _state;
+let {
+	pane,
+	_state,
+	onresize = () => {},
+	onresizeEnd = () => {},
+} = $props();
 
 let app = getContext("app");
 
 let {bottomPanes} = app;
-let {tabs, selectedTab} = pane;
-let {size, visible, expanded} = _state;
+let {tabs, selectedTab} = $state(pane);
+let {size, visible, expanded} = $state(_state);
 
 let tabComponents = {
 	findAndReplace: FindAndReplaceTab,
@@ -27,13 +29,10 @@ let tabComponents = {
 };
 
 function getDetails(tabs, tab) {
-	return {
-		label: tab.name,
-		closeable: tab.closeable,
-	};
+	return tab;
 }
 
-function select({detail: tab}) {
+function select(tab) {
 	pane.selectTab(tab);
 }
 
@@ -45,8 +44,8 @@ function onSelectTab() {
 	({selectedTab} = pane);
 }
 
-let mainStyle;
-let contentsStyle;
+let mainStyle = $state();
+let contentsStyle = $state();
 
 function update() {
 	({size, visible, expanded} = _state);
@@ -125,8 +124,8 @@ onMount(function() {
 	{#if expanded}
 		<ResizeHandle
 			position="top"
-			onresize
-			onresizeEnd
+			{onresize}
+			{onresizeEnd}
 		/>
 	{/if}
 	<div id="tabBar">
@@ -137,7 +136,7 @@ onMount(function() {
 			{selectedTab}
 			{getDetails}
 			onselect={select}
-			onclose={({detail: tab}) => pane.closeTab(tab)}
+			onclose={(tab) => pane.closeTab(tab)}
 		/>
 	</div>
 	<div
@@ -147,11 +146,12 @@ onMount(function() {
 		style={inlineStyle(contentsStyle)}
 	>
 		{#each tabs as tab (tab)}
+			{@const SvelteComponent = tabComponents[tab.type]}
 			<div
 				class="tab"
 				class:hide={tab !== selectedTab}
 			>
-				<svelte:component this={tabComponents[tab.type]} {tab}/>
+				<SvelteComponent {tab}/>
 			</div>
 		{/each}
 	</div>

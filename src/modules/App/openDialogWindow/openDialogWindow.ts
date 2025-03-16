@@ -38,6 +38,7 @@ export default function(app, createDialogComponent) {
 			},
 		});
 		
+		// MIGRATE svelte 5
 		toolbarComponent.$on("close", close);
 		
 		container.style = inlineStyle({

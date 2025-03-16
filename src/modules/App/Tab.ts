@@ -31,11 +31,13 @@ class Tab extends Evented {
 		throw new Error("tab name must be overridden");
 	}
 	
-	get windowTitle() {
-		return this.name;
+	// part of the name that's there to disambiguate it from other
+	// tabs, for files with the same name
+	get disambiguator() {
+		return "";
 	}
 	
-	get label() {
+	get windowTitle() {
 		return this.name;
 	}
 	

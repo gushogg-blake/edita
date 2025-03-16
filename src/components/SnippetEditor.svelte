@@ -1,5 +1,5 @@
 <script lang="ts">
-import {createEventDispatcher, onMount} from "svelte";
+import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import autoFocusAsync from "components/actions/autoFocusAsync";
 import Checkbox from "components/utils/Checkbox.svelte";
@@ -10,8 +10,6 @@ let {
 	onsaveAndExit = () => {},
 	oncancel = () => {},
 } = $props();
-
-let fire = createEventDispatcher();
 
 let {
 	name,

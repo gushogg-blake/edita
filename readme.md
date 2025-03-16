@@ -72,7 +72,7 @@ If getting the rollup build working is a pain anyway then it might be worth just
 
 ### Svelte
 
-Svelte 5. No runes in non-Svelte code atm.
+Svelte 5. No runes in non-Svelte code atm. Migration in progress. Search for // MIGRATION and svelte/legacy.
 
 ### TypeScript
 

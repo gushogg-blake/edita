@@ -79,6 +79,7 @@ function contextmenu(e) {
 }
 
 function select() {
+	console.log(onselect);
 	onselect(entry);
 }
 
@@ -211,10 +212,10 @@ onMount(function() {
 			{#each filteredEntries as entry (entry.path)}
 				<Entry
 					{entry}
-					onselect
-					onopen
-					oncontextmenu
-					onmakeRoot
+					{onselect}
+					{onopen}
+					{oncontextmenu}
+					{onmakeRoot}
 					{selectedEntry}
 					level={level + 1}
 				/>

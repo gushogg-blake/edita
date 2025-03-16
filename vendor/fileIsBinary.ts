@@ -1,5 +1,5 @@
-let fs = require("fs");
-let {promisify} = require("util");
+let fs = require("node:fs");
+let {promisify} = require("node:util");
 
 let statAsync = promisify(fs.stat);
 let openAsync = promisify(fs.open);
@@ -102,7 +102,7 @@ function bufferIsBinary(fileBuffer, bytesRead) {
 	return false;
 }
 
-module.exports = async function(path) {
+export default async function(path) {
 	let stat = await statAsync(path);
 	let fileDescriptor = await openAsync(path, "r");
 	let allocBuffer = Buffer.alloc(MAX_BYTES);

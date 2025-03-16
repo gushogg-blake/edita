@@ -30,7 +30,8 @@ export default {
 			},
 		});
 		
-		snippetEditor.$on("saveAndExit", async ({detail: snippet}) => {
+		// MIGRATE svelte 5
+		snippetEditor.$on("saveAndExit", async ({snippet}) => {
 			if (isNew) {
 				await platform.snippets.create(snippet);
 			} else {
@@ -40,6 +41,7 @@ export default {
 			close();
 		});
 		
+		// MIGRATE svelte 5
 		snippetEditor.$on("cancel", close);
 	},
 	
@@ -54,7 +56,8 @@ export default {
 			},
 		});
 		
-		messageBox.$on("response", ({detail: response}) => {
+		// MIGRATE svelte 5
+		messageBox.$on("response", (response) => {
 			this.messageBoxRespond(response);
 			
 			close();

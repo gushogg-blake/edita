@@ -12,19 +12,19 @@ function update() {
 	({containerHeight} = bottomPanes);
 }
 
-function onToolsResize({detail: diff}) {
+function onToolsResize(diff) {
 	bottomPanes.resizeTools(diff);
 }
 
-function onToolsResizeEnd({detail: diff}) {
+function onToolsResizeEnd(diff) {
 	bottomPanes.resizeAndSaveTools(diff);
 }
 
-function onOutputResize({detail: diff}) {
+function onOutputResize(diff) {
 	bottomPanes.resizeOutput(diff);
 }
 
-function onOutputResizeEnd({detail: diff}) {
+function onOutputResizeEnd(diff) {
 	bottomPanes.resizeAndSaveOutput(diff);
 }
 

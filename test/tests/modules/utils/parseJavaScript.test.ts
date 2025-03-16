@@ -1,4 +1,4 @@
-let {is, deep} = require("test/utils/assertions");
+import {is, deep} from "test/utils/assertions";
 import dedent from "test/utils/dedent";
 
 import parseJavaScript from "modules/snippets/parseJavaScript";

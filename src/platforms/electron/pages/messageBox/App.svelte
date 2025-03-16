@@ -6,7 +6,7 @@ let {
 	app,
 } = $props();
 
-function respond({detail: response}) {
+function respond(response) {
 	app.respond(response);
 }
 </script>

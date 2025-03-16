@@ -1,12 +1,8 @@
 <script lang="ts">
-import {createEventDispatcher} from "svelte";
-
 let {
 	items,
 	onclick = () => {},
 } = $props();
-
-let fire = createEventDispatcher();
 
 function click(item) {
 	onclick(item);
