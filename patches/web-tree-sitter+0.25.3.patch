@@ -1,0 +1,13 @@
+diff --git a/node_modules/web-tree-sitter/tree-sitter.js b/node_modules/web-tree-sitter/tree-sitter.js
+index 95b93b9..a6d067b 100644
+--- a/node_modules/web-tree-sitter/tree-sitter.js
++++ b/node_modules/web-tree-sitter/tree-sitter.js
+@@ -2034,7 +2034,7 @@ var Language = class _Language {
+     if (input instanceof Uint8Array) {
+       bytes = Promise.resolve(input);
+     } else {
+-      if (globalThis.process?.versions.node) {
++      if (globalThis.process?.versions.node && globalThis.process.type !== "renderer") {
+         const fs2 = __require("fs/promises");
+         bytes = fs2.readFile(input);
+       } else {
