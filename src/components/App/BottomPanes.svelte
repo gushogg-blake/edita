@@ -55,13 +55,13 @@ onMount(function() {
 <div id="main" style={inlineStyle(mainStyle)}>
 	<TabPane
 		pane={tools}
-		state={top}
+		_state={top}
 		onresize={onToolsResize}
 		onresizeEnd={onToolsResizeEnd}
 	/>
 	<TabPane
 		pane={output}
-		state={bottom}
+		_state={bottom}
 		onresize={onOutputResize}
 		onresizeEnd={onOutputResizeEnd}
 	/>

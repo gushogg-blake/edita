@@ -11,13 +11,13 @@ import RefactorTab from "./RefactorTab.svelte";
 import ClippingsTab from "./ClippingsTab.svelte";
 
 export let pane;
-export let state;
+export let _state;
 
 let app = getContext("app");
 
 let {bottomPanes} = app;
 let {tabs, selectedTab} = pane;
-let {size, visible, expanded} = state;
+let {size, visible, expanded} = _state;
 
 let tabComponents = {
 	findAndReplace: FindAndReplaceTab,
@@ -49,7 +49,7 @@ let mainStyle;
 let contentsStyle;
 
 function update() {
-	({size, visible, expanded} = state);
+	({size, visible, expanded} = _state);
 	
 	let height;
 	
@@ -86,7 +86,7 @@ onMount(function() {
 </script>
 
 <style lang="scss">
- "utils";
+@use "utils";
 
 #main {
 	position: relative;
