@@ -1,3 +1,5 @@
+import {Query} from "web-tree-sitter";
+
 class Lang {
 	constructor(lang) {
 		Object.assign(this, lang);
@@ -21,7 +23,7 @@ class Lang {
 	}
 	
 	query(string) {
-		return this.treeSitterLanguage.query(string);
+		return new Query(this.treeSitterLanguage, string);
 	}
 }
 

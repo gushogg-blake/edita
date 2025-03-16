@@ -95,7 +95,7 @@ export function countSpace(document, lineIndex, dir) {
 	}
 	
 	return space;
-},
+}
 
 export function createSpaces(n, indentLevel, indentStr) {
 	let spaces = [];
@@ -105,7 +105,7 @@ export function createSpaces(n, indentLevel, indentStr) {
 	}
 	
 	return spaces;
-},
+}
 
 export function findIndentLevel(document, lineIndex) {
 	let {lines} = document;
@@ -139,7 +139,7 @@ export function findIndentLevel(document, lineIndex) {
 	}
 	
 	return Math.max(next, prev);
-},
+}
 
 export function findSiblingIndex(document, lineIndex, indentLevel, dir) {
 	let {lines} = document;
@@ -158,7 +158,7 @@ export function findSiblingIndex(document, lineIndex, indentLevel, dir) {
 	}
 	
 	return null;
-},
+}
 
 export function findNextLineIndexAtIndentLevel(document, lineIndex, indentLevel) {
 	let {lines} = document;
@@ -170,7 +170,7 @@ export function findNextLineIndexAtIndentLevel(document, lineIndex, indentLevel)
 	}
 	
 	return null;
-},
+}
 
 export function findPrevLineIndexAtIndentLevel(document, lineIndex, indentLevel) {
 	let {lines} = document;
