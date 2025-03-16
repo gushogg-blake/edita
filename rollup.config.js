@@ -144,15 +144,6 @@ function commonPlugins(platform) {
 	return [
 		common.alias(),
 		
-		common.externals(),
-		
-		common.resolve({
-			browser: true,
-			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
-		}),
-		
-		common.typescript(),
-		
 		svelte({
 			preprocess: preprocess({
 				scss: {
@@ -163,6 +154,17 @@ function commonPlugins(platform) {
 			compilerOptions: {
 				dev,
 			},
+		}),
+		
+		common.externals(),
+		
+		common.resolve({
+			browser: true,
+			dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
+		}),
+		
+		common.typescript({
+			
 		}),
 		
 		cssOnly({
