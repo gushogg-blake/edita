@@ -269,14 +269,8 @@ export default function(config) {
 				throw new Error("No glob backend available");
 			}
 			
-			return new Promise((resolve, reject) => {
-				glob(osPath.resolve(this.path, pattern), options, (e, files) => {
-					if (e) {
-						reject(e);
-					} else {
-						resolve(files.map(file => this.child(file)));
-					}
-				});
+			return bluebird.map(glob(osPath.resolve(this.path, pattern), options), (file) => {
+				return this.child(file);
 			});
 		}
 		
