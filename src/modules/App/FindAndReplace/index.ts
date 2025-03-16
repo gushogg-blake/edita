@@ -1,1 +1,1 @@
-export * from "./FindAndReplace";
+export {default} from "./FindAndReplace";
