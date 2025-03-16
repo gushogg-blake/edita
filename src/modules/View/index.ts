@@ -1,1 +1,1 @@
-export default require("./View");
+export {default} from "./View";

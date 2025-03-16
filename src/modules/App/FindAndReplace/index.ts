@@ -1,1 +1,1 @@
-export default require("./FindAndReplace");
+export * from "./FindAndReplace";

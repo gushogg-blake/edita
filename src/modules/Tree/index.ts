@@ -1,1 +1,1 @@
-export default require("./Tree");
+export {default} from "./Tree";

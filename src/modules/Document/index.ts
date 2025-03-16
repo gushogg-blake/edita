@@ -1,1 +1,1 @@
-export default require("./Document");
+export {default} from "./Document";

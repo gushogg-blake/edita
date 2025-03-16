@@ -11,6 +11,7 @@ import livereload from "rollup-plugin-livereload";
 import copy from "rollup-plugin-copy-watch";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
+import externals from "rollup-plugin-node-externals";
 import json from "@rollup/plugin-json";
 import terser from "@rollup/plugin-terser";
 import svelte from "rollup-plugin-svelte";
@@ -86,6 +87,55 @@ let common = {
 			},
 		});
 	},
+	
+	// NOTE this might only be needed in main process and preload builds
+	externals() {
+		return externals({
+			// it can add/strip the node: prefix -- don't want to mess with them
+			builtinsPrefix: "ignore",
+			
+			// defaults to making all non-dev deps external
+			deps: false,
+			peerDeps: false,
+			optDeps: false,
+			
+			include: [
+				"os",
+				"child_process",
+				"fs",
+				"path",
+				"constants",
+				"util",
+				"stream",
+				"assert",
+				"string_decoder",
+				"buffer",
+				"events",
+				
+				// NOTE not sure if these need repeating, maybe that's
+				// what the strip/add default is for... in any case
+				// probs best to just always use them in our code and
+				// keep the auto add/strip off
+				"node:os",
+				"node:child_process",
+				"node:fs",
+				"node:path",
+				"node:constants",
+				"node:util",
+				"node:stream",
+				"node:assert",
+				"node:string_decoder",
+				"node:buffer",
+				"node:events",
+				
+				"glob",
+				"fs-extra",
+				"electron",
+				"chokidar",
+				"yargs",
+			],
+		});
+	},
 };
 
 function commonPlugins(platform) {
@@ -93,6 +143,8 @@ function commonPlugins(platform) {
 	
 	return [
 		common.alias(),
+		
+		common.externals(),
 		
 		svelte({
 			preprocess: preprocess({
@@ -195,6 +247,8 @@ function mainProcessPlugins() {
 	return [
 		common.alias(),
 		
+		common.externals(),
+		
 		common.resolve(),
 		
 		commonjs({
@@ -226,6 +280,10 @@ function globalCssBuild(path) {
 		
 		plugins: [
 			scss(),
+			
+			cssOnly({
+				output: "global.css",
+			}),
 			
 			_delete({
 				targets: [path],
@@ -291,6 +349,8 @@ if (platform === "all" || platform === "electron") {
 						},
 					],
 				}),
+				
+				dev && markBuildComplete(dir),
 			],
 		},
 	);

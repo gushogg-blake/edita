@@ -1,1 +1,1 @@
-export default require("./find");
+export {default} from "./find";

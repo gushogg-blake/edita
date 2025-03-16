@@ -6,8 +6,6 @@
 	},
 	"private": true,
 	"version": "0.101.0",
-	"type": "module",
-	"main": "./build/electron/mainProcess/main.js",
 	"scripts": {
 		"start": "node ./build/electron-dev/mainProcess/bootstrap.js",
 		"build": "rollup -c",
@@ -67,6 +65,7 @@
 		"rollup-plugin-css-only": "^4.5.2",
 		"rollup-plugin-delete": "^3.0.1",
 		"rollup-plugin-livereload": "^2.0.5",
+		"rollup-plugin-node-externals": "^8.0.0",
 		"rollup-plugin-scss": "^4.0.1",
 		"rollup-plugin-svelte": "^7.2.2",
 		"sass": "^1.85.1",

@@ -1,9 +1,10 @@
-import os from "os";
-import path from "path";
-import fsExtra from "fs-extra";
-import {glob} from "glob";
-import {mkdirp} from "mkdirp";
-import chokidar from "chokidar";
+let os = require("os");
+let path = require("path");
+let fsExtra = require("fs-extra");
+let {glob} = require("glob");
+let {mkdirp} = require("mkdirp");
+let chokidar = require("chokidar");
+
 import minimatch from "minimatch-browser";
 import fileIsBinary from "vendor/fileIsBinary";
 import fs from "utils/fs";

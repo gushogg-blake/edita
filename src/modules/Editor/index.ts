@@ -1,1 +1,1 @@
-export default require("./Editor");
+export {default} from "./Editor";

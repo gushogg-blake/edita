@@ -1,4 +1,4 @@
-import ipcRenderer from "platform/modules/ipcRenderer";
+import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 
 export default {
 	load(name, key) {

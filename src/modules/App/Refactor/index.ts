@@ -1,1 +1,1 @@
-export default require("./Refactor");
+export {default} from "./Refactor";

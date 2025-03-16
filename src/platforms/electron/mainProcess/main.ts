@@ -1,7 +1,9 @@
 import {app as electronApp} from "electron";
+import {spawn} from "node:child_process";
 import path from "path";
 import App from "./App";
 import config from "./config";
+import watch from "./watch";
 
 // ENTRYPOINT main (node) process for electron
 
@@ -11,7 +13,7 @@ let {debugEndpoint} = config;
 
 if (debugEndpoint) {
 	function printr(data, stack) {
-		let curl = require("child_process").spawn("curl", [
+		let curl = spawn("curl", [
 			"-H", "Content-Type: application/json",
 			"--data-binary", "@-",
 			debugEndpoint,
@@ -57,6 +59,6 @@ if (debugEndpoint) {
 	await app.launch();
 	
 	if (config.dev) {
-		require("./watch")(app);
+		watch(app);
 	}
 })();

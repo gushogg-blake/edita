@@ -1,5 +1,5 @@
 import {removeInPlace} from "utils/arrayMethods";
-import localStorage from "platform/modules/localStorage";
+import localStorage from "platforms/web/modules/localStorage";
 
 export default function(localStoragePrefix) {
 	function storageKey(name, key) {

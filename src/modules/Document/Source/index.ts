@@ -1,1 +1,1 @@
-export default require("./Source");
+export {default} from "./Source";

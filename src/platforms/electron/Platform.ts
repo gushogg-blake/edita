@@ -1,5 +1,6 @@
-import os from "os";
-import path from "path";
+let os = require("os");
+let path = require("path");
+
 import bluebird from "bluebird";
 import {Language} from "web-tree-sitter";
 

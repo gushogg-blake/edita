@@ -47,7 +47,7 @@ export default async function(app) {
 		return watcher;
 	});
 	
-	let watchMain = chokidar.watch(__dirname, watchOptions);
+	let watchMain = chokidar.watch(buildDir.path, watchOptions);
 	
 	setTimeout(function() {
 		watchMain.on("change", debounce(function() {

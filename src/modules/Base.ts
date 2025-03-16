@@ -40,6 +40,8 @@ import ruby from "modules/langs/ruby";
 import prisma from "modules/langs/prisma";
 import plaintext from "modules/langs/plaintext";
 
+import packageJson from "root/package.json";
+
 /*
 top-level object for general, global things like langs, as well as any
 initialisation that needs to be done before any other clientside code runs --
@@ -108,7 +110,7 @@ class Base extends Evented {
 	constructor() {
 		super();
 		
-		this.packageJson = require("root/package.json");
+		this.packageJson = packageJson;
 		
 		this.langs = new Langs();
 		this.initialisedLangs = new Set();

@@ -34,9 +34,11 @@ class App {
 			fileChooser: "centerOfScreen",
 		};
 		
-		this.dataDir = fs(this.config.userDataDir);
-		this.buildDir = fs(__dirname, "..", "..", config.dev ? "electron-dev" : "electron");
-		this.rootDir = this.buildDir.rel("..", "..");
+		let {userDataDir, buildDir, rootDir} = this.config;
+		
+		this.dataDir = fs(userDataDir);
+		this.buildDir = fs(buildDir);
+		this.rootDir = fs(rootDir);
 		
 		this.jsonStore = jsonStore(this);
 	}
