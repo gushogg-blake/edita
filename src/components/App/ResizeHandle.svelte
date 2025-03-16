@@ -1,11 +1,12 @@
 <script lang="ts">
-import {createEventDispatcher} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import {on, off} from "utils/dom/domEvents";
 
-export let position;
-
-let fire = createEventDispatcher();
+let {
+	position,
+	onresize = () => {},
+	onresizeEnd = () => {},
+} = $props();
 
 let orientation = position === "left" || position === "right" ? "vertical" : "horizontal";
 
@@ -49,7 +50,7 @@ function pointerdown(e) {
 }
 
 function pointermove(e) {
-	fire("resize", getDiffAndSetStartPoint(e));
+	onresize(getDiffAndSetStartPoint(e));
 }
 
 function pointerup(e) {
@@ -57,7 +58,7 @@ function pointerup(e) {
 	
 	div.releasePointerCapture(e.pointerId);
 	
-	fire("resizeEnd", getDiffAndSetStartPoint(e));
+	onresizeEnd(getDiffAndSetStartPoint(e));
 	
 	off(div, "pointermove", pointermove);
 	off(div, "pointerup", pointerup);
@@ -105,5 +106,5 @@ function pointerup(e) {
 	id="main"
 	class={position}
 	style={inlineStyle({cursor})}
-	on:pointerdown={pointerdown}
+	onpointerdown={pointerdown}
 ></div>

@@ -1,15 +1,17 @@
 <script lang="ts">
 import {onMount, setContext, getContext, createEventDispatcher, tick} from "svelte";
 
-export let app;
-export let entry;
-export let selected;
+let {
+	app,
+	entry,
+	selected,
+} = $props();
 
-let {isNew, name} = entry;
+let {isNew, name} = $state(entry);
 
-let nameInput;
-let nameInputValue = name || "";
-let renaming = false;
+let nameInput = $state();
+let nameInputValue = $state(name || "");
+let renaming = $state(false);
 
 function update() {
 	({name} = entry);
@@ -115,9 +117,9 @@ onMount(function() {
 <div
 	id="main"
 	class:selected
-	on:mousedown={(e) => mousedown(e, entry)}
-	on:dblclick={() => app.dblclick(entry)}
-	on:contextmenu={(e) => contextmenu(e, entry)}
+	onmousedown={(e) => mousedown(e, entry)}
+	ondblclick={() => app.dblclick(entry)}
+	oncontextmenu={(e) => contextmenu(e, entry)}
 >
 	<div
 		id="icon"
@@ -129,8 +131,8 @@ onMount(function() {
 			<input
 				bind:this={nameInput}
 				bind:value={nameInputValue}
-				on:keydown={nameInputKeydown}
-				on:blur={onBlur}
+				onkeydown={nameInputKeydown}
+				onblur={onBlur}
 			>
 		</div>
 	{:else}

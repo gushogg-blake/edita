@@ -1,9 +1,12 @@
 <script lang="ts">
 import Accel from "components/utils/Accel.svelte";
 
-export let value = false;
-export let label;
-export let disabled = false;
+let {
+	value = $bindable(false),
+	label,
+	disabled = false,
+	onchange = () => {},
+} = $props();
 </script>
 
 <style lang="scss">
@@ -19,7 +22,7 @@ label {
 	<input
 		bind:checked={value}
 		type="checkbox"
-		on:change
+		{onchange}
 		{disabled}
 	>
 	<Accel {label}/>

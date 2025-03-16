@@ -9,8 +9,8 @@ let {editor} = app.selectedTab;
 let startCursor = editor.normalSelection.right;
 let session;
 
-let main;
-let input;
+let main = $state();
+let input = $state();
 let search;
 let type = "plain";
 let caseMode = "caseSensitive";
@@ -121,9 +121,9 @@ onMount(function() {
 >
 	<input
 		bind:this={input}
-		on:keydown={inputKeydown}
-		on:input={onInput}
+		onkeydown={inputKeydown}
+		oninput={onInput}
 	>
 	<Spacer/>
-	<button on:click={close}>x</button>
+	<button onclick={close}>x</button>
 </div>

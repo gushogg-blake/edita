@@ -6,7 +6,7 @@ import TabPane from "./TabPane.svelte";
 let app = getContext("app");
 
 let {bottomPanes} = app;
-let {tools, output, top, bottom, containerHeight} = bottomPanes;
+let {tools, output, top, bottom, containerHeight} = $state(bottomPanes);
 
 function update() {
 	({containerHeight} = bottomPanes);
@@ -28,9 +28,9 @@ function onOutputResizeEnd({detail: diff}) {
 	bottomPanes.resizeAndSaveOutput(diff);
 }
 
-$: mainStyle = {
+let mainStyle = $derived({
 	height: containerHeight,
-};
+});
 
 onMount(function() {
 	let teardown = [
@@ -56,13 +56,13 @@ onMount(function() {
 	<TabPane
 		pane={tools}
 		state={top}
-		on:resize={onToolsResize}
-		on:resizeEnd={onToolsResizeEnd}
+		onresize={onToolsResize}
+		onresizeEnd={onToolsResizeEnd}
 	/>
 	<TabPane
 		pane={output}
 		state={bottom}
-		on:resize={onOutputResize}
-		on:resizeEnd={onOutputResizeEnd}
+		onresize={onOutputResize}
+		onresizeEnd={onOutputResizeEnd}
 	/>
 </div>

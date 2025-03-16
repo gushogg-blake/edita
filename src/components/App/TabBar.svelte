@@ -7,7 +7,7 @@ let app = getContext("app");
 let {
 	tabs,
 	selectedTab,
-} = app;
+} = $state(app);
 
 function getDetails(tabs, tab) {
 	return tab;
@@ -122,8 +122,8 @@ onMount(function() {
 	{getDetails}
 	{getContextMenuItems}
 	reorderable
-	on:select={select}
-	on:close={close}
-	on:reorder={reorder}
-	on:dblclick={dblclick}
+	onselect={select}
+	onclose={close}
+	onreorder={reorder}
+	ondblclick={dblclick}
 />

@@ -30,10 +30,12 @@ lang is for setting the language in textarea mode, where there isn't a file
 to guess the language from.
 */
 
-export let editor = null;
-export let value = ""; // readonly - call setValue to set
-export let lang = null;
-export let border = false;
+let {
+	editor = $bindable(null),
+	value = $bindable(""),
+	lang = null,
+	border = false,
+} = $props();
 
 export function setValue(value) {
 	editor.setValue(value);
@@ -65,16 +67,16 @@ let {
 
 let revisionCounter = 0;
 let mounted = false;
-let main;
-let canvasDiv;
-let measurementsDiv;
-let canvases = {};
+let main = $state();
+let canvasDiv = $state();
+let measurementsDiv = $state();
+let canvases = $state({});
 let contexts = {};
 let rowHeightPadding = 2;
 
-let verticalScrollbar;
-let horizontalScrollbar;
-let showingHorizontalScrollbar = !view.wrap;
+let verticalScrollbar = $state();
+let horizontalScrollbar = $state();
+let showingHorizontalScrollbar = $state(!view.wrap);
 
 let windowHasFocus;
 
@@ -705,55 +707,55 @@ canvas {
 <div
 	bind:this={main}
 	id="main"
-	on:wheel={wheel}
+	onwheel={wheel}
 	class="edita"
 	class:showingHorizontalScrollbar
 	class:border
 	tabindex="0"
-	on:focus={onFocus}
-	on:blur={onBlur}
-	on:keydown={keydown}
+	onfocus={onFocus}
+	onblur={onBlur}
+	onkeydown={keydown}
 >
 	<div
 		id="canvas"
 		bind:this={canvasDiv}
 	>
 		<div class="layer">
-			<canvas bind:this={canvases.background}/>
+			<canvas bind:this={canvases.background}></canvas>
 		</div>
 		<div class="layer">
-			<canvas bind:this={canvases.foldHilites}/>
+			<canvas bind:this={canvases.foldHilites}></canvas>
 		</div>
 		<div class="layer">
-			<canvas bind:this={canvases.hilites}/>
+			<canvas bind:this={canvases.hilites}></canvas>
 		</div>
 		<div class="layer">
-			<canvas bind:this={canvases.code}/>
+			<canvas bind:this={canvases.code}></canvas>
 		</div>
 		<div class="layer">
-			<canvas bind:this={canvases.margin}/>
+			<canvas bind:this={canvases.margin}></canvas>
 		</div>
 		<div class="layer">
 			<InteractionLayer
 				{document}
 				{editor}
 				{view}
-				on:mousedown={mousedown}
-				on:mouseenter={mouseenter}
-				on:mouseleave={mouseleave}
-				on:mousemove={mousemove}
-				on:mouseup={mouseup}
-				on:contextmenu={contextmenu}
-				on:middlepress={middlepress}
-				on:click={click}
-				on:dblclick={dblclick}
-				on:dragstart={dragstart}
-				on:dragover={dragover}
-				on:dragend={dragend}
-				on:dragenter={dragenter}
-				on:dragleave={dragleave}
-				on:drop={drop}
-				on:marginMousedown={marginMousedown}
+				onmousedown={mousedown}
+				onmouseenter={mouseenter}
+				onmouseleave={mouseleave}
+				onmousemove={mousemove}
+				onmouseup={mouseup}
+				oncontextmenu={contextmenu}
+				onmiddlepress={middlepress}
+				onclick={click}
+				ondblclick={dblclick}
+				ondragstart={dragstart}
+				ondragover={dragover}
+				ondragend={dragend}
+				ondragenter={dragenter}
+				ondragleave={dragleave}
+				ondrop={drop}
+				onmarginMousedown={marginMousedown}
 			/>
 		</div>
 	</div>
@@ -764,7 +766,7 @@ canvas {
 		<Scrollbar
 			bind:this={verticalScrollbar}
 			orientation="vertical"
-			on:scroll={verticalScroll}
+			onscroll={verticalScroll}
 		/>
 	</div>
 	<div
@@ -775,7 +777,7 @@ canvas {
 		<Scrollbar
 			bind:this={horizontalScrollbar}
 			orientation="horizontal"
-			on:scroll={horizontalScroll}
+			onscroll={horizontalScroll}
 		/>
 	</div>
 	{#if showingHorizontalScrollbar}

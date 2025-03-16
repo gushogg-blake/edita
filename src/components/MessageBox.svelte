@@ -5,16 +5,19 @@ import clickElementFromAccel from "utils/dom/clickElementFromAccel";
 import Accel from "components/utils/Accel.svelte";
 import Gap from "components/utils/Gap.svelte";
 
-export let options;
+let {
+	options,
+	onresponse = () => {},
+} = $props();
 
 let fire = createEventDispatcher();
 
 let {message, buttons} = options;
 
-let main;
+let main = $state();
 
 function respond(response) {
-	fire("response", response);
+	onresponse(response);
 }
 
 let functions = {
@@ -61,7 +64,7 @@ onMount(function() {
 }
 </style>
 
-<div bind:this={main} id="main" tabindex="0" on:keydown={keydown}>
+<div bind:this={main} id="main" tabindex="0" onkeydown={keydown}>
 	<Gap heightEm={1}/>
 	<div id="message">
 		{message}
@@ -69,7 +72,7 @@ onMount(function() {
 	<Gap heightEm={1}/>
 	<div id="buttons">
 		{#each buttons as button, i}
-			<button on:click={() => respond(i)}>
+			<button onclick={() => respond(i)}>
 				<Accel label={button}/>
 			</button>
 		{/each}

@@ -1,23 +1,31 @@
 <script lang="ts">
+import {run} from 'svelte/legacy';
 import {onMount, createEventDispatcher, getContext, tick} from "svelte";
 import screenOffsets from "utils/dom/screenOffsets";
 import scrollIntoView from "utils/dom/scrollIntoView";
 import Gap from "components/utils/Gap.svelte";
 
-export let border = false;
-export let showBorder = true;
-export let tabs;
-export let selectedTab;
-export let getDetails;
-export let getContextMenuItems = null;
-export let reorderable = false;
-export let mimeType = "application/vnd.editor.tab";
+let {
+	border = false,
+	showBorder = true,
+	tabs,
+	selectedTab,
+	getDetails,
+	getContextMenuItems = null,
+	reorderable = false,
+	mimeType = "application/vnd.editor.tab",
+	onclick = () => {},
+	onselect = () => {},
+	ondblclick = () => {},
+	onclose = () => {},
+	onreorder = () => {},
+} = $props();
 
 let app = getContext("app");
 
 let fire = createEventDispatcher();
 
-let main;
+let main = $state();
 let mounted = false;
 let isMounted = () => mounted;
 
@@ -26,15 +34,15 @@ async function mousedownTab(e, tab) {
 		return;
 	}
 	
-	fire("select", tab);
+	onselect(tab);
 }
 
 function dblclickTab(e, tab) {
-	fire("dblclick", tab);
+	ondblclick(tab);
 }
 
 function closeTab(tab) {
-	fire("close", tab);
+	onclose(tab);
 }
 
 function auxclickTab(e, tab) {
@@ -61,7 +69,7 @@ function wheel(e) {
 	main.scrollLeft += e.deltaY * 2;
 }
 
-let dropIndex = null;
+let dropIndex = $state(null);
 let dragging = false;
 
 function tabIndexFromMouseEvent(e) {
@@ -100,7 +108,7 @@ function dragover(e) {
 function drop(e) {
 	e.preventDefault();
 	
-	fire("reorder", {
+	onreorder({
 		tab: selectedTab,
 		index: tabIndexFromMouseEvent(e),
 	});
@@ -133,9 +141,11 @@ async function scrollSelectedTabIntoView() {
 	scrollIntoView(tabButton, main);
 }
 
-$: if (isMounted() && [tabs, selectedTab]) {
-	scrollSelectedTabIntoView();
-}
+run(() => {
+		if (isMounted() && [tabs, selectedTab]) {
+		scrollSelectedTabIntoView();
+	}
+	});
 
 onMount(function() {
 	mounted = true;
@@ -224,9 +234,9 @@ button {
 <div
 	bind:this={main}
 	id="main"
-	on:wheel={wheel}
-	on:dragover={dragover}
-	on:drop={drop}
+	onwheel={wheel}
+	ondragover={dragover}
+	ondrop={drop}
 >
 	{#each tabs as tab, i (tab)}
 		{#if dropIndex === i}
@@ -240,13 +250,13 @@ button {
 			class:border
 			class:closeable={getDetails(tabs, tab).closeable}
 			class:isSelected={tabIsSelected(tab, selectedTab)}
-			on:mousedown={(e) => mousedownTab(e, tab)}
-			on:dblclick={(e) => dblclickTab(e, tab)}
-			on:auxclick={(e) => auxclickTab(e, tab)}
-			on:contextmenu={(e) => showContextMenu(e, tab)}
+			onmousedown={(e) => mousedownTab(e, tab)}
+			ondblclick={(e) => dblclickTab(e, tab)}
+			onauxclick={(e) => auxclickTab(e, tab)}
+			oncontextmenu={(e) => showContextMenu(e, tab)}
 			draggable={reorderable}
-			on:dragstart={dragstart}
-			on:dragend={dragend}
+			ondragstart={dragstart}
+			ondragend={dragend}
 			use:registerTabButton={tab}
 		>
 			<div class="name">
@@ -254,7 +264,7 @@ button {
 			</div>
 			{#if getDetails(tabs, tab).closeable}
 				<div class="controls">
-					<button on:click={() => closeTab(tab)}>x</button>
+					<button onclick={() => closeTab(tab)}>x</button>
 				</div>
 			{/if}
 		</div>

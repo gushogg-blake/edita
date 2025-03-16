@@ -1,4 +1,6 @@
 <script lang="ts">
+import {run} from "svelte/legacy";
+
 import {onMount, tick, getContext, createEventDispatcher} from "svelte";
 import mapObject from "utils/mapObject";
 import getKeyCombo from "utils/getKeyCombo";
@@ -9,16 +11,18 @@ import Accel from "components/utils/Accel.svelte";
 import AccelLabel from "components/utils/AccelLabel.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 
-let fire = createEventDispatcher();
+let {
+	onclose = () => {},
+} = $props();
 
 let app = getContext("app");
 
 let {findAndReplace} = app;
-let {options, history} = findAndReplace;
+let {options, history} = $state(findAndReplace);
 let {multiPathSeparator} = platform.systemInfo;
 
-let searchInput;
-let session = null;
+let searchInput = $state();
+let session = $state(null);
 let optionsChangedSinceLastInit = false;
 let mounted = false;
 let isMounted = () => mounted;
@@ -76,31 +80,37 @@ function getOptions(formOptions) {
 	};
 }
 
-let formOptions = getFormOptions(options);
+let formOptions = $state(getFormOptions(options));
 
-$: options = getOptions(formOptions);
-
-$: optionsChanged(options);
-
-$: if (isMounted()) {
-	let {
-		regex,
-		caseMode,
-		word,
-		searchInSubDirs,
-		includePatterns,
-		excludePatterns,
-	} = options;
-	
-	findAndReplace.saveOptions({
-		regex,
-		caseMode,
-		word,
-		searchInSubDirs,
-		includePatterns,
-		excludePatterns,
+run(() => {
+		options = getOptions(formOptions);
 	});
-}
+
+run(() => {
+		optionsChanged(options);
+	});
+
+run(() => {
+		if (isMounted()) {
+		let {
+			regex,
+			caseMode,
+			word,
+			searchInSubDirs,
+			includePatterns,
+			excludePatterns,
+		} = options;
+		
+		findAndReplace.saveOptions({
+			regex,
+			caseMode,
+			word,
+			searchInSubDirs,
+			includePatterns,
+			excludePatterns,
+		});
+	}
+	});
 
 function init() {
 	if (optionsChangedSinceLastInit) {
@@ -133,7 +143,7 @@ let functions = {
 		let results = await findAndReplace.findAll(options);
 		
 		if (results.length > 0) {
-			fire("close");
+			onclose();
 		} else {
 			endSession({total: 0});
 		}
@@ -143,7 +153,7 @@ let functions = {
 		let results = await findAndReplace.replaceAll(options);
 		
 		if (results.length > 0) {
-			fire("close");
+			onclose();
 		} else {
 			endSession({total: 0});
 		}
@@ -194,7 +204,7 @@ let functions = {
 	},
 	
 	close() {
-		fire("close");
+		onclose();
 	},
 };
 
@@ -376,8 +386,8 @@ onMount(function() {
 
 <form
 	id="main"
-	on:submit={submit}
-	on:keydown={keydown}
+	onsubmit={submit}
+	onkeydown={keydown}
 	autocomplete="off"
 	tabindex="0"
 	use:accels
@@ -386,7 +396,7 @@ onMount(function() {
 	<div id="historyWrapper">
 		<div id="history">
 			{#each history as {options}}
-				<div class="historyEntry" on:click={() => applyHistoryEntry(options)}>
+				<div class="historyEntry" onclick={() => applyHistoryEntry(options)}>
 					{options.search}
 				</div>
 			{/each}
@@ -440,24 +450,24 @@ onMount(function() {
 	</div>
 	<div id="actions">
 		{#if formOptions.replace}
-			<button on:click={actions.findNext} disabled={!formOptions.search}>
+			<button onclick={actions.findNext} disabled={!formOptions.search}>
 				<Accel label="%Find next"/>
 			</button>
-			<button on:click={actions.replace} disabled={!formOptions.search}>
+			<button onclick={actions.replace} disabled={!formOptions.search}>
 				<Accel label="Re%place"/>
 			</button>
-			<button on:click={actions.replaceAll} disabled={!formOptions.search}>
+			<button onclick={actions.replaceAll} disabled={!formOptions.search}>
 				<Accel label="Replace %all"/>
 			</button>
 			<Checkbox bind:value={formOptions.showResults} label="Sh%ow results"/>
 		{:else}
-			<button on:click={actions.findPrevious} disabled={!formOptions.search}>
+			<button onclick={actions.findPrevious} disabled={!formOptions.search}>
 				<Accel label="Find pre%vious"/>
 			</button>
-			<button on:click={actions.findNext} disabled={!formOptions.search}>
+			<button onclick={actions.findNext} disabled={!formOptions.search}>
 				<Accel label="%Find next"/>
 			</button>
-			<button on:click={actions.findAll} disabled={!formOptions.search}>
+			<button onclick={actions.findAll} disabled={!formOptions.search}>
 				<Accel label="Find %all"/>
 			</button>
 		{/if}

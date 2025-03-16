@@ -6,9 +6,9 @@ let app = getContext("app");
 
 let {fileTree} = app;
 
-let dirSelector;
-let {rootEntry} = fileTree;
-let background;
+let dirSelector = $state();
+let {rootEntry} = $state(fileTree);
+let background = $state();
 
 function onUpdateRootDir() {
 	({rootEntry} = fileTree);
@@ -138,18 +138,18 @@ onMount(async function() {
 		<div
 			bind:this={dirSelector}
 			id="dirSelector"
-			on:mousedown={openDirMenu}
-			on:contextmenu={contextmenu}
+			onmousedown={openDirMenu}
+			oncontextmenu={contextmenu}
 			title={rootEntry.node.path}
 		>
 			{rootEntry.node.name}
 		</div>
 	</div>
-	<div id="list" on:wheel={wheel}>
+	<div id="list" onwheel={wheel}>
 		<div
 			bind:this={background}
 			id="scroll"
-			on:dblclick={dblclickBackground}
+			ondblclick={dblclickBackground}
 		>
 			<FileTree/>
 		</div>

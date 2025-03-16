@@ -1,3 +1,4 @@
+import {mount} from "svelte";
 import Base from "modules/Base";
 import App from "modules/App";
 import components from "components";
@@ -35,7 +36,7 @@ export default async function(options) {
 			
 			await app.init();
 			
-			let appComponent = new AppComponent({
+			let appComponent = mount(AppComponent, {
 				target: el,
 				
 				props: {

@@ -4,7 +4,7 @@ import Gap from "components/utils/Gap.svelte";
 
 let app = getContext("app");
 
-let snippetsByLang;
+let snippetsByLang = $state();
 
 function updateSnippetGroups() {
 	snippetsByLang = {};
@@ -151,8 +151,8 @@ onMount(function() {
 					{#each snippets as snippet}
 						<div
 							class="entry snippet"
-							on:click={() => app.editSnippet(snippet.id)}
-							on:contextmenu={(e) => showContextMenuForSnippet(e, snippet)}
+							onclick={() => app.editSnippet(snippet.id)}
+							oncontextmenu={(e) => showContextMenuForSnippet(e, snippet)}
 						>
 							<div class="icon fileIcon"></div>
 							<div class="name">
@@ -162,7 +162,7 @@ onMount(function() {
 					{/each}
 					<div
 						class="entry snippet"
-						on:click={() => newSnippetInList(snippets)}
+						onclick={() => newSnippetInList(snippets)}
 					>
 						<div class="icon fileIcon"></div>
 						<div class="name">
@@ -173,7 +173,7 @@ onMount(function() {
 			{/each}
 			<div
 				class="entry snippet"
-				on:click={() => newSnippet()}
+				onclick={() => newSnippet()}
 			>
 				<div class="icon fileIcon"></div>
 				<div class="name">

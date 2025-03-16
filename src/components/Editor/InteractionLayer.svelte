@@ -7,21 +7,37 @@ import getDistanceBetweenMouseEvents from "utils/dom/getDistanceBetweenMouseEven
 import drag from "./utils/drag";
 import createDragEvent from "./utils/createDragEvent";
 
-export let document;
-export let editor;
-export let view;
+let {
+	document,
+	editor,
+	view,
+	onmiddlepress = () => {},
+	ondblclick = () => {},
+	onmousedown = () => {},
+	onmousemove = () => {},
+	onmouseup = () => {},
+	onclick = () => {},
+	onmarginMousedown = () => {},
+	onmouseenter = () => {},
+	onmouseleave = () => {},
+	oncontextmenu = () => {},
+	ondragstart = () => {},
+	ondragover = () => {},
+	ondragenter = () => {},
+	ondragleave = () => {},
+	ondrop = () => {},
+	ondragend = () => {},
+} = $props();
 
-let fire = createEventDispatcher();
-
-let interactionDiv;
-let hoveredPickOption;
-let selectedPickOption;
-let draggable = false;
-let useSyntheticDrag;
-let currentDropTarget;
+let interactionDiv = $state();
+let hoveredPickOption = $state();
+let selectedPickOption = $state();
+let draggable = $state(false);
+let useSyntheticDrag = $state();
+let currentDropTarget = $state();
 let syntheticDrag = null;
-let dragStartedHere = false;
-let isDragging = false;
+let dragStartedHere = $state(false);
+let isDragging = $state(false);
 let lastMousedownWasDoubleClick = false;
 let lastMousedownEvent;
 let lastMousedownTime;
@@ -40,7 +56,7 @@ let {
 	scrollPosition,
 	measurements: {rowHeight, colWidth},
 	sizes,
-} = view;
+} = $state(view);
 
 let divToPickOption = new Map();
 let divToDropTarget = new Map();
@@ -144,7 +160,7 @@ function mousedown(e) {
 	selectedPickOption = pickOptionFromMouseEvent(e);
 	
 	if (e.button === 1) {
-		fire("middlepress", {
+		onmiddlepress({
 			e,
 			pickOptionType: selectedPickOption?.type,
 		});
@@ -181,14 +197,14 @@ function mousedown(e) {
 		&& getDistanceBetweenMouseEvents(e, lastClickMousedownEvent) <= clickDistanceThreshold
 		&& isDoubleClickSpeed
 	) {
-		fire("dblclick", e);
+		ondblclick(e);
 		
 		lastMousedownWasDoubleClick = true;
 	} else {
 		lastMousedownWasDoubleClick = false;
 	}
 	
-	fire("mousedown", {
+	onmousedown({
 		e,
 		isDoubleClick: lastMousedownWasDoubleClick,
 		pickOptionType: selectedPickOption?.type,
@@ -215,7 +231,7 @@ function mousemove(e) {
 		hoveredPickOption = pickOptionFromMouseEvent(e);
 	}
 	
-	fire("mousemove", {
+	onmousemove({
 		e,
 		pickOptionType: hoveredPickOption?.type,
 	});
@@ -236,14 +252,14 @@ function mouseup(e) {
 	draggable = false;
 	useSyntheticDrag = false;
 	
-	fire("mouseup", e);
+	onmouseup(e);
 	
 	off(window, "mouseup", mouseup);
 }
 
 function click(e) {
 	if (!lastMousedownWasDoubleClick) {
-		fire("click", {
+		onclick({
 			e,
 			pickOptionType: hoveredPickOption?.type,
 		});
@@ -254,11 +270,11 @@ function click(e) {
 }
 
 function marginMousedown(e) {
-	fire("marginMousedown", e);
+	onmarginMousedown(e);
 }
 
 function mouseenter(e) {
-	fire("mouseenter", e);
+	onmouseenter(e);
 }
 
 function mouseleave(e) {
@@ -266,7 +282,7 @@ function mouseleave(e) {
 		return;
 	}
 	
-	fire("mouseleave", e);
+	onmouseleave(e);
 }
 
 function contextmenu(e) {
@@ -274,7 +290,7 @@ function contextmenu(e) {
 	
 	selectedPickOption = pickOptionFromMouseEvent(e);
 	
-	fire("contextmenu", {
+	oncontextmenu({
 		e,
 		pickOptionType: selectedPickOption?.type,
 	});
@@ -298,7 +314,7 @@ function dragstart(e) {
 	
 	e.dataTransfer.effectAllowed = "all";
 	
-	fire("dragstart", {
+	ondragstart({
 		e,
 		pickOptionType: mode === "ast" ? selectedPickOption?.type : null,
 	});
@@ -315,7 +331,7 @@ function dragover(e) {
 		currentDropTarget = dropTargetFromMouseEvent(e);
 	}
 	
-	fire("dragover", {
+	ondragover({
 		e,
 		dropTargetType: mode === "ast" ? currentDropTarget?.target?.type : null,
 	});
@@ -339,14 +355,14 @@ function drop(e) {
 			return;
 		}
 		
-		fire("drop", {
+		ondrop({
 			e,
 			fromUs: true,
 			toUs: true,
 			extra,
 		});
 	} else {
-		fire("drop", {
+		ondrop({
 			e,
 			fromUs: false,
 			toUs: true,
@@ -357,7 +373,7 @@ function drop(e) {
 
 function dragend(e) {
 	if (!justDropped) {
-		fire("drop", {
+		ondrop({
 			e,
 			fromUs: true,
 			toUs: false,
@@ -365,7 +381,7 @@ function dragend(e) {
 		});
 	}
 	
-	fire("dragend", e);
+	ondragend(e);
 	
 	justDropped = false;
 	draggable = false;
@@ -380,7 +396,7 @@ function dragenter(e) {
 	
 	isDragging = true;
 	
-	fire("dragenter", e);
+	ondragenter(e);
 }
 
 function dragleave(e) {
@@ -388,7 +404,7 @@ function dragleave(e) {
 	
 	isDragging = false;
 	
-	fire("dragleave", e);
+	ondragleave(e);
 }
 
 function onUpdateSizes() {
@@ -481,9 +497,9 @@ function targetIsActive(target, currentDropTarget) {
 	);
 }
 
-$: marginStyle = calculateMarginStyle(sizes, mode);
+let marginStyle = $derived(calculateMarginStyle(sizes, mode));
 
-$: codeStyle = calculateCodeStyle(sizes, mode, dragStartedHere);
+let codeStyle = $derived(calculateCodeStyle(sizes, mode, dragStartedHere));
 
 onMount(function() {
 	let teardown = [
@@ -589,7 +605,7 @@ onMount(function() {
 	<div
 		id="margin"
 		style={inlineStyle(marginStyle)}
-		on:mousedown={marginMousedown}
+		onmousedown={marginMousedown}
 	></div>
 	<div
 		id="code"
@@ -635,26 +651,26 @@ onMount(function() {
 			bind:this={interactionDiv}
 			id="interactionLayer"
 			draggable={draggable && !useSyntheticDrag}
-			on:mousedown={mousedown}
-			on:mousemove={mousemove}
-			on:mouseenter={mouseenter}
-			on:mouseleave={mouseleave}
-			on:dragstart={dragstart}
-			on:dragover={dragover}
-			on:drop={drop}
-			on:dragend={dragend}
-			on:dragenter={dragenter}
-			on:dragleave={dragleave}
-			on:contextmenu={contextmenu}
+			onmousedown={mousedown}
+			onmousemove={mousemove}
+			onmouseenter={mouseenter}
+			onmouseleave={mouseleave}
+			ondragstart={dragstart}
+			ondragover={dragover}
+			ondrop={drop}
+			ondragend={dragend}
+			ondragenter={dragenter}
+			ondragleave={dragleave}
+			oncontextmenu={contextmenu}
 		>
 			{#if completions}
 				<div
 					id="completions"
 					style={inlineStyle(completionsStyle(completions, rowHeight, colWidth, scrollPosition))}
-					on:wheel={e => e.stopPropagation()}
-					on:mousedown={e => e.stopPropagation()}
-					on:click={e => e.stopPropagation()}
-					on:dblclick={e => e.stopPropagation()}
+					onwheel={e => e.stopPropagation()}
+					onmousedown={e => e.stopPropagation()}
+					onclick={e => e.stopPropagation()}
+					ondblclick={e => e.stopPropagation()}
 				>
 					{#each completions.completions as completion}
 						<div

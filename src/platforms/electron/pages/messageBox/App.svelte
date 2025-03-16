@@ -2,7 +2,9 @@
 import themeStyle from "components/themeStyle";
 import MessageBox from "components/MessageBox.svelte";
 
-export let app;
+let {
+	app,
+} = $props();
 
 function respond({detail: response}) {
 	app.respond(response);
@@ -17,5 +19,5 @@ function respond({detail: response}) {
 </style>
 
 <div id="main" class="edita" style={themeStyle(base.theme.app)}>
-	<MessageBox options={app.options} on:response={respond}/>
+	<MessageBox options={app.options} onresponse={respond}/>
 </div>

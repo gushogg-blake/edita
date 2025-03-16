@@ -2,10 +2,12 @@
 import _typeof from "utils/typeof";
 import inlineStyle from "utils/dom/inlineStyle";
 
-export let width = null;
-export let height = null;
-export let widthEm = null;
-export let heightEm = null;
+let {
+	width = null,
+	height = null,
+	widthEm = null,
+	heightEm = null,
+} = $props();
 
 function getValue(pxOrNameValue, emValue) {
 	if (emValue) {
@@ -23,10 +25,10 @@ function getValue(pxOrNameValue, emValue) {
 	}
 }
 
-$: style = {
+let style = $derived({
 	width: getValue(width, widthEm),
 	height: getValue(height, heightEm),
-};
+});
 </script>
 
 <div id="main" style={inlineStyle(style)}></div>

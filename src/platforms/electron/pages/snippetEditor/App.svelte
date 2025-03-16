@@ -5,7 +5,9 @@ import clickElementFromAccel from "utils/dom/clickElementFromAccel";
 import themeStyle from "components/themeStyle";
 import SnippetEditor from "components/SnippetEditor.svelte";
 
-export let app;
+let {
+	app
+} = $props();
 
 async function saveAndExit({detail: snippet}) {
 	await app.save(snippet);
@@ -41,7 +43,7 @@ function keydown(e) {
 }
 </script>
 
-<svelte:window on:keydown={keydown}/>
+<svelte:window onkeydown={keydown}/>
 
 <style lang="scss">
 #main {
@@ -53,7 +55,7 @@ function keydown(e) {
 <div id="main" class="edita" style={themeStyle(base.theme.app)}>
 	<SnippetEditor
 		snippet={app.snippet}
-		on:saveAndExit={saveAndExit}
-		on:cancel={cancel}
+		onsaveAndExit={saveAndExit}
+		oncancel={cancel}
 	/>
 </div>

@@ -2,10 +2,10 @@
 import _typeof from "utils/typeof";
 import Accel from "components/utils/Accel.svelte";
 
-export let label;
+let props = $props();
 
-$: _for = $$props["for"];
-$: forType = _typeof(_for) === "String" ? "id" : "component";
+let _for = $derived(props["for"]);
+let forType = $derived(_typeof(_for) === "String" ? "id" : "component");
 
 function click() {
 	if (forType === "component") {
@@ -14,6 +14,6 @@ function click() {
 }
 </script>
 
-<label for={forType === "id" ? _for : null} {...$$restProps} on:click={click}>
-	<Accel {label}/>
+<label for={forType === "id" ? _for : null} {...props} onclick={click}>
+	<Accel {props.label}/>
 </label>

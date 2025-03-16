@@ -6,7 +6,7 @@ import AstHint from "./AstHint.svelte";
 
 let app = getContext("app");
 
-let {prefs} = base;
+let {prefs} = $state(base);
 
 function onPrefsUpdated() {
 	({prefs} = base);
@@ -60,35 +60,35 @@ onMount(function() {
 		<Checkbox
 			label="Theme style element"
 			value={prefs.dev.showThemeStyleElement}
-			on:change={(e) => base.setPref("dev.showThemeStyleElement", e.target.checked)}
+			onchange={(e) => base.setPref("dev.showThemeStyleElement", e.target.checked)}
 		/>
 		<Checkbox
 			label="Open refactor"
 			value={prefs.dev.openRefactor}
-			on:change={(e) => toggleOpenRefactor(e.target.checked)}
+			onchange={(e) => toggleOpenRefactor(e.target.checked)}
 		/>
 		<Checkbox
 			label="Open find & replace"
 			value={prefs.dev.openFindAndReplace}
-			on:change={(e) => toggleOpenFindAndReplace(e.target.checked)}
+			onchange={(e) => toggleOpenFindAndReplace(e.target.checked)}
 		/>
 		<Checkbox
 			label="Log focused element"
 			value={prefs.dev.logFocusedElement}
-			on:change={(e) => base.setPref("dev.logFocusedElement", e.target.checked)}
+			onchange={(e) => base.setPref("dev.logFocusedElement", e.target.checked)}
 		/>
 		<Checkbox
 			label="Show theme selector"
 			value={prefs.showThemeSelector}
-			on:change={(e) => base.setPref("showThemeSelector", e.target.checked)}
+			onchange={(e) => base.setPref("showThemeSelector", e.target.checked)}
 		/>
 		<Checkbox
 			label="Show AST hints"
 			value={prefs.dev.showAstHints}
-			on:change={(e) => base.setPref("dev.showAstHints", e.target.checked)}
+			onchange={(e) => base.setPref("dev.showAstHints", e.target.checked)}
 		/>
 		<Spacer/>
-		<button on:click={() => base.setPref("dev.showToolbar", false)}>
+		<button onclick={() => base.setPref("dev.showToolbar", false)}>
 			Hide
 		</button>
 	</div>

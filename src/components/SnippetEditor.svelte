@@ -5,7 +5,11 @@ import autoFocusAsync from "components/actions/autoFocusAsync";
 import Checkbox from "components/utils/Checkbox.svelte";
 import Editor from "components/Editor/Editor.svelte";
 
-export let snippet;
+let {
+	snippet,
+	onsaveAndExit = () => {},
+	oncancel = () => {},
+} = $props();
 
 let fire = createEventDispatcher();
 
@@ -16,15 +20,15 @@ let {
 	text,
 	isDynamic,
 	keyCombo: assignedKeyCombo,
-} = snippet;
+} = $state(snippet);
 
 langGroups = langGroups.join(", ");
 langs = langs.join(", ");
 
-let editor;
+let editor = $state();
 
 function cancel() {
-	fire("cancel");
+	oncancel();
 }
 
 function saveAndExit() {
@@ -32,7 +36,7 @@ function saveAndExit() {
 		return;
 	}
 	
-	fire("saveAndExit", {
+	onsaveAndExit({
 		name,
 		langGroups: langGroups.split(", "),
 		langs: langs.split(", "),
@@ -140,8 +144,8 @@ input#name {
 
 <form
 	id="main"
-	on:submit={submit}
-	on:keydown={keydown}
+	onsubmit={submit}
+	onkeydown={keydown}
 	autocomplete="off"
 >
 	<div id="details">
@@ -176,19 +180,19 @@ input#name {
 				bind:value={assignedKeyCombo}
 				id="keyCombo"
 				readonly
-				on:keydown={setKeyCombo}
+				onkeydown={setKeyCombo}
 			>
 		</div>
 	</div>
 	<!--<div class="options">-->
 	<!--	<Checkbox-->
 	<!--		bind:value={isDynamic}-->
-	<!--		on:change={onToggleDynamic}-->
+	<!--		onchange={onToggleDynamic}-->
 	<!--		label="Dynamic"-->
 	<!--	/>-->
 	<!--</div>-->
 	<div id="actions">
-		<button type="button" on:click={cancel}>Cancel</button>
+		<button type="button" onclick={cancel}>Cancel</button>
 		<button type="submit">OK</button>
 	</div>
 </form>

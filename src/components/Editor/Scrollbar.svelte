@@ -4,13 +4,14 @@ import {on, off} from "utils/dom/domEvents";
 import inlineStyle from "utils/dom/inlineStyle";
 import sleep from "utils/sleep";
 
-export let orientation;
+let {
+	orientation,
+	onscroll = () => {},
+} = $props();
 
 export function update(totalSize, pageSize, position) {
 	_update(totalSize, pageSize, position);
 }
-
-let fire = createEventDispatcher();
 
 let minThumbSize = 50;
 
@@ -18,12 +19,12 @@ let totalSize = 1;
 let pageSize = 1;
 let position = 0;
 
-let thumbContainer;
+let thumbContainer = $state();
 
-let containerSize = 0;
-let thumbSize = 0;
+let containerSize = $state(0);
+let thumbSize = $state(0);
 let thumbRange = 0;
-let thumbOffset = 0;
+let thumbOffset = $state(0);
 
 let startThumbOffset;
 let startEvent;
@@ -78,7 +79,7 @@ function mousemove(e) {
 		thumbOffset = newThumbOffset;
 		position = thumbOffset / thumbRange;
 		
-		fire("scroll", position);
+		onscroll(position);
 	});
 }
 
@@ -97,11 +98,11 @@ function _update(_totalSize, _pageSize, _position) {
 	updateSizes();
 }
 
-$: thumbStyle = {
+let thumbStyle = $derived({
 	[cssSizeKey]: thumbSize,
 	[cssPositionKey]: thumbOffset,
 	visibility: thumbSize === containerSize ? "hidden" : "visible",
-};
+});
 
 onMount(function() {
 	updateSizes();
@@ -157,7 +158,7 @@ onMount(function() {
 		<div
 			id="thumb"
 			style={inlineStyle(thumbStyle)}
-			on:mousedown={mousedown}
+			onmousedown={mousedown}
 		></div>
 	</div>
 </div>

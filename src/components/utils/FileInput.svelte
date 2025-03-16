@@ -1,11 +1,11 @@
 <script lang="ts">
-import {createEventDispatcher} from "svelte";
 import bluebird from "bluebird";
 import lid from "utils/lid";
 
-export let multiple = false;
-
-let fire = createEventDispatcher();
+let {
+	multiple = false,
+	onupload = () => {},
+} = $props();
 
 let id = lid();
 
@@ -30,7 +30,7 @@ function readFile(file) {
 async function upload(e) {
 	let input = e.target;
 	
-	fire("upload", await bluebird.map(input.files, readFile));
+	onupload(await bluebird.map(input.files, readFile));
 	
 	input.value = "";
 }
@@ -46,7 +46,7 @@ async function upload(e) {
 		{id}
 		class="hideInput"
 		{multiple}
-		on:change={upload}
+		onchange={upload}
 	>
 	<label for={id}>
 		Open

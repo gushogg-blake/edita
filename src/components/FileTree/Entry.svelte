@@ -1,34 +1,43 @@
 <script lang="ts">
-import {getContext, onMount, tick, createEventDispatcher} from "svelte";
+import {run} from "svelte/legacy";
+import {getContext, onMount, tick} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
+import Entry from "./Entry.svelte";
 
-export let entry;
-export let isRoot = false;
-export let selectedEntry;
-export let level = -1;
-
-let fire = createEventDispatcher();
+let {
+	entry,
+	isRoot = false,
+	selectedEntry,
+	level = -1,
+	onmakeRoot = () => {},
+	oncontextmenu = () => {},
+	onopen = () => {},
+	onselect = () => {},
+} = $props();
 
 let app = getContext("app");
 
 let {fileTree} = app;
-let {expandedDirs} = fileTree;
+let {expandedDirs} = $state(fileTree);
 
 let {node, isDir} = entry;
 let {name} = node;
 let showEntry = !isRoot;
-let expanded;
-let entries = [];
+let expanded = $state();
+let entries = $state([]);
 let loaded = false;
-let showHiddenFiles = base.getPref("showHiddenFiles");
+let showHiddenFiles = $state(base.getPref("showHiddenFiles"));
 
-$: dirs = entries.filter(e => e.isDir);
-$: files = entries.filter(e => !e.isDir);
-$: expanded = isRoot || isDir && expandedDirs.has(entry.path);
+let dirs = $derived(entries.filter(e => e.isDir));
+let files = $derived(entries.filter(e => !e.isDir));
 
-$: filteredEntries = [...dirs, ...files].filter(function(entry) {
-	return showHiddenFiles || !entry.node.name.startsWith(".");
+run(() => {
+	expanded = isRoot || isDir && expandedDirs.has(entry.path);
 });
+
+let filteredEntries = $derived([...dirs, ...files].filter(function(entry) {
+	return showHiddenFiles || !entry.node.name.startsWith(".");
+}));
 
 async function update() {
 	({expandedDirs} = fileTree);
@@ -56,26 +65,28 @@ function toggle() {
 
 function dblclick() {
 	if (isDir) {
-		fire("makeRoot", entry);
+		onmakeRoot(entry);
 	} else {
-		fire("open", entry);
+		onopen(entry);
 	}
 }
 
 function contextmenu(e) {
-	fire("contextmenu", {
+	oncontextmenu({
 		e,
 		entry,
 	});
 }
 
 function select() {
-	fire("select", entry);
+	onselect(entry);
 }
 
-$: if (expanded) {
-	update();
-}
+run(() => {
+	if (expanded) {
+		update();
+	}
+});
 
 function onPrefsUpdated() {
 	showHiddenFiles = base.getPref("showHiddenFiles");
@@ -170,17 +181,17 @@ onMount(function() {
 		<div
 			id="entry"
 			class:selected={entry === selectedEntry}
-			on:mousedown={select}
-			on:dblclick={dblclick}
-			on:contextmenu={contextmenu}
+			onmousedown={select}
+			ondblclick={dblclick}
+			oncontextmenu={contextmenu}
 			style={inlineStyle(entryStyle)}
 		>
 			<div id="actions">
 				<div
 					class="button"
 					style={inlineStyle(buttonStyle)}
-					on:click={toggle}
-					on:dblclick={e => e.stopPropagation()}
+					onclick={toggle}
+					ondblclick={e => e.stopPropagation()}
 				>
 					{expanded ? "-" : "+"}
 				</div>
@@ -198,12 +209,12 @@ onMount(function() {
 	{#if expanded}
 		<div id="entries">
 			{#each filteredEntries as entry (entry.path)}
-				<svelte:self
+				<Entry
 					{entry}
-					on:select
-					on:open
-					on:contextmenu
-					on:makeRoot
+					onselect
+					onopen
+					oncontextmenu
+					onmakeRoot
 					{selectedEntry}
 					level={level + 1}
 				/>

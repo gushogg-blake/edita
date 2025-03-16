@@ -21,19 +21,22 @@ import DevToolbar from "./DevToolbar/DevToolbar.svelte";
 
 import DevFileChooserTab from "./DevFileChooserTab.svelte";
 
-export let app;
+let {
+	app,
+} = $props();
 
-let main;
+let main = $state();
 
 setContext("app", app);
 
-let {prefs, theme} = base;
+// NOTE not sure about this -- should we destructure base first? or use let prefs = $state(base.prefs)?
+let {prefs, theme} = $state(base);
 
 let {
 	tabs,
 	selectedTab,
 	panes,
-} = app;
+} = $state(app);
 
 let tabComponents = {
 	editor: EditorTab,
@@ -41,7 +44,7 @@ let tabComponents = {
 	devFileChooser: DevFileChooserTab,
 };
 
-let showingFindBar = false;
+let showingFindBar = $state(false);
 
 // ENTRYPOINT global key presses (handler installed on main div below)
 
@@ -126,7 +129,7 @@ onMount(function() {
 });
 </script>
 
-<svelte:window on:resize={() => app.resize()}/>
+<svelte:window onresize={() => app.resize()}/>
 
 <style lang="scss">
 @use "utils";
@@ -219,11 +222,11 @@ onMount(function() {
 	id="main"
 	class="edita"
 	style={themeStyle(theme.app)}
-	on:dragover={dragover}
-	on:drop={drop}
-	on:keydown={keydown}
-	on:mousedown={mousedown}
-	on:contextmenu={e => e.preventDefault()}
+	ondragover={dragover}
+	ondrop={drop}
+	onkeydown={keydown}
+	onmousedown={mousedown}
+	oncontextmenu={e => e.preventDefault()}
 	tabindex="0"
 	use:labelClick
 >
@@ -247,8 +250,9 @@ onMount(function() {
 	</div>
 	<div id="editor">
 		{#each tabs as tab (tab)}
+			{@const SvelteComponent = tabComponents[tab.type]}
 			<div class="tab" class:selected={tab === selectedTab}>
-				<svelte:component this={tabComponents[tab.type]} {tab}/>
+				<SvelteComponent {tab}/>
 			</div>
 		{/each}
 	</div>

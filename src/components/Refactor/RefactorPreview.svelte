@@ -4,16 +4,18 @@ import inlineStyle from "utils/dom/inlineStyle";
 import Gap from "components/utils/Gap.svelte";
 import Editor from "components/Editor/Editor.svelte";
 
-export let refactorPreview;
+let {
+	refactorPreview,
+} = $props();
 
 let {
 	paths,
 	selectedFile,
-} = refactorPreview;
+} = $state(refactorPreview);
 
-let astHintDiv;
+let astHintDiv = $state();
 
-let astHint;
+let astHint = $state();
 
 function onSelectPath() {
 	({selectedFile} = refactorPreview);
@@ -101,7 +103,7 @@ onMount(function() {
 			<div>
 				<select
 					class="compact"
-					on:change={(e) => refactorPreview.selectPath(e.target.value)}
+					onchange={(e) => refactorPreview.selectPath(e.target.value)}
 					value={selectedFile?.path}
 				>
 					{#each paths as path}

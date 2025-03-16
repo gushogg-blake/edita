@@ -8,7 +8,9 @@ import Accel from "components/utils/Accel.svelte";
 import Spacer from "components/utils/Spacer.svelte";
 import Entry from "./Entry.svelte";
 
-export let app;
+let {
+	app,
+} = $props();
 
 let {
 	mode,
@@ -18,13 +20,13 @@ let {
 	name,
 	bookmarks,
 	breadcrumbs,
-} = app;
+} = $state(app);
 
-let showHiddenFiles = base.getPref("fileChooser.showHiddenFiles");
+let showHiddenFiles = $state(base.getPref("fileChooser.showHiddenFiles"));
 
-let input;
-let inputValue = name;
-let newFolderEntry = null;
+let input = $state();
+let inputValue = $state(name);
+let newFolderEntry = $state(null);
 
 function updateMain() {
 	({dir, entries, breadcrumbs, selectedEntries} = app);
@@ -99,9 +101,9 @@ function onNewFolderCreated() {
 	newFolderEntry = null;
 }
 
-$: filteredEntries = entries.filter(function(entry) {
+let filteredEntries = $derived(entries.filter(function(entry) {
 	return showHiddenFiles || !entry.node.name.startsWith(".");
-});
+}));
 
 onMount(async function() {
 	let teardown = [
@@ -137,7 +139,7 @@ onMount(async function() {
 });
 </script>
 
-<svelte:window on:keydown={keydown}/>
+<svelte:window onkeydown={keydown}/>
 
 <style lang="scss">
 @use "utils";
@@ -256,19 +258,19 @@ input {
 		<div class="flex">
 			<div id="breadcrumbs">
 				{#each breadcrumbs as node}
-					<div class="breadcrumb" on:click={() => app.nav(node.path)}>
+					<div class="breadcrumb" onclick={() => app.nav(node.path)}>
 						{node.name}
 					</div>
 				{/each}
 			</div>
 			<Spacer/>
-			<button on:click={newFolder}>+</button>
+			<button onclick={newFolder}>+</button>
 		</div>
 	</div>
 	<div id="cols">
 		<div id="left">
 			{#each bookmarks as dir}
-				<div class="entry" on:click={() => app.nav(dir)}>
+				<div class="entry" onclick={() => app.nav(dir)}>
 					<div class="icon dirIcon"></div>
 					<div class="name">
 						{platform.fs(dir).name}
@@ -289,10 +291,10 @@ input {
 	</div>
 	<div id="controls">
 		<Spacer/>
-		<button on:click={() => app.cancel()}>
+		<button onclick={() => app.cancel()}>
 			<Accel label="%Cancel"/>
 		</button>
-		<button on:click={() => app.ok(inputValue)}>
+		<button onclick={() => app.ok(inputValue)}>
 			<Accel label={mode === "save" ? "%Save" : "%Open"}/>
 		</button>
 	</div>

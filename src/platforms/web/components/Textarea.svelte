@@ -3,13 +3,15 @@ import {onMount} from "svelte";
 import themeStyle from "components/themeStyle";
 import Editor from "components/Editor/Editor.svelte";
 
+let props = $props();
+
 export function setValue(value) {
 	editor.setValue(value);
 }
 
-let editor;
+let editor = $state();
 
-let {theme} = base;
+let {theme} = $state(base);
 
 function onThemeUpdated() {
 	({theme} = base);
@@ -39,5 +41,5 @@ onMount(function() {
 	id="main"
 	style={themeStyle(theme.app)}
 >
-	<Editor bind:this={editor} border {...$$props}/>
+	<Editor bind:this={editor} border {...props}/>
 </div>

@@ -2,7 +2,9 @@
 import {onMount} from "svelte";
 import RefactorPreview from "components/Refactor/RefactorPreview.svelte";
 
-export let tab;
+let {
+	tab,
+} = $props();
 
 let {refactorPreview} = tab;
 

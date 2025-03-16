@@ -1,4 +1,6 @@
 <script lang="ts">
+	import {run, preventDefault} from 'svelte/legacy';
+
 import {onMount, getContext, createEventDispatcher} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import accels from "components/actions/accels";
@@ -8,7 +10,9 @@ import Gap from "components/utils/Gap.svelte";
 import Spacer from "components/utils/Spacer.svelte";
 import Editor from "components/Editor/Editor.svelte";
 
-export let refactor;
+let {
+	refactor,
+} = $props();
 
 let fire = createEventDispatcher();
 
@@ -18,12 +22,11 @@ let {
 	options,
 } = refactor;
 
-let findEditor;
-let replaceWithEditor;
+let findEditor = $state();
+let replaceWithEditor = $state();
 
-let formOptions = getFormOptions(refactor.options);
+let formOptions = $state(getFormOptions(refactor.options));
 
-$: refactor.setOptions(getOptions(formOptions));
 
 function getFormOptions(options) {
 	let {globs} = options;
@@ -66,6 +69,9 @@ onMount(function() {
 		}
 	}
 });
+run(() => {
+		refactor.setOptions(getOptions(formOptions));
+	});
 </script>
 
 <style lang="scss">
@@ -109,7 +115,7 @@ onMount(function() {
 
 <div id="main">
 	<div id="controls">
-		<form id="options" on:submit|preventDefault={updatePaths}>
+		<form id="options" onsubmit={preventDefault(updatePaths)}>
 			<AccelLabel for="globs" label="F%iles"/>
 			<input bind:value={formOptions.globs} id="globs">
 			<button type="submit">
@@ -117,7 +123,7 @@ onMount(function() {
 			</button>
 		</form>
 		<div id="actions">
-			<button on:click={replaceAll}>
+			<button onclick={replaceAll}>
 				<Accel label={"Replace %all"}/>
 			</button>
 		</div>

@@ -6,12 +6,12 @@ import lineage from "utils/dom/lineage";
 let app = getContext("app");
 
 let {projects} = app;
-let {all: list, selectedProject} = projects;
+let {all: list, selectedProject} = $state(projects);
 
-let viewingProject = selectedProject;
-let showingSelector = false;
+let viewingProject = $state(selectedProject);
+let showingSelector = $state(false);
 let quickSelectMode;
-let main;
+let main = $state();
 
 function onUpdate() {
 	({all: list} = projects);
@@ -214,8 +214,8 @@ onMount(function() {
 <div id="main" bind:this={main}>
 	<div
 		id="button"
-		on:mousedown={buttonMousedown}
-		on:click={buttonClick}
+		onmousedown={buttonMousedown}
+		onclick={buttonClick}
 		class:showingSelector
 		title={selectedProject ? getFullName(selectedProject) : ""}
 	>
@@ -227,8 +227,8 @@ onMount(function() {
 				{#each list as project}
 					<div
 						class="project"
-						on:mouseup={() => projectMouseup(project)}
-						on:click={() => projectClick(project)}
+						onmouseup={() => projectMouseup(project)}
+						onclick={() => projectClick(project)}
 					>
 						{getLabel(project)}
 					</div>
@@ -236,8 +236,8 @@ onMount(function() {
 				{#if platform.chooseDir}
 					<div
 						class="project"
-						on:mouseup={newProjectMouseup}
-						on:click={newProjectClick}
+						onmouseup={newProjectMouseup}
+						onclick={newProjectClick}
 					>
 						New project
 					</div>
@@ -249,7 +249,7 @@ onMount(function() {
 						{getFullName(viewingProject)}
 					</div>
 					<div id="actions">
-						<!--<button on:click={() => selectAndClose(viewingProject)}>Select</button>-->
+						<!--<button onclick={() => selectAndClose(viewingProject)}>Select</button>-->
 					</div>
 				</div>
 			{/if}

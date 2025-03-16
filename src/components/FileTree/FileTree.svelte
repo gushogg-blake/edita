@@ -6,8 +6,8 @@ let app = getContext("app");
 
 let {fileTree} = app;
 
-let {rootEntry} = fileTree;
-let selectedEntry = null;
+let {rootEntry} = $state(fileTree);
+let selectedEntry = $state(null);
 
 function select({detail: entry}) {
 	selectedEntry = entry;
@@ -101,10 +101,10 @@ onMount(async function() {
 		<Entry
 			entry={rootEntry}
 			isRoot
-			on:select={select}
-			on:open={open}
-			on:contextmenu={contextmenu}
-			on:makeRoot={onMakeRoot}
+			onselect={select}
+			onopen={open}
+			oncontextmenu={contextmenu}
+			onmakeRoot={onMakeRoot}
 			{selectedEntry}
 		/>
 	{/if}

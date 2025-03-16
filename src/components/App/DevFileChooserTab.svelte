@@ -1,7 +1,9 @@
 <script lang="ts">
 import FileChooserApp from "platforms/electron/pages/fileChooser/App.svelte";
 
-export let tab;
+let {
+	tab,
+} = $props();
 
 let {fileChooserApp: app} = tab;
 </script>

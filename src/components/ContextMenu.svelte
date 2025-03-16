@@ -1,12 +1,15 @@
 <script lang="ts">
 import {createEventDispatcher} from "svelte";
 
-export let items;
+let {
+	items,
+	onclick = () => {},
+} = $props();
 
 let fire = createEventDispatcher();
 
 function click(item) {
-	fire("click", item);
+	onclick(item);
 }
 </script>
 
@@ -29,7 +32,7 @@ function click(item) {
 
 <div id="main">
 	{#each items as item}
-		<div class="item" on:mouseup={() => click(item)}>
+		<div class="item" onmouseup={() => click(item)}>
 			{@html item.label.replace(/%(\w)/, "<u>$1</u>")}
 		</div>
 	{/each}

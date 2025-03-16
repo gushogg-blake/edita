@@ -3,9 +3,12 @@ import {onMount} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import ResizeHandle from "./ResizeHandle.svelte";
 
-export let pane;
+let {
+	pane,
+	children,
+} = $props();
 
-let {position, visible, size} = pane;
+let {position, visible, size} = $state(pane);
 
 let borderAndResizeHandlePosition = {
 	left: "right",
@@ -23,10 +26,10 @@ function onUpdate() {
 	({visible, size} = pane);
 }
 
-$: style = {
+let style = $derived({
 	[sizeProp]: size,
 	["border-" + borderAndResizeHandlePosition]: "var(--appBorder)",
-};
+});
 
 onMount(function() {
 	let teardown = [
@@ -55,10 +58,10 @@ onMount(function() {
 	class:hide={!visible}
 	style={inlineStyle(style)}
 >
-	<slot/>
+	{@render children?.()}
 	<ResizeHandle
 		position={borderAndResizeHandlePosition}
-		on:resize={({detail: diff}) => pane.resize(diff)}
-		on:resizeEnd={({detail: diff}) => pane.resizeAndSave(diff)}
+		onresize={({detail: diff}) => pane.resize(diff)}
+		onresizeEnd={({detail: diff}) => pane.resizeAndSave(diff)}
 	/>
 </div>

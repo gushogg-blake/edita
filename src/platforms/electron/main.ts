@@ -1,3 +1,4 @@
+import {mount, unmount} from "svelte";
 import pages from "platforms/electron/pages";
 import init from "platforms/electron/init";
 
@@ -15,7 +16,8 @@ init(async function(options) {
 	// dialogs are re-inited every time they're invoked
 	if (app) {
 		app.teardown();
-		appComponent.$destroy();
+		
+		unmount(appComponent);
 		
 		document.body.innerHTML = "";
 	}
@@ -28,7 +30,7 @@ init(async function(options) {
 	
 	await app.init();
 	
-	appComponent = new AppComponent({
+	appComponent = mount(AppComponent, {
 		target: document.body,
 		
 		props: {

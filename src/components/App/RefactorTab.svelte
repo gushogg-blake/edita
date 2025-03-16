@@ -1,7 +1,9 @@
 <script lang="ts">
 import Refactor from "components/Refactor/Refactor.svelte";
 
-export let tab;
+let {
+	tab,
+} = $props();
 
 let {refactor} = tab;
 </script>

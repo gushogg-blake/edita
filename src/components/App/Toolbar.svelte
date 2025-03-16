@@ -9,9 +9,9 @@ let {
 	themes,
 	theme,
 	prefs,
-} = base;
+} = $state(base);
 
-let langButton;
+let langButton = $state();
 
 function upload({detail: files}) {
 	app.openFilesFromUpload(files);
@@ -75,37 +75,37 @@ onMount(function() {
 </style>
 
 <div id="main">
-	<button on:click={() => app.functions._new()}>
+	<button onclick={() => app.functions._new()}>
 		New
 	</button>
-	<button bind:this={langButton} title={base.findGlobalKeyComboFor("newWithLangSelector")} on:mousedown={openLanguages}>
+	<button bind:this={langButton} title={base.findGlobalKeyComboFor("newWithLangSelector")} onmousedown={openLanguages}>
 		Lang
 	</button>
 	{#if platform.isWeb}
-		<FileInput multiple on:upload={upload}/>
+		<FileInput multiple onupload={upload}/>
 	{:else}
-		<button on:click={() => app.functions.open()}>
+		<button onclick={() => app.functions.open()}>
 			Open
 		</button>
 	{/if}
-	<button on:click={() => app.functions.save()}>
+	<button onclick={() => app.functions.save()}>
 		Save
 	</button>
-	<button on:click={() => app.panes.left.toggle()}>
+	<button onclick={() => app.panes.left.toggle()}>
 		[
 	</button>
-	<button on:click={() => app.bottomPanes.toggleOutput()}>
+	<button onclick={() => app.bottomPanes.toggleOutput()}>
 		_
 	</button>
-	<button on:click={() => app.bottomPanes.toggleTools()}>
+	<button onclick={() => app.bottomPanes.toggleTools()}>
 		_
 	</button>
-	<button on:click={() => app.panes.right.toggle()}>
+	<button onclick={() => app.panes.right.toggle()}>
 		]
 	</button>
 	<Spacer/>
 	{#if prefs.showThemeSelector}
-		<select class="compact" value={prefs.theme} on:change={onSelectTheme}>
+		<select class="compact" value={prefs.theme} onchange={onSelectTheme}>
 			{#each Object.entries(themes) as [key, _theme]}
 				<option value={key}>{_theme.name}</option>
 			{/each}

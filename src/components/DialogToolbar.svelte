@@ -1,9 +1,7 @@
 <script lang="ts">
-import {createEventDispatcher} from "svelte";
-
-export let title = "";
-
-let fire = createEventDispatcher();
+let {
+	title = "",
+} = $props();
 </script>
 
 <style lang="scss">
@@ -27,6 +25,6 @@ let fire = createEventDispatcher();
 		{title}
 	</div>
 	<div id="buttons">
-		<button on:click={() => fire("close")}>x</button>
+		<button onclick={() => fire("close")}>x</button>
 	</div>
 </div>

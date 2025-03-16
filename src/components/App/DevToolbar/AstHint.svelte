@@ -5,8 +5,8 @@ import Gap from "components/utils/Gap.svelte";
 
 let app = getContext("app");
 
-let refs = {};
-let astHint;
+let refs = $state({});
+let astHint = $state();
 
 async function onShowAstHint(hint) {
 	astHint = hint;

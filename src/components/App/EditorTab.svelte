@@ -3,7 +3,9 @@ import {onMount} from "svelte";
 import getWheelCombo from "utils/getWheelCombo";
 import Editor from "components/Editor/Editor.svelte";
 
-export let tab;
+let {
+	tab,
+} = $props();
 
 let {platform} = window;
 
@@ -12,7 +14,7 @@ let {
 	path,
 	currentPath,
 	entries,
-} = tab;
+} = $state(tab);
 
 let mouseFunctions = {
 	fileZoom(wheelCombo) {
@@ -137,7 +139,7 @@ onMount(function() {
 }
 </style>
 
-<div id="main" on:wheel={wheel}>
+<div id="main" onwheel={wheel}>
 	<div id="editor" class:hide={currentPath !== path}>
 		<Editor {editor}/>
 	</div>
@@ -155,9 +157,9 @@ onMount(function() {
 			{#each entries as entry}
 				<div
 					class="entry"
-					on:click={(e) => switchToFile(entry)}
-					on:auxclick={(e) => openFile(entry)}
-					on:contextmenu={(e) => openContextMenuForFile(entry)}
+					onclick={(e) => switchToFile(entry)}
+					onauxclick={(e) => openFile(entry)}
+					oncontextmenu={(e) => openContextMenuForFile(entry)}
 				>
 					<div class="icon {entry.isDir ? "dirIcon" : "fileIcon"}"></div>
 					<div class="name">

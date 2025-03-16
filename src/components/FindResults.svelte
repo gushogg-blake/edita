@@ -3,7 +3,9 @@ import {onMount, getContext} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import Spacer from "components/utils/Spacer.svelte";
 
-export let findResults;
+let {
+	findResults,
+} = $props();
 
 let app = getContext("app");
 
@@ -11,7 +13,7 @@ let {
 	index,
 	pages,
 	currentPage,
-} = findResults;
+} = $state(findResults);
 
 function update() {
 	({
@@ -21,9 +23,9 @@ function update() {
 	} = findResults);
 }
 
-$: columnWidths = {
+let columnWidths = $derived({
 	gridTemplateColumns: "400px 100px auto",
-};
+});
 
 onMount(function() {
 	let teardown = [
@@ -100,16 +102,16 @@ onMount(function() {
 <div id="main">
 	{#if pages.length > 0}
 		<div id="nav">
-			<select class="compact" value={index} on:change={(e) => findResults.goToPage(Number(e.target.value))}>
+			<select class="compact" value={index} onchange={(e) => findResults.goToPage(Number(e.target.value))}>
 				{#each pages as {options, results}, i}
 					<option value={i}>{options.search} ({results.length} results)</option>
 				{/each}
 			</select>
 			&nbsp;
-			<button on:click={() => findResults.rerun()}>
+			<button onclick={() => findResults.rerun()}>
 				Rerun
 			</button>
-			<button on:click={() => findResults.edit()}>
+			<button onclick={() => findResults.edit()}>
 				Edit
 			</button>
 		</div>
@@ -121,7 +123,7 @@ onMount(function() {
 					<div
 						class="result"
 						style={inlineStyle(columnWidths)}
-						on:click={() => findResults.goToResult(result)}
+						onclick={() => findResults.goToResult(result)}
 					>
 						<div class="file">
 							<div class="path">

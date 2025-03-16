@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: can't migrate `let {tabs, selectedTab} = pane;` to `$state` because there's a variable named state.
+     Rename the variable and try again or migrate by hand. -->
 <script lang="ts">
 import {onMount, getContext} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
@@ -123,8 +125,8 @@ onMount(function() {
 	{#if expanded}
 		<ResizeHandle
 			position="top"
-			on:resize
-			on:resizeEnd
+			onresize
+			onresizeEnd
 		/>
 	{/if}
 	<div id="tabBar">
@@ -134,8 +136,8 @@ onMount(function() {
 			{tabs}
 			{selectedTab}
 			{getDetails}
-			on:select={select}
-			on:close={({detail: tab}) => pane.closeTab(tab)}
+			onselect={select}
+			onclose={({detail: tab}) => pane.closeTab(tab)}
 		/>
 	</div>
 	<div

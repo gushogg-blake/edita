@@ -1,5 +1,7 @@
 <script lang="ts">
-export let label;
+let {
+	label,
+} = $props();
 </script>
 
 <!-- % is used instead of & as Svelte converts HTML entities to their corresponding chars -->
