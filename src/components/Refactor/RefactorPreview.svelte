@@ -8,10 +8,8 @@ let {
 	refactorPreview,
 } = $props();
 
-let {
-	paths,
-	selectedFile,
-} = $state(refactorPreview);
+let paths = $state(refactorPreview.paths);
+let selectedFile = $state(refactorPreview.selectedFile);
 
 let astHintDiv = $state();
 

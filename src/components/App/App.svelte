@@ -32,11 +32,9 @@ setContext("app", app);
 let prefs = $state(base.prefs);
 let theme = $state(base.theme);
 
-let {
-	tabs,
-	selectedTab,
-	panes,
-} = $state(app);
+let tabs = $state(app.tabs);
+let selectedTab = $state(app.selectedTab);
+let panes = $state(app.panes);
 
 let tabComponents = {
 	editor: EditorTab,

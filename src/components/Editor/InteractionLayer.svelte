@@ -47,16 +47,17 @@ let clickDistanceThreshold = 2;
 let ignoreMouseLeave = false;
 let rowYHint = 0;
 
-let {
-	lines,
-	mode,
-	dropTargets,
-	pickOptions,
-	completions,
-	scrollPosition,
-	measurements: {rowHeight, colWidth},
-	sizes,
-} = $state(view);
+let {measurements} = view;
+
+let lines = $state(view.lines);
+let mode = $state(view.mode);
+let dropTargets = $state(view.dropTargets);
+let pickOptions = $state(view.pickOptions);
+let completions = $state(view.completions);
+let scrollPosition = $state(view.scrollPosition);
+let sizes = $state(view.sizes);
+let rowHeight = $state(measurements.rowHeight);
+let colWidth = $state(measurements.colWidth);
 
 let divToPickOption = new Map();
 let divToDropTarget = new Map();

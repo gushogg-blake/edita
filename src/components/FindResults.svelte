@@ -9,11 +9,9 @@ let {
 
 let app = getContext("app");
 
-let {
-	index,
-	pages,
-	currentPage,
-} = $state(findResults);
+let index = $state(findResults.index);
+let pages = $state(findResults.pages);
+let currentPage = $state(findResults.currentPage);
 
 function update() {
 	({

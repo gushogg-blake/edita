@@ -12,15 +12,13 @@ let {
 	app,
 } = $props();
 
-let {
-	mode,
-	dir,
-	entries,
-	selectedEntries,
-	name,
-	bookmarks,
-	breadcrumbs,
-} = $state(app);
+let mode = $state(app.mode);
+let dir = $state(app.dir);
+let entries = $state(app.entries);
+let selectedEntries = $state(app.selectedEntries);
+let name = $state(app.name);
+let bookmarks = $state(app.bookmarks);
+let breadcrumbs = $state(app.breadcrumbs);
 
 let showHiddenFiles = $state(base.getPref("fileChooser.showHiddenFiles"));
 

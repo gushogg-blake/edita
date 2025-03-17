@@ -9,12 +9,10 @@ let {
 
 let {platform} = window;
 
-let {
-	editor,
-	path,
-	currentPath,
-	entries,
-} = $state(tab);
+let editor = $state(tab.editor);
+let path = $state(tab.path);
+let currentPath = $state(tab.currentPath);
+let entries = $state(tab.entries);
 
 let mouseFunctions = {
 	fileZoom(wheelCombo) {

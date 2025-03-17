@@ -5,11 +5,9 @@ import Spacer from "components/utils/Spacer.svelte";
 
 let app = getContext("app");
 
-let {
-	themes,
-	theme,
-	prefs,
-} = $state(base);
+let themes = $state(base.themes);
+let theme = $state(base.theme);
+let prefs = $state(base.prefs);
 
 let langButton = $state();
 

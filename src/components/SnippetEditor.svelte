@@ -11,14 +11,12 @@ let {
 	oncancel = () => {},
 } = $props();
 
-let {
-	name,
-	langGroups,
-	langs,
-	text,
-	isDynamic,
-	keyCombo: assignedKeyCombo,
-} = $state(snippet);
+let name = $state(snippet.name);
+let langGroups = $state(snippet.langGroups);
+let langs = $state(snippet.langs);
+let text = $state(snippet.text);
+let isDynamic = $state(snippet.isDynamic);
+let assignedKeyCombo = $state(snippet.keyCombo);
 
 langGroups = langGroups.join(", ");
 langs = langs.join(", ");
