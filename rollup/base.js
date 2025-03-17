@@ -5,6 +5,7 @@ import alias from "@rollup/plugin-alias";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import externals from "rollup-plugin-node-externals";
+import json from "@rollup/plugin-json";
 
 import {root} from "./env.js";
 
@@ -55,6 +56,10 @@ export default {
 		return alias({
 			entries: aliasEntries,
 		});
+	},
+	
+	json() {
+		return json();
 	},
 	
 	resolve() {

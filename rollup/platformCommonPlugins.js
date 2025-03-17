@@ -1,12 +1,12 @@
 import svelte from "rollup-plugin-svelte";
 import preprocess from "svelte-preprocess";
 import copy from "rollup-plugin-copy-watch";
-import json from "@rollup/plugin-json";
 import scss from "rollup-plugin-scss";
 import css from "rollup-plugin-css-only";
 
 import {dev, prod, watch} from "./env.js";
 import base from "./base.js";
+import commonPlugins from "./commonPlugins.js";
 
 /*
 common to the main entrypoints for web, electron (renderer), and test
@@ -16,7 +16,7 @@ export default function(platform) {
 	let dir = "build/" + (dev ? platform + "-dev" : platform);
 	
 	return [
-		base.alias(),
+		...commonPlugins,
 		_svelte(),
 		base.externals(),
 		base.resolveBrowser(),
@@ -24,7 +24,6 @@ export default function(platform) {
 		scss(),
 		cssOnly(),
 		base.commonjs(),
-		json(),
 	];
 }
 

@@ -1,12 +1,13 @@
 import {dev} from "./env.js";
 import {watchOptions} from "./utils.js";
 import base from "./base.js";
+import commonPlugins from "./commonPlugins.js";
 
 let dir = "build/" + (dev ? "electron-dev" : "electron");
 
 function mainProcessPlugins() {
 	return [
-		base.alias(),
+		...commonPlugins,
 		base.externals(),
 		base.resolve(),
 		base.commonjs(),
