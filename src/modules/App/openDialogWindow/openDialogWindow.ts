@@ -1,3 +1,4 @@
+import {mount, unmount} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import {on, off} from "utils/dom/domEvents";
 
@@ -23,23 +24,26 @@ export default function(app, createDialogComponent) {
 				return;
 			}
 			
+			unmount(toolbarComponent);
+			
 			container.parentNode.removeChild(container);
+			
+			teardownComponent();
 			
 			this.focusSelectedTabAsync();
 			
 			closed = true;
 		}
 		
-		let toolbarComponent = new base.components.DialogToolbar({
+		let toolbarComponent = mount(base.components.DialogToolbar, {
 			target: toolbar,
 			
 			props: {
 				title: windowOptions.title,
+				
+				onclose: close,
 			},
 		});
-		
-		// MIGRATE svelte 5
-		toolbarComponent.$on("close", close);
 		
 		container.style = inlineStyle({
 			position: "fixed",
@@ -51,14 +55,10 @@ export default function(app, createDialogComponent) {
 			visibility: "hidden",
 		});
 		
-		let onCancel = await createDialogComponent[dialog](content, dialogOptions, close);
+		let teardownComponent = await createDialogComponent[dialog](content, dialogOptions, close);
 		
 		function cancel() {
 			close();
-			
-			if (onCancel) {
-				onCancel();
-			}
 		}
 		
 		if (!windowOptions.fitContents) {

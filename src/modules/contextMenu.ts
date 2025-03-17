@@ -1,3 +1,4 @@
+import {mount, unmount} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import {on, off} from "utils/dom/domEvents";
 import screenOffsets from "utils/dom/screenOffsets";
@@ -47,11 +48,15 @@ export default function(app, items, coords, options={}) {
 		userSelect: "none",
 	});
 	
-	let contextMenu = new base.components.ContextMenu({
+	let contextMenu = mount(base.components.ContextMenu, {
 		target: container,
 		
 		props: {
 			items,
+			
+			onclick(item) {
+				click(item);
+			},
 		},
 	});
 	
@@ -68,8 +73,7 @@ export default function(app, items, coords, options={}) {
 	}
 	
 	function close() {
-		// MIGRATE svelte 5
-		contextMenu.$destroy();
+		unmount(contextMenu);
 		
 		overlay.parentNode.removeChild(overlay);
 		
@@ -81,11 +85,6 @@ export default function(app, items, coords, options={}) {
 		off(window, "blur", close);
 		off(container, "keydown", keydown);
 	}
-	
-	// MIGRATE svelte 5
-	contextMenu.$on("click", function(item) {
-		click(item);
-	});
 	
 	function keydown(e) {
 		e.preventDefault();

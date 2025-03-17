@@ -1,5 +1,7 @@
+import {mount, unmount} from "svelte";
+
 /*
-NOTE a lot of the logic here is duplicated in electron/dialogs/[dialog]/App.js
+NOTE a lot of the logic here is duplicated in electron/pages/[dialog]/App.ts
 
 could be made generic and moved to Base maybe
 */
@@ -22,49 +24,48 @@ export default {
 			snippet = await platform.snippets.findById(id);
 		}
 		
-		let snippetEditor = new base.components.SnippetEditor({
-			target: el,
-			
+		let snippetEditor = mount(base.components.SnippetEditor, {
 			props: {
 				snippet,
+				
+				onsaveAndExit: async ({snippet}) => {
+					if (isNew) {
+						await platform.snippets.create(snippet);
+					} else {
+						await platform.snippets.update(id, snippet);
+					}
+					
+					close();
+				},
+				
+				oncancel: close,
 			},
 		});
 		
-		// MIGRATE svelte 5
-		snippetEditor.$on("saveAndExit", async ({snippet}) => {
-			if (isNew) {
-				await platform.snippets.create(snippet);
-			} else {
-				await platform.snippets.update(id, snippet);
-			}
-			
-			close();
-		});
-		
-		// MIGRATE svelte 5
-		snippetEditor.$on("cancel", close);
+		return () => {
+			unmount(snippetEditor);
+		};
 	},
 	
 	messageBox(el, dialogOptions, close) {
-		let responded = false;
-		
-		let messageBox = new base.components.MessageBox({
+		let messageBox = mount(base.components.MessageBox, {
 			target: el,
 			
 			props: {
 				options: dialogOptions,
+				
+				onresponse: (response) => {
+					this.messageBoxRespond(response);
+					
+					close();
+				},
 			},
-		});
-		
-		// MIGRATE svelte 5
-		messageBox.$on("response", (response) => {
-			this.messageBoxRespond(response);
-			
-			close();
 		});
 		
 		return () => {
 			this.messageBoxRespond(null);
-		}
+			
+			unmount(messageBox);
+		};
 	},
 };
