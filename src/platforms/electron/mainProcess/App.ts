@@ -100,13 +100,12 @@ class App {
 		]);
 		
 		electronApp.on("ready", async () => {
+			// https://github.com/electron/electron/issues/10388
 			try {
-				this.windowPositionAdjustment = (await this.jsonStore.load("prefs"))?.value.windowPositionAdjustment; // https://github.com/electron/electron/issues/10388
+				this.windowPositionAdjustment = (await this.jsonStore.load("prefs"))?.value.windowPositionAdjustment;
 			} catch (e) {
 				console.error(e);
 			}
-			
-			// TODO see if we still need all this bollocks
 			
 			protocol.registerStreamProtocol("app", async (request, callback) => {
 				let requestPath = decodeURIComponent(new URL(request.url).pathname);
@@ -124,18 +123,20 @@ class App {
 				
 				path = requestPath.substr(1);
 				
+				// all actual code and wasm files are in the build dir...
 				let built = this.buildDir.child(...path.split("/"));
+				// ...ts files (from src) are needed for source mapping
 				let src = this.rootDir.child(...path.split("/"));
 				let node = await built.exists() ? built : await src.exists() ? src : null;
 				
 				if (node) {
 					callback({
 						mimeType,
-						data: request.method === "HEAD" ? emptyStream() : node.createReadStream(),
+						data: node.createReadStream(),
 					});
 				} else {
 					callback({
-						statusCode: request.method === "HEAD" ? 204 : 404,
+						statusCode: 404,
 						data: emptyStream(),
 					});
 				}

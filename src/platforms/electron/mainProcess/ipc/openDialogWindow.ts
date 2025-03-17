@@ -1,4 +1,6 @@
-export default function(app) {
+import App from "../App";
+
+export default function(app: App) {
 	return {
 		open(e, name, dialogOptions) {
 			return app.openDialogWindow(name, dialogOptions, app.browserWindowFromEvent(e));
