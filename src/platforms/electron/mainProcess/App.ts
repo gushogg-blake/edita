@@ -422,6 +422,7 @@ class App {
 			clearTimeout(showOnTimeout);
 			
 			browserWindow.show();
+			browserWindow.webContents.openDevTools();
 		}
 		
 		if (config.dev) {
