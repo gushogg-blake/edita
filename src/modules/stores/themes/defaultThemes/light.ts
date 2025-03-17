@@ -59,7 +59,7 @@ let theme = {
 		contextMenuBorder: "1px solid #bbbbbb",
 		contextMenuBackground: "white",
 		contextMenuHoverColor: "white",
-		contextMenuHoverBackground: "#71A339",
+		contextMenuHoverBackground: "#92b372",
 		
 		scrollbarThumbWidth: "8px",
 		scrollbarPadding: "3px",
