@@ -107,6 +107,10 @@ export default {
 		this.panes.bottom.toggle();
 	},
 	
+	focusEditor() {
+		this.focusSelectedTab();
+	},
+	
 	toggleDevToolbar() {
 		base.setPref("dev.showToolbar", !base.getPref("dev.showToolbar"));
 	},

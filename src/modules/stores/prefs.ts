@@ -216,6 +216,10 @@ let migrations = {
 		prefs.normalKeymap["Ctrl+ArrowUp"] = "up";
 		prefs.normalKeymap["Ctrl+ArrowDown"] = "down";
 	},
+	
+	"29"(prefs) {
+		prefs.globalKeymap["Ctrl+#"] = "focusEditor";
+	},
 };
 
 export default function() {
@@ -383,6 +387,7 @@ export default function() {
 			"Ctrl+[": "toggleLeftPane",
 			"Ctrl+]": "toggleRightPane",
 			"Ctrl+-": "toggleBottomPane",
+			"Ctrl+#": "focusEditor",
 			
 			"Ctrl+Shift+D": "toggleDevToolbar",
 		},
