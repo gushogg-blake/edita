@@ -26,11 +26,19 @@ export default [
 			prod && copyPackageJson(dir),
 			copyTreeSitterWasm(dir),
 			copyVendorPublic(),
-			html(),
+			_html(),
 			dev && markBuildComplete(dir),
 		],
 	},
 ];
+
+function _html() {
+	return html({
+		title: "Edita",
+		publicPath: "/",
+		addScriptsToHead: true,
+	});
+}
 
 function copyVendorPublic() {
 	return copy({

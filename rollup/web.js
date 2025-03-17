@@ -29,11 +29,18 @@ export default [
 			copyTreeSitterWasm(dir),
 			copyVendorPublic(),
 			prod && terser(),
-			html(),
+			_html(),
 			dev && markBuildComplete(dir),
 		],
 	},
 ];
+
+function _html() {
+	return html({
+		title: "Edita",
+		addScriptsToHead: true,
+	});
+}
 
 function copyVendorPublic() {
 	return copy({
