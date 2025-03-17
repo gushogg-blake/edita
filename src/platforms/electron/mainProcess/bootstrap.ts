@@ -1,7 +1,10 @@
 import os from "node:os";
 import path from "node:path";
-import child_process from "node:child_process";
+import {spawn} from "node:child_process";
 import yargs from "yargs";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 /*
 parsing args is complicated once inside electron so we
@@ -61,7 +64,7 @@ let config = {
 	nodeOnly: NODE_ONLY === "1",
 };
 
-child_process.spawn("npx", [
+spawn("npx", [
 	"electron",
 	buildDir + "/mainProcess/main.js",
 	dev && "--inspect",

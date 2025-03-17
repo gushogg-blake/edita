@@ -1,3 +1,6 @@
 node_modules
 /build
 /install/*/installedFiles.txt
+.env
+.env.*
+!.env.example
