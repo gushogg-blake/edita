@@ -9,6 +9,9 @@ RUNS: once, to display a synthetic (non-native) context menu
 WHY: electron can display native context menus but sometimes we want them
 to be un-cancelable (if we're holding Esc and don't want the repeat to
 close the menu); web can't display native ones so needs a custom solution
+
+there is also a pref for it, as Chrome moved away from native menus to one
+that isn't as smooth.
 */
 
 export default function(app, items, coords, options={}) {

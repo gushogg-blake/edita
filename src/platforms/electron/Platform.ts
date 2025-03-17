@@ -167,35 +167,42 @@ class Platform extends Evented {
 		return this._dialogPromise("messageBox", options);
 	}
 	
-	showContextMenu(e, app, items, options={}) {
+	_showContextMenu(app, items, coords, options) {
 		options = {
 			noCancel: false,
+			useCoordsForNative: false,
 			...options,
 		};
 		
-		items = items.map(function(item) {
-			return {
-				...item,
-				label: item.label?.replaceAll("%", "&"),
-			};
-		});
+		let custom = options.noCancel || base.getPref("customContextMenu");
 		
-		if (options.noCancel) {
-			contextMenu(app, items, {
-				x: e.clientX,
-				y: e.clientY,
-			}, options);
+		if (custom) {
+			contextMenu(app, items, coords, options);
 		} else {
-			ipc.contextMenu(items);
+			items = items.map(function(item) {
+				return {
+					...item,
+					label: item.label?.replaceAll("%", "&"),
+				};
+			});
+			
+			ipc.contextMenu(items, options.useCoordsForNative ? coords : undefined);
 		}
 	}
 	
-	showContextMenuForElement(app, element, items, options={}) {
-		options = {
-			noCancel: false,
-			...options,
+	showContextMenu(e, app, items, options={}) {
+		let coords = {
+			x: e.clientX,
+			y: e.clientY,
 		};
 		
+		this._showContextMenu(app, items, coords, {
+			...options,
+			useCoordsForNative: false,
+		});
+	}
+	
+	showContextMenuForElement(app, element, items, options={}) {
 		let {x, y, height} = screenOffsets(element);
 		
 		x = Math.round(x);
@@ -203,11 +210,7 @@ class Platform extends Evented {
 		
 		let coords = {x, y: y + height};
 		
-		if (options.noCancel) {
-			contextMenu(app, items, coords, options);
-		} else {
-			ipc.contextMenu(items, coords);
-		}
+		this._showContextMenu(app, items, coords, options);
 	}
 	
 	openDialogWindow(app, dialog, dialogOptions, windowOptions) {
