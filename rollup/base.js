@@ -9,6 +9,23 @@ import json from "@rollup/plugin-json";
 
 import {root} from "./env.js";
 
+function watchOptions() {
+	return {
+		clearScreen: false,
+		buildDelay: 100,
+		
+		chokidar: {
+			usePolling: true,
+		},
+	};
+}
+
+export let baseConfig = {
+	watch: watchOptions(),
+	
+	onwarn() {},
+};
+
 // SYNC tsconfig, rollup aliases
 let aliasEntries = {
 	"root": root,
@@ -51,7 +68,7 @@ let externalsIgnore = [
 	/^node:/,
 ];
 
-export default {
+export let basePlugins = {
 	alias() {
 		return alias({
 			entries: aliasEntries,

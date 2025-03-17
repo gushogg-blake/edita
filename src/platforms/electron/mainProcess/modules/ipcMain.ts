@@ -1,5 +1,5 @@
 import {ipcMain} from "electron";
-import {lid} from "utils/node/index";
+import {lid} from "utils/node";
 
 let ipc = Object.create(ipcMain);
 

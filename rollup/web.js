@@ -6,12 +6,15 @@ import html from "@rollup/plugin-html";
 
 import {dev, prod, watch} from "./env.js";
 import {markBuildComplete} from "./utils.js";
+import {baseConfig, basePlugins} from "./base.js";
 import platformCommonPlugins, {copyTreeSitterWasm, copyPackageJson} from "./platformCommonPlugins.js";
 
 let dir = "build/" + (dev ? "web-dev" : "web");
 
 export default [
 	{
+		...baseConfig,
+		
 		input: "src/platforms/web/main.ts",
 		
 		output: {

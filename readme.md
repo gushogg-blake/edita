@@ -85,3 +85,31 @@ It may seem strange, but for the needs of this particular project (mostly single
 To install on Linux, run install/linux/install.sh (or uninstall.sh to uninstall). This will install a desktop entry so you can start from the menu and associate file types.
 
 Other platforms not supported and adding them isn't a priority, but should be able to at least run in development mode and see a working app.
+
+## Dev
+
+For live reloading in Electron, the main process watches the build dir for changes and:
+
+- for changes to the main process, reloads itself with `npm run restart`
+
+- for changes to the renderer code, calls `.reload()` on each app and dialog window
+
+The web version uses `rollup-plugin-live-reload`. This doesn't work with Edita's Electron setup, possibly because we use the custom `app:` protocol. It may be easy to just change this to `file:` or something, but I haven't got around to testing it.
+
+### Scripts
+
+Use `npm run dev` to start the app in development mode with live reloading.
+
+It will default to using `.edita-dev` as the Chrome user data dir in dev mode, so it won't interfere with your existing Edita config if you use it as your editor.
+
+Some scripts called by npm scripts require the PLATFORM environment variable to be set, to indicate which variant of the app we're working with (electron, web, or test).
+
+The PLATFORM variable is used for:
+
+- Rollup config, to avoid unnecessarily building everything if we're only developing on one of the variants.
+
+- `await-build` and `build-clean`, which will complain if PLATFORM isn't present. These are just for convenience, so that we don't start building the app, launch it in parallel, and then have it reload when the build completes. Instead we always wait for the initial build before launching.
+
+## Launch process
+
+The launch process for the Electron app starts with `bootstrap.ts` in both dev and prod mode. This makes arg parsing consistent and bundles args and env vars into a JSON object for easy consumption by the main process.

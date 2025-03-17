@@ -5,7 +5,7 @@ import scss from "rollup-plugin-scss";
 import css from "rollup-plugin-css-only";
 
 import {dev, prod, watch} from "./env.js";
-import base from "./base.js";
+import {basePlugins} from "./base.js";
 import commonPlugins from "./commonPlugins.js";
 
 /*
@@ -18,12 +18,12 @@ export default function(platform) {
 	return [
 		...commonPlugins,
 		_svelte(),
-		base.externals(),
-		base.resolveBrowser(),
-		base.typescript(),
+		basePlugins.externals(),
+		basePlugins.resolveBrowser(),
+		basePlugins.typescript(),
 		scss(),
 		cssOnly(),
-		base.commonjs(),
+		basePlugins.commonjs(),
 	];
 }
 

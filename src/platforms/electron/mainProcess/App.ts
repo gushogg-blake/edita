@@ -8,7 +8,7 @@ import {
 import {Readable} from "node:stream";
 import path from "node:path";
 import windowStateKeeper from "electron-window-state";
-import {fs, cmdSync} from "utils/node/index";
+import {fs, cmdSync} from "utils/node";
 import {removeInPlace} from "utils/arrayMethods";
 import getConfig from "./utils/getConfig";
 import ipcMain from "./modules/ipcMain";
@@ -41,6 +41,10 @@ class App {
 		this.rootDir = fs(rootDir);
 		
 		this.jsonStore = jsonStore(this);
+	}
+	
+	get windows() {
+		return [...this.appWindows, ...this.dialogWindows];
 	}
 	
 	get dialogWindows() {
@@ -412,6 +416,7 @@ class App {
 		
 		let showOnTimeout = setTimeout(function() {
 			browserWindow.show();
+			browserWindow.webContents.openDevTools();
 		}, 1000);
 		
 		try {
@@ -422,7 +427,6 @@ class App {
 			clearTimeout(showOnTimeout);
 			
 			browserWindow.show();
-			browserWindow.webContents.openDevTools();
 		}
 		
 		if (config.dev) {

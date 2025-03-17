@@ -1,6 +1,5 @@
 import {dev} from "./env.js";
-import {watchOptions} from "./utils.js";
-import base from "./base.js";
+import {basePlugins, baseConfig} from "./base.js";
 import commonPlugins from "./commonPlugins.js";
 
 let dir = "build/" + (dev ? "electron-dev" : "electron");
@@ -8,19 +7,21 @@ let dir = "build/" + (dev ? "electron-dev" : "electron");
 function mainProcessPlugins() {
 	return [
 		...commonPlugins,
-		base.externals(),
-		base.resolve(),
-		base.commonjs(),
-		base.typescript(),
+		basePlugins.externals(),
+		basePlugins.resolve(),
+		basePlugins.commonjs(),
+		basePlugins.typescript(),
 	];
 }
 
 export default [
 	// bootstrap
 	{
+		...baseConfig,
+		
 		input: "src/platforms/electron/mainProcess/bootstrap.ts",
+		
 		plugins: mainProcessPlugins(),
-		watch: watchOptions(),
 		
 		output: {
 			sourcemap: true,
@@ -30,9 +31,11 @@ export default [
 	
 	// electron main
 	{
+		...baseConfig,
+		
 		input: "src/platforms/electron/mainProcess/main.ts",
+		
 		plugins: mainProcessPlugins(),
-		watch: watchOptions(),
 		
 		output: {
 			sourcemap: true,

@@ -16,14 +16,3 @@ export function markBuildComplete(dir) {
 		},
 	};
 }
-
-export function watchOptions() {
-	return {
-		clearScreen: false,
-		buildDelay: 100,
-		
-		chokidar: {
-			usePolling: true,
-		},
-	};
-}

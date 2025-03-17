@@ -1,4 +1,4 @@
-import {Evented, lid, sleep, promiseWithMethods, spawn} from "utils/node/index";
+import {Evented, lid, sleep, promiseWithMethods, spawn} from "utils/node";
 import config from "./config";
 
 class LspServer extends Evented {

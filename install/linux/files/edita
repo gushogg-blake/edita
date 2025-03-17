@@ -1,7 +1,11 @@
 #!/bin/bash
 
-path=`pwd`
+cwd=`pwd`
 
 cd %path%
 
-node build/electron/mainProcess/bootstrap.js -- --start-args --cwd="$path" "$@"
+# --start-args allows us to reliably determine where our args start
+# after "node", the script filename, etc.
+# --cwd is to preserve the user's cwd, as we've cd'd to the project root
+
+node build/electron/mainProcess/bootstrap.js -- --start-args --cwd="$cwd" "$@"

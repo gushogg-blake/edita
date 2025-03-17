@@ -1,4 +1,4 @@
-import {fs} from "utils/node/index";
+import {fs} from "utils/node";
 
 export default function(app) {
 	function jsonStorageKey(name, key) {

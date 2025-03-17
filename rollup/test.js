@@ -2,21 +2,21 @@ import multi from "@rollup/plugin-multi-entry";
 import copy from "rollup-plugin-copy-watch";
 
 import {dev, prod, watch} from "./env.js";
-import {markBuildComplete, watchOptions} from "./utils.js";
-import base from "./base.js";
+import {markBuildComplete} from "./utils.js";
+import {baseConfig} from "./base.js";
 import platformCommonPlugins, {copyTreeSitterWasm} from "./platformCommonPlugins.js";
 
 let dir = "build/test";
 	
 export default [
 	{
+		...baseConfig,
+		
 		input: "test/main.ts",
 		
 		output: {
 			file: dir + "/main.js",
 		},
-		
-		watch: watchOptions(),
 		
 		plugins: [
 			...platformCommonPlugins("web"),
@@ -26,9 +26,9 @@ export default [
 	},
 	
 	{
-		input: "test/tests/**/*.test.ts",
+		...baseConfig,
 		
-		watch: watchOptions(),
+		input: "test/tests/**/*.test.ts",
 		
 		output: {
 			sourcemap: true,

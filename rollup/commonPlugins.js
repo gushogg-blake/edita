@@ -1,6 +1,6 @@
-import base from "./base.js";
+import {basePlugins} from "./base.js";
 
 export default [
-	base.alias(),
-	base.json(),
+	basePlugins.alias(),
+	basePlugins.json(),
 ];

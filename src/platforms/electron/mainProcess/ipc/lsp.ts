@@ -1,4 +1,4 @@
-import {lid} from "utils/node/index";
+import {lid} from "utils/node";
 import {removeInPlace} from "utils/arrayMethods";
 import LspServer from "../modules/lsp/LspServer";
 import config from "../modules/lsp/config";

@@ -2,6 +2,7 @@ import {app as electronApp} from "electron";
 import {spawn} from "node:child_process";
 import path from "node:path";
 import chokidar from "chokidar";
+import {fs} from "utils/node";
 
 function debounce(fn, delay) {
 	let timer;
@@ -19,19 +20,23 @@ let watchOptions = {
 
 export default async function(app) {
 	let {buildDir} = app;
+	let mainProcessDir = buildDir.child("mainProcess");
 	
-	let watchRenderer = chokidar.watch([
-		"js/main.js",
-		"css/global.css",
-	].map(path => buildDir.child(path).path), watchOptions);
-	
-	watchRenderer.on("change", function() {
-		app.appWindows.forEach(browserWindow => browserWindow.reload());
+	let watchRenderer = chokidar.watch(buildDir.path, {
+		...watchOptions,
+		
+		ignored(path) {
+			return fs(path).isDescendantOf(mainProcessDir);
+		},
 	});
 	
-	let watchMain = chokidar.watch(buildDir.child("mainProcess").path, watchOptions);
+	watchRenderer.on("change", function() {
+		app.windows.forEach(browserWindow => browserWindow.reload());
+	});
 	
-	watchMain.on("change", debounce(function() {
+	let watchMain = chokidar.watch(mainProcessDir.path, watchOptions);
+	
+	watchMain.on("change", debounce(function(path) {
 		let child = spawn("npm", ["run", "restart"], {
 			detached: true,
 			stdio: "inherit",
