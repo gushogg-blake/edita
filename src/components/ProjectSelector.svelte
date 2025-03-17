@@ -6,7 +6,8 @@ import lineage from "utils/dom/lineage";
 let app = getContext("app");
 
 let {projects} = app;
-let {all: list, selectedProject} = $state(projects);
+let list = $state(projects.all);
+let selectedProject = $state(projects.selectedProject);
 
 let viewingProject = $state(selectedProject);
 let showingSelector = $state(false);

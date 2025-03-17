@@ -8,7 +8,9 @@ let {
 	children,
 } = $props();
 
-let {position, visible, size} = $state(pane);
+let position = $state(pane.position);
+let visible = $state(pane.visible);
+let size = $state(pane.size);
 
 let borderAndResizeHandlePosition = {
 	left: "right",

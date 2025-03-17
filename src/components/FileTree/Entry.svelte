@@ -18,7 +18,7 @@ let {
 let app = getContext("app");
 
 let {fileTree} = app;
-let {expandedDirs} = $state(fileTree);
+let expandedDirs = $state(fileTree.expandedDirs);
 
 let {node, isDir} = entry;
 let {name} = node;

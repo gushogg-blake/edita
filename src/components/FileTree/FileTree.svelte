@@ -6,7 +6,7 @@ let app = getContext("app");
 
 let {fileTree} = app;
 
-let {rootEntry} = $state(fileTree);
+let rootEntry = $state(fileTree.rootEntry);
 let selectedEntry = $state(null);
 
 function select(entry) {

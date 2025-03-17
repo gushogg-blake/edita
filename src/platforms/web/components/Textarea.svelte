@@ -11,7 +11,7 @@ export function setValue(value) {
 
 let editor = $state();
 
-let {theme} = $state(base);
+let theme = $state(base.theme);
 
 function onThemeUpdated() {
 	({theme} = base);

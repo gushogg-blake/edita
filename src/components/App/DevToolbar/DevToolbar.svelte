@@ -6,7 +6,7 @@ import AstHint from "./AstHint.svelte";
 
 let app = getContext("app");
 
-let {prefs} = $state(base);
+let prefs = $state(base.prefs);
 
 function onPrefsUpdated() {
 	({prefs} = base);

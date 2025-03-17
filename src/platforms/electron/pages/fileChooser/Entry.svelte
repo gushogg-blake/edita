@@ -7,7 +7,8 @@ let {
 	selected,
 } = $props();
 
-let {isNew, name} = $state(entry);
+let isNew = $state(entry.isNew);
+let name = $state(entry.name);
 
 let nameInput = $state();
 let nameInputValue = $state(name || "");

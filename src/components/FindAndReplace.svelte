@@ -18,7 +18,8 @@ let {
 let app = getContext("app");
 
 let {findAndReplace} = app;
-let {options, history} = $state(findAndReplace);
+let options = $state(findAndReplace.options);
+let history = $state(findAndReplace.history);
 let {multiPathSeparator} = platform.systemInfo;
 
 let searchInput = $state();

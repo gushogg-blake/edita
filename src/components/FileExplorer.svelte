@@ -7,7 +7,7 @@ let app = getContext("app");
 let {fileTree} = app;
 
 let dirSelector = $state();
-let {rootEntry} = $state(fileTree);
+let rootEntry = $state(fileTree.rootEntry);
 let background = $state();
 
 function onUpdateRootDir() {

@@ -29,8 +29,8 @@ let main = $state();
 
 setContext("app", app);
 
-// NOTE not sure about this -- should we destructure base first? or use let prefs = $state(base.prefs)?
-let {prefs, theme} = $state(base);
+let prefs = $state(base.prefs);
+let theme = $state(base.theme);
 
 let {
 	tabs,
