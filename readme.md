@@ -79,3 +79,9 @@ Svelte 5. No runes in non-Svelte code atm. Migration in progress. Search for // 
 This project has been migrated from JS to TS, and in the initial change only the minimal required changes were applied to get the code to compile. The vast majority of the value for me is in convenience (90%) and the ability to write type annotations where that's the most natural way to express the concept (10%).
 
 It may seem strange, but for the needs of this particular project (mostly single highly experienced author & maintainer, mostly for personal use---and specifically, that person is me), the type checking part of TypeScript isn't all that valuable and the friction of having to write and structure code in such a way that the compiler knows it's correct would be significant. No doubt type-related errors that the checker would have found will slip in from time to time, but in my experience---again, on this project specifically---those bugs are quick to surface and easy to fix. I can remember probably a handful of times in the last few years where I've spent more than ten minutes chasing down a typo (actual type-related mistakes being even fewer; I'm not sure I can remember one at all), but the increased verbosity and time spent refactoring to satisfy the type checker would be a consistent cost that just feels unnecessary for this project. If you want to write a usable IDE from scratch as a single dev, these are the kinds of pragmatic (and fun) decisions you have to make.
+
+## Installation & running
+
+To install on Linux, run install/linux/install.sh (or uninstall.sh to uninstall). This will install a desktop entry so you can start from the menu and associate file types.
+
+Other platforms not supported and adding them isn't a priority, but should be able to at least run in development mode and see a working app.
