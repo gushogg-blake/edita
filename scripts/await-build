@@ -1,14 +1,29 @@
 #!/bin/bash
 
-build=$1
-file="build/$build/.build-complete"
-script="build-$build"
+if [[ $PLATFORM == "" ]]; then
+	echo "await-build: PLATFORM environment variable must be specified"
+	exit 1
+fi
 
-if [ ! -f "$file" ]; then
-	echo "Awaiting build $build..."
-	echo "Note: this script assumes you are running $script in parallel!"
-	
-	while [ ! -f "$file" ]; do
-		sleep 1
-	done
+suffix=""
+
+if [[ $PLATFORM != "test" ]]; then
+	suffix="-dev"
+fi
+
+build="$PLATFORM$suffix"
+file="build/$build/.build-complete"
+
+if [[ $1 == "--clean" ]]; then
+	if [ -f "$file" ]; then
+		rm "$file"
+	fi
+else
+	if [ ! -f "$file" ]; then
+		echo "Awaiting build $build..."
+		
+		while [ ! -f "$file" ]; do
+			sleep 1
+		done
+	fi
 fi

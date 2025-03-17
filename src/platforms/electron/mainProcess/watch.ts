@@ -33,7 +33,7 @@ export default async function(app) {
 	
 	setTimeout(function() {
 		watchMain.on("change", debounce(function() {
-			let child = spawn("npm", ["run", "electron"], {
+			let child = spawn("npm", ["run", "restart"], {
 				detached: true,
 				stdio: "inherit",
 			});
