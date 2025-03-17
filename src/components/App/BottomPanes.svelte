@@ -6,7 +6,8 @@ import TabPane from "./TabPane.svelte";
 let app = getContext("app");
 
 let {bottomPanes} = app;
-let {tools, output, top, bottom, containerHeight} = $state(bottomPanes);
+let {tools, output} = bottomPanes;
+let containerHeight = $state(bottomPanes.containerHeight);
 
 function update() {
 	({containerHeight} = bottomPanes);
@@ -55,13 +56,11 @@ onMount(function() {
 <div id="main" style={inlineStyle(mainStyle)}>
 	<TabPane
 		pane={tools}
-		_state={top}
 		onresize={onToolsResize}
 		onresizeEnd={onToolsResizeEnd}
 	/>
 	<TabPane
 		pane={output}
-		_state={bottom}
 		onresize={onOutputResize}
 		onresizeEnd={onOutputResizeEnd}
 	/>

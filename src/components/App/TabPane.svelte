@@ -10,7 +10,6 @@ import ClippingsTab from "./ClippingsTab.svelte";
 
 let {
 	pane,
-	_state,
 	onresize = () => {},
 	onresizeEnd = () => {},
 } = $props();
@@ -18,8 +17,13 @@ let {
 let app = getContext("app");
 
 let {bottomPanes} = app;
-let {tabs, selectedTab} = $state(pane);
-let {size, visible, expanded} = $state(_state);
+
+let tabs = $state(pane.tabs);
+let selectedTab = $state(pane.selectedTab);
+
+let size = $state(pane.state.size);
+let visible = $state(pane.state.visible);
+let expanded = $state(pane.state.expanded);
 
 let tabComponents = {
 	findAndReplace: FindAndReplaceTab,
@@ -48,7 +52,7 @@ let mainStyle = $state();
 let contentsStyle = $state();
 
 function update() {
-	({size, visible, expanded} = _state);
+	({size, visible, expanded} = pane.state);
 	
 	let height;
 	

@@ -2,9 +2,12 @@ import {removeInPlace} from "utils/arrayMethods";
 import Evented from "utils/Evented";
 
 class TabPane extends Evented {
-	constructor() {
+	constructor(state) {
 		super();
 		
+		// keep a reference to the related state for convenience
+		// we don't modify it; BottomPanes handles that
+		this.state = state;
 		this.tabs = [];
 		this.selectedTab = null;
 		this.previouslySelectedTabs = [];

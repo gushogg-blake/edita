@@ -39,9 +39,6 @@ class BottomPanes extends Evented {
 			bottom,
 		} = base.getPref("panes.bottom");
 		
-		this.tools = this.createPane();
-		this.output = this.createPane();
-		
 		this.top = {
 			visible: top.visible,
 			expanded: top.expanded,
@@ -53,6 +50,9 @@ class BottomPanes extends Evented {
 			expanded: bottom.expanded,
 			size: null,
 		};
+		
+		this.tools = this.createPane(this.top);
+		this.output = this.createPane(this.bottom);
 		
 		this.preferredSizes = preferredSizes;
 		
@@ -223,8 +223,8 @@ class BottomPanes extends Evented {
 		this.savePrefs();
 	}
 	
-	createPane(visible, expanded) {
-		let pane = new TabPane(visible, expanded);
+	createPane(state) {
+		let pane = new TabPane(state);
 		
 		return pane;
 	}
