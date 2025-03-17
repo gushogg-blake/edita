@@ -46,7 +46,7 @@ export default async function(init, options={}) {
 	});
 	
 	if (isDialogWindow) {
-		ipcRenderer.on("dialogInit", (e, ...args) => init(...args));
+		ipcRenderer.handle("dialogInit", (e, ...args) => init(...args));
 	} else {
 		init();
 	}

@@ -71,10 +71,8 @@ class Platform extends Evented {
 			this.fire("openFromElectronSecondInstance", files);
 		});
 		
-		ipcRenderer.on("dialogResponse", (e, {name, response}) => {
+		ipcRenderer.handle("dialogResponse", (e, {name, response}) => {
 			let promise = this.dialogPromises[name];
-			
-			console.log(name, response);
 			
 			promise?.resolve(response);
 			
