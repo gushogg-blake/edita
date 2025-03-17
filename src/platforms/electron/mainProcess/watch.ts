@@ -31,20 +31,18 @@ export default async function(app) {
 	
 	let watchMain = chokidar.watch(buildDir.child("mainProcess").path, watchOptions);
 	
-	setTimeout(function() {
-		watchMain.on("change", debounce(function() {
-			let child = spawn("npm", ["run", "restart"], {
-				detached: true,
-				stdio: "inherit",
-			});
-			
-			child.unref();
-			
-			closeWatchers();
-			
-			app.forceQuit();
-		}, 300));
-	}, 8000);
+	watchMain.on("change", debounce(function() {
+		let child = spawn("npm", ["run", "restart"], {
+			detached: true,
+			stdio: "inherit",
+		});
+		
+		child.unref();
+		
+		closeWatchers();
+		
+		app.forceQuit();
+	}, 300));
 	
 	function closeWatchers() {
 		[watchMain, watchRenderer].forEach(w => w.close());
