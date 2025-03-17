@@ -79,7 +79,6 @@ function contextmenu(e) {
 }
 
 function select() {
-	console.log(onselect);
 	onselect(entry);
 }
 
