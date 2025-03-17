@@ -1,6 +1,7 @@
 import _typeof from "utils/typeof";
 import Selection from "modules/Selection";
 import Cursor from "modules/Cursor";
+import normaliseNewlines from "modules/utils/normaliseNewlines";
 
 let {s} = Selection;
 let {c} = Cursor;
