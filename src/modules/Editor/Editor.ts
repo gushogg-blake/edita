@@ -3,9 +3,9 @@ import bindFunctions from "utils/bindFunctions";
 import {removeInPlace} from "utils/arrayMethods";
 
 import astCommon from "modules/astCommon";
-import AstSelection from "modules/AstSelection";
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
+import AstSelection, {a} from "modules/AstSelection";
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 
 import AstMode from "./AstMode";
 import normalMouse from "./normalMouse";
@@ -18,10 +18,6 @@ import commonWheel from "./commonWheel";
 import modeSwitchKey from "./modeSwitchKey";
 import snippets from "./snippets";
 import api from "./api";
-
-let {s: a} = AstSelection;
-let {s} = Selection;
-let {c} = Cursor;
 
 class Editor extends Evented {
 	constructor(document, view) {

@@ -1,7 +1,5 @@
 import generatorFromArray from "utils/generatorFromArray";
-import Cursor from "modules/Cursor";
-
-let {c} = Cursor;
+import Cursor, {c} from "modules/Cursor";
 
 export default class {
 	constructor(renderer) {

@@ -1,6 +1,6 @@
-import Cursor from "modules/Cursor";
-import Selection from "modules/Selection";
-import AstSelection from "modules/AstSelection";
+import Cursor, {c} from "modules/Cursor";
+import Selection, {s} from "modules/Selection";
+import AstSelection, {a} from "modules/AstSelection";
 
 import CurrentLineHiliteRenderer from "./CurrentLineHiliteRenderer";
 import NormalSelectionRenderer from "./NormalSelectionRenderer";
@@ -10,9 +10,6 @@ import MarginRenderer from "./MarginRenderer";
 import FoldHiliteRenderer from "./FoldHiliteRenderer";
 import CodeRenderer from "./CodeRenderer";
 import NormalCursorRenderer from "./NormalCursorRenderer";
-
-let {s} = Selection;
-let {c} = Cursor;
 
 function getFoldedLineRowsToRender(view) {
 	let {sizes, measurements} = view;

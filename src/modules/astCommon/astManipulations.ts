@@ -1,4 +1,4 @@
-import AstSelection from "modules/AstSelection";
+import AstSelection, {a} from "modules/AstSelection";
 
 export default {
 	wrap: {

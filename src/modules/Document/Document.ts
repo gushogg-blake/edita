@@ -1,17 +1,14 @@
 import throttle from "utils/throttle";
 import sleep from "utils/sleep";
 import Evented from "utils/Evented";
-import AstSelection from "modules/AstSelection";
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
+import AstSelection, {a} from "modules/AstSelection";
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 import protocol from "modules/protocol";
 import findAndReplace from "modules/findAndReplace";
 
 import Source from "./Source";
 import Line from "./Line";
-
-let {s} = Selection;
-let {c} = Cursor;
 
 class Document extends Evented {
 	constructor(string, url=null, options={}) {

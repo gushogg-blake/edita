@@ -1,9 +1,6 @@
-import AstSelection from "modules/AstSelection";
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
-
-let {s} = Selection;
-let {c} = Cursor;
+import AstSelection, {a} from "modules/AstSelection";
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 
 let lang;
 

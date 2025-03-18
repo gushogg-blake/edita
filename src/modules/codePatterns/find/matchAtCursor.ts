@@ -1,7 +1,5 @@
-import Selection from "modules/Selection";
+import Selection, {s} from "modules/Selection";
 import matchers from "./matchers";
-
-let {s} = Selection;
 
 export default function(context, document, tokens, cursor) {
 	let {getRegex, query} = context;

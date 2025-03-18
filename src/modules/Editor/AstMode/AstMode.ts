@@ -1,11 +1,8 @@
 import Evented from "utils/Evented";
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
-import AstSelection from "modules/AstSelection";
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
+import AstSelection, {a} from "modules/AstSelection";
 import MultiStepCommand from "./MultiStepCommand";
-
-let {s} = AstSelection;
-let {c} = Cursor;
 
 class AstMode extends Evented {
 	constructor(editor) {

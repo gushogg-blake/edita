@@ -1,9 +1,4 @@
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
-
-// TODO import Selection, {s}
-let {s} = Selection;
-let {c} = Cursor;
+import {s, c} from "modules/Selection";
 
 let langCodeMap = {
 	"javascript": "typescript",

@@ -1,7 +1,5 @@
 import Evented from "utils/Evented";
-import AstSelection from "modules/AstSelection";
-
-let {s} = AstSelection;
+import AstSelection, {a} from "modules/AstSelection";
 
 class MultiStepCommand extends Evented {
 	constructor(editor, astManipulation) {
@@ -49,7 +47,7 @@ class MultiStepCommand extends Evented {
 		} = editor.createSnippetPositionsForLines(indentedLines, startLineIndex);
 		
 		let edit = document.lineEdit(startLineIndex, endLineIndex - startLineIndex, replacedLines);
-		let newSelection = s(startLineIndex, startLineIndex + replacedLines.length);
+		let newSelection = a(startLineIndex, startLineIndex + replacedLines.length);
 		
 		let snippetSession = null;
 		

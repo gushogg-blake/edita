@@ -1,9 +1,7 @@
 import indentLines from "modules/utils/indentLines";
-import AstSelection from "modules/AstSelection";
+import AstSelection, {a} from "modules/AstSelection";
 import removeSelection from "modules/astCommon/removeSelection";
 import isIfFooter from "./utils/isIfFooter";
-
-let {s} = AstSelection;
 
 export default {
 	addSelectionToNewElse: {
@@ -63,7 +61,7 @@ export default {
 			
 			return {
 				edits,
-				newSelection: s(newStartLineIndex, newStartLineIndex + lines.length),
+				newSelection: a(newStartLineIndex, newStartLineIndex + lines.length),
 			};
 		},
 	},
@@ -128,7 +126,7 @@ export default {
 					insertLines,
 				},
 				
-				newSelection: s(newStartLineIndex, newStartLineIndex + lines.length),
+				newSelection: a(newStartLineIndex, newStartLineIndex + lines.length),
 			};
 		},
 	},

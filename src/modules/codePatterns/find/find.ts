@@ -1,12 +1,9 @@
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 import createRegex from "./createRegex";
 import query from "./query";
 import tokenise from "./tokenise";
 import matchAtCursor from "./matchAtCursor";
-
-let {s} = Selection;
-let {c} = Cursor;
 
 function advanceCursor(document, cursor) {
 	let {lineIndex, offset} = cursor;

@@ -1,6 +1,4 @@
-import AstSelection from "modules/AstSelection";
-
-let {s} = AstSelection;
+import AstSelection, {a} from "modules/AstSelection";
 
 export default {
 	...AstSelection,
@@ -8,6 +6,6 @@ export default {
 	validate(selection) {
 		let {lines} = this.document;
 		
-		return s(Math.min(selection.startLineIndex, lines.length - 1), Math.min(selection.endLineIndex, lines.length));
+		return a(Math.min(selection.startLineIndex, lines.length - 1), Math.min(selection.endLineIndex, lines.length));
 	},
 };

@@ -2,11 +2,8 @@ import regexMatches from "utils/regexMatches";
 import regexMatch from "utils/regexMatch";
 import unique from "utils/array/unique";
 import convertCase from "utils/convertCase";
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
-
-let {s} = Selection;
-let {c} = Cursor;
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 
 function findCompletions(code, wordAtCursor, index, extraWords=[]) {
 	let {left, right} = wordAtCursor;

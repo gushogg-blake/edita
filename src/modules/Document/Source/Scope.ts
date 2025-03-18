@@ -2,7 +2,7 @@ import _typeof from "utils/typeof";
 import groupBy from "utils/array/groupBy";
 import {removeInPlace} from "utils/arrayMethods";
 import mapArrayToObject from "utils/mapArrayToObject";
-import Selection from "modules/Selection";
+import Selection, {s} from "modules/Selection";
 import Tree from "modules/Tree";
 import Range from "./Range";
 

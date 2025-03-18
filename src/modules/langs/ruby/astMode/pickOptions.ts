@@ -1,7 +1,5 @@
-import AstSelection from "modules/AstSelection";
+import AstSelection, {a} from "modules/AstSelection";
 import {isHeader, getHeaders} from "modules/astCommon/utils";
-
-let {s: a} = AstSelection;
 
 export default {
 	contents: {

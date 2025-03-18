@@ -1,7 +1,5 @@
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
-
-let {s} = Selection;
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 
 /*
 Note - all Ranges have a .scope property. This is set by the owner

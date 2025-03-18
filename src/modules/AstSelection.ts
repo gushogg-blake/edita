@@ -1,8 +1,10 @@
-function s(startLineIndex, endLineIndex=null) {
+export function s(startLineIndex, endLineIndex=null) {
 	return new AstSelection(startLineIndex, endLineIndex);
 }
 
-class AstSelection {
+export {s as a};
+
+export default class AstSelection {
 	constructor(startLineIndex, endLineIndex) {
 		this.startLineIndex = startLineIndex;
 		this.endLineIndex = endLineIndex || startLineIndex;
@@ -128,5 +130,3 @@ class AstSelection {
 		});
 	}
 }
-
-export default AstSelection;

@@ -1,10 +1,7 @@
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 import SelectionContents from "modules/SelectionContents";
 import createPositions from "modules/snippets/createPositions";
-
-let {s} = Selection;
-let {c} = Cursor;
 
 /*
 placeholder - a long-lived object (while the session is active) describing

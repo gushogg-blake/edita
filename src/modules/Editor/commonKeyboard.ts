@@ -1,8 +1,5 @@
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
-
-let {s} = Selection;
-let {c} = Cursor;
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 
 export default {
 	toggleComment(comment) {

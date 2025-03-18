@@ -1,8 +1,11 @@
-function c(lineIndex, offset) {
+export function c(lineIndex, offset) {
 	return new Cursor(lineIndex, offset);
 }
 
-class Cursor {
+export default class Cursor {
+	lineIndex: number;
+	offset: number;
+	
 	constructor(lineIndex, offset) {
 		this.lineIndex = lineIndex;
 		this.offset = offset;
@@ -74,8 +77,6 @@ class Cursor {
 		return this.isWithin(selection) || this.isNextTo(selection);
 	}
 	
-	static c = c;
-	
 	static startOfLine(lineIndex) {
 		return c(lineIndex, 0);
 	}
@@ -92,5 +93,3 @@ class Cursor {
 		return c(0, 0);
 	}
 }
-
-export default Cursor;

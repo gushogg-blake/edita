@@ -1,5 +1,5 @@
 import sleep from "utils/sleep";
-import Selection from "modules/Selection";
+import Selection, {s} from "modules/Selection";
 import DevFileChooserTab from "./DevFileChooserTab";
 
 function get(key) {

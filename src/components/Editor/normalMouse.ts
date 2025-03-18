@@ -1,9 +1,7 @@
 import {on, off} from "utils/dom/domEvents";
-import Selection from "modules/Selection";
+import Selection, {s} from "modules/Selection";
 import autoScroll from "./utils/autoScroll";
 import {getCursor, getCharCursor} from "./utils/cursorFromEvent";
-
-let {s} = Selection;
 
 export default function(editor, editorComponent) {
 	let {document, view} = editor;

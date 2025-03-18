@@ -1,6 +1,6 @@
 import {Parser} from "web-tree-sitter";
 import mapArrayToObject from "utils/mapArrayToObject";
-import Cursor from "modules/Cursor";
+import Cursor, {c} from "modules/Cursor";
 import Node from "./Node";
 import find from "./find";
 
@@ -8,8 +8,6 @@ import {
 	cursorToTreeSitterPoint,
 	rangeToTreeSitterRange,
 } from "./treeSitterUtils";
-
-let {c} = Cursor;
 
 class Tree {
 	constructor(lang, treeSitterTree) {

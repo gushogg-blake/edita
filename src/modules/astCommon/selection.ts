@@ -1,4 +1,4 @@
-import AstSelection from "modules/AstSelection";
+import AstSelection, {a} from "modules/AstSelection";
 
 import {
 	findPrevLineIndexAtIndentLevel,
@@ -6,8 +6,6 @@ import {
 	extendUp,
 	extendDown,
 } from "./utils";
-
-let {s} = AstSelection;
 
 /*
 if a header/footer, expand to the entire block (following header-footers)
@@ -35,11 +33,11 @@ function fromLineIndex(document, lineIndex, forHilite) {
 		if (forHilite) {
 			return null;
 		} else {
-			return s(lineIndex);
+			return a(lineIndex);
 		}
 	}
 	
-	return s(extendUp(document, lineIndex), extendDown(document, lineIndex));
+	return a(extendUp(document, lineIndex), extendDown(document, lineIndex));
 }
 
 function selectionFromLineIndex(document, lineIndex) {
@@ -105,7 +103,7 @@ function fromLineRange(document, startLineIndex, endLineIndex) {
 		i = Math.max(i + 1, endIndex);
 	}
 	
-	return s(startIndex, endIndex);
+	return a(startIndex, endIndex);
 }
 
 let api = {
@@ -202,7 +200,7 @@ let api = {
 			endLine = lines[endLineIndex - 1];
 		}
 		
-		return s(startLineIndex, endLineIndex);
+		return a(startLineIndex, endLineIndex);
 	},
 }
 

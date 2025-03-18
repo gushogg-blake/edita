@@ -1,8 +1,6 @@
-import AstSelection from "modules/AstSelection";
+import AstSelection, {a} from "modules/AstSelection";
 import removeSelection from "./removeSelection";
 import {createSpaces, findIndentLevel, findSiblingIndex} from "./utils";
-
-let {s} = AstSelection;
 
 export default function(
 	astMode,
@@ -68,7 +66,7 @@ export default function(
 				insertLines: createSpaces(spaces, indentLevel, indentStr),
 			});
 			
-			newSelection = s(fromStart + adjustSelection, fromEnd + adjustSelection);
+			newSelection = a(fromStart + adjustSelection, fromEnd + adjustSelection);
 		}
 	} else {
 		let removeDiff = 0;
@@ -141,7 +139,7 @@ export default function(
 			
 			let newSelectionStart = toStart - removeDiff + adjustSpaces.above;
 			
-			newSelection = s(newSelectionStart, newSelectionStart + lines.length);
+			newSelection = a(newSelectionStart, newSelectionStart + lines.length);
 		}
 	}
 	

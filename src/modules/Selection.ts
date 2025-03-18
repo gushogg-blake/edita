@@ -1,22 +1,25 @@
-import Cursor from "modules/Cursor";
+import Cursor, {c} from "modules/Cursor";
 
-let {c} = Cursor;
+export {c};
 
-function s(start, end=null) {
+export function s(start, end=null) {
 	return new Selection(start, end);
 }
 
-class Selection {
+export default class Selection {
+	start: Cursor;
+	end: Cursor;
+	
 	constructor(start, end) {
 		this.start = start;
 		this.end = end || start;
 	}
 	
-	get left() {
+	get left(): Cursor {
 		return Cursor.min(this.start, this.end);
 	}
 	
-	get right() {
+	get right(): Cursor {
 		return Cursor.max(this.start, this.end);
 	}
 	
@@ -25,15 +28,15 @@ class Selection {
 	same span of chars
 	*/
 	
-	equals(selection) {
+	equals(selection: Selection) {
 		return selection.left.equals(this.left) && selection.right.equals(this.right);
 	}
 	
-	sort() {
+	sort(): Selection {
 		return Selection.sort(this);
 	}
 	
-	containsCursor(cursor) {
+	containsCursor(cursor): boolean {
 		return cursor.isWithin(this);
 	}
 	
@@ -283,5 +286,3 @@ class Selection {
 		return s(Cursor.startOfLine(lineIndex));
 	}
 }
-
-export default Selection;

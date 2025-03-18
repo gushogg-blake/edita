@@ -1,8 +1,6 @@
-import Selection from "modules/Selection";
-import AstSelection from "modules/AstSelection";
+import Selection, {s} from "modules/Selection";
+import AstSelection, {a} from "modules/AstSelection";
 import astCommon from "modules/astCommon";
-
-let {s: a} = AstSelection;
 
 export default {
 	setSelection(selection) {

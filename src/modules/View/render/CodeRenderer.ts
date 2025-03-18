@@ -1,4 +1,4 @@
-import Cursor from "modules/Cursor";
+import Cursor, {c} from "modules/Cursor";
 import LineRowRenderer from "./LineRowRenderer";
 
 /*

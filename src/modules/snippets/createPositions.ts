@@ -1,10 +1,7 @@
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 import Document from "modules/Document";
 import getPlaceholders from "./getPlaceholders";
-
-let {s} = Selection;
-let {c} = Cursor;
 
 function getReplacedString(string, placeholders) {
 	let replacedString = "";

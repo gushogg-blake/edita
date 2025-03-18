@@ -1,10 +1,8 @@
 import {on, off} from "utils/dom/domEvents";
-import AstSelection from "modules/AstSelection";
+import AstSelection, {a} from "modules/AstSelection";
 import astCommon from "modules/astCommon";
 import autoScroll from "./utils/autoScroll";
 import astDragData from "./astDragData";
-
-let {s} = AstSelection;
 
 export default function(editor, editorComponent) {
 	let {document, view} = editor;
@@ -81,7 +79,7 @@ export default function(editor, editorComponent) {
 		);
 		
 		if (range.isWithin(astSelection)) {
-			return s(astSelection.startLineIndex);
+			return a(astSelection.startLineIndex);
 		}
 		
 		return range;

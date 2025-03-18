@@ -1,4 +1,4 @@
-import Selection from "modules/Selection";
+import Selection, {s} from "modules/Selection";
 import URL from "modules/URL";
 import Tab from "./Tab";
 

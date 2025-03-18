@@ -1,11 +1,7 @@
-import Cursor from "modules/Cursor";
-import Selection from "modules/Selection";
-import AstSelection from "modules/AstSelection";
+import Cursor, {c} from "modules/Cursor";
+import Selection, {s} from "modules/Selection";
+import AstSelection, {a} from "modules/AstSelection";
 import {extendDown} from "modules/astCommon/utils";
-
-let {c} = Cursor;
-let {s} = Selection;
-let {s: a} = AstSelection;
 
 let matchers = {
 	literal(context, token, next) {

@@ -1,10 +1,7 @@
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 import Scope from "./Scope";
 import Range from "./Range";
-
-let {s} = Selection;
-let {c} = Cursor;
 
 export default class {
 	constructor(document) {

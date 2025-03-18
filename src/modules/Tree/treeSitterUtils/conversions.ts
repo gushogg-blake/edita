@@ -1,6 +1,4 @@
-import Cursor from "modules/Cursor";
-
-let {c} = Cursor;
+import Cursor, {c} from "modules/Cursor";
 
 export function treeSitterPointToCursor(point) {
 	return c(point.row, point.column);

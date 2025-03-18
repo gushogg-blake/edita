@@ -1,10 +1,7 @@
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
+import Selection, {s} from "modules/Selection";
+import Cursor, {c} from "modules/Cursor";
 import cachedNodeFunction from "./utils/cachedNodeFunction";
 import {treeSitterPointToCursor} from "./conversions";
-
-let {s} = Selection;
-let {c} = Cursor;
 
 let api = {
 	type: cachedNodeFunction(node => node.type),

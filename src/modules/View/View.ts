@@ -1,9 +1,9 @@
 import Evented from "utils/Evented";
 import bindFunctions from "utils/bindFunctions";
 import mapArrayToObject from "utils/mapArrayToObject";
-import Cursor from "modules/Cursor";
-import Selection from "modules/Selection";
-import AstSelection from "modules/AstSelection";
+import Cursor, {c} from "modules/Cursor";
+import Selection, {s} from "modules/Selection";
+import AstSelection, {a} from "modules/AstSelection";
 import astCommon from "modules/astCommon";
 
 import SelectionUtils from "./utils/Selection";
@@ -11,10 +11,6 @@ import AstSelectionUtils from "./utils/AstSelection";
 import wrapLine from "./utils/wrapLine";
 import canvasUtils from "./utils/canvasUtils";
 import Renderer from "./render/Renderer";
-
-let {s: a} = AstSelection;
-let {c} = Cursor;
-let {s} = Selection;
 
 class View extends Evented {
 	constructor(document) {

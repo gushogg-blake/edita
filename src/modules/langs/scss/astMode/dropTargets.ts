@@ -1,8 +1,6 @@
 import indentLines from "modules/utils/indentLines";
-import AstSelection from "modules/AstSelection";
+import AstSelection, {a} from "modules/AstSelection";
 import removeSelection from "modules/astCommon/removeSelection";
-
-let {s} = AstSelection;
 
 export default {
 	addSelectionToNewRule: {
@@ -65,7 +63,7 @@ export default {
 					insertLines,
 				},
 				
-				newSelection: s(newStartLineIndex, newStartLineIndex + lines.length),
+				newSelection: a(newStartLineIndex, newStartLineIndex + lines.length),
 			};
 		},
 	},
