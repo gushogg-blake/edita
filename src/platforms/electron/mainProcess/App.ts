@@ -9,7 +9,7 @@ import {Readable} from "node:stream";
 import path from "node:path";
 import windowStateKeeper from "electron-window-state";
 import {fs, cmdSync} from "utils/node";
-import {removeInPlace} from "utils/arrayMethods";
+import {removeInPlace} from "utils/array";
 import getConfig from "./utils/getConfig";
 import ipcMain from "./modules/ipcMain";
 import mimeTypes from "./modules/mimeTypes";

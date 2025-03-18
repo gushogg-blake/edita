@@ -222,4 +222,14 @@ export default {
 	"30"(prefs) {
 		prefs.customContextMenu = true;
 	},
+	
+	"31"(prefs) {
+		prefs.globalKeymap["Ctrl+Shift+P"] = "commandPalette";
+		prefs.globalKeymap["Ctrl+P"] = "fastOpen";
+	},
+	
+	"32"(prefs) {
+		prefs.globalKeymap["Ctrl+Alt+S"] = "saveAs";
+		prefs.globalKeymap["Ctrl+Shift+S"] = "saveAll";
+	},
 };

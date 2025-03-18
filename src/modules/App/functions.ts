@@ -1,3 +1,5 @@
+import App from "./App";
+
 export default {
 	async open() {
 		let dir = this.getCurrentDir();
@@ -18,12 +20,32 @@ export default {
 		this.save(this.selectedTab);
 	},
 	
+	saveAs() {
+		if (!this.selectedTab) {
+			return;
+		}
+		
+		this.saveAs(this.selectedTab);
+	},
+	
+	saveAll() {
+		this.saveAll();
+	},
+	
 	_new() {
 		this.newFile();
 	},
 	
 	newWithLangSelector() {
 		this.openLangSelector();
+	},
+	
+	fastOpen() {
+		this.showQuickAction("fastOpen");
+	},
+	
+	commandPalette() {
+		this.showQuickAction("commandPalette");
 	},
 	
 	find() {

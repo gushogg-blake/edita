@@ -149,8 +149,12 @@ export default function() {
 		globalKeymap: {
 			"Ctrl+O": "open",
 			"Ctrl+S": "save",
+			"Ctrl+Alt+S": "saveAs",
+			"Ctrl+Shift+S": "saveAll",
 			"Ctrl+N": "_new",
 			"Ctrl+L": "newWithLangSelector",
+			"Ctrl+P": "fastOpen",
+			//"Ctrl+Shift+P": "commandPalette",
 			
 			"Ctrl+F": "find",
 			"Ctrl+Shift+F": "findInOpenFiles",

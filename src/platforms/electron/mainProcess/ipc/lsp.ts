@@ -1,5 +1,5 @@
 import {lid} from "utils/node";
-import {removeInPlace} from "utils/arrayMethods";
+import {removeInPlace} from "utils/array";
 import LspServer from "../modules/lsp/LspServer";
 import config from "../modules/lsp/config";
 

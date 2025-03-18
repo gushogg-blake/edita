@@ -1,6 +1,6 @@
 import Evented from "utils/Evented";
 import bindFunctions from "utils/bindFunctions";
-import {removeInPlace} from "utils/arrayMethods";
+import {removeInPlace} from "utils/array";
 
 import astCommon from "modules/astCommon";
 import AstSelection, {a} from "modules/AstSelection";

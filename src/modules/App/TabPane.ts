@@ -1,4 +1,4 @@
-import {removeInPlace} from "utils/arrayMethods";
+import {removeInPlace} from "utils/array";
 import Evented from "utils/Evented";
 
 class TabPane extends Evented {

@@ -1,4 +1,3 @@
-export * from "./arrayMethods";
 export {default as Evented} from "./Evented";
 export {default as lid} from "./lid";
 export {default as sleep} from "./sleep";

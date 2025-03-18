@@ -1,4 +1,4 @@
-import {removeInPlace} from "../arrayMethods";
+import {removeInPlace} from "../array";
 
 let isFocused = document.hasFocus();
 

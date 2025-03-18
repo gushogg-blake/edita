@@ -1,4 +1,4 @@
-import {removeInPlace} from "utils/arrayMethods";
+import {removeInPlace} from "utils/array";
 import localStorage from "platforms/web/modules/localStorage";
 
 export default function(localStoragePrefix) {

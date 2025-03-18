@@ -1,5 +1,5 @@
 import Evented from "utils/Evented";
-import {removeInPlace} from "utils/arrayMethods";
+import {removeInPlace} from "utils/array";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 
 class Snippets extends Evented {

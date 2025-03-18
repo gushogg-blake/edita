@@ -1,5 +1,5 @@
 import Evented from "utils/Evented";
-import sortedPartition from "utils/array/sortedPartition";
+import {sortedPartition} from "utils/array";
 import URL from "modules/URL";
 import codePatterns from "modules/codePatterns";
 

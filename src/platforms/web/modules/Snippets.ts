@@ -1,7 +1,7 @@
 import bluebird from "bluebird";
 import lid from "utils/lid";
 import Evented from "utils/Evented";
-import {removeInPlace} from "utils/arrayMethods";
+import {removeInPlace} from "utils/array";
 
 class Snippets extends Evented {
 	constructor(fs) {

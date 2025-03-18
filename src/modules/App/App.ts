@@ -1,7 +1,7 @@
 import bluebird from "bluebird";
 
-import {removeInPlace, moveInPlace} from "utils/arrayMethods";
-import sortedPartition from "utils/array/sortedPartition";
+import {removeInPlace, moveInPlace} from "utils/array";
+import {partition, sortedPartition} from "utils/array";
 import Evented from "utils/Evented";
 import bindFunctions from "utils/bindFunctions";
 import promiseWithMethods from "utils/promiseWithMethods";
@@ -143,16 +143,31 @@ class App extends Evented {
 			
 			await document.save();
 		} else {
-			let dir = this.getCurrentDir(platform.systemInfo.homeDir);
-			
-			let path = await platform.saveAs({
-				path: platform.fs(dir, platform.fs(document.path).name).path,
-			});
-			
-			if (path) {
-				await document.saveAs(URL.file(path));
-			}
+			await this.saveAs(tab);
 		}
+	}
+	
+	async saveAs(tab) {
+		let {document} = tab;
+		
+		let dir = this.getCurrentDir(platform.systemInfo.homeDir);
+		
+		let path = await platform.saveAs({
+			path: platform.fs(dir, platform.fs(document.path).name).path,
+		});
+		
+		if (path) {
+			await document.saveAs(URL.file(path));
+		}
+	}
+	
+	async saveAll() {
+		let [saved, unsaved] = partition(this.tabs, tab => tab.isSaved);
+		
+		await Promise.all([
+			bluebird.map(saved, tab => this.save(tab)),
+			bluebird.each(unsaved, tab => this.saveAs(tab)),
+		]);
 	}
 	
 	async renameTab(tab) {
@@ -434,6 +449,10 @@ class App extends Evented {
 		this.fire("hideFindAndReplace");
 		
 		this.focusSelectedTab();
+	}
+	
+	showQuickAction(type) {
+		
 	}
 	
 	async readFileForOpen(path) {

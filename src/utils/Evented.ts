@@ -1,4 +1,4 @@
-import {removeInPlace} from "utils/arrayMethods";
+import {removeInPlace} from "utils/array";
 
 class Event {
 	constructor() {

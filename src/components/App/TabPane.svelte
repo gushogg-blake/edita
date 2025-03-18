@@ -150,12 +150,12 @@ onMount(function() {
 		style={inlineStyle(contentsStyle)}
 	>
 		{#each tabs as tab (tab)}
-			{@const SvelteComponent = tabComponents[tab.type]}
+			{@const Component = tabComponents[tab.type]}
 			<div
 				class="tab"
 				class:hide={tab !== selectedTab}
 			>
-				<SvelteComponent {tab}/>
+				<Component {tab}/>
 			</div>
 		{/each}
 	</div>

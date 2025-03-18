@@ -9,16 +9,22 @@ import themeStyleDev from "components/themeStyleDev";
 import labelClick from "components/actions/labelClick";
 
 import Toolbar from "./Toolbar.svelte";
+
 import TabBar from "./TabBar.svelte";
 import EditorTab from "./EditorTab.svelte";
 import RefactorPreviewTab from "./RefactorPreviewTab.svelte";
+
 import Pane from "./Pane.svelte";
 import LeftPane from "./LeftPane.svelte";
 import RightPane from "./RightPane.svelte";
 import BottomPanes from "./BottomPanes.svelte";
-import FindBar from "./FindBar.svelte";
-import DevToolbar from "./DevToolbar/DevToolbar.svelte";
 
+import FindBar from "./FindBar.svelte";
+
+import FastOpen from "./quickActions/FastOpen.svelte";
+import CommandPalette from "./quickActions/CommandPalette.svelte";
+
+import DevToolbar from "./DevToolbar/DevToolbar.svelte";
 import DevFileChooserTab from "./DevFileChooserTab.svelte";
 
 let {
@@ -35,6 +41,13 @@ let theme = $state(base.theme);
 let tabs = $state(app.tabs);
 let selectedTab = $state(app.selectedTab);
 let panes = $state(app.panes);
+
+let showingQuickAction = $state(null);
+
+let quickActionComponents = {
+	fastOpen: FastOpen,
+	commandPalette: CommandPalette,
+};
 
 let tabComponents = {
 	editor: EditorTab,
@@ -213,6 +226,13 @@ onMount(function() {
 #devToolbar {
 	border-top: var(--appBorder);
 }
+
+#quickAction {
+	position: absolute;
+	top: 50px; // SYNC should be just below the tabs
+	left: 0;
+	right: 0;
+}
 </style>
 
 <div
@@ -228,6 +248,12 @@ onMount(function() {
 	tabindex="0"
 	use:labelClick
 >
+	{#if showingQuickAction}
+		{@const Component = quickActionComponents[showingQuickAction]}
+		<div id="quickAction">
+			<Component/>
+		</div>
+	{/if}
 	{#if prefs.dev.showThemeStyleElement}
 		<div class="hide" use:themeStyleDev={{app, update: theme => base.modifyThemeForDev(theme)}}></div>
 	{/if}
@@ -248,9 +274,9 @@ onMount(function() {
 	</div>
 	<div id="editor">
 		{#each tabs as tab (tab)}
-			{@const SvelteComponent = tabComponents[tab.type]}
+			{@const Component = tabComponents[tab.type]}
 			<div class="tab" class:selected={tab === selectedTab}>
-				<SvelteComponent {tab}/>
+				<Component {tab}/>
 			</div>
 		{/each}
 	</div>

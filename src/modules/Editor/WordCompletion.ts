@@ -1,6 +1,6 @@
 import regexMatches from "utils/regexMatches";
 import regexMatch from "utils/regexMatch";
-import unique from "utils/array/unique";
+import {unique} from "utils/array";
 import convertCase from "utils/convertCase";
 import Selection, {s} from "modules/Selection";
 import Cursor, {c} from "modules/Cursor";

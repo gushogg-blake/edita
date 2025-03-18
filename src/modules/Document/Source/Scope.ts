@@ -1,6 +1,6 @@
 import _typeof from "utils/typeof";
-import groupBy from "utils/array/groupBy";
-import {removeInPlace} from "utils/arrayMethods";
+import {groupBy} from "utils/array";
+import {removeInPlace} from "utils/array";
 import mapArrayToObject from "utils/mapArrayToObject";
 import Selection, {s} from "modules/Selection";
 import Tree from "modules/Tree";

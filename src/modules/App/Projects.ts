@@ -1,7 +1,7 @@
 import bluebird from "bluebird";
 import Evented from "utils/Evented";
-import unique from "utils/array/unique";
-import {removeInPlace} from "utils/arrayMethods";
+import {unique} from "utils/array";
+import {removeInPlace} from "utils/array";
 import Project from "modules/Project";
 import {projectRootFiles} from "modules/conventions";
 
