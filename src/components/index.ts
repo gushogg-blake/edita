@@ -1,11 +1,9 @@
-import SnippetEditor from "./SnippetEditor.svelte";
-import ContextMenu from "./ContextMenu.svelte";
-import MessageBox from "./MessageBox.svelte";
-import DialogToolbar from "./DialogToolbar.svelte";
+import ContextMenu from "components/ContextMenu.svelte";
+import DialogToolbar from "components/DialogToolbar.svelte";
+import dialogs from "components/dialogs";
 
 export default {
-	SnippetEditor,
 	ContextMenu,
-	MessageBox,
 	DialogToolbar,
+	dialogs,
 };

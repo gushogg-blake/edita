@@ -1,6 +1,6 @@
 import Evented from "utils/Evented";
 import lid from "utils/lid";
-import URL from "modules/URL";
+import URL from "modules/utils/URL";
 import LspError from "modules/lsp/LspError";
 
 import {

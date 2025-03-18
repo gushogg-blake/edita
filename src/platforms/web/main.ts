@@ -1,7 +1,7 @@
 import {mount} from "svelte";
 import "css/global.scss";
-import Base from "modules/Base";
-import App from "modules/App";
+import Base from "modules/base/Base";
+import App from "modules/ui/App";
 import components from "components";
 import AppComponent from "components/App/App.svelte";
 import Textarea from "platforms/web/components/Textarea.svelte";

@@ -65,7 +65,7 @@ function newProjectMouseup() {
 }
 
 async function newProject() {
-	let dirs = await platform.chooseDir();
+	let dirs = await app.chooseDir();
 	
 	if (dirs.length === 0) {
 		return;
@@ -234,15 +234,13 @@ onMount(function() {
 						{getLabel(project)}
 					</div>
 				{/each}
-				{#if platform.chooseDir}
-					<div
-						class="project"
-						onmouseup={newProjectMouseup}
-						onclick={newProjectClick}
-					>
-						New project
-					</div>
-				{/if}
+				<div
+					class="project"
+					onmouseup={newProjectMouseup}
+					onclick={newProjectClick}
+				>
+					New project
+				</div>
 			</div>
 			{#if viewingProject}
 				<div id="details">

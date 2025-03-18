@@ -2,6 +2,10 @@
 let {
 	title = "",
 } = $props();
+
+export function setTitle(value) {
+	title = value;
+}
 </script>
 
 <style lang="scss">

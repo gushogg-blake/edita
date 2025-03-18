@@ -1,6 +1,6 @@
 import middle from "utils/middle";
-import Selection, {s} from "modules/Selection";
-import Cursor, {c} from "modules/Cursor";
+import Selection, {s} from "modules/core/Selection";
+import Cursor, {c} from "modules/core/Cursor";
 
 function findResultAtCursor(cache, cursor) {
 	let startIndex = 0;

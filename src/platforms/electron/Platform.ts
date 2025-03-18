@@ -94,38 +94,6 @@ class Platform extends Evented {
 		await this.snippets.init();
 	}
 	
-	async _open(dir, mode) {
-		let path = dir || os.homedir();
-		
-		let {canceled, paths} = await this._dialogPromise("fileChooser", {
-			path,
-			mode,
-		});
-		
-		if (canceled) {
-			return [];
-		}
-		
-		return paths;
-	}
-	
-	open(dir=null) {
-		return this._open(dir, "selectFiles");
-	}
-	
-	chooseDir(startDir=null) {
-		return this._open(startDir, "selectDir");
-	}
-	
-	async saveAs(options) {
-		let {canceled, path} = await this._dialogPromise("fileChooser", {
-			mode: "save",
-			...options,
-		});
-		
-		return path || null;
-	}
-	
 	backup(document) {
 		let key = encodeURIComponent(document.url);
 		
@@ -161,10 +129,6 @@ class Platform extends Evented {
 		this.dialogPromises[name] = promise;
 		
 		return promise;
-	}
-	
-	showMessageBox(_app, options) {
-		return this._dialogPromise("messageBox", options);
 	}
 	
 	_showContextMenu(app, items, coords, options) {
@@ -213,19 +177,13 @@ class Platform extends Evented {
 		this._showContextMenu(app, items, coords, options);
 	}
 	
-	openDialogWindow(app, dialog, dialogOptions, windowOptions) {
+	openDialogWindow(_showSyntheticDialog, dialog, dialogOptions, _windowOptions) {
 		ipc.openDialogWindow(dialog, dialogOptions);
 	}
 	
 	callOpener(channel, method, ...args) {
 		return ipcRenderer.invoke("callOpener", "call", channel, method, ...args);
 	}
-	
-	//handleIpcMessages(channel, handler) {
-	//	return ipcRenderer.handle(channel, function(e, method, ...args) {
-	//		return handler[method](...args);
-	//	});
-	//}
 	
 	get isWindows() {
 		return process.platform === "win32";

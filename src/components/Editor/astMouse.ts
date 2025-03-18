@@ -1,5 +1,5 @@
 import {on, off} from "utils/dom/domEvents";
-import AstSelection, {a} from "modules/AstSelection";
+import AstSelection, {a} from "modules/core/AstSelection";
 import astCommon from "modules/astCommon";
 import autoScroll from "./utils/autoScroll";
 import astDragData from "./astDragData";

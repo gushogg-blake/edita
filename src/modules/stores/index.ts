@@ -1,4 +1,4 @@
-import JsonStore from "modules/JsonStore";
+import JsonStore from "modules/stores/JsonStore";
 import prefs from "./prefs";
 import themes from "./themes";
 import session from "./session";

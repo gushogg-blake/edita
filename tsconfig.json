@@ -33,6 +33,7 @@ config.
 			"root/*": ["./*"],
 			"components/*": ["./src/components/*"],
 			"modules/*": ["./src/modules/*"],
+			"utils": ["./src/utils"],
 			"utils/*": ["./src/utils/*"],
 			"css/*": ["./src/css/*"],
 			"platforms/*": ["./src/platforms/*"],

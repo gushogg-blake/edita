@@ -1,5 +1,5 @@
-import Selection, {s} from "modules/Selection";
-import Cursor, {c} from "modules/Cursor";
+import Selection, {s} from "modules/core/Selection";
+import Cursor, {c} from "modules/core/Cursor";
 import createRegex from "./createRegex";
 import query from "./query";
 import tokenise from "./tokenise";

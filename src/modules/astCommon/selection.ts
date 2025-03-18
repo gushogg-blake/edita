@@ -1,4 +1,4 @@
-import AstSelection, {a} from "modules/AstSelection";
+import AstSelection, {a} from "modules/core/AstSelection";
 
 import {
 	findPrevLineIndexAtIndentLevel,

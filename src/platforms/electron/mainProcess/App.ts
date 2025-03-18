@@ -298,7 +298,7 @@ class App {
 		
 		winState.manage(browserWindow);
 		
-		browserWindow.loadURL("app://-/index.html?p=main");
+		browserWindow.loadURL("app://-/index.html");
 		
 		if (config.dev) {
 			browserWindow.webContents.openDevTools();
@@ -362,7 +362,7 @@ class App {
 	}
 	
 	createDialogWindow(name, windowOptions, opener) {
-		let url = "app://-/index.html?p=" + name;
+		let url = "app://-/index.html?dialog=" + name;
 		
 		let browserWindow = new BrowserWindow({
 			show: false,

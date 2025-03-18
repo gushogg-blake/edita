@@ -1,11 +1,11 @@
 import mapArrayToObject from "utils/mapArrayToObject";
-import Selection, {s} from "modules/Selection";
-import Cursor, {c} from "modules/Cursor";
-import AstSelection, {a} from "modules/AstSelection";
-import Document from "modules/Document";
-import SelectionContents from "modules/SelectionContents";
+import Selection, {s} from "modules/core/Selection";
+import Cursor, {c} from "modules/core/Cursor";
+import AstSelection, {a} from "modules/core/AstSelection";
+import Document from "modules/core/Document";
+import SelectionContents from "modules/core/SelectionContents";
 import astCommon from "modules/astCommon";
-import Node from "modules/Tree/Node";
+import Node from "modules/core/Tree/Node";
 import getPlaceholders from "modules/snippets/getPlaceholders";
 
 function getLineParts(string) {

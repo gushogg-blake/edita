@@ -5,7 +5,7 @@ import minimatch from "minimatch-browser";
 import {glob} from "glob";
 import {mkdirp} from "mkdirp";
 
-import fs from "../fs";
+import fs from "utils/fs";
 
 export default fs({
 	fs: fsExtra,

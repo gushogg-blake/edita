@@ -25,7 +25,6 @@ import FastOpen from "./quickActions/FastOpen.svelte";
 import CommandPalette from "./quickActions/CommandPalette.svelte";
 
 import DevToolbar from "./DevToolbar/DevToolbar.svelte";
-import DevFileChooserTab from "./DevFileChooserTab.svelte";
 
 let {
 	app,
@@ -52,7 +51,6 @@ let quickActionComponents = {
 let tabComponents = {
 	editor: EditorTab,
 	refactorPreview: RefactorPreviewTab,
-	devFileChooser: DevFileChooserTab,
 };
 
 let showingFindBar = $state(false);
