@@ -1,4 +1,5 @@
 import {mount, unmount} from "svelte";
+import sleep from "utils/sleep";
 import inlineStyle from "utils/dom/inlineStyle";
 import {on, off} from "utils/dom/domEvents";
 import screenOffsets from "utils/dom/screenOffsets";
@@ -56,9 +57,14 @@ export default function(app, items, coords, options={}) {
 		
 		props: {
 			items,
+			options,
 			
 			onclick(item) {
 				click(item);
+			},
+			
+			onclose() {
+				close();
 			},
 		},
 	});
@@ -69,10 +75,21 @@ export default function(app, items, coords, options={}) {
 		container.focus();
 	}, 0);
 	
-	function click(item) {
-		item.onClick();
-		
+	async function click(item) {
 		close();
+		
+		/*
+		NOTE this seems to be needed to close the menu before
+		a confirm() even though close() should have removed the
+		overlay synchronously. stepping through the code, it
+		works as expected (menu closes first) without the sleep,
+		but running normally the menu is still visible while the
+		confirm dialog is up
+		*/
+		
+		await sleep(0);
+		
+		item.onClick();
 	}
 	
 	function close() {
@@ -86,25 +103,6 @@ export default function(app, items, coords, options={}) {
 		
 		off(overlay, "mousedown", close);
 		off(window, "blur", close);
-		off(container, "keydown", keydown);
-	}
-	
-	function keydown(e) {
-		e.preventDefault();
-		
-		if (e.key === "Escape" && !options.noCancel) {
-			close();
-			
-			return;
-		}
-		
-		for (let item of items) {
-			if (item.label.toLowerCase().indexOf("%" + e.key.toLowerCase()) !== -1) {
-				click(item);
-				
-				return;
-			}
-		}
 	}
 	
 	let {right, bottom} = screenOffsets(container);
@@ -123,5 +121,4 @@ export default function(app, items, coords, options={}) {
 	
 	on(overlay, "mousedown", close);
 	on(window, "blur", close);
-	on(container, "keydown", keydown);
 }
