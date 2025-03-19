@@ -1,5 +1,5 @@
 <script lang="ts">
-import {onMount, getContext, tick} from "svelte";
+import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import sleep from "utils/sleep";
 import clickElementFromAccel from "utils/dom/clickElementFromAccel";
