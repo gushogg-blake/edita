@@ -4,9 +4,9 @@ import inlineStyle from "utils/dom/inlineStyle";
 import {on, off} from "utils/dom/domEvents";
 
 export default class extends Evented {
-	constructor(app, windowOptions) {
-		this.app = app;
+	constructor(windowOptions, renderDiv) {
 		this.windowOptions = windowOptions;
+		this.renderDiv = renderDiv;
 		this.closed = false;
 	}
 	
@@ -17,16 +17,18 @@ export default class extends Evented {
 		
 		this.fire("close");
 		
+		let {toolbarComponent, container} = this;
+		
 		unmount(toolbarComponent);
 		
 		container.parentNode.removeChild(container);
-		
-		this.app.focusSelectedTabAsync();
 		
 		this.closed = true;
 	}
 	
 	render() {
+		let {windowOptions, renderDiv} = this;
+		
 		let container = document.createElement("div");
 		let toolbar = document.createElement("div");
 		let content = document.createElement("div");
@@ -35,7 +37,7 @@ export default class extends Evented {
 		this.toolbar = toolbar;
 		this.content = content;
 		
-		this.app.renderDiv(container);
+		this.renderDiv(container);
 		
 		container.appendChild(toolbar);
 		container.appendChild(content);
@@ -64,7 +66,7 @@ export default class extends Evented {
 			visibility: "hidden",
 		});
 		
-		if (!this.windowOptions.fitContents) {
+		if (!windowOptions.fitContents) {
 			let {
 				width,
 				height,

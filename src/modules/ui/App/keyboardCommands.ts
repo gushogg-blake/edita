@@ -1,4 +1,5 @@
-import App from "./App";
+import {readFilesForOpen} from "modules/ui/App/utils/readFilesForOpen";
+import App from "modules/ui/App";
 
 /*
 functions available to be bound to key presses
@@ -7,7 +8,7 @@ functions available to be bound to key presses
 export default {
 	async open() {
 		let dir = this.getCurrentDir(platform.systemInfo.homeDir);
-		let files = await this.readFilesForOpen(await this.showOpenDialog(dir));
+		let files = await readFilesForOpen(await this.showOpenDialog(dir));
 		
 		for (let {path, code} of files) {
 			this.openPath(path, code);

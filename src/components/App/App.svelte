@@ -59,11 +59,12 @@ let showingFindBar = $state(false);
 
 function keydown(e) {
 	let {keyCombo} = getKeyCombo(e);
+	let command = base.prefs.globalKeymap[keyCombo];
 	
-	if (base.prefs.globalKeymap[keyCombo]) {
+	if (command) {
 		e.preventDefault();
 		
-		app.functions[base.prefs.globalKeymap[keyCombo]]();
+		app.keyboardCommands[command]();
 	}
 }
 
