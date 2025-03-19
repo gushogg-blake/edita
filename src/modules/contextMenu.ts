@@ -5,7 +5,7 @@ import {on, off} from "utils/dom/domEvents";
 import screenOffsets from "utils/dom/screenOffsets";
 
 /*
-RUNS: once, to display a synthetic (non-native) context menu
+RUNS: on right click, to display a synthetic (non-native) context menu
 
 WHY: electron can display native context menus but sometimes we want them
 to be un-cancelable (if we're holding Esc and don't want the repeat to
