@@ -25,6 +25,12 @@ function click(item) {
 		background: var(--contextMenuHoverBackground);
 	}
 }
+
+.separator {
+	height: 1px;
+	margin: 5px 0;
+	background: var(--appBorderColor);
+}
 </style>
 
 <div id="main">
