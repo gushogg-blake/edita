@@ -255,8 +255,10 @@ class FindAndReplace extends Evented {
 		this.savedOptions = await base.stores.findAndReplaceOptions.load();
 	}
 	
-	saveOptions(options) {
-		return base.stores.findAndReplaceOptions.save(options);
+	async saveOptions(options) {
+		this.savedOptions = options;
+		
+		await base.stores.findAndReplaceOptions.save(options);
 	}
 	
 	async loadHistory() {
