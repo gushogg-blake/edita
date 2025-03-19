@@ -7,7 +7,7 @@ functions available to be bound to key presses
 export default {
 	async open() {
 		let dir = this.getCurrentDir(platform.systemInfo.homeDir);
-		let files = await this.readFilesForOpen(await this.open(dir));
+		let files = await this.readFilesForOpen(await this.showOpenDialog(dir));
 		
 		for (let {path, code} of files) {
 			this.openPath(path, code);

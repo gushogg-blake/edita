@@ -47,7 +47,11 @@ let renames = [];
 
 for (let line of lines) {
 	if (line.startsWith("rename")) {
-		let [all, f, filename] = line.match(/^rename (from|to) src\/(.+)\.(ts|svelte)$/);
+		let [all, f, filename, ext] = line.match(/^rename (from|to) src\/(.+)\.(ts|svelte)$/);
+		
+		if (ext !== "ts") {
+			filename += "." + ext;
+		}
 		
 		filename = filename.replace(/\/index$/, "");
 		
