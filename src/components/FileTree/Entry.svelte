@@ -1,5 +1,4 @@
 <script lang="ts">
-import {run} from "svelte/legacy";
 import {getContext, onMount, tick} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
 import Entry from "./Entry.svelte";
@@ -31,7 +30,7 @@ let showHiddenFiles = $state(base.getPref("showHiddenFiles"));
 let dirs = $derived(entries.filter(e => e.isDir));
 let files = $derived(entries.filter(e => !e.isDir));
 
-run(() => {
+$effect(() => {
 	expanded = isRoot || isDir && expandedDirs.has(entry.path);
 });
 
@@ -82,7 +81,7 @@ function select() {
 	onselect(entry);
 }
 
-run(() => {
+$effect(() => {
 	if (expanded) {
 		update();
 	}

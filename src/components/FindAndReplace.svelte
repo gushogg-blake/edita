@@ -1,6 +1,4 @@
 <script lang="ts">
-import {run} from "svelte/legacy";
-
 import {onMount, tick, getContext} from "svelte";
 import mapObject from "utils/mapObject";
 import getKeyCombo from "utils/getKeyCombo";
@@ -20,6 +18,7 @@ let app = getContext("app");
 let {findAndReplace} = app;
 let options = $state(findAndReplace.options);
 let history = $state(findAndReplace.history);
+
 let {multiPathSeparator} = platform.systemInfo;
 
 let searchInput = $state();
@@ -83,35 +82,33 @@ function getOptions(formOptions) {
 
 let formOptions = $state(getFormOptions(options));
 
-run(() => {
-		options = getOptions(formOptions);
-	});
+$effect(() => {
+	options = getOptions(formOptions);
+});
 
-run(() => {
-		optionsChanged(options);
-	});
+$effect(() => {
+	optionsChanged(options);
+});
 
-run(() => {
-		if (isMounted()) {
-		let {
-			regex,
-			caseMode,
-			word,
-			searchInSubDirs,
-			includePatterns,
-			excludePatterns,
-		} = options;
-		
-		findAndReplace.saveOptions({
-			regex,
-			caseMode,
-			word,
-			searchInSubDirs,
-			includePatterns,
-			excludePatterns,
-		});
-	}
+$effect(() => {
+	let {
+		regex,
+		caseMode,
+		word,
+		searchInSubDirs,
+		includePatterns,
+		excludePatterns,
+	} = options;
+	
+	findAndReplace.saveOptions({
+		regex,
+		caseMode,
+		word,
+		searchInSubDirs,
+		includePatterns,
+		excludePatterns,
 	});
+});
 
 function init() {
 	if (optionsChangedSinceLastInit) {

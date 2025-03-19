@@ -1,5 +1,4 @@
 <script lang="ts">
-import {run} from "svelte/legacy";
 import {onMount, getContext, tick} from "svelte";
 import screenOffsets from "utils/dom/screenOffsets";
 import scrollIntoView from "utils/dom/scrollIntoView";
@@ -24,8 +23,6 @@ let {
 let app = getContext("app");
 
 let main = $state();
-let mounted = false;
-let isMounted = () => mounted;
 
 async function mousedownTab(e, tab) {
 	if (e.button !== 0) {
@@ -139,15 +136,13 @@ async function scrollSelectedTabIntoView() {
 	scrollIntoView(tabButton, main);
 }
 
-run(() => {
-		if (isMounted() && [tabs, selectedTab]) {
-		scrollSelectedTabIntoView();
-	}
-	});
+$effect(() => {
+	let _deps = [tabs, selectedTab];
+	
+	scrollSelectedTabIntoView();
+});
 
 onMount(function() {
-	mounted = true;
-	
 	scrollSelectedTabIntoView();
 });
 </script>

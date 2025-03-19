@@ -1,5 +1,4 @@
 <script lang="ts">
-import {run, preventDefault} from "svelte/legacy";
 import {onMount, getContext} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import accels from "components/actions/accels";
@@ -24,7 +23,6 @@ let replaceWithEditor = $state();
 
 let formOptions = $state(getFormOptions(refactor.options));
 
-
 function getFormOptions(options) {
 	let {globs} = options;
 	
@@ -47,13 +45,19 @@ function onOptionsChanged() {
 	({options} = refactor);
 }
 
-function updatePaths() {
+function submitOptions(e) {
+	e.preventDefault();
+	
 	refactor.updatePaths();
 }
 
 function replaceAll() {
 	refactor.replaceAll();
 }
+
+$effect(() => {
+	refactor.setOptions(getOptions(formOptions));
+});
 
 onMount(function() {
 	let teardown = [
@@ -66,9 +70,6 @@ onMount(function() {
 		}
 	}
 });
-run(() => {
-		refactor.setOptions(getOptions(formOptions));
-	});
 </script>
 
 <style lang="scss">
@@ -112,7 +113,7 @@ run(() => {
 
 <div id="main">
 	<div id="controls">
-		<form id="options" onsubmit={preventDefault(updatePaths)}>
+		<form id="options" onsubmit={submitOptions}>
 			<AccelLabel for="globs" label="F%iles"/>
 			<input bind:value={formOptions.globs} id="globs">
 			<button type="submit">
