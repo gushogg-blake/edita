@@ -33,12 +33,18 @@ class App extends Evented {
 		}
 	}
 	
-	async save(snippet) {
+	saveAndClose(snippet) {
 		if (this.isNew) {
-			await platform.snippets.create(snippet);
+			platform.snippets.create(snippet);
 		} else {
-			await platform.snippets.update(this.options.id, snippet);
+			platform.snippets.update(this.options.id, snippet);
 		}
+		
+		this.close();
+	}
+	
+	close() {
+		this.env.close();
 	}
 	
 	teardown() {

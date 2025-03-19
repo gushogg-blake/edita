@@ -1,7 +1,7 @@
 import bluebird from "bluebird";
-import FindAndReplaceTab from "./ui/FindAndReplaceTab";
+import FindAndReplaceTab from "./tabs/FindAndReplaceTab";
 import Refactor from "./Refactor";
-import RefactorTab from "./ui/RefactorTab";
+import RefactorTab from "./tabs/RefactorTab";
 
 class Tools {
 	constructor(app) {

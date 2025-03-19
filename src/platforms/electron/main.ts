@@ -8,6 +8,7 @@ import Base from "modules/base/Base";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 import Platform from "platforms/electron/Platform";
 import AppComponent from "components/App/App.svelte";
+import DialogWrapper from "platforms/electron/components/DialogWrapper.svelte";
 import components from "components";
 
 let preventDefaultCombos = [
@@ -54,7 +55,6 @@ async function init(options) {
 
 if (isDialogWindow) {
 	let AppClass = dialogs[dialogName];
-	let DialogAppComponent = components.dialogs[dialogName];
 	
 	await init({
 		useLangs: !!AppClass.requiresTreeSitter,
@@ -87,11 +87,12 @@ if (isDialogWindow) {
 		
 		await app.init();
 		
-		let appComponent = mount(DialogAppComponent, {
+		let dialogWrapperComponent = mount(DialogWrapper, {
 			target: document.body,
 			
 			props: {
 				app,
+				Component: base.components.dialogs[dialogName],
 			},
 		});
 		
@@ -99,7 +100,7 @@ if (isDialogWindow) {
 			function() {
 				app.teardown();
 				
-				unmount(appComponent);
+				unmount(dialogWrapperComponent);
 				
 				document.body.innerHTML = "";
 			},
@@ -116,11 +117,11 @@ if (isDialogWindow) {
 				fn();
 			}
 		}
+		
+		// DEV:
+		
+		window.app = app;
 	});
-	
-	// DEV:
-	
-	window.app = app;
 } else {
 	await init({
 		useLangs: true,

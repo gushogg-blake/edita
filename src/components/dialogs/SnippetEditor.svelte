@@ -6,10 +6,10 @@ import Checkbox from "components/utils/Checkbox.svelte";
 import Editor from "components/Editor/Editor.svelte";
 
 let {
-	snippet,
-	onsaveAndExit = () => {},
-	oncancel = () => {},
+	app,
 } = $props();
+
+let {snippet} = app;
 
 let name = $state(snippet.name);
 let langGroups = $state(snippet.langGroups);
@@ -24,15 +24,15 @@ langs = langs.join(", ");
 let editor = $state();
 
 function cancel() {
-	oncancel();
+	app.close();
 }
 
-function saveAndExit() {
+function saveAndClose() {
 	if (!name) {
 		return;
 	}
 	
-	onsaveAndExit({
+	app.saveAndClose({
 		name,
 		langGroups: langGroups.split(", "),
 		langs: langs.split(", "),
@@ -45,16 +45,16 @@ function saveAndExit() {
 function submit(e) {
 	e.preventDefault();
 	
-	saveAndExit();
+	saveAndClose();
 }
 
 let functions = {
-	saveAndExit,
+	saveAndClose,
 	cancel,
 };
 
 let keymap = {
-	"Ctrl+Enter": "saveAndExit",
+	"Ctrl+Enter": "saveAndClose",
 	"Escape": "cancel",
 };
 

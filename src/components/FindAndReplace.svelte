@@ -1,7 +1,7 @@
 <script lang="ts">
 import {run} from "svelte/legacy";
 
-import {onMount, tick, getContext, createEventDispatcher} from "svelte";
+import {onMount, tick, getContext} from "svelte";
 import mapObject from "utils/mapObject";
 import getKeyCombo from "utils/getKeyCombo";
 import accels from "components/actions/accels";

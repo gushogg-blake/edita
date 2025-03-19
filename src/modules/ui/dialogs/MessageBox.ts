@@ -1,9 +1,10 @@
 import Evented from "utils/Evented";
 
 class App extends Evented {
-	constructor(options) {
+	constructor(env, options) {
 		super();
 		
+		this.env = env;
 		this.options = options;
 		
 		this.hasResponded = false;
@@ -14,7 +15,7 @@ class App extends Evented {
 	}
 	
 	async init() {
-		document.title = this.options.title || "";
+		this.env.setTitle(this.options.title || "");
 	}
 	
 	_respond(buttonIndex) {
@@ -33,7 +34,7 @@ class App extends Evented {
 	respond(response) {
 		this._respond(response);
 		
-		window.close();
+		this.env.close();
 	}
 	
 	onDialogClosed() {

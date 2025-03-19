@@ -121,7 +121,7 @@ class Platform extends Evented {
 		return this.filesToOpenOnStartup;
 	}
 	
-	_dialogPromise(name, options) {
+	dialogPromise(_showSyntheticDialog, name, options) {
 		let promise = promiseWithMethods();
 		
 		ipc.openDialogWindow(name, options);
@@ -129,6 +129,10 @@ class Platform extends Evented {
 		this.dialogPromises[name] = promise;
 		
 		return promise;
+	}
+	
+	openDialogWindow(_showSyntheticDialog, dialog, dialogOptions, _windowOptions) {
+		ipc.openDialogWindow(dialog, dialogOptions);
 	}
 	
 	_showContextMenu(app, items, coords, options) {
@@ -175,10 +179,6 @@ class Platform extends Evented {
 		let coords = {x, y: y + height};
 		
 		this._showContextMenu(app, items, coords, options);
-	}
-	
-	openDialogWindow(_showSyntheticDialog, dialog, dialogOptions, _windowOptions) {
-		ipc.openDialogWindow(dialog, dialogOptions);
 	}
 	
 	callOpener(channel, method, ...args) {

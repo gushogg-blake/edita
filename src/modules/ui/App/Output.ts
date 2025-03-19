@@ -1,6 +1,6 @@
 import FindResults from "./FindResults";
-import FindResultsTab from "./ui/FindResultsTab";
-import ClippingsTab from "./ui/ClippingsTab";
+import FindResultsTab from "./tabs/FindResultsTab";
+import ClippingsTab from "./tabs/ClippingsTab";
 
 class Output {
 	constructor(app) {

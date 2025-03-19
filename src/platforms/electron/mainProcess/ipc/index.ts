@@ -1,7 +1,6 @@
 import ipcMain from "../modules/ipcMain";
 import init from "./init";
 import clipboard from "./clipboard";
-import dialog from "./dialog";
 import contextMenu from "./contextMenu";
 import openDialogWindow from "./openDialogWindow";
 import callOpener from "./callOpener";
@@ -11,7 +10,6 @@ import devTools from "./devTools";
 import lsp from "./lsp";
 
 let asyncModules = {
-	dialog,
 	contextMenu,
 	openDialogWindow,
 	callOpener,

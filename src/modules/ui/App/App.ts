@@ -20,12 +20,11 @@ import Output from "./Output";
 import FindAndReplace from "./FindAndReplace";
 import showSyntheticDialog from "./showSyntheticDialog";
 import functions from "./functions";
-
-import SidePanes from "./ui/SidePanes";
-import BottomPanes from "./ui/BottomPanes";
-import FileTree from "./ui/FileTree";
-import EditorTab from "./ui/EditorTab";
-import RefactorPreviewTab from "./ui/RefactorPreviewTab";
+import SidePanes from "./panes/SidePanes";
+import BottomPanes from "./panes/BottomPanes";
+import EditorTab from "./tabs/EditorTab";
+import RefactorPreviewTab from "./tabs/RefactorPreviewTab";
+import FileTree from "./FileTree";
 
 import dev from "./dev";
 
@@ -119,7 +118,11 @@ class App extends Evented {
 	}
 	
 	async _showOpenDialog(dir, mode) {
-		let {canceled, paths} = await this._dialogPromise("fileChooser", {
+		if (!dir) {
+			dir = this.getCurrentDir();
+		}
+		
+		let {canceled, paths} = await this.dialogPromise("fileChooser", {
 			path: dir,
 			mode,
 		});
@@ -131,7 +134,7 @@ class App extends Evented {
 		return paths;
 	}
 	
-	showOpenDialog(app, dir=null) {
+	showOpenDialog(dir=null) {
 		return this._showOpenDialog(dir, "selectFiles");
 	}
 	
@@ -140,7 +143,7 @@ class App extends Evented {
 	}
 	
 	async showSaveAsDialog(options) {
-		let {canceled, path} = await this._dialogPromise("fileChooser", {
+		let {canceled, path} = await this.dialogPromise("fileChooser", {
 			mode: "save",
 			...options,
 		});
@@ -339,7 +342,7 @@ class App extends Evented {
 	
 	async closeTab(tab, noSave=false) {
 		if (tab.modified) {
-			let response = await platform.showMessageBox(this, {
+			let response = await this.showMessageBox({
 				message: "Save changes to " + tab.name + "?",
 				buttons: ["%Yes", "%No", "%Cancel"],
 			});
@@ -916,7 +919,7 @@ class App extends Evented {
 		});
 	}
 	
-	_dialogPromise(name, options) {
+	dialogPromise(name, options) {
 		return platform.dialogPromise(this.showSyntheticDialog, name, options);
 	}
 	
@@ -946,24 +949,10 @@ class App extends Evented {
 	}
 	
 	showMessageBox(options) {
-		let promise = promiseWithMethods();
-		
-		this.openDialogWindow("messageBox", options, {
+		return this.dialogPromise("messageBox", options, {
 			width: 500,
 			height: 75,
 		});
-		
-		
-		
-		return promise;
-	}
-	
-	dialogRespond(name, response) {
-		if (this.dialogPromises[name]) {
-			this.dialogPromise[name].resolve(response);
-		}
-		
-		delete this.dialogPromises[name];
 	}
 	
 	async onDocumentSave(document) {
@@ -997,7 +986,7 @@ class App extends Evented {
 		
 		let tabNames = modifiedTabs.map(tab => tab.name).join(", ");
 		
-		let response = await platform.showMessageBox(this, {
+		let response = await this.showMessageBox({
 			message: "Save changes to " + tabNames + "?",
 			buttons: ["%Yes", "%No", "%Cancel"],
 		});

@@ -151,10 +151,6 @@ class Platform extends Evented {
 		app.openDialogWindow(dialog, dialogOptions, windowOptions);
 	}
 	
-	showMessageBox(app, config) {
-		return app.showMessageBox(config);
-	}
-	
 	showContextMenu(e, app, items, options) {
 		contextMenu(app, items, {
 			x: e.clientX,

@@ -1,5 +1,5 @@
 <script lang="ts">
-import {onMount, createEventDispatcher} from "svelte";
+import {onMount} from "svelte";
 import {unique} from "utils/array";
 import {on, off} from "utils/dom/domEvents";
 import inlineStyle from "utils/dom/inlineStyle";

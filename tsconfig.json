@@ -37,6 +37,7 @@ config.
 			"utils/*": ["./src/utils/*"],
 			"css/*": ["./src/css/*"],
 			"platforms/*": ["./src/platforms/*"],
+			"electronMain/*": ["./src/platforms/electron/mainProcess/*"],
 			"vendor/*": ["./vendor/*"],
 			"test/*": ["./test/*"],
 		},

@@ -1,5 +1,5 @@
 <script lang="ts">
-import {onMount, createEventDispatcher, tick} from "svelte";
+import {onMount, tick} from "svelte";
 import {on, off} from "utils/dom/domEvents";
 import inlineStyle from "utils/dom/inlineStyle";
 import sleep from "utils/sleep";

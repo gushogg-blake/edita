@@ -1,6 +1,6 @@
 <script lang="ts">
 import {run} from "svelte/legacy";
-import {onMount, createEventDispatcher, getContext, tick} from "svelte";
+import {onMount, getContext, tick} from "svelte";
 import screenOffsets from "utils/dom/screenOffsets";
 import scrollIntoView from "utils/dom/scrollIntoView";
 import Gap from "components/utils/Gap.svelte";

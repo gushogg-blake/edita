@@ -1,9 +1,8 @@
 <script lang="ts">
-import {onMount, createEventDispatcher, getContext, tick} from "svelte";
+import {onMount, getContext, tick} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import sleep from "utils/sleep";
 import clickElementFromAccel from "utils/dom/clickElementFromAccel";
-import themeStyle from "components/themeStyle";
 import Accel from "components/utils/Accel.svelte";
 import Spacer from "components/utils/Spacer.svelte";
 import Entry from "./Entry.svelte";
@@ -246,7 +245,7 @@ input {
 }
 </style>
 
-<div id="main" class="edita" style={themeStyle(base.theme.app)}>
+<div id="main">
 	<div id="top">
 		{#if mode === "save"}
 			<div id="input">

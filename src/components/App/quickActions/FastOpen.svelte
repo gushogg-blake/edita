@@ -1,5 +1,5 @@
 <script lang="ts">
-import {onMount, setContext, getContext, createEventDispatcher, tick} from "svelte";
+import {onMount, setContext, getContext, tick} from "svelte";
 
 
 </script>

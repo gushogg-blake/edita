@@ -34,6 +34,7 @@ let aliasEntries = {
 	"utils": path.join(root, "src/utils"),
 	"css": path.join(root, "src/css"),
 	"platforms": path.join(root, "src/platforms"),
+	"electronMain": path.join(root, "src/platforms/electron/mainProcess"),
 	"vendor": path.join(root, "vendor"),
 	"test": path.join(root, "test"),
 };
