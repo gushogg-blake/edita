@@ -27,7 +27,7 @@ import FileTree from "modules/ui/App/FileTree";
 import {readFileForOpen} from "modules/ui/App/utils/readFilesForOpen";
 
 import keyboardCommands from "./keyboardCommands";
-import TabMgmt from "./TabMgmt";
+import MainTabs from "./MainTabs";
 import SessionSaving from "./SessionSaving";
 import FileOperations from "./FileOperations";
 import Dialogs from "./Dialogs";
@@ -55,13 +55,8 @@ class App extends Evented {
 		
 		this.bottomPanes.init();
 		
+		this.mainTabs = new MainTabs(this);
 		this.fileTree = new FileTree(this);
-		
-		this.tabs = [];
-		this.selectedTab = null;
-		this.previouslySelectedTabs = [];
-		this.closedTabs = [];
-		
 		this.projects = new Projects(this);
 		
 		this.keyboardCommands = bindFunctions(this, keyboardCommands);
