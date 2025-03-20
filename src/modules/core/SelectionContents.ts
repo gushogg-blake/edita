@@ -1,6 +1,10 @@
-import getNewline from "modules/utils/getNewline";
-import guessIndent from "modules/utils/guessIndent";
-import getIndentationDetails from "modules/utils/getIndentationDetails";
+import {
+	getNewline,
+	getIndent,
+} from "modules/core/resources/utils";
+
+import {IndentationDetails} from "modules/core/resources/Format";
+
 import getIndentLevel from "modules/utils/getIndentLevel";
 
 class SelectionContents {

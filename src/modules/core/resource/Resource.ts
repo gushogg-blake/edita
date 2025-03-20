@@ -1,5 +1,6 @@
-import URL from "modules/core/resource/URL";
+import URL from "./URL";
 
 export default interface Resource {
 	url: URL;
+	contents: string;
 }

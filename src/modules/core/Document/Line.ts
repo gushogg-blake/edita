@@ -1,5 +1,4 @@
-import expandTabs from "modules/utils/expandTabs";
-import getIndentLevel from "modules/utils/getIndentLevel";
+import {expandTabs, getIndentLevel} from "modules/utils/editing";
 
 class Line {
 	constructor(string, format, startIndex, lineIndex) {
@@ -9,11 +8,9 @@ class Line {
 			offset: indentOffset,
 		} = getIndentLevel(string, format.indentation);
 		
-		let {
-			tabWidth,
-		} = base.prefs;
+		let {tabWidth} = format.indentation;
 		
-		let width = expandTabs(string, tabWidth).length;
+		let width = expandTabs(string, format).length;
 		
 		let splitByTabs = string.split("\t");
 		let variableWidthParts = [];

@@ -5,7 +5,6 @@ export default function() {
 	let defaultPrefs = {
 		tabWidth: 4,
 		defaultIndent: "\t",
-		defaultNewline: platform.systemInfo.newline,
 		defaultLangCode: "javascript",
 		defaultWrapLangs: ["markdown"],
 		

@@ -232,4 +232,8 @@ export default {
 		prefs.globalKeymap["Ctrl+Alt+S"] = "saveAs";
 		prefs.globalKeymap["Ctrl+Shift+S"] = "saveAll";
 	},
+	
+	"33"(prefs) {
+		delete prefs.defaultNewline;
+	},
 };

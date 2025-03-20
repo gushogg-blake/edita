@@ -322,7 +322,7 @@ export default {
 			innerOffset -= lineRow.string.length;
 		}
 		
-		let col = expandTabs(lineRow.string.substr(0, innerOffset)).length;
+		let col = expandTabs(lineRow.string.substr(0, innerOffset), this.document.format).length;
 		
 		if (lineRowIndex > 0) {
 			col += wrappedLine.line.indentCols;

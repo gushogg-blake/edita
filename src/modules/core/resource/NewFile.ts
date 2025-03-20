@@ -1,4 +1,5 @@
 import {Evented} from "utils";
+import nextName from "utils/nextName";
 
 let files = new WeakMap<URL, NewFile>();
 
@@ -15,7 +16,7 @@ export default class NewFile extends Evented implements Resource {
 		let name = nextName(function(n) {
 			return lang.name + "-" + n + extension;
 		}, function(name) {
-			return !files.some(file => file.path.endsWith(name));
+			return !files.some(file => file.url.toString().endsWith("/" + name));
 		});
 		
 		//let dir = this.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;

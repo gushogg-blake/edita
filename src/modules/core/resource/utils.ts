@@ -8,71 +8,52 @@ export function normaliseNewlines(str) {
 	return str;
 }
 
-export function checkNewlines(str) {
-	let mixed = false;
-	let mostCommon = null;
-	let all = str.match(/(\r\n|\r|\n)/g);
+export function hasMixedNewlines(str) {
+	let crlf = false;
+	let cr = false;
+	let lf = false;
 	
-	if (!all) {
-		return {
-			mixed,
-			mostCommon,
-		};
-	}
-	
-	let crlf = 0;
-	let cr = 0;
-	let lf = 0;
-	
-	for (let sequence of all) {
-		if (sequence === "\r\n") {
-			crlf++;
-		} else if (sequence === "\r") {
-			cr++;
-		} else {
-			lf++;
+	for (let i = 0; i < str.length; i++) {
+		let prev = str[i - 1];
+		let curr = str[i];
+		let next = str[i + 1];
+		
+		if (curr === "\r" && next === "\n") {
+			crlf = true;
+			
+			if (cr || lf) {
+				return true;
+			}
+		} else if (curr === "\r" && next !== "\n") {
+			cr = true;
+			
+			if (crlf || lf) {
+				return true;
+			}
+		} else if (curr === "\n" && prev !== "\r") {
+			lf = true;
+			
+			if (cr || crlf) {
+				return true;
+			}
 		}
 	}
 	
-	if (crlf + cr + lf === 0) {
-		return {
-			mixed,
-			mostCommon,
-		};
-	}
-	
-	mixed = [crlf, cr, lf].filter(c => c > 0).length > 1;
-	
-	if (crlf > cr && crlf > lf) {
-		mostCommon = "\r\n";
-	} else if (cr > crlf && cr > lf) {
-		mostCommon = "\r";
-	} else if (lf > crlf && lf > cr) {
-		mostCommon = "\n";
-	}
-	
-	if (mostCommon) {
-		return {
-			mixed,
-			mostCommon,
-		};
-	}
-	
-	return {
-		mixed,
-		mostCommon: "\n",
-	};
+	return false;
 }
 
-export function getIndentationDetails(indent, tabWidth=4) {
-	let type = indent[0] === "\t" ? "tab" : "space";
+export function getNewline(str) {
+	for (let check of ["\r\n", "\r", "\n"]) {
+		if (str.includes(check)) {
+			return check;
+		}
+	}
 	
-	return {
-		type,
-		string: indent,
-		re: new RegExp("^(" + indent + ")*"),
-		colsPerIndent: type === "tab" ? indent.length * tabWidth : indent.length,
-	};
+	return platform.systemInfo.newline;
+}
+
+export function getIndent(code) {
+	return detectIndent(code).indent || base.prefs.defaultIndent;
 }
 
 /*

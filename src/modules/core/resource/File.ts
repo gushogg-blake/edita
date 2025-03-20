@@ -1,11 +1,11 @@
-import Evented from "utils/Evented";
 import sleep from "utils/sleep";
 import {removeInPlace} from "utils/array";
-import Resource from "./Resource";
 import URL from "./URL";
+import FileLike from "./FileLike";
 
 import {
-	checkNewlines,
+	hasMixedNewlines,
+	getNewline,
 	normaliseNewlines,
 	guessIndent,
 	guessLang,
@@ -41,47 +41,13 @@ promise (when reading) or await it first (when writing).
 let files = new WeakMap<URL, File>();
 let promises = new Map<URL, Promise>();
 
-export default class File extends Evented implements Resource {
+export default class File extends FileLike {
 	constructor(url) {
 		this.url = url;
 		this.contents = null;
-		this.newline = platform.systemInfo.newline;
 		this.newlinesNormalised = false;
 		this.changeListeners = [];
 		this.saving = false;
-	}
-	
-	checkFormat() {
-		let {
-			defaultIndent,
-			tabWidth,
-			defaultNewline,
-		} = this.prefs;
-		
-		let indent = guessIndent(code) || defaultIndent;
-		let lang = this.guessLang(code, url);
-		
-		let {
-			mixed: hasMixedNewlines,
-			mostCommon: newline,
-		} = checkNewlines(code);
-		
-		if (!newline) {
-			newline = defaultNewline;
-		}
-		
-		let indentation = getIndentationDetails(indent, tabWidth);
-		
-		return {
-			indentation,
-			tabWidth,
-			lang,
-			newline,
-			hasMixedNewlines,
-		};
-	}
-		
-		this.format = format;
 	}
 	
 	/*
@@ -113,8 +79,6 @@ export default class File extends Evented implements Resource {
 				await file.load();
 			}
 			
-			file.setFormat();
-			
 			promise.resolve(file);
 		})();
 		
@@ -145,18 +109,16 @@ export default class File extends Evented implements Resource {
 	}
 	
 	private async load() {
-		this.contents = await platform.fs(this.path).read();
+		let str = await platform.fs(this.path).read();
 		
-		this.checkFormat();
-		let {mostCommon, mixed} = checkNewlines(str);
-		
-		if (mixed) {
+		if (hasMixedNewlines(str)) {
 			str = normaliseNewlines(str);
 			
 			this.newlinesNormalised = true;
 		}
 		
 		this.contents = str;
+		this.updateFormat();
 	}
 	
 	async save(str) {
@@ -168,7 +130,7 @@ export default class File extends Evented implements Resource {
 		
 		this.contents = str;
 		
-		this.checkFormat();
+		this.updateFormat();
 	}
 	
 	/*

@@ -6,7 +6,7 @@ export default class {
 	}
 	
 	async newFile(lang=null) {
-		// let dir = this.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
+		let dir = this.app.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
 		let resource = NewFile.create(dir, lang);
 		let tab = await this.app.mainTabs.newFile(resource);
 		
@@ -142,4 +142,3 @@ export default class {
 		this.closeTab(tab);
 	}
 }
-
