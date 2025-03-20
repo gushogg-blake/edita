@@ -23,6 +23,11 @@ class EditorTab extends Tab {
 		this.teardownCallbacks = [
 			() => {
 				this.editor.teardown();
+				// NOTE if we do multiple editors for one Document,
+				// we need to change the logic here to keep track
+				// of editors and only teardown when the last one
+				// closes
+				this.document.teardown();
 			},
 			
 			document.on("save", this.onDocumentSave.bind(this)),
@@ -312,12 +317,6 @@ class EditorTab extends Tab {
 		} else {
 			editor.setAstSelection(astSelection);
 		}
-	}
-	
-	teardown() {
-		super.teardown();
-		
-		this.document.teardown();
 	}
 }
 

@@ -263,7 +263,9 @@ export default class {
 		
 		let document = this.app.createDocument(resource);
 		let view = new View(document);
-		let editor = this._createEditor(document, view);
+		let editor = this.app._createEditor(document, view);
+		
+		document.setupWatch();
 		
 		editor.on("cut copy", (str) => {
 			this.output.clippingsTab?.addClipping(str);
