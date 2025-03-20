@@ -23,7 +23,7 @@ export default function(string, baseLineIndex=0, baseOffset=0) {
 	let replacedString = getReplacedString(string, placeholders);
 	
 	let indexOffset = 0;
-	let document = new Document(replacedString);
+	let document = Document.fromString(replacedString);
 	
 	let positions = [];
 	let tabstops = [];

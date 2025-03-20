@@ -217,7 +217,7 @@ class Base extends Evented {
 	}
 	
 	createEditorForTextArea(string="") {
-		let document = new Document(string);
+		let document = Document.fromString(string);
 		let view = new View(document);
 		
 		return new Editor(document, view);

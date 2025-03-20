@@ -1,16 +1,8 @@
 import {Evented} from "utils";
-import Resource from "./Resource";
-import Format from "./Format";
-
-import {
-	getNewline,
-	getIndent,
-	guessLang,
-} from "./utils";
+import {Resource, Format} from "modules/core/resources";
+import {getNewline, getIndent, guessLang} from "./utils";
 
 export default abstract class FileLike extends Evented implements Resource {
-	format: Format;
-	
 	updateFormat() {
 		let {url, contents} = this;
 		

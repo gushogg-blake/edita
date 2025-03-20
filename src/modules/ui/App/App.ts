@@ -221,7 +221,7 @@ class App extends Evented {
 	}
 	
 	createEditor() {
-		let document = new Document("");
+		let document = Document.fromString("");
 		let view = new View(document);
 		
 		return this._createEditor(document, view);

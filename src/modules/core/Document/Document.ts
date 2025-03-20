@@ -1,9 +1,6 @@
-import throttle from "utils/throttle";
-import sleep from "utils/sleep";
-import Evented from "utils/Evented";
-import AstSelection, {a} from "modules/core/AstSelection";
-import Selection, {s} from "modules/core/Selection";
-import Cursor, {c} from "modules/core/Cursor";
+import {throttle, sleep, Evented} from "utils";
+import {AstSelection, a, Selection, s, Cursor, c} from "modules/core";
+import Memory from "modules/core/resources/Memory";
 import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";
@@ -14,6 +11,7 @@ class Document extends Evented {
 		super();
 		
 		this.resource = resource;
+		this.string = resource.contents;
 		
 		options = {
 			project: null,
@@ -21,10 +19,8 @@ class Document extends Evented {
 			...options,
 		};
 		
-		this.string = string;
-		this.url = url;
-		this.format = options.format;
-		this.project = options.project;
+		//this.teardownCallbacks = [];
+		
 		this.noParse = options.noParse;
 		
 		this.history = [];
@@ -69,18 +65,30 @@ class Document extends Evented {
 		}
 	}
 	
+	static fromString(string, lang) {
+		return new Document(new Memory(string, lang));
+	}
+	
 	static maxEditsToApplyIndividually = 2;
+	
+	get url() {
+		return this.resource.url;
+	}
+	
+	get format() {
+		return this.resource.format;
+	}
 	
 	get lang() {
 		return this.format.lang;
 	}
 	
 	get path() {
-		return this.url?.path;
+		return this.url.path;
 	}
 	
 	get protocol() {
-		return this.url?.protocol;
+		return this.url.protocol;
 	}
 	
 	get isSaved() {

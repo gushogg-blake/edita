@@ -6,7 +6,7 @@ class FindResultsTab extends Tab {
 		super(app, "findResults");
 		
 		this.findResults = findResults;
-		this._url = URL.fromString("special://find-results");
+		this._url = new URL("special://find-results");
 		
 		this.teardownCallbacks = [
 		];

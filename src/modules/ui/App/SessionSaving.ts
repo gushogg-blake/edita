@@ -23,7 +23,7 @@ export default class {
 				let {tabs, selectedTabUrl} = mainTabs;
 				
 				tabsFromSession = await bluebird.map(tabs, async function({url: urlString, state}) {
-					let url = URL.fromString(urlString);
+					let url = new URL(urlString);
 					
 					return {
 						isFromStartup: false,
@@ -33,7 +33,7 @@ export default class {
 				});
 				
 				if (selectedTabUrl) {
-					urlToSelect = URL.fromString(selectedTabUrl);
+					urlToSelect = new URL(selectedTabUrl);
 				}
 			}
 		}

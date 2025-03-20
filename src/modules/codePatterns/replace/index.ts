@@ -119,6 +119,7 @@ somehow but without any other deleted nodes inside them.
 */
 
 function capturedNodeSelectionContentsWithoutDeletedNodes(document, result, captureName, selection) {
+	// MIGRATE
 	let copy = new Document(document.string);
 	let editsApplied = [];
 	
@@ -219,6 +220,7 @@ function getReplacedLines(document, lines, result) {
 }
 
 export default function(code, results, replaceWith) {
+	// MIGRATE
 	let original = new Document(code);
 	let document = new Document(code);
 	let lines = parseReplaceWith(replaceWith);

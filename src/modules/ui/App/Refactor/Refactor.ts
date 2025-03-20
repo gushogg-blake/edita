@@ -51,7 +51,8 @@ class Refactor extends Evented {
 		
 		await base.ensureRequiredLangsInitialised(format.lang);
 		
-		return new Document(code, url, {
+		// MIGRATE use Files
+		return Document(code, url, {
 			format,
 		});
 	}

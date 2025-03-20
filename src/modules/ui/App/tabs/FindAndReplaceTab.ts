@@ -5,7 +5,7 @@ class FindAndReplaceTab extends Tab {
 	constructor(app) {
 		super(app, "findAndReplace");
 		
-		this._url = URL.fromString("special://find-and-replace");
+		this._url = new URL("special://find-and-replace");
 		
 		this.findAndReplace = app.findAndReplace;
 		

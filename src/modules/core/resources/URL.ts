@@ -18,19 +18,9 @@ function urlToPath(urlPath) {
 	}
 }
 
-let instances = new WeakMap<string, CustomURL>();
-
 class CustomURL {
 	constructor(str) {
 		this.url = new URL(str);
-	}
-	
-	static fromString(str) {
-		if (!instances.has(str)) {
-			instances.set(str, new CustomURL(str));
-		}
-		
-		return instances.get(str);
 	}
 	
 	get path() {

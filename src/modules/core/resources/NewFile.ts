@@ -1,8 +1,6 @@
 import {Evented} from "utils";
 import nextName from "utils/nextName";
-import URL from "modules/core/resources/URL";
-
-let files = new WeakMap<URL, NewFile>();
+import {URL} from "modules/core";
 
 export default class NewFile extends Evented implements Resource {
 	constructor(url) {
@@ -25,4 +23,3 @@ export default class NewFile extends Evented implements Resource {
 		return new NewFile(url);
 	}
 }
-

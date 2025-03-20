@@ -7,6 +7,7 @@ export default async function(paths) {
 		try {
 			let code = await platform.fs(path).read();
 			
+			// MIGRATE
 			return new Document(code, URL.file(path), {
 				noParse: true,
 			});

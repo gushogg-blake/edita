@@ -6,7 +6,7 @@ class RefactorPreviewTab extends Tab {
 		super(app, "refactorPreview");
 		
 		this.refactorPreview = refactorPreview;
-		this._url = URL.fromString("special://refactor-preview");
+		this._url = new URL("special://refactor-preview");
 		
 		this.teardownCallbacks = [
 		];

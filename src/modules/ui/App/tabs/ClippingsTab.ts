@@ -8,7 +8,7 @@ class ClippingsTab extends Tab {
 		
 		this.editor = app.createEditor();
 		
-		this._url = URL.fromString("special://clippings");
+		this._url = new URL("special://clippings");
 		
 		this.view.setWrap(true);
 	}

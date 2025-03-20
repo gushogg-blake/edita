@@ -299,7 +299,7 @@ export default class {
 	
 	async loadFromSessionAndStartup({tabsToOpen, urlToSelect}) {
 		this.tabs = await bluebird.map(tabsToOpen, async ({file}) => {
-			let url = URL.fromString(urlString);
+			let url = new URL(urlString);
 			
 			try {
 				return this.createEditorTab(file);
