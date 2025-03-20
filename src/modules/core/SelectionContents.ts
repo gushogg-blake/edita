@@ -1,11 +1,6 @@
-import {
-	getNewline,
-	getIndent,
-} from "modules/core/resources/utils";
-
+import {getNewline, getIndent} from "modules/core/resources/utils";
 import {IndentationDetails} from "modules/core/resources/Format";
-
-import getIndentLevel from "modules/utils/getIndentLevel";
+import {getIndentLevel} from "modules/utils/editing";
 
 class SelectionContents {
 	constructor(lines) {
@@ -60,7 +55,7 @@ class SelectionContents {
 	
 	static fromString(string) {
 		let newline = getNewline(string);
-		let indentationDetails = getIndentationDetails(guessIndent(string) || base.getPref("defaultIndent"));
+		let indentationDetails = new IndentationDetails(getIndent(string));
 		
 		let lines = string.split(newline).map(function(lineString) {
 			return {

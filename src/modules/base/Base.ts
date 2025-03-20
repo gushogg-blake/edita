@@ -4,12 +4,7 @@ import set from "lodash.set";
 import merge from "lodash.merge";
 import {Parser} from "web-tree-sitter";
 
-import Evented from "utils/Evented";
-
-import getIndentationDetails from "modules/utils/getIndentationDetails";
-import guessIndent from "modules/utils/guessIndent";
-import checkNewlines from "modules/utils/checkNewlines";
-import generateRequiredLangs from "modules/utils/generateRequiredLangs";
+import {Evented} from "utils";
 
 import Project from "modules/Project";
 import Document from "modules/core/Document";
@@ -40,6 +35,7 @@ import ruby from "modules/langs/ruby";
 import prisma from "modules/langs/prisma";
 import plaintext from "modules/langs/plaintext";
 
+import {generateRequiredLangs} from "./utils";
 import Langs from "./Langs";
 
 import packageJson from "root/package.json";

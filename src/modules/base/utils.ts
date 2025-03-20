@@ -1,4 +1,4 @@
-function *generateRequiredLangs(lang, seen=[]) {
+export function *generateRequiredLangs(lang, seen=[]) {
 	if (seen.includes(lang)) {
 		return;
 	}
@@ -15,5 +15,3 @@ function *generateRequiredLangs(lang, seen=[]) {
 		}
 	}
 }
-
-export default generateRequiredLangs;
