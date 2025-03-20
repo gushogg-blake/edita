@@ -1,5 +1,6 @@
 import {Evented} from "utils";
 import nextName from "utils/nextName";
+import URL from "modules/core/resources/URL";
 
 let files = new WeakMap<URL, NewFile>();
 
@@ -9,7 +10,6 @@ export default class NewFile extends Evented implements Resource {
 	}
 	
 	static create(dir, lang) {
-		
 		let {defaultExtension} = lang;
 		let extension = defaultExtension ? "." + defaultExtension : "";
 		
@@ -19,10 +19,10 @@ export default class NewFile extends Evented implements Resource {
 			return !files.some(file => file.url.toString().endsWith("/" + name));
 		});
 		
-		//let dir = this.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
 		let path = platform.fs(dir).child(name).path;
+		let url = URL._new(path);
 		
-		let tab = await this.app.mainTabs.newFile(URL._new(path), format);
+		return new NewFile(url);
 	}
 }
 

@@ -195,10 +195,8 @@ class App extends Evented {
 		this.fire("openLangSelector");
 	}
 	
-	
-	
-	createDocument(code, url, options) {
-		let document = new Document(code, url, options);
+	createDocument(resource, options) {
+		let document = new Document(resource, options);
 		
 		for (let event of ["edit", "undo", "redo", "save", "fileChanged", "projectChanged"]) {
 			document.on(event, (...args) => {

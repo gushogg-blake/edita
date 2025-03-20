@@ -13,8 +13,8 @@ export default class {
 		this.closedTabs = [];
 	}
 	
-	async newFile(url, format) {
-		let tab = await this.createEditorTab("\n", url, format);
+	async newFile(resource) {
+		let tab = await this.createEditorTab(resource);
 		
 		this.tabs.push(tab);
 		
@@ -234,41 +234,14 @@ export default class {
 		}
 	}
 	
-	async createEditorTab(code, url, format=null) {
+	async createEditorTab(resource) {
 		if (base.getPref("dev.timing.misc")) {
 			console.time("createEditorTab");
 		}
 		
-		if (!format) {
-			format = base.getFormat(code, url);
-		}
+		await base.ensureRequiredLangsInitialised(resource.format.lang);
 		
-		let newlinesNormalised = false;
-		
-		if (format.hasMixedNewlines) {
-			let {newline} = platform.systemInfo;
-			let displayNewline = newline.replace("\n", "\\n").replace("\r", "\\r");
-			
-			alert("Warning: normalising mixed newlines to " + displayNewline + " to edit " + url.path);
-			
-			code = code.replaceAll("\r\n", newline);
-			code = code.replaceAll("\r", newline);
-			code = code.replaceAll("\n", newline);
-			
-			format.hasMixedNewlines = false;
-			format.newline = newline;
-			
-			newlinesNormalised = true;
-		}
-		
-		await base.ensureRequiredLangsInitialised(format.lang);
-		
-		let document = this.app.createDocument(code, url, {
-			project: await this.app.projects.findOrCreateProjectForUrl(url),
-			format,
-			newlinesNormalised,
-		});
-		
+		let document = this.app.createDocument(resource);
 		let view = new View(document);
 		let editor = this._createEditor(document, view);
 		
@@ -300,5 +273,44 @@ export default class {
 		}
 		
 		return tab;
+	}
+	
+	loadFromSessionAndStartup({tabsToOpen, urlToSelect}) {
+		this.tabs = await bluebird.map(tabsToOpen, async ({file}) => {
+			let url = URL.fromString(urlString);
+			
+			try {
+				return this.createEditorTab(file);
+			} catch (e) {
+				console.error(e);
+				
+				return null;
+			}
+		}).filter(Boolean);
+		
+		for (let {url, state, isFromStartup} of tabsToOpen) {
+			if (!isFromStartup) {
+				this.findTabByUrl(url)?.restoreState(state);
+			}
+		}
+		
+		if (this.editorTabs.length > 0) {
+			this.selectTab(urlToSelect && this.findTabByUrl(urlToSelect) || this.editorTabs.at(-1));
+		} else {
+			this.initialNewFileTab = this.fileOperations.newFile();
+		}
+		
+		this.fire("update");
+	}
+	
+	saveSession() {
+		let tabs = this.editorTabs.map(function(tab) {
+			return tab.isSaved ? tab.saveState() : null;
+		}).filter(Boolean);
+		
+		return {
+			tabs,
+			selectedTabUrl: this.selectedTab?.url.toString(),
+		};
 	}
 }

@@ -1,69 +1,72 @@
+import File from "modules/core/resources/File";
+
+type TabDescriptor = {
+	file: File,
+	isFromStartup: boolean,
+	state?: any; // TODO saved tab state
+};
+
 export default class {
 	constructor(app) {
 		this.app = app;
 	}
 	
 	async loadSessionAndFilesToOpenOnStartup() {
-		let tabsToOpen = [];
-		let fileToSelect;
+		let tabsFromSession = [];
+		let urlToSelect = null;
 		
 		if (platform.isMainWindow) {
 			let session = await base.stores.session.load();
 			
 			if (session) {
-				tabsToOpen = session.tabs;
-				fileToSelect = session.selectedTabUrl;
-			}
-		}
-		
-		let filesToOpenOnStartup = platform.getFilesToOpenOnStartup().map(function(path) {
-			return {
-				isNew: true,
-				url: URL.file(path),
-			};
-		}).filter(({url}) => !tabsToOpen.find(tab => url.toString() === tab.url.toString()));
-		
-		tabsToOpen.push(...filesToOpenOnStartup);
-		
-		if (filesToOpenOnStartup.length > 0) {
-			fileToSelect = filesToOpenOnStartup.at(-1).url;
-		}
-		
-		this.tabs = await bluebird.map(tabsToOpen, async ({url: urlString}) => {
-			let url = URL.fromString(urlString);
-			
-			try {
-				return this.createEditorTab(await protocol(url).read(), url);
-			} catch (e) {
-				console.error(e);
+				let {mainTabs} = session;
+				let {tabs, selectedTabUrl} = mainTabs;
 				
-				return null;
-			}
-		}).filter(Boolean);
-		
-		for (let details of tabsToOpen) {
-			if (!details.isNew) {
-				this.findTabByUrl(details.url)?.restoreState(details);
+				tabsFromSession = await bluebird.map(tabs, async function({url: urlString, state}) {
+					let url = URL.fromString(urlString);
+					
+					return {
+						isFromStartup: false,
+						file: await File.read(url),
+						state,
+					};
+				});
+				
+				if (selectedTabUrl) {
+					urlToSelect = URL.fromString(selectedTabUrl);
+				}
 			}
 		}
 		
-		if (this.editorTabs.length > 0) {
-			this.selectTab(fileToSelect && this.findTabByUrl(fileToSelect) || this.editorTabs.at(-1));
-		} else {
-			this.initialNewFileTab = await this.newFile();
+		let fromStartup = (await bluebird.map(
+			platform.getFilesToOpenOnStartup(),
+			async function(path) {
+				return {
+					isFromStartup: true,
+					file: await File.read(URL.file(path)),
+				};
+			},
+		)).filter(({file}) => {
+			return !tabsFromSession.find(function(tab) {
+				return tab.url === file.url;
+			});
+		});
+		
+		tabsToOpen.push(...fromStartup);
+		
+		if (fromStartup.length > 0) {
+			urlToSelect = fromStartup.at(-1).file.url;
 		}
 		
-		this.fire("updateTabs");
+		await this.app.mainTabs.loadFromSessionAndStartup({
+			tabsToOpen,
+			urlToSelect,
+		});
 	}
 	
 	async saveSession() {
-		let tabs = this.editorTabs.map(function(tab) {
-			return tab.isSaved ? tab.saveState() : null;
-		}).filter(Boolean);
-		
 		await base.stores.session.save({
-			tabs,
-			selectedTabUrl: this.selectedTab?.url.toString(),
+			mainTabs: this.app.mainTabs.saveSession(),
 		});
 	}
 	

@@ -52,11 +52,11 @@ class CustomURL {
 	}
 	
 	static file(path) {
-		return new CustomURL("file://" + pathToUrl(path));
+		return CustomURL.fromString("file://" + pathToUrl(path));
 	}
 	
 	static _new(path) {
-		return new CustomURL("new://" + pathToUrl(path));
+		return CustomURL.fromString("new://" + pathToUrl(path));
 	}
 	
 	toString() {

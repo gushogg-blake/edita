@@ -1,16 +1,9 @@
 import sleep from "utils/sleep";
 import {removeInPlace} from "utils/array";
+import Project from "modules/core/Project";
+import {hasMixedNewlines, normaliseNewlines} from "./utils";
 import URL from "./URL";
 import FileLike from "./FileLike";
-
-import {
-	hasMixedNewlines,
-	getNewline,
-	normaliseNewlines,
-	guessIndent,
-	guessLang,
-	getIndentationDetails,
-} from "./utils";
 
 /*
 PURPOSE
@@ -42,12 +35,14 @@ let files = new WeakMap<URL, File>();
 let promises = new Map<URL, Promise>();
 
 export default class File extends FileLike {
+	newlinesNormalised: boolean = false;
+	project?: Project = null;
+	
+	private saving: boolean = false;
+	
 	constructor(url) {
 		this.url = url;
-		this.contents = null;
-		this.newlinesNormalised = false;
 		this.changeListeners = [];
-		this.saving = false;
 	}
 	
 	/*

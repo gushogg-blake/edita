@@ -39,6 +39,25 @@ let migrations = {
 			});
 		}
 	},
+	
+	"3"(session) {
+		if (session.tabs) {
+			session.tabs = session.tabs.map(function(tab) {
+				let {url, ...state} = tab;
+				
+				return {url, state};
+			});
+		}
+	},
+	
+	"4"(session) {
+		let {tabs, selectedTabUrl} = session;
+		
+		session.mainTabs = {tabs, selectedTabUrl};
+		
+		delete session.tabs;
+		delete session.selectedTabUrl;
+	},
 };
 
 export default function() {
