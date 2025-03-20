@@ -23,8 +23,6 @@ import EditorTab from "modules/ui/App/tabs/EditorTab";
 import RefactorPreviewTab from "modules/ui/App/tabs/RefactorPreviewTab";
 import FileTree from "modules/ui/App/FileTree";
 
-import {readFileForOpen} from "modules/ui/App/utils/readFilesForOpen";
-
 import keyboardCommands from "./keyboardCommands";
 import MainTabs from "./MainTabs";
 import SessionSaving from "./SessionSaving";
