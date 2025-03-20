@@ -1,7 +1,6 @@
 import _typeof from "utils/typeof";
-import Selection, {s} from "modules/core/Selection";
-import Cursor, {c} from "modules/core/Cursor";
-import normaliseNewlines from "modules/utils/normaliseNewlines";
+import {Selection, s, Cursor, c} from "modules/core";
+import {normaliseNewlines} from "modules/core/resources/utils";
 
 export default {
 	up() {

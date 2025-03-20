@@ -8,7 +8,8 @@ import test from "./test.js";
 let builds = [];
 
 if (platform === "all" || platform === "electron") {
-	builds = builds.concat(electronMain, electronRenderer);
+	//builds = builds.concat(electronMain);
+	builds = builds.concat(electronRenderer);
 }
 
 if (platform === "all" || platform === "web") {

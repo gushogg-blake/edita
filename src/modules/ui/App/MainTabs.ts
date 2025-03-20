@@ -23,6 +23,26 @@ export default class {
 		return tab;
 	}
 	
+	async openFile(file) {
+		let closeInitialNewFileTab = (
+			this.editorTabs.length === 1
+			&& this.editorTabs[0] === this.initialNewFileTab
+			&& !this.initialNewFileTab.modified
+		);
+		
+		if (closeInitialNewFileTab) {
+			this.closeTab(this.initialNewFileTab);
+		}
+		
+		let tab = await this.createEditorTab(file);
+		
+		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
+		
+		this.fire("update");
+		
+		this.selectTab(tab);
+	}
+	
 	selectTab(tab) {
 		if (this.selectedTab) {
 			this.addToPreviouslySelectedTabs(this.selectedTab);
@@ -275,7 +295,7 @@ export default class {
 		return tab;
 	}
 	
-	loadFromSessionAndStartup({tabsToOpen, urlToSelect}) {
+	async loadFromSessionAndStartup({tabsToOpen, urlToSelect}) {
 		this.tabs = await bluebird.map(tabsToOpen, async ({file}) => {
 			let url = URL.fromString(urlString);
 			

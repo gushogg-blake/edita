@@ -7,8 +7,7 @@ import promiseWithMethods from "utils/promiseWithMethods";
 import nextName from "utils/nextName";
 import multimatch from "utils/multimatch";
 
-import URL from "modules/utils/URL";
-import protocol from "modules/protocol";
+import URL from "modules/core/resources/URL";
 import Document from "modules/core/Document";
 import Editor from "modules/ui/Editor";
 import View from "modules/ui/View";

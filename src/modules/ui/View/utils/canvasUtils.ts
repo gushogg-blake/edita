@@ -1,6 +1,6 @@
 import Selection, {s} from "modules/core/Selection";
 import Cursor, {c} from "modules/core/Cursor";
-import expandTabs from "modules/utils/expandTabs";
+import {expandTabs} from "modules/utils/editing";
 
 export default {
 	countLineRowsFolded() {

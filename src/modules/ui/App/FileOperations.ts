@@ -1,4 +1,4 @@
-import {File, NewFile} from "modules/core/resource";
+import {File, NewFile} from "modules/core/resources";
 
 export default class {
 	constructor(app) {
@@ -16,50 +16,19 @@ export default class {
 		return tab;
 	}
 	
-	openPath(path, code=null) {
-		return this.openFile(URL.file(path), code);
-	}
-	
-	async openFile(resource) {
-		let {path} = resource.url;
+	async openFile(file) {
 		let {mainTabs} =  this.app;
 		//let {editorTabs, initialNewFileTab} = mainTabs;
 		
-		let closeInitialNewFileTab = (
-			this.app.mainTabs.editorTabs.length === 1
-			&& this.editorTabs[0] === this.initialNewFileTab
-			&& !this.initialNewFileTab.modified
-		);
-		
-		let existingTab = this.findTabByUrl(url);
+		let existingTab = mainTabs.findTabByUrl(url);
 		
 		if (existingTab) {
-			this.selectTab(existingTab);
+			mainTabs.selectTab(existingTab);
 			
 			return existingTab;
 		}
 		
-		if (code === null) {
-			code = await readFileForOpen(path);
-			
-			if (code === null) {
-				return;
-			}
-		}
-		
-		if (closeInitialNewFileTab) {
-			this.closeTab(this.initialNewFileTab);
-		}
-		
-		let tab = await this.createEditorTab(code, url);
-		
-		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
-		
-		this.fire("updateTabs");
-		
-		this.selectTab(tab);
-		
-		return tab;
+		return mainTabs.openFile(file);
 	}
 	
 	async openFilesFromUpload(files) {

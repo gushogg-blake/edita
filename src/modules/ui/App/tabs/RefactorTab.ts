@@ -1,4 +1,4 @@
-import URL from "modules/utils/URL";
+import {URL} from "modules/core";
 import Tab from "./Tab";
 
 class RefactorTab extends Tab {

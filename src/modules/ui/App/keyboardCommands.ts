@@ -1,4 +1,7 @@
-import {readFilesForOpen} from "modules/ui/App/utils/readFilesForOpen";
+import bluebird from "bluebird";
+import {URL} from "modules/core";
+import {readFileForOpen, readFilesForOpen} from "modules/readFilesForOpen";
+
 import App from "modules/ui/App";
 
 /*
@@ -8,10 +11,11 @@ functions available to be bound to key presses
 export default {
 	async open() {
 		let dir = this.getCurrentDir(platform.systemInfo.homeDir);
-		let files = await readFilesForOpen(await this.showOpenDialog(dir));
+		let urls = (await this.showOpenDialog(dir)).map(path => URL.file(path));
+		let files = await readFilesForOpen(urls);
 		
-		for (let {path, code} of files) {
-			this.openPath(path, code);
+		for (let file of files) {
+			this.fileOperations.openFile(file);
 		}
 		
 		platform.showWindow();
