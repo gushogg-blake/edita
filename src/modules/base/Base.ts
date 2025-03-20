@@ -317,6 +317,7 @@ class Base extends Evented {
 			tabWidth,
 			lang,
 			newline,
+			hasMixedNewlines,
 		};
 	}
 	
@@ -339,6 +340,7 @@ class Base extends Evented {
 			tabWidth,
 			lang,
 			newline: defaultNewline,
+			hasMixedNewlines: false,
 		};
 	}
 	

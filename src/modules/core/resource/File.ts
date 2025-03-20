@@ -14,27 +14,20 @@ as it meant we always checked just before opening a tab. And we don't want
 to have to pass an extra "has the file had its newlines normalised" arg
 around to everything that takes a string of code (Document, ultimately).
 
-So the purpose is this:
+This also abstracts file watching and makes sure there's only one File
+per URL in the app at a time (value objects, with the identity being the
+URL)
 
-- we're dealing with files, but sometimes also new (unsaved) files, and
-maybe we want tabs that are other things entirely (refactor preview for
-example) -- all that is nicely expressed as a URL (file:///..., new:///...,
-special://refactor-preview, etc). So we need URLs, not just paths. This
-also makes it easier to support e.g. network files later.
+NOTES
 
-- we need a File abstraction (also something I didn't realise was needed
-until now). This gives us somewhere to put things like "does this file
-have mixed newlines?", possibly other format info, as well as loading
-and saving.
-
-- to open a file, we need its URL, and a File for it. We could put the URL
-in the File class, as all Files have URLs, but not all "things" have Files
--- new files and special tabs don't. We still want a single object that
-we can pass to things that want "a URL, and maybe a File", so we have
-Resource.
-
-Thinking about it, it would probably make more sense for File to be a
-subclass of Resource...
+There's a bit of finesse required to make sure everything stays
+in sync with async atomicity and renames but it should be solid
+I think. The approach is to only allow the creation of Files when
+we're reading them from disk or writing to them (as with a rename,
+which is a write operation if the new file already exists on disk
+when we rename a file). Each of these is tracked in a promise, so
+if we try to do it twice we'll either receive the original
+promise (when reading) or await it first (when writing).
 */
 
 let files = new WeakMap<URL, File>();
@@ -46,47 +39,6 @@ export default class File extends Evented implements Resource {
 		this.contents = null;
 		this.changeListeners = [];
 		this.saving = false;
-	}
-	
-	listen(fn) {
-		this.changeListeners.push(fn);
-		
-		if (this.changeListeners === 1) {
-			this.teardownWatch = platform.fs(this.path).watch(this.onWatchEvent.bind(this));
-		}
-		
-		return () => {
-			removeInPlace(this.changeListeners, fn);
-			
-			if (this.changeListeners.length === 0) {
-				this.teardownWatch();
-				
-				delete this.teardownWatch;
-			}
-		}
-	}
-	
-	async onWatchEvent() {
-		if (this.saving) {
-			return;
-		}
-		
-		try {
-			if (await this.exists()) {
-				await sleep(50); // read can return blank sometimes otherwise
-				await this.load();
-			} else {
-				throw new Error("file doesn't exist");
-			}
-		} catch (e) {
-			// maybe deleted - set contents back to null to indicate
-			// unknown state
-			this.contents = null;
-		}
-		
-		for (let fn of this.changeListeners) {
-			fn();
-		}
 	}
 	
 	/*
@@ -195,5 +147,46 @@ export default class File extends Evented implements Resource {
 	
 	async exists() {
 		return await platform.fs(this.path).exists();
+	}
+	
+	listen(fn) {
+		this.changeListeners.push(fn);
+		
+		if (this.changeListeners === 1) {
+			this.teardownWatch = platform.fs(this.path).watch(this.onWatchEvent.bind(this));
+		}
+		
+		return () => {
+			removeInPlace(this.changeListeners, fn);
+			
+			if (this.changeListeners.length === 0) {
+				this.teardownWatch();
+				
+				delete this.teardownWatch;
+			}
+		}
+	}
+	
+	async onWatchEvent() {
+		if (this.saving) {
+			return;
+		}
+		
+		try {
+			if (await this.exists()) {
+				await sleep(50); // read can return blank sometimes otherwise
+				await this.load();
+			} else {
+				throw new Error("file doesn't exist");
+			}
+		} catch (e) {
+			// maybe deleted - set contents back to null to indicate
+			// unknown state
+			this.contents = null;
+		}
+		
+		for (let fn of this.changeListeners) {
+			fn();
+		}
 	}
 }

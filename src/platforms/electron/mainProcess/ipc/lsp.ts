@@ -82,6 +82,8 @@ export default function(app) {
 	
 	return {
 		async start(e, key, langCode, initializeParams) {
+			console.log("LSP start: key: " + key + ", langCode: " + langCode);
+			
 			if (!langIsSupported(langCode)) {
 				return {
 					error: "Language " + langCode + " not supported",
