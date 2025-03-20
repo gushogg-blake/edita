@@ -1,8 +1,8 @@
+import bluebird from "bluebird";
 import File from "modules/core/resources/File";
 
 type TabDescriptor = {
 	file: File,
-	isFromStartup: boolean,
 	state?: any; // TODO saved tab state
 };
 
@@ -26,7 +26,6 @@ export default class {
 					let url = new URL(urlString);
 					
 					return {
-						isFromStartup: false,
 						file: await File.read(url),
 						state,
 					};
@@ -38,11 +37,10 @@ export default class {
 			}
 		}
 		
-		let fromStartup = (await bluebird.map(
+		let tabsFromStartup = (await bluebird.map(
 			platform.getFilesToOpenOnStartup(),
 			async function(path) {
 				return {
-					isFromStartup: true,
 					file: await File.read(URL.file(path)),
 				};
 			},
@@ -52,14 +50,12 @@ export default class {
 			});
 		});
 		
-		tabsToOpen.push(...fromStartup);
-		
-		if (fromStartup.length > 0) {
-			urlToSelect = fromStartup.at(-1).file.url;
+		if (tabsFromStartup.length > 0) {
+			urlToSelect = tabsFromStartup.at(-1).file.url;
 		}
 		
 		await this.app.mainTabs.loadFromSessionAndStartup({
-			tabsToOpen,
+			tabs: [...tabsFromSession, ...tabsFromStartup],
 			urlToSelect,
 		});
 	}

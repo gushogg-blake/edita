@@ -1,16 +1,25 @@
+import bluebird from "bluebird";
+import {Evented} from "utils";
+
 /*
 the main tabs (editors, and possibly others like RefactorPreview if that
 gets done)
 */
 
-export default class {
+export default class extends Evented {
 	constructor(app) {
+		super();
+		
 		this.app = app;
 		
 		this.tabs = [];
 		this.selectedTab = null;
 		this.previouslySelectedTabs = [];
 		this.closedTabs = [];
+	}
+	
+	get editorTabs() {
+		return this.tabs.filter(tab => tab.isEditor);
 	}
 	
 	async newFile(resource) {
@@ -297,8 +306,8 @@ export default class {
 		return tab;
 	}
 	
-	async loadFromSessionAndStartup({tabsToOpen, urlToSelect}) {
-		this.tabs = await bluebird.map(tabsToOpen, async ({file}) => {
+	async loadFromSessionAndStartup({tabs, urlToSelect}) {
+		this.tabs = await bluebird.map(tabs, async ({file}) => {
 			let url = new URL(urlString);
 			
 			try {
@@ -310,8 +319,8 @@ export default class {
 			}
 		}).filter(Boolean);
 		
-		for (let {url, state, isFromStartup} of tabsToOpen) {
-			if (!isFromStartup) {
+		for (let {url, state} of tabs) {
+			if (state) {
 				this.findTabByUrl(url)?.restoreState(state);
 			}
 		}
@@ -319,7 +328,7 @@ export default class {
 		if (this.editorTabs.length > 0) {
 			this.selectTab(urlToSelect && this.findTabByUrl(urlToSelect) || this.editorTabs.at(-1));
 		} else {
-			this.initialNewFileTab = this.fileOperations.newFile();
+			this.initialNewFileTab = this.app.fileOperations.newFile();
 		}
 		
 		this.fire("update");

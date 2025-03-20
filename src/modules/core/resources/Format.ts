@@ -23,7 +23,7 @@ export default class Format {
 	
 	constructor(newline, indent, lang) {
 		this.newline = newline;
-		this.indent = new IndentationDetails(indent);
+		this.indentation = new IndentationDetails(indent);
 		this.lang = lang;
 	}
 }

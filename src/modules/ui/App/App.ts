@@ -61,7 +61,6 @@ class App extends Evented {
 		this.dialogs = new Dialogs(this);
 		this.fileOperations = new FileOperations(this);
 		this.sessionSaving = new SessionSaving(this);
-		this.tabMgmt = new TabMgmt(this);
 		
 		if (platform.isMainWindow) {
 			window.addEventListener("beforeunload", () => {
@@ -84,7 +83,7 @@ class App extends Evented {
 		await this.projects.init();
 		
 		await Promise.all([
-			this.loadSessionAndFilesToOpenOnStartup(),
+			this.sessionSaving.loadSessionAndFilesToOpenOnStartup(),
 			this.fileTree.init(),
 			this.findAndReplace.init(),
 		]);
@@ -115,7 +114,7 @@ class App extends Evented {
 	}
 	
 	get editorTabs() {
-		return this.tabs.filter(tab => tab.isEditor);
+		return this.mainTabs.editorTabs;
 	}
 	
 	focus() {

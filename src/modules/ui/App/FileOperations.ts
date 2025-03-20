@@ -5,7 +5,7 @@ export default class {
 		this.app = app;
 	}
 	
-	async newFile(lang=null) {
+	async newFile(lang=base.getDefaultLang()) {
 		let dir = this.app.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
 		let resource = NewFile.create(dir, lang);
 		let tab = await this.app.mainTabs.newFile(resource);
@@ -17,8 +17,7 @@ export default class {
 	}
 	
 	async openFile(file) {
-		let {mainTabs} =  this.app;
-		//let {editorTabs, initialNewFileTab} = mainTabs;
+		let {mainTabs} = this.app;
 		
 		let existingTab = mainTabs.findTabByUrl(url);
 		

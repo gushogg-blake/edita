@@ -6,13 +6,12 @@ import {Parser} from "web-tree-sitter";
 
 import {Evented} from "utils";
 
-import Project from "modules/core/Project";
-import Document from "modules/core/Document";
+import {Project, Document, Lang} from "modules/core";
+
 import Editor from "modules/ui/Editor";
 import View from "modules/ui/View";
 import DirEntries from "modules/base/DirEntries";
 import stores from "modules/stores";
-import Lang from "modules/core/Lang";
 
 import javascript from "modules/langs/javascript";
 import typescript from "modules/langs/typescript";
@@ -247,6 +246,10 @@ class Base extends Evented {
 	
 	findGlobalKeyComboFor(fn) {
 		return Object.entries(this.prefs.globalKeymap).find(([combo, f]) => f === fn)?.[0] || null;
+	}
+	
+	getDefaultLang() {
+		return this.langs.get(this.prefs.defaultLangCode);
 	}
 	
 	getDefaultPerFilePrefs(document) {
