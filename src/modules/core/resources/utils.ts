@@ -1,3 +1,5 @@
+import detectIndent from "detect-indent";
+
 export function normaliseNewlines(str) {
 	let {newline} = platform.systemInfo;
 	
@@ -79,7 +81,7 @@ export function guessLang(code, url) {
 		for (let [langCode, patterns] of Object.entries(base.prefs.fileAssociations)) {
 			for (let pattern of patterns) {
 				if (platform.fs(url.path).matchName(pattern)) {
-					return this.langs.get(langCode);
+					return base.langs.get(langCode);
 				}
 			}
 		}
@@ -87,9 +89,9 @@ export function guessLang(code, url) {
 	
 	let general = null;
 	let alternate = null;
-	let fallback = this.langs.get("plaintext");
+	let fallback = base.langs.get("plaintext");
 	
-	for (let lang of this.langs.all.filter(lang => lang !== fallback)) {
+	for (let lang of base.langs.all.filter(lang => lang !== fallback)) {
 		let supportLevel = lang.getSupportLevel(code, url?.path);
 		
 		if (supportLevel === "specific") {

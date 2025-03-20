@@ -6,7 +6,7 @@ export default abstract class FileLike extends Evented implements Resource {
 	updateFormat() {
 		let {url, contents} = this;
 		
-		let indent = guessIndent(contents);
+		let indent = getIndent(contents);
 		let lang = guessLang(contents, url);
 		let newline = getNewline(contents);
 		
