@@ -29,8 +29,8 @@ export default class {
 			fileToSelect = filesToOpenOnStartup.at(-1).url;
 		}
 		
-		this.tabs = await bluebird.map(tabsToOpen, async ({url}) => {
-			url = new URL(url);
+		this.tabs = await bluebird.map(tabsToOpen, async ({url: urlString}) => {
+			let url = URL.fromString(urlString);
 			
 			try {
 				return this.createEditorTab(await protocol(url).read(), url);

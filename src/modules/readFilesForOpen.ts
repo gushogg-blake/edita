@@ -1,5 +1,19 @@
 import bluebird from "bluebird";
 
+
+
+function normaliseNewlines(str, newline) {
+	str = str.replaceAll("\r\n", newline)
+	str = str.replaceAll("\r", newline);
+	str = str.replaceAll("\n", newline);
+	
+	return str;
+}
+
+function () {
+	
+}
+
 export async function readFileForOpen(path) {
 	try {
 		return await platform.fs(path).read();
@@ -19,7 +33,7 @@ export async function readFileForOpen(path) {
 	}
 }
 
-export default async function readFilesForOpen(paths) {
+export async function readFilesForOpen(paths) {
 	let permissionsErrors = [];
 	let binaryFiles = [];
 	let otherErrors = false;

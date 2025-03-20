@@ -169,9 +169,9 @@ class LspClient extends Evented {
 			
 			return result.map(function(definition) {
 				let {uri, range} = definition;
-				let url = new URL(uri);
+				let url = URL.fromString(uri);
 				
-				if (url.protocol !== "file") {
+				if (url.protocol !== "file:") {
 					return null;
 				}
 				
@@ -210,9 +210,9 @@ class LspClient extends Evented {
 			
 			return result.map(function(definition) {
 				let {uri, range} = definition;
-				let url = new URL(uri);
+				let url = URL.fromString(uri);
 				
-				if (url.protocol !== "file") {
+				if (url.protocol !== "file:") {
 					return null;
 				}
 				

@@ -88,7 +88,7 @@ class Document extends Evented {
 	}
 	
 	get isSaved() {
-		return ["file"].includes(this.protocol);
+		return ["file:"].includes(this.protocol);
 	}
 	
 	get scopes() {
@@ -496,7 +496,7 @@ class Document extends Evented {
 			delete this.teardownWatch;
 		}
 		
-		if (this.protocol !== "file") {
+		if (this.protocol !== "file:") {
 			return;
 		}
 		

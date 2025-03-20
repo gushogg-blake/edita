@@ -112,7 +112,7 @@ class App {
 			}
 			
 			protocol.registerStreamProtocol("app", async (request, callback) => {
-				let requestPath = decodeURIComponent(new URL(request.url).pathname);
+				let requestPath = decodeURIComponent(URL.fromString(request.url).pathname);
 				let {name, type} = fs(requestPath);
 				let mimeType = mimeTypes[type];
 				let path;

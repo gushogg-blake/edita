@@ -90,13 +90,13 @@ class RefactorPreview extends Evented {
 		
 		let {path, code} = this.selectedFile;
 		
-		await this.setEditorCode(this.editors.results, new URL("refactor-results://" + path), code);
+		await this.setEditorCode(this.editors.results, URL.fromString("refactor-results://" + path), code);
 		
 		let results = this.refactor.find(this.editors.results.document, find);
 		
 		let replaced = codePatterns.replace(code, results, replaceWith);
 		
-		await this.setEditorCode(this.editors.preview, new URL("refactor-preview://" + path), replaced);
+		await this.setEditorCode(this.editors.preview, URL.fromString("refactor-preview://" + path), replaced);
 		
 		this.hiliteMatches(results);
 	}

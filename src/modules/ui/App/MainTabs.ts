@@ -1,6 +1,26 @@
+/*
+the main tabs (editors, and possibly others like RefactorPreview if that
+gets done)
+*/
+
 export default class {
 	constructor(app) {
 		this.app = app;
+		
+		this.tabs = [];
+		this.selectedTab = null;
+		this.previouslySelectedTabs = [];
+		this.closedTabs = [];
+	}
+	
+	async newFile(url, format) {
+		let tab = await this.createEditorTab("\n", url, format);
+		
+		this.tabs.push(tab);
+		
+		this.fire("update");
+		
+		return tab;
 	}
 	
 	selectTab(tab) {
@@ -21,7 +41,7 @@ export default class {
 			this.output.clippingsTab?.setLang(tab.editor.document.lang);
 		}
 		
-		this.fire("selectTab", tab);
+		this.fire("select", tab);
 		
 		this.focusSelectedTabAsync();
 	}
@@ -59,7 +79,7 @@ export default class {
 	reorderTab(tab, index) {
 		moveInPlace(this.tabs, tab, index);
 		
-		this.fire("updateTabs");
+		this.fire("update");
 	}
 	
 	getEditorTabLabel(tab) {
@@ -145,13 +165,13 @@ export default class {
 	
 	async closeTab(tab, noSave=false) {
 		if (tab.modified) {
-			let response = await this.showMessageBox({
+			let response = await this.app.showMessageBox({
 				message: "Save changes to " + tab.name + "?",
 				buttons: ["%Yes", "%No", "%Cancel"],
 			});
 			
 			if (response === 0) {
-				await this.save(tab);
+				await this.app.fileOperations.save(tab);
 				
 				if (!tab.isSaved) {
 					return;
@@ -204,7 +224,7 @@ export default class {
 			this.focus();
 		}
 		
-		this.fire("updateTabs");
+		this.fire("update");
 		this.fire("tabClosed", tab);
 	}
 	
@@ -243,15 +263,14 @@ export default class {
 		
 		await base.ensureRequiredLangsInitialised(format.lang);
 		
-		let document = this.createDocument(code, url, {
-			project: await this.projects.findOrCreateProjectForUrl(url),
+		let document = this.app.createDocument(code, url, {
+			project: await this.app.projects.findOrCreateProjectForUrl(url),
 			format,
 			newlinesNormalised,
 		});
 		
 		let view = new View(document);
 		let editor = this._createEditor(document, view);
-		let tab = new EditorTab(this, editor);
 		
 		editor.on("cut copy", (str) => {
 			this.output.clippingsTab?.addClipping(str);
@@ -266,6 +285,8 @@ export default class {
 			api.setNormalHilites([selection], 700);
 			api.centerSelection(selection);
 		});
+		
+		let tab = new EditorTab(this, editor);
 		
 		await tab.init();
 		

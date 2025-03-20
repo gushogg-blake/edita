@@ -14,14 +14,10 @@ export default class {
 		let dir = this.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
 		let path = platform.fs(dir).child(name).path;
 		
-		let tab = await this.createEditorTab("\n", URL._new(path), format);
+		let tab = await this.app.mainTabs.newFile(URL._new(path), format);
 		
-		this.tabs.push(tab);
-		
-		this.fire("updateTabs");
-		
-		this.selectTab(tab);
-		this.focusSelectedTab();
+		this.app.mainTabs.selectTab(tab);
+		this.app.focusSelectedTab();
 		
 		return tab;
 	}

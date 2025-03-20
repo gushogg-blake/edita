@@ -18,13 +18,19 @@ function urlToPath(urlPath) {
 	}
 }
 
+let instances = new WeakMap<string, CustomURL>();
+
 class CustomURL {
-	constructor(url) {
-		if (url instanceof CustomURL) {
-			url = url.toString();
+	constructor(str) {
+		this.url = new URL(str);
+	}
+	
+	static fromString(str) {
+		if (!instances.has(str)) {
+			instances.set(str, new CustomURL(str));
 		}
 		
-		this.url = new URL(url);
+		return instances.get(str);
 	}
 	
 	get path() {
@@ -38,11 +44,11 @@ class CustomURL {
 	}
 	
 	get isNew() {
-		return this.protocol === "new";
+		return this.protocol === "new:";
 	}
 	
 	get isFile() {
-		return this.protocol === "file";
+		return this.protocol === "file:";
 	}
 	
 	static file(path) {
