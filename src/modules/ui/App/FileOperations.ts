@@ -106,6 +106,8 @@ export default class {
 			path: platform.fs(dir, platform.fs(document.path).name).path,
 		});
 		
+		// TODO check if it's different
+		
 		if (path) {
 			await document.saveAs(URL.file(path));
 		}

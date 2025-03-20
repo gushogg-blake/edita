@@ -26,7 +26,7 @@ class EditorTab extends Tab {
 			},
 			
 			document.on("save", this.onDocumentSave.bind(this)),
-			document.on("urlChanged", this.onDocumentUrlChanged.bind(this)),
+			document.on("resourceChanged", this.onDocumentResourceChanged.bind(this)),
 			view.on("wrapChanged", this.onWrapChanged.bind(this)),
 			app.on("pane.update", this.onAppPaneUpdate.bind(this)),
 			app.on("updateTabLabels", this.onAppUpdateTabLabels.bind(this)),
@@ -199,7 +199,7 @@ class EditorTab extends Tab {
 		this.fire("zoomChange");
 	}
 	
-	async onDocumentUrlChanged() {
+	async onDocumentResourceChanged() {
 		await this.writePerFilePrefs();
 	}
 	

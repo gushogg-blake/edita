@@ -294,13 +294,14 @@ class Editor extends Evented {
 	}
 	
 	onDocumentFileChanged(updateEntry) {
+		if (!updateEntry) {
+		}
+		
 		let {view} = this;
 		
 		view.startBatch();
 		
-		if (updateEntry) {
-			this.applyExistingDocumentEntry(updateEntry);
-		}
+		this.applyExistingDocumentEntry(updateEntry);
 		
 		view.updateWrappedLines();
 		

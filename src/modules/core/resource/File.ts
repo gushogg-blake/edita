@@ -1,4 +1,6 @@
 import Evented from "utils/Evented";
+import sleep from "utils/sleep";
+import {removeInPlace} from "utils/array";
 import Resource from "./Resource";
 import URL from "./URL";
 
@@ -39,46 +41,106 @@ let files = new WeakMap<URL, File>();
 let promises = new Map<URL, Promise>();
 
 export default class File extends Evented implements Resource {
-	constructor(url, contents) {
+	constructor(url) {
 		this.url = url;
-		this.contents = contents;
-		this.writeQueue = [];
+		this.contents = null;
+		this.changeListeners = [];
+		this.saving = false;
 	}
 	
-	static async fromUrl(url, contents=null) {
-		if (files.has(url)) {
-			return files.get(url);
+	listen(fn) {
+		this.changeListeners.push(fn);
+		
+		if (this.changeListeners === 1) {
+			this.teardownWatch = platform.fs(this.path).watch(this.onWatchEvent.bind(this));
 		}
 		
-		if (promises.has(url)) {
-			return promises.get(url);
+		return () => {
+			removeInPlace(this.changeListeners, fn);
+			
+			if (this.changeListeners.length === 0) {
+				this.teardownWatch();
+				
+				delete this.teardownWatch;
+			}
+		}
+	}
+	
+	async onWatchEvent() {
+		if (this.saving) {
+			return;
 		}
 		
+		try {
+			if (await this.exists()) {
+				await sleep(50); // read can return blank sometimes otherwise
+				await this.load();
+			} else {
+				throw new Error("file doesn't exist");
+			}
+		} catch (e) {
+			// maybe deleted - set contents back to null to indicate
+			// unknown state
+			this.contents = null;
+		}
+		
+		for (let fn of this.changeListeners) {
+			fn();
+		}
+	}
+	
+	/*
+	static read() and write() bring a file into our purview
+	by reading it or writing to it respectively.
+	
+	these are the only ways we can create a File, so we know
+	(as far as we can know, given a multiprocess OS environment)
+	that the contents are in sync upon creation
+	*/
+	
+	private static async create(url, contents=null) {
 		let promise = promiseWithMethods();
 		
 		promises.set(url, promise);
 		
-		promise.finally(() => {
+		promise.then((file) => {
+			instances.set(url, file);
+		}).finally(() => {
 			promises.delete(url);
 		});
 		
 		(async () => {
-			let file = new File(url, contents);
+			let file = new File(url);
 			
-			if (contents === null) {
+			if (contents !== null) {
+				await file.save(contents);
+			} else {
 				await file.load();
 			}
+			
+			promise.resolve(file);
 		})();
 		
+		return promise;
+	}
+	
+	private static async read(url) {
+		return files.get(url) || promises.get(url) || File.create(url);
+	}
+	
+	private static async write(url, contents) {
+		let file = files.get(url);
+		let promise = promises.get(url);
 		
-		promises.set(url, promise);
-		
-		
-		if (!instances.has(url)) {
-			instances.set(url, new File(url));
+		if (!file && !promise) {
+			return File.create(url, contents);
+		} else if (promise) {
+			file = await promise;
 		}
 		
-		return instances.get(url);
+		await file.write(contents);
+		
+		return file;
 	}
 	
 	get path() {
@@ -86,53 +148,45 @@ export default class File extends Evented implements Resource {
 	}
 	
 	async load() {
-		this.contents = await this.read();
-	}
-	
-	async read() {
-		return await platform.fs(this.path).read();
+		this.contents = await platform.fs(this.path).read();
 	}
 	
 	async save(str) {
-		await this.write(str);
+		this.saving = true;
+		
+		await platform.fs(this.path).write(str);
 		
 		this.contents = str;
-	}
-	
-	async write(str) {
-		await platform.fs(this.path).write(str);
+		
+		this.saving = false;
 	}
 	
 	/*
 	returns a different instance, as there might already be an
 	instance for the new URL and we need to keep a one to one
-	mapping
+	mapping (not have multiple Files for a single URL). (not sure
+	why exactly, it's defo conceptually wrong though and I think
+	would introduce the possibility of them getting out of sync
+	if different parts of the code had different File instances
+	representing the same file. also, keeping it one to one means
+	we can do fileA === fileB if we want.)
+	
+	code that deals with Files should handle rename and replace
+	the instance with the new one.
 	*/
 	
 	async rename(url) {
-		let newFile;
-		let existingFile = files.get(url);
-		let existingPromise = promises.get(url);
-		
-		if (existingFile) {
-			await existingFile.write(this.contents);
-			
-			newFile = existingFile;
-		} else if (existingPromise) {
-			newFile = await existingPromise;
-		} else {
-			await this.delete();
-			
-			newFile = await File.fromUrl(url, this.contents);
+		if (url === this.url) {
+			return;
 		}
 		
-		this.fire("rename", newFile);
-	}
-	
-	overwrite(contents) {
-		this.contents = contents;
+		let newFile = await File.write(url, this.contents);
 		
-		this.fire("change");
+		this.delete();
+		
+		this.fire("rename", newFile);
+		
+		return newFile;
 	}
 	
 	async delete() {

@@ -459,11 +459,8 @@ class Document extends Evented {
 	}
 	
 	async save() {
-		this.saving = true;
+		await this.resource.save(this.toString());
 		
-		await protocol(this.url).save(this.toString());
-		
-		this.saving = false;
 		this.modified = false;
 		this.fileChangedWhileModified = false;
 		this.historyIndexAtSave = this.historyIndex;
@@ -475,64 +472,38 @@ class Document extends Evented {
 		this.fire("save");
 	}
 	
-	async saveAs(url) {
-		let oldUrl = this.url;
+	async saveAs(resource) {
 		
-		this.url = url;
+		this.teardownWatch();
+		
+		this.resource = resource;
+		
+		this.setupWatch();
 		
 		await this.save();
 		
-		if (this.url !== oldUrl) {
-			this.fire("urlChanged");
-		}
+		this.fire("resourceChanged");
 		
 		this.setupWatch();
 	}
 	
-	setupWatch() {
-		if (this.teardownWatch) {
-			this.teardownWatch();
-			
-			delete this.teardownWatch;
-		}
-		
-		if (this.protocol !== "file:") {
-			return;
-		}
-		
-		this.teardownWatch = platform.fs(this.path).watch(this.onWatchEvent.bind(this));
-	}
-	
 	async onWatchEvent() {
-		if (this.saving) {
-			return;
-		}
-		
 		let updateEntry = null;
+		let {contents} = this.file;
 		
-		try {
-			let file = protocol(this.url);
-			
-			if (await file.exists()) {
-				if (this.modified) {
-					this.fileChangedWhileModified = true;
-				} else {
-					await sleep(50); // read can return blank sometimes otherwise
-					
-					let code = await file.read();
-					let edit = this.edit(this.selectAll(), code);
-					
-					updateEntry = this.applyAndAddHistoryEntry([edit]);
-					
-					this.modified = false;
-				}
-			} else {
-				this.fileChangedWhileModified = true;
-			}
-		} catch (e) {
+		if (contents === null || this.modified) {
 			this.fileChangedWhileModified = true;
+		} else {
+			let edit = this.edit(this.selectAll(), contents);
+			
+			updateEntry = this.applyAndAddHistoryEntry([edit]);
+			
+			this.modified = false;
 		}
 		
+		// TODO see if we can just fire an edit above -
+		// that seems to be what listeners are interested in
+		// about fileChanged
 		this.fire("fileChanged", updateEntry);
 	}
 	
