@@ -24,3 +24,4 @@ export default class NewFile extends Evented implements Resource {
 		let tab = await this.app.mainTabs.newFile(URL._new(path), format);
 	}
 }
+
