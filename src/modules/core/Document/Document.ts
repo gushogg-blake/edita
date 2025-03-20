@@ -4,22 +4,20 @@ import Evented from "utils/Evented";
 import AstSelection, {a} from "modules/core/AstSelection";
 import Selection, {s} from "modules/core/Selection";
 import Cursor, {c} from "modules/core/Cursor";
-import protocol from "modules/protocol";
 import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";
 import Line from "./Line";
 
 class Document extends Evented {
-	constructor(string, url=null, options={}) {
+	constructor(resource, options={}) {
 		super();
+		
+		this.resource = resource;
 		
 		options = {
 			project: null,
-			format: base.getFormat(string, url),
 			noParse: false,
-			// if the file has mixed newlines, we normalise them on open
-			newlinesNormalised: false,
 			...options,
 		};
 		
@@ -32,7 +30,7 @@ class Document extends Evented {
 		this.history = [];
 		this.historyIndex = 0;
 		this.historyIndexAtSave = 0;
-		this.modified = options.newlinesNormalised;
+		this.modified = resource.newlinesNormalised;
 		
 		this.createLines();
 		

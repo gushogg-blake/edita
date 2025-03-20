@@ -1,20 +1,13 @@
+import {File, NewFile} from "modules/core/resource";
+
 export default class {
 	constructor(app) {
 		this.app = app;
 	}
 	
 	async newFile(lang=null) {
-		let format = base.getDefaultFormat(lang);
-		
-		({lang} = format);
-		
-		let {defaultExtension} = lang;
-		let extension = defaultExtension ? "." + defaultExtension : "";
-		let name = nextName(n => lang.name + "-" + n + extension, name => !this.editorTabs.some(tab => tab.path.includes(name)));
-		let dir = this.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
-		let path = platform.fs(dir).child(name).path;
-		
-		let tab = await this.app.mainTabs.newFile(URL._new(path), format);
+		let resource = NewFile.create(lang);
+		let tab = await this.app.mainTabs.newFile(resource);
 		
 		this.app.mainTabs.selectTab(tab);
 		this.app.focusSelectedTab();
@@ -28,9 +21,11 @@ export default class {
 	
 	async openFile(url, code=null) {
 		let {path} = url;
+		let {mainTabs} =  this.app;
+		//let {editorTabs, initialNewFileTab} = mainTabs;
 		
 		let closeInitialNewFileTab = (
-			this.editorTabs.length === 1
+			this.app.mainTabs.editorTabs.length === 1
 			&& this.editorTabs[0] === this.initialNewFileTab
 			&& !this.initialNewFileTab.modified
 		);

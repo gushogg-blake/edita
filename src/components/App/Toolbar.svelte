@@ -21,15 +21,7 @@ function openLanguages() {
 			label: lang.name,
 			
 			async onClick() {
-				let tab = await app.newFile(lang);
-				
-				// HACK - Svelte grammar is broken so we actually want
-				// HTML (HTML lang module supports .svelte)
-				// so we actually just want whatever lang the extension
-				// indicates
-				// TODO refactor
-				
-				await tab.document.updateFormat();
+				await app.fileOperations.newFile(lang);
 			},
 		};
 	}));

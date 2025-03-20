@@ -40,6 +40,8 @@ import ruby from "modules/langs/ruby";
 import prisma from "modules/langs/prisma";
 import plaintext from "modules/langs/plaintext";
 
+import Langs from "./Langs";
+
 import packageJson from "root/package.json";
 
 /*
@@ -54,57 +56,6 @@ the UI.
 
 lifespan: global singleton created on startup; never destroyed.
 */
-
-class Langs {
-	constructor() {
-		this.langs = {};
-		this.assignedAccelerators = new Set();
-	}
-	
-	add(langModule) {
-		let lang = new Lang(langModule);
-		
-		this.assignAccelerator(lang);
-		
-		this.langs[lang.code] = lang;
-	}
-	
-	// assign accelerators on a first-come, first-served basis
-	// this means langs should probably be listed in order of
-	// most used. (currently this is not per-user configurable).
-	// NOTE this seems to be not as good as just letting the
-	// platform handle it, as linux at least cycles between options
-	// if multiple labels begin with the same letter - turning
-	// off for now (see components/App/Toolbar.svelte)
-	
-	assignAccelerator(lang) {
-		let {name} = lang;
-		
-		lang.accelerator = name;
-		
-		for (let i = 0; i < name.length; i++) {
-			let ch = name[i];
-			
-			if (this.assignedAccelerators.has(ch.toLowerCase())) {
-				continue;
-			}
-			
-			lang.accelerator = name.substr(0, i) + "&" + name.substr(i);
-			
-			this.assignedAccelerators.add(ch.toLowerCase());
-			
-			break;
-		}
-	}
-	
-	get(code) {
-		return this.langs[code] || null;
-	}
-	
-	get all() {
-		return Object.values(this.langs);
-	}
-}
 
 class Base extends Evented {
 	constructor() {
@@ -241,107 +192,6 @@ class Base extends Evented {
 				//"cpp",
 			], code => this.ensureRequiredLangsInitialised(this.langs.get(code)));
 		}
-	}
-	
-	/*
-	There are 3 support levels: general and specific, and alternate.
-	
-	general means the lang supports the file, and should be used unless there is
-	a lang with specific support.
-	
-	specific means the file can be handled by a general lang, but this lang has
-	more specific support, e.g. Node vs JavaScript.  Languages should only return
-	"specific" if there is a specific reason to, and specific langs that can also
-	handle the general lang should return "alternate" for those files.  Node
-	should return "specific" for .js files that are identifiable as Node files
-	(e.g. they have a Node hashbang line); alternate for .js files that aren't
-	identifiable as Node files; and null for anything else.
-	
-	alternate means the lang supports the file but wouldn't usually be used,
-	e.g. JavaScript supports JSON files and SCSS supports CSS files.
-	*/
-	
-	guessLang(code, url) {
-		if (url) {
-			for (let [langCode, patterns] of Object.entries(base.prefs.fileAssociations)) {
-				for (let pattern of patterns) {
-					if (platform.fs(url.path).matchName(pattern)) {
-						return this.langs.get(langCode);
-					}
-				}
-			}
-		}
-		
-		let general = null;
-		let alternate = null;
-		let fallback = this.langs.get("plaintext");
-		
-		for (let lang of this.langs.all.filter(lang => lang !== fallback)) {
-			let supportLevel = lang.getSupportLevel(code, url?.path);
-			
-			if (supportLevel === "specific") {
-				return lang;
-			} else if (supportLevel === "general" && !general) {
-				general = lang;
-			} else if (supportLevel === "alternate" && !alternate) {
-				alternate = lang;
-			}
-		}
-		
-		return general || alternate || fallback;
-	}
-	
-	getFormat(code, url) {
-		let {
-			defaultIndent,
-			tabWidth,
-			defaultNewline,
-		} = this.prefs;
-		
-		let indent = guessIndent(code) || defaultIndent;
-		let lang = this.guessLang(code, url);
-		
-		let {
-			mixed: hasMixedNewlines,
-			mostCommon: newline,
-		} = checkNewlines(code);
-		
-		if (!newline) {
-			newline = defaultNewline;
-		}
-		
-		let indentation = getIndentationDetails(indent, tabWidth);
-		
-		return {
-			indentation,
-			tabWidth,
-			lang,
-			newline,
-			hasMixedNewlines,
-		};
-	}
-	
-	getDefaultFormat(lang=null) {
-		let {
-			defaultIndent,
-			tabWidth,
-			defaultNewline,
-			defaultLangCode,
-		} = this.prefs;
-		
-		if (!lang) {
-			lang = this.langs.get(defaultLangCode);
-		}
-		
-		let indentation = getIndentationDetails(defaultIndent, tabWidth);
-		
-		return {
-			indentation,
-			tabWidth,
-			lang,
-			newline: defaultNewline,
-			hasMixedNewlines: false,
-		};
 	}
 	
 	async initLang(lang) {

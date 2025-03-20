@@ -1,21 +1,9 @@
 import bluebird from "bluebird";
 
-
-
-function normaliseNewlines(str, newline) {
-	str = str.replaceAll("\r\n", newline)
-	str = str.replaceAll("\r", newline);
-	str = str.replaceAll("\n", newline);
-	
-	return str;
-}
-
-function () {
-	
-}
-
 export async function readFileForOpen(path) {
 	try {
+		throw "migrating";
+		return await File.fromPath(path);
 		return await platform.fs(path).read();
 	} catch (e) {
 		if (e instanceof platform.fs.FileIsBinary) {

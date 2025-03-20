@@ -4,6 +4,14 @@ import {removeInPlace} from "utils/array";
 import Resource from "./Resource";
 import URL from "./URL";
 
+import {
+	checkNewlines,
+	normaliseNewlines,
+	guessIndent,
+	guessLang,
+	getIndentationDetails,
+} from "./utils";
+
 /*
 PURPOSE
 
@@ -37,8 +45,43 @@ export default class File extends Evented implements Resource {
 	constructor(url) {
 		this.url = url;
 		this.contents = null;
+		this.newline = platform.systemInfo.newline;
+		this.newlinesNormalised = false;
 		this.changeListeners = [];
 		this.saving = false;
+	}
+	
+	checkFormat() {
+		let {
+			defaultIndent,
+			tabWidth,
+			defaultNewline,
+		} = this.prefs;
+		
+		let indent = guessIndent(code) || defaultIndent;
+		let lang = this.guessLang(code, url);
+		
+		let {
+			mixed: hasMixedNewlines,
+			mostCommon: newline,
+		} = checkNewlines(code);
+		
+		if (!newline) {
+			newline = defaultNewline;
+		}
+		
+		let indentation = getIndentationDetails(indent, tabWidth);
+		
+		return {
+			indentation,
+			tabWidth,
+			lang,
+			newline,
+			hasMixedNewlines,
+		};
+	}
+		
+		this.format = format;
 	}
 	
 	/*
@@ -70,17 +113,19 @@ export default class File extends Evented implements Resource {
 				await file.load();
 			}
 			
+			file.setFormat();
+			
 			promise.resolve(file);
 		})();
 		
 		return promise;
 	}
 	
-	private static async read(url) {
+	static async read(url) {
 		return files.get(url) || promises.get(url) || File.create(url);
 	}
 	
-	private static async write(url, contents) {
+	static async write(url, contents) {
 		let file = files.get(url);
 		let promise = promises.get(url);
 		
@@ -90,7 +135,7 @@ export default class File extends Evented implements Resource {
 			file = await promise;
 		}
 		
-		await file.write(contents);
+		await file.save(contents);
 		
 		return file;
 	}
@@ -99,8 +144,19 @@ export default class File extends Evented implements Resource {
 		return this.url.path;
 	}
 	
-	async load() {
+	private async load() {
 		this.contents = await platform.fs(this.path).read();
+		
+		this.checkFormat();
+		let {mostCommon, mixed} = checkNewlines(str);
+		
+		if (mixed) {
+			str = normaliseNewlines(str);
+			
+			this.newlinesNormalised = true;
+		}
+		
+		this.contents = str;
 	}
 	
 	async save(str) {
@@ -108,9 +164,11 @@ export default class File extends Evented implements Resource {
 		
 		await platform.fs(this.path).write(str);
 		
+		this.saving = false;
+		
 		this.contents = str;
 		
-		this.saving = false;
+		this.checkFormat();
 	}
 	
 	/*
@@ -190,3 +248,4 @@ export default class File extends Evented implements Resource {
 		}
 	}
 }
+
