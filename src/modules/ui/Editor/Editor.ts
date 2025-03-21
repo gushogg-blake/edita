@@ -739,10 +739,6 @@ class Editor extends Evented {
 		});
 	}
 	
-	setLang(lang) {
-		this.document.setLang(lang);
-	}
-	
 	onFocus() {
 		this.fire("focus");
 	}

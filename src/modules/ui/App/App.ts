@@ -126,13 +126,11 @@ class App extends Evented {
 	}
 	
 	focusSelectedTab() {
-		this.selectedTab?.focus();
+		this.mainTabs.focusSelectedTab();
 	}
 	
 	focusSelectedTabAsync() {
-		setTimeout(() => {
-			this.focusSelectedTab();
-		}, 0);
+		this.mainTabs.focusSelectedTabAsync();
 	}
 	
 	urlIsOpen(url) {

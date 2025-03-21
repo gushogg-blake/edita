@@ -13,6 +13,8 @@ class Document extends Evented {
 		this.resource = resource;
 		this.string = resource.contents;
 		
+		this.setupResource();
+		
 		options = {
 			project: null,
 			noParse: false,
@@ -427,13 +429,13 @@ class Document extends Evented {
 		return cursor;
 	}
 	
-	setFormat(format) {
-		this.format = format;
-		
-		this.source.parse();
-		
-		this.fire("formatChanged");
-	}
+	//setFormat(format) {
+	//	this.format = format;
+	//	
+	//	this.source.parse();
+	//	
+	//	this.fire("formatChanged");
+	//}
 	
 	setProject(project) {
 		this.project = project;
@@ -441,20 +443,46 @@ class Document extends Evented {
 		this.fire("projectChanged");
 	}
 	
-	setResource(resource) {
+	setupResource(watch=false) {
+		this.resourceTeardownFns = [
+			this.resource.on("formatChanged", this.onResourceFormatChanged.bind(this)),
+		];
+		
+		if (watch) {
+			this.setupWatch();
+		}
+	}
+	
+	teardownResource() {
 		if (this.teardownWatch) {
 			this.teardownWatch();
+			
+			delete this.teardownWatch();
 		}
+		
+		for (let fn of this.resourceTeardownFns) {
+			fn();
+		}
+		
+		this.resourceTeardownFns = [];
+	}
+	
+	setResource(resource) {
+		let watching = !!this.teardownWatch;
+		
+		this.teardownResource();
 		
 		this.resource = resource;
 		
 		this.source.parse();
 		
-		this.setupWatch();
+		this.setupResource(watching);
 		
 		this.fire("resourceChanged");
-		
-		this.setupWatch();
+	}
+	
+	onResourceFormatChanged() {
+		this.source.parse();
 	}
 	
 	async save() {
@@ -482,7 +510,7 @@ class Document extends Evented {
 			this.teardownWatch();
 		}
 		
-		this.teardownWatch = this.resource.listen(this.onWatchEvent.bind(this));
+		this.teardownWatch = this.resource.watch(this.onWatchEvent.bind(this));
 	}
 	
 	async onWatchEvent() {
@@ -628,9 +656,7 @@ class Document extends Evented {
 	}
 	
 	teardown() {
-		if (this.teardownWatch) {
-			this.teardownWatch();
-		}
+		this.teardownResource();
 	}
 }
 

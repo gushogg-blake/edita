@@ -52,8 +52,7 @@ class ClippingsTab extends Tab {
 	}
 	
 	setLang(lang) {
-		// MIGRATE
-		this.editor.setLang(lang);
+		this.document.resource.setLang(lang);
 	}
 }
 

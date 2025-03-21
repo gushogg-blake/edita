@@ -14,7 +14,7 @@ function getDetails(tabs, tab) {
 }
 
 function select(tab) {
-	mainTab.selectTab(tab);
+	mainTabs.selectTab(tab);
 }
 
 function dblclick(tab) {

@@ -101,7 +101,7 @@ export default class File extends FileLike {
 		return await platform.fs(this.path).exists();
 	}
 	
-	listen(fn) {
+	watch(fn) {
 		this.changeListeners.push(fn);
 		
 		if (this.changeListeners === 1) {
@@ -142,4 +142,3 @@ export default class File extends FileLike {
 		}
 	}
 }
-

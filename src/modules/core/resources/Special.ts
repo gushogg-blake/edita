@@ -5,11 +5,11 @@ export default class Special extends Resource {
 	private constructor(type, path) {
 		super();
 		
-		if (path) {
-			this.url = URL.special(type + ":", path);
-		} else {
-			this.url = URL.special("special:", type);
+		if (!path) {
+			path = type;
 		}
+		
+		this.url = URL.special(type + ":", path);
 	}
 	
 	static refactor() {

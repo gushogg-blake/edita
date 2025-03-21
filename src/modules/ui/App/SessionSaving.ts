@@ -78,7 +78,7 @@ export default class {
 			//	output: this.output.pane.selectedTab.url,
 			//},
 			
-			expandedDirs: [...this.fileTree.expandedDirs],
+			expandedDirs: [...this.app.fileTree.expandedDirs],
 		});
 	}
 	
@@ -96,6 +96,6 @@ export default class {
 		// have the unwanted effect of also expanding whichever
 		// tab is selected, so it will always be open on init
 		
-		this.fileTree.setExpandedDirs(expandedDirs || []);
+		this.app.fileTree.setExpandedDirs(expandedDirs || []);
 	}
 }

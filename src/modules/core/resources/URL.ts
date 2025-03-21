@@ -27,10 +27,12 @@ export default class CustomURL {
 		return urlToPath(this.url.pathname);
 	}
 	
+	get name() {
+		return platform.fs(this.path).name;
+	}
+	
 	get protocol() {
-		let {protocol} = this.url;
-		
-		return protocol.substr(0, protocol.length - 1);
+		return this.url.protocol;
 	}
 	
 	get isNew() {

@@ -26,10 +26,10 @@ let visible = $state(pane.state.visible);
 let expanded = $state(pane.state.expanded);
 
 let tabComponents = {
-	findAndReplace: FindAndReplaceTab,
-	findResults: FindResultsTab,
-	clippings: ClippingsTab,
-	refactor: RefactorTab,
+	"find-and-replace:": FindAndReplaceTab,
+	"find-results:": FindResultsTab,
+	"clippings:": ClippingsTab,
+	"refactor:": RefactorTab,
 };
 
 function getDetails(tabs, tab) {
@@ -150,7 +150,7 @@ onMount(function() {
 		style={inlineStyle(contentsStyle)}
 	>
 		{#each tabs as tab (tab)}
-			{@const Component = tabComponents[tab.type]}
+			{@const Component = tabComponents[tab.protocol]}
 			<div
 				class="tab"
 				class:hide={tab !== selectedTab}

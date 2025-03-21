@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import {Evented} from "utils";
+import {Evented, removeInPlace} from "utils";
 import View from "modules/ui/View";
 import {Document} from "modules/core";
 import EditorTab from "modules/ui/App/tabs/EditorTab";
@@ -266,6 +266,16 @@ export default class extends Evented {
 			tabs,
 			selectedTabUrl: this.selectedTab?.url.toString(),
 		};
+	}
+	
+	focusSelectedTab() {
+		this.selectedTab?.focus();
+	}
+	
+	focusSelectedTabAsync() {
+		setTimeout(() => {
+			this.focusSelectedTab();
+		}, 0);
 	}
 	
 	getEditorTabLabel(tab) {
