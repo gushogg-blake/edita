@@ -18,6 +18,11 @@ export function urlToPath(urlPath) {
 	}
 }
 
+/*
+we can use #123 or #123-456 to indicate a position or range in a
+file (chracter offset-based)
+*/
+
 function positionOrRange(startIndex, endIndex) {
 	if (startIndex !== null && endIndex !== null) {
 		return "#" + startIndex + "-" + endIndex;
