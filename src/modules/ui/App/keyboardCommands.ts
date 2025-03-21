@@ -10,7 +10,7 @@ export default {
 	async open() {
 		let dir = this.getCurrentDir(platform.systemInfo.homeDir);
 		let urls = (await this.showOpenDialog(dir)).map(path => URL.file(path));
-		let files = await this.readFilesForOpen(urls);
+		let files = await this.readFiles(urls);
 		
 		for (let file of files) {
 			this.fileOperations.openFile(file);

@@ -9,7 +9,7 @@ import {fs as createFs, Evented, lid} from "utils";
 import {screenOffsets} from "utils/dom";
 
 import {URL, File} from "modules/core";
-import contextMenu from "modules/contextMenu";
+import contextMenu from "modules/ui/contextMenu";
 
 import clipboard from "platforms/web/modules/clipboard";
 import jsonStore from "platforms/web/modules/jsonStore";
@@ -58,6 +58,10 @@ class Platform extends Evented {
 		//if (config.lspUrl) {
 		//	this.lsp = lsp(config.lspUrl);
 		//}
+	}
+	
+	get urlsToOpenOnStartup() {
+		return [];
 	}
 	
 	createFs(key) {
@@ -124,7 +128,7 @@ class Platform extends Evented {
 		this.backupFs(key).delete();
 	}
 	
-	async filesFromDropEvent(e) {
+	async filesFromDropEvent(app, e) {
 		return bluebird.map([...e.dataTransfer.files], async (droppedFile) => {
 			let tmpPath = platform.path.resolve("/tmp", "upload-" + lid(), file.name);
 			
@@ -133,10 +137,6 @@ class Platform extends Evented {
 				await droppedFile.text(),
 			);
 		});
-	}
-	
-	getFilesToOpenOnStartup() {
-		return [];
 	}
 	
 	openDialogWindow(app, dialog, dialogOptions, windowOptions) {

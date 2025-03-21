@@ -7,7 +7,7 @@ import {Language} from "web-tree-sitter";
 import {Evented, lid, promiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
 import {URL, File} from "modules/core";
-import contextMenu from "modules/contextMenu";
+import contextMenu from "modules/ui/contextMenu";
 
 import fs from "platforms/electron/modules/fs";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";
@@ -47,7 +47,9 @@ class Platform extends Evented {
 		this.path = path;
 		this.fs = fs;
 		
-		this.filesToOpenOnStartup = config.files.map(p => fs(config.cwd, p).path);
+		this.urlsToOpenOnStartup = config.files.map(function(path) {
+			return URL.file(path);
+		});
 		
 		this.dialogPromises = {};
 		
@@ -107,14 +109,10 @@ class Platform extends Evented {
 		this.fs(this.config.userDataDir, "backups", key).deleteIfExists();
 	}
 	
-	filesFromDropEvent(e) {
-		return bluebird.map([...e.dataTransfer.files], ({path}) => {
-			return File.read(URL.file(path));
-		});
-	}
-	
-	getFilesToOpenOnStartup() {
-		return this.filesToOpenOnStartup;
+	filesFromDropEvent(e, app) {
+		return app.readFiles([...e.dataTransfer.files].map(({path}) => {
+			return URL.file(path);
+		}));
 	}
 	
 	dialogPromise(_showSyntheticDialog, name, options) {

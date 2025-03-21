@@ -63,8 +63,8 @@ class App extends Evented {
 		
 		if (platform.isMainWindow) {
 			window.addEventListener("beforeunload", () => {
-				this.saveSession();
-				this.saveEphemeralUiState();
+				this.sessionSaving.saveSession();
+				this.sessionSaving.saveEphemeralUiState();
 			});
 		}
 		
@@ -96,12 +96,16 @@ class App extends Evented {
 		return this.projects.selectedProject;
 	}
 	
-	async readFiles(paths) {
-		return await readFiles(paths);
+	async readFiles(urls) {
+		return await readFiles(urls);
 	}
 	
-	async readFile(path) {
-		return (await readFiles([path]))[0] || null;
+	async readFilesByUrl(urls) {
+		return await readFiles(urls, true);
+	}
+	
+	async readFile(url) {
+		return (await readFiles([url]))[0] || null;
 	}
 	
 	getCurrentDir(_default=null) {

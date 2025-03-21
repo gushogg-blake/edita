@@ -1,8 +1,6 @@
-import Evented from "utils/Evented";
-import lid from "utils/lid";
-import URL from "modules/core/resources/URL";
+import {Evented, lid} from "utils";
+import {URL} from "modules/core";
 import LspError from "modules/lsp/LspError";
-
 import {
 	cursorToLspPosition,
 	lspRangeToSelection,
@@ -169,7 +167,7 @@ class LspClient extends Evented {
 			
 			return result.map(function(definition) {
 				let {uri, range} = definition;
-				let url = new URL(uri);
+				let url = URL.fromString(uri);
 				
 				if (url.protocol !== "file:") {
 					return null;

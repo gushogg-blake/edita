@@ -77,7 +77,7 @@ function dragover(e) {
 async function drop(e) {
 	e.preventDefault();
 	
-	for (let file of await platform.filesFromDropEvent(e)) {
+	for (let file of await platform.filesFromDropEvent(e, this)) {
 		app.fileOperations.openFile(file);
 	}
 }

@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import File from "modules/core/resources/File";
+import {URL, File} from "modules/core";
 
 type TabDescriptor = {
 	file: File,
@@ -21,34 +21,28 @@ export default class {
 			if (session) {
 				let {mainTabs} = session;
 				let {tabs, selectedTabUrl} = mainTabs;
+				let files = await this.app.readFilesByUrl(tabs.map(tab => URL.fromString(tab.url)));
 				
-				tabsFromSession = await bluebird.map(tabs, async function({url: urlString, state}) {
-					let url = new URL(urlString);
+				tabsFromSession = await bluebird.map(tabs, ({url: urlString, state}) => {
+					let file = files[urlString];
 					
-					return {
-						file: await File.read(url),
+					return file ? {
+						file,
 						state,
-					};
-				});
+					} : null;
+				}).filter(Boolean);
 				
-				if (selectedTabUrl) {
-					urlToSelect = new URL(selectedTabUrl);
+				if (selectedTabUrl && files[selectedTabUrl]) {
+					urlToSelect = URL.fromString(selectedTabUrl);
 				}
 			}
 		}
 		
-		let tabsFromStartup = (await bluebird.map(
-			platform.getFilesToOpenOnStartup(),
-			async function(path) {
-				return {
-					file: await File.read(URL.file(path)),
-				};
-			},
-		)).filter(({file}) => {
+		let tabsFromStartup = (await this.app.readFiles(platform.urlsToOpenOnStartup)).filter((file) => {
 			return !tabsFromSession.find(function(tab) {
-				return tab.url === file.url;
+				return tab.url.toString() === file.url.toString();
 			});
-		});
+		}).map(file => ({file}));
 		
 		if (tabsFromStartup.length > 0) {
 			urlToSelect = tabsFromStartup.at(-1).file.url;

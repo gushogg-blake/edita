@@ -19,7 +19,7 @@ export function urlToPath(urlPath) {
 }
 
 export default class CustomURL {
-	constructor(str) {
+	private constructor(str) {
 		this.url = new URL(str);
 	}
 	
@@ -53,6 +53,10 @@ export default class CustomURL {
 	
 	static memory(path) {
 		return new CustomURL("memory://" + pathToUrl(path));
+	}
+	
+	static fromString(str) {
+		return new CustomURL(str);
 	}
 	
 	static special(protocol, path) {

@@ -40,7 +40,7 @@ export default class {
 			return existingTab;
 		}
 		
-		let file = await this.app.readFile(url.path);
+		let file = await this.app.readFile(url);
 		
 		if (!file) {
 			return null;

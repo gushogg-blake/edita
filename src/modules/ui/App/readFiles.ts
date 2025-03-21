@@ -1,15 +1,17 @@
 import bluebird from "bluebird";
-import {URL, File} from "modules/core";
+import {type URL, File} from "modules/core";
 
-export default async function(paths) {
+export default async function(urls: URL[], asObject=false) {
 	let permissionsErrors = [];
 	let binaryFiles = [];
 	let otherErrors = false;
 	
-	let files = await bluebird.map(paths, async function(path) {
+	let files = await bluebird.map(urls, async function(url) {
 		try {
-			return await File.read(URL.file(path));
+			return await File.read(url);
 		} catch (e) {
+			let {path} = url;
+			
 			if (e instanceof platform.fs.FileIsBinary) {
 				binaryFiles.push(path);
 			} else if (e.code === "EACCES") {
@@ -37,5 +39,15 @@ export default async function(paths) {
 		alert("Error occurred while opening files - see console for more details");
 	}
 	
-	return files;
+	if (asObject) {
+		let obj = {};
+		
+		for (let file of files) {
+			obj[file.url] = file;
+		}
+		
+		return obj;
+	} else {
+		return files;
+	}
 }

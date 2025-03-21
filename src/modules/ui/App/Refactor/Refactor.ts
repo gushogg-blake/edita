@@ -64,11 +64,13 @@ class Refactor extends Evented {
 	async getFiles() {
 		let nodes = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
 		let textFileNodes = await bluebird.filter(nodes, node => node.isTextFile());
+		let urls = textFileNodes.map(node => URL.file(node.path));
 		
-		return bluebird.map(textFileNodes, node => File.read(node.path));
+		return this.app.readFiles(urls);
 	}
 	
 	async getPaths() {
+		// MIGRATE
 		return await bluebird.map(this.getFiles(), node => node.path);
 	}
 	

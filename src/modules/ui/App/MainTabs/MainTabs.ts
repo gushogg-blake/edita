@@ -238,23 +238,15 @@ export default class extends Evented {
 	}
 	
 	async loadFromSessionAndStartup({tabs, urlToSelect}) {
-		this.tabs = await bluebird.map(tabs, async ({file}) => {
-			let url = new URL(urlString);
+		this.tabs = await bluebird.map(tabs, async ({file, state}) => {
+			let tab = this.createEditorTab(file);
 			
-			try {
-				return this.createEditorTab(file);
-			} catch (e) {
-				console.error(e);
-				
-				return null;
-			}
-		}).filter(Boolean);
-		
-		for (let {url, state} of tabs) {
 			if (state) {
-				this.findTabByUrl(url)?.restoreState(state);
+				tab.restoreState(state);
 			}
-		}
+			
+			return tab;
+		});
 		
 		if (this.editorTabs.length > 0) {
 			this.selectTab(urlToSelect && this.findTabByUrl(urlToSelect) || this.editorTabs.at(-1));

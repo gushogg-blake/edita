@@ -40,7 +40,8 @@ class RefactorPreview extends Evented {
 	}
 	
 	async selectPath(path) {
-		let code = await this.app.readFileForOpen(path);
+		// MIGRATE
+		let code = await this.app.readFile(URL.file(path));
 		
 		if (code === null) {
 			return;
