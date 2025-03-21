@@ -31,14 +31,16 @@ to guess the language from.
 */
 
 let {
-	editor = $bindable(null),
-	value = $bindable(""),
-	lang = null,
-	border = false,
+	editor,
+	mode: editorMode = "app",
 } = $props();
 
 export function setValue(value) {
 	editor.setValue(value);
+}
+
+export function getValue() {
+	return editor.document.string;
 }
 
 export function focus() {
@@ -46,16 +48,6 @@ export function focus() {
 }
 
 let app = getContext("app");
-
-let editorMode = editor ? "app" : "textarea";
-
-if (editorMode === "textarea") {
-	editor = base.createEditorForTextArea(value);
-	
-	if (lang) {
-		editor.document.setLang(base.langs.get(lang));
-	}
-}
 
 let {theme} = base;
 
@@ -549,10 +541,6 @@ function onEdit() {
 	if (view.mode === "ast") {
 		astMouseHandler.updateHilites(lastMouseEvent);
 	}
-	
-	if (editorMode === "textarea") {
-		value = document.string;
-	}
 }
 
 function onModeSwitch() {
@@ -643,11 +631,6 @@ onMount(function() {
 	&.showingHorizontalScrollbar {
 		grid-template-rows: 1fr auto;
 	}
-	
-	&.border {
-		border: var(--inputBorder);
-		border-radius: var(--inputBorderRadius);
-	}
 }
 
 #canvas {
@@ -696,7 +679,6 @@ canvas {
 	onwheel={wheel}
 	class="edita"
 	class:showingHorizontalScrollbar
-	class:border
 	tabindex="0"
 	onfocus={onFocus}
 	onblur={onBlur}

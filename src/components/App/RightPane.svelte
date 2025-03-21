@@ -151,7 +151,7 @@ onMount(function() {
 					{#each snippets as snippet}
 						<div
 							class="entry snippet"
-							onclick={() => app.editSnippet(snippet.id)}
+							onclick={() => app.dialogs.editSnippet(snippet.id)}
 							oncontextmenu={(e) => showContextMenuForSnippet(e, snippet)}
 						>
 							<div class="icon fileIcon"></div>

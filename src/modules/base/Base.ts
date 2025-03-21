@@ -215,7 +215,7 @@ class Base extends Evented {
 		await bluebird.map([...generateRequiredLangs(mainLang)], lang => this.initLang(lang));
 	}
 	
-	async createEditorForTextArea(string="") {
+	createEditorForTextArea(string="") {
 		let document = Document.fromString(string);
 		let view = new View(document);
 		

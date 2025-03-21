@@ -3,7 +3,7 @@ import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import autoFocusAsync from "components/actions/autoFocusAsync";
 import Checkbox from "components/utils/Checkbox.svelte";
-import Editor from "components/Editor/Editor.svelte";
+import Textarea from "components/Textarea.svelte";
 
 let {
 	app,
@@ -15,7 +15,7 @@ let name = $state(snippet.name);
 let langGroups = $state(snippet.langGroups);
 let langs = $state(snippet.langs);
 let text = $state(snippet.text);
-let isDynamic = $state(snippet.isDynamic);
+//let isDynamic = $state(snippet.isDynamic);
 let assignedKeyCombo = $state(snippet.keyCombo);
 
 langGroups = langGroups.join(", ");
@@ -37,7 +37,7 @@ function saveAndClose() {
 		langGroups: langGroups.split(", "),
 		langs: langs.split(", "),
 		text,
-		isDynamic,
+		//isDynamic,
 		keyCombo: assignedKeyCombo || null,
 	});
 }
@@ -67,14 +67,6 @@ function keydown(e) {
 	}
 }
 
-function onToggleDynamic() {
-	if (isDynamic) {
-		wrap();
-	} else {
-		unwrap();
-	}
-}
-
 function setKeyCombo(e) {
 	let {keyCombo} = getKeyCombo(e);
 	
@@ -87,24 +79,12 @@ function setKeyCombo(e) {
 		assignedKeyCombo = null;
 	}
 }
-
-function wrap() {
-	//let {newline, indentation} = editor.getEditor().document.format;
-}
-
-async function unwrap() {
-	
-}
-
-onMount(function() {
-	editor.setValue(text);
-});
 </script>
 
 <style lang="scss">
 #main {
 	display: grid;
-	grid-template-rows: auto 1fr auto auto;
+	grid-template-rows: auto 1fr auto;
 	gap: 5px;
 	width: 100%;
 	height: 100%;
@@ -114,6 +94,12 @@ onMount(function() {
 #details {
 	display: grid;
 	grid-template-columns: 1fr auto auto;
+	gap: 1em;
+}
+
+#optionsAndActions {
+	display: grid;
+	grid-template-columns: 1fr auto;
 	gap: 1em;
 }
 
@@ -165,30 +151,32 @@ input#name {
 		</div>
 	</div>
 	<div id="editor">
-		<Editor bind:this={editor} bind:value={text}/>
+		<Textarea bind:value={text}/>
 	</div>
-	<div class="options">
-		<div class="field">
-			<label for="keyCombo">
-				Key combo
-			</label>
-			<input
-				bind:value={assignedKeyCombo}
-				id="keyCombo"
-				readonly
-				onkeydown={setKeyCombo}
-			>
+	<div id="optionsAndActions">
+		<div class="options">
+			<div class="field">
+				<label for="keyCombo">
+					Key combo
+				</label>
+				<input
+					bind:value={assignedKeyCombo}
+					id="keyCombo"
+					readonly
+					onkeydown={setKeyCombo}
+				>
+			</div>
 		</div>
-	</div>
-	<!--<div class="options">-->
-	<!--	<Checkbox-->
-	<!--		bind:value={isDynamic}-->
-	<!--		onchange={onToggleDynamic}-->
-	<!--		label="Dynamic"-->
-	<!--	/>-->
-	<!--</div>-->
-	<div id="actions">
-		<button type="button" onclick={cancel}>Cancel</button>
-		<button type="submit">OK</button>
+		<!--<div class="options">-->
+		<!--	<Checkbox-->
+		<!--		bind:value={isDynamic}-->
+		<!--		onchange={onToggleDynamic}-->
+		<!--		label="Dynamic"-->
+		<!--	/>-->
+		<!--</div>-->
+		<div id="actions">
+			<button type="button" onclick={cancel}>Cancel</button>
+			<button type="submit">Save</button>
+		</div>
 	</div>
 </form>

@@ -739,6 +739,10 @@ class Editor extends Evented {
 		});
 	}
 	
+	getValue() {
+		return this.document.string;
+	}
+	
 	onFocus() {
 		this.fire("focus");
 	}

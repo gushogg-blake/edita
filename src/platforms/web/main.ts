@@ -4,7 +4,6 @@ import Base from "modules/base/Base";
 import App from "modules/ui/App";
 import components from "components";
 import AppComponent from "components/App/App.svelte";
-import Textarea from "platforms/web/components/Textarea.svelte";
 import Platform from "./Platform";
 
 window.platform = new Platform();
@@ -50,7 +49,5 @@ export default async function(options) {
 				appComponent,
 			};
 		},
-		
-		Textarea,
 	};
 }
