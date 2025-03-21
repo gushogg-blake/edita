@@ -1,3 +1,4 @@
+import {lid, partition} from "utils";
 import {URL} from "modules/core";
 import {File, NewFile} from "modules/core/resources";
 
@@ -7,10 +8,12 @@ export default class {
 	}
 	
 	async newFile(lang=base.getDefaultLang()) {
+		let {mainTabs} = this.app;
+		
 		let dir = this.app.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
-		let url = this.app.mainTabs.nextNewFileName(dir, lang);
+		let url = mainTabs.nextNewFileName(dir, lang);
 		let resource = await NewFile.create(url);
-		let tab = await this.app.mainTabs.newFile(resource);
+		let tab = await mainTabs.newFile(resource);
 		
 		this.app.mainTabs.selectTab(tab);
 		this.app.focusSelectedTab();
@@ -18,11 +21,15 @@ export default class {
 		return tab;
 	}
 	
-	async openPath(path) {
-		return await this.openFile(URL.file(path));
+	private async openFile(file) {
+		return await this.app.mainTabs.openFile(file);
 	}
 	
-	async openFile(file) {
+	openPath(path) {
+		return this.openUrl(URL.file(path));
+	}
+	
+	async openUrl(url) {
 		let {mainTabs} = this.app;
 		
 		let existingTab = mainTabs.findTabByUrl(url);
@@ -33,22 +40,32 @@ export default class {
 			return existingTab;
 		}
 		
-		return mainTabs.openFile(file);
+		let file = await this.app.readFile(url.path);
+		
+		if (!file) {
+			return null;
+		}
+		
+		return await this.openFile(file);
 	}
 	
-	async openFilesFromUpload(files) {
-		await bluebird.map(files, async ({name, code}) => {
-			let path = "/" + name;
-			let node = platform.fs(path);
-			
-			if (await node.exists()) {
-				await node.rename(node.basename + "-" + Date.now() + node.extension);
-			}
-			
-			await node.write(code);
-			
-			await this.openPath(path, code);
+	/*
+	NOTE web version might use the file chooser dialog now so
+	not sure when/if this will come up 
+	*/
+	
+	async openFilesFromUpload(uploadedFiles) {
+		let dir = platform.fs("/upload-" + lid());
+		
+		await dir.child("placeholder").mkdirp();
+		
+		let files = await bluebird.map(uploadedFiles, ({name, contents}) => {
+			return File.write(URL.file(dir.child(name).path), contents);
 		});
+		
+		for (let file of files) {
+			await this.openFile(file);
+		}
 	}
 	
 	async save(tab) {
@@ -70,9 +87,9 @@ export default class {
 	async saveAs(tab) {
 		let {document} = tab;
 		
-		let dir = this.getCurrentDir(platform.systemInfo.homeDir);
+		let dir = this.app.getCurrentDir(platform.systemInfo.homeDir);
 		
-		let path = await this.dialogs.showSaveAs({
+		let path = await this.app.dialogs.showSaveAs({
 			path: platform.fs(dir, platform.fs(document.path).name).path,
 		});
 		
@@ -84,15 +101,17 @@ export default class {
 	}
 	
 	async saveAll() {
-		let [saved, unsaved] = partition(this.tabs, tab => tab.isSaved);
+		let [saved, unsaved] = partition(this.app.mainTabs.tabs, tab => tab.isSaved);
 		
 		await Promise.all([
-			bluebird.map(saved, tab => this.save(tab)),
-			bluebird.each(unsaved, tab => this.saveAs(tab)),
+			bluebird.map(saved, tab => this.app.save(tab)),
+			bluebird.each(unsaved, tab => this.app.saveAs(tab)),
 		]);
 	}
 	
 	async renameTab(tab) {
+		throw "migrate";
+		
 		let {url} = tab;
 		let oldPath = tab.path;
 		
@@ -107,6 +126,8 @@ export default class {
 	}
 	
 	async deleteTab(tab) {
+		throw "migrate";
+		
 		if (!await confirm("Delete " + tab.path + "?")) {
 			return;
 		}

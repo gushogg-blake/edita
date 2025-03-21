@@ -1,37 +1,14 @@
 import bluebird from "bluebird";
+import {URL, File} from "modules/core";
 
-export async function readFileForOpen(path) {
-	try {
-		throw "migrating";
-		return await File.fromPath(path);
-		return await platform.fs(path).read();
-	} catch (e) {
-		if (e instanceof platform.fs.FileIsBinary) {
-			alert("Opening binary files not supported: " + path);
-		} else if (e.code === "EACCES") {
-			alert("Could not read " + path + " (permission denied)");
-		} else {
-			console.log("Error reading file " + path);
-			console.error(e);
-			
-			alert("Error occurred while opening file: " + path + " - see console for more details");
-		}
-		
-		return null;
-	}
-}
-
-export async function readFilesForOpen(paths) {
+export default async function(paths) {
 	let permissionsErrors = [];
 	let binaryFiles = [];
 	let otherErrors = false;
 	
 	let files = await bluebird.map(paths, async function(path) {
 		try {
-			return {
-				path,
-				code: await platform.fs(path).read(),
-			};
+			return await File.read(URL.file(path));
 		} catch (e) {
 			if (e instanceof platform.fs.FileIsBinary) {
 				binaryFiles.push(path);

@@ -41,7 +41,7 @@ class Session {
 	}
 	
 	get tab() {
-		return this.url && this.app.findTabByUrl(this.url);
+		return this.url && this.app.mainTabs.findTabByUrl(this.url);
 	}
 	
 	async nextUrl() {

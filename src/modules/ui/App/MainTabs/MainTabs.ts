@@ -191,8 +191,6 @@ export default class extends Evented {
 			console.time("createEditorTab");
 		}
 		
-		await base.ensureRequiredLangsInitialised(resource.format.lang);
-		
 		let document = this.app.createDocument(resource);
 		let view = new View(document);
 		let editor = this.app._createEditor(document, view);
@@ -229,6 +227,14 @@ export default class extends Evented {
 		}
 		
 		return tab;
+	}
+	
+	findTabByPath(path) {
+		return this.editorTabs.find(tab => tab.isSaved && tab.path === path);
+	}
+	
+	findTabByUrl(url) {
+		return this.editorTabs.find(tab => tab.url.toString() === url.toString());
 	}
 	
 	async loadFromSessionAndStartup({tabs, urlToSelect}) {

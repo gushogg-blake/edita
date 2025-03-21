@@ -26,6 +26,8 @@ import SessionSaving from "./SessionSaving";
 import FileOperations from "./FileOperations";
 import Dialogs from "./Dialogs";
 
+import readFiles from "./readFiles";
+
 import Dev from "modules/ui/App/Dev";
 
 class App extends Evented {
@@ -94,6 +96,14 @@ class App extends Evented {
 		return this.projects.selectedProject;
 	}
 	
+	async readFiles(paths) {
+		return await readFiles(paths);
+	}
+	
+	async readFile(path) {
+		return (await readFiles([path]))[0] || null;
+	}
+	
 	getCurrentDir(_default=null) {
 		if (this.selectedTab?.isSaved) {
 			return platform.fs(this.selectedTab.path).parent.path;
@@ -137,7 +147,7 @@ class App extends Evented {
 	}
 	
 	pathIsOpen(path) {
-		return this.editorTabs.some(tab => tab.isFile && tab.path === path);
+		return this.editorTabs.some(tab => tab.isSaved && tab.path === path);
 	}
 	
 	showFindBar() {
@@ -247,11 +257,11 @@ class App extends Evented {
 	}
 	
 	findTabByPath(path) {
-		return this.editorTabs.find(tab => tab.isFile && tab.path === path);
+		return this.mainTabs.findTabByPath(path);
 	}
 	
 	findTabByUrl(url) {
-		return this.editorTabs.find(tab => tab.url.toString() === url.toString());
+		return this.mainTabs.findTabByUrl(url);
 	}
 	
 	onOpenFromElectronSecondInstance(paths) {

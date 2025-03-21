@@ -12,7 +12,7 @@ let prefs = $state(base.prefs);
 let langButton = $state();
 
 function upload(files) {
-	app.openFilesFromUpload(files);
+	app.fileOperations.openFilesFromUpload(files);
 }
 
 function openLanguages() {

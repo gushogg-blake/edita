@@ -1,7 +1,5 @@
 import bluebird from "bluebird";
 import {URL} from "modules/core";
-import {readFileForOpen, readFilesForOpen} from "modules/readFilesForOpen";
-
 import App from "modules/ui/App";
 
 /*
@@ -12,7 +10,7 @@ export default {
 	async open() {
 		let dir = this.getCurrentDir(platform.systemInfo.homeDir);
 		let urls = (await this.showOpenDialog(dir)).map(path => URL.file(path));
-		let files = await readFilesForOpen(urls);
+		let files = await this.readFilesForOpen(urls);
 		
 		for (let file of files) {
 			this.fileOperations.openFile(file);

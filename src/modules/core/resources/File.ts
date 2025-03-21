@@ -22,6 +22,8 @@ export default class File extends FileLike {
 	private saving: boolean = false;
 	
 	private constructor(url) {
+		super();
+		
 		this.url = url;
 		this.changeListeners = [];
 	}

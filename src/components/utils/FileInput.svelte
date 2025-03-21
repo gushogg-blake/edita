@@ -16,7 +16,7 @@ function readFile(file) {
 		reader.addEventListener("load", function() {
 			resolve({
 				name: file.name,
-				code: reader.result,
+				contents: reader.result,
 			});
 		});
 		

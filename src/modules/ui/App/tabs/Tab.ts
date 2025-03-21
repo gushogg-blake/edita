@@ -27,8 +27,8 @@ class Tab extends Evented {
 		return this.url.path;
 	}
 	
-	get isFile() {
-		return this.url.isFile;
+	get isSaved() {
+		return false;
 	}
 	
 	get name() {
