@@ -1,6 +1,5 @@
-import Evented from "utils/Evented";
+import {Evented, throttle, removeInPlace} from "utils";
 import bindFunctions from "utils/bindFunctions";
-import {removeInPlace} from "utils/array";
 
 import astCommon from "modules/astCommon";
 import AstSelection, {a} from "modules/core/AstSelection";
@@ -48,6 +47,10 @@ class Editor extends Evented {
 		this.batchState = null;
 		
 		this.api = bindFunctions(this, api);
+		
+		this.throttledBackup = throttle(() => {
+			platform.backup(this.document);
+		}, 15000);
 		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
@@ -285,6 +288,8 @@ class Editor extends Evented {
 		view.updateMarginSize();
 		
 		view.endBatch();
+		
+		this.throttledBackup();
 	}
 	
 	onDocumentSave() {

@@ -1,4 +1,4 @@
-import {throttle, sleep, Evented} from "utils";
+import {Evented} from "utils";
 import {AstSelection, a, Selection, s, Cursor, c} from "modules/core";
 import Memory from "modules/core/resources/Memory";
 import findAndReplace from "modules/grep/findAndReplace";
@@ -33,12 +33,6 @@ class Document extends Evented {
 		this.source = new Source(this);
 		
 		this.source.parse();
-		
-		this.throttledBackup = throttle(() => {
-			platform.backup(this);
-		}, 15000);
-		
-		this.on("edit", this.throttledBackup);
 		
 		this.fileChangedWhileModified = false;
 		

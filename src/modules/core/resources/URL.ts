@@ -18,6 +18,16 @@ export function urlToPath(urlPath) {
 	}
 }
 
+function positionOrRange(startIndex, endIndex) {
+	if (startIndex !== null && endIndex !== null) {
+		return "#" + startIndex + "-" + endIndex;
+	} else if (startIndex !== null) {
+		return "#" + startIndex;
+	} else {
+		return "";
+	}
+}
+
 export default class CustomURL {
 	private constructor(str) {
 		this.url = new URL(str);
@@ -43,16 +53,16 @@ export default class CustomURL {
 		return this.protocol === "file:";
 	}
 	
-	static file(path) {
-		return new CustomURL("file://" + pathToUrl(path));
+	static file(path, startIndex=null, endIndex=null) {
+		return new CustomURL("file://" + pathToUrl(path) + positionOrRange(startIndex, endIndex));
 	}
 	
-	static _new(path) {
-		return new CustomURL("new://" + pathToUrl(path));
+	static _new(path, startIndex=null, endIndex=null) {
+		return new CustomURL("new://" + pathToUrl(path) + positionOrRange(startIndex, endIndex));
 	}
 	
-	static memory(path) {
-		return new CustomURL("memory://" + pathToUrl(path));
+	static memory(path, startIndex=null, endIndex=null) {
+		return new CustomURL("memory://" + pathToUrl(path) + positionOrRange(startIndex, endIndex));
 	}
 	
 	static fromString(str) {

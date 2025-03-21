@@ -7,7 +7,7 @@ function containsWordBoundary(str) {
 	return !!str.match(/\W/);
 }
 
-function hasWordBoundaries(code, match) {
+function hasWordBoundaries(code, match: RegExpMatchArray) {
 	let [string] = match;
 	let {index} = match;
 	
