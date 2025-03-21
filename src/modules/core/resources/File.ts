@@ -106,7 +106,7 @@ export default class File extends FileLike {
 	watch(fn) {
 		this.changeListeners.push(fn);
 		
-		if (this.changeListeners === 1) {
+		if (this.changeListeners.length === 1) {
 			this.teardownWatch = platform.fs(this.path).watch(this.onWatchEvent.bind(this));
 		}
 		

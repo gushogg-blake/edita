@@ -21,8 +21,6 @@ class Document extends Evented {
 			...options,
 		};
 		
-		//this.teardownCallbacks = [];
-		
 		this.noParse = options.noParse;
 		
 		this.history = [];
@@ -429,14 +427,6 @@ class Document extends Evented {
 		return cursor;
 	}
 	
-	//setFormat(format) {
-	//	this.format = format;
-	//	
-	//	this.source.parse();
-	//	
-	//	this.fire("formatChanged");
-	//}
-	
 	setProject(project) {
 		this.project = project;
 		
@@ -457,7 +447,7 @@ class Document extends Evented {
 		if (this.teardownWatch) {
 			this.teardownWatch();
 			
-			delete this.teardownWatch();
+			delete this.teardownWatch;
 		}
 		
 		for (let fn of this.resourceTeardownFns) {
