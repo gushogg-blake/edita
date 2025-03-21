@@ -9,7 +9,6 @@ import {fs as createFs, Evented, lid} from "utils";
 import {screenOffsets} from "utils/dom";
 
 import {URL, File} from "modules/core";
-import contextMenu from "modules/ui/contextMenu";
 
 import clipboard from "platforms/web/modules/clipboard";
 import jsonStore from "platforms/web/modules/jsonStore";
@@ -144,7 +143,7 @@ class Platform extends Evented {
 	}
 	
 	showContextMenu(e, app, items, options) {
-		contextMenu(app, items, {
+		app.showContextMenu(items, {
 			x: e.clientX,
 			y: e.clientY,
 		}, options);
@@ -154,7 +153,7 @@ class Platform extends Evented {
 		let {x, y, height} = screenOffsets(element);
 		let coords = {x, y: y + height};
 		
-		contextMenu(app, items, coords, options);
+		app.showContextMenu(items, coords, options);
 	}
 	
 	get isWindows() {

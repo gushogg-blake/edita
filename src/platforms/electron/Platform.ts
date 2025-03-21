@@ -7,7 +7,6 @@ import {Language} from "web-tree-sitter";
 import {Evented, lid, promiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
 import {URL, File} from "modules/core";
-import contextMenu from "modules/ui/contextMenu";
 
 import fs from "platforms/electron/modules/fs";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";
@@ -139,7 +138,7 @@ class Platform extends Evented {
 		let custom = options.noCancel || base.getPref("customContextMenu");
 		
 		if (custom) {
-			contextMenu(app, items, coords, options);
+			app.showContextMenu(items, coords, options);
 		} else {
 			items = items.map(function(item) {
 				return {

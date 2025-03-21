@@ -25,6 +25,7 @@ import MainTabs from "./MainTabs";
 import SessionSaving from "./SessionSaving";
 import FileOperations from "./FileOperations";
 import Dialogs from "./Dialogs";
+import contextMenu from "./contextMenu";
 
 import readFiles from "./readFiles";
 
@@ -304,6 +305,10 @@ class App extends Evented {
 	
 	renderDiv(div) {
 		this.fire("renderDiv", div);
+	}
+	
+	showContextMenu(items, coords, options) {
+		contextMenu(this, items, coords, options);
 	}
 	
 	resize() {
