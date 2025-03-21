@@ -30,16 +30,17 @@ let {
 	app,
 } = $props();
 
-let main = $state();
-
 setContext("app", app);
+
+let {mainTabs, panes} = app;
+
+let main = $state();
 
 let prefs = $state(base.prefs);
 let theme = $state(base.theme);
 
-let tabs = $state(app.tabs);
-let selectedTab = $state(app.selectedTab);
-let panes = $state(app.panes);
+let tabs = $state(mainTabs.tabs);
+let selectedTab = $state(mainTabs.selectedTab);
 
 let showingQuickAction = $state(null);
 
@@ -87,11 +88,11 @@ function mousedown(e) {
 }
 
 function onUpdateTabs() {
-	tabs = app.tabs;
+	tabs = mainTabs.tabs;
 }
 
 function onSelectTab() {
-	selectedTab = app.selectedTab;
+	selectedTab = mainTabs.selectedTab;
 }
 
 function onShowFindBar() {
@@ -123,8 +124,9 @@ onMount(function() {
 		base.on("prefsUpdated", onPrefsUpdated),
 		base.on("themeUpdated", onThemeUpdated),
 		
-		app.on("updateTabs", onUpdateTabs),
-		app.on("selectTab", onSelectTab),
+		mainTabs.on("update", onUpdateTabs),
+		mainTabs.on("select", onSelectTab),
+		
 		app.on("hideFindBar", onHideFindBar),
 		app.on("showFindBar", onShowFindBar),
 		app.on("renderDiv", renderDiv),

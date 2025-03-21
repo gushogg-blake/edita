@@ -477,8 +477,9 @@ class Document extends Evented {
 	}
 	
 	async saveAs(resource) {
-		
-		this.teardownWatch();
+		if (this.teardownWatch) {
+			this.teardownWatch();
+		}
 		
 		this.resource = resource;
 		
@@ -489,6 +490,14 @@ class Document extends Evented {
 		this.fire("resourceChanged");
 		
 		this.setupWatch();
+	}
+	
+	setupWatch() {
+		if (this.teardownWatch) {
+			this.teardownWatch();
+		}
+		
+		this.teardownWatch = this.resource.listen(this.onWatchEvent.bind(this));
 	}
 	
 	async onWatchEvent() {

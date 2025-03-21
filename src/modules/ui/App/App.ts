@@ -4,8 +4,6 @@ import {removeInPlace, moveInPlace, partition, sortedPartition} from "utils/arra
 import Evented from "utils/Evented";
 import bindFunctions from "utils/bindFunctions";
 import promiseWithMethods from "utils/promiseWithMethods";
-import nextName from "utils/nextName";
-import multimatch from "utils/multimatch";
 
 import URL from "modules/core/resources/URL";
 import Document from "modules/core/Document";
@@ -29,7 +27,7 @@ import SessionSaving from "./SessionSaving";
 import FileOperations from "./FileOperations";
 import Dialogs from "./Dialogs";
 
-import dev from "modules/ui/App/dev";
+import Dev from "modules/ui/App/Dev";
 
 class App extends Evented {
 	constructor() {
@@ -88,9 +86,9 @@ class App extends Evented {
 			this.findAndReplace.init(),
 		]);
 		
-		this.restoreEphemeralUiState();
+		this.sessionSaving.restoreEphemeralUiState();
 		
-		dev(this);
+		this.dev = new Dev(this);
 	}
 	
 	get selectedProject() {
@@ -115,6 +113,10 @@ class App extends Evented {
 	
 	get editorTabs() {
 		return this.mainTabs.editorTabs;
+	}
+	
+	getEditorTabLabel(tab) {
+		return this.mainTabs.getEditorTabLabel(tab);
 	}
 	
 	focus() {

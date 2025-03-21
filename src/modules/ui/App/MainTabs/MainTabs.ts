@@ -1,5 +1,9 @@
 import bluebird from "bluebird";
 import {Evented} from "utils";
+import View from "modules/ui/View";
+import {Document} from "modules/core";
+import EditorTab from "modules/ui/App/tabs/EditorTab";
+import getEditorTabLabel from "./getEditorTabLabel";
 
 /*
 the main tabs (editors, and possibly others like RefactorPreview if that
@@ -111,87 +115,6 @@ export default class extends Evented {
 		this.fire("update");
 	}
 	
-	getEditorTabLabel(tab) {
-		let sep = platform.systemInfo.pathSeparator;
-		let node = platform.fs(tab.path);
-		let {name, basename, extension} = node;
-		let shortenedName = name;
-		let prefixWithParentByConvention = "";
-		
-		// shorten
-		
-		if (basename.length > 20) {
-			shortenedName = basename.substr(0, 8).trim() + "..." + basename.substr(-8).trim() + extension;
-		}
-		
-		// conventions - always include dir for generic names like index.js
-		
-		if (multimatch(alwaysIncludeDirInTabTitle, node.name)) {
-			prefixWithParentByConvention = node.parent.name + sep;
-		}
-		
-		/*
-		disambiguation
-		
-		start with the filename and for all tabs with same filename,
-		step back until we find an ancestor dir that's different
-		
-		then, if we just stepped back one dir just prepend it
-		
-		otherwise, prepend the dir, /.../, then the filename (the dots
-		representing path parts that are the same between tabs)
-		*/
-		
-		if (node.parent.isRoot) {
-			return shortenedName;
-		}
-		
-		let others = this.editorTabs.map(other => platform.fs(other.path)).filter(function(other) {
-			return (
-				other.path !== node.path
-				&& other.name === node.name
-			);
-		});
-		
-		if (others.length === 0) {
-			return {
-				label: prefixWithParentByConvention + shortenedName,
-			};
-		}
-		
-		let startNode = node;
-		
-		do {
-			startNode = startNode.parent;
-			others = others.map(other => other.parent);
-		} while (others.some(other => other.name === startNode.name));
-		
-		if (startNode.isRoot) {
-			/*
-			other tabs' paths are our full path with a prefix -
-			handle this case specially to avoid disambiguating it
-			as //.../filename
-			*/
-			
-			return {
-				label: prefixWithParentByConvention + shortenedName,
-			};
-		}
-		
-		let disambiguator = "";
-		
-		if (startNode.path === node.parent.path) {
-			disambiguator = prefixWithParentByConvention ? "" : startNode.name + sep;
-		} else {
-			disambiguator = startNode.name + sep + "..." + sep;
-		}
-		
-		return {
-			label: prefixWithParentByConvention + shortenedName,
-			disambiguator,
-		};
-	}
-	
 	async closeTab(tab, noSave=false) {
 		if (tab.modified) {
 			let response = await this.app.showMessageBox({
@@ -277,10 +200,10 @@ export default class extends Evented {
 		document.setupWatch();
 		
 		editor.on("cut copy", (str) => {
-			this.output.clippingsTab?.addClipping(str);
+			this.app.output.clippingsTab?.addClipping(str);
 		});
 		
-		editor.on("normalSelectionChangedByMouseOrKeyboard", () => this.showAstHint(editor));
+		editor.on("normalSelectionChangedByMouseOrKeyboard", () => this.app.showAstHint(editor));
 		
 		editor.on("requestGoToDefinition", async ({path, selection}) => {
 			let tab = await this.openPath(path);
@@ -294,7 +217,7 @@ export default class extends Evented {
 		
 		await tab.init();
 		
-		tab.on("focus", this.onTabFocus.bind(this));
+		tab.on("focus", this.app.onTabFocus.bind(this));
 		
 		this.fire("tabCreated", tab);
 		this.fire("editorTabCreated", tab);
@@ -343,5 +266,9 @@ export default class extends Evented {
 			tabs,
 			selectedTabUrl: this.selectedTab?.url.toString(),
 		};
+	}
+	
+	getEditorTabLabel(tab) {
+		return getEditorTabLabel(tab, this.editorTabs);
 	}
 }

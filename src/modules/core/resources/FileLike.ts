@@ -1,5 +1,5 @@
 import {Evented} from "utils";
-import {Resource, Format} from "modules/core/resources";
+import {type Resource, Format} from "modules/core/resources";
 import {getNewline, getIndent, guessLang} from "./utils";
 
 export default abstract class FileLike extends Evented implements Resource {
@@ -11,5 +11,9 @@ export default abstract class FileLike extends Evented implements Resource {
 		let newline = getNewline(contents);
 		
 		this.format = new Format(newline, indent, lang);
+	}
+	
+	listen() {
+		return () => {}
 	}
 }
