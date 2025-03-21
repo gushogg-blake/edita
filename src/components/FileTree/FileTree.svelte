@@ -14,7 +14,7 @@ function select(entry) {
 }
 
 function open(entry) {
-	app.openPath(entry.path);
+	app.fileOperations.openPath(entry.path);
 }
 
 function contextmenu({e, entry}) {

@@ -4,10 +4,9 @@ let path = require("node:path");
 import bluebird from "bluebird";
 import {Language} from "web-tree-sitter";
 
-import Evented from "utils/Evented";
-import screenOffsets from "utils/dom/screenOffsets";
-import promiseWithMethods from "utils/promiseWithMethods";
-import lid from "utils/lid";
+import {Evented, lid, promiseWithMethods} from "utils";
+import {screenOffsets} from "utils/dom";
+import {URL, File} from "modules/core";
 import contextMenu from "modules/contextMenu";
 
 import fs from "platforms/electron/modules/fs";
@@ -109,11 +108,8 @@ class Platform extends Evented {
 	}
 	
 	filesFromDropEvent(e) {
-		return [...e.dataTransfer.files].map(function(file) {
-			return {
-				path: file.path,
-				code: null,
-			};
+		return bluebird.map([...e.dataTransfer.files], ({path}) => {
+			return File.read(URL.file(path));
 		});
 	}
 	

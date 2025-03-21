@@ -1,6 +1,4 @@
-import {Evented} from "utils";
 import nextName from "utils/nextName";
-import {URL, type Resource} from "modules/core";
 import FileLike from "./FileLike";
 
 /*
@@ -18,7 +16,7 @@ you're done with it. Still don't think there's much actual value
 to it though.
 */
 
-export default class NewFile extends FileLike implements Resource {
+export default class NewFile extends FileLike {
 	constructor(url) {
 		super();
 		
@@ -28,7 +26,11 @@ export default class NewFile extends FileLike implements Resource {
 		this.updateFormat();
 	}
 	
-	static create(url) {
-		return new NewFile(url);
+	static async create(url) {
+		let newFile = new NewFile(url);
+		
+		await newFile.ensureRequiredLangsInitialised();
+		
+		return newFile;
 	}
 }

@@ -50,8 +50,9 @@ let quickActionComponents = {
 };
 
 let tabComponents = {
-	editor: EditorTab,
-	refactorPreview: RefactorPreviewTab,
+	"file:": EditorTab,
+	"new:": EditorTab,
+	"refactor-preview:": RefactorPreviewTab,
 };
 
 let showingFindBar = $state(false);
@@ -76,8 +77,8 @@ function dragover(e) {
 async function drop(e) {
 	e.preventDefault();
 	
-	for (let {path, code} of await platform.filesFromDropEvent(e)) {
-		app.openPath(path, code);
+	for (let file of await platform.filesFromDropEvent(e)) {
+		app.fileOperations.openFile(file);
 	}
 }
 
@@ -275,7 +276,7 @@ onMount(function() {
 	</div>
 	<div id="editor">
 		{#each tabs as tab (tab)}
-			{@const Component = tabComponents[tab.type]}
+			{@const Component = tabComponents[tab.protocol]}
 			<div class="tab" class:selected={tab === selectedTab}>
 				<Component {tab}/>
 			</div>

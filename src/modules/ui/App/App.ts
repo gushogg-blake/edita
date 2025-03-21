@@ -257,14 +257,14 @@ class App extends Evented {
 		return this.editorTabs.find(tab => tab.url.toString() === url.toString());
 	}
 	
-	onOpenFromElectronSecondInstance(files) {
-		for (let path of files) {
-			this.openPath(path);
+	onOpenFromElectronSecondInstance(paths) {
+		for (let path of paths) {
+			this.fileOperations.openPath(path);
 		}
 	}
 	
 	updateTitle() {
-		platform.setTitle(this.selectedTab?.windowTitle || "");
+		platform.setTitle(this.mainTabs.selectedTab?.windowTitle || "");
 	}
 	
 	findInFiles(paths) {

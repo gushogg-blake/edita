@@ -1,12 +1,11 @@
-import URL from "modules/core/resources/URL";
+import {Special} from "modules/core/resources";
 import Tab from "./Tab";
 
 class FindResultsTab extends Tab {
 	constructor(app, findResults) {
-		super(app, "findResults");
+		super(app, Special.findResults());
 		
 		this.findResults = findResults;
-		this._url = new URL("special://find-results");
 		
 		this.teardownCallbacks = [
 		];
@@ -18,10 +17,6 @@ class FindResultsTab extends Tab {
 	
 	get name() {
 		return "Find results";
-	}
-	
-	get url() {
-		return this._url;
 	}
 }
 

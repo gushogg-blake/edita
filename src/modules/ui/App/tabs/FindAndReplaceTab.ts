@@ -1,11 +1,9 @@
-import URL from "modules/core/resources/URL";
+import {Special} from "modules/core/resources";
 import Tab from "./Tab";
 
 class FindAndReplaceTab extends Tab {
 	constructor(app) {
-		super(app, "findAndReplace");
-		
-		this._url = new URL("special://find-and-replace");
+		super(app, Special.findAndReplace());
 		
 		this.findAndReplace = app.findAndReplace;
 		
@@ -19,10 +17,6 @@ class FindAndReplaceTab extends Tab {
 	
 	get name() {
 		return "Find & replace";
-	}
-	
-	get url() {
-		return this._url;
 	}
 	
 	get closeable() {

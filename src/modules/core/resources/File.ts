@@ -1,6 +1,6 @@
 import sleep from "utils/sleep";
 import {removeInPlace} from "utils/array";
-import {URL, Project} from "modules/core";
+import {Project} from "modules/core";
 import {hasMixedNewlines, normaliseNewlines} from "./utils";
 import FileLike from "./FileLike";
 
@@ -21,7 +21,7 @@ export default class File extends FileLike {
 	
 	private saving: boolean = false;
 	
-	constructor(url) {
+	private constructor(url) {
 		this.url = url;
 		this.changeListeners = [];
 	}
@@ -34,6 +34,8 @@ export default class File extends FileLike {
 		} else {
 			await file.load();
 		}
+		
+		await file.ensureRequiredLangsInitialised();
 		
 		return file;
 	}

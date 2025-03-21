@@ -65,8 +65,8 @@ class Document extends Evented {
 		}
 	}
 	
-	static fromString(string, lang) {
-		return new Document(new Memory(string, lang));
+	static fromString(string) {
+		return new Document(Memory.plain(string));
 	}
 	
 	static maxEditsToApplyIndividually = 2;
@@ -435,31 +435,26 @@ class Document extends Evented {
 		this.fire("formatChanged");
 	}
 	
-	async setUrl(url) {
-		this.url = url;
-		
-		await this.updateFormat();
-	}
-	
-	async updateFormat() {
-		let format = base.getFormat(this.string, this.url);
-		
-		await base.ensureRequiredLangsInitialised(format.lang);
-		
-		this.setFormat(format);
-	}
-	
-	setLang(lang) {
-		this.setFormat({
-			...this.format,
-			lang,
-		});
-	}
-	
 	setProject(project) {
 		this.project = project;
 		
 		this.fire("projectChanged");
+	}
+	
+	setResource(resource) {
+		if (this.teardownWatch) {
+			this.teardownWatch();
+		}
+		
+		this.resource = resource;
+		
+		this.source.parse();
+		
+		this.setupWatch();
+		
+		this.fire("resourceChanged");
+		
+		this.setupWatch();
 	}
 	
 	async save() {
@@ -477,19 +472,9 @@ class Document extends Evented {
 	}
 	
 	async saveAs(resource) {
-		if (this.teardownWatch) {
-			this.teardownWatch();
-		}
-		
-		this.resource = resource;
-		
-		this.setupWatch();
+		this.setResource(resource);
 		
 		await this.save();
-		
-		this.fire("resourceChanged");
-		
-		this.setupWatch();
 	}
 	
 	setupWatch() {

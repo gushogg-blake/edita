@@ -3,7 +3,7 @@ import {Evented} from "utils";
 import View from "modules/ui/View";
 import {Document} from "modules/core";
 import EditorTab from "modules/ui/App/tabs/EditorTab";
-import getEditorTabLabel from "./getEditorTabLabel";
+import {getEditorTabLabel, nextNewFileName} from "./utils";
 
 /*
 the main tabs (editors, and possibly others like RefactorPreview if that
@@ -68,10 +68,10 @@ export default class extends Evented {
 		tab.select();
 		tab.show();
 		
-		this.updateTitle();
+		this.app.updateTitle();
 		
 		if (tab.isEditor) {
-			this.output.clippingsTab?.setLang(tab.editor.document.lang);
+			this.app.output.clippingsTab?.setLang(tab.editor.document.lang);
 		}
 		
 		this.fire("select", tab);
@@ -172,7 +172,7 @@ export default class extends Evented {
 		}
 		
 		if (!selectNext) {
-			this.updateTitle();
+			this.app.updateTitle();
 			this.focus();
 		}
 		
@@ -206,7 +206,7 @@ export default class extends Evented {
 		editor.on("normalSelectionChangedByMouseOrKeyboard", () => this.app.showAstHint(editor));
 		
 		editor.on("requestGoToDefinition", async ({path, selection}) => {
-			let tab = await this.openPath(path);
+			let tab = await this.app.fileOperations.openPath(path);
 			let {api} = tab.editor;
 			
 			api.setNormalHilites([selection], 700);
@@ -270,5 +270,9 @@ export default class extends Evented {
 	
 	getEditorTabLabel(tab) {
 		return getEditorTabLabel(tab, this.editorTabs);
+	}
+	
+	nextNewFileName(dir, lang) {
+		return nextNewFileName(this.editorTabs, dir, lang);
 	}
 }

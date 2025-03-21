@@ -4,15 +4,17 @@ import TabBar from "components/TabBar.svelte";
 
 let app = getContext("app");
 
-let tabs = $state(app.tabs);
-let selectedTab = $state(app.selectedTab);
+let {mainTabs} = app;
+
+let tabs = $state(mainTabs.tabs);
+let selectedTab = $state(mainTabs.selectedTab);
 
 function getDetails(tabs, tab) {
 	return tab;
 }
 
 function select(tab) {
-	app.selectTab(tab);
+	mainTab.selectTab(tab);
 }
 
 function dblclick(tab) {
@@ -22,11 +24,11 @@ function dblclick(tab) {
 }
 
 function close(tab) {
-	app.closeTab(tab);
+	mainTabs.closeTab(tab);
 }
 
 function reorder({tab, index}) {
-	app.reorderTab(tab, index);
+	mainTabs.reorderTab(tab, index);
 }
 
 let _getContextMenuItems = {
@@ -52,7 +54,7 @@ let _getContextMenuItems = {
 				enabled: isSaved,
 				
 				onClick() {
-					app.renameTab(tab);
+					mainTabs.renameTab(tab);
 				},
 			},
 			
@@ -61,7 +63,7 @@ let _getContextMenuItems = {
 				enabled: isSaved,
 				
 				onClick() {
-					app.deleteTab(tab);
+					mainTabs.deleteTab(tab);
 				},
 			},
 			
@@ -71,10 +73,10 @@ let _getContextMenuItems = {
 			
 			{
 				label: "Close others",
-				enabled: app.tabs.length > 1,
+				enabled: mainTabs.tabs.length > 1,
 				
 				onClick() {
-					app.closeOthers(tab);
+					mainTabs.closeOthers(tab);
 				},
 			},
 		].filter(Boolean);
@@ -90,17 +92,18 @@ function getContextMenuItems(tab) {
 }
 
 function updateTabs() {
-	tabs = app.tabs;
+	tabs = mainTabs.tabs;
 }
 
 async function onSelectTab() {
-	selectedTab = app.selectedTab;
+	selectedTab = mainTabs.selectedTab;
 }
 
 onMount(function() {
 	let teardown = [
-		app.on("updateTabs", updateTabs),
-		app.on("selectTab", onSelectTab),
+		mainTabs.on("update", updateTabs),
+		mainTabs.on("select", onSelectTab),
+		
 		app.on("document.save", updateTabs),
 		app.on("document.edit", updateTabs),
 		app.on("document.fileChanged", updateTabs),

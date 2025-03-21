@@ -1,12 +1,11 @@
-import {URL} from "modules/core";
+import {Special} from "modules/core/resources";
 import Tab from "./Tab";
 
 class RefactorTab extends Tab {
 	constructor(app, refactor) {
-		super(app, "refactor");
+		super(app, Special.refactor());
 		
 		this.refactor = refactor;
-		this._url = new URL("special://refactor");
 		
 		this.teardownCallbacks = [
 		];
@@ -18,10 +17,6 @@ class RefactorTab extends Tab {
 	
 	get name() {
 		return "Refactor";
-	}
-	
-	get url() {
-		return this._url;
 	}
 	
 	focus() {

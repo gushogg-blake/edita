@@ -7,7 +7,7 @@ function fs(...args) {
 
 class EditorTab extends Tab {
 	constructor(app, editor) {
-		super(app, "editor");
+		super(app, editor.document.resource);
 		
 		this.editor = editor;
 		this.currentPath = this.path;
@@ -48,10 +48,6 @@ class EditorTab extends Tab {
 	
 	get document() {
 		return this.editor.document;
-	}
-	
-	get url() {
-		return this.document.url;
 	}
 	
 	get project() {
@@ -187,7 +183,7 @@ class EditorTab extends Tab {
 			
 			this.updateDirListing();
 		} else {
-			this.app.openPath(entry.path);
+			this.app.fileOperations.openPath(entry.path);
 		
 			this.currentPath = this.path;
 		}

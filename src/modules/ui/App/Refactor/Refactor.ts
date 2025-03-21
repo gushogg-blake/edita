@@ -26,8 +26,7 @@ class Refactor extends Evented {
 	
 	async replaceAll() {
 		await bluebird.map(this.getFiles(), async (file) => {
-			let code = await file.read();
-			let document = await this.getDocument(code, file.path);
+			let document = new Document(file);
 			
 			let find = this.editors.find.string;
 			let replaceWith = this.editors.replaceWith.string;
@@ -38,22 +37,9 @@ class Refactor extends Evented {
 				return;
 			}
 			
-			let replaced = codePatterns.replace(code, results, replaceWith);
+			let replaced = codePatterns.replace(document.string, results, replaceWith);
 			
 			await file.write(replaced);
-		});
-	}
-	
-	async getDocument(code, path) {
-		let url = URL.file(path);
-		
-		let format = base.getFormat(code, url);
-		
-		await base.ensureRequiredLangsInitialised(format.lang);
-		
-		// MIGRATE use Files
-		return Document(code, url, {
-			format,
 		});
 	}
 	
@@ -77,8 +63,9 @@ class Refactor extends Evented {
 	
 	async getFiles() {
 		let nodes = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
+		let textFileNodes = await bluebird.filter(nodes, node => node.isTextFile());
 		
-		return await bluebird.filter(nodes, node => node.isTextFile());
+		return bluebird.map(textFileNodes, node => File.read(node.path));
 	}
 	
 	async getPaths() {

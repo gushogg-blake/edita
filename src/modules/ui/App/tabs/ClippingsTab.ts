@@ -1,14 +1,12 @@
 import Selection, {s} from "modules/core/Selection";
-import URL from "modules/core/resources/URL";
+import {Special} from "modules/core/resources";
 import Tab from "./Tab";
 
 class ClippingsTab extends Tab {
 	constructor(app) {
-		super(app, "clippings");
+		super(app, Special.clippings());
 		
 		this.editor = app.createEditor();
-		
-		this._url = new URL("special://clippings");
 		
 		this.view.setWrap(true);
 	}
@@ -19,10 +17,6 @@ class ClippingsTab extends Tab {
 	
 	get name() {
 		return "Clippings";
-	}
-	
-	get url() {
-		return this._url;
 	}
 	
 	get document() {
@@ -58,6 +52,7 @@ class ClippingsTab extends Tab {
 	}
 	
 	setLang(lang) {
+		// MIGRATE
 		this.editor.setLang(lang);
 	}
 }

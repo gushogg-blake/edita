@@ -2,16 +2,13 @@ import minimatch from "minimatch-browser";
 import bluebird from "bluebird";
 import {Language} from "web-tree-sitter";
 
-import createFs from "utils/fs";
-
 import path from "vendor/path-browser";
 import fsWeb from "vendor/fs-web";
 
-import Evented from "utils/Evented";
-import screenOffsets from "utils/dom/screenOffsets";
-import {on} from "utils/dom/domEvents";
-import loadScript from "utils/dom/loadScript";
-import loadCss from "utils/dom/loadCss";
+import {fs as createFs, Evented, lid} from "utils";
+import {screenOffsets} from "utils/dom";
+
+import {URL, File} from "modules/core";
 import contextMenu from "modules/contextMenu";
 
 import clipboard from "platforms/web/modules/clipboard";
@@ -44,19 +41,12 @@ class Platform extends Evented {
 			localStoragePrefix: "edita.",
 			fsPrefix: "editaFs",
 			lspUrl: null,
-			test: false,
 			...config,
 		};
 		
 		this.config = config;
 		
 		this.jsonStore = jsonStore(config.localStoragePrefix);
-		
-		await Promise.all([
-			!config.test && loadCss(config.resourcePrefix + "css/global.css"),
-			!config.test && loadCss(config.resourcePrefix + "js/main.css"),
-			loadScript(config.resourcePrefix + "vendor/tree-sitter/tree-sitter.js"),
-		]);
 		
 		this.fs = this.createFs("files");
 		this.backupFs = this.createFs("backups");
@@ -135,11 +125,13 @@ class Platform extends Evented {
 	}
 	
 	async filesFromDropEvent(e) {
-		return bluebird.map([...e.dataTransfer.files], async function(file) {
-			return {
-				path: path.resolve("/", file.name),
-				code: await file.text(),
-			};
+		return bluebird.map([...e.dataTransfer.files], async (droppedFile) => {
+			let tmpPath = platform.path.resolve("/tmp", "upload-" + lid(), file.name);
+			
+			return await File.write(
+				URL.file(tmpPath),
+				await droppedFile.text(),
+			);
 		});
 	}
 	
@@ -164,10 +156,6 @@ class Platform extends Evented {
 		
 		contextMenu(app, items, coords, options);
 	}
-	
-	//handleIpcMessages(channel, handler) {
-	//	// noop
-	//}
 	
 	get isWindows() {
 		return false;

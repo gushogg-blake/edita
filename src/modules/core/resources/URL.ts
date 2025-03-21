@@ -1,4 +1,4 @@
-function pathToUrl(path) {
+export function pathToUrl(path) {
 	let encoded = "/" + path.split("/").slice(1).map(p => encodeURIComponent(p)).join("/");
 	
 	if (platform.isWindows) {
@@ -8,7 +8,7 @@ function pathToUrl(path) {
 	}
 }
 
-function urlToPath(urlPath) {
+export function urlToPath(urlPath) {
 	let decoded = "/" + urlPath.split("/").slice(1).map(p => decodeURIComponent(p)).join("/");
 	
 	if (platform.isWindows) {
@@ -18,7 +18,7 @@ function urlToPath(urlPath) {
 	}
 }
 
-class CustomURL {
+export default class CustomURL {
 	constructor(str) {
 		this.url = new URL(str);
 	}
@@ -42,11 +42,19 @@ class CustomURL {
 	}
 	
 	static file(path) {
-		return CustomURL.fromString("file://" + pathToUrl(path));
+		return new CustomURL("file://" + pathToUrl(path));
 	}
 	
 	static _new(path) {
-		return CustomURL.fromString("new://" + pathToUrl(path));
+		return new CustomURL("new://" + pathToUrl(path));
+	}
+	
+	static memory(path) {
+		return new CustomURL("memory://" + pathToUrl(path));
+	}
+	
+	static special(protocol, path) {
+		return new CustomURL(protocol + "//" + path);
 	}
 	
 	toString() {
@@ -57,5 +65,3 @@ class CustomURL {
 		return this.toString();
 	}
 }
-
-export default CustomURL;

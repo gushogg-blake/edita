@@ -1,30 +1,34 @@
 import Evented from "utils/Evented";
 
 class Tab extends Evented {
-	constructor(app, type) {
+	constructor(app, resource) {
 		super();
 		
 		this.app = app;
-		this.type = type;
+		this.resource = resource;
 	}
 	
 	async init() {
 	}
 	
 	get isEditor() {
-		return this.type === "editor";
+		return ["file:", "new:"].includes(this.protocol);
 	}
 	
 	get url() {
-		return null;
+		return this.resource.url;
+	}
+	
+	get protocol() {
+		return this.url.protocol;
 	}
 	
 	get path() {
-		return this.url?.path;
+		return this.url.path;
 	}
 	
 	get isFile() {
-		return this.url?.isFile;
+		return this.url.isFile;
 	}
 	
 	get name() {

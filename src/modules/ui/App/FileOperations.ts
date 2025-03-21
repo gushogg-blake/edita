@@ -1,3 +1,4 @@
+import {URL} from "modules/core";
 import {File, NewFile} from "modules/core/resources";
 
 export default class {
@@ -7,13 +8,18 @@ export default class {
 	
 	async newFile(lang=base.getDefaultLang()) {
 		let dir = this.app.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
-		let resource = NewFile.create(dir, lang);
+		let url = this.app.mainTabs.nextNewFileName(dir, lang);
+		let resource = await NewFile.create(url);
 		let tab = await this.app.mainTabs.newFile(resource);
 		
 		this.app.mainTabs.selectTab(tab);
 		this.app.focusSelectedTab();
 		
 		return tab;
+	}
+	
+	async openPath(path) {
+		return await this.openFile(URL.file(path));
 	}
 	
 	async openFile(file) {

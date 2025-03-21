@@ -1,7 +1,5 @@
-import {URL, Format} from "modules/core";
+import {URL} from "modules/core";
 
-export default interface Resource {
+export default class Resource {
 	url: URL;
-	contents: string;
-	format: Format;
 }
