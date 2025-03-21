@@ -57,6 +57,9 @@ class FindResults extends Evented {
 		
 		let {api: editorApi} = this.app.selectedTab.editor;
 		
+		// TODO find-results - this causes an error if the selection
+		// is invalid due to file change
+		// I added validation but must have missed some places
 		editorApi.setNormalSelectionAndCenter(selection);
 	}
 	
