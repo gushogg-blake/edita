@@ -203,7 +203,9 @@ export default class extends Evented {
 			this.app.output.clippingsTab?.addClipping(str);
 		});
 		
-		editor.on("normalSelectionChangedByMouseOrKeyboard", () => this.app.showAstHint(editor));
+		editor.on("normalSelectionChangedByMouseOrKeyboard", () => {
+			this.app.dev.showAstHint(editor);
+		});
 		
 		editor.on("requestGoToDefinition", async ({path, selection}) => {
 			let tab = await this.app.fileOperations.openPath(path);
@@ -217,7 +219,7 @@ export default class extends Evented {
 		
 		await tab.init();
 		
-		tab.on("focus", this.app.onTabFocus.bind(this));
+		tab.on("focus", this.onTabFocus.bind(this));
 		
 		this.fire("tabCreated", tab);
 		this.fire("editorTabCreated", tab);
@@ -276,6 +278,10 @@ export default class extends Evented {
 		setTimeout(() => {
 			this.focusSelectedTab();
 		}, 0);
+	}
+	
+	onTabFocus() {
+		this.app.hideFindBar();
 	}
 	
 	getEditorTabLabel(tab) {

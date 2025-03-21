@@ -1,6 +1,5 @@
 import bluebird from "bluebird";
 
-import {removeInPlace, moveInPlace, partition, sortedPartition} from "utils/array";
 import Evented from "utils/Evented";
 import bindFunctions from "utils/bindFunctions";
 import promiseWithMethods from "utils/promiseWithMethods";
@@ -287,10 +286,6 @@ class App extends Evented {
 		if (project !== document.project) {
 			document.setProject(project);
 		}
-	}
-	
-	onTabFocus() {
-		this.hideFindBar();
 	}
 	
 	renderDiv(div) {

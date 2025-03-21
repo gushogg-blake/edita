@@ -5,6 +5,8 @@ import Gap from "components/utils/Gap.svelte";
 
 let app = getContext("app");
 
+let {dev} = app;
+
 let refs = $state({});
 let astHint = $state();
 
@@ -24,7 +26,7 @@ function wrapperStyle(level) {
 
 onMount(function() {
 	let teardown = [
-		app.on("showAstHint", onShowAstHint),
+		dev.on("showAstHint", onShowAstHint),
 	];
 	
 	return function() {

@@ -1,12 +1,14 @@
-import sleep from "utils/sleep";
+import {Evented, sleep, sortedPartition} from "utils";
 import Selection, {s} from "modules/core/Selection";
 
 function get(key) {
 	return base.getPref("dev." + key);
 }
 
-export default class {
+export default class extends Evented {
 	constructor(app) {
+		super();
+		
 		this.app = app;
 		
 		this.init();
@@ -39,7 +41,7 @@ export default class {
 	}
 	
 	showAstHint(editor) {
-		if (!base.getPref("dev.showAstHints")) {
+		if (!get("showAstHints")) {
 			return;
 		}
 		
