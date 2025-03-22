@@ -54,7 +54,7 @@ class Editor extends Evented {
 		
 		this.throttledUpdateAstSelection = throttle(() => {
 			this.updateAstSelection();
-		}, 100);
+		}, 200);
 		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
