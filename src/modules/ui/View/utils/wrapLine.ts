@@ -116,7 +116,7 @@ class LineWrapper {
 		
 		this.init();
 		
-		for (let part of this.line.variableWidthParts) {
+		for (let part of this.viewLine.variableWidthParts) {
 			if (part.type === "tab") {
 				if (part.width > this.currentlyAvailableCols) {
 					this.nextRow();

@@ -106,7 +106,6 @@ onMount(function() {
 		
 		app.on("document.save", updateTabs),
 		app.on("document.edit", updateTabs),
-		app.on("document.fileChanged", updateTabs),
 	];
 	
 	return function() {

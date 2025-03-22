@@ -74,13 +74,14 @@ export default class {
 			return;
 		}
 		
-		let {
-			edit,
-			newSelection,
-			entry,
-		} = this.currentResult.replace(str);
-		
-		this.editor.applyExistingDocumentEntry(entry, newSelection);
+		// MIGRATE
+		//let {
+		//	edit,
+		//	newSelection,
+		//	entry,
+		//} = this.currentResult.replace(str);
+		//
+		//this.editor.applyExistingDocumentEntry(entry, newSelection);
 		
 		this.resultsReplaced++;
 		

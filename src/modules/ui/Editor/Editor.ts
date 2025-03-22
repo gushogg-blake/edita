@@ -55,7 +55,7 @@ class Editor extends Evented {
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
 			document.on("save", this.onDocumentSave.bind(this)),
-			document.on("fileChanged", this.onDocumentFileChanged.bind(this)),
+			document.on("historyEntryAdded", this.onDocumentHistoryEntryAdded.bind(this)),
 			view.on("focus", this.onFocus.bind(this)),
 			view.on("blur", this.onBlur.bind(this)),
 		];
@@ -271,6 +271,7 @@ class Editor extends Evented {
 	onDocumentEdit(edits) {
 		let {view} = this;
 		
+		// MIGRATE move to view
 		for (let edit of edits) {
 			view.setNormalHilites(view.normalHilites.map(function(hilite) {
 				if (hilite.overlaps(edit.selection)) {
@@ -283,7 +284,7 @@ class Editor extends Evented {
 			view.adjustFoldsForEdit(edit);
 		}
 		
-		// MIGRATE move to view (the above as well)
+		// MIGRATE move to view
 		view.updateMarginSize();
 		
 		this.throttledBackup();
@@ -293,14 +294,48 @@ class Editor extends Evented {
 		this.clearBatchState();
 	}
 	
-	onDocumentFileChanged(updateEntry) {
-		if (!updateEntry) {
-			return;
+	/*
+	we keep a parallel set of history entries to restore state like
+	selections and snippet sessions on undo/redo
+	
+	if the edit came from within the app, it will go through
+	applyAndAddHistoryEntry below, which will set pendingHistoryEntry
+	to be picked up when the document fires historyEntryAdded.
+	
+	otherwise (e.g. on file changed outside the editor), there will
+	be nothing there and we'll use default values
+	
+	NOTE not sure what happens to snippet session on file changed
+	-- should be cancelled obviously
+	*/
+	
+	onDocumentHistoryEntryAdded(entry) {
+		if (this.pendingHistoryEntry) {
+			this.historyEntries.set(entry, this.pendingHistoryEntry);
+			
+			delete this.pendingHistoryEntry;
+		} else {
+			this.historyEntries.set(entry, {
+				before: {
+					normalSelection: this.mode === "normal" ? this.normalSelection : undefined,
+					astSelection: this.mode === "ast" ? this.astSelection : undefined,
+					snippetSession: this.snippetSession,
+				},
+				
+				after: {
+					// document not edited by us, so we don't know what
+					// selection we want. most common reason probably file
+					// changed outside the editor, so reset to beginning
+					// in that case (selection will be whole file)
+					normalSelection: entry.redo.at(-1).newSelection.left,
+					astSelection: this.astSelection,
+				},
+			});
+			
+			this.clearBatchState();
 		}
 		
-		this.applyExistingDocumentEntry(updateEntry);
-		
-		this.clearBatchState();
+		this.applyHistoryEntry(entry, "after");
 	}
 	
 	applyHistoryEntry(entry, state) {
@@ -309,8 +344,6 @@ class Editor extends Evented {
 			astSelection,
 			snippetSession,
 		} = this.historyEntries.get(entry)[state];
-		
-		let {view} = this;
 		
 		if (normalSelection !== undefined) {
 			this.setNormalSelection(normalSelection);
@@ -328,9 +361,7 @@ class Editor extends Evented {
 	}
 	
 	applyAndAddHistoryEntry(edit) {
-		let entry = this.document.applyAndAddHistoryEntry(edit.edits);
-		
-		this.historyEntries.set(entry, {
+		this.pendingHistoryEntry = {
 			before: {
 				normalSelection: this.mode === "normal" ? this.normalSelection : undefined,
 				astSelection: this.mode === "ast" ? this.astSelection : undefined,
@@ -342,26 +373,9 @@ class Editor extends Evented {
 				astSelection: edit.astSelection,
 				snippetSession: edit.snippetSession,
 			},
-		});
+		};
 		
-		this.applyHistoryEntry(entry, "after");
-	}
-	
-	applyExistingDocumentEntry(entry, newSelection=null) {
-		this.historyEntries.set(entry, {
-			before: {
-				normalSelection: this.mode === "normal" ? this.normalSelection : undefined,
-				astSelection: this.mode === "ast" ? this.astSelection : undefined,
-				snippetSession: this.snippetSession,
-			},
-			
-			after: {
-				normalSelection: newSelection || this.normalSelection,
-				astSelection: this.astSelection,
-			},
-		});
-		
-		this.applyHistoryEntry(entry, "after");
+		this.document.applyAndAddHistoryEntry(edit.edits);
 	}
 	
 	applyAndMergeWithLastHistoryEntry(edit) {

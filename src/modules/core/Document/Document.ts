@@ -5,6 +5,7 @@ import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";
 import Line from "./Line";
+import LspHelpers from "./LspHelpers";
 
 export {default as Range} from "./Source/Range";
 export {default as Scope} from "./Source/Scope";
@@ -39,27 +40,7 @@ export default class Document extends Evented {
 		
 		this.fileChangedWhileModified = false;
 		
-		this.lsp = {
-			listSymbols() {
-				return this.project?.lspClient?.listSymbols(this);
-			},
-			
-			getCompletions(cursor) {
-				return this.project?.lspClient?.getCompletions(this, cursor);
-			},
-			
-			getDefinitions(cursor) {
-				return this.project?.lspClient?.getDefinitions(this, cursor);
-			},
-			
-			findReferences(cursor) {
-				return this.project?.lspClient?.findReferences(this, cursor);
-			},
-		};
-		
-		for (let [k, fn] of Object.entries(this.lsp)) {
-			this.lsp[k] = fn.bind(this);
-		}
+		this.lsp = new LspHelpers(this);
 	}
 	
 	static fromString(string) {
@@ -255,6 +236,8 @@ export default class Document extends Evented {
 		
 		this.history.push(entry);
 		this.historyIndex = this.history.length;
+		
+		this.fire("historyEntryAdded", entry);
 		
 		return entry;
 	}
@@ -501,7 +484,6 @@ export default class Document extends Evented {
 	}
 	
 	async onWatchEvent() {
-		let updateEntry = null;
 		let {contents} = this.file;
 		
 		if (contents === null || this.modified) {
@@ -509,15 +491,10 @@ export default class Document extends Evented {
 		} else {
 			let edit = this.edit(this.selectAll(), contents);
 			
-			updateEntry = this.applyAndAddHistoryEntry([edit]);
+			this.applyAndAddHistoryEntry([edit]);
 			
 			this.modified = false;
 		}
-		
-		// TODO see if we can just fire an edit above -
-		// that seems to be what listeners are interested in
-		// about fileChanged
-		this.fire("fileChanged", updateEntry);
 	}
 	
 	*find(options) {

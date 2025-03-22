@@ -75,6 +75,8 @@ class Renderer {
 			focused,
 		} = this.view;
 		
+		let {lines} = this.document;
+		
 		let {windowHasFocus, isPeekingAstMode} = this.uiState;
 		
 		let normal = mode === "normal";
@@ -111,7 +113,7 @@ class Renderer {
 		for (let renderer of renderers) {
 			renderer.init(firstRow);
 			
-			let lineAbove = this.document.lines[firstRow.lineIndex - 1] || null;
+			let lineAbove = lines[firstRow.lineIndex - 1] || null;
 			
 			renderer.renderBetweenLines(lineAbove, firstRow.line, firstRow.rowIndexInLine, 0);
 			
@@ -123,14 +125,14 @@ class Renderer {
 				renderer.endRow();
 				
 				if (foldedLineRow.rowIndexInLine === foldedLineRow.wrappedLine.lineRows.length - 1) {
-					let lineBelow = this.document.lines[foldedLineRow.lineIndex + 1] || null;
+					let lineBelow = lines[foldedLineRow.lineIndex + 1] || null;
 					
 					renderer.renderBetweenLines(foldedLineRow.line, lineBelow, 0, 0);
 				}
 			}
 			
 			if (lastRow.rowIndexInLine !== lastRow.wrappedLine.lineRows.length - 1) {
-				let lineBelow = this.document.lines[lastRow.lineIndex + 1] || null;
+				let lineBelow = lines[lastRow.lineIndex + 1] || null;
 				
 				renderer.renderBetweenLines(lastRow.line, lineBelow, 0, lastRow.wrappedLine.lineRows.length - 1 - lastRow.rowIndexInLine);
 			}

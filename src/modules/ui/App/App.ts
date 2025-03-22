@@ -110,11 +110,13 @@ class App extends Evented {
 	}
 	
 	getCurrentDir(_default=null) {
-		if (this.selectedTab?.isSaved) {
-			return platform.fs(this.selectedTab.path).parent.path;
+		let {selectedTab, previouslySelectedTabs} = this.mainTabs;
+		
+		if (selectedTab?.isSaved) {
+			return platform.fs(selectedTab.path).parent.path;
 		} else {
-			for (let i = this.previouslySelectedTabs.length - 1; i >= 0; i--) {
-				let tab = this.previouslySelectedTabs[i];
+			for (let i = previouslySelectedTabs.length - 1; i >= 0; i--) {
+				let tab = previouslySelectedTabs[i];
 				
 				if (tab.isSaved) {
 					return platform.fs(tab.path).parent.path;
@@ -170,33 +172,6 @@ class App extends Evented {
 		this.focusSelectedTab();
 	}
 	
-	showFindAndReplace(options) {
-		let search = "";
-		
-		if (this.selectedTab?.isEditor) {
-			let {editor} = this.selectedTab;
-			let {document} = editor;
-			let selectedText = editor.getSelectedText();
-			
-			if (selectedText.indexOf(document.format.newline) === -1) {
-				search = selectedText;
-			}
-		}
-		
-		this.tools.findAndReplace({
-			...this.findAndReplace.defaultOptions,
-			...this.findAndReplace.savedOptions,
-			search,
-			...options,
-		});
-	}
-	
-	hideFindAndReplace() {
-		this.fire("hideFindAndReplace");
-		
-		this.focusSelectedTab();
-	}
-	
 	showQuickAction(type) {
 		
 	}
@@ -208,7 +183,7 @@ class App extends Evented {
 	createDocument(resource, options) {
 		let document = new Document(resource, options);
 		
-		for (let event of ["edit", "undo", "redo", "save", "fileChanged", "projectChanged"]) {
+		for (let event of ["edit", "undo", "redo", "save", "projectChanged"]) {
 			document.on(event, (...args) => {
 				this.updateTitle();
 				
@@ -240,6 +215,7 @@ class App extends Evented {
 		return this._createEditor(document, view);
 	}
 	
+	// REFACTOR
 	async findReferencesToFile(tab) {
 		// TODO not implemented by LSP yet
 		// see https://github.com/microsoft/language-server-protocol/issues/2047

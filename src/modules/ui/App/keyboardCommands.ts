@@ -20,27 +20,27 @@ export default {
 	},
 	
 	save() {
-		if (!this.selectedTab) {
+		if (!this.mainTabs.selectedTab) {
 			return;
 		}
 		
-		this.save(this.selectedTab);
+		this.fileOperations.save(this.mainTabs.selectedTab);
 	},
 	
 	saveAs() {
-		if (!this.selectedTab) {
+		if (!this.mainTabs.selectedTab) {
 			return;
 		}
 		
-		this.saveAs(this.selectedTab);
+		this.fileOperations.saveAs(this.mainTabs.selectedTab);
 	},
 	
 	saveAll() {
-		this.saveAll();
+		this.fileOperations.saveAll();
 	},
 	
 	_new() {
-		this.newFile();
+		this.fileOperations.newFile();
 	},
 	
 	newWithLangSelector() {
@@ -56,7 +56,7 @@ export default {
 	},
 	
 	find() {
-		if (!this.selectedTab) {
+		if (!this.mainTabs.selectedTab) {
 			return;
 		}
 		
@@ -71,11 +71,11 @@ export default {
 	},
 	
 	replace() {
-		if (!this.selectedTab) {
+		if (!this.mainTabs.selectedTab) {
 			return;
 		}
 		
-		let {editor} = this.selectedTab;
+		let {editor} = this.mainTabs.selectedTab;
 		
 		this.showFindAndReplace({
 			replace: true,
@@ -99,11 +99,11 @@ export default {
 	},
 	
 	closeTab() {
-		if (!this.selectedTab) {
+		if (!this.mainTabs.selectedTab) {
 			return;
 		}
 		
-		this.closeTab(this.selectedTab);
+		this.closeTab(this.mainTabs.selectedTab);
 	},
 	
 	async closeAllTabs() {

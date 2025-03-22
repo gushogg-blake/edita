@@ -17,7 +17,7 @@ export default class {
 		};
 	}
 	
-	async _showOpenDialog(dir, mode) {
+	async _showOpen(dir, mode) {
 		if (!dir) {
 			dir = this.app.getCurrentDir();
 		}
@@ -34,15 +34,15 @@ export default class {
 		return paths;
 	}
 	
-	showOpenDialog(dir=null) {
-		return this._showOpenDialog(dir, "selectFiles");
+	showOpen(dir=null) {
+		return this._showOpen(dir, "selectFiles");
 	}
 	
-	showChooseDirDialog(startDir=null) {
+	showChooseDir(startDir=null) {
 		return this._showOpenDialog(startDir, "selectDir");
 	}
 	
-	async showSaveAsDialog(options) {
+	async showSaveAs(options) {
 		let {canceled, path} = await this.dialogPromise("fileChooser", {
 			mode: "save",
 			...options,

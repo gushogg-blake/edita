@@ -24,7 +24,7 @@ export default class View extends Evented {
 		
 		this.document = document;
 		
-		this.createLines();
+		this.createViewLines();
 		
 		this.focused = false;
 		this.visible = false;
@@ -32,6 +32,8 @@ export default class View extends Evented {
 		
 		this.redrawTimer = null;
 		this.redrawnWhileHidden = false;
+		this.hasBatchedUpdates = false;
+		this.syncRedrawBatchDepth = 0;
 		
 		this.mode = "normal";
 		
@@ -94,10 +96,10 @@ export default class View extends Evented {
 	
 	onDocumentEdit(edits) {
 		// TODO perf - should be able to optimise these given the edit
-		// that is, don't re-create lines/wrapped lines that aren't
+		// that is, don't re-create viewLines/wrapped lines that aren't
 		// affected by the edits.
 		
-		this.createLines();
+		this.createViewLines();
 		this.updateWrappedLines();
 		
 		// TODO validate selections?
@@ -107,17 +109,27 @@ export default class View extends Evented {
 		this.scheduleRedraw();
 	}
 	
-	createLines() {
-		this.lines = this.document.lines.map((line) => {
+	/*
+	there are 3 levels to lines - lines on the Document, which don't have
+	much rendering-related info; viewLines, which calculate tab widths;
+	and wrappedLines, which have soft wrap info.
+	*/
+	
+	get lines() {
+		return this.document.lines;
+	}
+	
+	createViewLines() {
+		this.viewLines = this.document.lines.map((line) => {
 			return new ViewLine(line, this.document.format);
 		});
 	}
 	
 	updateWrappedLines() {
-		this.wrappedLines = this.lines.map((line, lineIndex) => {
+		this.wrappedLines = this.viewLines.map((viewLine, lineIndex) => {
 			return wrapLine(
 				this.wrap,
-				line,
+				viewLine,
 				this.folds[lineIndex],
 				this.document.format.indentation,
 				this.measurements,
@@ -773,18 +785,71 @@ export default class View extends Evented {
 		this.fire("updateScrollbars");
 	}
 	
+	/*
+	redraws can be either batched synchronous or scheduled
+	
+	batched synchronous are sync, which helps with avoiding a flash
+	of blank canvas when re-initialising the canvases on resize (see
+	Editor component)
+	
+	scheduled are async (setTimeout with 0) and are simpler, as you
+	don't have to start and end a batch whenever you want to do stuff
+	*/
+	
+	startSyncRedrawBatch() {
+		this.syncRedrawBatchDepth++;
+	}
+	
+	endSyncRedrawBatch() {
+		if (this.syncRedrawBatchDepth === 0) {
+			throw new Error("mismatched batched redraw calls");
+		}
+		
+		this.syncRedrawBatchDepth--;
+		
+		if (this.syncRedrawBatchDepth === 0) {
+			if (this.hasBatchedUpdates) {
+				this.redrawSync();
+			}
+			
+			this.hasBatchedUpdates = false;
+		}
+	}
+	
+	batchRedraw() {
+		if (this.inSyncRedrawBatch) {
+			this.hasBatchedUpdates = true;
+		} else {
+			this.redrawSync();
+		}
+	}
+	
+	get inSyncRedrawBatch() {
+		return this.syncRedrawBatchDepth !== 0;
+	}
+	
+	redrawSync() {
+		if (this.visible) {
+			this.updateCanvas();
+			this.updateScrollbars();
+		} else {
+			this.redrawnWhileHidden = true;
+		}
+	}
+	
 	scheduleRedraw() {
+		if (this.inSyncRedrawBatch) {
+			this.hasBatchedUpdates = true;
+			
+			return;
+		}
+		
 		if (this.redrawTimer !== null) {
 			return;
 		}
 		
 		this.redrawTimer = setTimeout(() => {
-			if (this.visible) {
-				this.updateCanvas();
-				this.updateScrollbars();
-			} else {
-				this.redrawnWhileHidden = true;
-			}
+			this.redrawSync();
 			
 			this.redrawTimer = null;
 		}, 0);
@@ -794,7 +859,7 @@ export default class View extends Evented {
 		this.visible = true;
 		
 		if (this.redrawnWhileHidden) {
-			this.scheduleRedraw();
+			this.batchRedraw();
 		}
 		
 		this.fire("show");

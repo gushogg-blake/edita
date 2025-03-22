@@ -515,7 +515,7 @@ function updateMeasurements() {
 function toggleHorizontalScrollbar(show) {
 	showingHorizontalScrollbar = show;
 	
-	resizeAsync();
+	//resizeAsync();
 }
 
 function onThemeUpdated() {

@@ -18,8 +18,8 @@ export default class {
 		return this.foldedLineRow.rowIndexInLine;
 	}
 	
-	get line() {
-		return this.foldedLineRow.line;
+	get viewLine() {
+		return this.foldedLineRow.viewLine;
 	}
 	
 	get lineRow() {
@@ -78,7 +78,7 @@ export default class {
 		}
 		
 		if (this.canvasRenderer.startRow) {
-			this.canvasRenderer.startRow(this.isFirstRow ? 0 : this.line.indentCols);
+			this.canvasRenderer.startRow(this.isFirstRow ? 0 : this.viewLine.line.indentCols);
 		}
 	}
 	

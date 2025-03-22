@@ -173,7 +173,7 @@ export default class extends Evented {
 		
 		if (!selectNext) {
 			this.app.updateTitle();
-			this.focus();
+			this.app.focus();
 		}
 		
 		this.fire("update");
@@ -251,7 +251,7 @@ export default class extends Evented {
 		if (this.editorTabs.length > 0) {
 			this.selectTab(urlToSelect && this.findTabByUrl(urlToSelect) || this.editorTabs.at(-1));
 		} else {
-			this.initialNewFileTab = this.app.fileOperations.newFile();
+			this.initialNewFileTab = await this.app.fileOperations.newFile();
 		}
 		
 		this.fire("update");
