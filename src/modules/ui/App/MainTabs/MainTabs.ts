@@ -3,6 +3,7 @@ import {Evented, removeInPlace} from "utils";
 import View from "modules/ui/View";
 import {Document} from "modules/core";
 import EditorTab from "modules/ui/App/tabs/EditorTab";
+import type App from "modules/ui/App";
 import {getEditorTabLabel, nextNewFileName} from "./utils";
 
 /*
@@ -11,6 +12,8 @@ gets done)
 */
 
 export default class extends Evented {
+	private app: App;
+	
 	constructor(app) {
 		super();
 		
@@ -117,7 +120,7 @@ export default class extends Evented {
 	
 	async closeTab(tab, noSave=false) {
 		if (tab.modified) {
-			let response = await this.app.showMessageBox({
+			let response = await this.app.dialogs.showMessageBox({
 				message: "Save changes to " + tab.name + "?",
 				buttons: ["%Yes", "%No", "%Cancel"],
 			});

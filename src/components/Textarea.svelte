@@ -24,6 +24,18 @@ async function update() {
 	
 	isEditing = false;
 }
+
+onMount(function() {
+	let teardown = [
+		editor.on("edit", update),
+	];
+	
+	return function() {
+		for (let fn of teardown) {
+			fn();
+		}
+	}
+});
 </script>
 
 <style lang="scss">

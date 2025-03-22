@@ -14,7 +14,7 @@ let {message, buttons} = app.options;
 let main = $state();
 
 function respond(response) {
-	onresponse(response);
+	app.respond(response);
 }
 
 let functions = {
