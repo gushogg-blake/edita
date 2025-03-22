@@ -269,24 +269,6 @@ class Editor extends Evented {
 	}
 	
 	onDocumentEdit(edits) {
-		let {view} = this;
-		
-		// MIGRATE move to view
-		for (let edit of edits) {
-			view.setNormalHilites(view.normalHilites.map(function(hilite) {
-				if (hilite.overlaps(edit.selection)) {
-					return null;
-				}
-				
-				return hilite.edit(edit);
-			}).filter(Boolean));
-			
-			view.adjustFoldsForEdit(edit);
-		}
-		
-		// MIGRATE move to view
-		view.updateMarginSize();
-		
 		this.throttledBackup();
 	}
 	

@@ -106,6 +106,10 @@ export default class View extends Evented {
 		
 		this.ensureScrollIsWithinBounds();
 		
+		this.updateMarginSize();
+		
+		this.updateHilitesAndFolds(edits);
+		
 		this.scheduleRedraw();
 	}
 	
@@ -606,6 +610,23 @@ export default class View extends Evented {
 	
 	getNormalSelectionForFind() {
 		return this.mode === "ast" ? this.Selection.fromAstSelection(this.normalSelection) : this.normalSelection.sort();
+	}
+	
+	adjustHilitesAndFolds(edits) {
+		for (let edit of edits) {
+			this.adjustHilitesForEdit(edit);
+			this.adjustFoldsForEdit(edit);
+		}
+	}
+	
+	adjustHilitesForEdit(edit) {
+		this.setNormalHilites(this.normalHilites.map(function(hilite) {
+			if (hilite.overlaps(edit.selection)) {
+				return null;
+			}
+			
+			return hilite.edit(edit);
+		}).filter(Boolean));
 	}
 	
 	setFolds(folds) {
