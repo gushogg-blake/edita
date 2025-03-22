@@ -27,10 +27,16 @@ export default {
 		this.setSelectionFromNormalMouse(this.view.normalSelection);
 	},
 	
+	updateAstSelection() {
+		this.view.updateAstSelectionFromNormalSelection();
+	},
+	
 	setSelectionAndStartCursorBlink(selection) {
 		let {view} = this;
 		
-		this.setSelectionFromNormalMouse(selection);
+		this.setSelectionFromNormalMouse(selection, {
+			updateAstSelection: false,
+		});
 		
 		view.startCursorBlink();
 	},

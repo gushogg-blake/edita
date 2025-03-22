@@ -544,8 +544,8 @@ class Editor extends Evented {
 		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
 	
-	setSelectionFromNormalMouse(selection) {
-		this.setNormalSelection(selection);
+	setSelectionFromNormalMouse(selection, options={}) {
+		this.setNormalSelection(selection, options);
 		this.setSelectionClipboard();
 		this.view.updateSelectionEndCol();
 		

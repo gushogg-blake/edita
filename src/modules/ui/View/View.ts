@@ -604,7 +604,6 @@ export default class View extends Evented {
 	}
 	
 	updateAstSelectionFromNormalSelection() {
-		console.log("updateAstSelectionFromNormalSelection");
 		let {document} = this;
 		let {left, right} = this.normalSelection;
 		let {astMode} = this.lang;

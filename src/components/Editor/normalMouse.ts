@@ -68,6 +68,8 @@ export default function(editor, editorComponent) {
 	function mouseup(e) {
 		if (view.normalSelection.isFull()) {
 			editor.normalMouse.finishDrawingSelection();
+		} else {
+			editor.normalMouse.updateAstSelection();
 		}
 		
 		editorComponent.mouseup(e);
