@@ -6,7 +6,10 @@ import findAndReplace from "modules/grep/findAndReplace";
 import Source from "./Source";
 import Line from "./Line";
 
-class Document extends Evented {
+export {default as Range} from "./Source/Range";
+export {default as Scope} from "./Source/Scope";
+
+export default class Document extends Evented {
 	constructor(resource, options={}) {
 		super();
 		
@@ -643,5 +646,3 @@ class Document extends Evented {
 		this.teardownResource();
 	}
 }
-
-export default Document;
