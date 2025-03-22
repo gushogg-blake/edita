@@ -102,6 +102,7 @@ function dragover(e) {
 
 function drop(e) {
 	e.preventDefault();
+	e.stopPropagation();
 	
 	onreorder({
 		tab: selectedTab,

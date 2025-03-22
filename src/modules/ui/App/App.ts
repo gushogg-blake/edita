@@ -20,7 +20,7 @@ import EditorTab from "modules/ui/App/tabs/EditorTab";
 import RefactorPreviewTab from "modules/ui/App/tabs/RefactorPreviewTab";
 import FileTree from "modules/ui/App/FileTree";
 
-import keyboardCommands from "./keyboardCommands";
+import commands from "./commands";
 import MainTabs from "./MainTabs";
 import SessionSaving from "./SessionSaving";
 import FileOperations from "./FileOperations";
@@ -56,7 +56,7 @@ class App extends Evented {
 		this.fileTree = new FileTree(this);
 		this.projects = new Projects(this);
 		
-		this.keyboardCommands = bindFunctions(this, keyboardCommands);
+		this.commands = bindFunctions(this, commands);
 		
 		this.dialogs = new Dialogs(this);
 		this.fileOperations = new FileOperations(this);

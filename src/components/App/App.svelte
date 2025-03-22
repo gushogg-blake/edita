@@ -66,7 +66,7 @@ function keydown(e) {
 	if (command) {
 		e.preventDefault();
 		
-		app.keyboardCommands[command]();
+		app.commands[command]();
 	}
 }
 
@@ -77,7 +77,7 @@ function dragover(e) {
 async function drop(e) {
 	e.preventDefault();
 	
-	for (let file of await platform.filesFromDropEvent(e, this)) {
+	for (let file of await platform.filesFromDropEvent(e, app)) {
 		app.fileOperations.openFile(file);
 	}
 }

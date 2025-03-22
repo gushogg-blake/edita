@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import {Evented, removeInPlace} from "utils";
+import {Evented, moveInPlace, removeInPlace} from "utils";
 import View from "modules/ui/View";
 import {Document} from "modules/core";
 import EditorTab from "modules/ui/App/tabs/EditorTab";

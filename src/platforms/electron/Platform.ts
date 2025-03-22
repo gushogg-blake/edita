@@ -1,5 +1,6 @@
 let os = require("node:os");
 let path = require("node:path");
+let {webUtils} = require("electron");
 
 import bluebird from "bluebird";
 import {Language} from "web-tree-sitter";
@@ -109,8 +110,8 @@ class Platform extends Evented {
 	}
 	
 	filesFromDropEvent(e, app) {
-		return app.readFiles([...e.dataTransfer.files].map(({path}) => {
-			return URL.file(path);
+		return app.readFiles([...e.dataTransfer.files].map((file) => {
+			return URL.file(webUtils.getPathForFile(file));
 		}));
 	}
 	

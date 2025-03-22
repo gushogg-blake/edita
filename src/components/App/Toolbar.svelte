@@ -66,7 +66,7 @@ onMount(function() {
 </style>
 
 <div id="main">
-	<button onclick={() => app.functions._new()}>
+	<button onclick={() => app.commands._new()}>
 		New
 	</button>
 	<button bind:this={langButton} title={base.findGlobalKeyComboFor("newWithLangSelector")} onmousedown={openLanguages}>
@@ -75,11 +75,11 @@ onMount(function() {
 	{#if platform.isWeb}
 		<FileInput multiple onupload={upload}/>
 	{:else}
-		<button onclick={() => app.functions.open()}>
+		<button onclick={() => app.commands.open()}>
 			Open
 		</button>
 	{/if}
-	<button onclick={() => app.functions.save()}>
+	<button onclick={() => app.commands.save()}>
 		Save
 	</button>
 	<button onclick={() => app.panes.left.toggle()}>

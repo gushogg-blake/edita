@@ -127,7 +127,7 @@ class Platform extends Evented {
 		this.backupFs(key).delete();
 	}
 	
-	async filesFromDropEvent(app, e) {
+	async filesFromDropEvent(e, app) {
 		return bluebird.map([...e.dataTransfer.files], async (droppedFile) => {
 			let tmpPath = platform.path.resolve("/tmp", "upload-" + lid(), file.name);
 			
