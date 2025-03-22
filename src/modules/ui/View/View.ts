@@ -102,13 +102,13 @@ export default class View extends Evented {
 		this.createViewLines();
 		this.updateWrappedLines();
 		
-		// TODO validate selections?
+		//this.validateSelection();
 		
 		this.ensureScrollIsWithinBounds();
 		
 		this.updateMarginSize();
 		
-		this.updateHilitesAndFolds(edits);
+		this.adjustHilitesAndFolds(edits);
 		
 		this.scheduleRedraw();
 	}
@@ -529,12 +529,17 @@ export default class View extends Evented {
 		this.fire("scroll");
 	}
 	
-	setNormalSelection(selection, updateAstSelection=true) {
+	setNormalSelection(selection, options={}) {
+		options = {
+			updateAstSelection: true,
+			...options,
+		};
+		
 		this.normalSelection = this.Selection.validate(selection);
 		
 		// TODO validate for folds
 		
-		if (updateAstSelection) {
+		if (options.updateAstSelection) {
 			this.updateAstSelectionFromNormalSelection();
 		}
 		
@@ -599,6 +604,7 @@ export default class View extends Evented {
 	}
 	
 	updateAstSelectionFromNormalSelection() {
+		console.log("updateAstSelectionFromNormalSelection");
 		let {document} = this;
 		let {left, right} = this.normalSelection;
 		let {astMode} = this.lang;

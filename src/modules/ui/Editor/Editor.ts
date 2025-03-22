@@ -52,6 +52,10 @@ class Editor extends Evented {
 			platform.backup(this.document);
 		}, 15000);
 		
+		this.throttledUpdateAstSelection = throttle(() => {
+			this.updateAstSelection();
+		}, 100);
+		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
 			document.on("save", this.onDocumentSave.bind(this)),
@@ -511,14 +515,6 @@ class Editor extends Evented {
 		}
 	}
 	
-	keyup() {
-		if (this.needToUpdateAstSelection) {
-			this.view.updateAstSelectionFromNormalSelection();
-			
-			this.needToUpdateAstSelection = false;
-		}
-	}
-	
 	handleWheel(wheelCombo, cursor) {
 		let fnName = base.prefs.editorMouseMap[wheelCombo.wheelCombo];
 		
@@ -532,13 +528,18 @@ class Editor extends Evented {
 	}
 	
 	setSelectionFromNormalKeyboard(selection) {
-		this.setNormalSelection(selection, false);
+		this.setNormalSelection(selection, {
+			updateAstSelection: false,
+		});
+		
+		this.needToUpdateAstSelection = true;
+		
+		this.throttledUpdateAstSelection();
+		
 		this.setSelectionClipboard();
 		
 		this.clearBatchState();
 		this.astMode.clearMultiStepCommand();
-		
-		this.needToUpdateAstSelection = true;
 		
 		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
@@ -556,8 +557,8 @@ class Editor extends Evented {
 		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
 	
-	setNormalSelection(selection, updateAstSelection=true) {
-		this.view.setNormalSelection(selection, updateAstSelection);
+	setNormalSelection(selection, options) {
+		this.view.setNormalSelection(selection, options);
 		
 		this.wordCompletion.selectionChanged();
 		
@@ -641,7 +642,16 @@ class Editor extends Evented {
 		});
 	}
 	
+	updateAstSelection() {
+		if (this.needToUpdateAstSelection) {
+			this.view.updateAstSelectionFromNormalSelection();
+			
+			this.needToUpdateAstSelection = false;
+		}
+	}
+	
 	switchToAstMode() {
+		this.updateAstSelection();
 		this.clearCompletions();
 		this.view.switchToAstMode();
 	}

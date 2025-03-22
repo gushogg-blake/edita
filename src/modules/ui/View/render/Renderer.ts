@@ -115,7 +115,7 @@ class Renderer {
 			
 			let lineAbove = lines[firstRow.lineIndex - 1] || null;
 			
-			renderer.renderBetweenLines(lineAbove, firstRow.line, firstRow.rowIndexInLine, 0);
+			renderer.renderBetweenLines(lineAbove, firstRow.viewLine.line, firstRow.rowIndexInLine, 0);
 			
 			for (let foldedLineRow of this.foldedLineRows) {
 				renderer.startRow(foldedLineRow);
@@ -127,7 +127,7 @@ class Renderer {
 				if (foldedLineRow.rowIndexInLine === foldedLineRow.wrappedLine.lineRows.length - 1) {
 					let lineBelow = lines[foldedLineRow.lineIndex + 1] || null;
 					
-					renderer.renderBetweenLines(foldedLineRow.line, lineBelow, 0, 0);
+					renderer.renderBetweenLines(foldedLineRow.viewLine.line, lineBelow, 0, 0);
 				}
 			}
 			
