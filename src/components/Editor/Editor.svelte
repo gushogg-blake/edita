@@ -402,7 +402,9 @@ function resize() {
 			context.textBaseline = "bottom";
 		}
 		
+		view.startSyncRedrawBatch();
 		view.setCanvasSize(width, height);
+		view.endSyncRedrawBatch();
 		
 		updateScrollbars();
 		
@@ -515,7 +517,7 @@ function updateMeasurements() {
 function toggleHorizontalScrollbar(show) {
 	showingHorizontalScrollbar = show;
 	
-	//resizeAsync();
+	resizeAsync();
 }
 
 function onThemeUpdated() {
