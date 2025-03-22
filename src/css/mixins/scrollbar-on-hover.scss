@@ -1,5 +1,0 @@
-@mixin scrollbar-on-hover {
-	&:not(:hover)::-webkit-scrollbar-thumb {
-		display: none;
-	}
-}

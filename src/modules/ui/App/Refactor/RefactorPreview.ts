@@ -119,15 +119,11 @@ class RefactorPreview extends Evented {
 		
 		await base.ensureRequiredLangsInitialised(format.lang);
 		
-		view.startBatch();
-		
 		//view.scrollTo(0, 0);
 		
 		editor.api.edit(document.selectAll(), code);
 		
 		await document.setUrl(url);
-		
-		view.endBatch();
 	}
 	
 	show() {

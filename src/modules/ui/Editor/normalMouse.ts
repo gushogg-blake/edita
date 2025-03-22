@@ -30,13 +30,9 @@ export default {
 	setSelectionAndStartCursorBlink(selection) {
 		let {view} = this;
 		
-		view.startBatch();
-		
 		this.setSelectionFromNormalMouse(selection);
 		
 		view.startCursorBlink();
-		
-		view.endBatch();
 	},
 	
 	async insertSelectionClipboard(cursor) {
@@ -49,16 +45,12 @@ export default {
 		
 		let {view} = this;
 		
-		view.startBatch();
-		
 		this.applyAndAddHistoryEntry({
 			edits: [edit],
 			normalSelection: newSelection,
 		});
 		
 		view.startCursorBlink();
-		
-		view.endBatch();
 	},
 	
 	drop(cursor, str, move, fromUs, toUs) {
@@ -90,8 +82,6 @@ export default {
 			newSelection = document.getSelectionContainingString(cursor, str);
 		}
 		
-		view.startBatch();
-		
 		this.applyAndAddHistoryEntry({
 			edits,
 			normalSelection: newSelection,
@@ -99,7 +89,5 @@ export default {
 		
 		view.setInsertCursor(null);
 		view.startCursorBlink();
-		
-		view.endBatch();
 	},
 };

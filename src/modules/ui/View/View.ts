@@ -11,8 +11,9 @@ import AstSelectionUtils from "./utils/AstSelection";
 import wrapLine from "./utils/wrapLine";
 import canvasUtils from "./utils/canvasUtils";
 import Renderer from "./render/Renderer";
+import ViewLine from "./ViewLine";
 
-class View extends Evented {
+export default class View extends Evented {
 	constructor(document) {
 		super();
 		
@@ -23,10 +24,13 @@ class View extends Evented {
 		
 		this.document = document;
 		
+		this.createLines();
+		
 		this.focused = false;
 		this.visible = false;
 		this.mounted = false;
 		
+		this.redrawTimer = null;
 		this.redrawnWhileHidden = false;
 		
 		this.mode = "normal";
@@ -57,9 +61,6 @@ class View extends Evented {
 		this.cursorBlinkOn = false;
 		this.cursorInterval = null;
 		
-		this.batchDepth = 0;
-		this.hasBatchedUpdates = false;
-		
 		this.topMargin = 2;
 		
 		this.marginStyle = {
@@ -85,16 +86,35 @@ class View extends Evented {
 		this.updateWrappedLines();
 		
 		this.blur = this.blur.bind(this);
+		
+		this.teardownCallbacks = [
+			document.on("edit", this.onDocumentEdit.bind(this)),
+		];
 	}
 	
-	render(canvas, uiState) {
-		let renderer = new Renderer(this, canvas, uiState);
+	onDocumentEdit(edits) {
+		// TODO perf - should be able to optimise these given the edit
+		// that is, don't re-create lines/wrapped lines that aren't
+		// affected by the edits.
 		
-		renderer.render();
+		this.createLines();
+		this.updateWrappedLines();
+		
+		// TODO validate selections?
+		
+		this.ensureScrollIsWithinBounds();
+		
+		this.scheduleRedraw();
+	}
+	
+	createLines() {
+		this.lines = this.document.lines.map((line) => {
+			return new ViewLine(line, this.document.format);
+		});
 	}
 	
 	updateWrappedLines() {
-		this.wrappedLines = this.document.lines.map((line, lineIndex) => {
+		this.wrappedLines = this.lines.map((line, lineIndex) => {
 			return wrapLine(
 				this.wrap,
 				line,
@@ -105,7 +125,13 @@ class View extends Evented {
 			);
 		});
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
+	}
+	
+	render(canvas, uiState) {
+		let renderer = new Renderer(this, canvas, uiState);
+		
+		renderer.render();
 	}
 	
 	switchToAstMode() {
@@ -115,7 +141,7 @@ class View extends Evented {
 		
 		this.fire("modeSwitch");
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	switchToNormalMode() {
@@ -123,13 +149,9 @@ class View extends Evented {
 		this.astSelectionHilite = null;
 		
 		this.startCursorBlink();
-		this.batchRedraw();
+		this.scheduleRedraw();
 		
 		this.fire("modeSwitch");
-	}
-	
-	get lines() {
-		return this.document.lines;
 	}
 	
 	get lang() {
@@ -250,36 +272,6 @@ class View extends Evented {
 		this.fire("updateDropTargets");
 	}
 	
-	startBatch() {
-		this.batchDepth++;
-	}
-	
-	endBatch() {
-		this.batchDepth--;
-		
-		if (!this.inBatch) {
-			if (this.hasBatchedUpdates) {
-				this.redraw();
-			}
-			
-			this.hasBatchedUpdates = false;
-		}
-	}
-	
-	get inBatch() {
-		return this.batchDepth > 0;
-	}
-	
-	batchRedraw() {
-		if (this.inBatch) {
-			this.hasBatchedUpdates = true;
-			
-			return;
-		}
-		
-		this.redraw();
-	}
-	
 	getScrollHeight() {
 		let {
 			measurements: {rowHeight},
@@ -350,7 +342,7 @@ class View extends Evented {
 		if (scrolled) {
 			this.fire("scroll");
 			
-			this.batchRedraw();
+			this.scheduleRedraw();
 		}
 		
 		return scrolled;
@@ -373,7 +365,7 @@ class View extends Evented {
 		
 		this.fire("scroll");
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	setHorizontalScrollNoValidate(x) {
@@ -385,7 +377,7 @@ class View extends Evented {
 		
 		this.fire("scroll");
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	setScrollPosition(scrollPosition) {
@@ -530,7 +522,7 @@ class View extends Evented {
 			this.updateAstSelectionFromNormalSelection();
 		}
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	validateSelection() {
@@ -544,7 +536,7 @@ class View extends Evented {
 	setInsertCursor(cursor) {
 		this.insertCursor = cursor;
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	setAstSelection(astSelection) {
@@ -555,25 +547,25 @@ class View extends Evented {
 		
 		this.updateNormalSelectionFromAstSelection();
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	setAstSelectionHilite(astSelection) {
 		this.astSelectionHilite = astSelection;
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	clearAstSelectionHilite() {
 		this.astSelectionHilite = null;
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	setAstInsertionHilite(astSelection) {
 		this.astInsertionHilite = astSelection;
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	updateSelectionEndCol() {
@@ -587,7 +579,7 @@ class View extends Evented {
 		
 		this.updateSelectionEndCol();
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	updateAstSelectionFromNormalSelection() {
@@ -597,7 +589,7 @@ class View extends Evented {
 		
 		this.astSelection = astCommon.selection.fromLineRange(document, left.lineIndex, right.lineIndex + 1);
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	getNormalSelectionForFind() {
@@ -609,7 +601,7 @@ class View extends Evented {
 		
 		// TODO validate selection
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	toggleFoldHeader(lineIndex) {
@@ -628,7 +620,7 @@ class View extends Evented {
 		
 		this.folds[lineIndex] = footerLineIndex + 1;
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	adjustFoldsForEdit(edit) {
@@ -652,7 +644,7 @@ class View extends Evented {
 	setNormalHilites(hilites) {
 		this.normalHilites = hilites;
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	setWrap(wrap) {
@@ -670,7 +662,7 @@ class View extends Evented {
 		
 		this.fire("wrapChanged", wrap);
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	setCompletions(completions) {
@@ -688,13 +680,9 @@ class View extends Evented {
 	}
 	
 	setCanvasSize(width, height) {
-		this.startBatch();
-		
 		this.updateSizes(width, height);
 		this.updateWrappedLines();
 		this.validateScrollPosition();
-		
-		this.endBatch();
 	}
 	
 	updateSizes(width=null, height=null) {
@@ -732,21 +720,17 @@ class View extends Evented {
 		
 		this.fire("updateSizes");
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	updateMarginSize() {
 		let {marginWidth} = this.sizes;
-		
-		this.startBatch();
 		
 		this.updateSizes();
 		
 		if (marginWidth !== this.sizes.marginWidth) {
 			this.updateWrappedLines();
 		}
-		
-		this.endBatch();
 	}
 	
 	startCursorBlink() {
@@ -770,7 +754,7 @@ class View extends Evented {
 			this.updateCanvas();
 		}, base.prefs.cursorBlinkPeriod);
 		
-		this.batchRedraw();
+		this.scheduleRedraw();
 	}
 	
 	clearCursorBlink() {
@@ -789,20 +773,28 @@ class View extends Evented {
 		this.fire("updateScrollbars");
 	}
 	
-	redraw() {
-		if (this.visible) {
-			this.updateCanvas();
-			this.updateScrollbars();
-		} else {
-			this.redrawnWhileHidden = true;
+	scheduleRedraw() {
+		if (this.redrawTimer !== null) {
+			return;
 		}
+		
+		this.redrawTimer = setTimeout(() => {
+			if (this.visible) {
+				this.updateCanvas();
+				this.updateScrollbars();
+			} else {
+				this.redrawnWhileHidden = true;
+			}
+			
+			this.redrawTimer = null;
+		}, 0);
 	}
 	
 	show() {
 		this.visible = true;
 		
 		if (this.redrawnWhileHidden) {
-			this.redraw();
+			this.scheduleRedraw();
 		}
 		
 		this.fire("show");
@@ -823,7 +815,7 @@ class View extends Evented {
 		
 		this.startCursorBlink();
 		
-		this.redraw();
+		this.scheduleRedraw();
 		
 		this.fire("focus");
 	}
@@ -833,7 +825,7 @@ class View extends Evented {
 		
 		this.clearCursorBlink();
 		
-		this.redraw();
+		this.scheduleRedraw();
 		
 		this.fire("blur");
 	}
@@ -862,5 +854,3 @@ class View extends Evented {
 		this.clearCursorBlink();
 	}
 }
-
-export default View;

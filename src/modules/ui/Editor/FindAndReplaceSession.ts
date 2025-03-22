@@ -94,12 +94,8 @@ export default class {
 	goToResult(result) {
 		let {view} = this.editor;
 		
-		view.startBatch();
-		
 		view.setNormalSelection(result.selection);
 		view.ensureNormalCursorIsOnScreen();
-		
-		view.endBatch();
 	}
 	
 	clearHilites() {

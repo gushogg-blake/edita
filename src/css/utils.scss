@@ -12,6 +12,12 @@
 	left: 0;
 }
 
+@mixin scrollbar-on-hover {
+	&:not(:hover)::-webkit-scrollbar-thumb {
+		display: none;
+	}
+}
+
 /*
 inputs will scroll if moved off to the side somewhere, so are hidden
 by dimensions etc instead

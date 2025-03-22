@@ -1,15 +1,30 @@
 # grep
 
-These modules handle the general case of searching for patterns within files (or the current selection, etc) and possibly doing something with the results.
+Takes:
 
-The idea is to be as generic and modular as is reasonable, to allow for different features to re-use common functionality.
+- a list of URLs (e.g. from glob, the current file, all open files, the current selection*)
 
-Find and replace is the obvious case, and is where this code mostly originates from.
+- a function URL -> Document, so calling code can either read from disk or use the Document of a currently open editor
 
-CodePatterns is another case, very similar to F&R but more powerful.
+- a FindOptions
 
-// TODO also LSP-driven find usages may end up using generic find results.
+...and returns/generates a list of GrepMatchedFiles, in the form:
 
-Don't worry about the technical meaning of the word "grep"; it's just a memorable name for this type of functionality.
+{
+	url,
+	matches: GrepMatch[],
+}
 
-grep uses generators to provide the matches to callers, and it has a concept of editing, and will listen for changes to the document at any location (not just results), so you can replace occurrences and/or make other changes to the document as you're iterating through the find results without worrying about invalidating subsequent results. grep will not search within any text inserted during the search, for example if text is added to the end of the document while processing an earlier result, that text will be skipped.
+GrepMatch = {
+	url,
+	line: string, // for context
+	selection,
+	string,
+	regExpMatch?: RegExpMatchArray,
+};
+
+we don't keep the Document in the results, although it would be convenient, to avoid using too much memory. we want to keep the results fairly lean so we can keep a few pages of many results around
+
+for the actual grepping, Document will probs use functions from this module to search itself, so grep will call Document to get results then Document will call something in grep to find them. actualyl that probably doesn't make sense -- the logci should be here. keep it out of Document, it doesn't need to be there.
+
+\* URLs can contain a selection in the hash, like file:///a/b/c.ts#123,0-456,10 -- see core/URL.

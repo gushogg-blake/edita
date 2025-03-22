@@ -107,7 +107,7 @@ export default {
 		
 		while (lineIndex < this.wrappedLines.length) {
 			let wrappedLine = this.wrappedLines[lineIndex];
-			let {line} = wrappedLine;
+			let {viewLine} = wrappedLine;
 			let foldEndLineIndex = this.folds[lineIndex];
 			let isFoldHeader = !!foldEndLineIndex;
 			
@@ -119,7 +119,7 @@ export default {
 					lineIndex,
 					rowIndexInLine,
 					wrappedLine,
-					line,
+					viewLine,
 					lineRow,
 				};
 				
@@ -145,7 +145,7 @@ export default {
 		
 		while (lineIndex < this.wrappedLines.length) {
 			let wrappedLine = this.wrappedLines[lineIndex];
-			let {line} = wrappedLine;
+			let {viewLine} = wrappedLine;
 			let foldEndLineIndex = this.folds[lineIndex];
 			let isFoldHeader = !!foldEndLineIndex;
 			

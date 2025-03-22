@@ -271,8 +271,6 @@ class Editor extends Evented {
 	onDocumentEdit(edits) {
 		let {view} = this;
 		
-		view.startBatch();
-		
 		for (let edit of edits) {
 			view.setNormalHilites(view.normalHilites.map(function(hilite) {
 				if (hilite.overlaps(edit.selection)) {
@@ -285,34 +283,22 @@ class Editor extends Evented {
 			view.adjustFoldsForEdit(edit);
 		}
 		
+		// MIGRATE move to view (the above as well)
 		view.updateMarginSize();
-		
-		view.endBatch();
 		
 		this.throttledBackup();
 	}
 	
 	onDocumentSave() {
-		this.view.updateWrappedLines();
-		
 		this.clearBatchState();
 	}
 	
 	onDocumentFileChanged(updateEntry) {
 		if (!updateEntry) {
+			return;
 		}
 		
-		let {view} = this;
-		
-		view.startBatch();
-		
 		this.applyExistingDocumentEntry(updateEntry);
-		
-		view.updateWrappedLines();
-		
-		view.ensureScrollIsWithinBounds();
-		
-		view.endBatch();
 		
 		this.clearBatchState();
 	}
@@ -326,10 +312,6 @@ class Editor extends Evented {
 		
 		let {view} = this;
 		
-		view.startBatch();
-		
-		view.updateWrappedLines();
-		
 		if (normalSelection !== undefined) {
 			this.setNormalSelection(normalSelection);
 		}
@@ -341,8 +323,6 @@ class Editor extends Evented {
 		if (snippetSession !== undefined) {
 			this.snippetSession = snippetSession;
 		}
-		
-		view.endBatch();
 		
 		this.fire("edit");
 	}
@@ -419,13 +399,9 @@ class Editor extends Evented {
 		
 		let {view} = this;
 		
-		view.startBatch();
-		
 		view.updateSelectionEndCol();
 		view.ensureSelectionIsOnScreen();
 		view.startCursorBlink();
-		
-		view.endBatch();
 	}
 	
 	redo() {
@@ -443,13 +419,9 @@ class Editor extends Evented {
 		
 		let {view} = this;
 		
-		view.startBatch();
-		
 		view.updateSelectionEndCol();
 		view.ensureSelectionIsOnScreen();
 		view.startCursorBlink();
-		
-		view.endBatch();
 	}
 	
 	willHandleNormalKeydown(key, keyCombo, isModified) {
@@ -488,39 +460,22 @@ class Editor extends Evented {
 		let {view} = this;
 		
 		if (snippet) {
-			view.startBatch();
-			
 			this.clearSnippetSession();
 			this.insertSnippet(snippet);
 			
 			view.ensureSelectionIsOnScreen();
 			view.startCursorBlink();
 			
-			view.endBatch();
-			
 			return;
 		}
 		
 		let fnName = base.prefs.normalKeymap[keyCombo];
 		let flags;
-		let str;
-		let isPaste = ["paste", "pasteAndIndent"].includes(fnName);
-		
-		if (isPaste) {
-			// read clipboard before startBatch to keep startBatch/endBatch pairs sync
-			str = await platform.clipboard.read();
-		}
-		
-		view.startBatch();
 		
 		if (fnName) {
-			if (isPaste) {
-				flags = this.normalKeyboard[fnName](str);
-			} else {
-				flags = this.normalKeyboard[fnName]();
-			}
+			flags = await this.normalKeyboard[fnName]();
 		} else {
-			flags = this.normalKeyboard.insert(key);
+			flags = await this.normalKeyboard.insert(key);
 		}
 		
 		flags = flags || [];
@@ -534,8 +489,6 @@ class Editor extends Evented {
 		}
 		
 		view.startCursorBlink();
-		
-		view.endBatch();
 	}
 	
 	astKeydown(keyCombo) {
@@ -544,8 +497,6 @@ class Editor extends Evented {
 		let lang = this.document.langFromAstSelection(this.astSelection);
 		let astManipulationCode = astManipulationKeymap[lang.code]?.[keyCombo] || astManipulationKeymap.common[keyCombo];
 		
-		view.startBatch();
-		
 		if (astManipulationCode) {
 			this.doAstManipulation(astManipulationCode);
 		} else {
@@ -553,24 +504,15 @@ class Editor extends Evented {
 		}
 		
 		view.ensureSelectionIsOnScreen();
-		
-		view.endBatch();
 	}
 	
 	commonKeydown(keyCombo) {
 		let fnName = base.prefs.commonKeymap[keyCombo];
-		
-		let {view} = this;
-		
-		view.startBatch();
-		
 		let flags = this.commonKeyboard[fnName]() || [];
 		
 		if (!flags.includes("noScrollCursorIntoView")) {
-			view.ensureSelectionIsOnScreen();
+			this.view.ensureSelectionIsOnScreen();
 		}
-		
-		view.endBatch();
 	}
 	
 	keyup() {

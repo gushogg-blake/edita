@@ -56,6 +56,7 @@ function onOptionsUpdated() {
 }
 
 function getFormOptions(options) {
+	console.log(options);
 	let {caseMode} = options;
 	
 	return {
@@ -66,7 +67,7 @@ function getFormOptions(options) {
 }
 
 function getOptions(formOptions) {
-	let {smartCase, matchCase, paths, includePatterns, excludePatterns} = formOptions;
+	let {smartCase, matchCase} = formOptions;
 	
 	return {
 		...formOptions,
@@ -430,7 +431,7 @@ onMount(function() {
 				<option value="files">Files</option>
 			</select>
 			<input bind:value={formOptions.paths} id="paths" disabled={formOptions.searchIn !== "files"}>
-			<Checkbox bind:value={formOptions.searchInSubDirs} label="Search su%b dirs" disabled={formOptions.searchIn !== "files"}/>
+			<!--<Checkbox bind:value={formOptions.searchInSubDirs} label="Search su%b dirs" disabled={formOptions.searchIn !== "files"}/>-->
 		</div>
 		<AccelLabel for="include" label="Incl%ude" disabled={formOptions.searchIn !== "files"}/>
 		<div class="input">

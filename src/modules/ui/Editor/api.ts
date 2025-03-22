@@ -5,8 +5,6 @@ export default {
 	centerSelection(selection) {
 		let {view} = this;
 		
-		view.startBatch();
-		
 		let {rows} = view.sizes;
 		let {rowHeight} = view.measurements;
 		let [selectionRow] = view.rowColFromCursor(selection.start);
@@ -14,20 +12,14 @@ export default {
 		let scrollTop = scrollToRow * rowHeight;
 		
 		view.setVerticalScrollNoValidate(Math.max(0, scrollTop));
-		
-		view.endBatch();
 	},
 	
 	setNormalSelectionAndCenter(selection) {
 		let {view} = this;
 		
-		view.startBatch();
-		
 		this.setNormalSelection(selection);
 		
 		this.api.centerSelection(selection);
-		
-		view.endBatch();
 	},
 	
 	findAndReplace(options) {
@@ -61,8 +53,6 @@ export default {
 		let {document, view} = this;
 		let {edits, results} = document.replaceAll(options);
 		
-		view.startBatch();
-		
 		this.applyAndAddHistoryEntry({
 			edits,
 		});
@@ -70,8 +60,6 @@ export default {
 		view.validateSelection();
 		
 		view.setNormalHilites(edits.map(edit => edit.newSelection));
-		
-		view.endBatch();
 		
 		return results;
 	},
@@ -98,18 +86,14 @@ export default {
 			}
 		}
 		
-		view.startBatch();
-		
 		this.applyAndAddHistoryEntry({
 			edits,
 			normalSelection: selection,
 		});
 		
-		view.validateSelection();
+		view.validateSelection(); // MIGRATE move to view
 		
 		view.setNormalHilites(edits.map(edit => edit.newSelection));
-		
-		view.endBatch();
 		
 		return results;
 	},

@@ -1,17 +1,18 @@
 import regexMatch from "utils/regexMatch";
+import type ViewLine from "../ViewLine";
 
 let endWordRe = /[\S\w]+\s*$/;
 let wordRe = /[\S\w]+\s*/g;
 
 class LineWrapper {
-	constructor(line, indentation, measurements, availableWidth) {
-		this.line = line;
+	constructor(viewLine: ViewLine, indentation, measurements, availableWidth) {
+		this.viewLine = viewLine;
 		this.indentation = indentation;
 		this.measurements = measurements;
 		this.availableWidth = availableWidth;
 		
 		this.screenCols = Math.floor(availableWidth / measurements.colWidth);
-		this.textCols = this.screenCols - line.indentCols;
+		this.textCols = this.screenCols - viewLine.line.indentCols;
 		this.offset = 0;
 	}
 	
@@ -20,7 +21,7 @@ class LineWrapper {
 			return false;
 		}
 		
-		if (this.line.width <= this.screenCols) {
+		if (this.viewLine.width <= this.screenCols) {
 			return false;
 		}
 		
@@ -32,15 +33,12 @@ class LineWrapper {
 	}
 	
 	unwrapped() {
-		let {line} = this;
-		
-		let {
-			string,
-			width,
-			variableWidthParts,
-		} = line;
+		let {viewLine} = this;
+		let {line, width, variableWidthParts} = viewLine;
+		let {string} = line;
 		
 		return {
+			viewLine,
 			line,
 			height: 1,
 			lineRows: [
@@ -167,18 +165,19 @@ class LineWrapper {
 	}
 	
 	result() {
-		let {line, lineRows} = this;
+		let {viewLine, lineRows} = this;
 		
 		return {
-			line,
+			viewLine,
+			line: viewLine.line,
 			height: lineRows.length,
 			lineRows,
 		};
 	}
 }
 
-export default function(wrap, line, isFoldHeader, indentation, measurements, availableWidth) {
-	let wrapper = new LineWrapper(line, indentation, measurements, availableWidth);
+export default function(wrap, viewLine, isFoldHeader, indentation, measurements, availableWidth) {
+	let wrapper = new LineWrapper(viewLine, indentation, measurements, availableWidth);
 	
 	return wrapper.wrap(wrap, isFoldHeader);
 }

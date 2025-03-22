@@ -1,3 +1,5 @@
+import {s, c} from "modules/core";
+
 export function pathToUrl(path) {
 	let encoded = "/" + path.split("/").slice(1).map(p => encodeURIComponent(p)).join("/");
 	
@@ -18,32 +20,9 @@ export function urlToPath(urlPath) {
 	}
 }
 
-/*
-we can use #123 or #123-456 to indicate a position or range in a
-file (chracter offset-based)
-*/
-
-function positionOrRange(startIndex, endIndex) {
-	if (startIndex !== null && endIndex !== null) {
-		return "#" + startIndex + "-" + endIndex;
-	} else if (startIndex !== null) {
-		return "#" + startIndex;
-	} else {
-		return "";
-	}
-}
-
 export default class CustomURL {
-	private constructor(str) {
-		this.url = new URL(str);
-	}
-	
-	get path() {
-		return urlToPath(this.url.pathname);
-	}
-	
-	get name() {
-		return platform.fs(this.path).name;
+	private constructor(url) {
+		this.url = url;
 	}
 	
 	get protocol() {
@@ -58,24 +37,28 @@ export default class CustomURL {
 		return this.protocol === "file:";
 	}
 	
-	static file(path, startIndex=null, endIndex=null) {
-		return new CustomURL("file://" + pathToUrl(path) + positionOrRange(startIndex, endIndex));
+	static file(path) {
+		return CustomURL.fromString("file://" + pathToUrl(path));
 	}
 	
 	static _new(path, startIndex=null, endIndex=null) {
-		return new CustomURL("new://" + pathToUrl(path) + positionOrRange(startIndex, endIndex));
+		return CustomURL.fromString("new://" + pathToUrl(path));
 	}
 	
 	static memory(path, startIndex=null, endIndex=null) {
-		return new CustomURL("memory://" + pathToUrl(path) + positionOrRange(startIndex, endIndex));
+		return CustomURL.fromString("memory://" + pathToUrl(path));
 	}
 	
 	static fromString(str) {
-		return new CustomURL(str);
+		if (["file", "new", "memory"].includes(str.split(":")[0])) {
+			return new FileLikeURL(new URL(str));
+		} else {
+			return new CustomURL(new URL(str));
+		}
 	}
 	
 	static special(protocol, path) {
-		return new CustomURL(protocol + "//" + path);
+		return CustomURL.fromString(protocol + "//" + path);
 	}
 	
 	toString() {
@@ -86,3 +69,65 @@ export default class CustomURL {
 		return this.toString();
 	}
 }
+
+function encodeSelection(selection) {
+	let {left, right} = selection;
+	
+	return "#" + left.lineIndex + "," + left.offset + "-" + right.lineIndex + "," + right.offset;
+}
+
+class FileLikeURL extends CustomURL {
+	constructor(url) {
+		super(url);
+		
+		this.selection = this.parseSelection();
+	}
+	
+	parseSelection() {
+		let {hash} = this.url;
+		
+		if (!hash) {
+			return null;
+		}
+		
+		let [left, right] = hash.substr("#".length).split("-").map(function(str) {
+			let [lineIndex, offset] = str.split(",").map(Number);
+			
+			return c(lineIndex, offset);
+		});
+		
+		return s(left, right);
+	}
+	
+	withSelection(selection) {
+		let str = this.withoutSelection().toString() + encodeSelection(selection);
+		
+		return new FileLikeURL(new URL(str));
+	}
+	
+	withoutSelection() {
+		let url = new URL(this.toString());
+		
+		url.hash = "";
+		
+		return new CustomURL(url);
+	}
+	
+	static fromString(str) {
+		if (["file", "new", "memory"].includes(str.split(":")[0])) {
+			return new FileLikeURL(new URL(str));
+		} else {
+			return new CustomURL(new URL(str));
+		}
+	}
+	
+	get path() {
+		return urlToPath(this.url.pathname);
+	}
+	
+	get name() {
+		return platform.fs(this.path).name;
+	}
+}
+
+export type {FileLikeURL};

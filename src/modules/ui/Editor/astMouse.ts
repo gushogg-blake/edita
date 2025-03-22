@@ -10,26 +10,18 @@ export default {
 	setSelectionHilite(selection, targetLineIndex, showPickOptions=true) {
 		let {view} = this;
 		
-		view.startBatch();
-		
 		view.setAstSelectionHilite(selection);
 		
 		if (showPickOptions) {
 			view.showPickOptionsFor(targetLineIndex);
 		}
-		
-		view.endBatch();
 	},
 	
 	clearSelectionHilite() {
 		let {view} = this;
 		
-		view.startBatch();
-		
 		view.clearAstSelectionHilite();
 		view.clearPickOptions();
-		
-		view.endBatch();
 	},
 	
 	setInsertionHilite(selection) {
@@ -57,8 +49,6 @@ export default {
 		
 		let {document, view} = this;
 		let {astMode} = document.langFromAstSelection(fromSelection || toSelection);
-		
-		view.startBatch();
 		
 		view.clearDropTargets();
 		
@@ -135,19 +125,11 @@ export default {
 				});
 			}
 		}
-		
-		view.endBatch();
 	},
 	
 	invalidDrop() {
-		let {view} = this;
-		
-		view.startBatch();
-		
-		view.clearDropTargets();
+		this.view.clearDropTargets();
 		
 		this.astMouse.setInsertionHilite(null);
-		
-		view.endBatch();
 	},
 };

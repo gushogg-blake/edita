@@ -483,8 +483,8 @@ export default {
 		return ["noScrollCursorIntoView"];
 	},
 	
-	paste(str) {
-		str = normaliseNewlines(str, this.document.format.newline);
+	async paste() {
+		let str = normaliseNewlines(await platform.clipboard.read(), this.document.format.newline);
 		
 		let {
 			edit,

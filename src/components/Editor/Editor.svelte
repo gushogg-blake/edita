@@ -402,11 +402,7 @@ function resize() {
 			context.textBaseline = "bottom";
 		}
 		
-		view.startBatch();
-		
 		view.setCanvasSize(width, height);
-		
-		view.endBatch();
 		
 		updateScrollbars();
 		
