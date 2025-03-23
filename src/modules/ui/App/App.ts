@@ -4,7 +4,7 @@ import Evented from "utils/Evented";
 import bindFunctions from "utils/bindFunctions";
 import promiseWithMethods from "utils/promiseWithMethods";
 
-import URL from "modules/core/resources/URL";
+import URL from "modules/core/resource/URL";
 import Document from "modules/core/Document";
 import Editor from "modules/ui/Editor";
 import View from "modules/ui/View";

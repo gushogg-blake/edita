@@ -1,4 +1,4 @@
-import URL from "modules/core/resources/URL";
+import URL from "modules/core/resource/URL";
 import getPaths from "modules/grep/getPaths";
 import getFindAndReplaceOptions from "./getFindAndReplaceOptions";
 

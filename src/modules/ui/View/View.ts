@@ -154,10 +154,9 @@ export default class View extends Evented {
 		this.mode = "ast";
 		
 		this.clearCursorBlink();
+		this.scheduleRedraw();
 		
 		this.fire("modeSwitch");
-		
-		this.scheduleRedraw();
 	}
 	
 	switchToNormalMode() {

@@ -1,4 +1,4 @@
-export {URL, Format, File, NewFile, Resource} from "./resources";
+export {URL, Format, File, NewFile, Resource} from "./resource";
 export {default as Document, Scope, Range} from "./Document";
 export {default as Selection, s} from "./Selection";
 export {default as Cursor, c} from "./Cursor";

@@ -33,6 +33,7 @@ config.
 		// SYNC tsconfig, rollup aliases
 		"paths": {
 			"root/*": ["./*"],
+			"components": ["./src/components"],
 			"components/*": ["./src/components/*"],
 			"modules/*": ["./src/modules/*"],
 			"utils": ["./src/utils"],

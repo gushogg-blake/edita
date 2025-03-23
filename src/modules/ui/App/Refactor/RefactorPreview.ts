@@ -1,6 +1,6 @@
 import Evented from "utils/Evented";
 import {sortedPartition} from "utils/array";
-import URL from "modules/core/resources/URL";
+import URL from "modules/core/resource/URL";
 import codePatterns from "modules/codePatterns";
 
 class RefactorPreview extends Evented {

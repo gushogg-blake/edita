@@ -1,7 +1,7 @@
 export class IndentationDetails {
 	type: "tab" | "space";
 	string: string;
-	re: RegExp,
+	re: RegExp;
 	colsPerIndent: number;
 	
 	constructor(indent) {

@@ -4,24 +4,16 @@ import {mount, unmount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import App from "modules/ui/App";
 import dialogs from "modules/ui/dialogs";
-import Base from "modules/base/Base";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";
-import Platform from "platforms/electron/Platform";
 import AppComponent from "components/App/App.svelte";
 import DialogWrapper from "platforms/electron/components/DialogWrapper.svelte";
 import components from "components";
+import {setGlobals} from "platforms/common/globals";
+import Platform from "platforms/electron/Platform";
+
+setGlobals(Platform);
 
 // ENTRYPOINT main (renderer) process for Electron
-
-declare global {
-	module globalThis {
-		var platform: Platform;
-		var base: Base;
-	}
-}
-
-window.platform = new Platform();
-window.base = new Base();
 
 let [, dialogName] = location.href.match(/dialog=(\w+)/) || [];
 let isDialogWindow = !!dialogName;

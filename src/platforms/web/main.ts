@@ -1,20 +1,12 @@
 import {mount} from "svelte";
 import "css/global.scss";
-import Base from "modules/base/Base";
 import App from "modules/ui/App";
 import components from "components";
 import AppComponent from "components/App/App.svelte";
-import Platform from "./Platform";
+import {setGlobals} from "platforms/common/globals";
+import Platform from "platforms/web/Platform";
 
-declare global {
-	module globalThis {
-		var platform: Platform;
-		var base: Base;
-	}
-}
-
-window.platform = new Platform();
-window.base = new Base();
+setGlobals(Platform);
 
 // ENTRYPOINT main function for web - perform init tasks and return an object
 // with a function to create a whole app, and the Editor component.

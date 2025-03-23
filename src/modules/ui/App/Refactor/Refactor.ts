@@ -1,6 +1,6 @@
 import bluebird from "bluebird";
 import Evented from "utils/Evented";
-import URL from "modules/core/resources/URL";
+import URL from "modules/core/resource/URL";
 import Document from "modules/core/Document";
 import codePatterns from "modules/codePatterns";
 import RefactorPreview from "./RefactorPreview";

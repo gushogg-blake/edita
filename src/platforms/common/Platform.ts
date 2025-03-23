@@ -9,4 +9,6 @@ export default class extends Evented {
 	constructor() {
 		super();
 	}
+	
+	async init(config?: any): void;
 }

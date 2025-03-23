@@ -1,6 +1,6 @@
 import {Evented} from "utils";
 import {AstSelection, a, Selection, s, Cursor, c} from "modules/core";
-import Memory from "modules/core/resources/Memory";
+import Memory from "modules/core/resource/Memory";
 import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";
@@ -513,7 +513,7 @@ export default class Document extends Evented {
 	}
 	
 	replaceAll(options) {
-		let document = new Document(this.string, null, {
+		let document = new Document(Memory.plain(this.string), {
 			noParse: true,
 		});
 		

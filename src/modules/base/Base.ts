@@ -53,6 +53,12 @@ lifespan: global singleton created on startup; never destroyed.
 */
 
 class Base extends Evented {
+	langs: Langs;
+	DirEntries: DirEntries;
+	packageJson: any;
+	
+	private initialisedLangs: Set<Lang>;
+	
 	constructor() {
 		super();
 		
@@ -91,7 +97,7 @@ class Base extends Evented {
 		}
 	}
 	
-	async init(components, options) {
+	async init(components, options={}) {
 		options = {
 			// lang initialisation can be skipped for e.g. dialogs that don't use editors
 			useLangs: true,
