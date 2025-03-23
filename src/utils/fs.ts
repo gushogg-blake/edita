@@ -21,6 +21,13 @@ export default function(config) {
 	class FileIsBinary extends Error {}
 	
 	class Node {
+		path: string;
+		basename: string;
+		extension: string;
+		type: string;
+		lastExtension: string;
+		lastType: string;
+		
 		constructor(path) {
 			if (path instanceof Node) {
 				path = path.path;
