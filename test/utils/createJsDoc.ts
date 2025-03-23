@@ -1,7 +1,9 @@
 import {Document} from "modules/core";
 import {Memory} from "modules/core/resource";
-import dedent from "test/utils/dedent";
 
-export default function(code) {
-	return new Document(Memory.withLang(dedent(code), base.langs.get("javascript")));
+export default async function(code): Promise<Document> {
+	let lang = base.langs.get("javascript");
+	let file = await Memory.withLang(code, lang);
+	
+	return new Document(file);
 }

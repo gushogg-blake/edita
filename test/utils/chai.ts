@@ -1,5 +1,7 @@
-import chai, {assert, expect} from "chai";
+import * as chai from "chai";
 import chaiSubset from "chai-subset";
+
+let {assert, expect} = chai;
 
 chai.use(chaiSubset);
 

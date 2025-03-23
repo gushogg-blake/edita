@@ -1,11 +1,8 @@
 import {Document} from "modules/core";
 import {is, deep} from "test/utils/assertions";
 import dedent from "test/utils/dedent";
+import createJsDoc from "test/utils/createJsDoc";
 import parseIndexMarks from "test/utils/parseIndexMarks";
-
-function createJsDoc(code) {
-	return new Document(code, "new:///a.js");
-}
 
 let {
 	string: code,
@@ -38,8 +35,8 @@ let {
 let doc;
 
 describe("Document", function() {
-	before(function() {
-		doc = createJsDoc(code);
+	before(async function() {
+		doc = await createJsDoc(code);
 	});
 	
 	describe("cursorFromIndex", function() {

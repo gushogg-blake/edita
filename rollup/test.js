@@ -16,6 +16,8 @@ export default [
 		
 		output: {
 			file: dir + "/main.js",
+			format: "iife",
+			name: "main",
 		},
 		
 		plugins: [
@@ -33,6 +35,7 @@ export default [
 		output: {
 			sourcemap: true,
 			file: dir + "/tests.js",
+			format: "iife",
 		},
 		
 		plugins: [

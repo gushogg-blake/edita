@@ -30,6 +30,10 @@ config.
 		
 		"sourceMap": true,
 		
+		// we don't copy the TS files anywhere, so this is needed to
+		// bundle the source with the maps so we can see it in devtools
+		"inlineSources": true,
+		
 		// SYNC tsconfig, rollup aliases
 		"paths": {
 			"root/*": ["./*"],

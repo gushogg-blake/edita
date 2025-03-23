@@ -16,10 +16,14 @@ function match(document, codePattern) {
 	return matchAtCursor(context, document, tokenise(codePattern), Cursor.start());
 }
 
+async function createDoc(code) {
+	return await createJsDoc(dedent(code));
+}
+
 describe("codePatterns", function() {
 	describe("matchAtCursor", function() {
-		it("literal", function() {
-			let doc = createJsDoc(`
+		it("literal", async function() {
+			let doc = await createDoc(`
 				let asd = 123;
 			`);
 			
@@ -41,8 +45,8 @@ describe("codePatterns", function() {
 			]);
 		});
 		
-		it("one or more lines greedy", function() {
-			let doc = createJsDoc(`
+		it("one or more lines greedy", async function() {
+			let doc = await createDoc(`
 				let asd = 123;
 				let sdf = 456;
 				let line3 = "string";
@@ -87,8 +91,8 @@ describe("codePatterns", function() {
 			]);
 		});
 		
-		it("one or more lines greedy repeated", function() {
-			let doc = createJsDoc(`
+		it("one or more lines greedy repeated", async function() {
+			let doc = await createDoc(`
 				let asd = 123;
 				let sdf = 456;
 				let line3 = "string";
@@ -165,8 +169,8 @@ describe("codePatterns", function() {
 			]);
 		});
 		
-		it("zero or more lines greedy (no match)", function() {
-			let doc = createJsDoc(`
+		it("zero or more lines greedy (no match)", async function() {
+			let doc = await createDoc(`
 				let asd = 123;
 			`);
 			
@@ -189,8 +193,8 @@ describe("codePatterns", function() {
 			]);
 		});
 		
-		it("empty regex", function() {
-			let doc = createJsDoc(`
+		it("empty regex", async function() {
+			let doc = await createDoc(`
 				let asd = 123;
 			`);
 			
@@ -220,8 +224,8 @@ describe("codePatterns", function() {
 			]);
 		});
 		
-		it("regex", function() {
-			let doc = createJsDoc(`
+		it("regex", async function() {
+			let doc = await createDoc(`
 				let asd = 123;
 			`);
 			
@@ -258,8 +262,8 @@ describe("codePatterns", function() {
 			]);
 		});
 		
-		it("query", function() {
-			let doc = createJsDoc(`
+		it("query", async function() {
+			let doc = await createDoc(`
 				let asd = function() {
 					return 123;
 				}
@@ -314,8 +318,8 @@ describe("codePatterns", function() {
 			]);
 		});
 		
-		it("indentation", function() {
-			let doc = createJsDoc(`
+		it("indentation", async function() {
+			let doc = await createDoc(`
 				let asd = function() {
 					return 123;
 				}
@@ -373,8 +377,8 @@ describe("codePatterns", function() {
 			]);
 		});
 		
-		it("replace selection", function() {
-			let doc = createJsDoc(`
+		it("replace selection", async function() {
+			let doc = await createDoc(`
 				line1
 				line2
 				

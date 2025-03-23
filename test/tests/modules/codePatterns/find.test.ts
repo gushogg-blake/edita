@@ -3,10 +3,14 @@ import dedent from "test/utils/dedent";
 import createJsDoc from "test/utils/createJsDoc";
 import find from "modules/codePatterns/find";
 
+async function createDoc(code) {
+	return await createJsDoc(dedent(code));
+}
+
 describe("codePatterns", function() {
 	describe("find", function() {
-		it("literal", function() {
-			let doc = createJsDoc(`
+		it("literal", async function() {
+			let doc = await createDoc(`
 				let asd = 123;
 				let asd = 456;
 			`);
@@ -41,8 +45,8 @@ describe("codePatterns", function() {
 			]);
 		});
 		
-		it("one or more lines greedy", function() {
-			let doc = createJsDoc(`
+		it("one or more lines greedy", async function() {
+			let doc = await createDoc(`
 				// comment
 				
 				let asd = 123;
@@ -121,8 +125,8 @@ describe("codePatterns", function() {
 			]);
 		});
 		
-		it("one or more lines lazy (multiple matches)", function() {
-			let doc = createJsDoc(`
+		it("one or more lines lazy (multiple matches)", async function() {
+			let doc = await createDoc(`
 				// comment
 				
 				let asd = 123;
