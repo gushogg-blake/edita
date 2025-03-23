@@ -8,7 +8,6 @@ let {mkdirp} = require("mkdirp");
 import minimatch from "minimatch-browser";
 import fileIsBinary from "vendor/fileIsBinary";
 import fs from "utils/fs";
-import createWalk from "modules/utils/walk";
 
 export default fs({
 	fs: fsExtra,
@@ -18,11 +17,6 @@ export default fs({
 	fileIsBinary,
 	minimatch,
 	homeDir: os.homedir(),
-	
-	walk: createWalk({
-		fs: fsExtra,
-		path,
-	}),
 	
 	cwd() {
 		return process.cwd();
