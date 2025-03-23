@@ -39,10 +39,6 @@ function updateBookmarks() {
 	({bookmarks} = app);
 }
 
-function cancel() {
-	window.close();
-}
-
 function toggleShowHiddenFiles() {
 	showHiddenFiles = !showHiddenFiles;
 	
@@ -51,9 +47,7 @@ function toggleShowHiddenFiles() {
 
 let functions = {
 	close() {
-		if (platform.isDialogWindow) {
-			window.close();
-		}
+		app.cancel();
 	},
 	
 	ok() {

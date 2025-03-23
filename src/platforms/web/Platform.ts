@@ -15,7 +15,9 @@ import jsonStore from "platforms/web/modules/jsonStore";
 import Snippets from "platforms/web/modules/Snippets";
 import lsp from "platforms/web/modules/lsp";
 
-class Platform extends Evented {
+import Platform from "platforms/common/Platform";
+
+export default class extends Platform {
 	constructor() {
 		super();
 		
@@ -180,5 +182,3 @@ class Platform extends Evented {
 		// noop
 	}
 }
-
-export default Platform;

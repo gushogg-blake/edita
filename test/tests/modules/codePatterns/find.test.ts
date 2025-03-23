@@ -1,4 +1,4 @@
-import {is, deep, expect} from "test/utils/assertions";
+import {is, deep, expect, subset} from "test/utils/assertions";
 import dedent from "test/utils/dedent";
 import createJsDoc from "test/utils/createJsDoc";
 import find from "modules/codePatterns/find";

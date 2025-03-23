@@ -3,7 +3,7 @@ import dedent from "test/utils/dedent";
 
 import parseJavaScript from "modules/snippets/parseJavaScript";
 
-let tests = [
+let tests: [string, ...any][] = [
 	[
 		"init",
 		`

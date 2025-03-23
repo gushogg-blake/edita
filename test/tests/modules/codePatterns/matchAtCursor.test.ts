@@ -1,15 +1,11 @@
-import {is, deep, expect} from "test/utils/assertions";
+import {is, deep, expect, subset} from "test/utils/assertions";
 import dedent from "test/utils/dedent";
 import createJsDoc from "test/utils/createJsDoc";
-import Selection from "modules/Selection";
-import Cursor from "modules/Cursor";
+import {Selection, s, Cursor, c} from "modules/core";
 import query from "modules/codePatterns/find/query";
 import createRegex from "modules/codePatterns/find/createRegex";
 import tokenise from "modules/codePatterns/find/tokenise";
 import matchAtCursor from "modules/codePatterns/find/matchAtCursor";
-
-let {c} = Cursor;
-let {s} = Selection;
 
 function match(document, codePattern) {
 	let context = {

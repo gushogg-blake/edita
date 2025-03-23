@@ -2,17 +2,47 @@
 
 Edita is a code editor combining novel features and interactions with a familiar GUI interface.
 
-See [edita.vercel.app](//edita.vercel.app/).
+See [edita.vercel.app](//edita.vercel.app/) (WIP).
+
+## Why another editor? Why from scratch?
+
+To explore solutions to what I see as fundamental issues with existing editors. The original reason was that Komodo Edit (but any editor; that's just the one I was using) didn't support structural or "block-level" edits. It seemed insane to me that in order to move a `<div>` somewhere else on the page, I had to tell my _code editor_ exactly the range of characters that described it, then drag and drop the text and clean up whitespace afterwards. Out of this frustration came Edita's AST mode, which is structure-aware and works with whole lines as opposed to characters.
+
+I also just want something that works exactly how I want it to work. Other editors all seem to have various rough edges that aren't solvable by extensions or config. Tab snippets behaviour is a prime example.
+
+This leads into another more general thing I've noticed, which is that the Tab key is overloaded, and priority is misplaced:
+
+- The "original" function is to insert a single tab character, but that's hardly ever what's needed now.
+
+- If there's a selection, we usually want to indent or dedent it.
+
+- The other main use-case is snippets, where:
+
+	- If the preceding word is a snippet abbreviation, we insert the snippet.
+	
+	- Once in a snippet, Tab goes to the next tabstop
+	
+	- This means that nested snippets aren't a thing: at least in Edita, you have to finish the first snippet before inserting more.
+
+Something I've realised recently is that by relegating the original use-case to a more complex keystroke, we might be able to free up more Tab usages for more common functionality. I've been thinking lately that Tab and Shift-Tab should actually work more like they do in forms, as navigation commands. The things we'd be navigating between would be blocks of code. The waypoints would be (for a C-like language) after the opening `{` and after the closing `}`, so if you were in an `if` block, hitting Tab would put you after its closing `}`. Hitting Shift+Tab there would put you just after its opening `{`, where normal navigation or perhaps other new shortcuts could provide easy ways of going to a particular point within the block.
+
+### Escape
+
+Edita uses the Escape key to switch between normal mode and tree mode (the AST/block-aware mode). You can either hold it as a modifier to "peek" into AST mode, or press it to switch for a longer sequence of commands.
+
+All that is to say that in order to explore rethinking some of these things, it seemed necessary to start from a blank slate and have full control over the interface. Edita's handling of the Escape key in particular goes against the grain of deep assumptions built into other editors' interfaces, and I didn't want to constantly be fighting those assumptions.
+
+### General
+
+There are a few more general things that would be hard to integrate into an existing editor. VS Code, for example, uses Electron's (Chrome's) context and file menus, which are not as snappy and smooth as the native ones (on Linux Mint Mate at least). I think it's important to have full control over _all_ interactions to avoid small but annoying rough edges like these, so Edita uses custom context menus that are copied from Mate's.
+
+### Philosophy
+
+I'm fascinated by the prospect of a fully-fledged IDE that's just a single repo (not even a monorepo) with a handful of dependencies, and that you can download and run in dev mode with `git clone; npm i; npm run dev` -- no native code to build, no complex project structure to understand. Tree-sitter and LSP bring this within reach (although language servers will have to be bundled somehow as native binaries, where not written in JavaScript).
 
 ## Project status
 
-This started from a frustration with traditional editors' lack of understanding of the structure of code, and corresponding lack of support for semantic edits. I also think editors are mostly still stuck in a "code is just text" paradigm, which is mostly true, but restricts thinking around designing intuitive and ergonomic interfaces.
-
-I originally wanted to make a product out of it, but there's too much work for one person to make an editor with all the features people need these days - LSP servers, git integration, etc.
-
-It's also slow -- typing lags sometimes even on small documents, which is bearable for me but puts it off the table for commercial adoption. I think a canvas-based renderer using a Tree-sitter AST for syntax highlighting (which Edita is) can theoretically be fast enough, but again it would take time. The renderer isn't currently very amenable to caching - I've described these issues a bit in GitLab issues.
-
-So I'm mostly treating it as a project just for personal use at the moment, and not worrying too much about making it accessible either for other users -- official Windows and Mac support is not on the roadmap, for example -- or for potential contributors. That said, if this project interests you enough for you to start poking around in the code, I would welcome [emails](mailto:gus@gushogg-blake.com) or GitLab/GitHub discussions about potential contributions.
+I'm currently working on a code overhaul (port to TypeScript; big refactor) and performance and reliability issues to get Edita to a point where I would feel good about recommending that people try it. As of now I've been using it as my daily driver for over 3 years, but there are bugs (I encountered several unrecoverable freezes from the Markdown grammar WASM module while writing this, and have switched to xed -- other grammars seem more stable) and I don't know how approachable the UI is -- I've written it around my needs by necessity, so it's probably covered in rough edges and not discoverable at all for new users.
 
 ## High-level overview of the code
 
@@ -50,25 +80,11 @@ This means that everything is baked in and not much can be configured without ch
 
 ### Electron
 
-Electron now strongly discourages using `ipcRenderer` directly from the renderer and instead recommends preload scripts. We are still using nodeIntegration and require()ing electron imports directly from the renderer for now.
+Note: Electron now strongly discourages using `ipcRenderer` directly from the renderer and instead recommends preload scripts. We are still using nodeIntegration and require()ing electron imports directly from the renderer for now. We don't load any remote scripts, but `nodeIntegration` still opens us up to supply chain attacks from client-side dependencies whereas otherwise we'd only have to worry about the main process.
 
 ### Building
 
-There are a handful of electron-vite projects that have pre-configured defaults and make things like HMR work in Electron.
-
-I don't think it's a good idea to use these, at least not yet:
-
-- They seem to be single-person projects
-
-- My use-case is complex; for example one of them that I looked at only seemed to support a single entrypoint. What about dialogs?
-
-- I have a working rollup build with hot reloading mostly working; getting another whole project involved and figuring out how to get it working with an already complex project would add a whole other dimension of complexity to the port.
-
-- These might be opinionated about assets. This might be a good thing (could get rid of a lot of custom logic and protocol handlers if it Just Works) but could also be another source of friction.
-
-On the pros side, these projects are more likely to be up-to-date with how Electron works these days (going from 22 to 35) and have likely put a lot of effort into making it work and getting good DX.
-
-If getting the rollup build working is a pain anyway then it might be worth just taking the plunge.
+Rollup.
 
 ### Svelte
 

@@ -1,7 +1,9 @@
 <script lang="ts">
 let {
 	items,
+	options,
 	onclick = () => {},
+	onclose = () => {},
 } = $props();
 
 let selectedItem = $state.raw(null);
@@ -18,7 +20,7 @@ function keydown(e) {
 	e.preventDefault();
 	
 	if (e.key === "Escape" && !options.noCancel) {
-		close();
+		onclose();
 		
 		return;
 	}

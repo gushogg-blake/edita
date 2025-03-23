@@ -5,7 +5,7 @@ let {webUtils} = require("electron");
 import bluebird from "bluebird";
 import {Language} from "web-tree-sitter";
 
-import {Evented, lid, promiseWithMethods} from "utils";
+import {lid, promiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
 import {URL, File} from "modules/core";
 
@@ -13,14 +13,11 @@ import fs from "platforms/electron/modules/fs";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 import ipc from "platforms/electron/modules/ipc";
 
-class Platform extends Evented {
-	constructor(options={}) {
+import Platform from "platforms/common/Platform";
+
+export default class extends Platform  {
+	constructor() {
 		super();
-		
-		options = {
-			isDialogWindow: false,
-			...options,
-		};
 		
 		this.isWeb = false;
 		
@@ -31,7 +28,6 @@ class Platform extends Evented {
 		
 		this.config = config;
 		this.isMainWindow = isMainWindow;
-		this.isDialogWindow = options.isDialogWindow;
 		
 		this.systemInfo = {
 			newline: os.EOL,
@@ -203,5 +199,3 @@ class Platform extends Evented {
 		ipcRenderer.send("closeWindow");
 	}
 }
-
-export default Platform;

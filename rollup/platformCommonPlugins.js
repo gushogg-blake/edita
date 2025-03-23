@@ -1,8 +1,9 @@
 import svelte from "rollup-plugin-svelte";
-import preprocess from "svelte-preprocess";
 import copy from "rollup-plugin-copy-watch";
 import scss from "rollup-plugin-scss";
 import css from "rollup-plugin-css-only";
+
+import svelteConfig from "../svelte.config.js";
 
 import {dev, prod, watch} from "./env.js";
 import {basePlugins} from "./base.js";
@@ -29,13 +30,10 @@ export default function(platform) {
 
 function _svelte() {
 	return svelte({
-		preprocess: preprocess({
-			scss: {
-				includePaths: ["src/css"],
-			},
-		}),
+		...svelteConfig,
 		
 		compilerOptions: {
+			...svelteConfig.compilerOptions,
 			dev,
 		},
 	});

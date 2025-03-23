@@ -6,6 +6,13 @@ import components from "components";
 import AppComponent from "components/App/App.svelte";
 import Platform from "./Platform";
 
+declare global {
+	module globalThis {
+		var platform: Platform;
+		var base: Base;
+	}
+}
+
 window.platform = new Platform();
 window.base = new Base();
 

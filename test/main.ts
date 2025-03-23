@@ -1,5 +1,12 @@
-import Base from "modules/Base";
+import Base from "modules/base/Base";
 import Platform from "platforms/web/Platform";
+
+declare global {
+	module globalThis {
+		var platform: Platform;
+		var base: Base;
+	}
+}
 
 window.platform = new Platform();
 window.base = new Base({});
