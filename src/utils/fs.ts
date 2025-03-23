@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import promiseWithMethods from "./promiseWithMethods";
+import {_typeof, promiseWithMethods} from "utils";
 
 let queues = {};
 
@@ -13,7 +13,6 @@ export default function(config) {
 		cwd,
 		fileIsBinary,
 		homeDir,
-		walk,
 		minimatch,
 		noBinaryFiles,
 	} = config;
@@ -271,22 +270,42 @@ export default function(config) {
 			return bluebird.filter(this.ls(), node => node.isDir());
 		}
 		
-		glob(pattern, options): Promise<Node[]> {
+		glob(patterns, options): Promise<Node[]> {
 			if (!glob) {
 				throw new Error("No glob backend available");
 			}
 			
-			return bluebird.map(glob(osPath.resolve(this.path, pattern), options), (file) => {
-				return this.child(file);
+			/*
+			glob doesn't do absolute ignores relative to the cwd even
+			if absolute patterns are relative to the cwd (with the root: ""
+			option). See https://github.com/isaacs/node-glob/issues/189
+			*/
+			
+			let {ignore} = options;
+			let ignoreType = _typeof(ignore);
+			
+			if (["String", "Array"].includes(ignoreType) {
+				if (ignoreType === "String") {
+					ignore = [ignore];
+				}
+				
+				options = {
+					...options,
+					
+					ignore: ignore.map((pattern) => {
+						return pattern.startsWith("/") ? this.path + pattern : pattern;
+					}),
+				};
+			}
+			
+			return bluebird.map(glob(patterns, {
+				...options,
+				cwd: this.path,
+				root: "",
+				realpath: true,
+			}), (path) => {
+				return new Node(path);
 			});
-		}
-		
-		walk(options) {
-			return walk.walk(this.path, options);
-		}
-		
-		walkAll(options) {
-			return walk.all(this.path, options);
 		}
 		
 		watch(handler) {
