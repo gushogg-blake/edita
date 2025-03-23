@@ -54,7 +54,7 @@ lifespan: global singleton created on startup; never destroyed.
 
 class Base extends Evented {
 	langs: Langs;
-	DirEntries: DirEntries;
+	DirEntries: typeof DirEntries;
 	packageJson: any;
 	
 	private initialisedLangs: Set<Lang>;

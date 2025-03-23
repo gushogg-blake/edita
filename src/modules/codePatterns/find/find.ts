@@ -1,4 +1,3 @@
-import Selection, {s} from "modules/core/Selection";
 import Cursor, {c} from "modules/core/Cursor";
 import createRegex from "./createRegex";
 import query from "./query";

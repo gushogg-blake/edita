@@ -1,5 +1,5 @@
 import {removeInPlace} from "utils/array";
-import Evented from "utils/Evented";
+import {Evented} from "utils";
 
 class TabPane extends Evented {
 	constructor(state) {

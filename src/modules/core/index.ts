@@ -6,3 +6,4 @@ export {default as AstSelection, a} from "./AstSelection";
 export {default as Project} from "./Project";
 export {default as SelectionContents} from "./SelectionContents";
 export {default as Lang} from "./Lang";
+export {Tree, Node} from "./Tree";

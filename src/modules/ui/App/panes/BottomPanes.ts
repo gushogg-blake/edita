@@ -1,4 +1,4 @@
-import Evented from "utils/Evented";
+import {Evented} from "utils";
 import TabPane from "./TabPane";
 
 /*
@@ -137,8 +137,6 @@ class BottomPanes extends Evented {
 	}
 	
 	setSizes() {
-		let {top, bottom} = this;
-		
 		let topSize;
 		let bottomSize;
 		

@@ -5,4 +5,5 @@ export {default as promiseWithMethods} from "./promiseWithMethods";
 export {default as _typeof} from "./typeof";
 export {default as throttle} from "./throttle";
 export {default as fs} from "./fs";
+export {default as mapArrayToObject} from "./mapArrayToObject";
 export * from "./array";

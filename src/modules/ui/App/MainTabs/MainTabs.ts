@@ -4,6 +4,7 @@ import View from "modules/ui/View";
 import {Document} from "modules/core";
 import EditorTab from "modules/ui/App/tabs/EditorTab";
 import type App from "modules/ui/App";
+import type {TabDescriptor} from "modules/ui/App/SessionSaving";
 import {getEditorTabLabel, nextNewFileName} from "./utils";
 
 /*
@@ -240,7 +241,7 @@ export default class extends Evented {
 		return this.editorTabs.find(tab => tab.url.toString() === url.toString());
 	}
 	
-	async loadFromSessionAndStartup({tabs, urlToSelect}) {
+	async loadFromSessionAndStartup({tabs: TabDescriptor[], urlToSelect}) {
 		this.tabs = await bluebird.map(tabs, async ({file, state}) => {
 			let tab = this.createEditorTab(file);
 			

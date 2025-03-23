@@ -1,5 +1,4 @@
-import Selection, {s} from "modules/core/Selection";
-import Cursor, {c} from "modules/core/Cursor";
+import type {Selection, Cursor} from "modules/core";
 
 /*
 Note - all Ranges have a .scope property. This is set by the owner

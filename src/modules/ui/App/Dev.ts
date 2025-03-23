@@ -1,5 +1,4 @@
 import {Evented, sleep, sortedPartition} from "utils";
-import Selection, {s} from "modules/core/Selection";
 
 function get(key) {
 	return base.getPref("dev." + key);

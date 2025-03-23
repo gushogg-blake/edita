@@ -1,5 +1,4 @@
-import Selection, {s} from "modules/core/Selection";
-import Cursor, {c} from "modules/core/Cursor";
+import {type Cursor, c} from "modules/core";
 import Scope from "./Scope";
 import Range from "./Range";
 

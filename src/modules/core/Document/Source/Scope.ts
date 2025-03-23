@@ -1,9 +1,7 @@
 import _typeof from "utils/typeof";
-import {groupBy} from "utils/array";
-import {removeInPlace} from "utils/array";
-import mapArrayToObject from "utils/mapArrayToObject";
-import Selection, {s} from "modules/core/Selection";
-import Tree from "modules/core/Tree";
+import {groupBy, removeInPlace, mapArrayToObject} from "utils";
+import {Selection, s} from "modules/core";
+import {Tree} from "modules/core";
 import Range from "./Range";
 
 function getInjectionLangCode(injection, result) {
