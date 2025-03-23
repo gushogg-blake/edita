@@ -1,6 +1,7 @@
 import os from "node:os";
 import path from "node:path";
 import fsExtra from "fs-extra";
+import chokidar from "chokidar";
 import minimatch from "minimatch-browser";
 import {glob} from "glob";
 import {mkdirp} from "mkdirp";

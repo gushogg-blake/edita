@@ -131,7 +131,7 @@ export default class extends Platform {
 	
 	async filesFromDropEvent(e, app) {
 		return bluebird.map([...e.dataTransfer.files], async (droppedFile) => {
-			let tmpPath = platform.path.resolve("/tmp", "upload-" + lid(), file.name);
+			let tmpPath = platform.path.resolve("/tmp", "upload-" + lid(), droppedFile.name);
 			
 			return await File.write(
 				URL.file(tmpPath),

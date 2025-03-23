@@ -29,15 +29,15 @@ export default function(config) {
 			this.setPath(path);
 		}
 		
-		get isRoot() {
+		get isRoot(): boolean {
 			return this.path === osPath.resolve(this.path, "..");
 		}
 		
-		get parent() {
+		get parent(): Node {
 			return new Node(osPath.resolve(this.path, ".."));
 		}
 		
-		get parents() {
+		get parents(): Node[] {
 			let parents = [];
 			let node = this;
 			
@@ -50,11 +50,11 @@ export default function(config) {
 			return parents;
 		}
 		
-		get lineage() {
+		get lineage(): Node[] {
 			return [...this.parents.reverse(), this];
 		}
 		
-		get homePath() {
+		get homePath(): string {
 			let {path} = this;
 			
 			if (
@@ -68,19 +68,19 @@ export default function(config) {
 			return path;
 		}
 		
-		child(...paths) {
+		child(...paths): Node {
 			return this.rel(...paths);
 		}
 		
-		rel(...paths) {
+		rel(...paths): Node {
 			return new Node(osPath.resolve(this.path, ...paths));
 		}
 		
-		sibling(...paths) {
+		sibling(...paths): Node {
 			return this.parent.child(...paths);
 		}
 		
-		reExt(newExtension) {
+		reExt(newExtension): Node {
 			if (newExtension[0] !== ".") {
 				newExtension = "." + newExtension;
 			}
@@ -88,19 +88,19 @@ export default function(config) {
 			return this.sibling(this.basename + newExtension);
 		}
 		
-		withExt(newExtension) {
+		withExt(newExtension): Node {
 			return this.sibling(this.name + newExtension);
 		}
 		
-		withoutExt() {
+		withoutExt(): Node {
 			return this.sibling(this.basename);
 		}
 		
-		reparent(currentParent, newParent) {
+		reparent(currentParent, newParent): Node {
 			return new Node(newParent).rel(this.pathFrom(currentParent));
 		}
 		
-		pathFrom(parent) {
+		pathFrom(parent): string {
 			if (parent instanceof Node) {
 				parent = parent.path;
 			}
@@ -112,7 +112,7 @@ export default function(config) {
 			await mkdirp(this.path);
 		}
 		
-		isDescendantOf(parent) {
+		isDescendantOf(parent): boolean {
 			if (parent instanceof Node) {
 				parent = parent.path;
 			}
@@ -120,11 +120,11 @@ export default function(config) {
 			return this.parents.some(n => n.path === parent);
 		}
 		
-		match(pattern) {
+		match(pattern): boolean {
 			return minimatch(this.path, pattern);
 		}
 		
-		matchName(pattern) {
+		matchName(pattern): boolean {
 			return minimatch(this.path, pattern, {
 				matchBase: true,
 			});
@@ -241,13 +241,13 @@ export default function(config) {
 			});
 		}
 		
-		async ls() {
+		async ls(): Promise<Node[]> {
 			return (await this.readdir()).map((path) => {
 				return new Node(osPath.resolve(this.path, path));
 			});
 		}
 		
-		async lsWithTypes() {
+		async lsWithTypes(): Promise<{isDir: boolean, node: Node}[]> {
 			return (await this.readdir(true)).map((dirent) => {
 				return {
 					isDir: dirent.isDirectory(),
@@ -256,15 +256,15 @@ export default function(config) {
 			});
 		}
 		
-		async lsFiles() {
+		async lsFiles(): Promise<Node[]> {
 			return bluebird.filter(this.ls(), node => node.isFile());
 		}
 		
-		async lsDirs() {
+		async lsDirs(): Promise<Node[]> {
 			return bluebird.filter(this.ls(), node => node.isDir());
 		}
 		
-		glob(pattern, options) {
+		glob(pattern, options): Promise<Node[]> {
 			if (!glob) {
 				throw new Error("No glob backend available");
 			}
@@ -286,11 +286,11 @@ export default function(config) {
 			return watch(this.path, handler);
 		}
 		
-		async contains(filename) {
+		async contains(filename): Promise<boolean> {
 			return (await this.readdir()).indexOf(filename) !== -1;
 		}
 		
-		async isDir() {
+		async isDir(): Promise<boolean> {
 			try {
 				return (await fs.stat(this.path)).isDirectory();
 			} catch (e) {
@@ -298,7 +298,7 @@ export default function(config) {
 			}
 		}
 		
-		async isFile() {
+		async isFile(): Promise<boolean> {
 			try {
 				return (await fs.stat(this.path)).isFile();
 			} catch (e) {
@@ -306,15 +306,15 @@ export default function(config) {
 			}
 		}
 		
-		isBinary() {
+		isBinary(): Promise<boolean> {
 			return fileIsBinary(this.path);
 		}
 		
-		async isTextFile() {
+		async isTextFile(): Promise<boolean> {
 			return await this.isFile() && !await this.isBinary();
 		}
 		
-		async readJson() {
+		async readJson(): Promise<any> {
 			return JSON.parse(await this.read());
 		}
 		
@@ -442,9 +442,7 @@ export default function(config) {
 		return new Node(path).child(...paths);
 	}
 	
-	Object.assign(api, {
-		FileIsBinary,
-	});
+	api.FileIsBinary = FileIsBinary;
 	
 	return api;
 }

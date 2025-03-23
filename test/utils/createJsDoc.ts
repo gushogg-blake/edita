@@ -1,5 +1,5 @@
 import {Document} from "modules/core";
-import {Memory} from "modules/core/resources";
+import {Memory} from "modules/core/resource";
 import dedent from "test/utils/dedent";
 
 export default function(code) {
