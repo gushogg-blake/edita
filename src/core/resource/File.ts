@@ -1,6 +1,5 @@
 import sleep from "utils/sleep";
 import {removeInPlace} from "utils/array";
-import {Project} from "core";
 import {hasMixedNewlines, normaliseNewlines} from "./utils";
 import FileLike from "./FileLike";
 
@@ -17,7 +16,6 @@ around to everything that takes a string of code (Document, ultimately).
 
 export default class File extends FileLike {
 	newlinesNormalised: boolean = false;
-	project?: Project = null;
 	
 	private saving: boolean = false;
 	

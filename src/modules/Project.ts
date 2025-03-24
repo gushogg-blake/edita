@@ -1,6 +1,6 @@
 import get from "lodash.get";
 import set from "lodash.set";
-import Evented from "utils/Evented";
+import {Evented} from "utils";
 import LspClient from "modules/lsp/LspClient";
 
 function defaultConfig() {

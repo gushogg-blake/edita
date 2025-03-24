@@ -19,11 +19,19 @@ import modeSwitchKey from "./modeSwitchKey";
 import snippets from "./snippets";
 import api from "./api";
 
+type Env = {
+	// ways of getting LSP, extra word completions etc
+	// (Document no longer has .project)
+	// (remove requestWordCompletionCandidates)
+};
+
 class Editor extends Evented {
-	constructor(document, view) {
+	constructor(document, env: Env?) {
 		super();
 		
 		this.document = document;
+		this.env = env;
+		
 		this.view = new View(document);
 		
 		this.astMode = new AstMode(this);

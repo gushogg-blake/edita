@@ -5,7 +5,6 @@ import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";
 import Line from "./Line";
-import LspHelpers from "./LspHelpers";
 
 export {default as Range} from "./Source/Range";
 export {default as Scope} from "./Source/Scope";
@@ -39,8 +38,6 @@ export default class Document extends Evented {
 		this.source.parse();
 		
 		this.fileChangedWhileModified = false;
-		
-		this.lsp = new LspHelpers(this);
 	}
 	
 	static fromString(string) {

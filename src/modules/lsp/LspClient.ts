@@ -8,6 +8,10 @@ import {
 	normaliseLangCode,
 } from "modules/lsp/utils";
 
+/*
+LIFECYCLE Project (every Project has a single LspClient)
+*/
+
 class LspClient extends Evented {
 	constructor() {
 		super();
@@ -301,6 +305,8 @@ class LspClient extends Evented {
 		
 		this.scopesByUri.delete(uri);
 		this.urisByScope.delete(scope);
+		
+		// TODO if no more scopes, close server
 	}
 	
 	updateScopes(document) {

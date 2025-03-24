@@ -2,8 +2,17 @@ import bluebird from "bluebird";
 import Evented from "utils/Evented";
 import {unique} from "utils/array";
 import {removeInPlace} from "utils/array";
-import Project from "core/Project";
+import Project from "modules/Project";
 import {projectRootFiles} from "base/conventions";
+
+/*
+REFACTOR this should keep a map of File -> Project for open files
+
+this will allow us to get the current project (Document no longer has
+.project)
+
+Editor will need a ref to the App.
+*/
 
 class Projects extends Evented {
 	constructor(app) {

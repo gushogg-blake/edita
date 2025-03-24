@@ -1,3 +1,9 @@
+/*
+REFACTOR core (File & Document) shouldn't know about Projects or LSP
+
+keep these in Editor, App, etc
+*/
+
 export default class LspHelpers {
 	constructor(document) {
 		this.document = document;
