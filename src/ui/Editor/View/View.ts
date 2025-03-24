@@ -24,8 +24,6 @@ export default class View extends Evented {
 		
 		this.document = document;
 		
-		this.createViewLines();
-		
 		this.focused = false;
 		this.visible = false;
 		this.mounted = false;
@@ -85,7 +83,7 @@ export default class View extends Evented {
 		
 		this.wrap = base.getPref("wrap");
 		
-		this.updateWrappedLines();
+		this.createViewLines();
 		
 		this.blur = this.blur.bind(this);
 		
@@ -94,13 +92,10 @@ export default class View extends Evented {
 		];
 	}
 	
-	onDocumentEdit(edits) {
-		// TODO perf - should be able to optimise these given the edit
-		// that is, don't re-create viewLines/wrapped lines that aren't
-		// affected by the edits.
-		
-		this.createViewLines();
-		this.updateWrappedLines();
+	onDocumentEdit({edits, lineDiffs}) {
+		for (let {startLineIndex, invalidCount, newLines} of lineDiffs) {
+			this.updateViewLines(startLineIndex, invalidCount, newLines);
+		}
 		
 		//this.validateSelection();
 		
@@ -123,14 +118,28 @@ export default class View extends Evented {
 		return this.document.lines;
 	}
 	
-	createViewLines() {
-		this.viewLines = this.document.lines.map((line) => {
+	getViewLines(lines) {
+		return lines.map((line) => {
 			return new ViewLine(line, this.document.format);
 		});
 	}
 	
-	updateWrappedLines() {
-		this.wrappedLines = this.viewLines.map((viewLine, lineIndex) => {
+	createViewLines() {
+		this.viewLines = this.getViewLines(this.lines);
+		
+		this.createWrappedLines();
+	}
+	
+	updateViewLines(startLineIndex, invalidCount, newLines) {
+		let newViewLines = this.getViewLines(newLines);
+		
+		this.viewLines.splice(startLineIndex, invalidCount, ...newViewLines);
+		
+		this.updateWrappedLines(startLineIndex, invalidCount, newViewLines);
+	}
+	
+	getWrappedLines(viewLines) {
+		return viewLines.map((viewLine, lineIndex) => {
 			return wrapLine(
 				this.wrap,
 				viewLine,
@@ -140,6 +149,18 @@ export default class View extends Evented {
 				this.sizes.codeWidth,
 			);
 		});
+	}
+	
+	createWrappedLines() {
+		this.wrappedLines = this.getWrappedLines(this.viewLines);
+		
+		this.scheduleRedraw();
+	}
+	
+	updateWrappedLines(startLineIndex, invalidCount, newViewLines) {
+		let newWrappedLines = this.getWrappedLines(newViewLines);
+		
+		this.wrappedLines.splice(startLineIndex, invalidCount, ...newWrappedLines);
 		
 		this.scheduleRedraw();
 	}
@@ -695,7 +716,7 @@ export default class View extends Evented {
 			this.setHorizontalScrollNoValidate(0);
 		}
 		
-		this.updateWrappedLines();
+		this.createWrappedLines();
 		
 		this.fire("wrapChanged", wrap);
 		
@@ -718,7 +739,7 @@ export default class View extends Evented {
 	
 	setCanvasSize(width, height) {
 		this.updateSizes(width, height);
-		this.updateWrappedLines();
+		this.createWrappedLines();
 		this.validateScrollPosition();
 	}
 	
@@ -766,7 +787,7 @@ export default class View extends Evented {
 		this.updateSizes();
 		
 		if (marginWidth !== this.sizes.marginWidth) {
-			this.updateWrappedLines();
+			this.createWrappedLines();
 		}
 	}
 	

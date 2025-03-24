@@ -74,19 +74,37 @@ export default class Document extends Evented {
 		return this.source.scopes;
 	}
 	
-	createLines() {
-		this.lines = [];
+	getLines(string, prevLine=null) {
+		let lines = [];
 		
 		let {format} = this;
-		let lineStrings = this.string.split(format.newline);
-		let lineStartIndex = 0;
+		let {newline} = format;
+		let lineStrings = string.split(newline);
+		let lineIndex = prevLine ? prevLine.lineIndex + 1 : 0;
+		let startIndex = prevLine ? (prevLine.startIndex + prevLine.string.length + newline.length) : 0;
 		
-		for (let i = 0; i < lineStrings.length; i++) {
-			let lineString = lineStrings[i];
+		for (let lineString of lineStrings) {
+			lines.push(new Line(format, lineIndex, startIndex, lineString));
 			
-			this.lines.push(new Line(lineString, format, lineStartIndex, i));
+			lineIndex++;
+			startIndex += lineString.length + newline.length;
+		}
+		
+		return lines;
+	}
+	
+	createLines() {
+		this.lines = this.getLines(this.string);
+	}
+	
+	updateLines(startLineIndex, invalidCount, newLines, lineIndexDiff, startIndexDiff) {
+		this.lines.splice(startLineIndex, invalidCount, ...newLines);
+		
+		for (let i = startLineIndex + 1; i < this.lines.length; i++) {
+			let line = this.lines[i];
 			
-			lineStartIndex += lineString.length + format.newline.length;
+			line.startIndex += startIndexDiff;
+			line.lineIndex += lineIndexDiff;
 		}
 	}
 	
@@ -164,19 +182,34 @@ export default class Document extends Evented {
 		
 		this.string = this.string.substr(0, index) + replaceWith + this.string.substr(index + string.length);
 		
-		this.createLines();
+		let startLineIndex = selection.start.lineIndex;
+		let invalidCount = (selection.end.lineIndex - startLineIndex) + 1;
+		let prefix = this.lines[startLineIndex].string.substr(0, selection.start.offset);
+		let suffix = this.lines[selection.end.lineIndex].string.substr(selection.end.offset);
+		let newLines = this.getLines(prefix + replaceWith + suffix, this.lines[startLineIndex - 1] || null);
 		
-		return index;
+		let startIndexDiff = replaceWith.length - string.length;
+		let lineIndexDiff = newLines.length - invalidCount;
+		
+		this.updateLines(startLineIndex, invalidCount, newLines, lineIndexDiff, startIndexDiff);
+		
+		return {
+			index,
+			lineDiff: {startLineIndex, invalidCount, newLines},
+		};
 	}
 	
 	apply(edit) {
-		let index = this._apply(edit);
+		let {index, lineDiff} = this._apply(edit);
 		
 		this.source.edit(edit, index);
 		
 		this.modified = true;
 		
-		this.fire("edit", [edit]);
+		this.fire("edit", {
+			edits: [edit],
+			lineDiffs: [lineDiff],
+		});
 	}
 	
 	reverse(edit) {
@@ -205,15 +238,22 @@ export default class Document extends Evented {
 				this.apply(edit);
 			}
 		} else {
+			let lineDiffs = [];
+			
 			for (let edit of edits) {
-				this._apply(edit);
+				let {lineDiff} = this._apply(edit);
+				
+				lineDiffs.push(lineDiff);
 			}
 			
 			this.source.parse();
 			
 			this.modified = true;
 			
-			this.fire("edit", edits);
+			this.fire("edit", {
+				edits,
+				lineDiffs,
+			});
 		}
 	}
 	
