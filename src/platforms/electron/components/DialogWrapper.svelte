@@ -1,6 +1,6 @@
 <script lang="ts">
 import {onMount, setContext, getContext, tick} from "svelte";
-import themeStyle from "components/themeStyle";
+import themeStyle from "components/utils/themeStyle";
 
 let {
 	app,

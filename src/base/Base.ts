@@ -169,7 +169,7 @@ class Base extends Evented {
 	
 	/*
 	enable tweaking theme by changing CSS variables in dev tools. see
-	components/themeStyleDev
+	components/utils/themeStyleDev
 	*/
 	
 	modifyThemeForDev(values) {

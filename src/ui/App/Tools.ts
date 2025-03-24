@@ -1,6 +1,6 @@
 import bluebird from "bluebird";
+import Refactor from "ui/Refactor";
 import FindAndReplaceTab from "./tabs/FindAndReplaceTab";
-import Refactor from "./Refactor";
 import RefactorTab from "./tabs/RefactorTab";
 
 class Tools {

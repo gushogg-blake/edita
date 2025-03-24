@@ -1,6 +1,6 @@
 <script lang="ts">
-import FileExplorer from "components/FileExplorer.svelte";
-import ProjectSelector from "components/ProjectSelector.svelte";
+import ProjectSelector from "components/App/ProjectSelector.svelte";
+import FileExplorer from "components/App/FileExplorer.svelte";
 </script>
 
 <style lang="scss">

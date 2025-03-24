@@ -4,25 +4,25 @@ import {onMount, setContext, tick} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import inlineStyle from "utils/dom/inlineStyle";
 
-import themeStyle from "components/themeStyle";
-import themeStyleDev from "components/themeStyleDev";
+import themeStyle from "components/utils/themeStyle";
+import themeStyleDev from "components/utils/themeStyleDev";
 import labelClick from "components/actions/labelClick";
+
+import FastOpen from "components/quickActions/FastOpen.svelte";
+import CommandPalette from "components/quickActions/CommandPalette.svelte";
+
+import FindBar from "components/FindBar.svelte";
 
 import Toolbar from "./Toolbar.svelte";
 
 import TabBar from "./TabBar.svelte";
-import EditorTab from "./EditorTab.svelte";
-import RefactorPreviewTab from "./RefactorPreviewTab.svelte";
+import EditorTab from "./tabs/EditorTab.svelte";
+import RefactorPreviewTab from "./tabs/RefactorPreviewTab.svelte";
 
-import Pane from "./Pane.svelte";
-import LeftPane from "./LeftPane.svelte";
-import RightPane from "./RightPane.svelte";
-import BottomPanes from "./BottomPanes.svelte";
-
-import FindBar from "./FindBar.svelte";
-
-import FastOpen from "./quickActions/FastOpen.svelte";
-import CommandPalette from "./quickActions/CommandPalette.svelte";
+import Pane from "./panes/Pane.svelte";
+import LeftPane from "./panes/LeftPane.svelte";
+import RightPane from "./panes/RightPane.svelte";
+import BottomPanes from "./panes/BottomPanes.svelte";
 
 import DevToolbar from "./DevToolbar/DevToolbar.svelte";
 

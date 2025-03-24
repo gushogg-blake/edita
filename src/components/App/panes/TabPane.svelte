@@ -1,12 +1,15 @@
 <script lang="ts">
 import {onMount, getContext} from "svelte";
+
 import inlineStyle from "utils/dom/inlineStyle";
+
 import TabBar from "components/TabBar.svelte";
-import ResizeHandle from "./ResizeHandle.svelte";
-import FindAndReplaceTab from "./FindAndReplaceTab.svelte";
-import FindResultsTab from "./FindResultsTab.svelte";
-import RefactorTab from "./RefactorTab.svelte";
-import ClippingsTab from "./ClippingsTab.svelte";
+import ResizeHandle from "components/ResizeHandle.svelte";
+
+import FindAndReplaceTab from "components/App/tabs/FindAndReplaceTab.svelte";
+import FindResultsTab from "components/App/tabs/FindResultsTab.svelte";
+import RefactorTab from "components/App/tabs/RefactorTab.svelte";
+import ClippingsTab from "components/App/tabs/ClippingsTab.svelte";
 
 let {
 	pane,
