@@ -1,30 +1,28 @@
 import bluebird from "bluebird";
 
-import Evented from "utils/Evented";
-import bindFunctions from "utils/bindFunctions";
-import promiseWithMethods from "utils/promiseWithMethods";
+import {Evented, bindFunctions, promiseWithMethods} from "utils";
+import {URL, Document} from "core";
 
-import URL from "core/resource/URL";
-import Document from "core/Document";
-import Editor from "ui/Editor";
 import {alwaysIncludeDirInTabTitle} from "base/conventions";
+
+import Editor from "ui/Editor";
+import FindAndReplace from "ui/FindAndReplace";
+import FileTree from "ui/FileTree";
+import contextMenu from "ui/contextMenu";
 
 import Projects from "ui/App/Projects";
 import Tools from "ui/App/Tools";
 import Output from "ui/App/Output";
-import FindAndReplace from "ui/App/FindAndReplace";
 import SidePanes from "ui/App/panes/SidePanes";
 import BottomPanes from "ui/App/panes/BottomPanes";
 import EditorTab from "ui/App/tabs/EditorTab";
 import RefactorPreviewTab from "ui/App/tabs/RefactorPreviewTab";
-import FileTree from "ui/App/FileTree";
 
 import commands from "./commands";
 import MainTabs from "./MainTabs";
 import SessionSaving from "./SessionSaving";
 import FileOperations from "./FileOperations";
 import Dialogs from "./Dialogs";
-import contextMenu from "./contextMenu";
 
 import readFiles from "./readFiles";
 

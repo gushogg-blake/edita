@@ -1,4 +1,4 @@
-import FindResults from "./FindResults";
+import FindResults from "ui/FindResults";
 import FindResultsTab from "./tabs/FindResultsTab";
 import ClippingsTab from "./tabs/ClippingsTab";
 
