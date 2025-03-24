@@ -56,7 +56,6 @@ function onOptionsUpdated() {
 }
 
 function getFormOptions(options) {
-	console.log(options);
 	let {caseMode} = options;
 	
 	return {
