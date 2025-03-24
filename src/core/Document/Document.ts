@@ -521,7 +521,7 @@ export default class Document extends Evented {
 	}
 	
 	async onWatchEvent() {
-		let {contents} = this.file;
+		let {contents} = this.resource;
 		
 		if (contents === null || this.modified) {
 			this.fileChangedWhileModified = true;
