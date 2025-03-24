@@ -11,6 +11,8 @@ import components from "components";
 import {setGlobals} from "platforms/common/globals";
 import Platform from "platforms/electron/Platform";
 
+window.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
+
 setGlobals(Platform);
 
 // ENTRYPOINT main (renderer) process for Electron
@@ -137,5 +139,3 @@ window.addEventListener("keydown", function(e) {
 		ipcRenderer.invoke("devTools", "open");
 	}
 });
-
-window.ELECTRON_DISABLE_SECURITY_WARNINGS = true;

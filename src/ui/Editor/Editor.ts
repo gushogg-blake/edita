@@ -69,8 +69,8 @@ class Editor extends Evented {
 			document.on("edit", this.onDocumentEdit.bind(this)),
 			document.on("save", this.onDocumentSave.bind(this)),
 			document.on("historyEntryAdded", this.onDocumentHistoryEntryAdded.bind(this)),
-			view.on("focus", this.onFocus.bind(this)),
-			view.on("blur", this.onBlur.bind(this)),
+			this.view.on("focus", this.onFocus.bind(this)),
+			this.view.on("blur", this.onBlur.bind(this)),
 		];
 	}
 	
@@ -281,7 +281,7 @@ class Editor extends Evented {
 		return str;
 	}
 	
-	onDocumentEdit(edits) {
+	onDocumentEdit() {
 		this.throttledBackup();
 	}
 	

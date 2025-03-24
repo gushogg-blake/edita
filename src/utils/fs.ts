@@ -270,7 +270,7 @@ export default function(config) {
 			return bluebird.filter(this.ls(), node => node.isDir());
 		}
 		
-		glob(patterns, options): Promise<Node[]> {
+		glob(patterns, options={}): Promise<Node[]> {
 			if (!glob) {
 				throw new Error("No glob backend available");
 			}
@@ -284,7 +284,7 @@ export default function(config) {
 			let {ignore} = options;
 			let ignoreType = _typeof(ignore);
 			
-			if (["String", "Array"].includes(ignoreType) {
+			if (["String", "Array"].includes(ignoreType)) {
 				if (ignoreType === "String") {
 					ignore = [ignore];
 				}
@@ -304,7 +304,8 @@ export default function(config) {
 				root: "",
 				realpath: true,
 			}), (path) => {
-				return new Node(path);
+				// path will still be relative if pattern doesn't start with /
+				return this.rel(path);
 			});
 		}
 		
