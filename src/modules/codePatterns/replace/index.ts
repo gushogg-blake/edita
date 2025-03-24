@@ -1,6 +1,6 @@
 import mapArrayToObject from "utils/mapArrayToObject";
-import {Selection, s, AstSelection, a, SelectionContents} from "modules/core";
-import {Document, Node} from "modules/core";
+import {Selection, s, AstSelection, a, SelectionContents} from "core";
+import {Document, Node} from "core";
 import astCommon from "modules/astCommon";
 import getPlaceholders from "modules/snippets/getPlaceholders";
 

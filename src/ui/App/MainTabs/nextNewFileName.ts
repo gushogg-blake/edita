@@ -1,5 +1,5 @@
 import nextName from "utils/nextName";
-import {type Lang, URL} from "modules/core";
+import {type Lang, URL} from "core";
 
 export default function(editorTabs, dir, lang: Lang) {
 	let {defaultExtension} = lang;

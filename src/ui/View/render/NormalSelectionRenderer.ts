@@ -1,5 +1,5 @@
 import middle from "utils/middle";
-import Selection, {s} from "modules/core/Selection";
+import Selection, {s} from "core/Selection";
 import LineRowRenderer from "./LineRowRenderer";
 
 function findFirstVisibleSelectionIndex(visibleSelection, selections) {

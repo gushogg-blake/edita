@@ -1,5 +1,5 @@
 import Evented from "utils/Evented";
-import AstSelection, {a} from "modules/core/AstSelection";
+import AstSelection, {a} from "core/AstSelection";
 
 class MultiStepCommand extends Evented {
 	constructor(editor, astManipulation) {

@@ -1,6 +1,6 @@
-import Cursor, {c} from "modules/core/Cursor";
-import Selection, {s} from "modules/core/Selection";
-import AstSelection, {a} from "modules/core/AstSelection";
+import Cursor, {c} from "core/Cursor";
+import Selection, {s} from "core/Selection";
+import AstSelection, {a} from "core/AstSelection";
 import {extendDown} from "modules/astCommon/utils";
 
 let matchers = {

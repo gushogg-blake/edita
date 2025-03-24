@@ -1,4 +1,4 @@
-import {Special} from "modules/core/resource";
+import {Special} from "core/resource";
 import Tab from "./Tab";
 
 class RefactorPreviewTab extends Tab {

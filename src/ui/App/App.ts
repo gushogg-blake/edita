@@ -4,8 +4,8 @@ import Evented from "utils/Evented";
 import bindFunctions from "utils/bindFunctions";
 import promiseWithMethods from "utils/promiseWithMethods";
 
-import URL from "modules/core/resource/URL";
-import Document from "modules/core/Document";
+import URL from "core/resource/URL";
+import Document from "core/Document";
 import Editor from "ui/Editor";
 import View from "ui/View";
 import {alwaysIncludeDirInTabTitle} from "base/conventions";

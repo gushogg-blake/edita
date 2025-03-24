@@ -1,6 +1,6 @@
 import {expandTabs} from "modules/utils/editing";
-import type {Line} from "modules/core/Document";
-import type {Format} from "modules/core";
+import type {Line} from "core/Document";
+import type {Format} from "core";
 
 /*
 a Line with extra info about tabs for rendering

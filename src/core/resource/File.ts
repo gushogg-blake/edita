@@ -1,6 +1,6 @@
 import sleep from "utils/sleep";
 import {removeInPlace} from "utils/array";
-import {Project} from "modules/core";
+import {Project} from "core";
 import {hasMixedNewlines, normaliseNewlines} from "./utils";
 import FileLike from "./FileLike";
 

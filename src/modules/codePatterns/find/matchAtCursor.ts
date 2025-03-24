@@ -1,4 +1,4 @@
-import Selection, {s} from "modules/core/Selection";
+import Selection, {s} from "core/Selection";
 import matchers from "./matchers";
 
 export default function(context, document, tokens, cursor) {

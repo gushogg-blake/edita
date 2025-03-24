@@ -1,6 +1,6 @@
 import {Evented} from "utils";
-import {AstSelection, a, Selection, s, Cursor, c} from "modules/core";
-import Memory from "modules/core/resource/Memory";
+import {AstSelection, a, Selection, s, Cursor, c} from "core";
+import Memory from "core/resource/Memory";
 import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";

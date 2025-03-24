@@ -1,7 +1,7 @@
 import bluebird from "bluebird";
 import {Evented, moveInPlace, removeInPlace} from "utils";
 import View from "ui/View";
-import {Document} from "modules/core";
+import {Document} from "core";
 import EditorTab from "ui/App/tabs/EditorTab";
 import type App from "ui/App";
 import type {TabDescriptor} from "ui/App/SessionSaving";

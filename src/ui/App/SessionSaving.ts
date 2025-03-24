@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import {URL, File} from "modules/core";
+import {URL, File} from "core";
 import type {SavedState} from "./tabs/EditorTab";
 
 export type TabDescriptor = {

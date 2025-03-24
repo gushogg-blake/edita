@@ -1,6 +1,6 @@
 import {lid, partition} from "utils";
-import {URL} from "modules/core";
-import {File, NewFile} from "modules/core/resource";
+import {URL} from "core";
+import {File, NewFile} from "core/resource";
 
 export default class {
 	constructor(app) {

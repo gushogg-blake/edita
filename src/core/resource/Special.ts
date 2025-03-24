@@ -1,4 +1,4 @@
-import {Resource} from "modules/core";
+import {Resource} from "core";
 import URL, {pathToUrl} from "./URL";
 
 export default class Special extends Resource {

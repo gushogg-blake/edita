@@ -1,4 +1,4 @@
-import {type Cursor, c} from "modules/core";
+import {type Cursor, c} from "core";
 import Scope from "./Scope";
 import Range from "./Range";
 

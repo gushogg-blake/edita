@@ -1,5 +1,5 @@
 import {Evented} from "utils";
-import {Format, Resource} from "modules/core";
+import {Format, Resource} from "core";
 import {getNewline, getIndent, guessLang} from "./utils";
 
 export default class FileLike extends Evented {

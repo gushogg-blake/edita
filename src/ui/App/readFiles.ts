@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import {type URL, File} from "modules/core";
+import {type URL, File} from "core";
 
 export default async function(urls: URL[], asObject=false) {
 	let permissionsErrors = [];

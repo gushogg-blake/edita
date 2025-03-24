@@ -1,5 +1,5 @@
-import Selection, {s} from "modules/core/Selection";
-import {Special} from "modules/core/resource";
+import Selection, {s} from "core/Selection";
+import {Special} from "core/resource";
 import Tab from "./Tab";
 
 class ClippingsTab extends Tab {

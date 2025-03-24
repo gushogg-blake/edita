@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import {URL} from "modules/core";
+import {URL} from "core";
 import App from "ui/App";
 
 /*

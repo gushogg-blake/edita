@@ -6,7 +6,7 @@ import {Parser} from "web-tree-sitter";
 
 import {Evented} from "utils";
 
-import {Project, Document, Lang} from "modules/core";
+import {Project, Document, Lang} from "core";
 
 import Editor from "ui/Editor";
 import View from "ui/View";

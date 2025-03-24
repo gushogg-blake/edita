@@ -8,7 +8,7 @@ import fsWeb from "vendor/fs-web";
 import {fs as createFs, Evented, lid} from "utils";
 import {screenOffsets} from "utils/dom";
 
-import {URL, File} from "modules/core";
+import {URL, File} from "core";
 
 import clipboard from "platforms/web/modules/clipboard";
 import jsonStore from "platforms/web/modules/jsonStore";

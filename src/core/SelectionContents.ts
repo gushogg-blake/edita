@@ -1,5 +1,5 @@
-import {getNewline, getIndent} from "modules/core/resource/utils";
-import {IndentationDetails} from "modules/core/resource/Format";
+import {getNewline, getIndent} from "core/resource/utils";
+import {IndentationDetails} from "core/resource/Format";
 import {getIndentLevel} from "modules/utils/editing";
 
 class SelectionContents {

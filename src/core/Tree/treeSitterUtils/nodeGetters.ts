@@ -1,4 +1,4 @@
-import {type Selection, s} from "modules/core/Selection";
+import {type Selection, s} from "core/Selection";
 import cachedNodeFunction from "./utils/cachedNodeFunction";
 import {treeSitterPointToCursor} from "./conversions";
 

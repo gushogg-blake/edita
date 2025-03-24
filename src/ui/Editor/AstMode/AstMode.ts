@@ -1,7 +1,7 @@
 import Evented from "utils/Evented";
-import Selection, {s} from "modules/core/Selection";
-import Cursor, {c} from "modules/core/Cursor";
-import AstSelection, {a} from "modules/core/AstSelection";
+import Selection, {s} from "core/Selection";
+import Cursor, {c} from "core/Cursor";
+import AstSelection, {a} from "core/AstSelection";
 import MultiStepCommand from "./MultiStepCommand";
 
 class AstMode extends Evented {

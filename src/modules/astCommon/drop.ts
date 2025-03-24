@@ -1,4 +1,4 @@
-import AstSelection, {a} from "modules/core/AstSelection";
+import AstSelection, {a} from "core/AstSelection";
 import removeSelection from "./removeSelection";
 import {createSpaces, findIndentLevel, findSiblingIndex} from "./utils";
 

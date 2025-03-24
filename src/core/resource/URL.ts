@@ -1,4 +1,4 @@
-import {s, c} from "modules/core";
+import {s, c} from "core";
 
 export function pathToUrl(path) {
 	let encoded = "/" + path.split("/").slice(1).map(p => encodeURIComponent(p)).join("/");

@@ -1,4 +1,4 @@
-import Cursor, {c} from "modules/core/Cursor";
+import Cursor, {c} from "core/Cursor";
 import createRegex from "./createRegex";
 import query from "./query";
 import tokenise from "./tokenise";

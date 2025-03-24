@@ -1,5 +1,5 @@
-import Selection, {s} from "modules/core/Selection";
-import AstSelection, {a} from "modules/core/AstSelection";
+import Selection, {s} from "core/Selection";
+import AstSelection, {a} from "core/AstSelection";
 import astCommon from "modules/astCommon";
 
 export default {

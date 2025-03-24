@@ -1,5 +1,5 @@
 import {indentLines} from "modules/utils/editing";
-import AstSelection, {a} from "modules/core/AstSelection";
+import AstSelection, {a} from "core/AstSelection";
 import removeSelection from "modules/astCommon/removeSelection";
 import isIfFooter from "./utils/isIfFooter";
 

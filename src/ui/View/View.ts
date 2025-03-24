@@ -1,9 +1,9 @@
 import Evented from "utils/Evented";
 import bindFunctions from "utils/bindFunctions";
 import mapArrayToObject from "utils/mapArrayToObject";
-import Cursor, {c} from "modules/core/Cursor";
-import Selection, {s} from "modules/core/Selection";
-import AstSelection, {a} from "modules/core/AstSelection";
+import Cursor, {c} from "core/Cursor";
+import Selection, {s} from "core/Selection";
+import AstSelection, {a} from "core/AstSelection";
 import astCommon from "modules/astCommon";
 
 import SelectionUtils from "./utils/Selection";

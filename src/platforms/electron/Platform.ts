@@ -7,7 +7,7 @@ import {Language} from "web-tree-sitter";
 
 import {lid, promiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
-import {URL, File} from "modules/core";
+import {URL, File} from "core";
 
 import fs from "platforms/electron/modules/fs";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";

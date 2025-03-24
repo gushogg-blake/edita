@@ -1,6 +1,6 @@
-import Selection, {s} from "modules/core/Selection";
-import Cursor, {c} from "modules/core/Cursor";
-import SelectionContents from "modules/core/SelectionContents";
+import Selection, {s} from "core/Selection";
+import Cursor, {c} from "core/Cursor";
+import SelectionContents from "core/SelectionContents";
 import createPositions from "modules/snippets/createPositions";
 
 /*

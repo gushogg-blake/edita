@@ -1,5 +1,5 @@
 import {Evented, lid} from "utils";
-import {URL} from "modules/core";
+import {URL} from "core";
 import LspError from "modules/lsp/LspError";
 import {
 	cursorToLspPosition,

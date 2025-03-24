@@ -1,6 +1,6 @@
 import {Parser} from "web-tree-sitter";
 import mapArrayToObject from "utils/mapArrayToObject";
-import Cursor, {c} from "modules/core/Cursor";
+import Cursor, {c} from "core/Cursor";
 import Node from "./Node";
 import find from "./find";
 

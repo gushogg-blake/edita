@@ -1,4 +1,4 @@
-import Lang from "modules/core/Lang";
+import Lang from "core/Lang";
 
 export default class Langs {
 	constructor() {

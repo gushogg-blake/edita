@@ -1,5 +1,5 @@
 import findAndReplace from "modules/grep/findAndReplace";
-import Cursor, {c} from "modules/core/Cursor";
+import Cursor, {c} from "core/Cursor";
 
 export default class {
 	constructor(editor, options) {

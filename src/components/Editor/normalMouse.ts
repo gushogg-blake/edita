@@ -1,5 +1,5 @@
 import {on, off} from "utils/dom/domEvents";
-import Selection, {s} from "modules/core/Selection";
+import Selection, {s} from "core/Selection";
 import autoScroll from "./utils/autoScroll";
 import {getCursor, getCharCursor} from "./utils/cursorFromEvent";
 

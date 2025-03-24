@@ -41,6 +41,8 @@ config.
 			"electronMain/*": ["./src/platforms/electron/mainProcess/*"],
 			"base": ["./src/base"],
 			"base/*": ["./src/base/*"],
+			"core": ["./src/core"],
+			"core/*": ["./src/core/*"],
 			"components": ["./src/components"],
 			"components/*": ["./src/components/*"],
 			"modules/*": ["./src/modules/*"],

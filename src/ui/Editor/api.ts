@@ -1,4 +1,4 @@
-import Selection, {s} from "modules/core/Selection";
+import Selection, {s} from "core/Selection";
 import FindAndReplaceSession from "./FindAndReplaceSession";
 
 export default {

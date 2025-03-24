@@ -1,4 +1,4 @@
-import {URL, Format} from "modules/core";
+import {URL, Format} from "core";
 import {getNewline, getIndent, guessLang} from "./utils";
 import FileLike from "./FileLike";
 
