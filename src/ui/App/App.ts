@@ -7,7 +7,6 @@ import promiseWithMethods from "utils/promiseWithMethods";
 import URL from "core/resource/URL";
 import Document from "core/Document";
 import Editor from "ui/Editor";
-import View from "ui/View";
 import {alwaysIncludeDirInTabTitle} from "base/conventions";
 
 import Projects from "ui/App/Projects";
@@ -194,8 +193,8 @@ class App extends Evented {
 		return document;
 	}
 	
-	_createEditor(document, view) {
-		let editor = new Editor(document, view);
+	_createEditor(document) {
+		let editor = new Editor(document);
 		
 		editor.on("requestWordCompletionCandidates", (add) => {
 			add(this.editorTabs.map(function(tab) {
@@ -209,10 +208,7 @@ class App extends Evented {
 	}
 	
 	createEditor() {
-		let document = Document.fromString("");
-		let view = new View(document);
-		
-		return this._createEditor(document, view);
+		return this._createEditor(Document.fromString(""));
 	}
 	
 	// REFACTOR

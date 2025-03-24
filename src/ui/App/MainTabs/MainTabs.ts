@@ -1,6 +1,5 @@
 import bluebird from "bluebird";
 import {Evented, moveInPlace, removeInPlace} from "utils";
-import View from "ui/View";
 import {Document} from "core";
 import EditorTab from "ui/App/tabs/EditorTab";
 import type App from "ui/App";
@@ -196,8 +195,7 @@ export default class extends Evented {
 		}
 		
 		let document = this.app.createDocument(resource);
-		let view = new View(document);
-		let editor = this.app._createEditor(document, view);
+		let editor = this.app._createEditor(document);
 		
 		document.setupWatch();
 		

@@ -6,6 +6,7 @@ import AstSelection, {a} from "core/AstSelection";
 import Selection, {s} from "core/Selection";
 import Cursor, {c} from "core/Cursor";
 
+import View from "./View";
 import AstMode from "./AstMode";
 import normalMouse from "./normalMouse";
 import normalKeyboard from "./normalKeyboard";
@@ -23,7 +24,7 @@ class Editor extends Evented {
 		super();
 		
 		this.document = document;
-		this.view = view;
+		this.view = new View(document);
 		
 		this.astMode = new AstMode(this);
 		

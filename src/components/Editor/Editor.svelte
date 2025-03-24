@@ -17,18 +17,12 @@ import astDragData from "./astDragData";
 import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer.svelte";
 
-/*
-there are two general modes this component can run in - as a frontend to
-an existing Editor that's managed by the app (ie. a tab for editing/creating
-a file) ("app") or as essentially a fancy textarea ("textarea") (in which
-case it creates its own Editor).
+import type Editor from "ui/Editor";
 
-the point of this is to allow it to be used as a textarea with just
-bind:value as opposed to having to create a Document, a View, and an Editor.
-
-lang is for setting the language in textarea mode, where there isn't a file
-to guess the language from.
-*/
+type EditorProps = {
+	editor: Editor,
+	mode: "app" | "textarea",
+};
 
 let {
 	editor,

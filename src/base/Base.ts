@@ -9,7 +9,6 @@ import {Evented} from "utils";
 import {Project, Document, Lang} from "core";
 
 import Editor from "ui/Editor";
-import View from "ui/View";
 
 import DirEntries from "base/DirEntries";
 import stores from "base/stores";
@@ -223,10 +222,7 @@ class Base extends Evented {
 	}
 	
 	createEditorForTextArea(string="") {
-		let document = Document.fromString(string);
-		let view = new View(document);
-		
-		return new Editor(document, view);
+		return new Editor(Document.fromString(string));
 	}
 	
 	getPref(key) {
