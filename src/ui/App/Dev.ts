@@ -28,7 +28,7 @@ export default class extends Evented {
 		}
 		
 		if (get("openRefactor")) {
-			await app.refactor(["/home/gus/projects/edita/src/modules/langs"]);
+			await app.refactor(["/home/gus/projects/edita/src/base/langs"]);
 			
 			let {refactor} = app.bottomPanes.tools.tabs[1];
 			
