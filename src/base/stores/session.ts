@@ -1,4 +1,4 @@
-import JsonStore from "modules/stores/JsonStore";
+import JsonStore from "base/stores/JsonStore";
 
 let migrations = {
 	"1"(session) {

@@ -1,10 +1,10 @@
 import bluebird from "bluebird";
 import {Evented, moveInPlace, removeInPlace} from "utils";
-import View from "modules/ui/View";
+import View from "ui/View";
 import {Document} from "modules/core";
-import EditorTab from "modules/ui/App/tabs/EditorTab";
-import type App from "modules/ui/App";
-import type {TabDescriptor} from "modules/ui/App/SessionSaving";
+import EditorTab from "ui/App/tabs/EditorTab";
+import type App from "ui/App";
+import type {TabDescriptor} from "ui/App/SessionSaving";
 import {getEditorTabLabel, nextNewFileName} from "./utils";
 
 /*
@@ -241,7 +241,7 @@ export default class extends Evented {
 		return this.editorTabs.find(tab => tab.url.toString() === url.toString());
 	}
 	
-	async loadFromSessionAndStartup({tabs: TabDescriptor[], urlToSelect}) {
+	async loadFromSessionAndStartup({tabs, urlToSelect}: {tabs: TabDescriptor[], urlToSelect?: URL}) {
 		this.tabs = await bluebird.map(tabs, async ({file, state}) => {
 			let tab = this.createEditorTab(file);
 			
@@ -253,7 +253,7 @@ export default class extends Evented {
 		});
 		
 		if (this.editorTabs.length > 0) {
-			this.selectTab(urlToSelect && this.findTabByUrl(urlToSelect) || this.editorTabs.at(-1));
+			this.selectTab(urlToSelect ? this.findTabByUrl(urlToSelect) : this.editorTabs.at(-1));
 		} else {
 			this.initialNewFileTab = await this.app.fileOperations.newFile();
 		}

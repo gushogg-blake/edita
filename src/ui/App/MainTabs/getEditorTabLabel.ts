@@ -1,5 +1,5 @@
 import multimatch from "utils/multimatch";
-import {alwaysIncludeDirInTabTitle} from "modules/base/conventions";
+import {alwaysIncludeDirInTabTitle} from "base/conventions";
 
 export default function(tab, tabs) {
 	let sep = platform.systemInfo.pathSeparator;

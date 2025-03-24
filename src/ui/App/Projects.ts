@@ -3,7 +3,7 @@ import Evented from "utils/Evented";
 import {unique} from "utils/array";
 import {removeInPlace} from "utils/array";
 import Project from "modules/core/Project";
-import {projectRootFiles} from "modules/base/conventions";
+import {projectRootFiles} from "base/conventions";
 
 class Projects extends Evented {
 	constructor(app) {

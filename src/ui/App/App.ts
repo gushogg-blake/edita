@@ -6,19 +6,19 @@ import promiseWithMethods from "utils/promiseWithMethods";
 
 import URL from "modules/core/resource/URL";
 import Document from "modules/core/Document";
-import Editor from "modules/ui/Editor";
-import View from "modules/ui/View";
-import {alwaysIncludeDirInTabTitle} from "modules/base/conventions";
+import Editor from "ui/Editor";
+import View from "ui/View";
+import {alwaysIncludeDirInTabTitle} from "base/conventions";
 
-import Projects from "modules/ui/App/Projects";
-import Tools from "modules/ui/App/Tools";
-import Output from "modules/ui/App/Output";
-import FindAndReplace from "modules/ui/App/FindAndReplace";
-import SidePanes from "modules/ui/App/panes/SidePanes";
-import BottomPanes from "modules/ui/App/panes/BottomPanes";
-import EditorTab from "modules/ui/App/tabs/EditorTab";
-import RefactorPreviewTab from "modules/ui/App/tabs/RefactorPreviewTab";
-import FileTree from "modules/ui/App/FileTree";
+import Projects from "ui/App/Projects";
+import Tools from "ui/App/Tools";
+import Output from "ui/App/Output";
+import FindAndReplace from "ui/App/FindAndReplace";
+import SidePanes from "ui/App/panes/SidePanes";
+import BottomPanes from "ui/App/panes/BottomPanes";
+import EditorTab from "ui/App/tabs/EditorTab";
+import RefactorPreviewTab from "ui/App/tabs/RefactorPreviewTab";
+import FileTree from "ui/App/FileTree";
 
 import commands from "./commands";
 import MainTabs from "./MainTabs";
@@ -29,7 +29,7 @@ import contextMenu from "./contextMenu";
 
 import readFiles from "./readFiles";
 
-import Dev from "modules/ui/App/Dev";
+import Dev from "ui/App/Dev";
 
 class App extends Evented {
 	constructor() {

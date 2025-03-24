@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import JsonStore from "modules/stores/JsonStore";
+import JsonStore from "base/stores/JsonStore";
 import defaultThemes from "./defaultThemes";
 
 let migrations = {

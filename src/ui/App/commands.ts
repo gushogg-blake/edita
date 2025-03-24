@@ -1,6 +1,6 @@
 import bluebird from "bluebird";
 import {URL} from "modules/core";
-import App from "modules/ui/App";
+import App from "ui/App";
 
 /*
 functions available to be bound to key presses/buttons

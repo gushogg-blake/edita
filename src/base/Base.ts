@@ -8,10 +8,10 @@ import {Evented} from "utils";
 
 import {Project, Document, Lang} from "modules/core";
 
-import Editor from "modules/ui/Editor";
-import View from "modules/ui/View";
-import DirEntries from "modules/base/DirEntries";
-import stores from "modules/stores";
+import Editor from "ui/Editor";
+import View from "ui/View";
+import DirEntries from "base/DirEntries";
+import stores from "base/stores";
 
 import javascript from "modules/langs/javascript";
 import typescript from "modules/langs/typescript";

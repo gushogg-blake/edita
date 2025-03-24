@@ -1,6 +1,6 @@
 import {mount, unmount} from "svelte";
 import {promiseWithMethods} from "utils";
-import dialogs from "modules/ui/dialogs";
+import dialogs from "ui/dialogs";
 import components from "components";
 import DialogWindow from "./DialogWindow";
 

@@ -1,5 +1,5 @@
 import type Platform from "platforms/common/Platform";
-import Base from "modules/base/Base";
+import Base from "base/Base";
 
 declare global {
 	module globalThis {

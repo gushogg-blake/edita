@@ -29,12 +29,14 @@ export let baseConfig = {
 // SYNC tsconfig, rollup aliases
 let aliasEntries = {
 	"root": root,
-	"components": path.join(root, "src/components"),
-	"modules": path.join(root, "src/modules"),
-	"utils": path.join(root, "src/utils"),
-	"css": path.join(root, "src/css"),
 	"platforms": path.join(root, "src/platforms"),
 	"electronMain": path.join(root, "src/platforms/electron/mainProcess"),
+	"base": path.join(root, "src/base"),
+	"components": path.join(root, "src/components"),
+	"modules": path.join(root, "src/modules"),
+	"ui": path.join(root, "src/ui"),
+	"utils": path.join(root, "src/utils"),
+	"css": path.join(root, "src/css"),
 	"vendor": path.join(root, "vendor"),
 	"test": path.join(root, "test"),
 };

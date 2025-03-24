@@ -1,4 +1,4 @@
-import JsonStore from "modules/stores/JsonStore";
+import JsonStore from "base/stores/JsonStore";
 import migrations from "./migrations";
 
 export default function() {
