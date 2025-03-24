@@ -1,4 +1,4 @@
-let {cmdSync, fs} = require("utils/node");
+import {cmdSync, fs} from "utils/node";
 
 /*
 some packages have the wasm file already built, some need building
@@ -44,40 +44,38 @@ let packages = [
 	})),
 ];
 
-process.chdir(__dirname);
+process.chdir(import.meta.dirname);
 
 let root = fs("../..");
 let langsDir = root.child("vendor/public/tree-sitter/langs");
 
-(async function() {
-	for (let {langCode, path, action} of packages) {
-		let filename = "tree-sitter-" + langCode + ".wasm";
-		
-		if (await langsDir.child(filename).exists()) {
-			continue;
-		}
-		
-		if (action === "copy") {
-			let prebuiltWasm = fs("node_modules").child(path, filename);
-			
-			console.log("Copying " + langCode + " from " + prebuiltWasm.path);
-			console.log("");
-			
-			await prebuiltWasm.copy(langsDir);
-		} else {
-			console.log("Building " + langCode);
-			console.log("");
-			
-			try {
-				cmdSync("npx tree-sitter build --wasm node_modules/" + path);
-				
-				await fs(filename).move(langsDir);
-			} catch (e) {
-				console.log("Error when building parser for " + langCode);
-				console.error(e);
-			}
-		}
-		
-		console.log("");
+for (let {langCode, path, action} of packages) {
+	let filename = "tree-sitter-" + langCode + ".wasm";
+	
+	if (await langsDir.child(filename).exists()) {
+		continue;
 	}
-})();
+	
+	if (action === "copy") {
+		let prebuiltWasm = fs("node_modules").child(path, filename);
+		
+		console.log("Copying " + langCode + " from " + prebuiltWasm.path);
+		console.log("");
+		
+		await prebuiltWasm.copy(langsDir);
+	} else {
+		console.log("Building " + langCode);
+		console.log("");
+		
+		try {
+			cmdSync("npx tree-sitter build --wasm node_modules/" + path);
+			
+			await fs(filename).move(langsDir);
+		} catch (e) {
+			console.log("Error when building parser for " + langCode);
+			console.error(e);
+		}
+	}
+	
+	console.log("");
+}

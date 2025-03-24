@@ -22,7 +22,7 @@
 		"build-watch": "rollup -cw",
 		"await-build": "./scripts/await-build",
 		"build-clean": "./scripts/await-build --clean",
-		"build-parsers": "node ./scripts/tree-sitter/buildParsers.js",
+		"build-parsers": "bun ./scripts/tree-sitter/buildParsers.ts",
 		"postinstall": "patch-package"
 	},
 	"dependencies": {

@@ -4,6 +4,42 @@ Edita is a code editor combining novel features and interactions with a familiar
 
 See [edita.vercel.app](//edita.vercel.app/) (WIP).
 
+## Requirements
+
+- A recent Node version.
+
+- Bun is required to run the `buildParsers` script. This is only needed if you want to rebuild the grammar WASM files or add new ones; WASMs are included in the repo.
+
+## Installation & running
+
+To install on Linux, run install/linux/install.sh (or uninstall.sh to uninstall). This will install a desktop entry so you can start from the menu and associate file types.
+
+Other platforms not supported and adding them isn't a priority, but should be able to at least run in development mode and see a working app.
+
+## Dev
+
+For live reloading in Electron, the main process watches the build dir for changes and:
+
+- for changes to the main process, reloads itself with `npm run restart`
+
+- for changes to the renderer code, calls `.reload()` on each app and dialog window
+
+The web version uses `rollup-plugin-live-reload`. This doesn't work with Edita's Electron setup, possibly because we use the custom `app:` protocol. It may be easy to just change this to `file:` or something, but I haven't got around to testing it.
+
+### Scripts
+
+Use `npm run dev` to start the app in development mode with live reloading.
+
+It will default to using `.edita-dev` as the Chrome user data dir in dev mode, so it won't interfere with your existing Edita config if you use it as your editor.
+
+Some scripts called by npm scripts require the PLATFORM environment variable to be set, to indicate which variant of the app we're working with (electron, web, or test).
+
+The PLATFORM variable is used for:
+
+- Rollup config, to avoid unnecessarily building everything if we're only developing on one of the variants.
+
+- `await-build` and `build-clean`, which will complain if PLATFORM isn't present. These are just for convenience, so that we don't start building the app, launch it in parallel, and then have it reload when the build completes. Instead we always wait for the initial build before launching.
+
 ## Why another editor? Why from scratch?
 
 To explore solutions to what I see as fundamental issues with existing editors. The original reason was that Komodo Edit (but any editor; that's just the one I was using) didn't support structural or "block-level" edits. It seemed insane to me that in order to move a `<div>` somewhere else on the page, I had to tell my _code editor_ exactly the range of characters that described it, then drag and drop the text and clean up whitespace afterwards. Out of this frustration came Edita's AST mode, which is structure-aware and works with whole lines as opposed to characters.
@@ -91,36 +127,6 @@ Rollup.
 This project in the process of migration from JS to TS, and in the initial change only the minimal required changes were applied to get the code to compile.
 
 Currently compiling, but if something to do with types looks wrong, it probably is. Type annotations being added gradually and haphazardly. I'm ambivalent about typing; it feels like you can spend a lot of time doing stuff just to get rid of the errors, when the types are kind of irrelevant as they're not exposed outside the module. Large interfaces can be cumbersome to maintain and types aren't amenable to the pattern (v. common in JS) of just sticking something somewhere and not worrying too much about defining it precisely (see platforms/web/Platform .backupFs for example, which will be a PITA to type as it's basically "you know the Node fs module? ... yeah, kind of like that..."). They also don't play well with the pattern of passing a dependency into a closure and then defining an entire module's code in the closure for easy access -- again see utils/fs. Typing will require either a large interface repeating the Node interface, or foregoing the closure pattern and having something like this.backends.osPath instead of just osPath, for all the backend stuff.
-
-## Installation & running
-
-To install on Linux, run install/linux/install.sh (or uninstall.sh to uninstall). This will install a desktop entry so you can start from the menu and associate file types.
-
-Other platforms not supported and adding them isn't a priority, but should be able to at least run in development mode and see a working app.
-
-## Dev
-
-For live reloading in Electron, the main process watches the build dir for changes and:
-
-- for changes to the main process, reloads itself with `npm run restart`
-
-- for changes to the renderer code, calls `.reload()` on each app and dialog window
-
-The web version uses `rollup-plugin-live-reload`. This doesn't work with Edita's Electron setup, possibly because we use the custom `app:` protocol. It may be easy to just change this to `file:` or something, but I haven't got around to testing it.
-
-### Scripts
-
-Use `npm run dev` to start the app in development mode with live reloading.
-
-It will default to using `.edita-dev` as the Chrome user data dir in dev mode, so it won't interfere with your existing Edita config if you use it as your editor.
-
-Some scripts called by npm scripts require the PLATFORM environment variable to be set, to indicate which variant of the app we're working with (electron, web, or test).
-
-The PLATFORM variable is used for:
-
-- Rollup config, to avoid unnecessarily building everything if we're only developing on one of the variants.
-
-- `await-build` and `build-clean`, which will complain if PLATFORM isn't present. These are just for convenience, so that we don't start building the app, launch it in parallel, and then have it reload when the build completes. Instead we always wait for the initial build before launching.
 
 ## Launch process
 
