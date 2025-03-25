@@ -1,6 +1,6 @@
-import Cursor, {c} from "core/Cursor";
-import Selection, {s} from "core/Selection";
-import AstSelection, {a} from "core/AstSelection";
+import {Selection, s, AstSelection, a, Cursor, c} from "core";
+
+import type View from "ui/Editor/View";
 
 import CurrentLineHiliteRenderer from "./CurrentLineHiliteRenderer";
 import NormalSelectionRenderer from "./NormalSelectionRenderer";
@@ -11,7 +11,9 @@ import FoldHiliteRenderer from "./FoldHiliteRenderer";
 import CodeRenderer from "./CodeRenderer";
 import NormalCursorRenderer from "./NormalCursorRenderer";
 
-function getFoldedLineRowsToRender(view) {
+import type {CanvasRenderers} from "./types";
+
+function getFoldedLineRowsToRender(view: View) {
 	let {sizes, measurements} = view;
 	let foldedLineRows = [];
 	let rowsToRender = Math.ceil(sizes.height / measurements.rowHeight) + 1;
@@ -38,6 +40,8 @@ function getFoldedLineRowsToRender(view) {
 }
 
 class Renderer {
+	canvasRenderers: CanvasRenderers;
+	
 	constructor(view, canvasRenderers, uiState) {
 		this.view = view;
 		this.canvasRenderers = canvasRenderers;

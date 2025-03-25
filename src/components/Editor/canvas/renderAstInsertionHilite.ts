@@ -1,8 +1,11 @@
+import type CanvasRenderer from "ui/Editor/View";
+import type {MiscOffsets} from "./types";
+
 let lineThickness = 2;
 let lineWidth = 35;
 let yHint = 2;
 
-export default function(layers, view, offsets) {
+export default function(layers: CanvasLayers, view: View, offsets: MiscOffsets): CanvasRenderer {
 	let {
 		measurements: {colWidth, rowHeight},
 		sizes: {marginOffset},

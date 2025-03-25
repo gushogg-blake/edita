@@ -61,10 +61,6 @@ class Editor extends Evented {
 			platform.backup(this.document);
 		}, 15000);
 		
-		this.throttledUpdateAstSelection = throttle(() => {
-			this.updateAstSelection();
-		}, 200);
-		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
 			document.on("save", this.onDocumentSave.bind(this)),

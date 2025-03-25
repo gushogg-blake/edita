@@ -151,13 +151,13 @@ export default class View extends Evented {
 		});
 	}
 	
-	createWrappedLines() {
+	createWrappedLines(): void {
 		this.wrappedLines = this.getWrappedLines(this.viewLines);
 		
 		this.scheduleRedraw();
 	}
 	
-	updateWrappedLines(startLineIndex, invalidCount, newViewLines) {
+	updateWrappedLines(startLineIndex, invalidCount, newViewLines): void {
 		let newWrappedLines = this.getWrappedLines(newViewLines);
 		
 		this.wrappedLines.splice(startLineIndex, invalidCount, ...newWrappedLines);
@@ -165,13 +165,13 @@ export default class View extends Evented {
 		this.scheduleRedraw();
 	}
 	
-	render(canvas, uiState) {
-		let renderer = new Renderer(this, canvas, uiState);
+	render(canvasRenderers: CanvasRenderers, uiState): void {
+		let renderer = new Renderer(this, canvasRenderers, uiState);
 		
 		renderer.render();
 	}
 	
-	switchToAstMode() {
+	switchToAstMode(): void {
 		this.mode = "ast";
 		
 		this.clearCursorBlink();

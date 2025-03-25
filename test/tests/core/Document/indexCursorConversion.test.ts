@@ -1,4 +1,4 @@
-import {Document} from "modules/core";
+import {Document} from "core";
 import {is, deep} from "test/utils/assertions";
 import dedent from "test/utils/dedent";
 import createJsDoc from "test/utils/createJsDoc";

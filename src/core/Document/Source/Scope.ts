@@ -1,7 +1,6 @@
 import _typeof from "utils/typeof";
 import {groupBy, removeInPlace, mapArrayToObject} from "utils";
-import {Selection, s} from "core";
-import {Tree} from "core";
+import {Selection, s, Tree} from "core";
 import Range from "./Range";
 
 function getInjectionLangCode(injection, result) {
@@ -376,7 +375,7 @@ export default class Scope {
 	*/
 	
 	*_generateNodesStartingOnLine(lineIndex, startOffset, lang=null) {
-		if (!this.tree) {
+		if (!this.tree || !this.overlapsWithLine(lineIndex)) {
 			return;
 		}
 		
@@ -397,5 +396,9 @@ export default class Scope {
 	
 	allScopes() {
 		return this.scopes.concat(...this.scopes.map(scope => scope.allScopes()));
+	}
+	
+	overlapsWithLine(lineIndex) {
+		return this.ranges.some(range => range.overlapsWithLine(lineIndex));
 	}
 }

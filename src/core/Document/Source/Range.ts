@@ -43,6 +43,10 @@ class Range {
 	containsNodeStart(node) {
 		return this.selection.containsCharCursor(node.start);
 	}
+	
+	overlapsWithLine(lineIndex) {
+		return this.start.lineIndex <= lineIndex && this.end.lineIndex >= lineIndex;
+	}
 }
 
 export default Range;

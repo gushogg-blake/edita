@@ -1,7 +1,7 @@
-import _typeof from "utils/typeof";
+import {_typeof} from "utils";
 import {assert, expect} from "./chai";
 
-export {expect};
+export {expect} from "./chai";
 
 export function is(a, b) {
 	assert.strictEqual(a, b);

@@ -1,7 +1,7 @@
 import {is, deep, expect, subset} from "test/utils/assertions";
 import dedent from "test/utils/dedent";
 import createJsDoc from "test/utils/createJsDoc";
-import {Selection, s, Cursor, c} from "modules/core";
+import {Selection, s, Cursor, c} from "core";
 import query from "modules/codePatterns/find/query";
 import createRegex from "modules/codePatterns/find/createRegex";
 import tokenise from "modules/codePatterns/find/tokenise";

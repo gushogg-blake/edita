@@ -1,5 +1,11 @@
+import * as chai from "chai";
+import chaiSubset from "chai-subset";
 import Platform from "platforms/web/Platform";
 import {setGlobals} from "platforms/common/globals";
+
+chai.use(chaiSubset);
+
+chai.config.truncateThreshold = 0;
 
 setGlobals(Platform);
 

@@ -7,6 +7,8 @@ import renderFoldHilites from "./renderFoldHilites";
 import renderCode from "./renderCode";
 import renderNormalCursor from "./renderNormalCursor";
 
+import type MiscOffsets from "./types";
+
 export default function(layers, view, isPeekingAstMode, windowHasFocus) {
 	let {
 		sizes: {width, height, topMargin, marginOffset},

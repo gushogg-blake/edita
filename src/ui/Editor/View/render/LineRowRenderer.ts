@@ -1,13 +1,18 @@
 import generatorFromArray from "utils/generatorFromArray";
-import Cursor, {c} from "core/Cursor";
+import {Cursor, c} from "core";
+import type {CanvasRenderer} from "ui/Editor/View";
+import type Renderer from "./Renderer";
 
 export default class {
-	constructor(renderer) {
+	protected renderer: Renderer;
+	protected canvasRenderer: CanvasRenderer;
+	protected foldedLineRow: FoldedLineRow;
+	protected offset: number = null;
+	protected variableWidthPart: VariableWidthPart = null;
+	protected lastRenderedLineIndex?: number = null;
+	
+	constructor(renderer: Renderer) {
 		this.renderer = renderer;
-		this.foldedLineRow = null;
-		this.offset = null;
-		this.variableWidthPart = null;
-		this.lastRenderedLineIndex = null;
 	}
 	
 	get lineIndex() {
@@ -30,19 +35,19 @@ export default class {
 		return this.foldedLineRow.wrappedLine.lineRows;
 	}
 	
-	get isLastRow() {
+	get isLastRow(): boolean {
 		return this.rowIndexInLine === this.lineRows.length - 1;
 	}
 	
-	get isFirstRow() {
+	get isFirstRow(): boolean {
 		return this.rowIndexInLine === 0;
 	}
 	
-	get cursor() {
+	get cursor(): Cursor {
 		return c(this.lineIndex, this.offset);
 	}
 	
-	init(row) {
+	init(row): void {
 		if (this.canvasRenderer.init) {
 			this.canvasRenderer.init();
 		}
@@ -50,11 +55,11 @@ export default class {
 		this.startRow(row);
 	}
 	
-	nextVariableWidthPart() {
+	nextVariableWidthPart(): void {
 		this.variableWidthPart = this.variableWidthPartGenerator.next().value;
 	}
 	
-	atCursor(cursor) {
+	atCursor(cursor): boolean {
 		return cursor?.equals(this.cursor);
 	}
 	

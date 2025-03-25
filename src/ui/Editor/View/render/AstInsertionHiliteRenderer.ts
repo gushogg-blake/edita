@@ -1,15 +1,15 @@
 import LineRowRenderer from "./LineRowRenderer";
+import type Renderer from "./Renderer";
 
 export default class extends LineRowRenderer {
-	constructor(renderer) {
+	constructor(renderer: Renderer) {
 		super(renderer);
 		
 		this.canvasRenderer = this.renderer.canvasRenderers.astInsertionHilite;
-		this.hilite = this.renderer.view.astInsertionHilite;
 	}
 	
 	renderBetweenLines(lineAbove, lineBelow, rowsAboveCurrent, rowsBelowCurrent) {
-		let {startLineIndex, endLineIndex} = this.hilite;
+		let {startLineIndex, endLineIndex} = this.renderer.view.astInsertionHilite;
 		let lineIndex = lineBelow ? lineBelow.lineIndex : lineAbove.lineIndex + 1;
 		
 		if (lineIndex === startLineIndex) {

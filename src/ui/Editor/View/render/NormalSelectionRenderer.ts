@@ -1,42 +1,18 @@
 import middle from "utils/middle";
-import Selection, {s} from "core/Selection";
+import {Selection, s} from "core";
 import LineRowRenderer from "./LineRowRenderer";
-
-function findFirstVisibleSelectionIndex(visibleSelection, selections) {
-	let startIndex = 0;
-	let endIndex = selections.length;
-	let first = null;
-	
-	while (true) {
-		if (endIndex - startIndex === 0) {
-			break;
-		}
-		
-		let index = middle(startIndex, endIndex);
-		let selection = selections[index];
-		
-		if (selection.overlaps(visibleSelection)) {
-			first = index;
-			endIndex = index;
-		} else if (selection.isBefore(visibleSelection)) {
-			startIndex = index + 1;
-		} else {
-			endIndex = index;
-		}
-	}
-	
-	return first;
-}
+import type Renderer from "./Renderer";
 
 export default class extends LineRowRenderer {
-	constructor(renderer, selections, canvasRenderer) {
+	private selections: Selection[];
+	private selectionIndex?: number = null;
+	private inSelection: boolean = false;
+	
+	constructor(renderer: Renderer, selections: Selection[], canvasRenderer: CanvasRenderer) {
 		super(renderer);
 		
 		this.selections = selections;
 		this.canvasRenderer = canvasRenderer;
-		
-		this.selectionIndex = null;
-		this.inSelection = false;
 	}
 	
 	get selection() {
@@ -150,4 +126,33 @@ export default class extends LineRowRenderer {
 			}
 		}
 	}
+}
+
+function findFirstVisibleSelectionIndex(
+	visibleSelection: Selection,
+	selections: Selection[],
+): number | null {
+	let startIndex = 0;
+	let endIndex = selections.length;
+	let first = null;
+	
+	while (true) {
+		if (endIndex - startIndex === 0) {
+			break;
+		}
+		
+		let index = middle(startIndex, endIndex);
+		let selection = selections[index];
+		
+		if (selection.overlaps(visibleSelection)) {
+			first = index;
+			endIndex = index;
+		} else if (selection.isBefore(visibleSelection)) {
+			startIndex = index + 1;
+		} else {
+			endIndex = index;
+		}
+	}
+	
+	return first;
 }

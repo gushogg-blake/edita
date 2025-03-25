@@ -1,5 +1,5 @@
-import {Document} from "modules/core";
-import {Memory} from "modules/core/resource";
+import {Document} from "core";
+import {Memory} from "core/resource";
 
 export default async function(code): Promise<Document> {
 	let lang = base.langs.get("javascript");
