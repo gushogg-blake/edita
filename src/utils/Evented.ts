@@ -1,29 +1,28 @@
 import {removeInPlace} from "utils/array";
 
-class Event {
-	constructor() {
-		this.defaultPrevented = false;
-	}
+class Event2 {
+	defaultPrevented: boolean = false;
 	
 	preventDefault() {
 		this.defaultPrevented = true;
 	}
 }
 
-type EventMap = Record<string, any>;
-type EventKey<T extends EventMap> = string & keyof T;
-type Handler<T> = (params: T) => void;
+type BaseEventMap = Record<string, any>;
+type EventType<EventMap extends BaseEventMap> = string & keyof EventMap;
+type Handler<ArgType> = (arg: ArgType, e: Event2) => void;
+type Remover = () => void;
 
-export default class<T extends EventMap> {
-	private _handlers: {
-		[k in keyof T]?: Handler<T>[],
+class Evented<EventMap extends BaseEventMap> {
+	_handlers: {
+		[K in keyof EventMap]?: Handler<EventMap[K]>[];
 	} = {};
 	
 	constructor() {
 		this._handlers = {};
 	}
 	
-	on(event, handler) {
+	on<T extends EventType<EventMap>>(event: T, handler: Handler<EventMap[T]>): Remover {
 		if (!this._handlers[event]) {
 			this._handlers[event] = [];
 		}
@@ -39,20 +38,22 @@ export default class<T extends EventMap> {
 		}
 	}
 	
-	onNext(event, handler) {
-		let remove = this.on(event, function(arg) {
-			handler(arg);
+	onNext<T extends EventType<EventMap>>(event: T, handler: Handler<EventMap[T]>): Remover {
+		let remove = this.on(event, function(arg, e) {
+			handler(arg, e);
 			
 			remove();
 		});
+		
+		return remove;
 	}
 	
-	fire(event, arg) {
+	fire<T extends EventType<EventMap>>(event: T, arg: EventMap[T]): Event2 {
 		if (!this._handlers[event]) {
 			return;
 		}
 		
-		let e = new Event();
+		let e = new Event2();
 		
 		for (let handler of this._handlers[event]) {
 			handler(arg, e);
