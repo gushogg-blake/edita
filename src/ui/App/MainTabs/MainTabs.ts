@@ -199,10 +199,6 @@ export default class extends Evented {
 		
 		document.setupWatch();
 		
-		editor.on("cut copy", (str) => {
-			this.app.output.clippingsTab?.addClipping(str);
-		});
-		
 		editor.on("normalSelectionChangedByMouseOrKeyboard", () => {
 			this.app.dev.showAstHint(editor);
 		});

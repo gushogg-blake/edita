@@ -14,7 +14,7 @@ class JsonStore extends Evented {
 		
 		if (platform.jsonStore.watch) {
 			platform.jsonStore.watch(name, (key, value) => {
-				this.fire("update", key, value);
+				this.fire("update", {key, value});
 			});
 		}
 	}

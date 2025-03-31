@@ -114,12 +114,14 @@ class MultiStepCommand extends Evented {
 		this.teardown();
 		
 		this.fire("complete");
+		this.fire("resolved");
 	}
 	
 	cancel() {
 		this.teardown();
 		
 		this.fire("canceled");
+		this.fire("resolved");
 	}
 	
 	teardown() {

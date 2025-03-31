@@ -5,11 +5,26 @@ import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";
 import Line from "./Line";
+import Edit from "./Edit";
+//import Action from "./Action";
+import HistoryEntry from "./HistoryEntry";
 
 export {default as Range} from "./Source/Range";
 export {default as Scope} from "./Source/Scope";
 
 export default class Document extends Evented {
+	resource: Resource;
+	string: string;
+	lines: Line[];
+	history: HistoryEntry[] = [];
+	historyIndex: number = 0;
+	modified: boolean;
+	fileChangedWhileModified: boolean = false;
+	noParse: boolean;
+	
+	private source: Source;
+	private historyIndexAtSave: number = 0;
+	
 	constructor(resource, options={}) {
 		super();
 		
@@ -25,10 +40,6 @@ export default class Document extends Evented {
 		};
 		
 		this.noParse = options.noParse;
-		
-		this.history = [];
-		this.historyIndex = 0;
-		this.historyIndexAtSave = 0;
 		this.modified = resource.newlinesNormalised;
 		
 		this.createLines();
@@ -36,8 +47,6 @@ export default class Document extends Evented {
 		this.source = new Source(this);
 		
 		this.source.parse();
-		
-		this.fileChangedWhileModified = false;
 	}
 	
 	static fromString(string) {
@@ -108,7 +117,7 @@ export default class Document extends Evented {
 		}
 	}
 	
-	edit(selection, replaceWith) {
+	edit(selection: Selection, replaceWith: string): Edit {
 		selection = selection.sort();
 		
 		let currentStr = this.getSelectedText(selection);
@@ -126,12 +135,12 @@ export default class Document extends Evented {
 		let lastLine = insertLines.at(-1);
 		let newSelection = s(start, c(newEndLineIndex, lastLine.length - suffix.length));
 		
-		return {
+		return new Edit(
 			selection,
-			string: currentStr,
+			currentStr,
 			replaceWith,
 			newSelection,
-		};
+		);
 	}
 	
 	lineEdit(lineIndex, removeLinesCount, insertLines) {
@@ -176,7 +185,7 @@ export default class Document extends Evented {
 		return this.lineEdit(startLineIndex, endLineIndex - startLineIndex, insertLines);
 	}
 	
-	_apply(edit) {
+	private _apply(edit: Edit): {index: number, lineDiff: LineDiff} {
 		let {selection, string, replaceWith} = edit;
 		let index = this.indexFromCursor(selection.left);
 		
@@ -199,7 +208,7 @@ export default class Document extends Evented {
 		};
 	}
 	
-	apply(edit) {
+	private applyEdit(edit) {
 		let {index, lineDiff} = this._apply(edit);
 		
 		this.source.edit(edit, index);
@@ -212,30 +221,10 @@ export default class Document extends Evented {
 		});
 	}
 	
-	reverse(edit) {
-		let {
-			selection,
-			string,
-			newSelection,
-			replaceWith,
-		} = edit;
-		
-		return {
-			selection: newSelection,
-			string: replaceWith,
-			newSelection: selection,
-			replaceWith: string,
-		};
-	}
-	
-	reverseEdits(edits) {
-		return [...edits].reverse().map(edit => this.reverse(edit));
-	}
-	
-	applyEdits(edits) {
+	private applyEdits(edits) {
 		if (edits.length <= Document.maxEditsToApplyIndividually) {
 			for (let edit of edits) {
-				this.apply(edit);
+				this.applyEdit(edit);
 			}
 		} else {
 			let lineDiffs = [];
@@ -257,18 +246,13 @@ export default class Document extends Evented {
 		}
 	}
 	
-	applyAndAddHistoryEntry(edits) {
-		let undo = this.reverseEdits(edits);
-		
+	applyAndAddHistoryEntry(edits: Edit[]) {
 		this.applyEdits(edits);
 		
-		let entry = {
-			undo,
-			redo: edits,
-		};
+		let entry = new HistoryEntry(edits);
 		
 		if (this.historyIndex < this.history.length) {
-			this.history.splice(this.historyIndex, this.history.length - this.historyIndex);
+			this.history.splice(this.historyIndex);
 		}
 		
 		this.history.push(entry);
@@ -279,18 +263,17 @@ export default class Document extends Evented {
 		return entry;
 	}
 	
-	applyAndMergeWithLastHistoryEntry(edits) {
-		let entry = this.history.at(-1);
-		
+	applyAndMergeWithLastHistoryEntry(edits: Edit[]) {
 		this.applyEdits(edits);
 		
-		entry.redo = [...entry.redo, ...edits];
-		entry.undo = [...this.reverseEdits(edits), ...entry.undo];
+		let entry = this.history.at(-1);
+		
+		entry.merge(edits);
 		
 		return entry;
 	}
 	
-	undo() {
+	undo(): HistoryEntry | null {
 		if (this.historyIndex === 0) {
 			return null;
 		}
@@ -309,7 +292,7 @@ export default class Document extends Evented {
 		return entry;
 	}
 	
-	redo() {
+	redo(): HistoryEntry | null {
 		if (this.historyIndex === this.history.length) {
 			return null;
 		}
@@ -328,7 +311,7 @@ export default class Document extends Evented {
 		return entry;
 	}
 	
-	replaceSelection(selection, string) {
+	replaceSelection(selection: Selection, string: string) {
 		let edit = this.edit(selection, string);
 		let newSelection = s(edit.newSelection.end);
 		
@@ -338,11 +321,11 @@ export default class Document extends Evented {
 		};
 	}
 	
-	insert(selection, ch) {
+	insert(selection: Selection, ch: string) {
 		return this.replaceSelection(selection, ch);
 	}
 	
-	move(fromSelection, toCursor) {
+	move(fromSelection: Selection, toCursor: Cursor) {
 		let str = this.getSelectedText(fromSelection);
 		let remove = this.edit(fromSelection, "");
 		let insert = this.edit(s(toCursor), str);
@@ -444,12 +427,6 @@ export default class Document extends Evented {
 		return cursor;
 	}
 	
-	setProject(project) {
-		this.project = project;
-		
-		this.fire("projectChanged");
-	}
-	
 	setupResource(watch=false) {
 		this.resourceTeardownFns = [
 			this.resource.on("formatChanged", this.onResourceFormatChanged.bind(this)),
@@ -520,7 +497,7 @@ export default class Document extends Evented {
 		this.teardownWatch = this.resource.watch(this.onWatchEvent.bind(this));
 	}
 	
-	async onWatchEvent() {
+	private async onWatchEvent() {
 		let {contents} = this.resource;
 		
 		if (contents === null || this.modified) {

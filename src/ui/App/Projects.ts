@@ -25,7 +25,9 @@ class Projects extends Evented {
 		
 		app.on("tabCreated", this.onTabCreated.bind(this));
 		app.on("tabClosed", this.onTabClosed.bind(this));
-		app.on("selectTab tabClosed document.projectChanged", this.update.bind(this));
+		app.on("selectTab", this.update.bind(this));
+		app.on("tabClosed", this.update.bind(this));
+		app.on("document.projectChanged", this.update.bind(this));
 	}
 	
 	get selectedProject() {

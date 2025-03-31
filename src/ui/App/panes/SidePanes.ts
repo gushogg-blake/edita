@@ -17,7 +17,11 @@ class SidePanes {
 			base.setPref("panes." + side + ".size", pane.size);
 		});
 		
-		pane.on("show hide", () => {
+		pane.on("show", () => {
+			base.setPref("panes." + side + ".visible", pane.visible);
+		});
+		
+		pane.on("hide", () => {
 			base.setPref("panes." + side + ".visible", pane.visible);
 		});
 		

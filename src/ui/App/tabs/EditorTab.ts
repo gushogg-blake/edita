@@ -35,7 +35,8 @@ class EditorTab extends Tab {
 			view.on("wrapChanged", this.onWrapChanged.bind(this)),
 			app.on("pane.update", this.onAppPaneUpdate.bind(this)),
 			app.on("updateTabLabels", this.onAppUpdateTabLabels.bind(this)),
-			...this.relayEvents(editor, ["focus", "blur"]),
+			editor.on("focus", () => this.fire("focus")),
+			editor.on("blur", () => this.fire("blur")),
 		];
 	}
 	

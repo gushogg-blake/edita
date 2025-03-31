@@ -16,6 +16,11 @@ function defaultConfig() {
 }
 
 class Project extends Evented {
+	lspClient: LspClient;
+	isSaved: boolean;
+	dirs: string[];
+	config: any;
+	
 	constructor(dirs, config, isSaved) {
 		super();
 		
@@ -24,8 +29,6 @@ class Project extends Evented {
 		this.isSaved = isSaved;
 		
 		this.lspClient = new LspClient();
-		
-		this.relayEvents(this.lspClient, ["notification", "error"], "lsp.");
 	}
 	
 	get prefs() {

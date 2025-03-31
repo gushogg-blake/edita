@@ -18,6 +18,14 @@ class Output {
 		]);
 		
 		this.pane.selectTab(this.findResultsTab);
+		
+		this.teardownCallbacks = [
+			platform.clipboard.on("set", (str) => {
+				this.clippingsTab.addClipping(str);
+			});
+			
+			app.on("teardown", this.teardown.bind(this)),
+		];
 	}
 	
 	showFindResults(action, options, results) {
@@ -26,6 +34,12 @@ class Output {
 		this.pane.selectTab(this.findResultsTab);
 		
 		this.app.bottomPanes.configure(null, true);
+	}
+	
+	teardown() {
+		for (let fn of this.teardownCallbacks) {
+			fn();
+		}
 	}
 }
 

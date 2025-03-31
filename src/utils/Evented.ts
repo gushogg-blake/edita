@@ -10,42 +10,44 @@ class Event {
 	}
 }
 
-export default class {
+type EventMap = Record<string, any>;
+type EventKey<T extends EventMap> = string & keyof T;
+type Handler<T> = (params: T) => void;
+
+export default class<T extends EventMap> {
+	private _handlers: {
+		[k in keyof T]?: Handler<T>[],
+	} = {};
+	
 	constructor() {
 		this._handlers = {};
 	}
 	
-	on(events, handler) {
-		events = events.split(" ");
-		
-		for (let e of events) {
-			if (!this._handlers[e]) {
-				this._handlers[e] = [];
-			}
-			
-			this._handlers[e].push(handler);
+	on(event, handler) {
+		if (!this._handlers[event]) {
+			this._handlers[event] = [];
 		}
 		
+		this._handlers[event].push(handler);
+		
 		return () => {
-			for (let e of events) {
-				removeInPlace(this._handlers[e], handler);
-				
-				if (this._handlers[e].length === 0) {
-					delete this._handlers[e];
-				}
+			removeInPlace(this._handlers[event], handler);
+			
+			if (this._handlers[event].length === 0) {
+				delete this._handlers[event];
 			}
 		}
 	}
 	
-	onNext(events, handler) {
-		let remove = this.on(events, function(...args) {
-			handler(...args);
+	onNext(event, handler) {
+		let remove = this.on(event, function(arg) {
+			handler(arg);
 			
 			remove();
 		});
 	}
 	
-	fire(event, ...args) {
+	fire(event, arg) {
 		if (!this._handlers[event]) {
 			return;
 		}
@@ -53,17 +55,9 @@ export default class {
 		let e = new Event();
 		
 		for (let handler of this._handlers[event]) {
-			handler(...args, e);
+			handler(arg, e);
 		}
 		
 		return e;
-	}
-	
-	relayEvents(source, events, prefix="", extraArgs=[]) {
-		return events.map((event) => {
-			return source.on(event, (...args) => {
-				this.fire(prefix + event, ...[...extraArgs, ...args]);
-			});
-		});
 	}
 }

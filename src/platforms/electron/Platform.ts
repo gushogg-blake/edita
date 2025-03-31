@@ -12,6 +12,7 @@ import {URL, File} from "core";
 import fs from "platforms/electron/modules/fs";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 import ipc from "platforms/electron/modules/ipc";
+import clipboard from "platforms/electron/modules/clipboard";
 
 import Platform from "platforms/common/Platform";
 
@@ -36,7 +37,7 @@ export default class extends Platform  {
 			multiPathSeparator: process.platform === "win32" ? ";" : ":",
 		};
 		
-		this.clipboard = ipc.clipboard;
+		this.clipboard = clipboard;
 		this.snippets = ipc.snippets;
 		this.jsonStore = ipc.jsonStore;
 		this.lsp = ipc.lsp;

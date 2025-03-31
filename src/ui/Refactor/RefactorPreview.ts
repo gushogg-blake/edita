@@ -65,7 +65,13 @@ class RefactorPreview extends Evented {
 	getTooltipComponent(type) {
 		let component = null;
 		
-		this.fire("requestTooltipComponent", type, c => component = c);
+		this.fire("requestTooltipComponent", {
+			type,
+			
+			provideComponent(c) {
+				component = c;
+			},
+		});
 		
 		return component;
 	}

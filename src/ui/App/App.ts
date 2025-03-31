@@ -28,7 +28,14 @@ import readFiles from "./readFiles";
 
 import Dev from "ui/App/Dev";
 
-class App extends Evented {
+class App extends Evented<{
+	teardown: undefined,
+	"document.edit": Document,
+	"document.undo": Document,
+	"document.redo": Document,
+	"document.save": Document,
+	"pane.update": undefined,
+}> {
 	constructor() {
 		super();
 		
@@ -72,7 +79,12 @@ class App extends Evented {
 			this.on("document.save", this.onDocumentSave.bind(this)),
 			// update tab labels before any other handlers see updateTabs
 			this.on("updateTabs", () => this.fire("updateTabLabels")),
-			...[this.panes.left, this.panes.right, this.bottomPanes].map(pane => this.relayEvents(pane, ["update"], "pane.")).flat(),
+			
+			...[this.panes.left, this.panes.right, this.bottomPanes].map((pane) => {
+				return [
+					pane.on("update", () => this.fire("pane.update")),
+				];
+			}).flat(),
 		];
 	}
 	
@@ -180,11 +192,11 @@ class App extends Evented {
 	createDocument(resource, options) {
 		let document = new Document(resource, options);
 		
-		for (let event of ["edit", "undo", "redo", "save", "projectChanged"]) {
-			document.on(event, (...args) => {
+		for (let event of ["edit", "undo", "redo", "save"]) {
+			document.on(event, () => {
 				this.updateTitle();
 				
-				this.fire("document." + event, document, ...args);
+				this.fire("document." + event, document);
 			});
 		}
 		
@@ -266,11 +278,12 @@ class App extends Evented {
 	}
 	
 	async onDocumentSave(document) {
-		let project = await this.projects.findOrCreateProjectForUrl(document.url);
-		
-		if (project !== document.project) {
-			document.setProject(project);
-		}
+		// MIGRATE
+		//let project = await this.projects.findOrCreateProjectForUrl(document.url);
+		//
+		//if (project !== document.project) {
+		//	document.setProject(project);
+		//}
 	}
 	
 	renderDiv(div) {
@@ -320,6 +333,8 @@ class App extends Evented {
 		for (let fn of this.teardownCallbacks) {
 			fn();
 		}
+		
+		this.fire("teardown");
 	}
 }
 

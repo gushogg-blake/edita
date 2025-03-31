@@ -81,7 +81,7 @@ class Snippets extends Evented {
 		
 		this.snippets[this.findIndexById(id)] = snippet;
 		
-		this.fire("update", id, snippet);
+		this.fire("update", {id, snippet});
 	}
 	
 	async delete(id) {
