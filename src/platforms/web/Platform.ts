@@ -18,6 +18,9 @@ import lsp from "platforms/web/modules/lsp";
 import Platform from "platforms/common/Platform";
 
 export default class extends Platform {
+	private fs: any;
+	private backupFs: any;
+	
 	constructor() {
 		super();
 		

@@ -1,10 +1,14 @@
 import bluebird from "bluebird";
-import lid from "utils/lid";
-import Evented from "utils/Evented";
+import {Evented, lid} from "utils";
 import {removeInPlace} from "utils/array";
+import SnippetsCommon, {type Snippet, type SnippetId} from "platforms/common/Snippets";
 
-class Snippets extends Evented {
-	constructor(fs) {
+class Snippets extends SnippetsCommon {
+	private fs: any; // fs
+	private snippetsDir: any; // fs Node
+	private snippets: Snippet[] = [];
+	
+	constructor(fs: any) {
 		super();
 		
 		this.fs = fs;
@@ -16,7 +20,7 @@ class Snippets extends Evented {
 		this.snippets = await bluebird.map(this.snippetsDir.ls(), node => node.readJson());
 	}
 	
-	generateFilename(snippet) {
+	private generateFilename(snippet) {
 		let {id, name, langs, langGroups} = snippet;
 		
 		langs = langs.join("-");
@@ -25,15 +29,15 @@ class Snippets extends Evented {
 		return [langGroups, langs, name, id].filter(Boolean).join("-") + ".json";
 	}
 	
-	async getNode(id) {
+	private async getNode(id) {
 		return (await this.snippetsDir.ls()).find(node => node.basename.endsWith("-" + id));
 	}
 	
-	all() {
+	all(): Snippet[] {
 		return this.snippets;
 	}
 	
-	findByLangAndName(lang, name) {
+	findByLangAndName(lang: Lang, name: string): Snippet? {
 		return this.snippets.find(function(snippet) {
 			return snippet.name === name && (
 				snippet.langGroups.includes(lang.group)
@@ -42,7 +46,7 @@ class Snippets extends Evented {
 		});
 	}
 	
-	findByLangAndKeyCombo(lang, keyCombo) {
+	findByLangAndKeyCombo(lang: Lang, keyCombo: string): Snippet? {
 		return this.snippets.find(function(snippet) {
 			return snippet.keyCombo === keyCombo && (
 				snippet.langGroups.includes(lang.group)
@@ -51,7 +55,7 @@ class Snippets extends Evented {
 		});
 	}
 	
-	async create(snippet) {
+	async create(snippet: Snippet): Promise<SnippetId> {
 		snippet = {
 			...snippet,
 			id: snippet.id || lid(),
@@ -68,7 +72,7 @@ class Snippets extends Evented {
 		return snippet.id;
 	}
 	
-	async update(id, snippet) {
+	async update(id: SnippetId, snippet: Snippet): Promise<void> {
 		snippet = {id, ...snippet};
 		
 		let node = await this.getNode(id);
@@ -84,7 +88,7 @@ class Snippets extends Evented {
 		this.fire("update", {id, snippet});
 	}
 	
-	async delete(id) {
+	async delete(id: SnippetId): Promise<void> {
 		let node = await this.getNode(id);
 		
 		if (!node) {
@@ -98,15 +102,15 @@ class Snippets extends Evented {
 		this.fire("delete", id);
 	}
 	
-	findById(id) {
+	findById(id: SnippetId): Snippet? {
 		return this.snippets.find(s => s.id === id);
 	}
 	
-	findIndexById(id) {
+	findIndexById(id: SnippetId): number {
 		return this.snippets.findIndex(s => s.id === id);
 	}
 	
-	remove(snippet) {
+	private remove(snippet: Snippet): void {
 		removeInPlace(this.snippets, snippet);
 	}
 }

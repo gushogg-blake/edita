@@ -17,7 +17,7 @@ export default class Special extends Resource {
 	}
 	
 	static refactorPreview(path) {
-		return new Special(specialUrl("refactor-preview", pathToUrl(path)));
+		return new Special("refactor-preview");
 	}
 	
 	static findAndReplace() {

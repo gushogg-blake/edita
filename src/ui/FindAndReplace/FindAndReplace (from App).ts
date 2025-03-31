@@ -1,6 +1,6 @@
 import {Evented} from "utils";
 
-export default class extends Evented {
+export default class extends Evented<{}> {
 	
 	// commenting to avoid TS errors
 	//show(options) {

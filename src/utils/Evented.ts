@@ -13,7 +13,7 @@ type EventType<EventMap extends BaseEventMap> = string & keyof EventMap;
 type Handler<ArgType> = (arg: ArgType, e: Event2) => void;
 type Remover = () => void;
 
-class Evented<EventMap extends BaseEventMap> {
+export default class Evented<EventMap extends BaseEventMap> {
 	_handlers: {
 		[K in keyof EventMap]?: Handler<EventMap[K]>[];
 	} = {};
