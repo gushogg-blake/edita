@@ -428,10 +428,6 @@ class App {
 			
 			browserWindow.show();
 		}
-		
-		if (config.dev) {
-			//browserWindow.webContents.openDevTools();
-		}
 	}
 	
 	browserWindowFromEvent(e) {

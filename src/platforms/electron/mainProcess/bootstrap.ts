@@ -50,7 +50,7 @@ let {
 } = argv;
 
 let rootDir = process.cwd();
-let buildDir = rootDir + "/build/" + (dev ? "electron-dev" : "electron");
+let buildDir = path.join(rootDir, "build", dev ? "electron-dev" : "electron");
 
 let config = {
 	cwd,
@@ -60,13 +60,13 @@ let config = {
 	buildDir,
 	rootDir,
 	forceNewInstance,
-	debugEndpoint: DEBUG_ENDPOINT || null,
+	debugEndpoint: DEBUG_ENDPOINT || null, // NOTE not used atm
 	nodeOnly: NODE_ONLY === "1",
 };
 
 spawn("npx", [
 	"electron",
-	buildDir + "/mainProcess/main.js",
+	path.join(buildDir, "mainProcess", "main.js"),
 	dev && "--inspect",
 	"--edita-config=" + Buffer.from(JSON.stringify(config)).toString("base64"),
 ].filter(Boolean), {

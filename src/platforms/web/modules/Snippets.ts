@@ -37,7 +37,7 @@ class Snippets extends SnippetsCommon {
 		return this.snippets;
 	}
 	
-	findByLangAndName(lang: Lang, name: string): Snippet? {
+	findByLangAndName(lang: Lang, name: string): Snippet | undefined {
 		return this.snippets.find(function(snippet) {
 			return snippet.name === name && (
 				snippet.langGroups.includes(lang.group)
@@ -46,7 +46,7 @@ class Snippets extends SnippetsCommon {
 		});
 	}
 	
-	findByLangAndKeyCombo(lang: Lang, keyCombo: string): Snippet? {
+	findByLangAndKeyCombo(lang: Lang, keyCombo: string): Snippet | undefined {
 		return this.snippets.find(function(snippet) {
 			return snippet.keyCombo === keyCombo && (
 				snippet.langGroups.includes(lang.group)
@@ -102,7 +102,7 @@ class Snippets extends SnippetsCommon {
 		this.fire("delete", id);
 	}
 	
-	findById(id: SnippetId): Snippet? {
+	findById(id: SnippetId): Snippet | undefined {
 		return this.snippets.find(s => s.id === id);
 	}
 	

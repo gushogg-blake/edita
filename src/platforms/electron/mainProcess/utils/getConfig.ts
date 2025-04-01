@@ -9,6 +9,7 @@ export default function(argv) {
 		userDataDir: path.join(os.homedir(), ".edita"),
 		cwd: process.cwd(),
 		forceNewInstance: false,
+		openDevTools: false,
 	};
 	
 	let args = yargs(argv);
