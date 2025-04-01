@@ -52,7 +52,7 @@ the UI.
 lifespan: global singleton created on startup; never destroyed.
 */
 
-class Base extends Evented {
+export default class Base extends Evented {
 	langs: Langs;
 	DirEntries: typeof DirEntries;
 	packageJson: any;
@@ -121,7 +121,7 @@ class Base extends Evented {
 		
 		this.theme = this.themes[this.prefs.theme];
 		
-		this.stores.prefs.on("update", ({value}) => this.updatePrefs(value));
+		this.stores.prefs.on("update", (value) => this.updatePrefs(value));
 		this.stores.themes.on("update", () => this.updateTheme());
 		
 		this.setPrefs(options.prefs);
@@ -261,5 +261,3 @@ class Base extends Evented {
 		};
 	}
 }
-
-export default Base;

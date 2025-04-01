@@ -27,7 +27,7 @@ class App extends Evented {
 			
 			this.env.setTitle("New snippet");
 		} else {
-			this.snippet = await platform.snippets.findById(id);
+			this.snippet = await base.stores.snippets.findById(id);
 			
 			this.env.setTitle(this.snippet.name);
 		}
@@ -35,9 +35,9 @@ class App extends Evented {
 	
 	saveAndClose(snippet) {
 		if (this.isNew) {
-			platform.snippets.create(snippet);
+			base.stores.snippets.create(snippet);
 		} else {
-			platform.snippets.update(this.options.id, snippet);
+			base.stores.snippets.update(this.options.id, snippet);
 		}
 		
 		this.close();

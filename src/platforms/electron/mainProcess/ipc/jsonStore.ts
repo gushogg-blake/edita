@@ -4,8 +4,20 @@ export default function(app) {
 			return app.jsonStore.load(name, key);
 		},
 		
-		save(e, name, key, data) {
-			return app.jsonStore.save(name, key, data);
+		update(e, name, key, data) {
+			return app.jsonStore.update(name, key, data);
+		},
+		
+		create(e, name, key, data) {
+			return app.jsonStore.create(name, key, data);
+		},
+		
+		createOrUpdate(e, name, key, data) {
+			return app.jsonStore.createOrUpdate(name, key, data);
+		},
+		
+		delete(e, name, key) {
+			return app.jsonStore.delete(name, key);
 		},
 		
 		ls(e, name) {

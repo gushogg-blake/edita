@@ -9,7 +9,7 @@ let snippetsByLang = $state();
 function updateSnippetGroups() {
 	snippetsByLang = {};
 	
-	for (let snippet of platform.snippets.all()) {
+	for (let snippet of base.stores.snippets.all()) {
 		let langs = snippet.langs.join(", ");
 		let groups = snippet.langGroups.join(", ");
 		let key = langs + (langs && groups ? ", " : "") + groups;
@@ -25,7 +25,11 @@ function updateSnippetGroups() {
 updateSnippetGroups();
 
 function newSnippet() {
-	app.newSnippet();
+	app.dialogs.newSnippet();
+}
+
+function editSnippet(id) {
+	app.dialogs.editSnippet(id);
 }
 
 function newSnippetInList(list) {
@@ -43,7 +47,7 @@ function showContextMenuForSnippet(e, snippet) {
 			label: "%Delete",
 			
 			onClick() {
-				platform.snippets.delete(snippet.id);
+				base.stores.snippets.delete(snippet.id);
 			},
 		},
 	]);
@@ -51,9 +55,9 @@ function showContextMenuForSnippet(e, snippet) {
 
 onMount(function() {
 	let teardown = [
-		platform.snippets.on("new", updateSnippetGroups),
-		platform.snippets.on("update", updateSnippetGroups),
-		platform.snippets.on("delete", updateSnippetGroups),
+		base.stores.snippets.on("create", updateSnippetGroups),
+		base.stores.snippets.on("update", updateSnippetGroups),
+		base.stores.snippets.on("delete", updateSnippetGroups),
 	];
 	
 	return function() {
@@ -151,7 +155,7 @@ onMount(function() {
 					{#each snippets as snippet}
 						<div
 							class="entry snippet"
-							onclick={() => app.dialogs.editSnippet(snippet.id)}
+							onclick={() => editSnippet(snippet.id)}
 							oncontextmenu={(e) => showContextMenuForSnippet(e, snippet)}
 						>
 							<div class="icon fileIcon"></div>

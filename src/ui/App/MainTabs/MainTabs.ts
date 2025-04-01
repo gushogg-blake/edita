@@ -255,6 +255,19 @@ export default class extends Evented {
 		this.fire("update");
 	}
 	
+	// MIGRATE
+	openRefactorPreviewTab(refactorPreview) {
+		let tab = new RefactorPreviewTab(this, refactorPreview);
+		
+		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
+		
+		this.fire("updateTabs");
+		
+		this.selectTab(tab);
+		
+		return tab;
+	}
+	
 	saveSession() {
 		let tabs = this.editorTabs.map(function(tab) {
 			return tab.isSaved ? tab.saveState() : null;

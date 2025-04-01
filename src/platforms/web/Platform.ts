@@ -55,10 +55,6 @@ export default class extends Platform {
 		this.fs = this.createFs("files");
 		this.backupFs = this.createFs("backups");
 		
-		this.snippets = new Snippets(this.createFs("snippets"));
-		
-		await this.snippets.init();
-		
 		//if (config.lspUrl) {
 		//	this.lsp = lsp(config.lspUrl);
 		//}

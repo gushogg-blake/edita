@@ -11,6 +11,14 @@ export default {
 		localStorage.setItem(key, JSON.stringify(data));
 	},
 	
+	has(key) {
+		return localStorage.getItem(key) !== null;
+	},
+	
+	remove(key) {
+		localStorage.removeItem(key);
+	},
+	
 	keys() {
 		return Object.keys(localStorage);
 	},

@@ -5,7 +5,6 @@ import contextMenu from "./contextMenu";
 import openDialogWindow from "./openDialogWindow";
 import callOpener from "./callOpener";
 import jsonStore from "./jsonStore";
-import snippets from "./snippets";
 import devTools from "./devTools";
 import lsp from "./lsp";
 
@@ -14,7 +13,6 @@ let asyncModules = {
 	openDialogWindow,
 	callOpener,
 	jsonStore,
-	snippets,
 	devTools,
 	lsp,
 };

@@ -231,18 +231,6 @@ class App extends Evented<{
 		return this.tools.refactor(...args);
 	}
 	
-	openRefactorPreviewTab(refactorPreview) {
-		let tab = new RefactorPreviewTab(this, refactorPreview);
-		
-		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
-		
-		this.fire("updateTabs");
-		
-		this.selectTab(tab);
-		
-		return tab;
-	}
-	
 	findTabByPath(path) {
 		return this.mainTabs.findTabByPath(path);
 	}

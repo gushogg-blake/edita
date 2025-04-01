@@ -1,7 +1,6 @@
 import Singleton from "base/stores/Singleton";
-import defaultPrefs from "./defaultPrefs";
 import migrations from "./migrations";
 
 export default function() {
-	return new Singleton("prefs", defaultPrefs, migrations);
+	return new Singleton("findAndReplaceHistory", [], migrations);
 }

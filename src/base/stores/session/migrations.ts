@@ -1,6 +1,4 @@
-import JsonStore from "base/stores/JsonStore";
-
-let migrations = {
+export default {
 	"1"(session) {
 		if (session) {
 			for (let details of session.tabs) {
@@ -59,9 +57,3 @@ let migrations = {
 		delete session.selectedTabUrl;
 	},
 };
-
-export default function() {
-	let defaultSession = null;
-	
-	return new JsonStore("session", defaultSession, migrations);
-}

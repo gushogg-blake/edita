@@ -457,9 +457,7 @@ class App {
 	}
 	
 	mkdirs() {
-		return Promise.all([
-			"snippets",
-		].map(dir => this.dataDir.child(dir).mkdirp()));
+		
 	}
 	
 	forceQuit() {

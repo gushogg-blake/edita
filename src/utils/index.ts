@@ -8,3 +8,4 @@ export {default as throttle} from "./throttle";
 export {default as fs} from "./fs";
 export {default as mapArrayToObject} from "./mapArrayToObject";
 export * from "./array";
+export type * from "./types";

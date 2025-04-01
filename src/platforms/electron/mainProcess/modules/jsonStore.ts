@@ -1,22 +1,25 @@
 import {fs} from "utils/node";
 
 export default function(app) {
-	function jsonStorageKey(name, key) {
-		let path = [encodeURIComponent(name)];
-		
-		if (key) {
-			path.push(encodeURIComponent(key));
-		}
-		
-		return path;
+	let {userDataDir} = app.config;
+	let storesDir = fs(userDataDir, "stores");
+	
+	function getDir(name: string): any /* TODO fs Node */ {
+		return storesDir.child(encodeURIComponent(name));
 	}
 	
-	let {userDataDir} = app.config;
+	function getNode(name: string, key: string): any /* TODO fs Node */ {
+		return getDir(name).child(encodeURIComponent(key)).withExt(".json");
+	}
 	
 	return {
-		async load(name, key) {
+		notify(name: string, key: string, value: any | null, type: string) {
+			app.sendToRenderers("jsonStore.update", name, key, value, type);
+		},
+		
+		async load(name: string, key: string): Promise<any> /* TODO could probs reference actual types */ {
 			try {
-				let node = fs(userDataDir, ...jsonStorageKey(name, key)).withExt(".json");
+				let node = getNode(name, key);
 				
 				if (!await node.exists()) {
 					return null;
@@ -24,26 +27,62 @@ export default function(app) {
 				
 				return await node.readJson();
 			} catch (e) {
-				console.log("Error loading JSON store: " + name + (key ? ", " + key : ""));
+				console.log("Error loading JSON store: " + name + ", " + key));
 				
 				throw e;
 			}
 		},
 		
-		async save(name, key, data) {
-			data = JSON.parse(data);
+		async update(name: string, key: string, data: string): Promise<void> {
+			let node = getNode(name, key);
 			
-			let node = fs(userDataDir, ...jsonStorageKey(name, key)).withExt(".json");
+			if (!await node.exists()) {
+				throw new Error("jsonStore.update: item doesn't exist: " + name + ", " + key);
+			}
 			
-			await node.parent.mkdirp();
-			await node.writeJson(data);
+			await node.write(data);
 			
-			app.sendToRenderers("jsonStore.update", name, key, data.value);
+			this.notify(name, key, JSON.parse(data).value, "update");
 		},
 		
-		async ls(name) {
+		async create(name: string, key: string, data: string): Promise<void> {
+			let node = getNode(name, key);
+			
+			if (await node.exists()) {
+				throw new Error("jsonStore.create: item already exists: " + name + ", " + key);
+			}
+			
+			await node.parent.mkdirp();
+			await node.write(data);
+			
+			this.notify(name, key, JSON.parse(data).value, "create");
+		},
+		
+		async createOrUpdate(name: string, key: string, data: string): Promise<void> {
+			let node = getNode(name, key);
+			
+			if (await node.exists()) {
+				await this.update(name, key, data);
+			} else {
+				await this.create(name, key, data);
+			}
+		},
+		
+		async delete(name: string, key: string): Promise<void> {
+			let node = getNode(name, key);
+			
+			if (!await node.exists()) {
+				throw new Error("jsonStore.delete: item doesn't exist: " + name + ", " + key);
+			}
+			
+			await node.delete();
+			
+			this.notify(name, key, null, "delete");
+		},
+		
+		async ls(name: string): Promise<string[]> {
 			try {
-				return (await fs(userDataDir, encodeURIComponent(name)).ls()).map(node => decodeURIComponent(node.basename));
+				return (await getDir(name).ls()).map(node => decodeURIComponent(node.basename));
 			} catch (e) {
 				return [];
 			}

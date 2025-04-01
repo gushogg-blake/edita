@@ -1,6 +1,6 @@
 import {Evented} from "utils";
 import type Clipboard from "./Clipboard";
-import type Snippets from "./Snippets";
+import type JsonStore from "./JsonStore";
 
 type Path = {
 	sep: string;
@@ -14,7 +14,7 @@ export default class extends Evented {
 	systemInfo: any;
 	path: Path;
 	clipboard: Clipboard;
-	snippets: Snippets;
+	jsonStore: JsonStore;
 	
 	// ...
 	

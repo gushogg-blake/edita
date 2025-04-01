@@ -363,7 +363,7 @@ export default {
 			let {left} = document.wordAtCursor(start);
 			
 			if (left) {
-				snippet = platform.snippets.findByLangAndName(document.langFromCursor(start), left);
+				snippet = base.stores.snippets.findByLangAndName(document.langFromCursor(start), left);
 			}
 		}
 		

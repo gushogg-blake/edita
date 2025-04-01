@@ -21,7 +21,7 @@ class Refactor extends Evented {
 		this.eachEditor(editor => editor.view.setWrap(true));
 		
 		this.preview = new RefactorPreview(app, this);
-		this.previewTab = app.openRefactorPreviewTab(this.preview);
+		this.previewTab = app.mainTabs.openRefactorPreviewTab(this.preview);
 	}
 	
 	async replaceAll() {

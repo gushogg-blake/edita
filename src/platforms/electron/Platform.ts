@@ -38,7 +38,6 @@ export default class extends Platform  {
 		};
 		
 		this.clipboard = clipboard;
-		this.snippets = ipc.snippets;
 		this.jsonStore = ipc.jsonStore;
 		this.lsp = ipc.lsp;
 		this.path = path;
@@ -89,7 +88,7 @@ export default class extends Platform  {
 	}
 	
 	async init() {
-		await this.snippets.init();
+		
 	}
 	
 	backup(document) {

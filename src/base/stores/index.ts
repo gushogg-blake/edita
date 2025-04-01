@@ -1,18 +1,23 @@
-import JsonStore from "base/stores/JsonStore";
+import ephemeralUiState from "./ephemeralUiState";
+import fileTree from "./fileTree";
+import findAndReplaceHistory from "./findAndReplaceHistory";
+import findAndReplaceOptions from "./findAndReplaceOptions";
 import prefs from "./prefs";
-import themes from "./themes";
+import projects from "./projects";
 import session from "./session";
+import snippets from "./snippets";
+import themes from "./themes";
 
 export default async function() {
 	return {
-		prefs: prefs(),
+		ephemeralUiState: await ephemeralUiState(),
+		fileTree: await fileTree(),
+		findAndReplaceHistory: await findAndReplaceHistory(),
+		findAndReplaceOptions: await findAndReplaceOptions(),
+		prefs: await prefs(),
+		projects: await projects(),
+		session: await session(),
+		snippets: await snippets(),
 		themes: await themes(),
-		session: session(),
-		fileTree: new JsonStore("fileTree", {}),
-		perFilePrefs: new JsonStore("perFilePrefs", {}),
-		projects: new JsonStore("projects", null),
-		findAndReplaceOptions: new JsonStore("findAndReplaceOptions", {}),
-		findAndReplaceHistory: new JsonStore("findAndReplaceHistory", []),
-		ephemeralUiState: new JsonStore("ephemeralUiState", null),
 	};
 }

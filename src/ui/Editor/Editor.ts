@@ -435,7 +435,7 @@ class Editor extends Evented {
 		return (
 			base.prefs.normalKeymap[keyCombo]
 			|| key.length === 1 && !isModified
-			|| platform.snippets.findByLangAndKeyCombo(lang, keyCombo)
+			|| base.stores.snippets.findByLangAndKeyCombo(lang, keyCombo)
 		);
 	}
 	
@@ -460,7 +460,7 @@ class Editor extends Evented {
 		}
 		
 		let lang = this.document.langFromCursor(this.normalSelection.start);
-		let snippet = platform.snippets.findByLangAndKeyCombo(lang, keyCombo);
+		let snippet = base.stores.snippets.findByLangAndKeyCombo(lang, keyCombo);
 		
 		let {view} = this;
 		
