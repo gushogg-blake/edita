@@ -28,9 +28,9 @@ type Env = {
 };
 
 class Editor extends Evented<{
-	edit: undefined;
-	focus: undefined;
-	blur: undefined;
+	edit: void;
+	focus: void;
+	blur: void;
 	normalSelectionChangedByMouseOrKeyboard: Selection;
 }> {
 	constructor(document, env?: Env) {

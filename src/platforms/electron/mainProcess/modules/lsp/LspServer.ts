@@ -5,7 +5,7 @@ import type App from "electronMain/App";
 import config from "./config";
 
 export default class LspServer extends Evented<{
-	start: undefined;
+	start: void;
 	notification: any; // TYPE probs just leave this as any...
 	error: string;
 }> {

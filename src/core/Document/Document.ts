@@ -25,8 +25,8 @@ export default class Document extends Evented<{
 	};
 	undo: HistoryEntry;
 	redo: HistoryEntry;
-	save: undefined;
-	resourceChanged: undefined;
+	save: void;
+	resourceChanged: void;
 }> {
 	resource: Resource;
 	string: string;

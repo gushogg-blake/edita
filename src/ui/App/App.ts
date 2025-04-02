@@ -29,18 +29,18 @@ import readFiles from "./readFiles";
 import Dev from "ui/App/Dev";
 
 class App extends Evented<{
-	teardown: undefined;
+	teardown: void;
 	"document.edit": Document;
 	"document.undo": Document;
 	"document.redo": Document;
 	"document.save": Document;
-	"pane.update": undefined;
-	openLangSelector: undefined;
-	showFindBar: undefined; // MIGRATE move to its own module?
-	hideFindBar: undefined; // MIGRATE move to its own module?
-	resize: undefined;
+	"pane.update": void;
+	openLangSelector: void;
+	showFindBar: void; // MIGRATE move to its own module?
+	hideFindBar: void; // MIGRATE move to its own module?
+	resize: void;
 	renderDiv: HTMLDivElement;
-	requestFocus: undefined;
+	requestFocus: void;
 }> {
 	dialogs: Dialogs;
 	mainTabs: MainTabs;
