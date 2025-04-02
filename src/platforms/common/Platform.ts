@@ -9,10 +9,10 @@ type Path = {
 };
 
 export default class extends Evented<{
-	closeWindow: undefined;
-	windowClosing: undefined;
+	closeWindow: void;
+	windowClosing: void;
 	openFromElectronSecondInstance: string[];
-	dialogClosed: undefined;
+	dialogClosed: void;
 }> {
 	isWeb: boolean;
 	isMainWindow: boolean;
