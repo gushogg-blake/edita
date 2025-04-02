@@ -25,11 +25,11 @@ export default class App {
 	mainWindow: BrowserWindow | null;
 	lastFocusedWindow: BrowserWindow | null;
 	
-	dataDir: any; // TODO fs Node
-	buildDir: any; // TODO fs Node
-	rootDir: any; // TODO fs Node
+	dataDir: any; // TYPE fs Node
+	buildDir: any; // TYPE fs Node
+	rootDir: any; // TYPE fs Node
 	
-	jsonStore: any; // TODO ./modules/jsonStore
+	jsonStore: any; // TYPE ./modules/jsonStore
 	
 	private closeWithoutConfirming = new WeakSet<BrowserWindow>();
 	private dialogOpeners = new WeakMap<BrowserWindow, BrowserWindow>();

@@ -20,13 +20,20 @@ import snippets from "./snippets";
 import api from "./api";
 
 type Env = {
+	// MIGRATE
+	// update -- this should probably just be App, to keep things simple...
 	// ways of getting LSP, extra word completions etc
 	// (Document no longer has .project)
 	// (remove requestWordCompletionCandidates)
 };
 
-class Editor extends Evented {
-	constructor(document, env: Env?) {
+class Editor extends Evented<{
+	edit: undefined;
+	focus: undefined;
+	blur: undefined;
+	normalSelectionChangedByMouseOrKeyboard: Selection;
+}> {
+	constructor(document, env?: Env) {
 		super();
 		
 		this.document = document;
@@ -231,9 +238,10 @@ class Editor extends Evented {
 	getExternalWordCompletionCandidates() {
 		let candidates = [];
 		
-		this.fire("requestWordCompletionCandidates", function(words) {
-			candidates = [...candidates, words];
-		});
+		// MIGRATE
+		//this.fire("requestWordCompletionCandidates", function(words) {
+		//	candidates = [...candidates, words];
+		//});
 		
 		return candidates;
 	}
@@ -241,6 +249,7 @@ class Editor extends Evented {
 	async goToDefinitionFromCursor(cursor) {
 		let word = this.wordUnderCursor(cursor);
 		
+		// MIGRATE
 		let results = await this.document.lsp.getDefinitions(cursor) || [];
 		
 		if (results.length === 0) {
@@ -249,12 +258,13 @@ class Editor extends Evented {
 		
 		// TODO if multiple, bring up a list
 		
-		this.fire("requestGoToDefinition", results[0]);
+		//this.fire("requestGoToDefinition", results[0]);
 	}
 	
 	async findReferencesFromCursor(cursor) {
 		let word = this.wordUnderCursor(cursor);
 		
+		// MIGRATE
 		let results = await this.document.lsp.findReferences(cursor) || [];
 		
 		if (results.length === 0) {
@@ -263,7 +273,7 @@ class Editor extends Evented {
 		
 		console.log(results);
 		
-		this.fire("requestShowReferences", results);
+		//this.fire("requestShowReferences", results);
 	}
 	
 	wordUnderCursor(cursor) {

@@ -1,4 +1,5 @@
 import {Evented} from "utils";
+import type URL from "core";
 import type Clipboard from "./Clipboard";
 import type JsonStore from "./JsonStore";
 
@@ -7,7 +8,12 @@ type Path = {
 	resolve(...parts: string[]): string;
 };
 
-export default class extends Evented {
+export default class extends Evented<{
+	closeWindow: undefined;
+	windowClosing: undefined;
+	openFromElectronSecondInstance: string[];
+	dialogClosed: undefined;
+}> {
 	isWeb: boolean;
 	isMainWindow: boolean;
 	config: any;
@@ -15,7 +21,9 @@ export default class extends Evented {
 	path: Path;
 	clipboard: Clipboard;
 	jsonStore: JsonStore;
-	lsp?: any;
+	lsp?: any; // TYPE
+	fs: any; // TYPE fs
+	urlsToOpenOnStartup?: URL[] = [];
 	
 	// ...
 	
@@ -23,5 +31,12 @@ export default class extends Evented {
 		super();
 	}
 	
-	async init(config?: any): void;
+	abstract init(config?: any): Promise<void>;
+	
+	callOpener(method: string, data: unknown) {
+		throw new Error("callOpener: electron only");
+	}
+	
+	abstract closeWindow(): void;
+	abstract setTitle(title: string): void;
 }

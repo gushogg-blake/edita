@@ -10,11 +10,11 @@ export default class LspServer extends Evented<{
 	error: string;
 }> {
 	ready: boolean = false;
+	serverCapabilities: any; // TYPE (see also modules/.../LspServer)
 	
 	private app: App;
 	private langCode: string;
 	private initializeParams: any;
-	private serverCapabilities: any; // TYPE (see also modules/.../LspServer)
 	private requestPromises: Record<string, PromiseWithMethods<any>> = {};
 	private responseBuffer: Buffer;
 	private process: any; // TYPE Node process (from spawn)

@@ -1,10 +1,17 @@
 import type PlatformCommon from "platforms/common/Platform";
 import Base from "base/Base";
+import type App from "ui/App";
 
 declare global {
 	module globalThis {
 		var platform: PlatformCommon;
 		var base: Base;
+		
+		// debug
+		var app: App | undefined;
+		
+		// electron
+		var ELECTRON_DISABLE_SECURITY_WARNINGS: boolean;
 	}
 }
 

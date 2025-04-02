@@ -29,13 +29,38 @@ import readFiles from "./readFiles";
 import Dev from "ui/App/Dev";
 
 class App extends Evented<{
-	teardown: undefined,
-	"document.edit": Document,
-	"document.undo": Document,
-	"document.redo": Document,
-	"document.save": Document,
-	"pane.update": undefined,
+	teardown: undefined;
+	"document.edit": Document;
+	"document.undo": Document;
+	"document.redo": Document;
+	"document.save": Document;
+	"pane.update": undefined;
+	openLangSelector: undefined;
+	showFindBar: undefined; // MIGRATE move to its own module?
+	hideFindBar: undefined; // MIGRATE move to its own module?
+	resize: undefined;
+	renderDiv: HTMLDivElement;
+	requestFocus: undefined;
 }> {
+	dialogs: Dialogs;
+	mainTabs: MainTabs;
+	fileTree: FileTree;
+	projects: Projects;
+	fileOperations: FileOperations;
+	sessionSaving: SessionSaving;
+	
+	private teardownCallbacks: Array<() => void>;
+	
+	// MIGRATE all these will probs change so no point typing for now
+	tools: any;
+	output: any;
+	bottomPanes: any;
+	sidePanes: any;
+	findAndReplace: any;
+	panes: any;
+	
+	commands: any; // TYPE
+	
 	constructor() {
 		super();
 		
@@ -192,10 +217,11 @@ class App extends Evented<{
 	createDocument(resource, options) {
 		let document = new Document(resource, options);
 		
-		for (let event of ["edit", "undo", "redo", "save"]) {
+		for (let event of ["edit", "undo", "redo", "save"] as const) {
 			document.on(event, () => {
 				this.updateTitle();
 				
+				// @ts-ignore
 				this.fire("document." + event, document);
 			});
 		}
@@ -206,13 +232,14 @@ class App extends Evented<{
 	_createEditor(document) {
 		let editor = new Editor(document);
 		
-		editor.on("requestWordCompletionCandidates", (add) => {
-			add(this.editorTabs.map(function(tab) {
-				let {path} = tab;
-				
-				return path && platform.fs(path).basename;
-			}).filter(Boolean));
-		});
+		// MIGRATE
+		//editor.on("requestWordCompletionCandidates", (add) => {
+		//	add(this.editorTabs.map(function(tab) {
+		//		let {path} = tab;
+		//		
+		//		return path && platform.fs(path).basename;
+		//	}).filter(Boolean));
+		//});
 		
 		return editor;
 	}
@@ -239,7 +266,7 @@ class App extends Evented<{
 		return this.mainTabs.findTabByUrl(url);
 	}
 	
-	onOpenFromElectronSecondInstance(paths) {
+	onOpenFromElectronSecondInstance(paths: string[]) {
 		for (let path of paths) {
 			this.fileOperations.openPath(path);
 		}
@@ -250,19 +277,21 @@ class App extends Evented<{
 	}
 	
 	findInFiles(paths) {
-		this.showFindAndReplace({
-			replace: false,
-			searchIn: "files",
-			paths,
-		});
+		// MIGRATE
+		//this.showFindAndReplace({
+		//	replace: false,
+		//	searchIn: "files",
+		//	paths,
+		//});
 	}
 	
 	replaceInFiles(paths) {
-		this.showFindAndReplace({
-			replace: true,
-			searchIn: "files",
-			paths,
-		});
+		// MIGRATE
+		//this.showFindAndReplace({
+		//	replace: true,
+		//	searchIn: "files",
+		//	paths,
+		//});
 	}
 	
 	async onDocumentSave(document) {
@@ -286,7 +315,7 @@ class App extends Evented<{
 		this.fire("resize");
 	}
 	
-	async onCloseWindow(e) {
+	async onCloseWindow(_, e) {
 		let modifiedTabs = this.editorTabs.filter(tab => tab.modified);
 		
 		if (modifiedTabs.length === 0) {
@@ -304,7 +333,7 @@ class App extends Evented<{
 		
 		if (response === 0) {
 			for (let tab of modifiedTabs) {
-				await this.save(tab);
+				await this.fileOperations.save(tab);
 				
 				if (!tab.isSaved) {
 					return;

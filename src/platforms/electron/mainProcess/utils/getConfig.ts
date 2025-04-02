@@ -20,7 +20,7 @@ export default function(argv) {
 	let {editaConfig} = args.argv;
 	
 	if (editaConfig) {
-		let json = Buffer.from(editaConfig, "base64");
+		let json = Buffer.from(editaConfig, "base64").toString();
 		
 		config = JSON.parse(json);
 	}

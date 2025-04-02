@@ -12,6 +12,7 @@ import Editor from "ui/Editor";
 
 import DirEntries from "base/DirEntries";
 import stores from "base/stores";
+import type {Theme} from "base/stores/themes";
 
 import javascript from "base/langs/javascript";
 import typescript from "base/langs/typescript";
@@ -56,6 +57,9 @@ export default class Base extends Evented {
 	langs: Langs;
 	DirEntries: typeof DirEntries;
 	packageJson: any;
+	theme: Theme;
+	
+	components: Record<string, any>; // TYPE Svelte components
 	
 	private initialisedLangs: Set<Lang>;
 	

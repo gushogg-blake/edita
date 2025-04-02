@@ -2,6 +2,7 @@ import bluebird from "bluebird";
 import {Evented, moveInPlace, removeInPlace} from "utils";
 import {Document} from "core";
 import EditorTab from "ui/App/tabs/EditorTab";
+import type Tab from "ui/App/tabs/Tab";
 import type App from "ui/App";
 import type {TabDescriptor} from "ui/App/SessionSaving";
 import {getEditorTabLabel, nextNewFileName} from "./utils";
@@ -12,17 +13,17 @@ gets done)
 */
 
 export default class extends Evented {
+	tabs: Tab[] = [];
+	selectedTab: Tab | null = null;
+	
 	private app: App;
+	private previouslySelectedTabs: Tab[] = [];
+	private closedTabs: Tab[] = [];
 	
 	constructor(app) {
 		super();
 		
 		this.app = app;
-		
-		this.tabs = [];
-		this.selectedTab = null;
-		this.previouslySelectedTabs = [];
-		this.closedTabs = [];
 	}
 	
 	get editorTabs() {

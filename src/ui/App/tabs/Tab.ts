@@ -41,7 +41,7 @@ class Tab extends Evented {
 		return "";
 	}
 	
-	get windowTitle() {
+	get windowTitle(): string {
 		return this.name;
 	}
 	

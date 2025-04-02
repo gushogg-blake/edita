@@ -12,7 +12,22 @@ import HistoryEntry from "./HistoryEntry";
 export {default as Range} from "./Source/Range";
 export {default as Scope} from "./Source/Scope";
 
-export default class Document extends Evented {
+type LineDiff = {
+	startLineIndex: number;
+	invalidCount: number;
+	newLines: Line[];
+};
+
+export default class Document extends Evented<{
+	edit: {
+		edits: Edit[];
+		lineDiffs: LineDiff[];
+	};
+	undo: HistoryEntry;
+	redo: HistoryEntry;
+	save: undefined;
+	resourceChanged: undefined;
+}> {
 	resource: Resource;
 	string: string;
 	lines: Line[];

@@ -6,6 +6,7 @@ import bluebird from "bluebird";
 import {Language} from "web-tree-sitter";
 
 import {lid, promiseWithMethods} from "utils";
+import type {PromiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
 import {URL, File} from "core";
 
@@ -14,9 +15,11 @@ import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 import ipc from "platforms/electron/modules/ipc";
 import clipboard from "platforms/electron/modules/clipboard";
 
-import Platform from "platforms/common/Platform";
+import PlatformCommon from "platforms/common/Platform";
 
-export default class extends Platform  {
+export default class Platform extends PlatformCommon {
+	private dialogPromises: Record<string, PromiseWithMethods<any>> = {};
+	
 	constructor() {
 		super();
 		
@@ -47,18 +50,10 @@ export default class extends Platform  {
 			return URL.file(path);
 		});
 		
-		this.dialogPromises = {};
-		
 		ipcRenderer.on("closeWindow", () => {
-			let defaultPrevented = false;
+			let e = this.fire("closeWindow");
 			
-			this.fire("closeWindow", {
-				preventDefault() {
-					defaultPrevented = true;
-				},
-			});
-			
-			if (!defaultPrevented) {
+			if (!e.defaultPrevented) {
 				this.fire("windowClosing");
 				this.closeWindow();
 			}

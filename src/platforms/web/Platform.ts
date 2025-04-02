@@ -15,8 +15,7 @@ import jsonStore from "platforms/web/modules/jsonStore";
 
 import PlatformCommon from "platforms/common/Platform";
 
-export default class extends PlatformCommon {
-	private fs: any;
+export default class Platform extends PlatformCommon {
 	private backupFs: any;
 	
 	constructor() {
@@ -51,10 +50,6 @@ export default class extends PlatformCommon {
 		
 		this.fs = this.createFs("files");
 		this.backupFs = this.createFs("backups");
-	}
-	
-	get urlsToOpenOnStartup() {
-		return [];
 	}
 	
 	createFs(key) {
