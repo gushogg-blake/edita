@@ -1,10 +1,11 @@
 import {Evented} from "utils";
+import type {AsyncOrSync} from "utils/types";
 
 export default class extends Evented<{
 	set: string;
 }> {
-	abstract read(): Promise<string> | string;
-	abstract readSelection(): Promise<string> | string;
-	abstract write(): Promise<void>;
-	abstract writeSelection(): Promise<void>;
+	abstract read(): AsyncOrSync<string>;
+	abstract readSelection(): AsyncOrSync<string>;
+	abstract write(str: string): AsyncOrSync<void>;
+	abstract writeSelection(str: string): AsyncOrSync<void>;
 }

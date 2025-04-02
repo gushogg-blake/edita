@@ -1,14 +1,14 @@
-import type Platform from "platforms/common/Platform";
+import type PlatformCommon from "platforms/common/Platform";
 import Base from "base/Base";
 
 declare global {
 	module globalThis {
-		var platform: Platform;
+		var platform: PlatformCommon;
 		var base: Base;
 	}
 }
 
-export function setGlobals(PlatformClass) {
-	window.platform = new PlatformClass();
+export function setGlobals(Platform) {
+	window.platform = new Platform();
 	window.base = new Base();
 }

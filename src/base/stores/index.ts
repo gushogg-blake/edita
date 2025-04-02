@@ -2,6 +2,7 @@ import ephemeralUiState from "./ephemeralUiState";
 import fileTree from "./fileTree";
 import findAndReplaceHistory from "./findAndReplaceHistory";
 import findAndReplaceOptions from "./findAndReplaceOptions";
+import perFilePrefs from "./perFilePrefs";
 import prefs from "./prefs";
 import projects from "./projects";
 import session from "./session";
@@ -14,6 +15,7 @@ export default async function() {
 		fileTree: await fileTree(),
 		findAndReplaceHistory: await findAndReplaceHistory(),
 		findAndReplaceOptions: await findAndReplaceOptions(),
+		perFilePrefs: await perFilePrefs(),
 		prefs: await prefs(),
 		projects: await projects(),
 		session: await session(),

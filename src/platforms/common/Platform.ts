@@ -15,6 +15,7 @@ export default class extends Evented {
 	path: Path;
 	clipboard: Clipboard;
 	jsonStore: JsonStore;
+	lsp?: any;
 	
 	// ...
 	

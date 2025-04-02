@@ -21,6 +21,7 @@ export default function(config) {
 	
 	class Node {
 		path: string;
+		name: string;
 		basename: string;
 		extension: string;
 		type: string;

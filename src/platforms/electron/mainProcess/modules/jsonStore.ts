@@ -4,11 +4,11 @@ export default function(app) {
 	let {userDataDir} = app.config;
 	let storesDir = fs(userDataDir, "stores");
 	
-	function getDir(name: string): any /* TODO fs Node */ {
+	function getDir(name: string): any { // TYPE fs Node
 		return storesDir.child(encodeURIComponent(name));
 	}
 	
-	function getNode(name: string, key: string): any /* TODO fs Node */ {
+	function getNode(name: string, key: string): any { // TYPE fs Node
 		return getDir(name).child(encodeURIComponent(key)).withExt(".json");
 	}
 	
@@ -17,7 +17,7 @@ export default function(app) {
 			app.sendToRenderers("jsonStore.update", name, key, value, type);
 		},
 		
-		async load(name: string, key: string): Promise<any> /* TODO could probs reference actual types */ {
+		async load(name: string, key: string): Promise<any> /* TYPE could probs reference actual types */ {
 			try {
 				let node = getNode(name, key);
 				
@@ -27,7 +27,7 @@ export default function(app) {
 				
 				return await node.readJson();
 			} catch (e) {
-				console.log("Error loading JSON store: " + name + ", " + key));
+				console.log("Error loading JSON store: " + name + ", " + key);
 				
 				throw e;
 			}

@@ -17,18 +17,31 @@ import jsonStore from "./modules/jsonStore";
 import ipc from "./ipc";
 import config from "./config";
 
-class App {
+type DialogPosition = "centerOfScreen" | "centerOfOpener";
+
+export default class App {
+	config: any;
+	appWindows: BrowserWindow[];
+	mainWindow: BrowserWindow | null;
+	lastFocusedWindow: BrowserWindow | null;
+	
+	dataDir: any; // TODO fs Node
+	buildDir: any; // TODO fs Node
+	rootDir: any; // TODO fs Node
+	
+	jsonStore: any; // TODO ./modules/jsonStore
+	
+	private closeWithoutConfirming = new WeakSet<BrowserWindow>();
+	private dialogOpeners = new WeakMap<BrowserWindow, BrowserWindow>();
+	private dialogsByAppWindowAndName = new WeakMap<BrowserWindow, Record<string, BrowserWindow>>();
+	private perWindowConfig = new WeakMap<BrowserWindow, any>();
+	private dialogPositions: Record<string, DialogPosition>;
+	
+	// https://github.com/electron/electron/issues/10388
+	private windowPositionAdjustment: {x: number; y: number} | null = null;
+	
 	constructor() {
 		this.config = config;
-		
-		this.appWindows = [];
-		this.mainWindow = null;
-		this.lastFocusedWindow = null;
-		
-		this.closeWithoutConfirming = new WeakSet();
-		this.dialogOpeners = new WeakMap();
-		this.dialogsByAppWindowAndName = new WeakMap();
-		this.perWindowConfig = new WeakMap();
 		
 		this.dialogPositions = {
 			fileChooser: "centerOfScreen",
@@ -43,19 +56,19 @@ class App {
 		this.jsonStore = jsonStore(this);
 	}
 	
-	get windows() {
+	get windows(): BrowserWindow[] {
 		return [...this.appWindows, ...this.dialogWindows];
 	}
 	
-	get dialogWindows() {
+	get dialogWindows(): BrowserWindow[] {
 		return this.appWindows.map(w => this.getDialogs(w)).flat();
 	}
 	
-	getDialogs(appWindow) {
+	getDialogs(appWindow): BrowserWindow[] {
 		return Object.values(this.dialogsByAppWindowAndName.get(appWindow));
 	}
 	
-	async launch() {
+	async launch(): Promise<void> {
 		if (!config.forceNewInstance && !electronApp.requestSingleInstanceLock()) {
 			electronApp.quit();
 			
@@ -72,7 +85,7 @@ class App {
 		};
 	}
 	
-	async init() {
+	async init(): Promise<void> {
 		ipc(this);
 		
 		ipcMain.on("showWindow", (e) => {
@@ -104,7 +117,6 @@ class App {
 		]);
 		
 		electronApp.on("ready", async () => {
-			// https://github.com/electron/electron/issues/10388
 			try {
 				this.windowPositionAdjustment = (await this.jsonStore.load("prefs"))?.value.windowPositionAdjustment;
 			} catch (e) {
@@ -190,7 +202,7 @@ class App {
 	}
 	
 	// PLATFORM
-	getCurrentWorkspace() {
+	getCurrentWorkspace(): string {
 		let currentWorkspaceRaw = cmdSync(`xprop -root _NET_CURRENT_DESKTOP`);
 		
 		/*
@@ -203,7 +215,7 @@ class App {
 	}
 	
 	// PLATFORM
-	getWindowId(window) {
+	getWindowId(window: BrowserWindow): string {
 		/*
 		getNativeWindowHandle returns a Buffer containing window ID as an
 		unsigned long
@@ -229,7 +241,7 @@ class App {
 	}
 	
 	// PLATFORM
-	mapWindowsToWorkspaces() {
+	mapWindowsToWorkspaces(): Map<BrowserWindow, string> {
 		/*
 		list all X windows and the workspace they're on (second field below)
 		and match them to our windows using the id (first field)
@@ -267,13 +279,13 @@ class App {
 		return map;
 	}
 	
-	createAppWindow(openFiles=null) {
+	createAppWindow(openFiles: string[] | null = null): BrowserWindow {
 		let {
 			x = 0,
 			y = 0,
 		} = this.windowPositionAdjustment || {};
 		
-		let winState = windowStateKeeper();
+		let winState = windowStateKeeper({});
 		
 		let browserWindow = new BrowserWindow({
 			x: winState.x + x,
@@ -361,7 +373,7 @@ class App {
 		return browserWindow;
 	}
 	
-	createDialogWindow(name, windowOptions, opener) {
+	createDialogWindow(name: string, windowOptions, opener: BrowserWindow): BrowserWindow {
 		let url = "app://-/index.html?dialog=" + name;
 		
 		let browserWindow = new BrowserWindow({
@@ -394,7 +406,7 @@ class App {
 		return browserWindow;
 	}
 	
-	setDialogPosition(name, dialogWindow, opener) {
+	setDialogPosition(name: string, dialogWindow: BrowserWindow, opener: BrowserWindow) {
 		let mode = this.dialogPositions[name] || "centerOfOpener";
 		
 		if (mode === "centerOfOpener") {
@@ -409,7 +421,7 @@ class App {
 		}
 	}
 	
-	async openDialogWindow(name, dialogOptions, opener) {
+	async openDialogWindow(name: string, dialogOptions, opener: BrowserWindow) {
 		let browserWindow = this.dialogsByAppWindowAndName.get(opener)[name];
 		
 		this.setDialogPosition(name, browserWindow, opener);
@@ -460,7 +472,7 @@ class App {
 		
 	}
 	
-	forceQuit() {
+	forceQuit(): void {
 		for (let browserWindow of this.appWindows) {
 			this.closeWithoutConfirming.add(browserWindow);
 		}
@@ -468,5 +480,3 @@ class App {
 		electronApp.quit();
 	}
 }
-
-export default App;

@@ -48,7 +48,7 @@ export default class Evented<EventMap extends BaseEventMap> {
 		return remove;
 	}
 	
-	fire<T extends EventType<EventMap>>(event: T, arg: EventMap[T]): Event2 {
+	fire<T extends EventType<EventMap>>(event: T, arg?: EventMap[T]): Event2 {
 		if (!this._handlers[event]) {
 			return;
 		}

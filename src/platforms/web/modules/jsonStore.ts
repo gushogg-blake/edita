@@ -2,7 +2,7 @@ import {removeInPlace} from "utils/array";
 import localStorage from "platforms/web/modules/localStorage";
 
 export default function(localStoragePrefix) {
-	function storageKey(name, key) {
+	function storageKey(name: string, key?: string) {
 		let parts = [encodeURIComponent(name)];
 		
 		if (key) {
@@ -17,7 +17,7 @@ export default function(localStoragePrefix) {
 	function notify(name, key, data, type) {
 		if (watchers[name]) {
 			for (let fn of watchers[name]) {
-				fn(key, data.value, exists ? "update" : "create");
+				fn(key, data.value, type);
 			}
 		}
 	}
@@ -83,7 +83,7 @@ export default function(localStoragePrefix) {
 			watchers[name].push(fn);
 			
 			return function() {
-				removeInPlace(watchers[name], handler);
+				removeInPlace(watchers[name], fn);
 				
 				if (watchers[name].length === 0) {
 					delete watchers[name];

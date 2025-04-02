@@ -12,12 +12,10 @@ import {URL, File} from "core";
 
 import clipboard from "platforms/web/modules/clipboard";
 import jsonStore from "platforms/web/modules/jsonStore";
-import Snippets from "platforms/web/modules/Snippets";
-import lsp from "platforms/web/modules/lsp";
 
-import Platform from "platforms/common/Platform";
+import PlatformCommon from "platforms/common/Platform";
 
-export default class extends Platform {
+export default class extends PlatformCommon {
 	private fs: any;
 	private backupFs: any;
 	
@@ -44,7 +42,6 @@ export default class extends Platform {
 			resourcePrefix: "",
 			localStoragePrefix: "edita.",
 			fsPrefix: "editaFs",
-			lspUrl: null,
 			...config,
 		};
 		
@@ -54,10 +51,6 @@ export default class extends Platform {
 		
 		this.fs = this.createFs("files");
 		this.backupFs = this.createFs("backups");
-		
-		//if (config.lspUrl) {
-		//	this.lsp = lsp(config.lspUrl);
-		//}
 	}
 	
 	get urlsToOpenOnStartup() {

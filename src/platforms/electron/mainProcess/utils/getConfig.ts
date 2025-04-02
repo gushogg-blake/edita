@@ -10,6 +10,7 @@ export default function(argv) {
 		cwd: process.cwd(),
 		forceNewInstance: false,
 		openDevTools: false,
+		nodeOnly: false,
 	};
 	
 	let args = yargs(argv);

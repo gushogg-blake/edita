@@ -2,7 +2,7 @@
 Promise that can be resolved/rejected from outside
 */
 
-type PromiseWithMethods<T> = Promise<T> & {
+export type PromiseWithMethods<T> = Promise<T> & {
 	resolve(value: any);
 	reject(error: any);
 };

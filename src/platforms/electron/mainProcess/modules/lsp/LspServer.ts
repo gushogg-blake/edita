@@ -1,16 +1,31 @@
-import {Evented, lid, sleep, promiseWithMethods, spawn} from "utils/node";
+import {Evented, lid, sleep, promiseWithMethods} from "utils/node";
+import type {PromiseWithMethods} from "utils";
+import {spawn} from "utils/node";
+import type App from "electronMain/App";
 import config from "./config";
 
-class LspServer extends Evented {
-	constructor(app, langCode, initializeParams) {
+export default class LspServer extends Evented<{
+	start: undefined;
+	notification: any; // TYPE probs just leave this as any...
+	error: string;
+}> {
+	ready: boolean = false;
+	
+	private app: App;
+	private langCode: string;
+	private initializeParams: any;
+	private serverCapabilities: any; // TYPE (see also modules/.../LspServer)
+	private requestPromises: Record<string, PromiseWithMethods<any>> = {};
+	private responseBuffer: Buffer;
+	private process: any; // TYPE Node process (from spawn)
+	private closed: boolean = false;
+	
+	constructor(app: App, langCode: string, initializeParams) {
 		super();
 		
 		this.app = app;
 		this.langCode = langCode;
 		this.initializeParams = initializeParams;
-		this.requestPromises = {};
-		
-		this.ready = false;
 		
 		this.responseBuffer = Buffer.alloc(0);
 	}
@@ -41,7 +56,7 @@ class LspServer extends Evented {
 		this.fire("start");
 	}
 	
-	request(method, params) {
+	request(method: string, params): Promise<any> { // TYPE seems like it might be loads of typing to get proper types for these
 		let id = lid();
 		
 		let json = JSON.stringify({
@@ -173,5 +188,3 @@ class LspServer extends Evented {
 		this.start();
 	}
 }
-
-export default LspServer;

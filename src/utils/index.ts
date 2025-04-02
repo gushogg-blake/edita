@@ -1,7 +1,7 @@
 export {default as Evented} from "./Evented";
 export {default as lid} from "./lid";
 export {default as sleep} from "./sleep";
-export {default as promiseWithMethods} from "./promiseWithMethods";
+export {default as promiseWithMethods, type PromiseWithMethods} from "./promiseWithMethods";
 export {default as bindFunctions} from "./bindFunctions";
 export {default as _typeof} from "./typeof";
 export {default as throttle} from "./throttle";
