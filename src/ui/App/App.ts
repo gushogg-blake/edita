@@ -41,6 +41,7 @@ class App extends Evented<{
 	resize: void;
 	renderDiv: HTMLDivElement;
 	requestFocus: void;
+	updateTabLabels: void;
 }> {
 	dialogs: Dialogs;
 	mainTabs: MainTabs;
@@ -60,6 +61,8 @@ class App extends Evented<{
 	panes: any;
 	
 	commands: any; // TYPE
+	
+	private dev: any;
 	
 	constructor() {
 		super();
@@ -103,7 +106,7 @@ class App extends Evented<{
 			platform.on("openFromElectronSecondInstance", this.onOpenFromElectronSecondInstance.bind(this)),
 			this.on("document.save", this.onDocumentSave.bind(this)),
 			// update tab labels before any other handlers see updateTabs
-			this.on("updateTabs", () => this.fire("updateTabLabels")),
+			this.mainTabs.on("update", () => this.fire("updateTabLabels")),
 			
 			...[this.panes.left, this.panes.right, this.bottomPanes].map((pane) => {
 				return [

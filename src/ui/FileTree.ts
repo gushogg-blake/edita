@@ -1,7 +1,18 @@
 import bluebird from "bluebird";
-import Evented from "utils/Evented";
+import {Evented} from "utils";
+import type App from "ui/App";
+import type {DirEntry} from "base/DirEntries";
 
-export default class extends Evented {
+export default class extends Evented<{
+	updateRootDir: void;
+	updateExpandedDirs: void;
+}> {
+	rootEntry: DirEntry;
+	
+	private dir: string;
+	private app: App;
+	private expandedDirs = new Set<string>();
+	
 	constructor(app) {
 		super();
 		
@@ -41,7 +52,7 @@ export default class extends Evented {
 		this.fire("updateExpandedDirs");
 	}
 	
-	toggleDir(path) {
+	toggleDir(path): void {
 		if (this.expandedDirs.has(path)) {
 			this.expandedDirs.delete(path);
 		} else {
@@ -51,7 +62,7 @@ export default class extends Evented {
 		this.fire("updateExpandedDirs");
 	}
 	
-	getRootEntry() {
+	getRootEntry(): DirEntry {
 		return base.DirEntries.createEntry(this.dir);
 	}
 }

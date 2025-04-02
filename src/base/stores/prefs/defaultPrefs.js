@@ -59,6 +59,7 @@ export default {
 		"Shift+Backspace": "backspace",
 		"Shift+Delete": "delete",
 		"Ctrl+Backspace": "deleteWordLeft",
+		"Alt+Backspace": "deleteWordLeft",
 		"Ctrl+Delete": "deleteWordRight",
 		"Shift+Enter": "enter",
 		"Ctrl+Enter": "enterNoAutoIndent",

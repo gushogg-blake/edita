@@ -1,5 +1,11 @@
 import bluebird from "bluebird";
 
+export type DirEntry = {
+	path: string;
+	node: any; // TYPE fs Node
+	isDir: boolean;
+};
+
 function compareEntries(a, b) {
 	return a.node.name.localeCompare(b.node.name);
 }

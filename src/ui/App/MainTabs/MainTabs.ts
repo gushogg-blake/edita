@@ -15,9 +15,9 @@ gets done)
 export default class extends Evented {
 	tabs: Tab[] = [];
 	selectedTab: Tab | null = null;
+	previouslySelectedTabs: Tab[] = [];
 	
 	private app: App;
-	private previouslySelectedTabs: Tab[] = [];
 	private closedTabs: Tab[] = [];
 	
 	constructor(app) {
@@ -262,7 +262,7 @@ export default class extends Evented {
 		
 		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
 		
-		this.fire("updateTabs");
+		this.fire("update");
 		
 		this.selectTab(tab);
 		

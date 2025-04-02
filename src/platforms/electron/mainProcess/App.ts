@@ -21,7 +21,7 @@ type DialogPosition = "centerOfScreen" | "centerOfOpener";
 
 export default class App {
 	config: any;
-	appWindows: BrowserWindow[];
+	appWindows: BrowserWindow[] = [];
 	mainWindow: BrowserWindow | null;
 	lastFocusedWindow: BrowserWindow | null;
 	
