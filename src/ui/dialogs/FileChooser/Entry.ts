@@ -1,7 +1,19 @@
-import Evented from "utils/Evented";
+import {Evented} from "utils";
+import type {DirEntry} from "base/DirEntries";
 
-export default class extends Evented {
-	constructor(isNew, dirEntry) {
+export default class extends Evented<{
+	create: string;
+	rename: string;
+	cancel: void;
+	cancelRename: void;
+	requestRename: void;
+}> {
+	node: any; // TYPE fs Node
+	path: string | null;
+	isDir: boolean;
+	isNew: boolean;
+	
+	constructor(isNew: boolean, dirEntry?: DirEntry) {
 		super();
 		
 		if (isNew) {

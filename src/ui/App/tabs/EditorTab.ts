@@ -1,12 +1,21 @@
 import set from "lodash.set";
+import type Editor from "ui/Editor";
+import type App from "ui/App";
 import Tab from "./Tab";
 
 function fs(...args) {
 	return platform.fs(...args);
 }
 
-class EditorTab extends Tab {
-	constructor(app, editor) {
+class EditorTab extends Tab<{
+	focus: void;
+	blur: void;
+	zoomChange: void;
+	updateDirListing: void;
+}> {
+	editor: Editor;
+	
+	constructor(app: App, editor: Editor) {
 		super(app, editor.document.resource);
 		
 		this.editor = editor;

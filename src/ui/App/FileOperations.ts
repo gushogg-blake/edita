@@ -1,3 +1,4 @@
+import bluebird from "bluebird";
 import {lid, partition} from "utils";
 import {URL, type Lang} from "core";
 import {File, NewFile} from "core/resource";
@@ -11,7 +12,7 @@ export default class {
 		this.app = app;
 	}
 	
-	async newFile(lang: Lang = base.getDefaultLang()): EditorTab {
+	async newFile(lang: Lang = base.getDefaultLang()): Promise<EditorTab> {
 		let {mainTabs} = this.app;
 		
 		let dir = this.app.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
@@ -25,7 +26,7 @@ export default class {
 		return tab;
 	}
 	
-	private async openFile(file: File): EditorTab {
+	private async openFile(file: File): Promise<EditorTab> {
 		return await this.app.mainTabs.openFile(file);
 	}
 	
@@ -105,20 +106,20 @@ export default class {
 		let [saved, unsaved] = partition(this.app.mainTabs.tabs, tab => tab.isSaved);
 		
 		await Promise.all([
-			bluebird.map(saved, tab => this.app.save(tab)),
-			bluebird.each(unsaved, tab => this.app.saveAs(tab)),
+			bluebird.map(saved, tab => this.save(tab)),
+			bluebird.each(unsaved, tab => this.saveAs(tab)),
 		]);
 	}
 	
 	async renameTab(tab: EditorTab): Promise<void> {
-		let {document} = tab;
+		let {document, path: oldPath} = tab;
 		let {resource} = document;
 		
-		let path = await platform.saveAs({
+		let path = await this.app.dialogs.showSaveAs({
 			path: oldPath,
 		});
 		
-		if (path && path !== tab.path) {
+		if (path && path !== oldPath) {
 			await document.saveAs(URL.file(path));
 			await resource.delete();
 		}
@@ -133,6 +134,6 @@ export default class {
 		
 		await tab.document.resource.delete();
 		
-		this.closeTab(tab);
+		this.app.mainTabs.closeTab(tab);
 	}
 }

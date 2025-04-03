@@ -1,14 +1,18 @@
 import type {DialogEnv} from "ui/dialogs";
 
+type MessageBoxOptions = {
+	title?: string;
+	message: string;
+	buttons: string[];
+};
+
 export default class App {
 	private env: DialogEnv;
-	private options: any; // TYPE
+	private options: MessageBoxOptions;
 	private hasResponded: boolean = false;
 	private teardownCallbacks: Array<() => void>;
 	
-	constructor(env, options) {
-		super();
-		
+	constructor(env: DialogEnv, options: MessageBoxOptions) {
 		this.env = env;
 		this.options = options;
 		

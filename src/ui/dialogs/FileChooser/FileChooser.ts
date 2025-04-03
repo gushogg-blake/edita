@@ -1,20 +1,46 @@
-import Evented from "utils/Evented";
+import {Evented} from "utils";
 import {removeInPlace} from "utils/array";
+import type {DialogEnv} from "ui/dialogs";
 import Entry from "./Entry";
 
-export default class App extends Evented {
-	constructor(env, options) {
+type Mode = "selectFiles" | "selectDir" | "save"; // TYPE dedupe this
+
+type FileChooserOptions = {
+	mode: Mode;
+	path: string;
+};
+
+export default class App extends Evented<{
+	updateMain: void;
+	updateSelected: void;
+	newFolder: Entry;
+	newFolderCreated: void;
+	cancelNewFolder: void;
+	updateBookmarks: string[];
+}> {
+	mode: Mode;
+	dir: string;
+	entries: Entry[];
+	selectedEntries: Entry[];
+	name: string;
+	bookmarks: string[];
+	breadcrumbs: any[]; // TYPE fs Node
+	
+	private env: DialogEnv;
+	private options: FileChooserOptions;
+	private hasResponded: boolean = false;
+	private teardownCallbacks: Array<() => void>;
+	
+	constructor(env: DialogEnv, options: FileChooserOptions) {
 		super();
 		
 		this.env = env;
+		this.options = options;
+		this.mode = options.mode;
 		
-		let {path, mode} = options;
+		let node = platform.fs(options.path);
 		
-		this.mode = mode;
-		
-		let node = platform.fs(path);
-		
-		if (mode === "save") {
+		if (this.mode === "save") {
 			this.dir = node.parent.path;
 			this.name = node.name;
 		} else {
@@ -34,7 +60,7 @@ export default class App extends Evented {
 			selectFiles: "Select files",
 			selectDir: "Select a folder",
 			save: "Save as",
-		})[mode]);
+		})[this.mode]);
 		
 		this.teardownCallbacks = [
 			platform.on("dialogClosed", this.onDialogClosed.bind(this)),
@@ -68,7 +94,6 @@ export default class App extends Evented {
 	}
 	
 	async load() {
-		this.node = platform.fs(this.dir);
 		this.entries = (await base.DirEntries.ls(this.dir)).map(n => new Entry(false, n));
 		this.selectedEntries = this.entries.length > 0 ? [this.entries[0]] : [];
 		
@@ -139,7 +164,7 @@ export default class App extends Evented {
 	async ok(name) {
 		if (this.mode === "selectDir") {
 			this.respond({
-				path: this.path,
+				path: this.dir,
 			});
 		} else if (this.mode === "selectFiles") {
 			this.respond({
@@ -164,20 +189,21 @@ export default class App extends Evented {
 		}
 	}
 	
-	async dblclick(entry) {
+	async dblclick(entry: Entry) {
+		let {mode} = this.options;
 		let {node} = entry;
 		let {path} = node;
 		
 		if (entry.isDir) {
 			this.nav(path);
 		} else {
-			if (this.mode === "selectDir") {
+			if (mode === "selectDir") {
 				// TODO this should be disabled
-			} else if (this.mode === "selectFiles") {
+			} else if (mode === "selectFiles") {
 				this.respond({
 					paths: [path],
 				});
-			} else if (this.mode === "save") {
+			} else if (mode === "save") {
 				if (await node.exists()) {
 					if (!confirm("Overwrite existing file?")) {
 						return;

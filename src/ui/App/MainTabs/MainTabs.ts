@@ -1,7 +1,7 @@
 import bluebird from "bluebird";
 import {Evented, moveInPlace, removeInPlace} from "utils";
-import {Document} from "core";
-import {type Resource} from "core/resource";
+import {type Lang} from "core";
+import type {Resource, URL, File} from "core/resource";
 import EditorTab from "ui/App/tabs/EditorTab";
 import type Tab from "ui/App/tabs/Tab";
 import type App from "ui/App";
@@ -26,6 +26,7 @@ export default class extends Evented<{
 	
 	private app: App;
 	private closedTabs: Tab[] = [];
+	private initialNewFileTab?: EditorTab;
 	
 	constructor(app: App) {
 		super();
@@ -37,7 +38,7 @@ export default class extends Evented<{
 		return this.tabs.filter(tab => tab.isEditor);
 	}
 	
-	async newFile(resource): EditorTab {
+	async newFile(resource): Promise<EditorTab> {
 		let tab = await this.createEditorTab(resource);
 		
 		this.tabs.push(tab);
@@ -47,7 +48,7 @@ export default class extends Evented<{
 		return tab;
 	}
 	
-	async openFile(file: File): EditorTab {
+	async openFile(file: File): Promise<EditorTab> {
 		let closeInitialNewFileTab = (
 			this.editorTabs.length === 1
 			&& this.editorTabs[0] === this.initialNewFileTab
@@ -69,7 +70,7 @@ export default class extends Evented<{
 		return tab;
 	}
 	
-	selectTab(tab: Tab) {
+	selectTab(tab: Tab): void {
 		if (this.selectedTab) {
 			this.addToPreviouslySelectedTabs(this.selectedTab);
 		}
@@ -248,7 +249,7 @@ export default class extends Evented<{
 	
 	async loadFromSessionAndStartup({tabs, urlToSelect}: {tabs: TabDescriptor[], urlToSelect?: URL}): Promise<void> {
 		this.tabs = await bluebird.map(tabs, async ({file, state}) => {
-			let tab = this.createEditorTab(file);
+			let tab = await this.createEditorTab(file);
 			
 			if (state) {
 				tab.restoreState(state);
@@ -268,15 +269,15 @@ export default class extends Evented<{
 	
 	// MIGRATE
 	openRefactorPreviewTab(refactorPreview) {
-		let tab = new RefactorPreviewTab(this, refactorPreview);
-		
-		this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
-		
-		this.fire("update");
-		
-		this.selectTab(tab);
-		
-		return tab;
+		//let tab = new RefactorPreviewTab(this, refactorPreview);
+		//
+		//this.tabs.splice(this.tabs.indexOf(this.selectedTab) + 1, 0, tab);
+		//
+		//this.fire("update");
+		//
+		//this.selectTab(tab);
+		//
+		//return tab;
 	}
 	
 	saveSession() { // TYPE
@@ -308,7 +309,7 @@ export default class extends Evented<{
 		return getEditorTabLabel(tab, this.editorTabs);
 	}
 	
-	nextNewFileName(dir, lang) {
+	nextNewFileName(dir: string, lang: Lang): URL {
 		return nextNewFileName(this.editorTabs, dir, lang);
 	}
 }

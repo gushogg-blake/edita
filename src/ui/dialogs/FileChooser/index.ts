@@ -1,1 +1,1 @@
-export {default} from "./FileChooser.ts";
+export {default} from "./FileChooser";
