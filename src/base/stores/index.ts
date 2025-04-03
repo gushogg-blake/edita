@@ -1,3 +1,7 @@
+import type JsonStore from "./JsonStore";
+import type Singleton from "./Singleton";
+import type {SnippetsStore} from "./snippets";
+
 import ephemeralUiState from "./ephemeralUiState";
 import fileTree from "./fileTree";
 import findAndReplaceHistory from "./findAndReplaceHistory";
@@ -8,6 +12,19 @@ import projects from "./projects";
 import session from "./session";
 import snippets from "./snippets";
 import themes from "./themes";
+
+export type Stores = {
+	ephemeralUiState: Singleton;
+	fileTree: Singleton;
+	findAndReplaceHistory: Singleton;
+	findAndReplaceOptions: Singleton;
+	perFilePrefs: JsonStore;
+	prefs: Singleton;
+	projects: JsonStore;
+	session: Singleton;
+	snippets: SnippetsStore;
+	themes: JsonStore;
+};
 
 export default async function() {
 	return {

@@ -1,5 +1,5 @@
-import {URL} from "core";
+import type {URL} from "core";
 
-export default class Resource {
+export interface Resource {
 	url: URL;
 }

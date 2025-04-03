@@ -1,7 +1,8 @@
 import nextName from "utils/nextName";
 import {type Lang, URL} from "core";
+import type EditorTab from "ui/App/tabs/EditorTab";
 
-export default function(editorTabs, dir, lang: Lang) {
+export default function(editorTabs: EditorTab[], dir: string, lang: Lang): URL {
 	let {defaultExtension} = lang;
 	let extension = defaultExtension ? "." + defaultExtension : "";
 	

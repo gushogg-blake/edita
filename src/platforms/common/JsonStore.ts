@@ -1,6 +1,6 @@
 import type {AsyncOrSync} from "utils";
 
-export type JsonStore = {
+export default type JsonStore = {
 	load(name: string, key: string): AsyncOrSync<any>;
 	create(name: string, key: string, data: any): AsyncOrSync<string>;
 	update(name: string, key: string, data: any): AsyncOrSync<void>;

@@ -1,10 +1,8 @@
-import {Resource} from "core";
+import type {Resource} from "core";
 import URL, {pathToUrl} from "./URL";
 
-export default class Special extends Resource {
-	private constructor(type, path) {
-		super();
-		
+export default class Special implements Resource {
+	private constructor(type: string, path: string) {
 		if (!path) {
 			path = type;
 		}
@@ -12,23 +10,23 @@ export default class Special extends Resource {
 		this.url = URL.special(type + ":", path);
 	}
 	
-	static refactor() {
+	static refactor(): Special {
 		return new Special("refactor");
 	}
 	
-	static refactorPreview(path) {
+	static refactorPreview(path: string): Special {
 		return new Special("refactor-preview");
 	}
 	
-	static findAndReplace() {
+	static findAndReplace(): Special {
 		return new Special("find-and-replace");
 	}
 	
-	static clippings() {
+	static clippings(): Special {
 		return new Special("clippings");
 	}
 	
-	static findResults() {
+	static findResults(): Special {
 		return new Special("find-results");
 	}
 }

@@ -1,16 +1,27 @@
-import Evented from "utils/Evented";
+import type {DialogEnv} from "ui/dialogs";
+import type {Snippet} from "base/stores/snippets";
 
-class App extends Evented {
+type SnippetEditorOptions = {
+	id?: string;
+	details?: Partial<Snippet>;
+};
+
+class App {
 	static requiresTreeSitter = true;
 	
-	constructor(env, options) {
-		super();
+	private env: DialogEnv;
+	private options: SnippetEditorOptions;
+	private snippet?: Snippet;
+	private isNew: boolean;
+	
+	constructor(env: DialogEnv, options: SnippetEditorOptions) {
+		//super();
 		
 		this.env = env;
 		this.options = options;
 	}
 	
-	async init() {
+	async init(): Promise<void> {
 		let {id, details} = this.options;
 		
 		this.isNew = !id;
@@ -21,7 +32,8 @@ class App extends Evented {
 				langGroups: [],
 				langs: [],
 				text: "",
-				isDynamic: false,
+				keyCombo: null,
+				//isDynamic: false,
 				...details,
 			};
 			
@@ -33,7 +45,7 @@ class App extends Evented {
 		}
 	}
 	
-	saveAndClose(snippet) {
+	saveAndClose(snippet: Snippet): void {
 		if (this.isNew) {
 			base.stores.snippets.create(snippet);
 		} else {
@@ -43,11 +55,11 @@ class App extends Evented {
 		this.close();
 	}
 	
-	close() {
+	close(): void {
 		this.env.close();
 	}
 	
-	teardown() {
+	teardown(): void {
 		
 	}
 }

@@ -1,13 +1,26 @@
 import {mount, unmount} from "svelte";
-import Evented from "utils/Evented";
+import {Evented} from "utils";
 import inlineStyle from "utils/dom/inlineStyle";
 import {on, off} from "utils/dom/domEvents";
 
-export default class extends Evented {
-	constructor(windowOptions, renderDiv) {
+export default class extends Evented<{
+	close: void;
+}> {
+	content: HTMLDivElement;
+	
+	private container: HTMLDivElement;
+	private toolbar: HTMLDivElement;
+	
+	private windowOptions: any; // TYPE
+	private closed: boolean = false;
+	private renderDiv: (div: HTMLDivElement) => void;
+	private toolbarComponent: any; // TYPE Svelte component
+	
+	constructor(windowOptions, renderDiv: (div: HTMLDivElement) => void) {
+		super();
+		
 		this.windowOptions = windowOptions;
 		this.renderDiv = renderDiv;
-		this.closed = false;
 	}
 	
 	close() {
@@ -132,8 +145,8 @@ export default class extends Evented {
 					};
 					
 					origPosition = {
-						x: container.offsetLeft,
-						y: container.offsetTop,
+						x: this.container.offsetLeft,
+						y: this.container.offsetTop,
 					};
 				}
 				

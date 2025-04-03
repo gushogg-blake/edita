@@ -17,16 +17,14 @@ around to everything that takes a string of code (Document, ultimately).
 export default class File extends FileLike {
 	newlinesNormalised: boolean = false;
 	
+	private changeListeners: Array<() => void> = [];
 	private saving: boolean = false;
 	
-	private constructor(url) {
-		super();
-		
-		this.url = url;
-		this.changeListeners = [];
+	private constructor(url: URL) {
+		super(url);
 	}
 	
-	private static async create(url, contents=null) {
+	private static async create(url: URL, contents = null): Promise<File> {
 		let file = new File(url);
 		
 		if (contents !== null) {
@@ -40,19 +38,19 @@ export default class File extends FileLike {
 		return file;
 	}
 	
-	static async read(url) {
+	static async read(url: URL): Promise<File> {
 		return File.create(url);
 	}
 	
-	static async write(url, contents) {
+	static async write(url, contents): Promise<void> {
 		return File.create(url, contents);
 	}
 	
-	get path() {
+	get path(): string {
 		return this.url.path;
 	}
 	
-	private async load() {
+	private async load(): Promise<void> {
 		let str = await platform.fs(this.path).read();
 		
 		if (hasMixedNewlines(str)) {
@@ -65,7 +63,7 @@ export default class File extends FileLike {
 		this.updateFormat();
 	}
 	
-	async save(str) {
+	async save(str: string): Promise<void> {
 		this.saving = true;
 		
 		await platform.fs(this.path).write(str);
@@ -77,31 +75,31 @@ export default class File extends FileLike {
 		this.updateFormat();
 	}
 	
-	async rename(url) {
-		if (url === this.url) {
-			return;
-		}
-		
-		let oldUrl = this.url;
-		
-		this.url = url;
-		
-		await this.save();
-		
-		this.fire("rename", url);
-		
-		platform.fs(oldUrl.path).delete();
-	}
+	//async rename(url: URL) {
+	//	if (url.toString() === this.url.toString()) {
+	//		return;
+	//	}
+	//	
+	//	let oldUrl = this.url;
+	//	
+	//	this.url = url;
+	//	
+	//	await this.save();
+	//	
+	//	this.fire("rename", url);
+	//	
+	//	platform.fs(oldUrl.path).delete();
+	//}
 	
-	async delete() {
+	async delete(): Promise<void> {
 		await platform.fs(this.path).delete();
 	}
 	
-	async exists() {
+	async exists(): Promise<boolean> {
 		return await platform.fs(this.path).exists();
 	}
 	
-	watch(fn) {
+	watch(fn: () => void): () => void {
 		this.changeListeners.push(fn);
 		
 		if (this.changeListeners.length === 1) {
@@ -119,7 +117,7 @@ export default class File extends FileLike {
 		}
 	}
 	
-	async onWatchEvent() {
+	async onWatchEvent(): void {
 		if (this.saving) {
 			return;
 		}

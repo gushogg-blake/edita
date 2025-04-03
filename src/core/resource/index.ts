@@ -1,4 +1,4 @@
-export {default as Resource} from "./Resource";
+export type {Resource} from "./Resource";
 export {default as Format} from "./Format";
 export {default as URL} from "./URL";
 export {default as File} from "./File";

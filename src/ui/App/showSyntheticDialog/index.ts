@@ -1,10 +1,15 @@
 import {mount, unmount} from "svelte";
-import {promiseWithMethods} from "utils";
+import {promiseWithMethods, type PromiseWithMethods} from "utils";
 import dialogs from "ui/dialogs";
 import components from "components";
 import DialogWindow from "./DialogWindow";
 
-export default async function(dialogName, dialogOptions, windowOptions, renderDiv) {
+export default async function(
+	dialogName: string,
+	dialogOptions,
+	windowOptions,
+	renderDiv: (div: HTMLDivElement) => void,
+): Promise<PromiseWithMethods<any>> {
 	let promise = promiseWithMethods();
 	let response = undefined;
 	

@@ -1,6 +1,6 @@
 import {Evented} from "utils";
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
-import Memory from "core/resource/Memory";
+import {type Resource, File, Memory} from "core/resource";
 import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";
@@ -484,24 +484,28 @@ export default class Document extends Evented<{
 		this.source.parse();
 	}
 	
-	async save() {
-		await this.resource.save(this.toString());
-		
+	private onSave() {
 		this.modified = false;
 		this.fileChangedWhileModified = false;
 		this.historyIndexAtSave = this.historyIndex;
 		
 		platform.removeBackup(this);
 		
-		await this.updateFormat();
-		
 		this.fire("save");
 	}
 	
-	async saveAs(resource) {
-		this.setResource(resource);
+	async save() {
+		await this.resource.save(this.toString());
 		
-		await this.save();
+		this.onSave();
+	}
+	
+	async saveAs(url: URL): Promise<void> {
+		let file = await File.write(url, this.string);
+		
+		this.setResource(file);
+		
+		this.onSave();
 	}
 	
 	setupWatch() {

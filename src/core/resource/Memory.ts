@@ -1,12 +1,11 @@
-import {URL, Format} from "core";
+import {URL, Format, type Lang} from "core";
 import {getNewline, getIndent, guessLang} from "./utils";
 import FileLike from "./FileLike";
 
 export default class Memory extends FileLike {
-	private constructor(url, str, lang=null) {
-		super();
+	private constructor(url: URL, str: string, lang: Lang = null) {
+		super(url || URL.memory("memory"));
 		
-		this.url = url || URL.memory("memory");
 		this.contents = str;
 		
 		let indent = getIndent(str);
@@ -19,14 +18,14 @@ export default class Memory extends FileLike {
 		this.format = new Format(newline, indent, lang);
 	}
 	
-	protected updateFormat() {
+	protected updateFormat(): void {
 	}
 	
-	static plain(str) {
+	static plain(str: string): Memory {
 		return new Memory(null, str);
 	}
 	
-	static async withPath(path, str) {
+	static async withPath(path: string, str: string): Promise<Memory> {
 		let file = new Memory(URL.file(path), str);
 		
 		await file.ensureRequiredLangsInitialised();
@@ -34,7 +33,7 @@ export default class Memory extends FileLike {
 		return file;
 	}
 	
-	static async withLang(str, lang) {
+	static async withLang(str: string, lang: Lang): Promise<Memory> {
 		let file = new Memory(null, str, lang);
 		
 		await file.ensureRequiredLangsInitialised();

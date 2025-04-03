@@ -1,13 +1,17 @@
 import {lid, partition} from "utils";
-import {URL} from "core";
+import {URL, type Lang} from "core";
 import {File, NewFile} from "core/resource";
+import type App from "ui/App";
+import type EditorTab from "ui/App/tabs/EditorTab";
 
 export default class {
-	constructor(app) {
+	app: App;
+	
+	constructor(app: App) {
 		this.app = app;
 	}
 	
-	async newFile(lang=base.getDefaultLang()) {
+	async newFile(lang: Lang = base.getDefaultLang()): EditorTab {
 		let {mainTabs} = this.app;
 		
 		let dir = this.app.selectedProject?.dirs[0].path || platform.systemInfo.homeDir;
@@ -21,15 +25,15 @@ export default class {
 		return tab;
 	}
 	
-	private async openFile(file) {
+	private async openFile(file: File): EditorTab {
 		return await this.app.mainTabs.openFile(file);
 	}
 	
-	openPath(path) {
+	openPath(path: string): Promise<EditorTab> {
 		return this.openUrl(URL.file(path));
 	}
 	
-	async openUrl(url) {
+	async openUrl(url: URL): Promise<EditorTab> {
 		let {mainTabs} = this.app;
 		
 		let existingTab = mainTabs.findTabByUrl(url);
@@ -57,7 +61,7 @@ export default class {
 	async openFilesFromUpload(uploadedFiles) {
 		let dir = platform.fs("/upload-" + lid());
 		
-		await dir.child("placeholder").mkdirp();
+		await dir.mkdirp();
 		
 		let files = await bluebird.map(uploadedFiles, ({name, contents}) => {
 			return File.write(URL.file(dir.child(name).path), contents);
@@ -68,7 +72,7 @@ export default class {
 		}
 	}
 	
-	async save(tab) {
+	async save(tab: EditorTab): Promise<void> {
 		let {document} = tab;
 		
 		if (document.isSaved) {
@@ -84,23 +88,20 @@ export default class {
 		}
 	}
 	
-	async saveAs(tab) {
+	async saveAs(tab: EditorTab): Promise<void> {
 		let {document} = tab;
-		
 		let dir = this.app.getCurrentDir(platform.systemInfo.homeDir);
 		
 		let path = await this.app.dialogs.showSaveAs({
 			path: platform.fs(dir, platform.fs(document.path).name).path,
 		});
 		
-		// TODO check if it's different
-		
-		if (path) {
+		if (path && path !== document.path) {
 			await document.saveAs(URL.file(path));
 		}
 	}
 	
-	async saveAll() {
+	async saveAll(): Promise<void> {
 		let [saved, unsaved] = partition(this.app.mainTabs.tabs, tab => tab.isSaved);
 		
 		await Promise.all([
@@ -109,30 +110,28 @@ export default class {
 		]);
 	}
 	
-	async renameTab(tab) {
-		throw "migrate";
-		
-		let {url} = tab;
-		let oldPath = tab.path;
+	async renameTab(tab: EditorTab): Promise<void> {
+		let {document} = tab;
+		let {resource} = document;
 		
 		let path = await platform.saveAs({
 			path: oldPath,
 		});
 		
-		if (path && path !== oldPath) {
-			await tab.document.saveAs(URL.file(path));
-			await protocol(url).delete();
+		if (path && path !== tab.path) {
+			await document.saveAs(URL.file(path));
+			await resource.delete();
 		}
 	}
 	
-	async deleteTab(tab) {
-		throw "migrate";
-		
+	async deleteTab(tab: EditorTab): Promise<void> {
 		if (!await confirm("Delete " + tab.path + "?")) {
 			return;
 		}
 		
-		await protocol(tab.url).delete();
+		let file = tab.document.resource;
+		
+		await tab.document.resource.delete();
 		
 		this.closeTab(tab);
 	}

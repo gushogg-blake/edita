@@ -12,7 +12,7 @@ export type Snippet = {
 	text: string;
 };
 
-class SnippetsStore extends Evented<{
+export class SnippetsStore extends Evented<{
 	create: Snippet;
 	update: Snippet;
 	delete: string;

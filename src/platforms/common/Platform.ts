@@ -1,5 +1,6 @@
-import {Evented} from "utils";
-import type URL from "core";
+import {Evented, type PromiseWithMethods} from "utils";
+import type {URL, Document, File} from "core";
+import type App from "ui/App";
 import type Clipboard from "./Clipboard";
 import type JsonStore from "./JsonStore";
 
@@ -25,18 +26,63 @@ export default class extends Evented<{
 	fs: any; // TYPE fs
 	urlsToOpenOnStartup?: URL[] = [];
 	
-	// ...
-	
-	constructor() {
-		super();
+	init(config?: any): Promise<void> {
+		throw new Error("abstract");
 	}
 	
-	abstract init(config?: any): Promise<void>;
+	backup(document: Document): void {
+		throw new Error("abstract");
+	}
+	
+	removeBackup(document: Document): void {
+		throw new Error("abstract");
+	}
+	
+	filesFromDropEvent(e, app: App): Promise<File[]> {
+		throw new Error("abstract");
+	}
+	
+	dialogPromise(showSyntheticDialog, name, options, windowOptions): PromiseWithMethods<any> {
+		throw new Error("abstract");
+	}
+	
+	openDialogWindow(app, dialog, dialogOptions, windowOptions): void {
+		throw new Error("abstract");
+	}
 	
 	callOpener(method: string, data: unknown) {
-		throw new Error("callOpener: electron only");
+		throw new Error("electron only");
 	}
 	
-	abstract closeWindow(): void;
-	abstract setTitle(title: string): void;
+	showContextMenu(e: Event, app: App, items, options): void {
+		throw new Error("abstract");
+	}
+	
+	showContextMenuForElement(app: App, element: HTMLElement, items, options): void {
+		throw new Error("abstract");
+	}
+	
+	get isWindows(): boolean {
+		throw new Error("abstract");
+	}
+	
+	setTitle(title: string): void {
+		throw new Error("abstract");
+	}
+	
+	loadTreeSitterLanguage(name: string): Promise<any> { // TYPE tree-sitter lang
+		throw new Error("abstract");
+	}
+	
+	locateTreeSitterWasm(): string {
+		throw new Error("abstract");
+	}
+	
+	showWindow(): void {
+		throw new Error("electron only");
+	}
+	
+	closeWindow(): void {
+		throw new Error("electron only");
+	}
 }

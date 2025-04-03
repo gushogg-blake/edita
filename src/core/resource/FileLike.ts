@@ -1,8 +1,10 @@
 import {Evented} from "utils";
-import {Format, Resource} from "core";
+import {type URL, Format, type Resource, type Lang} from "core";
 import {getNewline, getIndent, guessLang} from "./utils";
 
-export default class FileLike extends Evented {
+export default class FileLike extends Evented<{
+	formatChanged: void;
+}> implements Resource {
 	contents: string;
 	format: Format;
 	
@@ -10,13 +12,13 @@ export default class FileLike extends Evented {
 		super();
 	}
 	
-	setLang(lang) {
+	setLang(lang: Lang) {
 		this.format.lang = lang;
 		
 		this.fire("formatChanged");
 	}
 	
-	protected updateFormat() {
+	protected updateFormat(): void {
 		let hasFormat = !!this.format;
 		
 		let {url, contents} = this;
@@ -32,7 +34,7 @@ export default class FileLike extends Evented {
 		}
 	}
 	
-	protected ensureRequiredLangsInitialised() {
+	protected ensureRequiredLangsInitialised(): Promise<void> {
 		return base.ensureRequiredLangsInitialised(this.format.lang);
 	}
 	

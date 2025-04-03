@@ -10,6 +10,8 @@ import type {PromiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
 import {URL, File} from "core";
 
+import type App from "ui/App";
+
 import fs from "platforms/electron/modules/fs";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 import ipc from "platforms/electron/modules/ipc";
@@ -106,7 +108,7 @@ export default class Platform extends PlatformCommon {
 		}));
 	}
 	
-	dialogPromise(_showSyntheticDialog, name, options) {
+	dialogPromise(_showSyntheticDialog, name, options, _windowOptions): PromiseWithMethods<any> {
 		let promise = promiseWithMethods();
 		
 		ipc.openDialogWindow(name, options);
@@ -116,11 +118,11 @@ export default class Platform extends PlatformCommon {
 		return promise;
 	}
 	
-	openDialogWindow(_showSyntheticDialog, dialog, dialogOptions, _windowOptions) {
-		ipc.openDialogWindow(dialog, dialogOptions);
+	openDialogWindow(_showSyntheticDialog, name: string, options, _windowOptions): void {
+		ipc.openDialogWindow(name, options);
 	}
 	
-	_showContextMenu(app, items, coords, options) {
+	private _showContextMenu(app, items, coords, options): void {
 		options = {
 			noCancel: false,
 			useCoordsForNative: false,
@@ -143,7 +145,7 @@ export default class Platform extends PlatformCommon {
 		}
 	}
 	
-	showContextMenu(e, app, items, options={}) {
+	showContextMenu(e, app: App, items, options={}): void {
 		let coords = {
 			x: e.clientX,
 			y: e.clientY,
@@ -155,7 +157,7 @@ export default class Platform extends PlatformCommon {
 		});
 	}
 	
-	showContextMenuForElement(app, element, items, options={}) {
+	showContextMenuForElement(app: App, element: HTMLElement, items, options={}): void {
 		let {x, y, height} = screenOffsets(element);
 		
 		x = Math.round(x);

@@ -1,11 +1,16 @@
 import {Evented, sleep, sortedPartition} from "utils";
+import type App from "ui/App";
 
 function get(key) {
 	return base.getPref("dev." + key);
 }
 
-export default class extends Evented {
-	constructor(app) {
+export default class extends Evented<{
+	showAstHint: any;
+}> {
+	private app: App;
+	
+	constructor(app: App) {
 		super();
 		
 		this.app = app;
@@ -18,13 +23,14 @@ export default class extends Evented {
 		
 		setInterval(() => {
 			if (get("logFocusedElement")) {
-				console.log(app.selectedTab?.editor.view.focused);
+				// @ts-ignore
+				console.log(app.mainTabs.selectedTab?.editor.view.focused);
 				console.log(document.activeElement);
 			}
 		}, 1000);
 		
 		if (get("openFindAndReplace")) {
-			app.showFindAndReplace();
+			//app.showFindAndReplace();
 		}
 		
 		if (get("openRefactor")) {

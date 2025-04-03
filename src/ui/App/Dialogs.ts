@@ -1,7 +1,19 @@
+import type {PromiseWithMethods} from "utils";
+import type App from "ui/App";
 import showSyntheticDialog from "./showSyntheticDialog";
 
+type OpenDialogMode = "selectDir" | "selectFiles" | "save";
+
 export default class {
-	constructor(app) {
+	private showSyntheticDialog: (
+		name: string,
+		options: any,
+		windowOptions: any,
+	) => Promise<PromiseWithMethods<any>>; // TYPE dialog response
+	
+	private app: App;
+	
+	constructor(app: App) {
 		this.app = app;
 		
 		this.showSyntheticDialog = (dialogName, dialogOptions, windowOptions) => {
@@ -17,7 +29,7 @@ export default class {
 		};
 	}
 	
-	async _showOpen(dir, mode) {
+	async _showOpen(dir: string, mode: OpenDialogMode): Promise<string[]> {
 		if (!dir) {
 			dir = this.app.getCurrentDir();
 		}
@@ -34,15 +46,15 @@ export default class {
 		return paths;
 	}
 	
-	showOpen(dir=null) {
+	showOpen(dir: string = null): Promise<string[]> {
 		return this._showOpen(dir, "selectFiles");
 	}
 	
-	showChooseDir(startDir=null) {
-		return this._showOpenDialog(startDir, "selectDir");
+	showChooseDir(startDir: string = null): Promise<string[]> {
+		return this._showOpen(startDir, "selectDir");
 	}
 	
-	async showSaveAs(options) {
+	async showSaveAs(options): Promise<string | null> {
 		let {canceled, path} = await this.dialogPromise("fileChooser", {
 			mode: "save",
 			...options,
@@ -51,15 +63,15 @@ export default class {
 		return path || null;
 	}
 	
-	dialogPromise(name, options, windowOptions) {
+	private dialogPromise(name: string, options, windowOptions = {}): PromiseWithMethods<any> {
 		return platform.dialogPromise(this.showSyntheticDialog, name, options, windowOptions);
 	}
 	
-	openDialogWindow(name, options, windowOptions) {
+	private openDialogWindow(name: string, options, windowOptions = {}): void {
 		platform.openDialogWindow(this.showSyntheticDialog, name, options, windowOptions);
 	}
 	
-	newSnippet(details={}) {
+	newSnippet(details = {}) {
 		this.openDialogWindow("snippetEditor", {
 			id: null,
 			details,
@@ -70,7 +82,7 @@ export default class {
 		});
 	}
 	
-	editSnippet(id) {
+	editSnippet(id: string) {
 		this.openDialogWindow("snippetEditor", {
 			id,
 		}, {

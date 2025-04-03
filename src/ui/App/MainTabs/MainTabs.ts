@@ -1,6 +1,7 @@
 import bluebird from "bluebird";
 import {Evented, moveInPlace, removeInPlace} from "utils";
 import {Document} from "core";
+import {type Resource} from "core/resource";
 import EditorTab from "ui/App/tabs/EditorTab";
 import type Tab from "ui/App/tabs/Tab";
 import type App from "ui/App";
@@ -12,7 +13,13 @@ the main tabs (editors, and possibly others like RefactorPreview if that
 gets done)
 */
 
-export default class extends Evented {
+export default class extends Evented<{
+	update: void;
+	select: Tab;
+	tabCreated: Tab;
+	tabClosed: Tab;
+	editorTabCreated: EditorTab;
+}> {
 	tabs: Tab[] = [];
 	selectedTab: Tab | null = null;
 	previouslySelectedTabs: Tab[] = [];
@@ -20,17 +27,17 @@ export default class extends Evented {
 	private app: App;
 	private closedTabs: Tab[] = [];
 	
-	constructor(app) {
+	constructor(app: App) {
 		super();
 		
 		this.app = app;
 	}
 	
-	get editorTabs() {
+	get editorTabs(): EditorTab[] {
 		return this.tabs.filter(tab => tab.isEditor);
 	}
 	
-	async newFile(resource) {
+	async newFile(resource): EditorTab {
 		let tab = await this.createEditorTab(resource);
 		
 		this.tabs.push(tab);
@@ -40,7 +47,7 @@ export default class extends Evented {
 		return tab;
 	}
 	
-	async openFile(file) {
+	async openFile(file: File): EditorTab {
 		let closeInitialNewFileTab = (
 			this.editorTabs.length === 1
 			&& this.editorTabs[0] === this.initialNewFileTab
@@ -58,9 +65,11 @@ export default class extends Evented {
 		this.fire("update");
 		
 		this.selectTab(tab);
+		
+		return tab;
 	}
 	
-	selectTab(tab) {
+	selectTab(tab: Tab) {
 		if (this.selectedTab) {
 			this.addToPreviouslySelectedTabs(this.selectedTab);
 		}
@@ -83,7 +92,7 @@ export default class extends Evented {
 		this.focusSelectedTabAsync();
 	}
 	
-	selectNextTab(dir) {
+	selectNextTab(dir: number): void {
 		if (!this.selectedTab) {
 			return;
 		}
@@ -103,7 +112,7 @@ export default class extends Evented {
 		this.selectTab(tabs[newIndex]);
 	}
 	
-	addToPreviouslySelectedTabs(tab) {
+	addToPreviouslySelectedTabs(tab: Tab): void {
 		removeInPlace(this.previouslySelectedTabs, tab);
 		
 		this.previouslySelectedTabs.push(tab);
@@ -113,13 +122,13 @@ export default class extends Evented {
 		}
 	}
 	
-	reorderTab(tab, index) {
+	reorderTab(tab: Tab, index: number): void {
 		moveInPlace(this.tabs, tab, index);
 		
 		this.fire("update");
 	}
 	
-	async closeTab(tab, noSave=false) {
+	async closeTab(tab: Tab, noSave: boolean = false): void {
 		if (tab.modified) {
 			let response = await this.app.dialogs.showMessageBox({
 				message: "Save changes to " + tab.name + "?",
@@ -184,13 +193,13 @@ export default class extends Evented {
 		this.fire("tabClosed", tab);
 	}
 	
-	async closeOthers(tab) {
+	async closeOthers(tab: Tab): Promise<void> {
 		for (let other of this.editorTabs.filter(t => t !== tab)) {
 			await this.closeTab(other);
 		}
 	}
 	
-	async createEditorTab(resource) {
+	async createEditorTab(resource: Resource): Promise<EditorTab> {
 		if (base.getPref("dev.timing.misc")) {
 			console.time("createEditorTab");
 		}
@@ -204,13 +213,14 @@ export default class extends Evented {
 			this.app.dev.showAstHint(editor);
 		});
 		
-		editor.on("requestGoToDefinition", async ({path, selection}) => {
-			let tab = await this.app.fileOperations.openPath(path);
-			let {api} = tab.editor;
-			
-			api.setNormalHilites([selection], 700);
-			api.centerSelection(selection);
-		});
+		// MIGRATE
+		//editor.on("requestGoToDefinition", async ({path, selection}) => {
+		//	let tab = await this.app.fileOperations.openPath(path);
+		//	let {api} = tab.editor;
+		//	
+		//	api.setNormalHilites([selection], 700);
+		//	api.centerSelection(selection);
+		//});
 		
 		let tab = new EditorTab(this, editor);
 		
@@ -228,15 +238,15 @@ export default class extends Evented {
 		return tab;
 	}
 	
-	findTabByPath(path) {
+	findTabByPath(path: string): EditorTab | undefined {
 		return this.editorTabs.find(tab => tab.isSaved && tab.path === path);
 	}
 	
-	findTabByUrl(url) {
+	findTabByUrl(url: URL): EditorTab | undefined {
 		return this.editorTabs.find(tab => tab.url.toString() === url.toString());
 	}
 	
-	async loadFromSessionAndStartup({tabs, urlToSelect}: {tabs: TabDescriptor[], urlToSelect?: URL}) {
+	async loadFromSessionAndStartup({tabs, urlToSelect}: {tabs: TabDescriptor[], urlToSelect?: URL}): Promise<void> {
 		this.tabs = await bluebird.map(tabs, async ({file, state}) => {
 			let tab = this.createEditorTab(file);
 			
@@ -269,7 +279,7 @@ export default class extends Evented {
 		return tab;
 	}
 	
-	saveSession() {
+	saveSession() { // TYPE
 		let tabs = this.editorTabs.map(function(tab) {
 			return tab.isSaved ? tab.saveState() : null;
 		}).filter(Boolean);
@@ -280,21 +290,21 @@ export default class extends Evented {
 		};
 	}
 	
-	focusSelectedTab() {
+	focusSelectedTab(): void {
 		this.selectedTab?.focus();
 	}
 	
-	focusSelectedTabAsync() {
+	focusSelectedTabAsync(): void {
 		setTimeout(() => {
 			this.focusSelectedTab();
 		}, 0);
 	}
 	
-	onTabFocus() {
+	onTabFocus(): void {
 		this.app.hideFindBar();
 	}
 	
-	getEditorTabLabel(tab) {
+	getEditorTabLabel(tab: EditorTab): string {
 		return getEditorTabLabel(tab, this.editorTabs);
 	}
 	

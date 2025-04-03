@@ -11,7 +11,7 @@ import {Document, Lang} from "core";
 import Editor from "ui/Editor";
 
 import DirEntries from "base/DirEntries";
-import stores from "base/stores";
+import stores, {type Stores} from "base/stores";
 import type {Theme} from "base/stores/themes";
 
 import javascript from "base/langs/javascript";
@@ -53,11 +53,15 @@ the UI.
 lifespan: global singleton created on startup; never destroyed.
 */
 
-export default class Base extends Evented {
+export default class Base extends Evented<{
+	prefsUpdated: void;
+	themeUpdated: void;
+}> {
 	langs: Langs;
 	DirEntries: typeof DirEntries;
 	packageJson: any;
 	theme: Theme;
+	stores: Stores;
 	
 	components: Record<string, any>; // TYPE Svelte components
 	

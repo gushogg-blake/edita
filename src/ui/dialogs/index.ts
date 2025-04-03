@@ -5,6 +5,7 @@ import SnippetEditor from "./SnippetEditor";
 export interface DialogEnv {
 	close(): void;
 	respond(response: any): void;
+	setTitle(title: string): void;
 }
 
 export interface DialogApp {

@@ -1,13 +1,16 @@
-import Evented from "utils/Evented";
+import type {DialogEnv} from "ui/dialogs";
 
-class App extends Evented {
+export default class App {
+	private env: DialogEnv;
+	private options: any; // TYPE
+	private hasResponded: boolean = false;
+	private teardownCallbacks: Array<() => void>;
+	
 	constructor(env, options) {
 		super();
 		
 		this.env = env;
 		this.options = options;
-		
-		this.hasResponded = false;
 		
 		this.teardownCallbacks = [
 			platform.on("dialogClosed", this.onDialogClosed.bind(this)),
@@ -47,5 +50,3 @@ class App extends Evented {
 		}
 	}
 }
-
-export default App;

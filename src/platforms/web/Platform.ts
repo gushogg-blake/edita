@@ -5,7 +5,7 @@ import {Language} from "web-tree-sitter";
 import path from "vendor/path-browser";
 import fsWeb from "vendor/fs-web";
 
-import {fs as createFs, Evented, lid} from "utils";
+import {fs as createFs, Evented, lid, promiseWithMethods, type PromiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
 
 import {URL, File} from "core";
@@ -127,8 +127,12 @@ export default class Platform extends PlatformCommon {
 		});
 	}
 	
-	openDialogWindow(app, dialog, dialogOptions, windowOptions) {
-		app.openDialogWindow(dialog, dialogOptions, windowOptions);
+	dialogPromise(showSyntheticDialog, name: string, options, windowOptions): PromiseWithMethods<any> {
+		return showSyntheticDialog(name, options, windowOptions);
+	}
+	
+	openDialogWindow(showSyntheticDialog, name: string, options, windowOptions): void {
+		showSyntheticDialog(name, options, windowOptions);
 	}
 	
 	showContextMenu(e, app, items, options) {
