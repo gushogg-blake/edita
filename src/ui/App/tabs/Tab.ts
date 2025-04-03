@@ -1,6 +1,6 @@
 import Evented from "utils/Evented";
 
-class Tab extends Evented {
+class Tab<EventMap> extends Evented<EventMap> {
 	constructor(app, resource) {
 		super();
 		
