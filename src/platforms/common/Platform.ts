@@ -2,7 +2,7 @@ import {Evented, type PromiseWithMethods} from "utils";
 import type {URL, Document, File} from "core";
 import type App from "ui/App";
 import type Clipboard from "./Clipboard";
-import type JsonStore from "./JsonStore";
+import type {JsonStore} from "./JsonStore";
 
 type Path = {
 	sep: string;

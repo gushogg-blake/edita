@@ -35,7 +35,7 @@ function getVariables(theme, selectedTab, path=[]) {
 		editor,
 	};
 	
-	if (selectedTab?.isEditor) {
+	if (selectedTab instanceof EditorTab) {
 		values.langs = {};
 		
 		for (let {lang} of selectedTab.editor.document.scopes) {

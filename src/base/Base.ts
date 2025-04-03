@@ -12,7 +12,8 @@ import Editor from "ui/Editor";
 
 import DirEntries from "base/DirEntries";
 import stores, {type Stores} from "base/stores";
-import type {Theme} from "base/stores/themes";
+
+import type {Prefs, Theme} from "base/types";
 
 import javascript from "base/langs/javascript";
 import typescript from "base/langs/typescript";
@@ -62,6 +63,7 @@ export default class Base extends Evented<{
 	packageJson: any;
 	theme: Theme;
 	stores: Stores;
+	prefs: Prefs;
 	
 	components: Record<string, any>; // TYPE Svelte components
 	

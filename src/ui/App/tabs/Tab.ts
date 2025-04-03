@@ -1,6 +1,6 @@
 import Evented from "utils/Evented";
 
-class Tab<EventMap> extends Evented<EventMap> {
+class Tab<EventMap = {}> extends Evented<EventMap> {
 	constructor(app, resource) {
 		super();
 		
@@ -9,10 +9,6 @@ class Tab<EventMap> extends Evented<EventMap> {
 	}
 	
 	async init() {
-	}
-	
-	get isEditor() {
-		return ["file:", "new:"].includes(this.protocol);
 	}
 	
 	get url() {

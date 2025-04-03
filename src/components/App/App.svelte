@@ -34,7 +34,7 @@ setContext("app", app);
 
 let {mainTabs, panes} = app;
 
-let main = $state();
+let main = $state<HTMLDivElement>();
 
 let prefs = $state(base.prefs);
 let theme = $state(base.theme);

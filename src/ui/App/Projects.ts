@@ -107,7 +107,7 @@ class Projects extends Evented {
 	}
 	
 	onTabCreated(tab) {
-		if (!tab.isEditor) {
+		if (!(tab instanceof EditorTab)) {
 			return;
 		}
 		
@@ -117,7 +117,7 @@ class Projects extends Evented {
 	}
 	
 	onTabClosed(tab) {
-		if (!tab.isEditor) {
+		if (!(tab instanceof EditorTab)) {
 			return;
 		}
 		

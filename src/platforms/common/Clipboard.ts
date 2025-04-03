@@ -1,7 +1,7 @@
 import {Evented} from "utils";
 import type {AsyncOrSync} from "utils/types";
 
-export default class extends Evented<{
+export default abstract class extends Evented<{
 	set: string;
 }> {
 	abstract read(): AsyncOrSync<string>;

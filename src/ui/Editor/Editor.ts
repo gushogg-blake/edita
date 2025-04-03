@@ -6,6 +6,8 @@ import AstSelection, {a} from "core/AstSelection";
 import Selection, {s} from "core/Selection";
 import Cursor, {c} from "core/Cursor";
 
+import type App from "ui/App";
+
 import View from "./View";
 import AstMode from "./AstMode";
 import normalMouse from "./normalMouse";
@@ -19,13 +21,20 @@ import modeSwitchKey from "./modeSwitchKey";
 import snippets from "./snippets";
 import api from "./api";
 
-type Env = {
-	// MIGRATE
-	// update -- this should probably just be App, to keep things simple...
-	// ways of getting LSP, extra word completions etc
-	// (Document no longer has .project)
-	// (remove requestWordCompletionCandidates)
-};
+// stuff the Editor needs from outside, e.g. LSP, word completions
+// from other tabs' filenames
+
+export interface EditorEnv {
+	getWordCompletionCandidates(): string[];
+	
+	lsp: {
+		getCompletions(cursor: Cursor): Promise<any[]>; // TYPE LSP response
+		getDefinitions(cursor: Cursor): Promise<any[]>; // TYPE LSP response
+	};
+	
+	findReferences(cursor: Cursor): Promise<void>;
+	goToDefinition(definition: any): Promise<void>; // TYPE LSP response (or we convert it into our own)
+}
 
 class Editor extends Evented<{
 	edit: void;
@@ -33,7 +42,11 @@ class Editor extends Evented<{
 	blur: void;
 	normalSelectionChangedByMouseOrKeyboard: Selection;
 }> {
-	constructor(document, env?: Env) {
+	document: Document;
+	
+	private app?: App;
+	
+	constructor(document: Document, env?: Env) {
 		super();
 		
 		this.document = document;
@@ -195,7 +208,7 @@ class Editor extends Evented<{
 		
 		let cursor = this.normalSelection.left;
 		
-		let completions = await this.document.lsp.getCompletions(cursor) || [];
+		let completions = await this.env?.lsp.getCompletions(cursor) || [];
 		
 		console.log(completions);
 		
@@ -236,21 +249,11 @@ class Editor extends Evented<{
 	}
 	
 	getExternalWordCompletionCandidates() {
-		let candidates = [];
-		
-		// MIGRATE
-		//this.fire("requestWordCompletionCandidates", function(words) {
-		//	candidates = [...candidates, words];
-		//});
-		
-		return candidates;
+		return this.env?.getWordCompletionCandidates() || [];
 	}
 	
-	async goToDefinitionFromCursor(cursor) {
-		let word = this.wordUnderCursor(cursor);
-		
-		// MIGRATE
-		let results = await this.document.lsp.getDefinitions(cursor) || [];
+	goToDefinitionFromCursor(cursor: Cursor): void {
+		let results = await this.env?.lsp.getDefinitions(cursor) || [];
 		
 		if (results.length === 0) {
 			return;
@@ -258,25 +261,14 @@ class Editor extends Evented<{
 		
 		// TODO if multiple, bring up a list
 		
-		//this.fire("requestGoToDefinition", results[0]);
+		this.env?.goToDefinition(results[0]);
 	}
 	
-	async findReferencesFromCursor(cursor) {
-		let word = this.wordUnderCursor(cursor);
-		
-		// MIGRATE
-		let results = await this.document.lsp.findReferences(cursor) || [];
-		
-		if (results.length === 0) {
-			return;
-		}
-		
-		console.log(results);
-		
-		//this.fire("requestShowReferences", results);
+	findReferencesFromCursor(cursor: Cursor): void {
+		this.env?.findReferences(cursor);
 	}
 	
-	wordUnderCursor(cursor) {
+	wordUnderCursor(cursor: Cursor): string | null {
 		let wordSelection = this.view.Selection.wordUnderCursor(cursor);
 		let str = this.document.getSelectedText(wordSelection);
 		
@@ -287,11 +279,11 @@ class Editor extends Evented<{
 		return str;
 	}
 	
-	onDocumentEdit() {
+	onDocumentEdit(): void {
 		this.throttledBackup();
 	}
 	
-	onDocumentSave() {
+	onDocumentSave(): void {
 		this.clearBatchState();
 	}
 	
@@ -310,7 +302,7 @@ class Editor extends Evented<{
 	-- should be cancelled obviously
 	*/
 	
-	onDocumentHistoryEntryAdded(entry) {
+	onDocumentHistoryEntryAdded(entry: DocumentHistoryEntry): void {
 		if (this.pendingHistoryEntry) {
 			this.historyEntries.set(entry, this.pendingHistoryEntry);
 			

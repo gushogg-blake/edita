@@ -12,6 +12,10 @@ import HistoryEntry from "./HistoryEntry";
 export {default as Range} from "./Source/Range";
 export {default as Scope} from "./Source/Scope";
 
+export type DocumentOptions = {
+	noParse: boolean;
+};
+
 type LineDiff = {
 	startLineIndex: number;
 	invalidCount: number;
@@ -40,7 +44,7 @@ export default class Document extends Evented<{
 	private source: Source;
 	private historyIndexAtSave: number = 0;
 	
-	constructor(resource, options={}) {
+	constructor(resource, options?: DocumentOptions) {
 		super();
 		
 		this.resource = resource;
@@ -49,7 +53,6 @@ export default class Document extends Evented<{
 		this.setupResource();
 		
 		options = {
-			project: null,
 			noParse: false,
 			...options,
 		};

@@ -1,9 +1,13 @@
-import {type Cursor, c} from "core";
+import {c} from "core";
+import type {Cursor, Selection, Document} from "core";
 import Scope from "./Scope";
 import Range from "./Range";
 
 export default class {
-	constructor(document) {
+	document: Document;
+	rootScope: Scope;
+	
+	constructor(document: Document) {
 		this.document = document;
 	}
 	
@@ -23,19 +27,19 @@ export default class {
 		return this.format.lang;
 	}
 	
-	parse() {
+	parse(): void {
 		this.rootScope = new Scope(this, null, this.lang, [this.getContainingRange()]);
 	}
 	
-	edit(edit, index) {
+	edit(edit, index: number): void {
 		this.rootScope.edit(edit, index, [this.getContainingRange()]);
 	}
 	
-	getVisibleScopes(selection) {
+	getVisibleScopes(selection: Selection): Scope[] {
 		return this.rootScope.getVisibleScopes(selection);
 	}
 	
-	generateNodesStartingOnLine(lineIndex, lang=null) {
+	generateNodesStartingOnLine(lineIndex, lang = null) {
 		return this.rootScope.generateNodesStartingOnLine(lineIndex, lang);
 	}
 	

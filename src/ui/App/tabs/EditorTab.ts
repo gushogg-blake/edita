@@ -219,7 +219,7 @@ class EditorTab extends Tab<{
 	}
 	
 	onAppUpdateTabLabels() {
-		this._label = this.app.getEditorTabLabel(this);
+		this._label = this.app.mainTabs.getEditorTabLabel(this);
 	}
 	
 	onAppPaneUpdate() {

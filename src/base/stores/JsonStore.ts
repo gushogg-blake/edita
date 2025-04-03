@@ -13,9 +13,8 @@ for singleton stores (prefs, session state, etc) see Singleton.
 */
 
 export type Migration = (value: any) => any | undefined;
-export type StoreValue = any;
 
-export default class JsonStore extends Evented<{
+export default class JsonStore<StoreValue = any> extends Evented<{
 	create: {key: string; value: StoreValue};
 	update: {key: string; value: StoreValue};
 	delete: {key: string; value: StoreValue};
@@ -93,7 +92,7 @@ export default class JsonStore extends Evented<{
 		return platform.jsonStore.delete(this.name, key);
 	}
 	
-	wrap(value) {
+	wrap(value: StoreValue) {
 		return {
 			_version: this.latestVersion,
 			value,

@@ -1,7 +1,8 @@
 import bluebird from "bluebird";
 
 import {Evented, bindFunctions, promiseWithMethods} from "utils";
-import {URL, Document} from "core";
+import {URL, Document, type Resource} from "core";
+import type {DocumentOptions} from "core/Document";
 
 import {alwaysIncludeDirInTabTitle} from "base/conventions";
 
@@ -62,7 +63,7 @@ class App extends Evented<{
 	
 	commands: any; // TYPE
 	
-	private dev: any;
+	dev: any;
 	
 	constructor() {
 		super();
@@ -217,7 +218,7 @@ class App extends Evented<{
 		this.fire("openLangSelector");
 	}
 	
-	createDocument(resource, options) {
+	createDocument(resource: Resource, options?: DocumentOptions): Document {
 		let document = new Document(resource, options);
 		
 		for (let event of ["edit", "undo", "redo", "save"] as const) {
@@ -232,7 +233,7 @@ class App extends Evented<{
 		return document;
 	}
 	
-	_createEditor(document) {
+	_createEditor(document: Document): Editor {
 		let editor = new Editor(document);
 		
 		// MIGRATE
@@ -247,7 +248,7 @@ class App extends Evented<{
 		return editor;
 	}
 	
-	createEditor() {
+	createEditor(): Editor {
 		return this._createEditor(Document.fromString(""));
 	}
 	

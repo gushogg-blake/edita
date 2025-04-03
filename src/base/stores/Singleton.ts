@@ -1,15 +1,15 @@
 import {Evented} from "utils";
-import JsonStore, {type StoreValue, type Migration} from "./JsonStore";
+import JsonStore, {type Migration} from "./JsonStore";
 
-export default class Singleton extends Evented<{
+export default class Singleton<StoreValue = any> extends Evented<{
 	update: StoreValue;
 }> {
-	private store: JsonStore;
+	private store: JsonStore<StoreValue>;
 	
 	constructor(name: string, defaultValue: StoreValue, migrations: Record<string, Migration>) {
 		super();
 		
-		this.store = new JsonStore(name, defaultValue, migrations);
+		this.store = new JsonStore<StoreValue>(name, defaultValue, migrations);
 		
 		this.store.on("create", ({value}) => this.fire("update", value));
 		this.store.on("update", ({value}) => this.fire("update", value));

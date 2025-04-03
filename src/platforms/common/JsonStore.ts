@@ -1,11 +1,13 @@
 import type {AsyncOrSync} from "utils";
 
-export default type JsonStore = {
+export type JsonStoreWatcher = (key: string, value: any, type: string) => void;
+
+export type JsonStore = {
 	load(name: string, key: string): AsyncOrSync<any>;
-	create(name: string, key: string, data: any): AsyncOrSync<string>;
+	create(name: string, key: string, data: any): AsyncOrSync<void>;
 	update(name: string, key: string, data: any): AsyncOrSync<void>;
 	createOrUpdate(name: string, key: string, data: any): AsyncOrSync<void>;
 	delete(name: string, key: string): AsyncOrSync<void>;
 	ls(name: string): AsyncOrSync<string[]>;
-	watch(name: string, callback: (key: string, value: any, type: string) => void): void;
+	watch(name: string, callback: JsonStoreWatcher): void;
 };

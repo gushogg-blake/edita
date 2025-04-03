@@ -1,6 +1,9 @@
 import Evented from "utils/Evented";
 
-class LspServer extends Evented {
+class LspServer extends Evented<{
+	notification: any;
+	error: any;
+}> {
 	serverCapabilities: any;
 	
 	// TYPE available here: https://github.com/microsoft/vscode-languageserver-node/blob/df05883f34b39255d40d68cef55caf2e93cff35f/protocol/src/common/protocol.ts#L1503
@@ -18,7 +21,7 @@ class LspServer extends Evented {
 	}
 	
 	async start() {
-		let {error, result} = await this.backend.start(this.options);
+		let {error, result} = await this.backend.start(this.initializeParams);
 		
 		this.serverCapabilities = result;
 		

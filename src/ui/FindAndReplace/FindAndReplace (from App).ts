@@ -11,7 +11,7 @@ export default class extends Evented<{}> {
 	//	let search = "";
 	//	let {selectedTab} = this.app.mainTabs;
 	//	
-	//	if (selectedTab?.isEditor) {
+	//	if (selectedTab instanceof EditorTab) {
 	//		let {editor} = selectedTab;
 	//		let {document} = editor;
 	//		let selectedText = editor.getSelectedText();

@@ -35,7 +35,7 @@ export default class extends Evented<{
 	}
 	
 	get editorTabs(): EditorTab[] {
-		return this.tabs.filter(tab => tab.isEditor);
+		return this.tabs.filter(tab => tab instanceof EditorTab);
 	}
 	
 	async newFile(resource): Promise<EditorTab> {
@@ -84,7 +84,7 @@ export default class extends Evented<{
 		
 		this.app.updateTitle();
 		
-		if (tab.isEditor) {
+		if (tab instanceof EditorTab) {
 			this.app.output.clippingsTab?.setLang(tab.editor.document.lang);
 		}
 		
@@ -129,7 +129,7 @@ export default class extends Evented<{
 		this.fire("update");
 	}
 	
-	async closeTab(tab: Tab, noSave: boolean = false): void {
+	async closeTab(tab: Tab, noSave: boolean = false): Promise<void> {
 		if (tab.modified) {
 			let response = await this.app.dialogs.showMessageBox({
 				message: "Save changes to " + tab.name + "?",
@@ -137,7 +137,7 @@ export default class extends Evented<{
 			});
 			
 			if (response === 0) {
-				await this.app.fileOperations.save(tab);
+				await this.app.fileOperations.save(tab as EditorTab);
 				
 				if (!tab.isSaved) {
 					return;
@@ -223,7 +223,7 @@ export default class extends Evented<{
 		//	api.centerSelection(selection);
 		//});
 		
-		let tab = new EditorTab(this, editor);
+		let tab = new EditorTab(this.app, editor);
 		
 		await tab.init();
 		
