@@ -1,6 +1,7 @@
 import mapObject from "utils/mapObject";
 import _typeof from "utils/typeof";
 import inlineStyle from "utils/dom/inlineStyle";
+import EditorTab from "ui/App/tabs/EditorTab";
 
 /*
 write theme variables to the node's style (and update them when the
@@ -31,7 +32,7 @@ function _getVariables(values, path=[]) {
 function getVariables(theme, selectedTab, path=[]) {
 	let {editor, langs} = theme;
 	
-	let values = {
+	let values: any = {
 		editor,
 	};
 	

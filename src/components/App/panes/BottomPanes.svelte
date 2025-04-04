@@ -1,9 +1,10 @@
 <script lang="ts">
-import {onMount, getContext} from "svelte";
+import {onMount} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
+import {getApp} from "components/context";
 import TabPane from "./TabPane.svelte";
 
-let app = getContext("app");
+let app = getApp();
 
 let {bottomPanes} = app;
 let {tools, output} = bottomPanes;

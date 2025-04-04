@@ -4,6 +4,7 @@ import {unique} from "utils/array";
 import {removeInPlace} from "utils/array";
 import Project from "modules/Project";
 import {projectRootFiles} from "base/conventions";
+import type App from "ui/App";
 
 /*
 REFACTOR this should keep a map of File -> Project for open files
@@ -14,8 +15,17 @@ this will allow us to get the current project (Document no longer has
 Editor will need a ref to the App.
 */
 
-class Projects extends Evented {
-	constructor(app) {
+class Projects extends Evented<{
+	select: void;
+	update: void;
+}> {
+	app: App;
+	
+	private savedProjects: Project[];
+	private inferredProjects: Project[];
+	private _selectedProject: Project;
+	
+	constructor(app: App) {
 		super();
 		
 		this.app = app;

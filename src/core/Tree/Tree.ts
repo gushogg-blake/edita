@@ -1,6 +1,14 @@
-import {Parser} from "web-tree-sitter";
+import {
+	Parser,
+	Tree as TreeSitterTree,
+	Node as TreeSitterNode,
+	Query,
+	//QueryMatch as TreeSitterQueryMatch,
+} from "web-tree-sitter";
+
 import mapArrayToObject from "utils/mapArrayToObject";
-import Cursor, {c} from "core/Cursor";
+import {Cursor, c, type Lang} from "core";
+//import type {Edit} from "core/Document";
 import Node from "./Node";
 import find from "./find";
 
@@ -9,7 +17,18 @@ import {
 	rangeToTreeSitterRange,
 } from "./treeSitterUtils";
 
-class Tree {
+type QueryCapture = {
+	name: string;
+	node: Node;
+};
+
+export type CaptureSingleResult = Record<string, Node>;
+
+export default class Tree {
+	lang: Lang;
+	_tree: TreeSitterTree;
+	wrap: (treeSitterNode: TreeSitterNode) => Node;
+	
 	constructor(lang, treeSitterTree) {
 		this.lang = lang;
 		
@@ -22,11 +41,11 @@ class Tree {
 		return this.wrap(this._tree.rootNode);
 	}
 	
-	wrap(treeSitterNode) {
+	wrap(treeSitterNode: TreeSitterNode): Node {
 		return wrap(this.lang, treeSitterNode);
 	}
 	
-	edit(edit, index) {
+	edit(edit, index: number) {
 		let {
 			selection,
 			newSelection,
@@ -44,7 +63,7 @@ class Tree {
 		});
 	}
 	
-	*generateNodesStartingOnLine(lineIndex, startOffset=0) {
+	*generateNodesStartingOnLine(lineIndex: number, startOffset: number = 0): Generator<Node, void, void> {
 		let node = this.firstOnOrAfter(c(lineIndex, startOffset));
 		
 		while (node?.start.lineIndex === lineIndex) {
@@ -54,16 +73,18 @@ class Tree {
 		}
 	}
 	
-	firstOnOrAfter(cursor) {
+	firstOnOrAfter(cursor: Cursor): Node | null {
 		return find.firstOnOrAfterCursor(this.root, cursor);
 	}
 	
-	smallestAtChar(cursor) {
+	smallestAtChar(cursor: Cursor): Node | null {
 		return find.smallestAtCharCursor(this.root, cursor);
 	}
 	
-	query(query, startCursor=null) {
-		let startPosition = startCursor ? cursorToTreeSitterPoint(startCursor) : null;
+	query(query: Query, startCursor: Cursor = null): QueryCapture[][] {
+		let options = {
+			startPosition: startCursor ? cursorToTreeSitterPoint(startCursor) : undefined,
+		};
 		
 		/*
 		query.matches returns an array of objects, each with a list of captures
@@ -74,7 +95,7 @@ class Tree {
 		can generate a bunch of empty matches, so we filter those out
 		*/
 		
-		return query.matches(this._tree.rootNode, startPosition ? {startPosition} : {}).map((match) => {
+		return query.matches(this._tree.rootNode, options).map((match) => {
 			return match.captures.map(({node: treeSitterNode, name}) => {
 				return {
 					node: this.wrap(treeSitterNode),
@@ -88,11 +109,13 @@ class Tree {
 	query and return a single captured node per capture name
 	*/
 	
-	captureSingle(query, name) {
-		return this.query(query).map(result => mapArrayToObject(result, c => [c.name, c.node]));
+	captureSingle(query: Query): Record<string, Node>[] {
+		return this.query(query).map((result) => {
+			return mapArrayToObject(result, capture => [capture.name, capture.node]);
+		});
 	}
 	
-	static createTreeSitterParser(lang) {
+	static createTreeSitterParser(lang: Lang): Parser {
 		let parser = new Parser();
 		let {treeSitterLanguage} = lang;
 		
@@ -107,7 +130,7 @@ class Tree {
 		return parser;
 	}
 	
-	static parse(lang, code, editedTree, includedRanges) {
+	static parse(lang: Lang, code: string, editedTree?: Tree, includedRanges?: Range[]): Tree {
 		let parser = Tree.createTreeSitterParser(lang);
 		
 		let treeSitterTree = parser.parse(code, editedTree?._tree, {
@@ -117,5 +140,3 @@ class Tree {
 		return new Tree(lang, treeSitterTree);
 	}
 }
-
-export default Tree;

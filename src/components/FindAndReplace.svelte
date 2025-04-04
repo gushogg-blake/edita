@@ -1,7 +1,8 @@
 <script lang="ts">
-import {onMount, tick, getContext} from "svelte";
+import {onMount, tick} from "svelte";
 import mapObject from "utils/mapObject";
 import getKeyCombo from "utils/getKeyCombo";
+import {getApp} from "components/context";
 import accels from "components/actions/accels";
 import Gap from "components/utils/Gap.svelte";
 import Spacer from "components/utils/Spacer.svelte";
@@ -13,7 +14,7 @@ let {
 	onclose = () => {},
 } = $props();
 
-let app = getContext("app");
+let app = getApp();
 
 let {findAndReplace} = app;
 let options = $state(findAndReplace.options);

@@ -1,12 +1,13 @@
 import {Evented, sleep, sortedPartition} from "utils";
 import type App from "ui/App";
+import type {AstHint} from "ui/AstHint";
 
 function get(key) {
 	return base.getPref("dev." + key);
 }
 
 export default class extends Evented<{
-	showAstHint: any;
+	showAstHint: AstHint;
 }> {
 	private app: App;
 	

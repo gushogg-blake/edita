@@ -10,6 +10,9 @@ import {screenOffsets} from "utils/dom";
 
 import {URL, File} from "core";
 
+import type {ContextMenuOptions} from "ui/contextMenu";
+import type App from "ui/App";
+
 import clipboard from "platforms/web/modules/clipboard";
 import jsonStore from "platforms/web/modules/jsonStore";
 
@@ -135,14 +138,14 @@ export default class Platform extends PlatformCommon {
 		showSyntheticDialog(name, options, windowOptions);
 	}
 	
-	showContextMenu(e, app, items, options) {
+	showContextMenu(e, app, items, options: ContextMenuOptions = {}) {
 		app.showContextMenu(items, {
 			x: e.clientX,
 			y: e.clientY,
 		}, options);
 	}
 	
-	showContextMenuForElement(app, element, items, options) {
+	showContextMenuForElement(app, element, items, options: ContextMenuOptions = {}) {
 		let {x, y, height} = screenOffsets(element);
 		let coords = {x, y: y + height};
 		

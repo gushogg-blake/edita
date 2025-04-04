@@ -1,12 +1,13 @@
 <script lang="ts">
-import {onMount, getContext} from "svelte";
+import {onMount} from "svelte";
+import {getApp} from "components/context";
 import FileTree from "components/FileTree/FileTree.svelte";
 
-let app = getContext("app");
+let app = getApp();
 
 let {fileTree} = app;
 
-let dirSelector = $state();
+let dirSelector: HTMLElement = $state();
 let rootEntry = $state(fileTree.rootEntry);
 let background = $state();
 
@@ -85,7 +86,7 @@ function dblclickBackground(e) {
 	fileTree.setRootDir(rootEntry.node.parent.path);
 }
 
-onMount(async function() {
+onMount(function() {
 	let teardown = [
 		fileTree.on("updateRootDir", onUpdateRootDir),
 	];

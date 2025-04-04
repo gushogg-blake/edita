@@ -15,7 +15,11 @@ there is also a pref for it, as Chrome moved away from native menus to one
 that isn't as smooth.
 */
 
-export default function(app, items, coords, options={}) {
+export type ContextMenuOptions = {
+	noCancel?: boolean;
+};
+
+export default function(app: App, items, coords, options: ContextMenuOptions = {}) {
 	options = {
 		noCancel: false,
 		...options,

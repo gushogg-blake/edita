@@ -1,12 +1,15 @@
 <script lang="ts">
-import {onMount, setContext, tick} from "svelte";
+import {onMount, tick} from "svelte";
 
 import getKeyCombo from "utils/getKeyCombo";
 import inlineStyle from "utils/dom/inlineStyle";
 
+import type App from "ui/App";
+
 import themeStyle from "components/utils/themeStyle";
 import themeStyleDev from "components/utils/themeStyleDev";
 import labelClick from "components/actions/labelClick";
+import {setApp} from "components/context";
 
 import FastOpen from "components/quickActions/FastOpen.svelte";
 import CommandPalette from "components/quickActions/CommandPalette.svelte";
@@ -26,11 +29,15 @@ import BottomPanes from "./panes/BottomPanes.svelte";
 
 import DevToolbar from "./DevToolbar/DevToolbar.svelte";
 
+interface Props {
+	app: App;
+}
+
 let {
 	app,
-} = $props();
+}: Props = $props();
 
-setContext("app", app);
+setApp(app);
 
 let {mainTabs, panes} = app;
 

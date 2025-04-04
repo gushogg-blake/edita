@@ -1,7 +1,8 @@
 <script lang="ts">
-import {onMount, getContext, tick} from "svelte";
+import {onMount, tick} from "svelte";
 import screenOffsets from "utils/dom/screenOffsets";
 import scrollIntoView from "utils/dom/scrollIntoView";
+import {getApp} from "components/context";
 import Gap from "components/utils/Gap.svelte";
 
 let {
@@ -20,9 +21,9 @@ let {
 	onreorder = () => {},
 } = $props();
 
-let app = getContext("app");
+let app = getApp();
 
-let main = $state();
+let main: HTMLDivElement = $state();
 
 async function mousedownTab(e, tab) {
 	if (e.button !== 0) {
@@ -120,9 +121,11 @@ let tabButtons = new Map();
 function registerTabButton(node, tab) {
 	tabButtons.set(tab, node);
 	
-	return function() {
-		tabButtons.delete(tab);
-	}
+	return {
+		destroy() {
+			tabButtons.delete(tab);
+		},
+	};
 }
 
 async function scrollSelectedTabIntoView() {

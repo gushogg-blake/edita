@@ -1,16 +1,18 @@
 <script lang="ts">
-import {onMount, getContext} from "svelte";
+import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
+import type EditorTab from "ui/App/tabs/EditorTab";
+import {getApp} from "components/context";
 import Spacer from "components/utils/Spacer.svelte";
 
-let app = getContext("app");
+let app = getApp();
 
-let {editor} = app.selectedTab;
+let {editor} = app.mainTabs.selectedTab as EditorTab;
 let startCursor = editor.normalSelection.right;
 let session;
 
-let main = $state();
-let input = $state();
+let main: HTMLDivElement = $state();
+let input: HTMLInputElement = $state();
 let search;
 let type = "plain";
 let caseMode = "caseSensitive";

@@ -2,9 +2,8 @@ import {Evented, throttle, removeInPlace} from "utils";
 import bindFunctions from "utils/bindFunctions";
 
 import astCommon from "modules/astCommon";
-import AstSelection, {a} from "core/AstSelection";
-import Selection, {s} from "core/Selection";
-import Cursor, {c} from "core/Cursor";
+import {AstSelection, a, Selection, s, Cursor, c} from "core";
+import type {Document} from "core";
 
 import type App from "ui/App";
 

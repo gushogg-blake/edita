@@ -1,6 +1,7 @@
 import {Evented, type PromiseWithMethods} from "utils";
 import type {URL, Document, File} from "core";
 import type App from "ui/App";
+import type {ContextMenuOptions} from "ui/contextMenu";
 import type Clipboard from "./Clipboard";
 import type {JsonStore} from "./JsonStore";
 
@@ -54,11 +55,11 @@ export default class extends Evented<{
 		throw new Error("electron only");
 	}
 	
-	showContextMenu(e: Event, app: App, items, options): void {
+	showContextMenu(e: Event, app: App, items, options: ContextMenuOptions = {}): void {
 		throw new Error("abstract");
 	}
 	
-	showContextMenuForElement(app: App, element: HTMLElement, items, options): void {
+	showContextMenuForElement(app: App, element: HTMLElement, items, options: ContextMenuOptions = {}): void {
 		throw new Error("abstract");
 	}
 	

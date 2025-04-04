@@ -1,9 +1,10 @@
 <script lang="ts">
-import {onMount, getContext} from "svelte";
+import {onMount} from "svelte";
 import {on, off} from "utils/dom/domEvents";
 import lineage from "utils/dom/lineage";
+import {getApp} from "components/context";
 
-let app = getContext("app");
+let app = getApp();
 
 let {projects} = app;
 let list = $state(projects.all);
@@ -65,7 +66,7 @@ function newProjectMouseup() {
 }
 
 async function newProject() {
-	let dirs = await app.chooseDir();
+	let dirs = await app.dialogs.showChooseDir();
 	
 	if (dirs.length === 0) {
 		return;
@@ -74,7 +75,8 @@ async function newProject() {
 	try {
 		let project = await projects.createFromDirs(dirs);
 		
-		selectProject(project);
+		// MIGRATE
+		//selectProject(project);
 	} catch (e) {
 		console.error(e);
 		

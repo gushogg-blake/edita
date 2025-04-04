@@ -1,8 +1,9 @@
 <script lang="ts">
-import {onMount, getContext} from "svelte";
+import {onMount} from "svelte";
+import {getApp} from "components/context";
 import Gap from "components/utils/Gap.svelte";
 
-let app = getContext("app");
+let app = getApp();
 
 let snippetsByLang = $state();
 
@@ -35,7 +36,7 @@ function editSnippet(id) {
 function newSnippetInList(list) {
 	let {langGroups, langs} = list[0];
 	
-	app.newSnippet({
+	app.dialogs.newSnippet({
 		langGroups,
 		langs,
 	});

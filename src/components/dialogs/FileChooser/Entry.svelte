@@ -1,5 +1,5 @@
 <script lang="ts">
-import {onMount, setContext, getContext, tick} from "svelte";
+import {onMount, tick} from "svelte";
 
 let {
 	app,

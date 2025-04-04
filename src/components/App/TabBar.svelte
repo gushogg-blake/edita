@@ -1,10 +1,11 @@
 <script lang="ts">
-import {onMount, getContext, tick} from "svelte";
+import {onMount, tick} from "svelte";
+import {getApp} from "components/context";
 import TabBar from "components/TabBar.svelte";
 
-let app = getContext("app");
+let app = getApp();
 
-let {mainTabs} = app;
+let {mainTabs, fileOperations} = app;
 
 let tabs = $state(mainTabs.tabs);
 let selectedTab = $state(mainTabs.selectedTab);
@@ -18,9 +19,10 @@ function select(tab) {
 }
 
 function dblclick(tab) {
-	if (tab.project) {
-		app.projects.select(tab.project);
-	}
+	// MIGRATE
+	//if (tab.project) {
+	//	app.projects.select(tab.project);
+	//}
 }
 
 function close(tab) {
@@ -41,7 +43,8 @@ let _getContextMenuItems = {
 				enabled: isSaved,
 				
 				onClick() {
-					app.findReferencesToFile(tab);
+					// TODO
+					//app.findReferencesToFile(tab);
 				},
 			},
 			
@@ -54,7 +57,7 @@ let _getContextMenuItems = {
 				enabled: isSaved,
 				
 				onClick() {
-					mainTabs.renameTab(tab);
+					fileOperations.renameTab(tab);
 				},
 			},
 			
@@ -63,7 +66,7 @@ let _getContextMenuItems = {
 				enabled: isSaved,
 				
 				onClick() {
-					mainTabs.deleteTab(tab);
+					fileOperations.deleteTab(tab);
 				},
 			},
 			

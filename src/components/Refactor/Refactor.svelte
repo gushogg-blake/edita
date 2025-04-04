@@ -1,6 +1,7 @@
 <script lang="ts">
-import {onMount, getContext} from "svelte";
+import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
+import {getApp} from "components/context";
 import accels from "components/actions/accels";
 import Accel from "components/utils/Accel.svelte";
 import AccelLabel from "components/utils/AccelLabel.svelte";
@@ -12,7 +13,7 @@ let {
 	refactor,
 } = $props();
 
-let app = getContext("app");
+let app = getApp();
 
 let {
 	options,

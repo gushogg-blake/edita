@@ -1,16 +1,19 @@
 <script lang="ts">
-import {onMount, tick, getContext} from "svelte";
+import {onMount, tick} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
+import type {AstHint} from "ui/AstHint";
+import {getApp} from "components/context";
 import Gap from "components/utils/Gap.svelte";
 
-let app = getContext("app");
+let app = getApp();
 
 let {dev} = app;
 
-let refs = $state({});
-let astHint = $state();
+let refs: any = $state({});
 
-async function onShowAstHint(hint) {
+let astHint: AstHint = $state(null);
+
+async function onShowAstHint(hint: AstHint) {
 	astHint = hint;
 	
 	await tick();
@@ -44,9 +47,9 @@ onMount(function() {
 	padding: 5px;
 	overflow-y: auto;
 	
-	.wrapper {
-		
-	}
+	//.wrapper {
+	//	
+	//}
 	
 	#tip {
 		font-style: italic;

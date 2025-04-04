@@ -10,6 +10,7 @@ import type {PromiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
 import {URL, File} from "core";
 
+import type {ContextMenuOptions} from "ui/contextMenu";
 import type App from "ui/App";
 
 import fs from "platforms/electron/modules/fs";
@@ -18,6 +19,10 @@ import ipc from "platforms/electron/modules/ipc";
 import clipboard from "platforms/electron/modules/clipboard";
 
 import PlatformCommon from "platforms/common/Platform";
+
+type ElectronContextMenuOptions = ContextMenuOptions & {
+	useCoordsForNative?: boolean;
+};
 
 export default class Platform extends PlatformCommon {
 	private dialogPromises: Record<string, PromiseWithMethods<any>> = {};
@@ -122,7 +127,7 @@ export default class Platform extends PlatformCommon {
 		ipc.openDialogWindow(name, options);
 	}
 	
-	private _showContextMenu(app, items, coords, options): void {
+	private _showContextMenu(app, items, coords, options: ElectronContextMenuOptions = {}): void {
 		options = {
 			noCancel: false,
 			useCoordsForNative: false,
@@ -132,7 +137,7 @@ export default class Platform extends PlatformCommon {
 		let custom = options.noCancel || base.getPref("customContextMenu");
 		
 		if (custom) {
-			app.showContextMenu(items, coords, options);
+			app.showContextMenu(items, coords, options as ContextMenuOptions);
 		} else {
 			items = items.map(function(item) {
 				return {
@@ -145,7 +150,7 @@ export default class Platform extends PlatformCommon {
 		}
 	}
 	
-	showContextMenu(e, app: App, items, options={}): void {
+	showContextMenu(e, app: App, items, options: ElectronContextMenuOptions = {}): void {
 		let coords = {
 			x: e.clientX,
 			y: e.clientY,
@@ -165,7 +170,10 @@ export default class Platform extends PlatformCommon {
 		
 		let coords = {x, y: y + height};
 		
-		this._showContextMenu(app, items, coords, options);
+		this._showContextMenu(app, items, coords, {
+			...options,
+			useCoordsForNative: true,
+		});
 	}
 	
 	callOpener(channel, method, ...args) {

@@ -1,7 +1,13 @@
+import type {Node as TreeSitterNode} from "web-tree-sitter";
 import {nodeGetters, cachedNodeFunction} from "./treeSitterUtils";
 import find from "./find";
+import type Tree from "./Tree";
 
-class Node {
+export default class Node {
+	tree: Tree;
+	_node: TreeSitterNode;
+	wrap: (treeSitterNode: TreeSitterNode) => Node;
+	
 	constructor(tree, treeSitterNode) {
 		this.tree = tree;
 		
@@ -127,11 +133,9 @@ class Node {
 		return nodeGetters[field](this._node);
 	}
 	
-	static getCachedWrapFunction(tree) {
+	static getCachedWrapFunction(tree: Tree) {
 		let getter = cachedNodeFunction(treeSitterNode => new Node(tree, treeSitterNode));
 		
 		return treeSitterNode => treeSitterNode && getter(treeSitterNode);
 	}
 }
-
-export default Node;

@@ -1,8 +1,9 @@
 <script lang="ts">
-import {getContext, onMount, tick} from "svelte";
+import {onMount, tick} from "svelte";
+import {getApp} from "components/context";
 import Entry from "./Entry.svelte";
 
-let app = getContext("app");
+let app = getApp();
 
 let {fileTree} = app;
 
@@ -79,7 +80,7 @@ function onMakeRoot(entry) {
 	fileTree.setRootDir(entry.path);
 }
 
-onMount(async function() {
+onMount(function() {
 	let teardown = [
 		fileTree.on("updateRootDir", onUpdateRootDir),
 	];

@@ -8,10 +8,10 @@ export default class extends Evented<{
 	updateExpandedDirs: void;
 }> {
 	rootEntry: DirEntry;
+	expandedDirs = new Set<string>();
 	
 	private dir: string;
 	private app: App;
-	private expandedDirs = new Set<string>();
 	
 	constructor(app) {
 		super();

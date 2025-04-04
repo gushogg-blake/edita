@@ -1,10 +1,12 @@
 <script lang="ts">
-import {onMount, getContext} from "svelte";
+import {onMount} from "svelte";
 
 import inlineStyle from "utils/dom/inlineStyle";
 import windowFocus from "utils/dom/windowFocus";
 import {on} from "utils/dom/domEvents";
 import getKeyCombo from "utils/getKeyCombo";
+
+import {getApp} from "components/context";
 
 import render from "./canvas/render";
 
@@ -20,14 +22,16 @@ import InteractionLayer from "./InteractionLayer.svelte";
 import type Editor from "ui/Editor";
 
 type EditorProps = {
-	editor: Editor,
-	mode: "app" | "textarea",
+	editor: Editor;
+	mode?: "app" | "textarea";
+	border?: boolean;
 };
 
 let {
 	editor,
 	mode: editorMode = "app",
-} = $props();
+	border = false,
+}: EditorProps = $props();
 
 export function setValue(value) {
 	editor.setValue(value);
@@ -41,7 +45,7 @@ export function focus() {
 	main.focus();
 }
 
-let app = getContext("app");
+let app = getApp();
 
 let {theme} = base;
 

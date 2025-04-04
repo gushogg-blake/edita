@@ -1,9 +1,11 @@
 import Lang from "core/Lang";
 
 export default class Langs {
+	langs: Record<string, Lang> = {};
+	assignedAccelerators = new Set<string>();
+	
 	constructor() {
-		this.langs = {};
-		this.assignedAccelerators = new Set();
+		
 	}
 	
 	add(langModule) {
@@ -22,7 +24,7 @@ export default class Langs {
 	// if multiple labels begin with the same letter - turning
 	// off for now (see components/App/Toolbar.svelte)
 	
-	assignAccelerator(lang) {
+	assignAccelerator(lang: Lang) {
 		let {name} = lang;
 		
 		lang.accelerator = name;
@@ -42,11 +44,11 @@ export default class Langs {
 		}
 	}
 	
-	get(code) {
+	get(code: string): Lang | null {
 		return this.langs[code] || null;
 	}
 	
-	get all() {
+	get all(): Lang[] {
 		return Object.values(this.langs);
 	}
 }

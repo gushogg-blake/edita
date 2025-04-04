@@ -96,7 +96,7 @@ let filteredEntries = $derived(entries.filter(function(entry) {
 	return showHiddenFiles || !entry.node.name.startsWith(".");
 }));
 
-onMount(async function() {
+onMount(function() {
 	let teardown = [
 		app.on("updateMain", updateMain),
 		app.on("updateSelected", updateSelected),
@@ -117,10 +117,6 @@ onMount(async function() {
 			input.select();
 		}
 	}
-	
-	await sleep(100);
-	
-	//input?.focus();
 	
 	return function() {
 		for (let fn of teardown) {

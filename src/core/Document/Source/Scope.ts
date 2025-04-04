@@ -1,6 +1,7 @@
 import _typeof from "utils/typeof";
 import {groupBy, removeInPlace, mapArrayToObject} from "utils";
-import {Selection, s, Tree} from "core";
+import {Selection, s, Tree, Lang} from "core";
+import type Source from "./Source";
 import Range from "./Range";
 
 function getInjectionLangCode(injection, result) {
@@ -8,17 +9,20 @@ function getInjectionLangCode(injection, result) {
 }
 
 export default class Scope {
-	constructor(source, parent, lang, ranges) {
+	source: Source;
+	parent: Scope | null;
+	lang: Lang
+	tree: Tree | null = null;
+	ranges: Range[];
+	scopes: Scope[] = [];
+	scopesByNodeId: Record<string, Scope> = {};
+	
+	constructor(source: Source, parent: Lang | null, lang: Lang, ranges: Range[]) {
 		this.source = source;
 		this.parent = parent;
 		this.lang = lang;
 		
-		this.tree = null;
-		
 		this.setRanges(ranges);
-		
-		this.scopes = [];
-		this.scopesByNode = {};
 		
 		this.parse();
 	}
@@ -167,7 +171,7 @@ export default class Scope {
 	
 	processInjections(findExistingScope, useExistingScope) {
 		this.scopes = [];
-		this.scopesByNode = {};
+		this.scopesByNodeId = {};
 		
 		if (!this.tree) {
 			return;
@@ -215,7 +219,7 @@ export default class Scope {
 						let node = nodes[i];
 						let ranges = nodeRanges[i];
 						
-						this.scopesByNode[node.id] = scope;
+						this.scopesByNodeId[node.id] = scope;
 					}
 				}
 			} else {
@@ -245,7 +249,7 @@ export default class Scope {
 					}
 					
 					this.scopes.push(scope);
-					this.scopesByNode[node.id] = scope;
+					this.scopesByNodeId[node.id] = scope;
 				}
 			}
 		}

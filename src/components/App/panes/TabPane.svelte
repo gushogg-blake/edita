@@ -1,8 +1,9 @@
 <script lang="ts">
-import {onMount, getContext} from "svelte";
+import {onMount} from "svelte";
 
 import inlineStyle from "utils/dom/inlineStyle";
 
+import {getApp} from "components/context";
 import TabBar from "components/TabBar.svelte";
 import ResizeHandle from "components/ResizeHandle.svelte";
 
@@ -17,7 +18,7 @@ let {
 	onresizeEnd = () => {},
 } = $props();
 
-let app = getContext("app");
+let app = getApp();
 
 let {bottomPanes} = app;
 

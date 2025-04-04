@@ -1,8 +1,14 @@
 <script lang="ts">
 import {onMount, tick} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
+import type RefactorPreview from "ui/Refactor/RefactorPreview";
+import type {AstHint} from "ui/AstHint";
 import Gap from "components/utils/Gap.svelte";
 import Editor from "components/Editor/Editor.svelte";
+
+type Props = {
+	refactorPreview: RefactorPreview;
+};
 
 let {
 	refactorPreview,
@@ -11,9 +17,9 @@ let {
 let paths = $state(refactorPreview.paths);
 let selectedFile = $state(refactorPreview.selectedFile);
 
-let astHintDiv = $state();
+let astHintDiv: HTMLDivElement = $state();
 
-let astHint = $state();
+let astHint: AstHint = $state();
 
 function onSelectPath() {
 	({selectedFile} = refactorPreview);
@@ -23,7 +29,7 @@ function onUpdatePaths() {
 	({paths} = refactorPreview);
 }
 
-async function onShowAstHint(hint) {
+async function onShowAstHint(hint: AstHint) {
 	astHint = hint;
 	
 	await tick();
@@ -101,7 +107,7 @@ onMount(function() {
 			<div>
 				<select
 					class="compact"
-					onchange={(e) => refactorPreview.selectPath(e.target.value)}
+					onchange={(e) => refactorPreview.selectPath((e.target as HTMLSelectElement).value)}
 					value={selectedFile?.path}
 				>
 					{#each paths as path}

@@ -1,13 +1,14 @@
 <script lang="ts">
-import {onMount, getContext} from "svelte";
+import {onMount} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
+import {getApp} from "components/context";
 import Spacer from "components/utils/Spacer.svelte";
 
 let {
 	findResults,
 } = $props();
 
-let app = getContext("app");
+let app = getApp();
 
 let index = $state(findResults.index);
 let pages = $state(findResults.pages);
@@ -24,6 +25,13 @@ function update() {
 let columnWidths = $derived({
 	gridTemplateColumns: "400px 100px auto",
 });
+
+function onPageChange(e) {
+	let el = e.target as HTMLSelectElement;
+	let page = Number(el.value);
+	
+	findResults.goToPage(page);
+}
 
 onMount(function() {
 	let teardown = [
@@ -100,7 +108,7 @@ onMount(function() {
 <div id="main">
 	{#if pages.length > 0}
 		<div id="nav">
-			<select class="compact" value={index} onchange={(e) => findResults.goToPage(Number(e.target.value))}>
+			<select class="compact" value={index} onchange={onPageChange}>
 				{#each pages as {options, results}, i}
 					<option value={i}>{options.search} ({results.length} results)</option>
 				{/each}

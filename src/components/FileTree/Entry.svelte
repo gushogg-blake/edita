@@ -1,6 +1,7 @@
 <script lang="ts">
-import {getContext, onMount, tick} from "svelte";
+import {onMount, tick} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
+import {getApp} from "components/context";
 import Entry from "./Entry.svelte";
 
 let {
@@ -14,7 +15,7 @@ let {
 	onselect = () => {},
 } = $props();
 
-let app = getContext("app");
+let app = getApp();
 
 let {fileTree} = app;
 let expandedDirs = $state(fileTree.expandedDirs);
@@ -107,7 +108,7 @@ let buttonStyle = {
 
 onMount(function() {
 	let teardown = [
-		isDir && platform.on("prefsUpdated", onPrefsUpdated),
+		isDir && base.on("prefsUpdated", onPrefsUpdated),
 		isDir && platform.fs(entry.path).watch(onFsChange),
 		isDir && fileTree.on("updateExpandedDirs", update),
 	];

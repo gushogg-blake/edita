@@ -61,6 +61,7 @@ export default class Base extends Evented<{
 	langs: Langs;
 	DirEntries: typeof DirEntries;
 	packageJson: any;
+	themes: Theme[];
 	theme: Theme;
 	stores: Stores;
 	prefs: Prefs;

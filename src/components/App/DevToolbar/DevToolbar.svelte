@@ -1,10 +1,11 @@
 <script lang="ts">
-import {onMount, getContext} from "svelte";
+import {onMount} from "svelte";
+import {getApp} from "components/context";
 import Spacer from "components/utils/Spacer.svelte";
 import Checkbox from "components/utils/Checkbox.svelte";
 import AstHint from "./AstHint.svelte";
 
-let app = getContext("app");
+let app = getApp();
 
 let prefs = $state(base.prefs);
 
@@ -15,23 +16,25 @@ function onPrefsUpdated() {
 function toggleOpenFindAndReplace(open) {
 	base.setPref("dev.openFindAndReplace", open);
 	
+	// MIGRATE
 	if (open) {
-		app.showFindAndReplace();
+		//app.showFindAndReplace();
 	} else {
-		app.hideFindAndReplace();
+		//app.hideFindAndReplace();
 	}
 }
 
 function toggleOpenRefactor(open) {
 	base.setPref("dev.openRefactor", open);
 	
-	if (open) {
-		let {path} = app.editorTabs[0] || {};
-		
-		app.refactor([path || platform.systemInfo.homeDir]);
-	} else {
-		app.tabs.filter(tab => tab.type === "refactor").forEach(tab => app.closeTab(tab));
-	}
+	// MIGRATE
+	//if (open) {
+	//	let {path} = app.editorTabs[0] || {};
+	//	
+	//	app.refactor([path || platform.systemInfo.homeDir]);
+	//} else {
+	//	app.tabs.filter(tab => tab.type === "refactor").forEach(tab => app.closeTab(tab));
+	//}
 }
 
 onMount(function() {

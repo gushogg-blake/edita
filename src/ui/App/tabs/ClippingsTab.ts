@@ -1,9 +1,13 @@
-import Selection, {s} from "core/Selection";
+import {Selection, s} from "core";
 import {Special} from "core/resource";
+import type App from "ui/App";
+import type Editor from "ui/Editor";
 import Tab from "./Tab";
 
 class ClippingsTab extends Tab {
-	constructor(app) {
+	editor: Editor;
+	
+	constructor(app: App) {
 		super(app, Special.clippings());
 		
 		this.editor = app.createEditor();

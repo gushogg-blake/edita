@@ -26,7 +26,7 @@ export default class {
 		return tab;
 	}
 	
-	private async openFile(file: File): Promise<EditorTab> {
+	async openFile(file: File): Promise<EditorTab> {
 		return await this.app.mainTabs.openFile(file);
 	}
 	

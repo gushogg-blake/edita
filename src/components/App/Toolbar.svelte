@@ -1,15 +1,16 @@
 <script lang="ts">
-import {getContext, onMount} from "svelte";
+import {onMount} from "svelte";
+import {getApp} from "components/context";
 import FileInput from "components/utils/FileInput.svelte";
 import Spacer from "components/utils/Spacer.svelte";
 
-let app = getContext("app");
+let app = getApp();
 
 let themes = $state(base.themes);
 let theme = $state(base.theme);
 let prefs = $state(base.prefs);
 
-let langButton = $state();
+let langButton: HTMLButtonElement = $state();
 
 function upload(files) {
 	app.fileOperations.openFilesFromUpload(files);
