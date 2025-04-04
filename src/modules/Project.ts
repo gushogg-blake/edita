@@ -60,7 +60,7 @@ class Project extends Evented {
 	}
 	
 	async save() {
-		await base.stores.projects.save(this.key, this.toJSON());
+		await base.stores.projects.createOrUpdate(this.key, this.toJSON());
 	}
 	
 	toJSON() {

@@ -262,7 +262,7 @@ class EditorTab extends Tab<{
 			return;
 		}
 		
-		await base.stores.perFilePrefs.save(this.path, this.perFilePrefs);
+		await base.stores.perFilePrefs.createOrUpdate(this.path, this.perFilePrefs);
 	}
 	
 	async setPerFilePref(pref, value) {

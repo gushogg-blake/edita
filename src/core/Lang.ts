@@ -16,13 +16,14 @@ export default class Lang {
 	defaultExtension: string;
 	astMode: any; // TYPE
 	codeIntel: any; // TYPE
+	accelerator?: string;
 	// whether the lang should be available as a file type or is an internal util
 	// (markdown_inline for example)
 	util: boolean;
 	
 	treeSitterLanguage: Language;
 	queries: Record<string, Query>;
-	injections: 
+	injections: Injection[];
 	
 	constructor(langModule) {
 		Object.assign(this, langModule);

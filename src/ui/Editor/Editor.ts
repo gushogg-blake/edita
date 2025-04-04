@@ -18,7 +18,9 @@ import WordCompletion from "./WordCompletion";
 import commonWheel from "./commonWheel";
 import modeSwitchKey from "./modeSwitchKey";
 import snippets from "./snippets";
-import api from "./api";
+import EditorApi from "./EditorApi";
+
+export type EditorMode = "normal" | "ast";
 
 // stuff the Editor needs from outside, e.g. LSP, word completions
 // from other tabs' filenames
@@ -42,8 +44,12 @@ class Editor extends Evented<{
 	normalSelectionChangedByMouseOrKeyboard: Selection;
 }> {
 	document: Document;
+	view: View;
+	api: EditorApi;
 	
 	private app?: App;
+	
+	private teardownCallbacks: Array<() => void>;
 	
 	constructor(document: Document, env?: Env) {
 		super();
@@ -74,7 +80,7 @@ class Editor extends Evented<{
 		
 		this.batchState = null;
 		
-		this.api = bindFunctions(this, api);
+		this.api = new EditorApi(this);
 		
 		this.throttledBackup = throttle(() => {
 			platform.backup(this.document);

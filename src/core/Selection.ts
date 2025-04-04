@@ -1,6 +1,4 @@
-import Cursor, {c} from "core/Cursor";
-
-export {c};
+import {Cursor, c} from "core";
 
 export function s(start, end=null) {
 	return new Selection(start, end);

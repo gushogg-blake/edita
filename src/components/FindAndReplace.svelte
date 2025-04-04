@@ -22,7 +22,7 @@ let history = $state(findAndReplace.history);
 
 let {multiPathSeparator} = platform.systemInfo;
 
-let searchInput = $state();
+let searchInput: HTMLInputElement = $state();
 let session = $state(null);
 let optionsChangedSinceLastInit = false;
 let mounted = false;
@@ -82,7 +82,9 @@ $effect(() => {
 });
 
 $effect(() => {
-	optionsChanged(options);
+	options;
+	
+	optionsChanged();
 });
 
 $effect(() => {
@@ -107,7 +109,7 @@ function init() {
 	}
 }
 
-function action(fn) {
+function action(fn: Function): () => Promise<void> {
 	return async function() {
 		if (loading) {
 			return;

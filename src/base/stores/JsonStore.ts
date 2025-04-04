@@ -19,8 +19,9 @@ export default class JsonStore<StoreValue = any> extends Evented<{
 	update: {key: string; value: StoreValue};
 	delete: {key: string; value: StoreValue};
 }> {
+	defaultValue: StoreValue;
+	
 	private name: string;
-	private defaultValue: StoreValue;
 	private migrations: Record<string, Migration>;
 	private versions: number[];
 	private latestVersion: number;

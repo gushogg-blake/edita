@@ -15,6 +15,10 @@ export default class Singleton<StoreValue = any> extends Evented<{
 		this.store.on("update", ({value}) => this.fire("update", value));
 	}
 	
+	get defaultValue() {
+		return this.store.defaultValue;
+	}
+	
 	load(): Promise<StoreValue> {
 		return this.store.load("default");
 	}

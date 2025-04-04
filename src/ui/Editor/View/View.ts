@@ -1,10 +1,11 @@
-import Evented from "utils/Evented";
+import {Evented, mapArrayToObject} from "utils";
 import bindFunctions from "utils/bindFunctions";
-import mapArrayToObject from "utils/mapArrayToObject";
-import Cursor, {c} from "core/Cursor";
-import Selection, {s} from "core/Selection";
-import AstSelection, {a} from "core/AstSelection";
+import {Selection, s, Cursor, c, AstSelection, a} from "core";
+import type {Document} from "core";
 import astCommon from "modules/astCommon";
+import type {PickOption, DropTarget} from "modules/astCommon";
+
+import type {EditorMode} from "ui/Editor";
 
 import SelectionUtils from "./utils/Selection";
 import AstSelectionUtils from "./utils/AstSelection";
@@ -13,8 +14,56 @@ import canvasUtils from "./utils/canvasUtils";
 import Renderer from "./render/Renderer";
 import ViewLine from "./ViewLine";
 
-export default class View extends Evented {
-	constructor(document) {
+export default class View extends Evented<{
+	
+}> {
+	focused: boolean = false;
+	visible: boolean = false;
+	mounted: boolean = false;
+	
+	document: Document;
+	normalSelection: NormalSelection = s(c(0, 0));
+	astSelection: AstSelection | null = null;
+	
+	normalHilites: Selection[] = [];
+	
+	mode: EditorMode = "normal";
+	
+	Selection: any; // TYPE -- convert to class
+	AstSelection: any; // ^
+	
+	private pickOptions: PickOption[] = [];
+	private dropTargets: DropTarget[] = [];
+	
+	private insertCursor: Cursor | null = null;
+	private astSelectionHilite: AstSelection | null = null;
+	private astInsertionHilite: AstSelection | null = null; // TODO not 100% sure what this is
+	
+	private completions: any[] = null; // TYPE
+	
+	// for remembering the "intended" col when moving a cursor up/down to a line
+	// that doesn't have as many cols as the cursor
+	private selectionEndCol: number = 0;
+	
+	// TYPE not clear what this is but it's a map of header line index to footer line index
+	// might be better as a map, and possibly with explicit types for the numbers -- not
+	// sure about that yet as a pattern, but would obvs extend to line numbers, offsets, etc
+	// might be worth doing, as there is always gonna be ambiguity -- would allow us to
+	// distinguish between line indexes and line positions (where a position can be
+	// array.length, whereas an index can't)
+	private folds: Record<string, number> = {};
+	
+	private redrawTimer: number | null = null;
+	private redrawnWhileHidden: boolean = false;
+	private hasBatchedUpdates: boolean = false;
+	private syncRedrawBatchDepth: number = 0;
+	
+	private cursorBlinkOn: boolean = false;
+	private cursorInterval: number | null = null;
+	
+	private topMargin: number = 2;
+	
+	constructor(document: Document) {
 		super();
 		
 		this.Selection = bindFunctions(this, SelectionUtils);
@@ -24,44 +73,7 @@ export default class View extends Evented {
 		
 		this.document = document;
 		
-		this.focused = false;
-		this.visible = false;
-		this.mounted = false;
-		
-		this.redrawTimer = null;
-		this.redrawnWhileHidden = false;
-		this.hasBatchedUpdates = false;
-		this.syncRedrawBatchDepth = 0;
-		
-		this.mode = "normal";
-		
-		this.normalSelection = s(c(0, 0));
-		
-		// for remembering the "intended" col when moving a cursor up/down to a line
-		// that doesn't have as many cols as the cursor
-		this.selectionEndCol = 0;
-		
-		this.astSelection = null;
-		
 		this.updateAstSelectionFromNormalSelection();
-		
-		this.folds = {};
-		
-		this.pickOptions = [];
-		this.dropTargets = [];
-		
-		this.normalHilites = [];
-		
-		this.insertCursor = null;
-		this.astSelectionHilite = null;
-		this.astInsertionHilite = null;
-		
-		this.completions = null;
-		
-		this.cursorBlinkOn = false;
-		this.cursorInterval = null;
-		
-		this.topMargin = 2;
 		
 		this.marginStyle = {
 			margin: 2,

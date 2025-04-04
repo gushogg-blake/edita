@@ -5,6 +5,7 @@ import merge from "lodash.merge";
 import {Parser} from "web-tree-sitter";
 
 import {Evented} from "utils";
+import type {RecursivePartial, AsyncOrSync} from "utils/types";
 
 import {Document, Lang} from "core";
 
@@ -54,6 +55,12 @@ the UI.
 lifespan: global singleton created on startup; never destroyed.
 */
 
+type BaseOptions = {
+	useLangs?: boolean;
+	prefs?: RecursivePartial<Prefs>;
+	init?: () => AsyncOrSync<void>;
+};
+
 export default class Base extends Evented<{
 	prefsUpdated: void;
 	themeUpdated: void;
@@ -61,10 +68,12 @@ export default class Base extends Evented<{
 	langs: Langs;
 	DirEntries: typeof DirEntries;
 	packageJson: any;
-	themes: Theme[];
+	themes: Record<string, Theme>;
 	theme: Theme;
 	stores: Stores;
 	prefs: Prefs;
+	
+	options: BaseOptions;
 	
 	components: Record<string, any>; // TYPE Svelte components
 	
@@ -108,7 +117,7 @@ export default class Base extends Evented<{
 		}
 	}
 	
-	async init(components, options={}) {
+	async init(components, options: BaseOptions = {}) {
 		options = {
 			// lang initialisation can be skipped for e.g. dialogs that don't use editors
 			useLangs: true,
@@ -183,12 +192,12 @@ export default class Base extends Evented<{
 	components/utils/themeStyleDev
 	*/
 	
-	modifyThemeForDev(values) {
+	modifyThemeForDev(values: RecursivePartial<Theme>): void {
 		merge(this.theme, values);
 		
 		this.fire("themeUpdated");
 		
-		this.stores.themes.save(this.prefs.theme, this.theme);
+		this.stores.themes.update(this.prefs.theme, this.theme);
 	}
 	
 	async asyncInit() {
