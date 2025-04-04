@@ -1,5 +1,19 @@
 import regexMatch from "utils/regexMatch";
-import type ViewLine from "../ViewLine";
+import type ViewLine, {VariableWidthPart} from "../ViewLine";
+
+export type LineRow = {
+	startOffset: number;
+	string: string;
+	width: number;
+	variableWidthParts: VariableWidthPart[];
+};
+
+export type WrappedLine = {
+	viewLine: ViewLine;
+	line: Line;
+	height: number;
+	lineRows: LineRow[];
+};
 
 let endWordRe = /[\S\w]+\s*$/;
 let wordRe = /[\S\w]+\s*/g;
@@ -176,7 +190,14 @@ class LineWrapper {
 	}
 }
 
-export default function(wrap, viewLine, isFoldHeader, indentation, measurements, availableWidth) {
+export default function(
+	wrap: boolean,
+	viewLine: ViewLine,
+	isFoldHeader: boolean,
+	indentation,
+	measurements,
+	availableWidth: number,
+) {
 	let wrapper = new LineWrapper(viewLine, indentation, measurements, availableWidth);
 	
 	return wrapper.wrap(wrap, isFoldHeader);

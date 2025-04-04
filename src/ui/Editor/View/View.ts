@@ -9,7 +9,7 @@ import type {EditorMode} from "ui/Editor";
 
 import SelectionUtils from "./utils/Selection";
 import AstSelectionUtils from "./utils/AstSelection";
-import wrapLine from "./utils/wrapLine";
+import wrapLine, {type WrappedLine} from "./utils/wrapLine";
 import canvasUtils from "./utils/canvasUtils";
 import Renderer from "./render/Renderer";
 import ViewLine from "./ViewLine";
@@ -17,6 +17,8 @@ import ViewLine from "./ViewLine";
 export default class View extends Evented<{
 	
 }> {
+	wrappedLines: WrappedLine[];
+	
 	focused: boolean = false;
 	visible: boolean = false;
 	mounted: boolean = false;
@@ -32,6 +34,10 @@ export default class View extends Evented<{
 	Selection: any; // TYPE -- convert to class
 	AstSelection: any; // ^
 	
+	// for remembering the "intended" col when moving a cursor up/down to a line
+	// that doesn't have as many cols as the cursor
+	selectionEndCol: number = 0;
+	
 	private pickOptions: PickOption[] = [];
 	private dropTargets: DropTarget[] = [];
 	
@@ -40,10 +46,6 @@ export default class View extends Evented<{
 	private astInsertionHilite: AstSelection | null = null; // TODO not 100% sure what this is
 	
 	private completions: any[] = null; // TYPE
-	
-	// for remembering the "intended" col when moving a cursor up/down to a line
-	// that doesn't have as many cols as the cursor
-	private selectionEndCol: number = 0;
 	
 	// TYPE not clear what this is but it's a map of header line index to footer line index
 	// might be better as a map, and possibly with explicit types for the numbers -- not

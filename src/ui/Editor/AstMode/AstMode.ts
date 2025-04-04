@@ -1,11 +1,14 @@
-import Evented from "utils/Evented";
-import Selection, {s} from "core/Selection";
-import Cursor, {c} from "core/Cursor";
-import AstSelection, {a} from "core/AstSelection";
+import {Evented} from "utils";
+import {Selection, s, Cursor, c, AstSelection, a} from "core/Selection";
+import type Editor from "ui/Editor";
 import MultiStepCommand from "./MultiStepCommand";
 
-class AstMode extends Evented {
-	constructor(editor) {
+class AstMode extends Evented<{
+	pasteFromNormalMode: any; // TYPE
+}> {
+	editor: Editor;
+	
+	constructor(editor: Editor) {
 		super();
 		
 		this.editor = editor;

@@ -6,6 +6,13 @@ import type {Format} from "core";
 a Line with extra info about tabs for rendering
 */
 
+export type VariableWidthPart = {
+	offset: number;
+	type: "string" | "tab";
+	string: string;
+	width: number;
+};
+
 export default class ViewLine {
 	line: Line;
 	variableWidthParts: VariableWidthPart[];

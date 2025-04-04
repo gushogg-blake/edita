@@ -49,6 +49,8 @@ class Editor extends Evented<{
 	
 	private app?: App;
 	
+	private modeSwitchKey: ReturnType<modeSwitchKey>;
+	
 	private teardownCallbacks: Array<() => void>;
 	
 	constructor(document: Document, env?: Env) {
@@ -752,10 +754,6 @@ class Editor extends Evented<{
 	
 	get wrappedLines() {
 		return this.view.wrappedLines;
-	}
-	
-	get astSelection() {
-		return this.view.astSelection;
 	}
 	
 	teardown() {
