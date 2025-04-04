@@ -1,7 +1,7 @@
 import bluebird from "bluebird";
 import {type URL, File} from "core";
 
-export default async function(urls: URL[], asObject=false) {
+export default async function(urls: URL[], asObject: boolean = false) {
 	let permissionsErrors = [];
 	let binaryFiles = [];
 	let otherErrors = false;

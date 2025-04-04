@@ -1,4 +1,4 @@
-import {s, c} from "core/Selection";
+import {s, c} from "core";
 
 let langCodeMap = {
 	"javascript": "typescript",

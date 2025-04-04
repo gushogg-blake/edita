@@ -48,8 +48,10 @@ class Editor extends Evented<{
 	api: EditorApi;
 	
 	private app?: App;
-	
 	private modeSwitchKey: ReturnType<modeSwitchKey>;
+	private astMode: AstMode;
+	
+	private mouseIsDown: boolean = false;
 	
 	private teardownCallbacks: Array<() => void>;
 	
@@ -73,8 +75,6 @@ class Editor extends Evented<{
 		this.wordCompletion = new WordCompletion(this);
 		
 		this.modeSwitchKey = modeSwitchKey(this);
-		
-		this.mouseIsDown = false;
 		
 		this.snippetSession = null;
 		
@@ -259,7 +259,7 @@ class Editor extends Evented<{
 		return this.env?.getWordCompletionCandidates() || [];
 	}
 	
-	goToDefinitionFromCursor(cursor: Cursor): void {
+	async goToDefinitionFromCursor(cursor: Cursor): Promise<void> {
 		let results = await this.env?.lsp.getDefinitions(cursor) || [];
 		
 		if (results.length === 0) {

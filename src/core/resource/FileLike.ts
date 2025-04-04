@@ -8,8 +8,10 @@ export default class FileLike extends Evented<{
 	contents: string;
 	format: Format;
 	
-	constructor() {
+	constructor(url: URL) {
 		super();
+		
+		this.url = url;
 	}
 	
 	setLang(lang: Lang) {

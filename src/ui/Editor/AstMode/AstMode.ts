@@ -1,5 +1,5 @@
 import {Evented} from "utils";
-import {Selection, s, Cursor, c, AstSelection, a} from "core/Selection";
+import {Selection, s, Cursor, c, AstSelection, a} from "core";
 import type Editor from "ui/Editor";
 import MultiStepCommand from "./MultiStepCommand";
 
