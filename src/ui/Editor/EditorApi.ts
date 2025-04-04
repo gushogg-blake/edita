@@ -36,12 +36,10 @@ export default class EditorApi {
 		view.setVerticalScrollNoValidate(Math.max(0, scrollTop));
 	}
 	
-	setNormalSelectionAndCenter(selection: Selection) {
-		let {view} = this;
+	setNormalSelectionAndCenter(selection: Selection): void {
+		this.editor.setNormalSelection(selection);
 		
-		this.setNormalSelection(selection);
-		
-		this.api.centerSelection(selection);
+		this.centerSelection(selection);
 	}
 	
 	findAndReplace(options) {
@@ -72,10 +70,10 @@ export default class EditorApi {
 	}
 	
 	replaceAll(options) {
-		let {document, view} = this;
+		let {editor, document, view} = this;
 		let {edits, results} = document.replaceAll(options);
 		
-		this.applyAndAddHistoryEntry({
+		editor.applyAndAddHistoryEntry({
 			edits,
 		});
 		
@@ -142,7 +140,7 @@ export default class EditorApi {
 	setNormalHilites(selections: Selection[], clearAfterMs: number = null) {
 		this.view.setNormalHilites(selections);
 		
-		if (clearAfter !== null) {
+		if (clearAfterMs !== null) {
 			setTimeout(() => {
 				this.setNormalHilites([]);
 			}, clearAfterMs);

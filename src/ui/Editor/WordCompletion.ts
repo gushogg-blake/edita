@@ -1,11 +1,12 @@
 import regexMatches from "utils/regexMatches";
 import regexMatch from "utils/regexMatch";
-import {unique} from "utils/array";
 import convertCase from "utils/convertCase";
-import Selection, {s} from "core/Selection";
-import Cursor, {c} from "core/Cursor";
+import {unique} from "utils/array";
+import {Selection, s, Cursor, c} from "core";
+import type {WordAtCursor} from "core/Document";
+import type Editor from "ui/Editor";
 
-function findCompletions(code, wordAtCursor, index, extraWords=[]) {
+function findCompletions(code: string, wordAtCursor, index, extraWords=[]) {
 	let {left, right} = wordAtCursor;
 	let caseTypes = getPossibleCaseTypes(left || right);
 	let re;
@@ -90,12 +91,24 @@ function getPossibleCaseTypes(word) {
 	}
 }
 
+type Session = {
+	words: string[];
+	index: number;
+	selection: Selection;
+	originalWord: WordAtCursor;
+	currentWord: string;
+};
+
 class WordCompletion {
-	constructor(editor) {
+	private editor: Editor;
+	private session?: Session;
+	private inWordComplete: boolean = false;
+	
+	constructor(editor: Editor) {
 		this.editor = editor;
 	}
 	
-	applyCompletion(selection, word, originalWord) {
+	applyCompletion(selection: Selection, word: string) {
 		let {editor} = this;
 		let {document} = editor;
 		
@@ -141,7 +154,7 @@ class WordCompletion {
 			nextWord = words[newIndex];
 		}
 		
-		this.applyCompletion(selection, nextWord, originalWord);
+		this.applyCompletion(selection, nextWord);
 		
 		this.session = {
 			...this.session,
@@ -181,7 +194,7 @@ class WordCompletion {
 		let currentWord = words[0];
 		let selection = s(c(lineIndex, offset - left.length), c(lineIndex, offset + right.length));
 		
-		this.applyCompletion(selection, currentWord, wordAtCursor);
+		this.applyCompletion(selection, currentWord);
 		
 		this.session = {
 			originalWord: wordAtCursor,

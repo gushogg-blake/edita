@@ -1,4 +1,4 @@
-export function s(startLineIndex, endLineIndex=null) {
+function s(startLineIndex, endLineIndex=null) {
 	return new AstSelection(startLineIndex, endLineIndex);
 }
 

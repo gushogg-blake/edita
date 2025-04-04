@@ -7,7 +7,8 @@ import {
 } from "web-tree-sitter";
 
 import mapArrayToObject from "utils/mapArrayToObject";
-import {Cursor, c, type Lang} from "core";
+import {Cursor, c} from "core";
+import type {Lang, Range} from "core";
 //import type {Edit} from "core/Document";
 import Node from "./Node";
 import find from "./find";

@@ -1,6 +1,6 @@
 import _typeof from "utils/typeof";
 import {groupBy, removeInPlace, mapArrayToObject} from "utils";
-import {Selection, s, Tree, Lang} from "core";
+import {Selection, s, Tree, Lang, type Node} from "core";
 import type Source from "./Source";
 import Range from "./Range";
 
@@ -11,13 +11,13 @@ function getInjectionLangCode(injection, result) {
 export default class Scope {
 	source: Source;
 	parent: Scope | null;
-	lang: Lang
+	lang: Lang;
 	tree: Tree | null = null;
 	ranges: Range[];
 	scopes: Scope[] = [];
 	scopesByNodeId: Record<string, Scope> = {};
 	
-	constructor(source: Source, parent: Lang | null, lang: Lang, ranges: Range[]) {
+	constructor(source: Source, parent: Scope | null, lang: Lang, ranges: Range[]) {
 		this.source = source;
 		this.parent = parent;
 		this.lang = lang;
@@ -378,7 +378,7 @@ export default class Scope {
 	child scopes after the main loop but it didn't really make sense
 	*/
 	
-	*_generateNodesStartingOnLine(lineIndex, startOffset, lang=null) {
+	*_generateNodesStartingOnLine(lineIndex: number, startOffset: number, lang: Lang = null): Generator<Node, void, void> {
 		if (!this.tree || !this.overlapsWithLine(lineIndex)) {
 			return;
 		}
@@ -390,11 +390,11 @@ export default class Scope {
 		}
 		
 		for (let scope of this.scopes) {
-			yield* scope.generateNodesStartingOnLine(lineIndex, startOffset, lang);
+			yield* scope._generateNodesStartingOnLine(lineIndex, startOffset, lang);
 		}
 	}
 	
-	generateNodesStartingOnLine(lineIndex, lang=null) {
+	generateNodesStartingOnLine(lineIndex: number, lang: Lang = null) {
 		return this._generateNodesStartingOnLine(lineIndex, 0, lang);
 	}
 	

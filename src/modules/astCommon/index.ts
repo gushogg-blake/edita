@@ -1,9 +1,15 @@
 import type {Selection, Document, Line} from "core";
+import type AstSelectionLines from "core/astMode";
 import selection from "./selection";
 import drop from "./drop";
 import astManipulations from "./astManipulations";
 import removeSelection from "./removeSelection";
 import {getHeaderLineIndex, getFooterLineIndex} from "./utils";
+
+export type AstManipulationResult = {
+	replaceSelectionWith: AstSelectionLines,
+	onPasteFromNormalMode?: (paste: any) => void; // TYPE
+};
 
 export type DropTarget = {
 	type: string;

@@ -14,8 +14,28 @@ import canvasUtils from "./utils/canvasUtils";
 import Renderer from "./render/Renderer";
 import ViewLine from "./ViewLine";
 
+type SetNormalSelectionOptions = {
+	updateAstSelection: boolean;
+};
+
 export default class View extends Evented<{
-	
+	modeSwitch: void;
+	updatePickOptions: void;
+	updateDropTargets: void;
+	scroll: void;
+	wrapChange: void;
+	updateCompletions: void;
+	updateMeasurements: void;
+	updateSizes: void;
+	updateScrollbars: void;
+	updateCanvas: void;
+	requestFocus: void;
+	requestResize: void;
+	requestResizeAsync: void;
+	focus: void;
+	blur: void;
+	show: void;
+	hide: void;
 }> {
 	wrappedLines: WrappedLine[];
 	
@@ -563,7 +583,7 @@ export default class View extends Evented<{
 		this.fire("scroll");
 	}
 	
-	setNormalSelection(selection, options={}) {
+	setNormalSelection(selection, options?: SetNormalSelectionOptions) {
 		options = {
 			updateAstSelection: true,
 			...options,
@@ -668,7 +688,7 @@ export default class View extends Evented<{
 		}).filter(Boolean));
 	}
 	
-	setFolds(folds) {
+	setFolds(folds): void {
 		this.folds = folds;
 		
 		// TODO validate selection
@@ -676,7 +696,7 @@ export default class View extends Evented<{
 		this.scheduleRedraw();
 	}
 	
-	toggleFoldHeader(lineIndex) {
+	toggleFoldHeader(lineIndex: number): void {
 		let {document} = this;
 		let footerLineIndex = astCommon.getFooterLineIndex(document, lineIndex);
 		

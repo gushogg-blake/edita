@@ -1,5 +1,5 @@
 import {Evented} from "utils";
-import {Selection, s, Cursor, c, AstSelection, a} from "core";
+import {Selection, s, Cursor, c, AstSelection, a, type AstSelectionLines} from "core";
 import type Editor from "ui/Editor";
 import MultiStepCommand from "./MultiStepCommand";
 
@@ -7,13 +7,13 @@ class AstMode extends Evented<{
 	pasteFromNormalMode: any; // TYPE
 }> {
 	editor: Editor;
+	clipboard: AstSelectionLines | null = null;
+	multiStepCommand: MultiStepCommand | null = null;
 	
 	constructor(editor: Editor) {
 		super();
 		
 		this.editor = editor;
-		this.clipboard = null;
-		this.command = null;
 	}
 	
 	doAstManipulation(astManipulation) {

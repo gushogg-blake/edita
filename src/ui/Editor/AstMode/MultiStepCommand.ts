@@ -1,14 +1,27 @@
-import Evented from "utils/Evented";
-import AstSelection, {a} from "core/AstSelection";
+import {Evented} from "utils";
+import {AstSelection, a} from "core";
+import type {AstManipulationResult} from "modules/astCommon";
+import type Editor from "ui/Editor";
 
-class MultiStepCommand extends Evented {
-	constructor(editor, astManipulation) {
+class MultiStepCommand extends Evented<{
+	complete: void;
+	canceled: void;
+	resolved: void;
+}> {
+	editor: Editor;
+	astManipulation: any; // TYPE
+	selectionOnReturnToAstMode: AstSelection | null = null;
+	
+	private astManipulationResult?: AstManipulationResult;
+	private peekingAstMode: boolean;
+	private teardownCallbacks: Array<() => void>;
+	
+	constructor(editor: Editor, astManipulation: any) { // TYPE AstManipulation
 		super();
 		
 		this.editor = editor;
 		this.astManipulation = astManipulation;
 		
-		this.selectionOnReturnToAstMode = null;
 		this.peekingAstMode = this.editor.modeSwitchKey.isPeeking;
 		
 		this.teardownCallbacks = [

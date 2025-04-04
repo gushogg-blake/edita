@@ -5,8 +5,9 @@ import type {CaptureSingleResult} from "core/Tree";
 type Injection = {
 	pattern: string; // TYPE? TSQ
 	lang: string | (capture: CaptureSingleResult) => Lang;
-	combined?: boolean;
 	query: Query;
+	combined?: boolean;
+	excludeChildren?: boolean;
 };
 
 export default class Lang {

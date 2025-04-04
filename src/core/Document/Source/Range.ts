@@ -1,4 +1,4 @@
-import type {Selection, Cursor} from "core";
+import type {Selection, Cursor, Scope} from "core";
 
 /*
 Note - all Ranges have a .scope property. This is set by the owner
@@ -8,6 +8,11 @@ passed in the constructor).
 */
 
 class Range {
+	scope: Scope;
+	startIndex: number;
+	endIndex: number;
+	selection: Selection;
+	
 	constructor(startIndex, endIndex, selection) {
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;

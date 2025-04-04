@@ -1,6 +1,14 @@
 import {getIndentLevel} from "modules/utils/editing";
 
 class Line {
+	lineIndex: number;
+	startIndex: number;
+	string: string;
+	trimmed: string;
+	indentLevel: number;
+	indentCols: number;
+	indentOffset: number;
+	
 	constructor(format, lineIndex, startIndex, string) {
 		let {
 			level: indentLevel,

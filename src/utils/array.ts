@@ -1,6 +1,10 @@
 import _typeof from "utils/typeof";
 
-export function groupBy(array, field, _default=null) {
+export function groupBy<T extends Record<string, any>>(
+	array: T[],
+	field: string | (item: T) => string,
+	_default?: string,
+): Record<string, T[]> {
 	let obj = {};
 		
 	for (let item of array) {
@@ -22,7 +26,7 @@ export function groupBy(array, field, _default=null) {
 	return obj;
 }
 
-export function unique(array) {
+export function unique<T>(array: T[]): T[] {
 	let result = [];
 	
 	for (let item of array) {

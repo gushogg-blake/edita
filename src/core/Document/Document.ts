@@ -13,6 +13,8 @@ export {default as Line} from "./Line";
 export {default as Range} from "./Source/Range";
 export {default as Scope} from "./Source/Scope";
 
+export type {HistoryEntry};
+
 export type DocumentOptions = {
 	noParse: boolean;
 };
@@ -21,6 +23,11 @@ type LineDiff = {
 	startLineIndex: number;
 	invalidCount: number;
 	newLines: Line[];
+};
+
+export type WordAtCursor = {
+	left: string;
+	right: string;
 };
 
 export default class Document extends Evented<{
@@ -398,7 +405,7 @@ export default class Document extends Evented<{
 		return Selection.containString(cursor, str, this.format.newline);
 	}
 	
-	wordAtCursor(cursor) {
+	wordAtCursor(cursor: Cursor): WordAtCursor {
 		let {lineIndex, offset} = cursor;
 		
 		let line = this.lines[lineIndex];

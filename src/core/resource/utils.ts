@@ -1,7 +1,12 @@
 import detectIndent from "detect-indent";
+import type {Lang, URL} from "core";
 
-export function normaliseNewlines(str) {
-	let {newline} = platform.systemInfo;
+// type Newline = "\r\n" | "\r" | "\n";
+
+export function normaliseNewlines(str: string, newline?: string): string {
+	if (!newline) {
+		newline = platform.systemInfo.newline;
+	}
 	
 	str = str.replaceAll("\r\n", newline)
 	str = str.replaceAll("\r", newline);
@@ -10,7 +15,7 @@ export function normaliseNewlines(str) {
 	return str;
 }
 
-export function hasMixedNewlines(str) {
+export function hasMixedNewlines(str: string): boolean {
 	let crlf = false;
 	let cr = false;
 	let lf = false;
@@ -44,7 +49,7 @@ export function hasMixedNewlines(str) {
 	return false;
 }
 
-export function getNewline(str) {
+export function getNewline(str: string): "\r\n" | "\r" | "\n" {
 	for (let check of ["\r\n", "\r", "\n"]) {
 		if (str.includes(check)) {
 			return check;
@@ -54,8 +59,8 @@ export function getNewline(str) {
 	return platform.systemInfo.newline;
 }
 
-export function getIndent(code) {
-	return detectIndent(code).indent || base.prefs.defaultIndent;
+export function getIndent(str: string): string {
+	return detectIndent(str).indent || base.prefs.defaultIndent;
 }
 
 /*
@@ -76,7 +81,7 @@ alternate means the lang supports the file but wouldn't usually be used,
 e.g. JavaScript supports JSON files and SCSS supports CSS files.
 */
 
-export function guessLang(code, url) {
+export function guessLang(str: string, url?: URL): Lang {
 	if (url) {
 		for (let [langCode, patterns] of Object.entries(base.prefs.fileAssociations)) {
 			for (let pattern of patterns) {
@@ -92,7 +97,7 @@ export function guessLang(code, url) {
 	let fallback = base.langs.get("plaintext");
 	
 	for (let lang of base.langs.all.filter(lang => lang !== fallback)) {
-		let supportLevel = lang.getSupportLevel(code, url?.path);
+		let supportLevel = lang.getSupportLevel(str, url?.path);
 		
 		if (supportLevel === "specific") {
 			return lang;

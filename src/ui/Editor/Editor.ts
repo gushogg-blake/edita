@@ -4,6 +4,7 @@ import bindFunctions from "utils/bindFunctions";
 import astCommon from "modules/astCommon";
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
 import type {Document} from "core";
+import type {HistoryEntry} from "core/Document";
 
 import type App from "ui/App";
 
@@ -21,6 +22,20 @@ import snippets from "./snippets";
 import EditorApi from "./EditorApi";
 
 export type EditorMode = "normal" | "ast";
+
+type EditorHistoryEntry = {
+	before: {
+		normalSelection?: Selection;
+		astSelection?: AstSelection;
+		snippetSession?: any; // TYPE
+	};
+	
+	after: {
+		normalSelection?: Selection;
+		astSelection?: AstSelection;
+		snippetSession?: any; // TYPE
+	};
+};
 
 // stuff the Editor needs from outside, e.g. LSP, word completions
 // from other tabs' filenames
@@ -47,11 +62,28 @@ class Editor extends Evented<{
 	view: View;
 	api: EditorApi;
 	
-	private app?: App;
+	private env?: EditorEnv;
 	private modeSwitchKey: ReturnType<modeSwitchKey>;
 	private astMode: AstMode;
+	private wordCompletion: WordCompletion;
 	
+	private historyEntries = new WeakMap<HistoryEntry, EditorHistoryEntry>();
+	private pendingHistoryEntry?: EditorHistoryEntry;
+	
+	private snippetSession?: any; // TYPE
+	private batchState: "typing" | "backspace" | "delete" | null = null;
 	private mouseIsDown: boolean = false;
+	private needToUpdateAstSelection: boolean = false;
+	private throttledBackup: () => void;
+	
+	// TYPE this might not be technically right as they go through bindFunctions
+	// but bindFunctions does leave the signature unchanged, so maybe it's OK
+	private normalMouse: typeof normalMouse;
+	private normalKeyboard: typeof normalKeyboard;
+	private astMouse: typeof astMouse;
+	private astKeyboard: typeof astKeyboard;
+	private commonKeyboard: typeof commonKeyboard;
+	private commonWheel: typeof commonWheel;
 	
 	private teardownCallbacks: Array<() => void>;
 	
@@ -79,8 +111,6 @@ class Editor extends Evented<{
 		this.snippetSession = null;
 		
 		this.historyEntries = new WeakMap();
-		
-		this.batchState = null;
 		
 		this.api = new EditorApi(this);
 		
@@ -309,7 +339,7 @@ class Editor extends Evented<{
 	-- should be cancelled obviously
 	*/
 	
-	onDocumentHistoryEntryAdded(entry: DocumentHistoryEntry): void {
+	onDocumentHistoryEntryAdded(entry: HistoryEntry): void {
 		if (this.pendingHistoryEntry) {
 			this.historyEntries.set(entry, this.pendingHistoryEntry);
 			
@@ -327,7 +357,7 @@ class Editor extends Evented<{
 					// selection we want. most common reason probably file
 					// changed outside the editor, so reset to beginning
 					// in that case (selection will be whole file)
-					normalSelection: entry.redo.at(-1).newSelection.left,
+					normalSelection: s(entry.redo.at(-1).newSelection.left),
 					astSelection: this.astSelection,
 				},
 			});
@@ -537,8 +567,6 @@ class Editor extends Evented<{
 	
 	marginMousedown(lineIndex) {
 		this.view.toggleFoldHeader(lineIndex);
-		
-		this.view.redraw();
 	}
 	
 	setSelectionFromNormalKeyboard(selection) {
@@ -547,8 +575,6 @@ class Editor extends Evented<{
 		});
 		
 		this.needToUpdateAstSelection = true;
-		
-		this.throttledUpdateAstSelection();
 		
 		this.setSelectionClipboard();
 		
@@ -571,7 +597,7 @@ class Editor extends Evented<{
 		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
 	
-	setNormalSelection(selection, options) {
+	setNormalSelection(selection, options?) {
 		this.view.setNormalSelection(selection, options);
 		
 		this.wordCompletion.selectionChanged();
