@@ -1,32 +1,52 @@
 import type {Lang} from "core";
-import * as coreModules from "./modules";
+import type {AstIntel} from "modules/astIntel";
+import type {CodeIntel} from "modules/codeIntel";
+import * as langModules from "./core";
+import * as astIntelModules from "./astIntel";
+import * as codeIntelModules from "./codeIntel";
 
 class Registry<T> {
-	langs: Record<string, T> = {};
+	map: Record<string, T> = {};
 	
 	add(langCode: string, module: T) {
-		this.langs[langCode] = module;
+		this.map[langCode] = module;
 	}
 	
 	get(langCode: string): T | null {
-		return this.langs[langCode] || null;
+		return this.map[langCode] || null;
 	}
 	
 	get all(): T[] {
-		return Object.values(this.langs);
+		return Object.values(this.map);
 	}
 }
 
-let langs = new Registry<Lang>();
-let astIntel = new Registry<AstIntel>();
-let codeIntel = new Registry<CodeIntel>();
-
-export default function() {
-	let langs = new Langs();
+export function core() {
+	let langs = new Registry<Lang>();
 	
 	for (let LangClass of Object.values(langModules)) {
-		langs.add(LangClass);
+		langs.add(new LangClass());
 	}
 	
 	return langs;
+}
+
+export function astIntel() {
+	let astIntel = new Registry<AstIntel>();
+	
+	for (let AstIntelClass of Object.values(astIntelModules)) {
+		astIntel.add(new AstIntelClass());
+	}
+	
+	return astIntel;
+}
+
+export function codeIntel() {
+	let codeIntel = new Registry<CodeIntel>();
+	
+	for (let CodeIntelClass of Object.values(codeIntelModules)) {
+		codeIntelModules.add(new CodeIntelClass());
+	}
+	
+	return codeIntelModules;
 }

@@ -5,9 +5,6 @@ export default class Lang {
 	code: string;
 	name: string;
 	defaultExtension: string;
-	astMode?: AstMode; // TYPE
-	codeIntel?: CodeIntel; // TYPE
-	accelerator?: string;
 	
 	// whether the lang should be available as a file type or is an internal util
 	// (markdown_inline for example)
