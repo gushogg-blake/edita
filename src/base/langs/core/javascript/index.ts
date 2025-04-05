@@ -52,7 +52,6 @@ let keywords = new Set([
 
 export default class extends Lang {
 	group = "javascript";
-	code = "javascript";
 	name = "JavaScript";
 	defaultExtension = "js";
 	injections = [];

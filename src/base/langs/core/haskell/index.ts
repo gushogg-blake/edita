@@ -37,7 +37,6 @@ let keywords = new Set([
 
 export default class extends Lang {
 	group = "haskell";
-	code = "haskell";
 	name = "Haskell";
 	defaultExtension = "hs";
 	injections = [];

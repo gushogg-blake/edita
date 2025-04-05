@@ -1,11 +1,7 @@
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
 //import type {Document} from "core";
 
-let lang;
-
 export default {
-	,
-	
 	convertVariableAssignmentsToObject: {
 		code: "convertVariableAssignmentsToObject",
 		name: "Convert to object",

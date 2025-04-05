@@ -1,4 +1,6 @@
-export default {
+import {CodeIntel} from "modules/codeIntel";
+
+export default class extends CodeIntel {
 	indentOnNewline(line, lines, lineIndex) {
 		
 	}

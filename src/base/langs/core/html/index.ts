@@ -2,7 +2,6 @@ import {Lang} from "core";
 
 export default class extends Lang {
 	group = "html";
-	code = "html";
 	name = "HTML";
 	defaultExtension = "html";
 	possibleInjections = ["javascript", "typescript", "css", "scss", "sass"];

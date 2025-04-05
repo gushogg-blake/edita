@@ -93,7 +93,6 @@ let keywords = new Set([
 
 export default class extends Lang {
 	group = "vala";
-	code = "vala";
 	name = "Vala";
 	defaultExtension = "vala";
 	injections = [];

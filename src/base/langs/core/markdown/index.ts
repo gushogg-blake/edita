@@ -2,7 +2,6 @@ import {Lang} from "core";
 
 export default class extends Lang {
 	group = "html";
-	code = "markdown";
 	name = "Markdown";
 	defaultExtension = "md";
 	possibleInjections = ["html", "markdown_inline", "typescript"];

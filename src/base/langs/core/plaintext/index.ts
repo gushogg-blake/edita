@@ -1,7 +1,6 @@
 import {Lang} from "core";
 
 export default class extends Lang {
-	code = "plaintext";
 	name = "Plain text";
 	
 	commentLines(document, startLineIndex, endLineIndex) {

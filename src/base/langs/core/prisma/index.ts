@@ -10,7 +10,6 @@ let keywords = new Set([
 
 export default class extends Lang {
 	group = "prisma";
-	code = "prisma";
 	name = "Prisma";
 	defaultExtension = "prisma";
 	injections = [];

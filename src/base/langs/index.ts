@@ -8,8 +8,14 @@ import * as codeIntelModules from "./codeIntel";
 class Registry<T> {
 	map: Record<string, T> = {};
 	
-	add(langCode: string, module: T) {
-		this.map[langCode] = module;
+	constructor(modules: Record<string, ClassType extends typeof T>) {
+		for (let [langCode, Class] of Object.entries(modules)) {
+			this.add(langCode, new Class(langCode));
+		}
+	}
+	
+	add(langCode: string, instance: T) {
+		this.map[langCode] = instance;
 	}
 	
 	get(langCode: string): T | null {
@@ -22,31 +28,13 @@ class Registry<T> {
 }
 
 export function core() {
-	let langs = new Registry<Lang>();
-	
-	for (let LangClass of Object.values(langModules)) {
-		langs.add(new LangClass());
-	}
-	
-	return langs;
+	return new Registry<Lang>(langModules);
 }
 
 export function astIntel() {
-	let astIntel = new Registry<AstIntel>();
-	
-	for (let AstIntelClass of Object.values(astIntelModules)) {
-		astIntel.add(new AstIntelClass());
-	}
-	
-	return astIntel;
+	return new Registry<AstIntel>(astIntelModules);
 }
 
 export function codeIntel() {
-	let codeIntel = new Registry<CodeIntel>();
-	
-	for (let CodeIntelClass of Object.values(codeIntelModules)) {
-		codeIntelModules.add(new CodeIntelClass());
-	}
-	
-	return codeIntelModules;
+	return new Registry<CodeIntel>(codeIntelModules);
 }

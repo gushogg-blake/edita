@@ -1,4 +1,6 @@
-export default {
+import {CodeIntel} from "modules/codeIntel";
+
+export default class extends CodeIntel {
 	indentOnNewline(document, line, cursor) {
 		return line.string.substr(0, cursor.offset).match(/[\[{(]$/);
 	}

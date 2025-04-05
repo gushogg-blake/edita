@@ -4,7 +4,6 @@ let wordRe = /\w/;
 
 export default class extends Lang {
 	group = "c";
-	code = "c";
 	name = "C";
 	defaultExtension = "c";
 	injections = [];

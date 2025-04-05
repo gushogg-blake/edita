@@ -2,7 +2,6 @@ import {Lang} from "core";
 
 export default class extends Lang {
 	group = "css";
-	code = "scss";
 	name = "SCSS";
 	defaultExtension = "scss";
 	injections = [];

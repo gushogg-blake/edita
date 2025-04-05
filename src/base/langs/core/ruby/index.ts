@@ -4,7 +4,6 @@ let wordRe = /\w/;
 
 export default class extends Lang {
 	group = "ruby";
-	code = "ruby";
 	name = "Ruby";
 	defaultExtension = "rb";
 	injections = [];

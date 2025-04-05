@@ -2,10 +2,9 @@ import {Lang} from "core";
 
 export default class extends Lang {
 	group = "html";
-	code = "svelte";
 	name = "Svelte";
 	defaultExtension = "svelte";
-	possibleInjections: ["javascript", "css", "scss", "sass"],
+	possibleInjections = ["javascript", "css", "scss", "sass"];
 	injections = [];
 	
 	getFooter(node) {

@@ -3,7 +3,6 @@ import {Lang} from "core";
 let wordRe = /\w/;
 
 export default class extends Lang {
-	code = "python";
 	name = "Python";
 	defaultExtension = "py";
 	injections = [];

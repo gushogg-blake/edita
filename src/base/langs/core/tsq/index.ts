@@ -2,7 +2,6 @@ import {Lang} from "core";
 
 export default class extends Lang {
 	group = "lisp";
-	code = "tsq";
 	name = "Tree-sitter Query";
 	defaultExtension = "tsq";
 	

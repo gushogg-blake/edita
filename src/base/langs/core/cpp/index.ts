@@ -6,7 +6,6 @@ let wordRe = /\w/;
 
 export default class extends Lang {
 	group = "c";
-	code = "cpp";
 	name = "C++";
 	defaultExtension = "cpp";
 	injections = [];

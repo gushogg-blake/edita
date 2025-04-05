@@ -1,7 +1,6 @@
 import {Lang} from "core";
 
 export default class extends Lang {
-	code = "codepatterns";
 	name = "CodePatterns Query";
 	defaultExtension = "cp";
 	//reparseOnEdit = true; // HACK
