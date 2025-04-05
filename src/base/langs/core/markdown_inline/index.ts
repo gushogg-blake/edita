@@ -2,15 +2,15 @@ export default class extends Lang {
 	group = "html"; // to get snippets
 	code = "markdown_inline";
 	name = "markdown_inline (sub-parser for markdown)";
-	util: true,
+	util = true;
 	
-	injections: [
+	injections: = [
 		{
 			pattern: "(html_tag) @injectionNode",
 			lang: "html",
 			combined: false,
 		},
-	],
+	];
 	
 	getFooter(node) {
 		return null;

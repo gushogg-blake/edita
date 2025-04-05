@@ -1,17 +1,19 @@
+import {Lang} from "core";
+
 export default class extends Lang {
 	code = "codepatterns";
 	name = "CodePatterns Query";
 	defaultExtension = "cp";
-	reparseOnEdit: true, // HACK
-	possibleInjections: ["tsq"],
+	//reparseOnEdit = true; // HACK
+	possibleInjections = ["tsq"];
 	
-	injections: [
+	injections = [
 		{
 			pattern: "(tsq) @injectionNode",
 			combined: true,
 			lang: "tsq",
 		},
-	],
+	];
 	
 	getFooter(node) {
 		return null;

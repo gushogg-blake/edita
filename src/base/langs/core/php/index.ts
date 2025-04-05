@@ -6,15 +6,15 @@ export default class extends Lang {
 	code = "php";
 	name = "PHP";
 	defaultExtension = "php";
-	possibleInjections: ["html"],
+	possibleInjections = ["html"];
 	
-	injections: [
+	injections = [
 		{
 			pattern: "(text) @injectionNode",
 			combined: true,
 			lang: "html",
 		},
-	],
+	];
 	
 	isBlock(node) {
 		return node.start.lineIndex !== node.end.lineIndex && [

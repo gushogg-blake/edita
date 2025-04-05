@@ -5,9 +5,9 @@ export default class extends Lang {
 	code = "markdown";
 	name = "Markdown";
 	defaultExtension = "md";
-	possibleInjections: ["html", "markdown_inline", "typescript"],
+	possibleInjections = ["html", "markdown_inline", "typescript"];
 	
-	injections: [
+	injections = [
 		{
 			pattern: "(inline) @injectionNode",
 			lang: "markdown_inline",
@@ -55,7 +55,7 @@ export default class extends Lang {
 			
 			combined: true,
 		},
-	],
+	];
 	
 	getFooter(node) {
 		return null;

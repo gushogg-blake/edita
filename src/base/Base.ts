@@ -17,7 +17,7 @@ import stores, {type Stores} from "base/stores";
 import type {Prefs, Theme} from "base/types";
 
 import {generateRequiredLangs} from "./utils";
-import langs, {type Langs} from "./langs";
+import {core as langs, astIntel, codeIntel} from "./langs";
 
 import packageJson from "root/package.json";
 
@@ -44,7 +44,9 @@ export default class Base extends Evented<{
 	prefsUpdated: void;
 	themeUpdated: void;
 }> {
-	langs: Langs;
+	langs: ReturnType<typeof langs>;
+	astIntel: ReturnType<typeof astIntel>;
+	codeIntel: ReturnType<typeof codeIntel>;
 	DirEntries: typeof DirEntries;
 	packageJson: any;
 	themes: Record<string, Theme>;
@@ -56,7 +58,7 @@ export default class Base extends Evented<{
 	
 	components: Record<string, any>; // TYPE Svelte components
 	
-	private initialisedLangs: Set<Lang>;
+	private initialisedLangs = new Set<Lang>();
 	
 	constructor() {
 		super();
@@ -64,7 +66,8 @@ export default class Base extends Evented<{
 		this.packageJson = packageJson;
 		
 		this.langs = langs();
-		this.initialisedLangs = new Set();
+		this.astIntel = astIntel();
+		this.codeIntel = codeIntel();
 		
 		this.DirEntries = DirEntries;
 	}
@@ -180,10 +183,6 @@ export default class Base extends Evented<{
 				
 				console.error(e);
 			}
-		}
-		
-		if (lang.init) {
-			lang.init({base: this});
 		}
 		
 		this.initialisedLangs.add(lang);

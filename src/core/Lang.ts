@@ -1,13 +1,15 @@
 import {Query} from "web-tree-sitter";
 import type {CaptureSingleResult} from "core/Tree";
 
-export type Injection = {
+// wrapped in partial to avoid errors as query is added later
+// ? used to mark things as actually optional
+export type Injection = Partial<{
 	pattern: string;
 	lang: string | (capture: CaptureSingleResult) => Lang;
 	query: Query;
 	combined?: boolean;
 	excludeChildren?: boolean;
-};
+}>;
 
 export default class Lang {
 	group: string;

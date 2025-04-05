@@ -5,9 +5,9 @@ export default class extends Lang {
 	code = "html";
 	name = "HTML";
 	defaultExtension = "html";
-	possibleInjections: ["javascript", "typescript", "css", "scss", "sass"],
+	possibleInjections = ["javascript", "typescript", "css", "scss", "sass"];
 	
-	injections: [
+	injections = [
 		{
 			pattern: "(script_element (raw_text) @injectionNode)",
 			
@@ -45,7 +45,7 @@ export default class extends Lang {
 				return lang || "css";
 			},
 		},
-	],
+	];
 	
 	isElementBlock(node) {
 		return (
