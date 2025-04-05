@@ -1,4 +1,13 @@
 import {Query} from "web-tree-sitter";
+import type {CaptureSingleResult} from "core/Tree";
+
+export type Injection = {
+	pattern: string;
+	lang: string | (capture: CaptureSingleResult) => Lang;
+	query: Query;
+	combined?: boolean;
+	excludeChildren?: boolean;
+};
 
 export default class Lang {
 	group: string;

@@ -1,5 +1,5 @@
 import type {Selection, Document, Line} from "core";
-import type AstSelectionContents from "core/astMode";
+import type {AstSelectionContents} from "core/astMode";
 
 export {default as selectionUtils} from "./selectionUtils";
 export {default as drop} from "./drop";
@@ -7,16 +7,13 @@ export {default as astManipulations} from "./astManipulations";
 export {default as removeSelection} from "./removeSelection";
 
 export * from "./utils";
-//export * from "./types";
-
-import type {Document} from "core";
 
 export type AstIntel = {
-	pickOptions: PickOption,
-	dropTargets,
-	astManipulations,
+	pickOptions?: Record<string, PickOption>;
+	dropTargets?: Record<string, DropTarget>;
+	astManipulations?: Record<string, AstManipulation>;
 	
-	adjustSpaces: (
+	adjustSpaces?: (
 		document,
 		fromSelection,
 		toSelection,
@@ -61,14 +58,30 @@ export type PickOption = {
 	getSelection: (document: Document, lineIndex: number) => Selection;
 };
 
-export function astManipulationIsAvailable(astManipulation, document, selection) {
+export function astManipulationIsAvailable(
+	astManipulation: AstManipulation,
+	document: Document,
+	selection: Selection,
+): boolean {
 	return !astManipulation.isAvailable || astManipulation.isAvailable(document, selection);
 }
 
-export function getPickOptions(astMode, document, lineIndex) {
-	return Object.values(astMode.pickOptions).filter(pickOption => pickOption.isAvailable(document, lineIndex));
+export function getPickOptions(
+	astIntel: AstIntel,
+	document: Document,
+	lineIndex: number,
+): PickOption[] {
+	return Object.values(astIntel.pickOptions).filter((pickOption) => {
+		return pickOption.isAvailable(document, lineIndex);
+	});
 }
 
-export function getDropTargets(astMode, document, lineIndex) {
-	return Object.values(astMode.dropTargets).filter(dropTarget => dropTarget.isAvailable(document, lineIndex));
+export function getDropTargets(
+	astIntel: AstIntel,
+	document: Document,
+	lineIndex: number,
+): DropTarget[] {
+	return Object.values(astIntel.dropTargets).filter((dropTarget) => {
+		return dropTarget.isAvailable(document, lineIndex);
+	});
 }

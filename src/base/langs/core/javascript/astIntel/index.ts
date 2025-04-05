@@ -1,4 +1,4 @@
-import {isHeader, isFooter} from "modules/astCommon/utils";
+import {isHeader, isFooter} from "modules/astIntel/utils";
 import pickOptions from "./pickOptions";
 import dropTargets from "./dropTargets";
 import astManipulations from "./astManipulations";

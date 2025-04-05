@@ -1,7 +1,7 @@
 import mapArrayToObject from "utils/mapArrayToObject";
 import {Selection, s, AstSelection, a, SelectionContents} from "core";
 import {Document, Node} from "core";
-import {removeSelection} from "modules/astCommon";
+import {removeSelection} from "modules/astIntel";
 import getPlaceholders from "modules/snippets/getPlaceholders";
 
 function getLineParts(string) {

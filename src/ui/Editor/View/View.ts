@@ -11,7 +11,7 @@ import {
 	getFooterLineIndex,
 	type PickOption,
 	type DropTarget,
-} from "modules/astCommon";
+} from "modules/astIntel";
 
 import type {EditorMode, ActiveCompletions} from "ui/Editor";
 

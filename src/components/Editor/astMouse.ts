@@ -1,6 +1,6 @@
 import {on, off} from "utils/dom/domEvents";
 import AstSelection, {a} from "core/AstSelection";
-import {selectionUtils} from "modules/astCommon";
+import {selectionUtils} from "modules/astIntel";
 import autoScroll from "./utils/autoScroll";
 import astDragData from "./astDragData";
 

@@ -1,7 +1,7 @@
 import Cursor, {c} from "core/Cursor";
 import Selection, {s} from "core/Selection";
 import AstSelection, {a} from "core/AstSelection";
-import {extendDown} from "modules/astCommon/utils";
+import {extendDown} from "modules/astIntel/utils";
 
 let matchers = {
 	literal(context, token, next) {

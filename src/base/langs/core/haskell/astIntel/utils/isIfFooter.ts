@@ -1,4 +1,4 @@
-import {isHeader} from "modules/astCommon/utils";
+import {isHeader} from "modules/astIntel/utils";
 
 export default function(document, lineIndex) {
 	if (isHeader(document, lineIndex)) {

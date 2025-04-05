@@ -1,5 +1,5 @@
 import AstSelection, {a} from "core/AstSelection";
-import {isHeader, getHeaders} from "modules/astCommon/utils";
+import {isHeader, getHeaders} from "modules/astIntel/utils";
 
 export default {
 	contents: {

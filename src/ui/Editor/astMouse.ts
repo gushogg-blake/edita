@@ -1,5 +1,5 @@
 import {AstSelection, a, Selection, s} from "core";
-import {drop as astDrop} from "modules/astCommon";
+import {drop as astDrop} from "modules/astIntel";
 
 export default {
 	setSelection(selection) {

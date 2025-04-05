@@ -1,4 +1,4 @@
-import {selectionUtils} from "modules/astCommon";
+import {selectionUtils} from "modules/astIntel";
 
 export default {
 	up() {

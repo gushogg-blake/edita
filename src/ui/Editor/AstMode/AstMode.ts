@@ -5,7 +5,7 @@ import {
 	astManipulations as commonAstManipulations,
 	astManipulationIsAvailable,
 	type AstManipulation,
-} from "modules/astCommon";
+} from "modules/astIntel";
 
 import type Editor from "ui/Editor";
 import MultiStepCommand from "./MultiStepCommand";
