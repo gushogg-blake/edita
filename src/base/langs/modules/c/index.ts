@@ -13,7 +13,7 @@ export default class extends Lang {
 		return node.start.lineIndex !== node.end.lineIndex && [
 			
 		].includes(node.type);
-	},
+	}
 	
 	getFooter(node) {
 		let {parent} = node;
@@ -28,7 +28,7 @@ export default class extends Lang {
 		}
 		
 		return null;
-	},
+	}
 	
 	getHeader(node) {
 		let {parent} = node;
@@ -43,7 +43,7 @@ export default class extends Lang {
 		}
 		
 		return null;
-	},
+	}
 	
 	getHiliteClass(node) {
 		let {
@@ -92,7 +92,7 @@ export default class extends Lang {
 		}
 		
 		return "symbol";
-	},
+	}
 	
 	getSupportLevel(code, path) {
 		if (!path) {
@@ -108,5 +108,5 @@ export default class extends Lang {
 		}
 		
 		return null;
-	},
+	}
 }

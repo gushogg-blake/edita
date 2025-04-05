@@ -15,13 +15,6 @@ export default class extends Lang {
 	defaultExtension = "prisma";
 	injections = [];
 	
-	init(env) {
-		env = {...env, lang: this};
-		
-		this.astMode.init(env);
-		this.codeIntel.init(env);
-	},
-	
 	isBlock(node) {
 		return node.isMultiline() && [
 			"object",
@@ -34,7 +27,7 @@ export default class extends Lang {
 			"variable_declarator",
 			"switch_body",
 		].includes(node.type);
-	},
+	}
 	
 	getFooter(node) {
 		let {parent} = node;
@@ -49,7 +42,7 @@ export default class extends Lang {
 		}
 		
 		return null;
-	},
+	}
 	
 	getHeader(node) {
 		let {parent} = node;
@@ -64,7 +57,7 @@ export default class extends Lang {
 		}
 		
 		return null;
-	},
+	}
 	
 	getOpenerAndCloser(node) {
 		if ([
@@ -82,7 +75,7 @@ export default class extends Lang {
 		}
 		
 		return null;
-	},
+	}
 	
 	getHiliteClass(node) {
 		let {type, parent} = node;
@@ -160,7 +153,7 @@ export default class extends Lang {
 		}
 		
 		return "symbol";
-	},
+	}
 	
 	commentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);
@@ -170,7 +163,7 @@ export default class extends Lang {
 		return lines.map(function(line) {
 			return line.string.replace(new RegExp("^" + minIndent), minIndent + "//");
 		}).join(document.format.newline);
-	},
+	}
 	
 	uncommentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);
@@ -178,7 +171,7 @@ export default class extends Lang {
 		return lines.map(function(line) {
 			return line.string.replace(/^(\s*)(\/\/)?/, "$1");
 		}).join(document.format.newline);
-	},
+	}
 	
 	getSupportLevel(code, path) {
 		if (!path) {
@@ -194,5 +187,5 @@ export default class extends Lang {
 		}
 		
 		return null;
-	},
+	}
 }

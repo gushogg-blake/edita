@@ -4,9 +4,7 @@ import {AstSelection, a, Selection, s, Cursor, c} from "core";
 let lang;
 
 export default {
-	init(env) {
-		({lang} = env);
-	},
+	,
 	
 	convertVariableAssignmentsToObject: {
 		code: "convertVariableAssignmentsToObject",

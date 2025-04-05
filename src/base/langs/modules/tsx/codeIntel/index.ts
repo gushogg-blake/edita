@@ -1,9 +1,7 @@
 let lang;
 
 export default {
-	init(env) {
-		({lang} = env);
-	},
+	,
 	
 	indentOnNewline(document, line, cursor) {
 		return line.string.substr(0, cursor.offset).match(/[\[{(]$/);

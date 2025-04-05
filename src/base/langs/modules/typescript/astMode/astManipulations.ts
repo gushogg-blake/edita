@@ -5,9 +5,7 @@ import Cursor, {c} from "core/Cursor";
 let lang;
 
 export default {
-	init(env) {
-		({lang} = env);
-	},
+	,
 	
 	convertVariableAssignmentsToObject: {
 		code: "convertVariableAssignmentsToObject",

@@ -59,11 +59,11 @@ export default class extends Lang {
 	
 	getFooter(node) {
 		return null;
-	},
+	}
 	
 	getHeader(node) {
 		return null;
-	},
+	}
 	
 	getHiliteClass(node) {
 		let {
@@ -84,7 +84,7 @@ export default class extends Lang {
 		}
 		
 		return "text";
-	},
+	}
 	
 	commentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);
@@ -94,7 +94,7 @@ export default class extends Lang {
 		return lines.map(function(line) {
 			return line.string.replace(new RegExp("^" + minIndent), minIndent + "<!--") + "-->";
 		}).join(document.format.newline);
-	},
+	}
 	
 	uncommentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);
@@ -102,7 +102,7 @@ export default class extends Lang {
 		return lines.map(function(line) {
 			return line.string.replace(/^(\s*)(<!--)?/, "$1").replace(/-->$/, "");
 		}).join(document.format.newline);
-	},
+	}
 	
 	getSupportLevel(code, path) {
 		if (!path) {
@@ -118,5 +118,5 @@ export default class extends Lang {
 		}
 		
 		return null;
-	},
+	}
 }

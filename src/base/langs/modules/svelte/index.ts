@@ -10,15 +10,15 @@ export default class extends Lang {
 	
 	getFooter(node) {
 		return null;
-	},
+	}
 	
 	getHeader(node) {
 		return null;
-	},
+	}
 	
 	getHiliteClass(node) {
 		// TODO
-	},
+	}
 	
 	getSupportLevel(code, path) {
 		let type = platform.fs(path).lastType;
@@ -36,5 +36,5 @@ export default class extends Lang {
 		}
 		
 		return null;
-	},
+	}
 }

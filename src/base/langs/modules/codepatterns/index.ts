@@ -15,11 +15,11 @@ export default class extends Lang {
 	
 	getFooter(node) {
 		return null;
-	},
+	}
 	
 	getHeader(node) {
 		return null;
-	},
+	}
 	
 	getHiliteClass(node) {
 		let {
@@ -62,7 +62,7 @@ export default class extends Lang {
 		}
 		
 		return "literal";
-	},
+	}
 	
 	getSupportLevel(code, path) {
 		if (!path) {
@@ -78,5 +78,5 @@ export default class extends Lang {
 		}
 		
 		return null;
-	},
+	}
 }

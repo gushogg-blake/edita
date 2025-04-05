@@ -10,7 +10,7 @@ export default {
 		return lines.map(function(line) {
 			return line.string.replace(new RegExp("^" + minIndent), minIndent + "#");
 		}).join(document.format.newline);
-	},
+	}
 	
 	uncommentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);
@@ -18,5 +18,5 @@ export default {
 		return lines.map(function(line) {
 			return line.string.replace(/^(\s*)#?/, "$1");
 		}).join(document.format.newline);
-	},
+	}
 };

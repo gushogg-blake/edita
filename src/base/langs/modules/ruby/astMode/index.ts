@@ -4,9 +4,7 @@ import dropTargets from "./dropTargets";
 import astManipulations from "./astManipulations";
 
 export default {
-	init(env) {
-		this.astManipulations.init(env);
-	},
+	,
 	
 	pickOptions,
 	dropTargets,
