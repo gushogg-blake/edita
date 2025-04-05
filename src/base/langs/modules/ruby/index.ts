@@ -1,16 +1,13 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
 let wordRe = /\w/;
 
-let lang = {
-	group: "ruby",
-	code: "ruby",
-	name: "Ruby",
-	defaultExtension: "rb",
-	astMode,
-	codeIntel,
-	injections: [],
+export default class extends Lang {
+	group = "ruby";
+	code = "ruby";
+	name = "Ruby";
+	defaultExtension = "rb";
+	injections = [];
 	
 	init(env) {
 		env = {...env, lang: this};
@@ -153,6 +150,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

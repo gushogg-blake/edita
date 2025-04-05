@@ -1,13 +1,10 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
-let lang = {
-	group: "html",
-	code: "markdown",
-	name: "Markdown",
-	defaultExtension: "md",
-	astMode,
-	codeIntel,
+export default class extends Lang {
+	group = "html";
+	code = "markdown";
+	name = "Markdown";
+	defaultExtension = "md";
 	possibleInjections: ["html", "markdown_inline", "typescript"],
 	
 	injections: [
@@ -122,6 +119,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

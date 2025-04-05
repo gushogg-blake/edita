@@ -1,5 +1,4 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
 let wordRe = /\w/;
 
@@ -51,14 +50,12 @@ let keywords = new Set([
 	"yield",
 ]);
 
-let lang = {
-	group: "javascript",
-	code: "javascript",
-	name: "JavaScript",
-	defaultExtension: "js",
-	astMode,
-	codeIntel,
-	injections: [],
+export default class extends Lang {
+	group = "javascript";
+	code = "javascript";
+	name = "JavaScript";
+	defaultExtension = "js";
+	injections = [];
 	
 	init(env) {
 		env = {...env, lang: this};
@@ -252,6 +249,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

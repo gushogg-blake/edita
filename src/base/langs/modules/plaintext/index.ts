@@ -1,6 +1,6 @@
 export default {
-	code: "plaintext",
-	name: "Plain text",
+	code = "plaintext";
+	name = "Plain text";
 	
 	commentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);

@@ -1,5 +1,4 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
 let wordRe = /\w/;
 
@@ -36,14 +35,12 @@ let keywords = new Set([
 	"where",
 ]);
 
-let lang = {
-	group: "haskell",
-	code: "haskell",
-	name: "Haskell",
-	defaultExtension: "hs",
-	astMode,
-	codeIntel,
-	injections: [],
+export default class extends Lang {
+	group = "haskell";
+	code = "haskell";
+	name = "Haskell";
+	defaultExtension = "hs";
+	injections = [];
 	
 	init(env) {
 		env = {...env, lang: this};
@@ -193,6 +190,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

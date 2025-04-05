@@ -1,16 +1,13 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
 let wordRe = /\w/;
 
-let lang = {
-	group: "c",
-	code: "c",
-	name: "C",
-	defaultExtension: "c",
-	astMode,
-	codeIntel,
-	injections: [],
+export default class extends Lang {
+	group = "c";
+	code = "c";
+	name = "C";
+	defaultExtension = "c";
+	injections = [];
 	
 	isBlock(node) {
 		return node.start.lineIndex !== node.end.lineIndex && [
@@ -112,6 +109,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

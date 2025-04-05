@@ -1,14 +1,11 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
 let wordRe = /\w/;
 
-let lang = {
-	code: "php",
-	name: "PHP",
-	defaultExtension: "php",
-	astMode,
-	codeIntel,
+export default class extends Lang {
+	code = "php";
+	name = "PHP";
+	defaultExtension = "php";
 	possibleInjections: ["html"],
 	
 	injections: [
@@ -112,6 +109,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

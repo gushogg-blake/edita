@@ -1,15 +1,12 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
-let lang = {
-	group: "html",
-	code: "svelte",
-	name: "Svelte",
-	defaultExtension: "svelte",
-	astMode,
-	codeIntel,
+export default class extends Lang {
+	group = "html";
+	code = "svelte";
+	name = "Svelte";
+	defaultExtension = "svelte";
 	possibleInjections: ["javascript", "css", "scss", "sass"],
-	injections: [],
+	injections = [];
 	
 	getFooter(node) {
 		return null;
@@ -40,6 +37,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

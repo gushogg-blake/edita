@@ -1,7 +1,7 @@
-let lang = {
-	group: "html", // to get snippets
-	code: "markdown_inline",
-	name: "markdown_inline (sub-parser for markdown)",
+export default class extends Lang {
+	group = "html"; // to get snippets
+	code = "markdown_inline";
+	name = "markdown_inline (sub-parser for markdown)";
 	util: true,
 	
 	injections: [
@@ -57,6 +57,4 @@ let lang = {
 	getSupportLevel(code, path) {
 		return null;
 	},
-};
-
-export default lang;
+}

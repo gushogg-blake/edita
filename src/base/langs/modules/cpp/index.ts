@@ -1,18 +1,15 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
 let loggedTypes = [];
 
 let wordRe = /\w/;
 
-let lang = {
-	group: "c",
-	code: "cpp",
-	name: "C++",
-	defaultExtension: "cpp",
-	astMode,
-	codeIntel,
-	injections: [],
+export default class extends Lang {
+	group = "c";
+	code = "cpp";
+	name = "C++";
+	defaultExtension = "cpp";
+	injections = [];
 	
 	init(env) {
 		env = {...env, lang: this};
@@ -127,6 +124,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

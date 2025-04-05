@@ -1,14 +1,11 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
-let lang = {
-	group: "css",
-	code: "css",
-	name: "CSS",
-	defaultExtension: "css",
-	astMode,
-	codeIntel,
-	injections: [],
+export default class extends Lang {
+	group = "css";
+	code = "css";
+	name = "CSS";
+	defaultExtension = "css";
+	injections = [];
 	
 	isBlock(node) {
 		return node.start.lineIndex !== node.end.lineIndex && [
@@ -132,6 +129,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang
+}

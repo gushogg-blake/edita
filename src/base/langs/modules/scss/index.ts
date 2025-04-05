@@ -1,14 +1,11 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
-let lang = {
-	group: "css",
-	code: "scss",
-	name: "SCSS",
-	defaultExtension: "scss",
-	astMode,
-	codeIntel,
-	injections: [],
+export default class extends Lang {
+	group = "css";
+	code = "scss";
+	name = "SCSS";
+	defaultExtension = "scss";
+	injections = [];
 	
 	init(env) {
 		
@@ -131,6 +128,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang
+}

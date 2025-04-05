@@ -1,5 +1,4 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
 let wordRe = /\w/;
 
@@ -92,14 +91,12 @@ let keywords = new Set([
 	"type",
 ]);
 
-let lang = {
-	group: "vala",
-	code: "vala",
-	name: "Vala",
-	defaultExtension: "vala",
-	astMode,
-	codeIntel,
-	injections: [],
+export default class extends Lang {
+	group = "vala";
+	code = "vala";
+	name = "Vala";
+	defaultExtension = "vala";
+	injections = [];
 	
 	init(env) {
 		env = {...env, lang: this};
@@ -267,6 +264,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

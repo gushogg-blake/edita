@@ -1,13 +1,10 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
-let lang = {
-	group: "html",
-	code: "html",
-	name: "HTML",
-	defaultExtension: "html",
-	astMode,
-	codeIntel,
+export default class extends Lang {
+	group = "html";
+	code = "html";
+	name = "HTML";
+	defaultExtension = "html";
 	possibleInjections: ["javascript", "typescript", "css", "scss", "sass"],
 	
 	injections: [
@@ -164,6 +161,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

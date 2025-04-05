@@ -1,7 +1,7 @@
-let lang = {
-	code: "codepatterns",
-	name: "CodePatterns Query",
-	defaultExtension: "cp",
+export default class extends Lang {
+	code = "codepatterns";
+	name = "CodePatterns Query";
+	defaultExtension = "cp";
 	reparseOnEdit: true, // HACK
 	possibleInjections: ["tsq"],
 	
@@ -79,6 +79,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

@@ -1,5 +1,4 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
 let wordRe = /\w/;
 
@@ -9,14 +8,12 @@ let keywords = new Set([
 	//"generator",
 ]);
 
-let lang = {
-	group: "prisma",
-	code: "prisma",
-	name: "Prisma",
-	defaultExtension: "prisma",
-	astMode,
-	codeIntel,
-	injections: [],
+export default class extends Lang {
+	group = "prisma";
+	code = "prisma";
+	name = "Prisma";
+	defaultExtension = "prisma";
+	injections = [];
 	
 	init(env) {
 		env = {...env, lang: this};
@@ -198,6 +195,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

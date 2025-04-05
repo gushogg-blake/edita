@@ -1,15 +1,12 @@
-import astMode from "./astMode";
-import codeIntel from "./codeIntel";
+import {Lang} from "core";
 
 let wordRe = /\w/;
 
-let lang = {
-	code: "python",
-	name: "Python",
-	defaultExtension: "py",
-	astMode,
-	codeIntel,
-	injections: [],
+export default class extends Lang {
+	code = "python";
+	name = "Python";
+	defaultExtension = "py";
+	injections = [];
 	
 	isBlock(node) {
 		return node.start.lineIndex !== node.end.lineIndex && [
@@ -99,6 +96,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}

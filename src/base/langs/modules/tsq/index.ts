@@ -1,8 +1,8 @@
-let lang = {
-	group: "lisp",
-	code: "tsq",
-	name: "Tree-sitter Query",
-	defaultExtension: "tsq",
+export default class extends Lang {
+	group = "lisp";
+	code = "tsq";
+	name = "Tree-sitter Query";
+	defaultExtension = "tsq";
 	
 	getFooter(node) {
 		return null;
@@ -60,6 +60,4 @@ let lang = {
 		
 		return null;
 	},
-};
-
-export default lang;
+}
