@@ -55,7 +55,7 @@ export type PickOption = {
 	type: string;
 	label: string;
 	isAvailable: (document: Document, lineIndex: number) => boolean;
-	getSelection: (document: Document, lineIndex: number) => Selection;
+	getSelection: (document: Document, lineIndex: number) => AstSelection;
 };
 
 export function astManipulationIsAvailable(
