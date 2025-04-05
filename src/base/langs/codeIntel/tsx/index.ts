@@ -1,11 +1,9 @@
 let lang;
 
 export default {
-	,
-	
 	indentOnNewline(document, line, cursor) {
 		return line.string.substr(0, cursor.offset).match(/[\[{(]$/);
-	},
+	}
 	
 	indentAdjustmentAfterInsertion(document, line, cursor) {
 		let nodes = document.getNodesOnLine(cursor.lineIndex, lang);
@@ -27,9 +25,9 @@ export default {
 		}
 		
 		return 0;
-	},
+	}
 	
 	async isProjectRoot(dir) {
 		return (await platform.fs(dir).readdir()).includes("package.json");
-	},
+	}
 }
