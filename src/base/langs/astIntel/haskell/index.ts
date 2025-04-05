@@ -1,186 +1,39 @@
-import {Lang} from "core";
+import {isHeader, isFooter} from "modules/astCommon/utils";
+import pickOptions from "./pickOptions";
+import dropTargets from "./dropTargets";
+import astManipulations from "./astManipulations";
 
-let wordRe = /\w/;
-
-let keywords = new Set([
-	"as",
-	"case",
-	"of",
-	"class",
-	"data",
-	"family",
-	"instance",
-	"default",
-	"deriving",
-	"do",
-	"forall",
-	"foreign",
-	"hiding",
-	"if",
-	"then",
-	"else",
-	"import",
-	"infix",
-	"infixl",
-	"infixr",
-	"let",
-	"in",
-	"mdo",
-	"module",
-	"newtype",
-	"proc",
-	"qualified",
-	"rec",
-	"type",
-	"where",
-]);
-
-export default class extends Lang {
-	group = "haskell";
-	code = "haskell";
-	name = "Haskell";
-	defaultExtension = "hs";
-	injections = [];
+export default {
+	,
 	
-	isBlock(node) {
-		return node.isMultiline() && [
-			
-		].includes(node.type);
-	}
+	pickOptions,
+	dropTargets,
+	astManipulations,
 	
-	getFooter(node) {
-		let {parent} = node;
+	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines, insertIndentLevel) {
+		let spaceBlocks = base.getPref("verticalSpacing.spaceBlocks");
 		
-		if (
-			parent
-			&& this.isBlock(parent)
-			&& node.equals(parent.firstChild)
-			&& parent.lastChild.end.lineIndex > node.end.lineIndex
-		) {
-			return parent.lastChild;
-		}
-		
-		return null;
-	}
-	
-	getHeader(node) {
-		let {parent} = node;
-		
-		if (
-			parent
-			&& this.isBlock(parent)
-			&& node.equals(parent.lastChild)
-			&& parent.firstChild.start.lineIndex < node.start.lineIndex
-		) {
-			return parent.firstChild;
-		}
-		
-		return null;
-	}
-	
-	getOpenerAndCloser(node) {
-		if ([
-			
-		].includes(node.type)) {
+		if (!spaceBlocks) {
 			return {
-				opener: node.firstChild,
-				closer: node.lastChild,
+				above: 0,
+				below: 0,
 			};
 		}
 		
-		return null;
-	}
-	
-	getHiliteClass(node) {
-		let {type, parent, text} = node;
+		let insertLineIndex = toSelection.startLineIndex;
 		
-		if ([
-			"string",
-			"regex",
-		].includes(parent?.type)) {
-			return null;
-		}
+		let lineAbove = insertLineIndex > 0 ? document.lines[insertLineIndex - 1] : null;
+		let lineBelow = insertLineIndex < document.lines.length ? document.lines[insertLineIndex] : null;
 		
-		if (
-			[
-				"identifier",
-				"property_identifier",
-				"shorthand_property_identifier",
-				"shorthand_property_identifier_pattern",
-				"statement_identifier",
-				"type_identifier",
-				"predefined_type",
-			].includes(type)
-			&& !(
-				parent?.parent?.type === "type"
-				&& keywords.has(text)
-			)
-		) {
-			return "id";
-		}
+		let isBlock = isHeader(document, fromSelection.startLineIndex);
+		let isBelowSibling = lineAbove?.indentLevel === insertIndentLevel && lineAbove.trimmed.length > 0;
+		let isAboveSibling = lineBelow?.indentLevel === insertIndentLevel && lineBelow.trimmed.length > 0;
+		let isBelowBlock = lineAbove && isFooter(document, insertLineIndex - 1) && !isHeader(document, insertLineIndex - 1);
+		let isAboveBlock = lineBelow && isHeader(document, insertLineIndex) && !isFooter(document, insertLineIndex);
 		
-		if (type === "comment") {
-			return "comment";
-		}
-		
-		if (["string", "template_string", "`", "escape_sequence"].includes(type)) {
-			return "string";
-		}
-		
-		if (["integer", "real", "arithmetic_negation_expression"].includes(type)) {
-			return "number";
-		}
-		
-		if (type === "regex") {
-			return "regex";
-		}
-		
-		if ("(){}[]".includes(type) || type === "${") {
-			return "bracket";
-		}
-		
-		if (type[0].match(wordRe)) {
-			if (keywords.has(type) || keywords.has(text)) {
-				return "keyword";
-			} else {
-				return "id";
-			}
-		}
-		
-		return "symbol";
-	}
-	
-	commentLines(document, startLineIndex, endLineIndex) {
-		let lines = document.lines.slice(startLineIndex, endLineIndex);
-		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
-		let minIndent = document.format.indentation.string.repeat(minIndentLevel);
-		
-		return lines.map(function(line) {
-			return line.string.replace(new RegExp("^" + minIndent), minIndent + "//");
-		}).join(document.format.newline);
-	}
-	
-	uncommentLines(document, startLineIndex, endLineIndex) {
-		let lines = document.lines.slice(startLineIndex, endLineIndex);
-		
-		return lines.map(function(line) {
-			return line.string.replace(/^(\s*)(\/\/)?/, "$1");
-		}).join(document.format.newline);
-	}
-	
-	getSupportLevel(code, path) {
-		if (!path) {
-			return null; //
-		}
-		
-		let type = platform.fs(path).lastType;
-		
-		if ([
-			"hs",
-		].includes(type)) {
-			return "general";
-		}
-		
-		return null;
-	}
-}
+		return {
+			above: isBelowBlock || isBlock && isBelowSibling ? 1 : 0,
+			below: isAboveBlock || isBlock && isAboveSibling ? 1 : 0,
+		};
+	},
+};
