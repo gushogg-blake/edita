@@ -1,11 +1,12 @@
 import {c} from "core";
-import type {Cursor, Selection, Document} from "core";
+import type {Cursor, Selection, Document, Lang} from "core";
+import type {AppliedEdit} from "core/Document";
 import Scope from "./Scope";
 import Range from "./Range";
 
 export default class {
-	document: Document;
 	rootScope: Scope;
+	private document: Document;
 	
 	constructor(document: Document) {
 		this.document = document;
@@ -31,19 +32,19 @@ export default class {
 		this.rootScope = new Scope(this, null, this.lang, [this.getContainingRange()]);
 	}
 	
-	edit(edit, index: number): void {
-		this.rootScope.edit(edit, index, [this.getContainingRange()]);
+	edit(appliedEdit: AppliedEdit): void {
+		this.rootScope.edit(appliedEdit, [this.getContainingRange()]);
 	}
 	
 	getVisibleScopes(selection: Selection): Scope[] {
 		return this.rootScope.getVisibleScopes(selection);
 	}
 	
-	generateNodesStartingOnLine(lineIndex, lang = null) {
+	generateNodesStartingOnLine(lineIndex: number, lang: Lang = null) {
 		return this.rootScope.generateNodesStartingOnLine(lineIndex, lang);
 	}
 	
-	getNodeAtCursor(cursor) {
+	getNodeAtCursor(cursor: Cursor): Node | null {
 		let range = this.rangeFromCharCursor(cursor);
 		
 		if (range) {
@@ -53,11 +54,11 @@ export default class {
 		}
 	}
 	
-	getContainingRange() {
+	getContainingRange(): Range {
 		return new Range(0, this.string.length, this.document.selectAll());
 	}
 	
-	indexFromCursor(cursor) {
+	indexFromCursor(cursor: Cursor): number {
 		let {lineIndex, offset} = cursor;
 		let index = 0;
 		
@@ -70,7 +71,7 @@ export default class {
 		return index;
 	}
 	
-	cursorFromIndex(index) {
+	cursorFromIndex(index: number): Cursor {
 		let lineIndex = 0;
 		
 		for (let line of this.lines) {
@@ -83,7 +84,7 @@ export default class {
 		}
 	}
 	
-	_rangeFromCursor(cursor, _char, scope=this.rootScope) {
+	_rangeFromCursor(cursor: Cursor, _char: boolean, scope: Scope = this.rootScope): Range | null {
 		let range = _char ? scope.rangeFromCharCursor(cursor) : scope.rangeFromCursor(cursor);
 		
 		if (!range) {
@@ -101,19 +102,19 @@ export default class {
 		return range;
 	}
 	
-	rangeFromCursor(cursor) {
+	rangeFromCursor(cursor: Cursor): Range | null {
 		return this._rangeFromCursor(cursor, false);
 	}
 	
-	rangeFromCharCursor(cursor) {
+	rangeFromCharCursor(cursor: Cursor): Range | null {
 		return this._rangeFromCursor(cursor, true);
 	}
 	
-	langFromCursor(cursor) {
-		return this.rangeFromCursor(cursor).lang;
+	langFromCursor(cursor: Cursor): Lang | null {
+		return this.rangeFromCursor(cursor)?.lang || null;
 	}
 	
-	get scopes() {
+	get scopes(): Scope[] {
 		return [this.rootScope, ...this.rootScope.allScopes()];
 	}
 }

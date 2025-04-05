@@ -23,6 +23,17 @@ import EditorApi from "./EditorApi";
 
 export type EditorMode = "normal" | "ast";
 
+export type ActiveCompletions = {
+	completions: any[], // TYPE LSP
+	selectedCompletion: any; // ^
+	cursor: Cursor;
+};
+
+type Action = {
+	edits: Edit[];
+	newSelection: Selection;
+};
+
 type EditorHistoryEntry = {
 	before: {
 		normalSelection?: Selection;
@@ -66,6 +77,7 @@ class Editor extends Evented<{
 	private modeSwitchKey: ReturnType<modeSwitchKey>;
 	private astMode: AstMode;
 	private wordCompletion: WordCompletion;
+	private completions: ActiveCompletions | null = null;
 	
 	private historyEntries = new WeakMap<HistoryEntry, EditorHistoryEntry>();
 	private pendingHistoryEntry?: EditorHistoryEntry;
@@ -270,11 +282,9 @@ class Editor extends Evented<{
 	
 	acceptSelectedCompletion() {
 		//let {
-		//	edit,
+		//	edits,
 		//	newSelection,
-		//} = this.document.replaceSelection(selection, nextWord);
-		//
-		//let edits = [edit];
+		//} = this.replaceSelection(selection, nextWord);
 		//
 		//this.applyAndAddHistoryEntry({
 		//	edits,
@@ -322,6 +332,45 @@ class Editor extends Evented<{
 	
 	onDocumentSave(): void {
 		this.clearBatchState();
+	}
+	
+	replaceSelection(selection: Selection, string: string): Action {
+		let edit = this.document.edit(selection, string);
+		let newSelection = s(edit.newSelection.end);
+		
+		return {
+			edits: [edit],
+			newSelection,
+		};
+	}
+	
+	insert(selection: Selection, ch: string): Action {
+		return this.replaceSelection(selection, ch);
+	}
+	
+	move(fromSelection: Selection, toCursor: Cursor): Action {
+		let {document} = this;
+		
+		let str = document.getSelectedText(fromSelection);
+		let remove = document.edit(fromSelection, "");
+		let insert = document.edit(s(toCursor), str);
+		
+		let newSelection = document.getSelectionContainingString(toCursor, str);
+		
+		newSelection = newSelection.subtractEarlierSelection(fromSelection);
+		
+		let edits;
+		
+		if (toCursor.isBefore(fromSelection.start)) {
+			edits = [remove, insert];
+		} else {
+			edits = [insert, remove];
+		}
+		
+		return {
+			edits,
+			newSelection,
+		};
 	}
 	
 	/*
@@ -672,12 +721,12 @@ class Editor extends Evented<{
 		}
 		
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = document.replaceSelection(normalSelection, str);
+		} = this.replaceSelection(normalSelection, str);
 		
 		this.applyAndAddHistoryEntry({
-			edits: [edit],
+			edits,
 			normalSelection: newSelection,
 		});
 	}
@@ -722,12 +771,12 @@ class Editor extends Evented<{
 	
 	setValue(value) {
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = this.document.replaceSelection(this.view.Selection.all(), value);
+		} = this.replaceSelection(this.view.Selection.all(), value);
 		
 		this.applyAndAddHistoryEntry({
-			edits: [edit],
+			edits,
 			normalSelection: s(newSelection.end),
 		});
 	}

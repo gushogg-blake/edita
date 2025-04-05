@@ -9,7 +9,7 @@ import {
 import mapArrayToObject from "utils/mapArrayToObject";
 import {Cursor, c} from "core";
 import type {Lang, Range} from "core";
-//import type {Edit} from "core/Document";
+import type {AppliedEdit} from "core/Document";
 import Node from "./Node";
 import find from "./find";
 
@@ -46,13 +46,9 @@ export default class Tree {
 		return wrap(this.lang, treeSitterNode);
 	}
 	
-	edit(edit, index: number) {
-		let {
-			selection,
-			newSelection,
-			string,
-			replaceWith,
-		} = edit;
+	edit(appliedEdit: AppliedEdit): void {
+		let {edit, index} = appliedEdit;
+		let {selection, newSelection, string, replaceWith} = edit;
 		
 		this._tree.edit({
 			startPosition: cursorToTreeSitterPoint(selection.start),

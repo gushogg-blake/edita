@@ -1,6 +1,7 @@
 import _typeof from "utils/typeof";
 import {groupBy, removeInPlace, mapArrayToObject} from "utils";
 import {Selection, s, Tree, Lang, type Node} from "core";
+import type {AppliedEdit} from "core/Document";
 import type Source from "./Source";
 import Range from "./Range";
 
@@ -88,7 +89,7 @@ export default class Scope {
 		}
 	}
 	
-	edit(edit, index, newRanges) {
+	edit(appliedEdit: AppliedEdit, newRanges: Range[]): void {
 		this.setRanges(newRanges);
 		
 		if (!this.tree) {
@@ -98,7 +99,7 @@ export default class Scope {
 		}
 		
 		try {
-			this.tree.edit(edit, index);
+			this.tree.edit(appliedEdit);
 		} catch (e) {
 			console.log("Tree edit error");
 			console.error(e);
@@ -163,7 +164,7 @@ export default class Scope {
 				return true;
 			});
 		}, function(existingScope, ranges) {
-			existingScope.edit(edit, index, ranges);
+			existingScope.edit(appliedEdit, ranges);
 			
 			removeInPlace(existingScopes, existingScope);
 		});

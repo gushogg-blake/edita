@@ -45,14 +45,14 @@ export default {
 		let str = await platform.clipboard.readSelection();
 		
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = this.document.replaceSelection(s(cursor), str);
+		} = this.replaceSelection(s(cursor), str);
 		
 		let {view} = this;
 		
 		this.applyAndAddHistoryEntry({
-			edits: [edit],
+			edits,
 			normalSelection: newSelection,
 		});
 		
@@ -80,11 +80,10 @@ export default {
 			({
 				edits,
 				newSelection,
-			} = document.move(selection, cursor));
+			} = this.move(selection, cursor));
 		} else {
-			let edit = document.replaceSelection(s(cursor), str);
+			edits = this.replaceSelection(s(cursor), str).edits;
 			
-			edits = [edit.edit];
 			newSelection = document.getSelectionContainingString(cursor, str);
 		}
 		

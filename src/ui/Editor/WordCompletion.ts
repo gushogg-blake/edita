@@ -110,14 +110,11 @@ class WordCompletion {
 	
 	applyCompletion(selection: Selection, word: string) {
 		let {editor} = this;
-		let {document} = editor;
 		
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = document.replaceSelection(selection, word);
-		
-		let edits = [edit];
+		} = editor.replaceSelection(selection, word);
 		
 		editor.applyAndAddHistoryEntry({
 			edits,

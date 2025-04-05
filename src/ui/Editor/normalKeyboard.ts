@@ -131,11 +131,9 @@ export default {
 		}
 		
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = document.replaceSelection(selection, newline + indent);
-		
-		let edits = [edit];
+		} = this.replaceSelection(selection, newline + indent);
 		
 		this.applyAndAddHistoryEntry({
 			edits,
@@ -162,10 +160,8 @@ export default {
 		let indent = indentation.string.repeat(indentLevel);
 		
 		let {
-			edit,
-		} = document.replaceSelection(selection, indent + newline);
-		
-		let edits = [edit];
+			edits,
+		} = this.replaceSelection(selection, indent + newline);
 		
 		this.applyAndAddHistoryEntry({
 			edits,
@@ -188,10 +184,8 @@ export default {
 		let indent = indentation.string.repeat(line.indentLevel);
 		
 		let {
-			edit,
-		} = document.replaceSelection(selection, newline + indent);
-		
-		let edits = [edit];
+			edits,
+		} = this.replaceSelection(selection, newline + indent);
 		
 		this.applyAndAddHistoryEntry({
 			edits,
@@ -211,14 +205,14 @@ export default {
 		
 		let newBatchState = isFull || offset === 0 ? null : "backspace";
 		
-		let edit;
+		let edits;
 		let newSelection;
 		
 		if (isFull) {
 			({
-				edit,
+				edits,
 				newSelection,
-			} = this.document.replaceSelection(selection, ""));
+			} = this.replaceSelection(selection, ""));
 		} else {
 			if (lineIndex === 0 && offset === 0) {
 				return;
@@ -232,11 +226,9 @@ export default {
 				end = c(lineIndex, offset - 1);
 			}
 			
-			edit = this.document.edit(s(start, end), ""),
+			edits = [this.document.edit(s(start, end), "")],
 			newSelection = s(end);
 		}
-		
-		let edits = [edit];
 		
 		let apply = {
 			edits,
@@ -255,6 +247,7 @@ export default {
 	},
 	
 	delete() {
+		let {document} = this;
 		let selection = this.normalSelection.sort();
 		let {start} = selection;
 		let {lineIndex, offset} = start;
@@ -266,18 +259,18 @@ export default {
 			: "delete"
 		);
 		
-		let edit;
+		let edits;
 		let newSelection;
 		
 		if (isFull) {
 			({
-				edit,
+				edits,
 				newSelection,
-			} = this.document.replaceSelection(selection, ""));
+			} = this.replaceSelection(selection, ""));
 		} else {
-			let line = this.document.lines[lineIndex];
+			let line = document.lines[lineIndex];
 			
-			if (lineIndex === this.document.lines.length - 1 && offset === line.string.length) {
+			if (lineIndex === document.lines.length - 1 && offset === line.string.length) {
 				return;
 			}
 				
@@ -289,11 +282,9 @@ export default {
 				end = c(lineIndex, offset + 1);
 			}
 			
-			edit = this.document.edit(s(start, end), ""),
+			edits = [document.edit(s(start, end), "")];
 			newSelection = s(start);
 		}
-		
-		let edits = [edit];
 		
 		let apply = {
 			edits,
@@ -316,11 +307,9 @@ export default {
 		let selection = isFull ? this.normalSelection : this.view.Selection.expandOrContractWordLeft();
 		
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = this.document.replaceSelection(selection, "");
-		
-		let edits = [edit];
+		} = this.replaceSelection(selection, "");
 		
 		this.applyAndAddHistoryEntry({
 			edits,
@@ -337,11 +326,9 @@ export default {
 		let selection = isFull ? this.normalSelection : this.view.Selection.expandOrContractWordRight();
 		
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = this.document.replaceSelection(selection, "");
-		
-		let edits = [edit];
+		} = this.replaceSelection(selection, "");
 		
 		this.applyAndAddHistoryEntry({
 			edits,
@@ -445,11 +432,9 @@ export default {
 		platform.clipboard.write(str);
 		
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = this.document.replaceSelection(this.view.normalSelection, "");
-		
-		let edits = [edit];
+		} = this.replaceSelection(this.view.normalSelection, "");
 		
 		this.applyAndAddHistoryEntry({
 			edits,
@@ -487,11 +472,9 @@ export default {
 		let str = normaliseNewlines(await platform.clipboard.read(), this.document.format.newline);
 		
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = this.document.replaceSelection(this.view.normalSelection, str);
-		
-		let edits = [edit];
+		} = this.replaceSelection(this.view.normalSelection, str);
 		
 		this.applyAndAddHistoryEntry({
 			edits,
@@ -524,11 +507,9 @@ export default {
 		let {lineIndex} = selection.left;
 		
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = document.insert(selection, key);
-		
-		let edits = [edit];
+		} = this.insert(selection, key);
 		
 		let apply = {
 			edits,
@@ -554,11 +535,11 @@ export default {
 			let newIndentStr = indentStr.repeat(newIndentLevel);
 			
 			let {
-				edit,
-			} = document.replaceSelection(s(c(lineIndex, 0), c(lineIndex, oldIndentStr.length)), newIndentStr);
+				edits,
+			} = this.replaceSelection(s(c(lineIndex, 0), c(lineIndex, oldIndentStr.length)), newIndentStr);
 			
 			let apply = {
-				edits: [edit],
+				edits,
 				normalSelection: s(c(newSelection.start.lineIndex, newSelection.start.offset + (newIndentStr.length - oldIndentStr.length))),
 			};
 			

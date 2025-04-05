@@ -19,10 +19,16 @@ export type DocumentOptions = {
 	noParse: boolean;
 };
 
-type LineDiff = {
+export type LineDiff = {
 	startLineIndex: number;
 	invalidCount: number;
 	newLines: Line[];
+};
+
+export type AppliedEdit = {
+	edit: Edit;
+	index: number;
+	lineDiff: LineDiff;
 };
 
 export type WordAtCursor = {
@@ -31,10 +37,7 @@ export type WordAtCursor = {
 };
 
 export default class Document extends Evented<{
-	edit: {
-		edits: Edit[];
-		lineDiffs: LineDiff[];
-	};
+	edit: AppliedEdit[];
 	undo: HistoryEntry;
 	redo: HistoryEntry;
 	save: void;
@@ -109,7 +112,7 @@ export default class Document extends Evented<{
 		return this.source.scopes;
 	}
 	
-	getLines(string, prevLine=null) {
+	getLines(string: string, prevLine?: LineIndex) {
 		let lines = [];
 		
 		let {format} = this;
@@ -128,11 +131,17 @@ export default class Document extends Evented<{
 		return lines;
 	}
 	
-	createLines() {
+	createLines(): void {
 		this.lines = this.getLines(this.string);
 	}
 	
-	updateLines(startLineIndex, invalidCount, newLines, lineIndexDiff, startIndexDiff) {
+	updateLines(
+		startLineIndex: number,
+		invalidCount: number,
+		newLines: Line[],
+		lineIndexDiff: number,
+		startIndexDiff: number,
+	): void {
 		this.lines.splice(startLineIndex, invalidCount, ...newLines);
 		
 		for (let i = startLineIndex + 1; i < this.lines.length; i++) {
@@ -169,7 +178,7 @@ export default class Document extends Evented<{
 		);
 	}
 	
-	lineEdit(lineIndex, removeLinesCount, insertLines) {
+	lineEdit(lineIndex: number, removeLinesCount: number, insertLines: string[]): Edit {
 		let {newline} = this.format;
 		
 		let endLineIndex = lineIndex + removeLinesCount;
@@ -205,13 +214,19 @@ export default class Document extends Evented<{
 		return this.edit(s(start, end), insertString);
 	}
 	
-	astEdit(astSelection, insertLines) {
+	astEdit(astSelection: AstSelection, insertLines: string[]): Edit {
 		let {startLineIndex, endLineIndex} = astSelection;
 		
 		return this.lineEdit(startLineIndex, endLineIndex - startLineIndex, insertLines);
 	}
 	
-	private _apply(edit: Edit): {index: number, lineDiff: LineDiff} {
+	/*
+	apply edit but don't tell Source yet -- we may want to do a bunch of
+	edits, in which case it's more efficient to wait until the end and
+	tell Source to do a full re-parse.
+	*/
+	
+	private _apply(edit: Edit): AppliedEdit {
 		let {selection, string, replaceWith} = edit;
 		let index = this.indexFromCursor(selection.left);
 		
@@ -229,50 +244,39 @@ export default class Document extends Evented<{
 		this.updateLines(startLineIndex, invalidCount, newLines, lineIndexDiff, startIndexDiff);
 		
 		return {
+			edit,
 			index,
 			lineDiff: {startLineIndex, invalidCount, newLines},
 		};
 	}
 	
-	private applyEdit(edit) {
-		let {index, lineDiff} = this._apply(edit);
+	private applyEdit(edit: Edit): void {
+		let appliedEdit = this._apply(edit);
 		
-		this.source.edit(edit, index);
+		this.source.edit(appliedEdit);
 		
 		this.modified = true;
 		
-		this.fire("edit", {
-			edits: [edit],
-			lineDiffs: [lineDiff],
-		});
+		this.fire("edit", [appliedEdit]);
 	}
 	
-	private applyEdits(edits) {
+	private applyEdits(edits: Edit[]): void {
 		if (edits.length <= Document.maxEditsToApplyIndividually) {
 			for (let edit of edits) {
 				this.applyEdit(edit);
 			}
 		} else {
-			let lineDiffs = [];
-			
-			for (let edit of edits) {
-				let {lineDiff} = this._apply(edit);
-				
-				lineDiffs.push(lineDiff);
-			}
+			let appliedEdits = edits.map(edit => this._apply(edit));
 			
 			this.source.parse();
 			
 			this.modified = true;
 			
-			this.fire("edit", {
-				edits,
-				lineDiffs,
-			});
+			this.fire("edit", appliedEdits);
 		}
 	}
 	
-	applyAndAddHistoryEntry(edits: Edit[]) {
+	applyAndAddHistoryEntry(edits: Edit[]): HistoryEntry {
 		this.applyEdits(edits);
 		
 		let entry = new HistoryEntry(edits);
@@ -289,7 +293,7 @@ export default class Document extends Evented<{
 		return entry;
 	}
 	
-	applyAndMergeWithLastHistoryEntry(edits: Edit[]) {
+	applyAndMergeWithLastHistoryEntry(edits: Edit[]): HistoryEntry {
 		this.applyEdits(edits);
 		
 		let entry = this.history.at(-1);
@@ -335,43 +339,6 @@ export default class Document extends Evented<{
 		this.fire("redo", entry);
 		
 		return entry;
-	}
-	
-	replaceSelection(selection: Selection, string: string) {
-		let edit = this.edit(selection, string);
-		let newSelection = s(edit.newSelection.end);
-		
-		return {
-			edit,
-			newSelection,
-		};
-	}
-	
-	insert(selection: Selection, ch: string) {
-		return this.replaceSelection(selection, ch);
-	}
-	
-	move(fromSelection: Selection, toCursor: Cursor) {
-		let str = this.getSelectedText(fromSelection);
-		let remove = this.edit(fromSelection, "");
-		let insert = this.edit(s(toCursor), str);
-		
-		let newSelection = this.getSelectionContainingString(toCursor, str);
-		
-		newSelection = newSelection.subtractEarlierSelection(fromSelection);
-		
-		let edits;
-		
-		if (toCursor.isBefore(fromSelection.start)) {
-			edits = [remove, insert];
-		} else {
-			edits = [insert, remove];
-		}
-		
-		return {
-			edits,
-			newSelection,
-		};
 	}
 	
 	indexFromCursor(cursor) {

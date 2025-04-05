@@ -118,15 +118,13 @@ export default class EditorApi {
 		return results;
 	}
 	
-	edit(selection: Selection, replaceWith: string) {
-		let {editor, document, view} = this;
+	edit(selection: Selection, replaceWith: string): void {
+		let {editor, view} = this;
 		
 		let {
-			edit,
+			edits,
 			newSelection,
-		} = document.replaceSelection(selection, replaceWith);
-		
-		let edits = [edit];
+		} = editor.replaceSelection(selection, replaceWith);
 		
 		editor.applyAndAddHistoryEntry({
 			edits,
@@ -134,7 +132,7 @@ export default class EditorApi {
 			snippetSession: editor.adjustSnippetSession(edits),
 		});
 		
-		view.ensureScrollIsWithinBounds();
+		view.ensureScrollIsWithinBounds(); // MIGRATE view should probs do this itself
 	}
 	
 	setNormalHilites(selections: Selection[], clearAfterMs: number = null) {

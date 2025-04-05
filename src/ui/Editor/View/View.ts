@@ -2,10 +2,11 @@ import {Evented, mapArrayToObject} from "utils";
 import bindFunctions from "utils/bindFunctions";
 import {Selection, s, Cursor, c, AstSelection, a} from "core";
 import type {Document} from "core";
+import type {AppliedEdit} from "core/Document";
 import astCommon from "modules/astCommon";
 import type {PickOption, DropTarget} from "modules/astCommon";
 
-import type {EditorMode} from "ui/Editor";
+import type {EditorMode, ActiveCompletions} from "ui/Editor";
 
 import SelectionUtils from "./utils/Selection";
 import AstSelectionUtils from "./utils/AstSelection";
@@ -16,6 +17,12 @@ import ViewLine from "./ViewLine";
 
 type SetNormalSelectionOptions = {
 	updateAstSelection: boolean;
+};
+
+type ViewLineDiff = {
+	startLineIndex: number;
+	invalidCount: number;
+	newViewLines: ViewLine[];
 };
 
 export default class View extends Evented<{
@@ -51,8 +58,8 @@ export default class View extends Evented<{
 	
 	mode: EditorMode = "normal";
 	
-	Selection: any; // TYPE -- convert to class
-	AstSelection: any; // ^
+	Selection: typeof SelectionUtils;
+	AstSelection: typeof AstSelectionUtils;
 	
 	// for remembering the "intended" col when moving a cursor up/down to a line
 	// that doesn't have as many cols as the cursor
@@ -65,7 +72,7 @@ export default class View extends Evented<{
 	private astSelectionHilite: AstSelection | null = null;
 	private astInsertionHilite: AstSelection | null = null; // TODO not 100% sure what this is
 	
-	private completions: any[] = null; // TYPE
+	private completions: ActiveCompletions | null = null;
 	
 	// TYPE not clear what this is but it's a map of header line index to footer line index
 	// might be better as a map, and possibly with explicit types for the numbers -- not
@@ -126,9 +133,9 @@ export default class View extends Evented<{
 		];
 	}
 	
-	onDocumentEdit({edits, lineDiffs}) {
-		for (let {startLineIndex, invalidCount, newLines} of lineDiffs) {
-			this.updateViewLines(startLineIndex, invalidCount, newLines);
+	onDocumentEdit(appliedEdits) {
+		for (let {lineDiff} of appliedEdits) {
+			this.updateViewLines(lineDiff);
 		}
 		
 		//this.validateSelection();
@@ -137,7 +144,7 @@ export default class View extends Evented<{
 		
 		this.updateMarginSize();
 		
-		this.adjustHilitesAndFolds(edits);
+		this.adjustHilitesAndFolds(appliedEdits);
 		
 		this.scheduleRedraw();
 	}
@@ -152,27 +159,29 @@ export default class View extends Evented<{
 		return this.document.lines;
 	}
 	
-	getViewLines(lines) {
+	getViewLines(lines: Line[]): ViewLine[] {
 		return lines.map((line) => {
 			return new ViewLine(line, this.document.format);
 		});
 	}
 	
-	createViewLines() {
+	createViewLines(): void {
 		this.viewLines = this.getViewLines(this.lines);
 		
 		this.createWrappedLines();
 	}
 	
-	updateViewLines(startLineIndex, invalidCount, newLines) {
+	updateViewLines(lineDiff: LineDiff): void {
+		let {startLineIndex, invalidCount, newLines} = lineDiff;
+		
 		let newViewLines = this.getViewLines(newLines);
 		
 		this.viewLines.splice(startLineIndex, invalidCount, ...newViewLines);
 		
-		this.updateWrappedLines(startLineIndex, invalidCount, newViewLines);
+		this.updateWrappedLines({startLineIndex, invalidCount, newViewLines});
 	}
 	
-	getWrappedLines(viewLines) {
+	getWrappedLines(viewLines: ViewLine[]): WrappedLine[] {
 		return viewLines.map((viewLine, lineIndex) => {
 			return wrapLine(
 				this.wrap,
@@ -191,7 +200,9 @@ export default class View extends Evented<{
 		this.scheduleRedraw();
 	}
 	
-	updateWrappedLines(startLineIndex, invalidCount, newViewLines): void {
+	updateWrappedLines(viewLineDiff: ViewLineDiff): void {
+		let {startLineIndex, invalidCount, newViewLines} = viewLineDiff;
+		
 		let newWrappedLines = this.getWrappedLines(newViewLines);
 		
 		this.wrappedLines.splice(startLineIndex, invalidCount, ...newWrappedLines);
@@ -671,14 +682,14 @@ export default class View extends Evented<{
 		return this.mode === "ast" ? this.Selection.fromAstSelection(this.normalSelection) : this.normalSelection.sort();
 	}
 	
-	adjustHilitesAndFolds(edits) {
-		for (let edit of edits) {
+	adjustHilitesAndFolds(appliedEdits: AppliedEdit[]): void {
+		for (let {edit} of appliedEdits) {
 			this.adjustHilitesForEdit(edit);
 			this.adjustFoldsForEdit(edit);
 		}
 	}
 	
-	adjustHilitesForEdit(edit) {
+	adjustHilitesForEdit(edit: Edit): void {
 		this.setNormalHilites(this.normalHilites.map(function(hilite) {
 			if (hilite.overlaps(edit.selection)) {
 				return null;
@@ -715,7 +726,7 @@ export default class View extends Evented<{
 		this.scheduleRedraw();
 	}
 	
-	adjustFoldsForEdit(edit) {
+	adjustFoldsForEdit(edit: Edit): void {
 		let {selection, newSelection} = edit;
 		let origEndLineIndex = selection.end.lineIndex;
 		let newEndLineIndex = newSelection.end.lineIndex;
@@ -733,13 +744,13 @@ export default class View extends Evented<{
 		});
 	}
 	
-	setNormalHilites(hilites) {
+	setNormalHilites(hilites: Selection[]) {
 		this.normalHilites = hilites;
 		
 		this.scheduleRedraw();
 	}
 	
-	setWrap(wrap) {
+	setWrap(wrap: boolean): void {
 		if (this.wrap === wrap) {
 			return;
 		}
@@ -757,7 +768,7 @@ export default class View extends Evented<{
 		this.scheduleRedraw();
 	}
 	
-	setCompletions(completions) {
+	setCompletions(completions: ActiveCompletions): void {
 		this.completions = completions;
 		
 		this.fire("updateCompletions");

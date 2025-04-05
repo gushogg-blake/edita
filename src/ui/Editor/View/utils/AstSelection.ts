@@ -1,4 +1,4 @@
-import AstSelection, {a} from "core/AstSelection";
+import {AstSelection, a} from "core";
 
 export default {
 	...AstSelection,
