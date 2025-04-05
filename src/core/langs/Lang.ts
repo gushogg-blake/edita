@@ -1,9 +1,24 @@
 import {Query} from "web-tree-sitter";
-import type {LangModule} from "base/langs";
 
-export default class Lang implements LangModule {
-	constructor(langModule: LangModule) {
-		Object.assign(this, langModule);
+export default class Lang {
+	group: string;
+	code: string;
+	name: string;
+	defaultExtension: string;
+	astMode?: AstMode; // TYPE
+	codeIntel?: CodeIntel; // TYPE
+	accelerator?: string;
+	
+	// whether the lang should be available as a file type or is an internal util
+	// (markdown_inline for example)
+	util: boolean;
+	
+	treeSitterLanguage: Language;
+	queries: Record<string, Query>;
+	injections: Injection[];
+	
+	constructor() {
+		
 	}
 	
 	async initTreeSitterLanguage() {
