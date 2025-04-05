@@ -40,6 +40,7 @@ export default class Document extends Evented<{
 	edit: AppliedEdit[];
 	undo: HistoryEntry;
 	redo: HistoryEntry;
+	historyEntryAdded: HistoryEntry;
 	save: void;
 	resourceChanged: void;
 }> {
@@ -354,7 +355,7 @@ export default class Document extends Evented<{
 	}
 	
 	getAstSelection(astSelection) {
-		return AstSelection.linesToSelectionLines(this.getSelectedLines(astSelection));
+		return AstSelection.linesToSelectionContents(this.getSelectedLines(astSelection));
 	}
 	
 	getSelectedText(selection) {

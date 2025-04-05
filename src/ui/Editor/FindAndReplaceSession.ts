@@ -1,8 +1,20 @@
+import {Cursor, c} from "core";
 import findAndReplace from "modules/grep/findAndReplace";
-import Cursor, {c} from "core/Cursor";
+import type Editor from "ui/Editor";
 
 export default class {
-	constructor(editor, options) {
+	editor: Editor;
+	
+	private options: any; // TYPE
+	private generator: Generator<any, void, void>; // TYPE result
+	
+	// TYPE
+	private results: any;
+	private countResults: any;
+	private currentResult: any;
+	private resultsReplaced: any;
+	
+	constructor(editor: Editor, options) {
 		this.editor = editor;
 		
 		let {document, view} = editor;

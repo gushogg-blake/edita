@@ -1,5 +1,12 @@
 import {Evented} from "utils";
-import {Selection, s, Cursor, c, AstSelection, a, type AstSelectionLines} from "core";
+import {Selection, s, Cursor, c, AstSelection, a, type AstSelectionContents} from "core";
+
+import {
+	astManipulations as commonAstManipulations,
+	astManipulationIsAvailable,
+	type AstManipulation,
+} from "modules/astCommon";
+
 import type Editor from "ui/Editor";
 import MultiStepCommand from "./MultiStepCommand";
 
@@ -7,7 +14,7 @@ class AstMode extends Evented<{
 	pasteFromNormalMode: any; // TYPE
 }> {
 	editor: Editor;
-	clipboard: AstSelectionLines | null = null;
+	clipboard: AstSelectionContents | null = null;
 	multiStepCommand: MultiStepCommand | null = null;
 	
 	constructor(editor: Editor) {
@@ -16,7 +23,20 @@ class AstMode extends Evented<{
 		this.editor = editor;
 	}
 	
-	doAstManipulation(astManipulation) {
+	getAvailableAstManipulations(): AstManipulation[] {
+		let {document, view, astSelection} = this.editor;
+		
+		let astManipulations = {
+			...commonAstManipulations,
+			...view.lang.astMode?.astManipulations,
+		};
+		
+		return Object.values(astManipulations).filter((manipulation) => {
+			return astManipulationIsAvailable(manipulation, document, astSelection);
+		});
+	}
+	
+	private _doAstManipulation(astManipulation: AstManipulation): void {
 		if (this.multiStepCommand) {
 			this.multiStepCommand.cancel();
 		}
@@ -30,6 +50,39 @@ class AstMode extends Evented<{
 		});
 		
 		command.start();
+	}
+	
+	private findAstManipulation(code: string): AstManipulation | null {
+		let {document, view, astSelection} = this.editor;
+		
+		let astManipulations = {
+			...commonAstManipulations,
+			...view.lang.astMode?.astManipulations,
+		};
+		
+		if (code[0] === "$") {
+			return Object.values(astManipulations).reverse().find((m) => {
+				return m.group === code && astManipulationIsAvailable(m, document, astSelection);
+			}) || null;
+		} else {
+			let manipulation = astManipulations[code] || null;
+			
+			if (!manipulation || !astManipulationIsAvailable(manipulation, document, astSelection)) {
+				return null;
+			}
+			
+			return manipulation;
+		}
+	}
+	
+	doAstManipulation(code: string): void {
+		let manipulation = this.findAstManipulation(code);
+		
+		if (!manipulation) {
+			return;
+		}
+		
+		this._doAstManipulation(manipulation);
 	}
 	
 	clearMultiStepCommand() {
@@ -61,9 +114,9 @@ class AstMode extends Evented<{
 		let {left, right} = editor.view.normalSelection;
 		let {indentLevel} = document.lines[left.lineIndex];
 		
-		let astSelection = s(left.lineIndex, right.lineIndex + 1);
+		let astSelection = a(left.lineIndex, right.lineIndex + 1);
 		
-		let insertLines = AstSelection.selectionLinesToStrings(this.clipboard, document.format.indentation.string, indentLevel);
+		let insertLines = AstSelection.selectionContentsToStrings(this.clipboard, document.format.indentation.string, indentLevel);
 		
 		let edit = document.astEdit(astSelection, insertLines);
 		
@@ -71,7 +124,7 @@ class AstMode extends Evented<{
 		
 		let {lineIndex, offset} = edit.newSelection.end;
 		let cursor = c(lineIndex - 1, insertLines.at(-1).length);
-		let newSelection = Selection.s(cursor);
+		let newSelection = s(cursor);
 		
 		editor.applyAndAddHistoryEntry({
 			edits,

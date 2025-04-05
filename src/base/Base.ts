@@ -16,29 +16,8 @@ import stores, {type Stores} from "base/stores";
 
 import type {Prefs, Theme} from "base/types";
 
-import javascript from "base/langs/javascript";
-import typescript from "base/langs/typescript";
-import vala from "base/langs/vala";
-import haskell from "base/langs/haskell";
-import tsx from "base/langs/tsx";
-import svelte from "base/langs/svelte";
-import html from "base/langs/html";
-import css from "base/langs/css";
-import scss from "base/langs/scss";
-import php from "base/langs/php";
-import c from "base/langs/c";
-import markdown from "base/langs/markdown";
-import markdown_inline from "base/langs/markdown_inline";
-import cpp from "base/langs/cpp";
-import python from "base/langs/python";
-import ruby from "base/langs/ruby";
-//import codepatterns from "base/langs/codepatterns";
-//import tsq from "base/langs/tsq";
-import prisma from "base/langs/prisma";
-import plaintext from "base/langs/plaintext";
-
 import {generateRequiredLangs} from "./utils";
-import Langs from "./Langs";
+import langs, {type Langs} from "./langs";
 
 import packageJson from "root/package.json";
 
@@ -84,37 +63,10 @@ export default class Base extends Evented<{
 		
 		this.packageJson = packageJson;
 		
-		this.langs = new Langs();
+		this.langs = langs();
 		this.initialisedLangs = new Set();
 		
 		this.DirEntries = DirEntries;
-		
-		let langs = [
-			javascript,
-			typescript,
-			vala,
-			haskell,
-			tsx,
-			svelte,
-			html,
-			css,
-			scss,
-			php,
-			markdown,
-			markdown_inline,
-			c,
-			cpp,
-			python,
-			ruby,
-			//codepatterns,
-			//tsq,
-			prisma,
-			plaintext,
-		];
-		
-		for (let lang of langs) {
-			this.langs.add(lang);
-		}
 	}
 	
 	async init(components, options: BaseOptions = {}) {
@@ -205,9 +157,9 @@ export default class Base extends Evented<{
 		
 		if (this.options.useLangs) {
 			await bluebird.map([
-				"javascript",
+				"typescript",
 				"html",
-				"css",
+				"scss",
 				//"php",
 				//"c",
 				//"cpp",

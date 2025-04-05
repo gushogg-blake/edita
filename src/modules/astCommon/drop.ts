@@ -85,7 +85,7 @@ export default function(
 		
 		if (toSelection) {
 			let insertIndentLevel = findIndentLevel(document, toStart);
-			let lines = AstSelection.selectionLinesToStrings(selectionLines, indentStr, insertIndentLevel);
+			let lines = AstSelection.selectionContentsToStrings(selectionLines, indentStr, insertIndentLevel);
 			
 			if (toStart !== toEnd) {
 				/*

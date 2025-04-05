@@ -1,4 +1,4 @@
-import AstSelection, {a} from "core/AstSelection";
+import {AstSelection, a} from "core";
 
 import {
 	findPrevLineIndexAtIndentLevel,
@@ -202,6 +202,6 @@ let api = {
 		
 		return a(startLineIndex, endLineIndex);
 	},
-}
+};
 
 export default api;

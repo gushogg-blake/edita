@@ -1,55 +1,22 @@
 import type {Selection, Document, Line} from "core";
-import type AstSelectionLines from "core/astMode";
-import selection from "./selection";
-import drop from "./drop";
-import astManipulations from "./astManipulations";
-import removeSelection from "./removeSelection";
-import {getHeaderLineIndex, getFooterLineIndex} from "./utils";
+import type AstSelectionContents from "core/astMode";
 
-export type AstManipulationResult = {
-	replaceSelectionWith: AstSelectionLines,
-	onPasteFromNormalMode?: (paste: any) => void; // TYPE
-};
+export {default as selectionUtils} from "./selectionUtils";
+export {default as drop} from "./drop";
+export {default as astManipulations} from "./astManipulations";
+export {default as removeSelection} from "./removeSelection";
 
-export type DropTarget = {
-	type: string;
-	label: string;
-	isAvailable: (document: Document, lineIndex: number) => boolean;
-	
-	handleDrop: (
-		document: Document,
-		fromSelection: Selection,
-		toSelection: Selection,
-		lines: Line[],
-		move: boolean,
-		pickOptionType: string | null,
-	) => void;
-};
+export * from "./utils";
+export * from "./types";
 
-export type PickOption = {
-	type: string;
-	label: string;
-	isAvailable: (document: Document, lineIndex: number) => boolean;
-	getSelection: (document: Document, lineIndex: number) => Selection;
-};
+export function astManipulationIsAvailable(astManipulation, document, selection) {
+	return !astManipulation.isAvailable || astManipulation.isAvailable(document, selection);
+}
 
-export default {
-	selection,
-	drop,
-	astManipulations,
-	removeSelection,
-	getHeaderLineIndex,
-	getFooterLineIndex,
-	
-	astManipulationIsAvailable(astManipulation, document, selection) {
-		return !astManipulation.isAvailable || astManipulation.isAvailable(document, selection);
-	},
-	
-	getPickOptions(astMode, document, lineIndex) {
-		return Object.values(astMode.pickOptions).filter(pickOption => pickOption.isAvailable(document, lineIndex));
-	},
-	
-	getDropTargets(astMode, document, lineIndex) {
-		return Object.values(astMode.dropTargets).filter(dropTarget => dropTarget.isAvailable(document, lineIndex));
-	},
-};
+export function getPickOptions(astMode, document, lineIndex) {
+	return Object.values(astMode.pickOptions).filter(pickOption => pickOption.isAvailable(document, lineIndex));
+}
+
+export function getDropTargets(astMode, document, lineIndex) {
+	return Object.values(astMode.dropTargets).filter(dropTarget => dropTarget.isAvailable(document, lineIndex));
+}

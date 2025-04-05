@@ -1,6 +1,6 @@
 import {on, off} from "utils/dom/domEvents";
 import AstSelection, {a} from "core/AstSelection";
-import astCommon from "modules/astCommon";
+import {selectionUtils} from "modules/astCommon";
 import autoScroll from "./utils/autoScroll";
 import astDragData from "./astDragData";
 
@@ -48,7 +48,7 @@ export default function(editor, editorComponent) {
 			return astSelection;
 		}
 		
-		return astCommon.selection.hiliteFromLineIndex(document, lineIndex, pickOptionType);
+		return selectionUtils.hiliteFromLineIndex(document, lineIndex, pickOptionType);
 	}
 	
 	function hiliteFromEvent(e, pickOptionType=null, withinSelection=false) {
@@ -209,12 +209,12 @@ export default function(editor, editorComponent) {
 		
 		editor.astMouse.setSelection(selection);
 		
-		let items = editor.getAvailableAstManipulations().map(function({code, name}) {
+		let items = editor.astMode.getAvailableAstManipulations().map(function({code, name}) {
 			return {
 				label: name,
 				
 				onClick() {
-					editor.doAstManipulation(code);
+					editor.astMode.doAstManipulation(code);
 				},
 			};
 		});
@@ -234,7 +234,7 @@ export default function(editor, editorComponent) {
 		} = view;
 		
 		let {startLineIndex, endLineIndex} = selection;
-		let lines = AstSelection.linesToSelectionLines(document.lines.slice(startLineIndex, endLineIndex));
+		let lines = AstSelection.linesToSelectionContents(document.lines.slice(startLineIndex, endLineIndex));
 		
 		drag = {
 			selection,

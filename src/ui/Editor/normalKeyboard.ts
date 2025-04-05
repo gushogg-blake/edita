@@ -575,11 +575,11 @@ export default {
 	},
 	
 	wrap() {
-		this.astMode.commands.wrap();
+		this.astMode.doAstManipulation("wrap");
 	},
 	
 	unwrap() {
-		this.doAstManipulation("unwrap");
+		this.astMode.doAstManipulation("unwrap");
 	},
 	
 	clearHilites() {

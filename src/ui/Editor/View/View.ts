@@ -3,8 +3,15 @@ import bindFunctions from "utils/bindFunctions";
 import {Selection, s, Cursor, c, AstSelection, a} from "core";
 import type {Document} from "core";
 import type {AppliedEdit} from "core/Document";
-import astCommon from "modules/astCommon";
-import type {PickOption, DropTarget} from "modules/astCommon";
+
+import {
+	selectionUtils as astSelectionUtils,
+	getPickOptions,
+	getDropTargets,
+	getFooterLineIndex,
+	type PickOption,
+	type DropTarget,
+} from "modules/astCommon";
 
 import type {EditorMode, ActiveCompletions} from "ui/Editor";
 
@@ -257,7 +264,7 @@ export default class View extends Evented<{
 		this.pickOptions = [{
 			lineIndex,
 			
-			options: astCommon.getPickOptions(astMode, document, lineIndex).map(function(option) {
+			options: getPickOptions(astMode, document, lineIndex).map(function(option) {
 				return {
 					lineIndex,
 					option,
@@ -317,7 +324,7 @@ export default class View extends Evented<{
 				continue;
 			}
 			
-			byLineIndex.set(lineIndex, astCommon.getDropTargets(
+			byLineIndex.set(lineIndex, getDropTargets(
 				astMode,
 				document,
 				lineIndex,
@@ -626,7 +633,7 @@ export default class View extends Evented<{
 	}
 	
 	setAstSelection(astSelection) {
-		this.astSelection = astCommon.selection.trim(this.document, this.AstSelection.validate(astSelection));
+		this.astSelection = astSelectionUtils.trim(this.document, this.AstSelection.validate(astSelection));
 		this.astSelectionHilite = null;
 		
 		// TODO validate for folds
@@ -673,7 +680,7 @@ export default class View extends Evented<{
 		let {left, right} = this.normalSelection;
 		let {astMode} = this.lang;
 		
-		this.astSelection = astCommon.selection.fromLineRange(document, left.lineIndex, right.lineIndex + 1);
+		this.astSelection = astSelectionUtils.fromLineRange(document, left.lineIndex, right.lineIndex + 1);
 		
 		this.scheduleRedraw();
 	}
@@ -709,7 +716,7 @@ export default class View extends Evented<{
 	
 	toggleFoldHeader(lineIndex: number): void {
 		let {document} = this;
-		let footerLineIndex = astCommon.getFooterLineIndex(document, lineIndex);
+		let footerLineIndex = getFooterLineIndex(document, lineIndex);
 		
 		if (lineIndex in this.folds) {
 			delete this.folds[lineIndex];

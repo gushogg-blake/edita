@@ -12,7 +12,14 @@ export default {
 	dropTargets,
 	astManipulations,
 	
-	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines, insertIndentLevel) {
+	adjustSpaces(
+		document,
+		fromSelection,
+		toSelection,
+		selectionLines,
+		insertLines,
+		insertIndentLevel,
+	) {
 		let spaceBlocks = base.getPref("verticalSpacing.spaceBlocks");
 		
 		if (!spaceBlocks) {

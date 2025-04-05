@@ -1,7 +1,6 @@
 import {Evented, throttle, removeInPlace} from "utils";
 import bindFunctions from "utils/bindFunctions";
 
-import astCommon from "modules/astCommon";
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
 import type {Document} from "core";
 import type {HistoryEntry} from "core/Document";
@@ -63,7 +62,7 @@ export interface EditorEnv {
 	goToDefinition(definition: any): Promise<void>; // TYPE LSP response (or we convert it into our own)
 }
 
-class Editor extends Evented<{
+export default class Editor extends Evented<{
 	edit: void;
 	focus: void;
 	blur: void;
@@ -137,46 +136,6 @@ class Editor extends Evented<{
 			this.view.on("focus", this.onFocus.bind(this)),
 			this.view.on("blur", this.onBlur.bind(this)),
 		];
-	}
-	
-	getAvailableAstManipulations() {
-		let {document, view, astSelection} = this;
-		
-		let astManipulations = {
-			...astCommon.astManipulations,
-			...view.lang.astMode?.astManipulations,
-		};
-		
-		return Object.values(astManipulations).filter(function(manipulation) {
-			return astCommon.astManipulationIsAvailable(manipulation, document, astSelection);
-		});
-	}
-	
-	doAstManipulation(code) {
-		let {document, view, astSelection} = this;
-		
-		let astManipulations = {
-			...astCommon.astManipulations,
-			...view.lang.astMode?.astManipulations,
-		};
-		
-		let manipulation;
-		
-		if (code[0] === "$") {
-			manipulation = Object.values(astManipulations).reverse().find(m => m.group === code && astCommon.astManipulationIsAvailable(m, document, astSelection));
-			
-			if (!manipulation) {
-				return;
-			}
-		} else {
-			manipulation = astManipulations[code];
-			
-			if (!manipulation || !astCommon.astManipulationIsAvailable(manipulation, document, astSelection)) {
-				return;
-			}
-		}
-		
-		this.astMode.doAstManipulation(manipulation);
 	}
 	
 	insertSnippet(snippet, replaceWord=null) {
@@ -591,7 +550,7 @@ class Editor extends Evented<{
 		let astManipulationCode = astManipulationKeymap[lang.code]?.[keyCombo] || astManipulationKeymap.common[keyCombo];
 		
 		if (astManipulationCode) {
-			this.doAstManipulation(astManipulationCode);
+			this.astMode.doAstManipulation(astManipulationCode);
 		} else {
 			this.astKeyboard[astKeymap[keyCombo]]();
 		}
@@ -839,5 +798,3 @@ class Editor extends Evented<{
 		}
 	}
 }
-
-export default Editor;

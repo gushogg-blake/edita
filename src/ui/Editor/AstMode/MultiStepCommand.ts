@@ -52,7 +52,7 @@ class MultiStepCommand extends Evented<{
 		
 		this.astManipulationResult = astManipulationResult;
 		
-		let indentedLines = AstSelection.selectionLinesToStrings(astManipulationResult.replaceSelectionWith, indentStr, baseIndentLevel);
+		let indentedLines = AstSelection.selectionContentsToStrings(astManipulationResult.replaceSelectionWith, indentStr, baseIndentLevel);
 		
 		let {
 			replacedLines,

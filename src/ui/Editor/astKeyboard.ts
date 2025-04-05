@@ -1,20 +1,20 @@
-import astCommon from "modules/astCommon";
+import {selectionUtils} from "modules/astCommon";
 
 export default {
 	up() {
-		this.setAstSelection(astCommon.selection.up(this.document, this.view.astSelection));
+		this.setAstSelection(selectionUtils.up(this.document, this.astSelection));
 	},
 	
 	down() {
-		this.setAstSelection(astCommon.selection.down(this.document, this.view.astSelection));
+		this.setAstSelection(selectionUtils.down(this.document, this.astSelection));
 	},
 	
 	next() {
-		this.setAstSelection(astCommon.selection.next(this.document, this.view.astSelection));
+		this.setAstSelection(selectionUtils.next(this.document, this.astSelection));
 	},
 	
 	previous() {
-		this.setAstSelection(astCommon.selection.previous(this.document, this.view.astSelection));
+		this.setAstSelection(selectionUtils.previous(this.document, this.astSelection));
 	},
 	
 	insertAtEnd() {

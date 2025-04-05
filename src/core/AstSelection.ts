@@ -1,3 +1,5 @@
+import type {AstSelectionContents} from "core";
+
 function s(startLineIndex, endLineIndex=null) {
 	return new AstSelection(startLineIndex, endLineIndex);
 }
@@ -5,7 +7,10 @@ function s(startLineIndex, endLineIndex=null) {
 export {s as a};
 
 export default class AstSelection {
-	constructor(startLineIndex, endLineIndex) {
+	startLineIndex: number;
+	endLineIndex: number;
+	
+	constructor(startLineIndex: number, endLineIndex: number) {
 		this.startLineIndex = startLineIndex;
 		this.endLineIndex = endLineIndex || startLineIndex;
 	}
@@ -14,23 +19,23 @@ export default class AstSelection {
 		return this.startLineIndex !== this.endLineIndex;
 	}
 	
-	equals(selection) {
+	equals(selection: AstSelection) {
 		return this.startLineIndex === selection.startLineIndex && this.endLineIndex === selection.endLineIndex;
 	}
 	
-	isWithin(selection) {
+	isWithin(selection: AstSelection) {
 		return this.startLineIndex >= selection.startLineIndex && this.endLineIndex <= selection.endLineIndex;
 	}
 	
-	isNextTo(selection) {
+	isNextTo(selection: AstSelection) {
 		return this.startLineIndex === selection.endLineIndex || selection.startLineIndex === this.endLineIndex;
 	}
 	
-	containsLineIndex(lineIndex) {
+	containsLineIndex(lineIndex: number) {
 		return lineIndex >= this.startLineIndex && lineIndex < this.endLineIndex;
 	}
 	
-	getSelectedLines(lines) {
+	getSelectedLines(lines: Line[]) {
 		return lines.slice(this.startLineIndex, this.endLineIndex);
 	}
 	
@@ -60,7 +65,12 @@ export default class AstSelection {
 	lines
 	*/
 	
-	static insertionRange(lines, aboveLineIndex, belowLineIndex, offset) {
+	static insertionRange(
+		lines: Line[],
+		aboveLineIndex: number,
+		belowLineIndex: number,
+		offset: number,
+	): AstSelection {
 		if (aboveLineIndex === null) {
 			return s(0);
 		}
@@ -109,14 +119,14 @@ export default class AstSelection {
 	}
 	
 	/*
-	linesToSelectionLines/selectionLinesToStrings:
+	linesToSelectionContents/selectionContentsToStrings:
 	
 	The contents of an AST selection is an array of [indentLevel, trimmedString]
 	pairs representing the lines ("selection lines").  These two functions convert
 	between arrays of Document lines, strings, and selection lines.
 	*/
 	
-	static linesToSelectionLines(lines) {
+	static linesToSelectionContents(lines: Line[]): AstSelectionContents {
 		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
 		
 		return lines.map(function(line) {
@@ -124,8 +134,12 @@ export default class AstSelection {
 		});
 	}
 	
-	static selectionLinesToStrings(selectionLines, indentStr, indent=0) {
-		return selectionLines.map(function([indentLevel, line]) {
+	static selectionContentsToStrings(
+		selectionContents: AstSelectionContents,
+		indentStr: string,
+		indent: number = 0,
+	): string[] {
+		return selectionContents.map(function([indentLevel, line]) {
 			return indentStr.repeat(indent + indentLevel) + line;
 		});
 	}

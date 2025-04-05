@@ -1,32 +1,8 @@
-import {Query, Language} from "web-tree-sitter";
-import type {Node} from "core";
-import type {CaptureSingleResult} from "core/Tree";
+import {Query} from "web-tree-sitter";
+import type {LangModule} from "base/langs";
 
-type Injection = {
-	pattern: string; // TYPE? TSQ
-	lang: string | (capture: CaptureSingleResult) => Lang;
-	query: Query;
-	combined?: boolean;
-	excludeChildren?: boolean;
-};
-
-export default class Lang {
-	group: string;
-	code: string;
-	name: string;
-	defaultExtension: string;
-	astMode: any; // TYPE
-	codeIntel: any; // TYPE
-	accelerator?: string;
-	// whether the lang should be available as a file type or is an internal util
-	// (markdown_inline for example)
-	util: boolean;
-	
-	treeSitterLanguage: Language;
-	queries: Record<string, Query>;
-	injections: Injection[];
-	
-	constructor(langModule) {
+export default class Lang implements LangModule {
+	constructor(langModule: LangModule) {
 		Object.assign(this, langModule);
 	}
 	

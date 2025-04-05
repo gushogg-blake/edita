@@ -1,7 +1,7 @@
 import mapArrayToObject from "utils/mapArrayToObject";
 import {Selection, s, AstSelection, a, SelectionContents} from "core";
 import {Document, Node} from "core";
-import astCommon from "modules/astCommon";
+import {removeSelection} from "modules/astCommon";
 import getPlaceholders from "modules/snippets/getPlaceholders";
 
 function getLineParts(string) {
@@ -99,7 +99,7 @@ function expandRemoveSelectionToTrimBlankLines(document, selection) {
 		return document.edit(selection, "");
 	} else {
 		let astSelection = a(start.lineIndex, end.lineIndex + 1);
-		let {lineIndex, removeLinesCount, insertLines} = astCommon.removeSelection(document, astSelection);
+		let {lineIndex, removeLinesCount, insertLines} = removeSelection(document, astSelection);
 		
 		return document.lineEdit(lineIndex, removeLinesCount, insertLines);
 	}

@@ -1,6 +1,5 @@
-import Selection, {s} from "core/Selection";
-import AstSelection, {a} from "core/AstSelection";
-import astCommon from "modules/astCommon";
+import {AstSelection, a, Selection, s} from "core";
+import {drop as astDrop} from "modules/astCommon";
 
 export default {
 	setSelection(selection) {
@@ -56,7 +55,7 @@ export default {
 			edits,
 			snippetEdit,
 			newSelection,
-		} = astCommon.drop(
+		} = astDrop(
 			astMode,
 			document,
 			fromSelection,
