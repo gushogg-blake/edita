@@ -1,120 +1,35 @@
-import {Lang} from "core";
+let lang;
 
-let loggedTypes = [];
-
-let wordRe = /\w/;
-
-export default class extends Lang {
-	group = "c";
-	code = "cpp";
-	name = "C++";
-	defaultExtension = "cpp";
-	injections = [];
+export default {
+	,
 	
-	isBlock(node) {
-		return node.start.lineIndex !== node.end.lineIndex && [
-			"function_definition",
-		].includes(node.type);
-	}
+	indentOnNewline(document, line, cursor) {
+		return line.string.substr(0, cursor.offset).match(/[\[{(]$/);
+	},
 	
-	getFooter(node) {
-		let {parent} = node;
+	indentAdjustmentAfterInsertion(document, line, cursor) {
+		let nodes = document.getNodesOnLine(cursor.lineIndex, lang);
 		
-		if (
-			parent
-			&& this.isBlock(parent)
-			&& node.equals(parent.firstChild)
-			&& parent.lastChild.end.lineIndex > node.end.lineIndex
-		) {
-			return parent.lastChild;
+		for (let node of nodes) {
+			if (node.end.offset !== cursor.offset) {
+				continue;
+			}
+			
+			let header = lang.getHeader(node);
+			
+			if (header) {
+				let {indentLevel} = document.lines[header.start.lineIndex];
+				
+				if (indentLevel !== line.indentLevel) {
+					return indentLevel - line.indentLevel;
+				}
+			}
 		}
 		
-		return null;
-	}
+		return 0;
+	},
 	
-	getHeader(node) {
-		let {parent} = node;
-		
-		if (
-			parent
-			&& this.isBlock(parent)
-			&& node.equals(parent.lastChild)
-			&& parent.firstChild.start.lineIndex < node.start.lineIndex
-		) {
-			return parent.firstChild;
-		}
-		
-		return null;
-	}
-	
-	getHiliteClass(node) {
-		let {
-			type,
-			parent,
-		} = node;
-		
-		if ([
-			"comment",
-			"string",
-		].includes(parent?.type)) {
-			return null;
-		}
-		
-		if ([
-			"identifier",
-			"field_identifier",
-		].includes(type)) {
-			return "id";
-		}
-		
-		if ([
-			"type_identifier",
-		].includes(type)) {
-			return "type";
-		}
-		
-		if (type === "#include") {
-			return "include";
-		}
-		
-		if (type === "comment") {
-			return "comment";
-		}
-		
-		if (["string_literal", "\""].includes(type)) {
-			return "string";
-		}
-		
-		if (type === "integer" || type === "float") {
-			return "number";
-		}
-		
-		if (type[0].match(wordRe)) {
-			return "keyword";
-		}
-		
-		return "symbol";
-	}
-	
-	getSupportLevel(code, path) {
-		if (!path) {
-			return null; //
-		}
-		
-		let type = platform.fs(path).lastType;
-		
-		if ([
-			"cpp",
-			"cxx",
-			"cc",
-		].includes(type)) {
-			return "general";
-		}
-		
-		if (type === "vala") {
-			return "alternate";
-		}
-		
-		return null;
-	}
-}
+	async isProjectRoot(dir) {
+		return (await platform.fs(dir).readdir()).includes("Makefile");
+	},
+};
