@@ -1,4 +1,4 @@
-import AstSelection, {a} from "core/AstSelection";
+import {AstSelection, a, type Lang} from "core";
 import {isHeader, getHeaders} from "modules/astIntel/utils";
 
 export default function(lang: Lang) {

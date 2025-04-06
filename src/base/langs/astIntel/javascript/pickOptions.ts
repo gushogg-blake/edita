@@ -1,4 +1,5 @@
-import {AstSelection, a} from "core";
+import {AstSelection, a, Selection, s, Cursor, c} from "core";
+import type {Document, Lang} from "core";
 import {isHeader, getHeaders} from "modules/astIntel/utils";
 
 export default function(lang: Lang) {

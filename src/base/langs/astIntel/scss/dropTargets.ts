@@ -1,5 +1,6 @@
+import {AstSelection, a, Selection, s, Cursor, c} from "core";
+import type {Document, Lang} from "core";
 import {indentLines} from "modules/utils/editing";
-import AstSelection, {a} from "core/AstSelection";
 import removeSelection from "modules/astIntel/removeSelection";
 
 export default function(lang: Lang) {
