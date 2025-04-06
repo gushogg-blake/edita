@@ -1,4 +1,4 @@
-import type {Selection, Document, Line} from "core";
+import type {Selection, Document, Node, Line} from "core";
 import type {AstSelectionContents} from "core/astMode";
 
 export {default as selectionUtils} from "./selectionUtils";
@@ -8,23 +8,11 @@ export {default as removeSelection} from "./removeSelection";
 
 export * from "./utils";
 
-interface IAstIntel {
+export abstract class AstIntel {
+	langCode: string;
 	pickOptions?: Record<string, PickOption>;
 	dropTargets?: Record<string, DropTarget>;
 	astManipulations?: Record<string, AstManipulation>;
-	
-	adjustSpaces?: (
-		document,
-		fromSelection,
-		toSelection,
-		selectionLines,
-		insertLines,
-		insertIndentLevel,
-	) => any; // TYPE
-}
-
-export abstract class AstIntel implements IAstIntel {
-	langCode: string;
 	
 	constructor(langCode: string) {
 		this.langCode = langCode;
@@ -32,6 +20,33 @@ export abstract class AstIntel implements IAstIntel {
 	
 	get lang() {
 		return base.langs.get(this.langCode);
+	}
+	
+	isBlock(node: Node): boolean {
+		return false;
+	}
+	
+	getHeader(node: Node): Node | null {
+		return null;
+	}
+	
+	getFooter(node: Node) => Node | null {
+		return null;
+	}
+	
+	getOpenerAndCloser(node: Node) => Node | null {
+		return null;
+	}
+	
+	adjustSpaces(
+		document,
+		fromSelection,
+		toSelection,
+		selectionLines,
+		insertLines,
+		insertIndentLevel,
+	) => {above: number; below: number} {
+		return {above: 0, below: 0};
 	}
 }
 

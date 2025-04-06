@@ -13,7 +13,7 @@ export default class extends CodeIntel {
 				continue;
 			}
 			
-			let header = this.lang.getHeader(node);
+			let header = this.lang.astIntel.getHeader(node);
 			
 			if (header) {
 				let {indentLevel} = document.lines[header.start.lineIndex];

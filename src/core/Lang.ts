@@ -11,9 +11,9 @@ export type Injection = Partial<{
 	excludeChildren?: boolean;
 }>;
 
-interface ILang {
-	
-}
+//interface ILang {
+//	
+//}
 
 type SupportLevel = "specific" | "general" | "alternate" | null;
 
@@ -33,6 +33,14 @@ export default abstract class Lang {
 	
 	constructor(langCode: string) {
 		this.code = langCode;
+	}
+	
+	get astIntel() {
+		return base.astIntel.get(this.code);
+	}
+	
+	get codeIntel() {
+		return base.codeIntel.get(this.code);
 	}
 	
 	async initTreeSitterLanguage() {
