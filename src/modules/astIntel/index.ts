@@ -31,11 +31,11 @@ export abstract class AstIntel {
 		return null;
 	}
 	
-	getFooter(node: Node) => Node | null {
+	getFooter(node: Node): Node | null {
 		return null;
 	}
 	
-	getOpenerAndCloser(node: Node) => Node | null {
+	getOpenerAndCloser(node: Node): Node | null {
 		return null;
 	}
 	

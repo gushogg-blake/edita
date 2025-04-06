@@ -167,7 +167,7 @@ export default class View extends Evented<{
 		];
 	}
 	
-	onDocumentEdit(appliedEdits) {
+	onDocumentEdit(appliedEdits: AppliedEdit[]): void {
 		for (let {lineDiff} of appliedEdits) {
 			this.updateViewLines(lineDiff);
 		}
@@ -324,7 +324,7 @@ export default class View extends Evented<{
 			},
 		} = this;
 		
-		let {lineIndex} = this.canvasUtils.();
+		let {lineIndex} = this.canvasUtils.findFirstVisibleLine();
 		
 		let rowsToRender = height / rowHeight;
 		let rowsRenderedOrSkipped = 0;
@@ -393,7 +393,7 @@ export default class View extends Evented<{
 			sizes: {topMargin, height},
 		} = this;
 		
-		let rows = this.canvasUtils.();
+		let rows = this.canvasUtils.countLineRowsFolded();
 		
 		return rows === 1 ? height : topMargin + (rows - 1) * rowHeight + height;
 	}
@@ -551,8 +551,8 @@ export default class View extends Evented<{
 		let {height} = this.sizes;
 		let {startLineIndex, endLineIndex} = this.astSelection;
 		
-		let topY = this.canvasUtils.(startLineIndex);
-		let bottomY = this.canvasUtils.(endLineIndex);
+		let topY = this.canvasUtils.screenYFromLineIndex(startLineIndex);
+		let bottomY = this.canvasUtils.screenYFromLineIndex(endLineIndex);
 		let selectionHeight = bottomY - topY;
 		let bottomDistance = height - bottomY;
 		
@@ -587,9 +587,9 @@ export default class View extends Evented<{
 		
 		let {end} = this.normalSelection;
 		let {lineIndex, offset} = end;
-		let [row, col] = this.canvasUtils.(end);
+		let [row, col] = this.canvasUtils.rowColFromCursor(end);
 		
-		let maxRow = this.canvasUtils.() - 1;
+		let maxRow = this.canvasUtils.countLineRowsFolded() - 1;
 		let firstVisibleRow = Math.floor(scrollPosition.y / rowHeight);
 		let firstFullyVisibleRow = Math.ceil(scrollPosition.y / rowHeight);
 		let lastFullyVisibleRow = firstVisibleRow + rows;
@@ -612,7 +612,7 @@ export default class View extends Evented<{
 		if (!this.wrap) {
 			let colBuffer = colWidth * 4;
 			
-			let [x] = this.canvasUtils.(row, col);
+			let [x] = this.canvasUtils.screenCoordsFromRowCol(row, col);
 			
 			x -= this.sizes.marginOffset;
 			
@@ -689,7 +689,7 @@ export default class View extends Evented<{
 	}
 	
 	updateSelectionEndCol() {
-		let [, endCol] = this.canvasUtils.(this.normalSelection.end);
+		let [, endCol] = this.canvasUtils.rowColFromCursor(this.normalSelection.end);
 		
 		this.selectionEndCol = endCol;
 	}
