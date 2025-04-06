@@ -1,8 +1,7 @@
-import Selection, {s} from "core/Selection";
-import Cursor, {c} from "core/Cursor";
+import {Selection, s, Cursor, c} from "core";
 
 export default {
-	toggleComment(comment) {
+	toggleComment(comment: boolean) {
 		let {document} = this;
 		let {left, right} = this.normalSelection;
 		
@@ -15,13 +14,13 @@ export default {
 		let selection = s(c(startLineIndex, 0), c(endLineIndex - 1, Infinity));
 		let langCursor = c(startLineIndex, document.lines[startLineIndex].indentOffset);
 		let method = comment ? "commentLines" : "uncommentLines";
-		let lang = document.langFromCursor(langCursor);
+		let {codeIntel} = document.langFromCursor(langCursor);
 		
-		if (!lang[method]) {
+		if (!codeIntel?.[method]) {
 			return;
 		}
 		
-		let replaceWith = lang[method](document, startLineIndex, endLineIndex);
+		let replaceWith = codeIntel[method](document, startLineIndex, endLineIndex);
 		
 		let edits = [document.edit(selection, replaceWith)];
 		

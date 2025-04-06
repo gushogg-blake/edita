@@ -11,7 +11,7 @@ let {
 
 let {message, buttons} = app.options;
 
-let main = $state();
+let main: HTMLDivElement = $state();
 
 function respond(response) {
 	app.respond(response);

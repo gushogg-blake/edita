@@ -1,5 +1,5 @@
 import {on, off} from "utils/dom/domEvents";
-import Selection, {s} from "core/Selection";
+import {Selection, s} from "core";
 import autoScroll from "./utils/autoScroll";
 import {getCursor, getCharCursor} from "./utils/cursorFromEvent";
 
@@ -82,7 +82,7 @@ export default function(editor, editorComponent) {
 		off(window, "dragend", dragend);
 	}
 	
-	function mouseenter() {
+	function mouseenter(e) {
 		
 	}
 	

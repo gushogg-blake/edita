@@ -55,17 +55,27 @@ let {
 	modeSwitchKey,
 } = editor;
 
+type CanvasKey = "background" | "foldHilites" | "hilites" | "code" | "margin";
+
+type Canvases = {
+	[K in CanvasKey]: HTMLCanvasElement;
+};
+
+type Contexts = {
+	[K in CanvasKey]: CanvasRenderingContext2D;
+};
+
 let revisionCounter = 0;
 let mounted = false;
-let main = $state();
-let canvasDiv = $state();
-let measurementsDiv = $state();
-let canvases = $state({});
-let contexts = {};
+let main: HTMLDivElement = $state();
+let canvasDiv: HTMLDivElement = $state();
+let measurementsDiv: HTMLDivElement = $state();
+let canvases = $state({}) as Canvases;
+let contexts = {} as Contexts;
 let rowHeightPadding = 2;
 
-let verticalScrollbar = $state();
-let horizontalScrollbar = $state();
+let verticalScrollbar: Scrollbar = $state();
+let horizontalScrollbar: Scrollbar = $state();
 let showingHorizontalScrollbar = $state(!view.wrap);
 
 let windowHasFocus;
@@ -202,7 +212,7 @@ function dblclick(e) {
 
 function contextmenu({e, pickOptionType}) {
 	if (view.mode === "normal") {
-		normalMouseHandler.contextmenu(e, pickOptionType);
+		normalMouseHandler.contextmenu(e);
 	} else if (view.mode === "ast") {
 		astMouseHandler.contextmenu(e, pickOptionType);
 	}
@@ -210,7 +220,7 @@ function contextmenu({e, pickOptionType}) {
 
 function middlepress({e, pickOptionType}) {
 	if (view.mode === "normal") {
-		normalMouseHandler.middlepress(e, pickOptionType);
+		normalMouseHandler.middlepress(e);
 	} else if (view.mode === "ast") {
 		astMouseHandler.middlepress(e, pickOptionType);
 	}
@@ -359,10 +369,6 @@ function keydown(e) {
 	if (base.getPref("dev.timing.keydown")) {
 		console.timeEnd("keydown");
 	}
-}
-
-function keyup(e) {
-	editor.keyup();
 }
 
 let prevWidth;

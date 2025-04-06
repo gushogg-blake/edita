@@ -21,7 +21,7 @@ let breadcrumbs = $state(app.breadcrumbs);
 
 let showHiddenFiles = $state(base.getPref("fileChooser.showHiddenFiles"));
 
-let input = $state();
+let input: HTMLInputElement = $state();
 let inputValue = $state(name);
 let newFolderEntry = $state(null);
 

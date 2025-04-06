@@ -1,6 +1,11 @@
 import getKeyCombo from "utils/getKeyCombo";
 
-export default function(e, options) {
+type Options = Partial<{
+	noAlt: boolean;
+	el: HTMLElement;
+}>;
+
+export default function(e, options?: Options) {
 	options = {
 		noAlt: false,
 		el: document.body,
@@ -22,7 +27,7 @@ export default function(e, options) {
 		return false;
 	}
 	
-	for (let node of el.querySelectorAll("button, label")) {
+	for (let node of el.querySelectorAll<HTMLElement>("button, label")) {
 		if (node.innerHTML.toLowerCase().includes("<u>" + key + "</u>")) {
 			node.click();
 			

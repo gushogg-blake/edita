@@ -71,10 +71,10 @@ export default class Editor extends Evented<{
 	document: Document;
 	view: View;
 	api: EditorApi;
+	astMode: AstMode;
+	modeSwitchKey: ReturnType<typeof modeSwitchKey>;
 	
 	private env?: EditorEnv;
-	private modeSwitchKey: ReturnType<typeof modeSwitchKey>;
-	private astMode: AstMode;
 	private wordCompletion: WordCompletion;
 	private completions: ActiveCompletions | null = null;
 	

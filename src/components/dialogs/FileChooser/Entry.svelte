@@ -4,13 +4,13 @@ import {onMount, tick} from "svelte";
 let {
 	app,
 	entry,
-	selected,
+	selected = false,
 } = $props();
 
 let isNew = $state(entry.isNew);
 let name = $state(entry.name);
 
-let nameInput = $state();
+let nameInput: HTMLInputElement = $state();
 let nameInputValue = $state(name || "");
 let renaming = $state(false);
 
@@ -120,7 +120,6 @@ onMount(function() {
 	class:selected
 	onmousedown={(e) => mousedown(e, entry)}
 	ondblclick={() => app.dblclick(entry)}
-	oncontextmenu={(e) => contextmenu(e, entry)}
 >
 	<div
 		id="icon"

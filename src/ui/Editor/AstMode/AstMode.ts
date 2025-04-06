@@ -1,10 +1,10 @@
 import {Evented} from "utils";
-import {Selection, s, Cursor, c, AstSelection, a, type AstSelectionContents} from "core";
+import {Selection, s, Cursor, c, AstSelection, a} from "core";
+import type {AstManipulation, AstSelectionContents} from "core";
 
 import {
 	astManipulations as commonAstManipulations,
 	astManipulationIsAvailable,
-	type AstManipulation,
 } from "modules/astIntel";
 
 import type Editor from "ui/Editor";
@@ -26,7 +26,7 @@ class AstMode extends Evented<{
 	getAvailableAstManipulations(): AstManipulation[] {
 		let {document, view, astSelection} = this.editor;
 		
-		let astManipulations = {
+		let astManipulations: Record<string, AstManipulation> = {
 			...commonAstManipulations,
 			...view.lang.astMode?.astManipulations,
 		};
@@ -55,7 +55,7 @@ class AstMode extends Evented<{
 	private findAstManipulation(code: string): AstManipulation | null {
 		let {document, view, astSelection} = this.editor;
 		
-		let astManipulations = {
+		let astManipulations: Record<string, AstManipulation> = {
 			...commonAstManipulations,
 			...view.lang.astMode?.astManipulations,
 		};

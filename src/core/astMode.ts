@@ -70,8 +70,8 @@ export type AstManipulation = {
 	name: string;
 	group?: string;
 	isAvailable: (document: Document, selection: Selection) => boolean;
-	apply?: (multiStepCommand: MultiStepCommand, document: Document, selection: Selection) => AstManipulationResult;
-	setNormalModeSelection?: (document: Document, selection: Selection) => Selection;
+	apply?: (multiStepCommand: MultiStepCommand, document: Document, astSelection: AstSelection) => AstManipulationResult;
+	setNormalModeSelection?: (document: Document, astSelection: AstSelection) => Selection;
 };
 
 export type AstManipulationResult = {

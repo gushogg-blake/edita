@@ -1,5 +1,5 @@
 import {on, off} from "utils/dom/domEvents";
-import AstSelection, {a} from "core/AstSelection";
+import {AstSelection, a} from "core";
 import {selectionUtils} from "modules/astIntel";
 import autoScroll from "./utils/autoScroll";
 import astDragData from "./astDragData";
@@ -172,7 +172,7 @@ export default function(editor, editorComponent) {
 		off(window, "dragend", dragend);
 	}
 	
-	function mouseenter() {
+	function mouseenter(e) {
 		mouseIsOver = true;
 	}
 	

@@ -3,6 +3,6 @@ import {Hiliter} from "modules/hiliter";
 
 export default class extends Hiliter {
 	getHiliteClass(node: Node): string | null {
-		// TODO
+		return null;
 	}
 }

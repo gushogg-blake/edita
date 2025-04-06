@@ -7,6 +7,10 @@ interface ICodeIntel {
 	
 	isProjectRoot?: (dir: string) => Promise<boolean>;
 	
+	// these return a single string of all affected lines, including indentation
+	commentLines?: (document: Document, startLineIndex: number, endLineIndex: number) => string;
+	uncommentLines?: (document: Document, startLineIndex: number, endLineIndex: number) => string;
+	
 	// https://stackoverflow.com/questions/46449237/type-x-has-no-properties-in-common-with-type-y
 	_weakTypeFix: any;
 }

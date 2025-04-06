@@ -66,10 +66,10 @@ export default class View extends Evented<{
 	updatePickOptions: void;
 	updateDropTargets: void;
 	scroll: void;
-	wrapChange: void;
+	wrapChanged: void;
 	updateCompletions: void;
 	updateMeasurements: void;
-	updateSizes:f void;
+	updateSizes: void;
 	updateScrollbars: void;
 	updateCanvas: void;
 	requestFocus: void;
@@ -91,6 +91,8 @@ export default class View extends Evented<{
 	astSelection: AstSelection | null = null;
 	
 	normalHilites: Selection[] = [];
+	
+	wrap: boolean;
 	
 	mode: EditorMode = "normal";
 	
