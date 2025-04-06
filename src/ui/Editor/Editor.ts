@@ -601,7 +601,7 @@ export default class Editor extends Evented<{
 	}
 	
 	setNormalSelection(selection) {
-		this.view.setNormalSelection(selection, options);
+		this.view.setNormalSelection(selection);
 		
 		this.wordCompletion.selectionChanged();
 		

@@ -5,8 +5,6 @@ import type {AppliedEdit} from "core/Document";
 
 import {
 	selectionUtils as astSelectionUtils,
-	getPickOptions,
-	getDropTargets,
 	getFooterLineIndex,
 	type PickOption,
 	type DropTarget,
@@ -20,6 +18,7 @@ import wrapLine, {type WrappedLine} from "./utils/wrapLine";
 import CanvasUtils from "./utils/CanvasUtils";
 import Renderer from "./render/Renderer";
 import ViewLine from "./ViewLine";
+import AstMode from "./AstMode";
 
 type ViewLineDiff = {
 	startLineIndex: number;
@@ -92,9 +91,11 @@ export default class View extends Evented<{
 	
 	mode: EditorMode = "normal";
 	
-	Selection: typeof SelectionUtils;
-	AstSelection: typeof AstSelectionUtils;
-	canvasUtils: CanvasUtils;
+	astMode = new AstMode(this);
+	
+	Selection = bindFunctions(this, SelectionUtils);
+	AstSelection = bindFunctions(this, AstSelectionUtils);
+	canvasUtils = new CanvasUtils(this);
 	
 	// for remembering the "intended" col when moving a cursor up/down to a line
 	// that doesn't have as many cols as the cursor
@@ -113,9 +114,6 @@ export default class View extends Evented<{
 	
 	sizes: Sizes;
 	scrollPosition: ScrollPosition = {x: 0, y: 0};
-	
-	private pickOptions: PickOption[] = [];
-	private dropTargets: DropTarget[] = [];
 	
 	private insertCursor: Cursor | null = null;
 	private astSelectionHilite: AstSelection | null = null;
@@ -143,10 +141,6 @@ export default class View extends Evented<{
 	
 	constructor(document: Document) {
 		super();
-		
-		this.Selection = bindFunctions(this, SelectionUtils);
-		this.AstSelection = bindFunctions(this, AstSelectionUtils);
-		this.canvasUtils = new CanvasUtils(this);
 		
 		this.document = document;
 		
@@ -283,108 +277,7 @@ export default class View extends Evented<{
 		}
 	}
 	
-	showPickOptionsFor(lineIndex) {
-		let {document} = this;
-		let {astMode} = document.langFromAstSelection(a(lineIndex));
-		
-		this.pickOptions = [{
-			lineIndex,
-			
-			options: getPickOptions(astMode, document, lineIndex).map(function(option) {
-				return {
-					lineIndex,
-					option,
-				};
-			}),
-		}];
-		
-		this.fire("updatePickOptions");
-	}
-	
-	clearPickOptions() {
-		this.pickOptions = [];
-		
-		this.fire("updatePickOptions");
-	}
-	
-	showDropTargets() {
-		let byLineIndex = new Map();
-		
-		let {
-			document,
-			wrappedLines,
-			astSelection,
-			astSelectionHilite,
-			measurements: {
-				rowHeight,
-			},
-			sizes: {
-				height,
-			},
-		} = this;
-		
-		let {lineIndex} = this.canvasUtils.findFirstVisibleLine();
-		
-		let rowsToRender = height / rowHeight;
-		let rowsRenderedOrSkipped = 0;
-		
-		while (lineIndex < wrappedLines.length) {
-			let wrappedLine = wrappedLines[lineIndex];
-			let {line} = wrappedLine;
-			
-			if (
-				astSelection.containsLineIndex(lineIndex)
-				|| astSelectionHilite?.containsLineIndex(lineIndex)
-			) {
-				lineIndex++;
-				
-				continue;
-			}
-			
-			let {astMode} = document.langFromLineIndex(lineIndex);
-			
-			if (!astMode) {
-				lineIndex++;
-				rowsRenderedOrSkipped += wrappedLine.height;
-				
-				continue;
-			}
-			
-			byLineIndex.set(lineIndex, getDropTargets(
-				astMode,
-				document,
-				lineIndex,
-			).map(function(target) {
-				return {
-					lineIndex,
-					target,
-				};
-			}));
-			
-			rowsRenderedOrSkipped += wrappedLine.height;
-			
-			if (rowsRenderedOrSkipped >= rowsToRender) {
-				break;
-			}
-			
-			lineIndex++;
-		}
-		
-		this.dropTargets = [...byLineIndex.entries()].map(function([lineIndex, targets]) {
-			return {
-				lineIndex,
-				targets,
-			};
-		});
-		
-		this.fire("updateDropTargets");
-	}
-	
-	clearDropTargets() {
-		this.dropTargets = [];
-		
-		this.fire("updateDropTargets");
-	}
+	// TODO move these to a helper class, like AstMode
 	
 	getScrollHeight() {
 		let {

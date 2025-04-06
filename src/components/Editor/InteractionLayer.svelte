@@ -4,6 +4,7 @@ import {unique} from "utils/array";
 import {on, off} from "utils/dom/domEvents";
 import inlineStyle from "utils/dom/inlineStyle";
 import getDistanceBetweenMouseEvents from "utils/dom/getDistanceBetweenMouseEvents";
+import type {PickOption, DropTarget} from "core/astMode";
 import drag from "./utils/drag";
 import createDragEvent from "./utils/createDragEvent";
 
@@ -29,38 +30,42 @@ let {
 	ondragend = () => {},
 } = $props();
 
-let interactionDiv = $state();
-let hoveredPickOption = $state();
-let selectedPickOption = $state();
+let interactionDiv: HTMLDivElement = $state();
+
+let hoveredPickOption: PickOption | null = $state();
+let selectedPickOption: PickOption | null = $state();
+
 let draggable = $state(false);
 let useSyntheticDrag = $state();
-let currentDropTarget = $state();
+let currentDropTarget: DropTarget = $state();
 let syntheticDrag = null;
 let dragStartedHere = $state(false);
 let isDragging = $state(false);
+
 let lastMousedownWasDoubleClick = false;
 let lastMousedownEvent;
 let lastMousedownTime;
 let lastClickMousedownEvent;
 let lastClickMousedownTime;
+
 let clickDistanceThreshold = 2;
 let ignoreMouseLeave = false;
 let rowYHint = 0;
 
-let {measurements} = view;
+let {measurements, astMode} = view;
 
 let lines = $state(view.lines);
 let mode = $state(view.mode);
-let dropTargets = $state(view.dropTargets);
-let pickOptions = $state(view.pickOptions);
+let dropTargetsByLine = $state(astMode.dropTargetsByLine);
+let pickOptionsByLine = $state(astMode.pickOptionsByLine);
 let completions = $state(view.completions);
 let scrollPosition = $state(view.scrollPosition);
 let sizes = $state(view.sizes);
 let rowHeight = $state(measurements.rowHeight);
 let colWidth = $state(measurements.colWidth);
 
-let divToPickOption = new Map();
-let divToDropTarget = new Map();
+let divToPickOption = new Map<HTMLDivElement, PickOption>();
+let divToDropTarget = new Map<HTMLDivElement, DropTarget>();
 
 function registerItem(el, map, item) {
 	map.set(el, item);
@@ -425,11 +430,11 @@ function onModeSwitch() {
 }
 
 function onUpdatePickOptions() {
-	({pickOptions} = view);
+	({pickOptionsByLine} = view);
 }
 
 function onUpdateDropTargets() {
-	({dropTargets} = view);
+	({dropTargetsByLine} = view);
 }
 
 function onUpdateCompletions() {
@@ -498,7 +503,7 @@ function targetIsActive(target, currentDropTarget) {
 	);
 }
 
-let marginStyle = $derived(calculateMarginStyle(sizes, mode));
+let marginStyle = $derived(calculateMarginStyle(sizes));
 
 let codeStyle = $derived(calculateCodeStyle(sizes, mode, dragStartedHere));
 
@@ -508,9 +513,10 @@ onMount(function() {
 		view.on("updateMeasurements", onUpdateMeasurements),
 		view.on("scroll", onScroll),
 		view.on("modeSwitch", onModeSwitch),
-		view.on("updatePickOptions", onUpdatePickOptions),
-		view.on("updateDropTargets", onUpdateDropTargets),
 		view.on("updateCompletions", onUpdateCompletions),
+		
+		astMode.on("updatePickOptions", onUpdatePickOptions),
+		astMode.on("updateDropTargets", onUpdateDropTargets),
 		
 		editor.on("edit", onEdit),
 	];
@@ -613,36 +619,36 @@ onMount(function() {
 		style={inlineStyle(codeStyle)}
 	>
 		{#if mode === "ast"}
-			{#each dropTargets as {lineIndex, targets} (lineIndex)}
+			{#each dropTargetsByLine as {lineIndex, dropTargets} (lineIndex)}
 				<div
 					class="row"
 					style={inlineStyle(rowStyle(lines, lineIndex, rowHeight, colWidth, scrollPosition))}
 				>
-					{#each targets as target (target)}
+					{#each dropTargets as dropTarget (dropTarget)}
 						<div
-							use:registerDropTarget={target}
+							use:registerDropTarget={dropTarget}
 							class="item dropTarget"
-							class:active={targetIsActive(target, currentDropTarget)}
+							class:active={targetIsActive(dropTarget, currentDropTarget)}
 							class:fade={!isDragging}
 						>
-							{target.target.label}
+							{dropTarget.label}
 						</div>
 					{/each}
 				</div>
 			{/each}
-			{#each pickOptions as {lineIndex, options} (lineIndex)}
+			{#each pickOptionsByLine as {lineIndex, pickOptions} (lineIndex)}
 				<div
 					class="row"
 					style={inlineStyle(rowStyle(lines, lineIndex, rowHeight, colWidth, scrollPosition))}
 				>
-					{#each options as {option}}
+					{#each pickOptions as pickOption}}
 						<div
-							use:registerPickOption={option}
+							use:registerPickOption={registerPickOption}
 							class="item pickOption"
-							class:hover={option.type === hoveredPickOption?.type}
-							class:active={option.type === selectedPickOption?.type}
+							class:hover={pickOption.type === hoveredPickOption?.type}
+							class:active={pickOption.type === selectedPickOption?.type}
 						>
-							{option.label}
+							{pickOption.label}
 						</div>
 					{/each}
 				</div>

@@ -1,5 +1,6 @@
-import {AstSelection, a, type Lang} from "core";
+import {AstSelection, a} from "core";
 import {indentLines} from "modules/utils/editing";
+import type {AstIntel} from "modules/astIntel";
 import removeSelection from "modules/astIntel/removeSelection";
 import isIfFooter from "./utils/isIfFooter";
 

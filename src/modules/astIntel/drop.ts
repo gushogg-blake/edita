@@ -96,7 +96,7 @@ export default function(
 				let spaceAbove = toStart > 0 && document.lines[toStart - 1].indentLevel === insertIndentLevel;
 				let spaceBelow = toEnd < document.lines.length && document.lines[toEnd].indentLevel === insertIndentLevel;
 				
-				let spaces = createSpaces(toEnd - toStart, insertIndentLevel, indentStr);
+				let spaces = createSpaces(1, insertIndentLevel, indentStr);
 				
 				if (spaceAbove) {
 					lines = [...spaces, ...lines];

@@ -35,7 +35,7 @@ export abstract class AstIntel {
 		return null;
 	}
 	
-	getOpenerAndCloser(node: Node): Node | null {
+	getOpenerAndCloser(node: Node): {opener: Node; closer: Node} | null {
 		return null;
 	}
 	
