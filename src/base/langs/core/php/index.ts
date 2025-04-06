@@ -15,48 +15,6 @@ export default class extends Lang {
 		},
 	];
 	
-	getHiliteClass(node) {
-		let {
-			type,
-			parent,
-		} = node;
-		
-		if ([
-			
-		].includes(parent?.type)) {
-			return null;
-		}
-		
-		if ([
-			"$",
-			"name",
-		].includes(type)) {
-			return "id";
-		}
-		
-		if (type === "comment") {
-			return "comment";
-		}
-		
-		if (["string", "\""].includes(type)) {
-			return "string";
-		}
-		
-		if (type === "integer" || type === "float") {
-			return "number";
-		}
-		
-		if (["php_tag", "?>"].includes(type)) {
-			return "phpTag";
-		}
-		
-		if (type[0].match(wordRe)) {
-			return "keyword";
-		}
-		
-		return "symbol";
-	}
-	
 	getSupportLevel(code, path) {
 		if (!path) {
 			return null; //

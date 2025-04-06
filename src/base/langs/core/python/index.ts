@@ -7,43 +7,6 @@ export default class extends Lang {
 	defaultExtension = "py";
 	injections = [];
 	
-	getHiliteClass(node) {
-		let {
-			type,
-			parent,
-		} = node;
-		
-		if ([
-			
-		].includes(parent?.type)) {
-			return null;
-		}
-		
-		if ([
-			"identifier",
-		].includes(type)) {
-			return "id";
-		}
-		
-		if (type === "comment") {
-			return "comment";
-		}
-		
-		if (["string_literal", "\""].includes(type)) {
-			return "string";
-		}
-		
-		if (type === "integer" || type === "float") {
-			return "number";
-		}
-		
-		if (type[0].match(wordRe)) {
-			return "keyword";
-		}
-		
-		return "symbol";
-	}
-	
 	getSupportLevel(code, path) {
 		if (!path) {
 			return null; //

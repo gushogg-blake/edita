@@ -46,44 +46,6 @@ export default class extends Lang {
 		},
 	];
 	
-	getHiliteClass(node) {
-		let {
-			type,
-			parent,
-		} = node;
-		
-		if ([
-			"quoted_attribute_value",
-			"doctype",
-		].includes(parent?.type)) {
-			return null;
-		}
-		
-		if ([
-			"<",
-			">",
-			"/>",
-			"</",
-			"tag_name",
-		].includes(type)) {
-			return "tag";
-		}
-		
-		if (type === "attribute_name") {
-			return "attribute";
-		}
-		
-		if (type === "quoted_attribute_value") {
-			return "string";
-		}
-		
-		if (type === "comment") {
-			return "comment";
-		}
-		
-		return "text";
-	}
-	
 	commentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);
 		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));

@@ -22,49 +22,6 @@ export default class extends Lang {
 		return null;
 	}
 	
-	getHiliteClass(node) {
-		let {
-			type,
-			parent,
-		} = node;
-		
-		if ([
-			"regex",
-			"captureLabel",
-		].includes(parent?.type)) {
-			return null;
-		}
-		
-		if (type === "captureLabel") {
-			let prevNonEmptySibling = null;
-			let prevSibling = node.previousSibling;
-			
-			while (prevSibling) {
-				if (prevSibling.text.trim() !== "") {
-					prevNonEmptySibling = prevSibling;
-					
-					break;
-				}
-				
-				prevSibling = prevSibling.previousSibling;
-			}
-			
-			let prevType = prevNonEmptySibling?.type;
-			
-			if (["regex", "lineQuantifier", "tsq"].includes(prevType)) {
-				return "captureLabel";
-			} else {
-				return "literal";
-			}
-		}
-		
-		if (type.match(/\w/)) {
-			return type;
-		}
-		
-		return "literal";
-	}
-	
 	getSupportLevel(code, path) {
 		if (!path) {
 			return null; //

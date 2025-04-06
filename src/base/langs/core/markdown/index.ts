@@ -56,27 +56,6 @@ export default class extends Lang {
 		},
 	];
 	
-	getHiliteClass(node) {
-		let {
-			type,
-			parent,
-		} = node;
-		
-		if (parent?.type.endsWith("_heading")) {
-			return null;
-		}
-		
-		if (type === "link") {
-			return "link";
-		}
-		
-		if (type.endsWith("_heading")) {
-			return "heading";
-		}
-		
-		return "text";
-	}
-	
 	commentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);
 		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));

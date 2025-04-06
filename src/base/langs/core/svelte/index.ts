@@ -7,10 +7,6 @@ export default class extends Lang {
 	possibleInjections = ["javascript", "css", "scss", "sass"];
 	injections = [];
 	
-	getHiliteClass(node) {
-		// TODO
-	}
-	
 	getSupportLevel(code, path) {
 		let type = platform.fs(path).lastType;
 		

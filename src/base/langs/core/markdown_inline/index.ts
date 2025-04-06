@@ -21,22 +21,6 @@ export default class extends Lang {
 		return null;
 	}
 	
-	getHiliteClass(node) {
-		let {
-			type,
-			parent,
-		} = node;
-		
-		if ([
-			"inline_link",
-			"shortcut_link",
-		].includes(type)) {
-			return "link";
-		}
-		
-		return null;
-	}
-	
 	commentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);
 		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
