@@ -58,8 +58,6 @@ const TOP_MARGIN = 2;
 
 export default class View extends Evented<{
 	modeSwitch: void;
-	updatePickOptions: void;
-	updateDropTargets: void;
 	scroll: void;
 	wrapChanged: void;
 	updateCompletions: void;

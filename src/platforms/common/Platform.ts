@@ -10,6 +10,39 @@ type Path = {
 	resolve(...parts: string[]): string;
 };
 
+/*
+check loops so we can debug without freezing
+
+if iterate() is called > max times in a session (between
+calls to reset()), we get an alert in the UI, the info
+is logged to the console, and we can break the loop
+or let it continue for another step
+*/
+
+class Loop {
+	private loops = 0;
+	
+	check(max: number, ...debugInfo) {
+		if (this.loops > max) {
+			console.log("Possible infinite loop\n");
+			console.log("Debug info:\n");
+			console.log(...debugInfo);
+			
+			if (!confirm("Possible infinite loop detected after " + max + " iterations. Continue?\n\nStack trace:\n\n" + stack)) {
+				throw new Error("Breaking out of possible infinite loop");
+			}
+		}
+		
+		this.loops++;
+		
+		return true;
+	}
+	
+	reset() {
+		this.loops = 0;
+	}
+}
+
 export default class extends Evented<{
 	closeWindow: void;
 	windowClosing: void;
@@ -26,6 +59,8 @@ export default class extends Evented<{
 	lsp?: any; // TYPE
 	fs: any; // TYPE fs
 	urlsToOpenOnStartup?: URL[] = [];
+	
+	private _loop = new Loop();
 	
 	init(config?: any): Promise<void> {
 		throw new Error("abstract");
@@ -85,5 +120,13 @@ export default class extends Evented<{
 	
 	closeWindow(): void {
 		throw new Error("electron only");
+	}
+	
+	loop(...args) {
+		return this._loop.iterate(...args);
+	}
+	
+	resetLoop() {
+		this._loop.reset();
 	}
 }

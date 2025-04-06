@@ -1,3 +1,4 @@
+import {Evented} from "utils";
 import {Selection, s, Cursor, c, AstSelection, a} from "core";
 
 import {
@@ -15,14 +16,19 @@ splitting this out to reduce size of View
 could move some more stuff here probably
 */
 
-export default class {
+export default class extends Evented<{
+	updatePickOptions: void;
+	updateDropTargets: void;
+}> {
 	pickOptionsByLine: {lineIndex: number; pickOptions: PickOption[]}[] = [];
 	dropTargetsByLine: {lineIndex: number; dropTargets: DropTarget[]}[] = [];
 	
 	private view: View;
 	
 	constructor(view: View) {
-		this.view = View;
+		super();
+		
+		this.view = view;
 	}
 	
 	showPickOptionsFor(lineIndex: number) {
