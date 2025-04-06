@@ -1,5 +1,6 @@
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
-import type {Lang} from "core";
+import {AstSelection, a, Selection, s, Cursor, c} from "core";
+import type {Document, Lang} from "core";
 
 export default function(lang: Lang) {
 	return {
