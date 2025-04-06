@@ -1,4 +1,5 @@
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
+import type {Lang} from "core";
 
 export default function(lang: Lang) {
 	return {
