@@ -7,4 +7,12 @@ export default class extends AstIntel {
 	pickOptions = pickOptions;
 	dropTargets = dropTargets;
 	astManipulations = astManipulations;
+	
+	getFooter(node) {
+		return null;
+	}
+	
+	getHeader(node) {
+		return null;
+	}
 }

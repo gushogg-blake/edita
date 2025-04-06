@@ -9,6 +9,68 @@ export default class extends AstIntel {
 	dropTargets = dropTargets;
 	astManipulations = astManipulations;
 	
+	isBlock(node) {
+		return node.isMultiline() && [
+			"object",
+			"array",
+			"parenthesized_expression", // includes if condition brackets
+			"arguments",
+			"statement_block",
+			"class_body",
+			"template_string",
+			"variable_declarator",
+			"switch_body",
+		].includes(node.type);
+	}
+	
+	getFooter(node) {
+		let {parent} = node;
+		
+		if (
+			parent
+			&& this.isBlock(parent)
+			&& node.equals(parent.firstChild)
+			&& parent.lastChild.end.lineIndex > node.end.lineIndex
+		) {
+			return parent.lastChild;
+		}
+		
+		return null;
+	}
+	
+	getHeader(node) {
+		let {parent} = node;
+		
+		if (
+			parent
+			&& this.isBlock(parent)
+			&& node.equals(parent.lastChild)
+			&& parent.firstChild.start.lineIndex < node.start.lineIndex
+		) {
+			return parent.firstChild;
+		}
+		
+		return null;
+	}
+	
+	getOpenerAndCloser(node) {
+		if ([
+			"object",
+			"array",
+			"parenthesized_expression", // includes if condition brackets
+			"statement_block",
+			"class_body",
+			"template_string",
+		].includes(node.type)) {
+			return {
+				opener: node.firstChild,
+				closer: node.lastChild,
+			};
+		}
+		
+		return null;
+	}
+	
 	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines, insertIndentLevel) {
 		let spaceBlocks = base.getPref("verticalSpacing.spaceBlocks");
 		

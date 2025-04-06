@@ -5,11 +5,76 @@ import dropTargets from "./dropTargets";
 import astManipulations from "./astManipulations";
 
 export default class extends AstIntel {
-	,
-	
 	pickOptions = pickOptions;
 	dropTargets = dropTargets;
 	astManipulations = astManipulations;
+	
+	isBlock(node) {
+		return node.isMultiline() && [
+			"namespace_declaration", // classes
+			"class_declaration", // classes
+			"method_declaration", // functions
+			"initializer", // case blocks, arrays
+			"object_initializers",
+			"method_call_expression",
+			"enum_declaration",
+			//"for_statement",
+			//"while_statement",
+			//"do_statement",
+			//"if_statement",
+			//"else_statement",
+			"switch_statement",
+			"block", // for, while, do, if, else
+		].includes(node.type);
+	}
+	
+	getFooter(node) {
+		let {parent} = node;
+		
+		if (
+			parent
+			&& this.isBlock(parent)
+			&& node.equals(parent.firstChild)
+			&& parent.lastChild.end.lineIndex > node.end.lineIndex
+		) {
+			return parent.lastChild;
+		}
+		
+		return null;
+	}
+	
+	getHeader(node) {
+		let {parent} = node;
+		
+		if (
+			parent
+			&& this.isBlock(parent)
+			&& node.equals(parent.lastChild)
+			&& parent.firstChild.start.lineIndex < node.start.lineIndex
+		) {
+			return parent.firstChild;
+		}
+		
+		return null;
+	}
+	
+	getOpenerAndCloser(node) {
+		if ([
+			"object",
+			"array",
+			"parenthesized_expression", // includes if condition brackets
+			"statement_block",
+			"class_body",
+			"template_string",
+		].includes(node.type)) {
+			return {
+				opener: node.firstChild,
+				closer: node.lastChild,
+			};
+		}
+		
+		return null;
+	}
 	
 	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines, insertIndentLevel) {
 		let spaceBlocks = base.getPref("verticalSpacing.spaceBlocks");
@@ -36,5 +101,5 @@ export default class extends AstIntel {
 			above: isBelowBlock || isBlock && isBelowSibling ? 1 : 0,
 			below: isAboveBlock || isBlock && isAboveSibling ? 1 : 0,
 		};
-	},
+	}
 }

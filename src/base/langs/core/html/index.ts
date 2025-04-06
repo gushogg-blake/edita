@@ -46,43 +46,6 @@ export default class extends Lang {
 		},
 	];
 	
-	isElementBlock(node) {
-		return (
-			[
-				"element",
-				"style_element",
-				"script_element",
-			].includes(node.type)
-			&& node.firstChild.end.lineIndex !== node.lastChild.start.lineIndex
-		);
-	}
-	
-	getFooter(node) {
-		let {parent} = node;
-		
-		if (
-			node.type === "start_tag"
-			&& this.isElementBlock(parent)
-		) {
-			return parent.lastChild;
-		}
-		
-		return null;
-	}
-	
-	getHeader(node) {
-		let {parent} = node;
-		
-		if (
-			node.type === "end_tag"
-			&& this.isElementBlock(parent)
-		) {
-			return parent.firstChild;
-		}
-		
-		return null;
-	}
-	
 	getHiliteClass(node) {
 		let {
 			type,

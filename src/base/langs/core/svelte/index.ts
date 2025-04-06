@@ -7,14 +7,6 @@ export default class extends Lang {
 	possibleInjections = ["javascript", "css", "scss", "sass"];
 	injections = [];
 	
-	getFooter(node) {
-		return null;
-	}
-	
-	getHeader(node) {
-		return null;
-	}
-	
 	getHiliteClass(node) {
 		// TODO
 	}

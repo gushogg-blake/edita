@@ -8,6 +8,14 @@ export default class extends AstIntel {
 	dropTargets = dropTargets;
 	astManipulations = astManipulations;
 	
+	getFooter(node) {
+		return null;
+	}
+	
+	getHeader(node) {
+		return null;
+	}
+	
 	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines) {
 		console.log(document);
 		console.log(fromSelection);
@@ -19,5 +27,5 @@ export default class extends AstIntel {
 			above: 0,
 			below: 0,
 		};
-	},
+	}
 }

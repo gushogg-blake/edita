@@ -6,40 +6,6 @@ export default class extends Lang {
 	defaultExtension = "scss";
 	injections = [];
 	
-	isBlock(node) {
-		return node.start.lineIndex !== node.end.lineIndex && [
-			"block",
-		].includes(node.type);
-	}
-	
-	getFooter(node) {
-		let {parent} = node;
-		
-		if (
-			parent
-			&& this.isBlock(parent)
-			&& node.equals(parent.firstChild)
-		) {
-			return parent.lastChild;
-		}
-		
-		return null;
-	}
-	
-	getHeader(node) {
-		let {parent} = node;
-		
-		if (
-			parent
-			&& this.isBlock(parent)
-			&& node.equals(parent.lastChild)
-		) {
-			return parent.firstChild;
-		}
-		
-		return null;
-	}
-	
 	getHiliteClass(node) {
 		let {type, parent} = node;
 		

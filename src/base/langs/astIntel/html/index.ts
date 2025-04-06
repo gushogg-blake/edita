@@ -8,6 +8,43 @@ export default class extends AstIntel {
 	dropTargets = dropTargets;
 	astManipulations = astManipulations;
 	
+	isElementBlock(node) {
+		return (
+			[
+				"element",
+				"style_element",
+				"script_element",
+			].includes(node.type)
+			&& node.firstChild.end.lineIndex !== node.lastChild.start.lineIndex
+		);
+	}
+	
+	getFooter(node) {
+		let {parent} = node;
+		
+		if (
+			node.type === "start_tag"
+			&& this.isElementBlock(parent)
+		) {
+			return parent.lastChild;
+		}
+		
+		return null;
+	}
+	
+	getHeader(node) {
+		let {parent} = node;
+		
+		if (
+			node.type === "end_tag"
+			&& this.isElementBlock(parent)
+		) {
+			return parent.firstChild;
+		}
+		
+		return null;
+	}
+	
 	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines) {
 		console.log(document);
 		console.log(fromSelection);
@@ -19,5 +56,5 @@ export default class extends AstIntel {
 			above: 0,
 			below: 0,
 		};
-	},
+	}
 }
