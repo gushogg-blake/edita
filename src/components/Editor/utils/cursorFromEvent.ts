@@ -12,9 +12,9 @@ export function getCursor(e, view, canvasDiv) {
 	let x = e.clientX - left;
 	let y = e.clientY - top;
 	
-	let [row, col] = view.cursorRowColFromScreenCoords(x, y);
+	let [row, col] = view.canvasUtils.cursorRowColFromScreenCoords(x, y);
 	
-	return view.cursorFromRowCol(row, col);
+	return view.canvasUtils.cursorFromRowCol(row, col);
 }
 
 /*
@@ -30,7 +30,7 @@ export function getCharCursor(e, view, canvasDiv) {
 	let x = e.clientX - left;
 	let y = e.clientY - top;
 	
-	let [row, col] = view.rowColFromScreenCoords(x, y);
+	let [row, col] = view.canvasUtils.rowColFromScreenCoords(x, y);
 	
-	return view.cursorFromRowCol(row, col, true);
+	return view.canvasUtils.cursorFromRowCol(row, col, true);
 }

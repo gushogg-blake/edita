@@ -21,9 +21,9 @@ function getFoldedLineRowsToRender(view: View) {
 	let {
 		lineIndex: firstLineIndex,
 		rowIndexInLine: firstLineRowIndex,
-	} = view.findFirstVisibleLine();
+	} = view.canvasUtils.findFirstVisibleLine();
 	
-	let foldedLineRowGenerator = view.generateLineRowsFolded(firstLineIndex);
+	let foldedLineRowGenerator = view.canvasUtils.generateLineRowsFolded(firstLineIndex);
 	let foldedLineRow = foldedLineRowGenerator.next().value;
 	
 	while (foldedLineRow?.rowIndexInLine < firstLineRowIndex) {

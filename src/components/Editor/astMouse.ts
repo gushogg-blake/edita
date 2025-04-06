@@ -28,13 +28,13 @@ export default function(editor, editorComponent) {
 	
 	function lineIndexFromEvent(e) {
 		let [x, y] = getCanvasCoords(e);
-		let [row, col] = view.cursorRowColFromScreenCoords(x, y);
+		let [row, col] = view.canvasUtils.cursorRowColFromScreenCoords(x, y);
 		
-		if (row >= view.countLineRowsFolded()) {
+		if (row >= view.canvasUtils.countLineRowsFolded()) {
 			return null;
 		}
 		
-		return view.cursorFromRowCol(row, col).lineIndex;
+		return view.canvasUtils.cursorFromRowCol(row, col).lineIndex;
 	}
 	
 	function hiliteFromLineIndex(lineIndex, pickOptionType=null, withinSelection=false) {
@@ -69,7 +69,7 @@ export default function(editor, editorComponent) {
 			aboveLineIndex,
 			belowLineIndex,
 			offset,
-		} = view.insertLineIndexFromScreenY(y);
+		} = view.canvasUtils.insertLineIndexFromScreenY(y);
 		
 		let range = AstSelection.insertionRange(
 			lines,

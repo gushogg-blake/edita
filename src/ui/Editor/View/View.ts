@@ -17,7 +17,7 @@ import type {EditorMode, ActiveCompletions} from "ui/Editor";
 import SelectionUtils from "./utils/Selection";
 import AstSelectionUtils from "./utils/AstSelection";
 import wrapLine, {type WrappedLine} from "./utils/wrapLine";
-import canvasUtils from "./utils/canvasUtils";
+import CanvasUtils from "./utils/CanvasUtils";
 import Renderer from "./render/Renderer";
 import ViewLine from "./ViewLine";
 
@@ -31,6 +31,36 @@ type ViewLineDiff = {
 	newViewLines: ViewLine[];
 };
 
+type Measurements = {
+	rowHeight: number;
+	colWidth: number;
+};
+
+type MarginStyle = {
+	margin: number;
+	paddingLeft: number;
+	paddingRight: number;
+};
+
+type ScrollPosition = {
+	x: number;
+	y: number;
+};
+
+type Sizes = {
+	width: number;
+	height: number;
+	topMargin: number;
+	marginWidth: number;
+	marginOffset: number;
+	marginStyle: number;
+	codeWidth: number;
+	rows: number;
+	cols: number;
+};
+
+const TOP_MARGIN = 2;
+
 export default class View extends Evented<{
 	modeSwitch: void;
 	updatePickOptions: void;
@@ -39,7 +69,7 @@ export default class View extends Evented<{
 	wrapChange: void;
 	updateCompletions: void;
 	updateMeasurements: void;
-	updateSizes: void;
+	updateSizes:f void;
 	updateScrollbars: void;
 	updateCanvas: void;
 	requestFocus: void;
@@ -66,13 +96,25 @@ export default class View extends Evented<{
 	
 	Selection: typeof SelectionUtils;
 	AstSelection: typeof AstSelectionUtils;
-	
-	// TODO simplify
-	[K in keyof typeof canvasUtils]: (typeof canvasUtils)[K];
+	canvasUtils: CanvasUtils;
 	
 	// for remembering the "intended" col when moving a cursor up/down to a line
 	// that doesn't have as many cols as the cursor
 	selectionEndCol: number = 0;
+	
+	marginStyle: MarginStyle = {
+		margin: 2,
+		paddingLeft: 3,
+		paddingRight: 7,
+	};
+	
+	measurements: Measurements = {
+		rowHeight: 20,
+		colWidth: 8,
+	};
+	
+	sizes: Sizes;
+	scrollPosition: ScrollPosition = {x: 0, y: 0};
 	
 	private pickOptions: PickOption[] = [];
 	private dropTargets: DropTarget[] = [];
@@ -99,35 +141,16 @@ export default class View extends Evented<{
 	private cursorBlinkOn: boolean = false;
 	private cursorInterval: number | null = null;
 	
-	private topMargin: number = 2;
-	
 	constructor(document: Document) {
 		super();
 		
 		this.Selection = bindFunctions(this, SelectionUtils);
 		this.AstSelection = bindFunctions(this, AstSelectionUtils);
-		
-		Object.assign(this, canvasUtils);
+		this.canvasUtils = new CanvasUtils(this);
 		
 		this.document = document;
 		
 		this.updateAstSelectionFromNormalSelection();
-		
-		this.marginStyle = {
-			margin: 2,
-			paddingLeft: 3,
-			paddingRight: 7,
-		};
-		
-		this.measurements = {
-			rowHeight: 20,
-			colWidth: 8,
-		};
-		
-		this.scrollPosition = {
-			x: 0,
-			y: 0,
-		};
 		
 		this.updateSizes(800, 600);
 		
@@ -299,7 +322,7 @@ export default class View extends Evented<{
 			},
 		} = this;
 		
-		let {lineIndex} = this.findFirstVisibleLine();
+		let {lineIndex} = this.canvasUtils.();
 		
 		let rowsToRender = height / rowHeight;
 		let rowsRenderedOrSkipped = 0;
@@ -368,7 +391,7 @@ export default class View extends Evented<{
 			sizes: {topMargin, height},
 		} = this;
 		
-		let rows = this.countLineRowsFolded();
+		let rows = this.canvasUtils.();
 		
 		return rows === 1 ? height : topMargin + (rows - 1) * rowHeight + height;
 	}
@@ -526,8 +549,8 @@ export default class View extends Evented<{
 		let {height} = this.sizes;
 		let {startLineIndex, endLineIndex} = this.astSelection;
 		
-		let topY = this.screenYFromLineIndex(startLineIndex);
-		let bottomY = this.screenYFromLineIndex(endLineIndex);
+		let topY = this.canvasUtils.(startLineIndex);
+		let bottomY = this.canvasUtils.(endLineIndex);
 		let selectionHeight = bottomY - topY;
 		let bottomDistance = height - bottomY;
 		
@@ -562,9 +585,9 @@ export default class View extends Evented<{
 		
 		let {end} = this.normalSelection;
 		let {lineIndex, offset} = end;
-		let [row, col] = this.rowColFromCursor(end);
+		let [row, col] = this.canvasUtils.(end);
 		
-		let maxRow = this.countLineRowsFolded() - 1;
+		let maxRow = this.canvasUtils.() - 1;
 		let firstVisibleRow = Math.floor(scrollPosition.y / rowHeight);
 		let firstFullyVisibleRow = Math.ceil(scrollPosition.y / rowHeight);
 		let lastFullyVisibleRow = firstVisibleRow + rows;
@@ -587,7 +610,7 @@ export default class View extends Evented<{
 		if (!this.wrap) {
 			let colBuffer = colWidth * 4;
 			
-			let [x] = this.screenCoordsFromRowCol(row, col);
+			let [x] = this.canvasUtils.(row, col);
 			
 			x -= this.sizes.marginOffset;
 			
@@ -664,7 +687,7 @@ export default class View extends Evented<{
 	}
 	
 	updateSelectionEndCol() {
-		let [, endCol] = this.rowColFromCursor(this.normalSelection.end);
+		let [, endCol] = this.canvasUtils.(this.normalSelection.end);
 		
 		this.selectionEndCol = endCol;
 	}
@@ -804,7 +827,6 @@ export default class View extends Evented<{
 		
 		let {
 			lines,
-			topMargin,
 			marginStyle,
 			measurements,
 		} = this;
@@ -821,7 +843,7 @@ export default class View extends Evented<{
 		this.sizes = {
 			width,
 			height,
-			topMargin,
+			topMargin: TOP_MARGIN,
 			marginWidth,
 			marginOffset,
 			marginStyle,

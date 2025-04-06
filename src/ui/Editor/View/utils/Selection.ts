@@ -11,7 +11,7 @@ let wordUnderCursorRe = {
 
 export default {
 	up() {
-		let [startRow, startCol] = this.rowColFromCursor(this.normalSelection.left);
+		let [startRow, startCol] = this.canvasUtils.rowColFromCursor(this.normalSelection.left);
 		
 		if (startRow === 0) {
 			return s(c(0, 0));
@@ -20,21 +20,21 @@ export default {
 		let row = startRow - 1;
 		let col = this.selectionEndCol;
 		
-		return s(this.cursorFromRowCol(row, col));
+		return s(this.canvasUtils.cursorFromRowCol(row, col));
 	},
 	
 	down() {
 		let {right} = this.normalSelection;
-		let [endRow, endCol] = this.rowColFromCursor(right);
+		let [endRow, endCol] = this.canvasUtils.rowColFromCursor(right);
 		
-		if (endRow === this.countLineRowsFolded() - 1) {
+		if (endRow === this.canvasUtils.countLineRowsFolded() - 1) {
 			return s(c(right.lineIndex, this.lines[right.lineIndex].string.length));
 		}
 		
 		let row = endRow + 1;
 		let col = this.selectionEndCol;
 		
-		return s(this.cursorFromRowCol(row, col));
+		return s(this.canvasUtils.cursorFromRowCol(row, col));
 	},
 	
 	left() {
@@ -80,49 +80,49 @@ export default {
 		let {rows} = this.sizes;
 		let {left} = this.normalSelection;
 		
-		let [startRow, startCol] = this.rowColFromCursor(left);
+		let [startRow, startCol] = this.canvasUtils.rowColFromCursor(left);
 		
 		let row = Math.max(0, startRow - rows);
 		let col = this.selectionEndCol;
 		
-		return s(this.cursorFromRowCol(row, col));
+		return s(this.canvasUtils.cursorFromRowCol(row, col));
 	},
 	
 	pageDown() {
 		let {rows} = this.sizes;
 		let {right} = this.normalSelection;
 		
-		let [endRow, endCol] = this.rowColFromCursor(right);
+		let [endRow, endCol] = this.canvasUtils.rowColFromCursor(right);
 		
-		let row = Math.min(endRow + rows, this.countLineRowsFolded() - 1);
+		let row = Math.min(endRow + rows, this.canvasUtils.countLineRowsFolded() - 1);
 		let col = this.selectionEndCol;
 		
-		return s(this.cursorFromRowCol(row, col));
+		return s(this.canvasUtils.cursorFromRowCol(row, col));
 	},
 	
 	home() {
 		let {wrappedLines} = this;
 		let {left} = this.normalSelection;
 		let {lineIndex, offset} = left;
-		let [row, col] = this.rowColFromCursor(left);
+		let [row, col] = this.canvasUtils.rowColFromCursor(left);
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(left);
+		let [lineRowIndex, offsetInRow] = this.canvasUtils.lineRowIndexAndOffsetFromCursor(left);
 		let {indentCols} = line;
 		
 		if (wrappedLine.height > 1 && lineRowIndex > 0) {
 			if (offsetInRow === 0) {
-				let startingRow = this.getLineStartingRow(lineIndex);
+				let startingRow = this.canvasUtils.getLineStartingRow(lineIndex);
 				
-				return s(this.cursorFromRowCol(startingRow, indentCols));
+				return s(this.canvasUtils.cursorFromRowCol(startingRow, indentCols));
 			} else {
-				return s(this.cursorFromRowCol(row, indentCols));
+				return s(this.canvasUtils.cursorFromRowCol(row, indentCols));
 			}
 		} else {
 			if (!this.normalSelection.isFull() && col === indentCols) {
-				return s(this.cursorFromRowCol(row, 0));
+				return s(this.canvasUtils.cursorFromRowCol(row, 0));
 			} else {
-				return s(this.cursorFromRowCol(row, indentCols));
+				return s(this.canvasUtils.cursorFromRowCol(row, indentCols));
 			}
 		}
 	},
@@ -133,7 +133,7 @@ export default {
 		let {lineIndex, offset} = right;
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(right);
+		let [lineRowIndex, offsetInRow] = this.canvasUtils.lineRowIndexAndOffsetFromCursor(right);
 		
 		if (wrappedLine.height > 1 && lineRowIndex < wrappedLine.height - 1) {
 			let lineRow = wrappedLine.lineRows[lineRowIndex];
@@ -180,7 +180,7 @@ export default {
 	
 	expandOrContractUp() {
 		let {start, end} = this.normalSelection;
-		let [endRow, endCol] = this.rowColFromCursor(end);
+		let [endRow, endCol] = this.canvasUtils.rowColFromCursor(end);
 		
 		if (endRow === 0) {
 			return s(start, c(0, 0));
@@ -189,23 +189,23 @@ export default {
 		let row = endRow - 1;
 		let col = this.selectionEndCol;
 		
-		return s(start, this.cursorFromRowCol(row, col));
+		return s(start, this.canvasUtils.cursorFromRowCol(row, col));
 	},
 	
 	expandOrContractDown() {
 		let {wrappedLines} = this;
 		let {start, end} = this.normalSelection;
 		let {lineIndex} = end;
-		let [endRow, endCol] = this.rowColFromCursor(end);
+		let [endRow, endCol] = this.canvasUtils.rowColFromCursor(end);
 		
-		if (endRow === this.countLineRowsFolded() - 1) {
+		if (endRow === this.canvasUtils.countLineRowsFolded() - 1) {
 			return s(start, c(lineIndex, wrappedLines[lineIndex].line.string.length));
 		}
 		
 		let row = endRow + 1;
 		let col = this.selectionEndCol;
 		
-		return s(start, this.cursorFromRowCol(row, col));
+		return s(start, this.canvasUtils.cursorFromRowCol(row, col));
 	},
 	
 	expandOrContractLeft() {
@@ -246,48 +246,48 @@ export default {
 	expandOrContractPageUp() {
 		let {rows} = this.sizes;
 		let {start, end} = this.normalSelection;
-		let [endRow, endCol] = this.rowColFromCursor(end);
+		let [endRow, endCol] = this.canvasUtils.rowColFromCursor(end);
 		
 		let row = Math.max(0, endRow - rows);
 		let col = this.selectionEndCol;
 		
-		return s(start, this.cursorFromRowCol(row, col));
+		return s(start, this.canvasUtils.cursorFromRowCol(row, col));
 	},
 	
 	expandOrContractPageDown() {
 		let {rows} = this.sizes;
 		let {start, end} = this.normalSelection;
-		let [endRow, endCol] = this.rowColFromCursor(end);
+		let [endRow, endCol] = this.canvasUtils.rowColFromCursor(end);
 		
-		let row = Math.min(endRow + rows, this.countLineRowsFolded() - 1);
+		let row = Math.min(endRow + rows, this.canvasUtils.countLineRowsFolded() - 1);
 		let col = this.selectionEndCol;
 		
-		return s(start, this.cursorFromRowCol(row, col));
+		return s(start, this.canvasUtils.cursorFromRowCol(row, col));
 	},
 	
 	expandOrContractHome() {
 		let {wrappedLines} = this;
 		let {start, end} = this.normalSelection;
 		let {lineIndex, offset} = end;
-		let [row, col] = this.rowColFromCursor(end);
+		let [row, col] = this.canvasUtils.rowColFromCursor(end);
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(end);
+		let [lineRowIndex, offsetInRow] = this.canvasUtils.lineRowIndexAndOffsetFromCursor(end);
 		let {indentCols} = line;
 		
 		if (wrappedLine.height > 1 && lineRowIndex > 0) {
 			if (offsetInRow === 0) {
-				let startingRow = this.getLineStartingRow(lineIndex);
+				let startingRow = this.canvasUtils.getLineStartingRow(lineIndex);
 				
-				return s(start, this.cursorFromRowCol(startingRow, indentCols));
+				return s(start, this.canvasUtils.cursorFromRowCol(startingRow, indentCols));
 			} else {
-				return s(start, this.cursorFromRowCol(row, indentCols));
+				return s(start, this.canvasUtils.cursorFromRowCol(row, indentCols));
 			}
 		} else {
 			if (col === indentCols) {
-				return s(start, this.cursorFromRowCol(row, 0));
+				return s(start, this.canvasUtils.cursorFromRowCol(row, 0));
 			} else {
-				return s(start, this.cursorFromRowCol(row, indentCols));
+				return s(start, this.canvasUtils.cursorFromRowCol(row, indentCols));
 			}
 		}
 	},
@@ -298,7 +298,7 @@ export default {
 		let {lineIndex, offset} = end;
 		let wrappedLine = wrappedLines[lineIndex];
 		let {line} = wrappedLine;
-		let [lineRowIndex, offsetInRow] = this.lineRowIndexAndOffsetFromCursor(end);
+		let [lineRowIndex, offsetInRow] = this.canvasUtils.lineRowIndexAndOffsetFromCursor(end);
 		
 		if (wrappedLine.height > 1 && lineRowIndex < wrappedLine.height - 1) {
 			let lineRow = wrappedLine.lineRows[lineRowIndex];

@@ -464,7 +464,7 @@ function calculateCodeStyle(sizes, mode, dragStartedHere) {
 }
 
 function rowStyle(lines, lineIndex, rowHeight, colWidth, scrollPosition) {
-	let screenY = view.screenYFromLineIndex(lineIndex);
+	let screenY = view.canvasUtils.screenYFromLineIndex(lineIndex);
 	let line = lines[lineIndex];
 	let screenCol = line.trimmed ? line.width + 1 : line.width;
 	
@@ -477,8 +477,8 @@ function rowStyle(lines, lineIndex, rowHeight, colWidth, scrollPosition) {
 
 function completionsStyle(completions, rowHeight, colWidth, scrollPosition) {
 	let {cursor} = completions;
-	let [row, col] = view.rowColFromCursor(cursor);
-	let screenY = view.screenYFromLineIndex(cursor.lineIndex + 1);
+	let [row, col] = view.canvasUtils.rowColFromCursor(cursor);
+	let screenY = view.canvasUtils.screenYFromLineIndex(cursor.lineIndex + 1);
 	let screenCol = col;
 	
 	return {
