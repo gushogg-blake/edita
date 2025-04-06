@@ -6,14 +6,14 @@ export default class extends CodeIntel {
 	}
 	
 	indentAdjustmentAfterInsertion(document, line, cursor) {
-		let nodes = document.getNodesOnLine(cursor.lineIndex, lang);
+		let nodes = document.getNodesOnLine(cursor.lineIndex, this.lang);
 		
 		for (let node of nodes) {
 			if (node.end.offset !== cursor.offset) {
 				continue;
 			}
 			
-			let header = lang.getHeader(node);
+			let header = this.lang.getHeader(node);
 			
 			if (header) {
 				let {indentLevel} = document.lines[header.start.lineIndex];

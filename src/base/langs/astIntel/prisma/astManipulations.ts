@@ -1,12 +1,6 @@
-import AstSelection, {a} from "core/AstSelection";
-import Selection, {s} from "core/Selection";
-import Cursor, {c} from "core/Cursor";
-
-let lang;
+import {AstSelection, a, Selection, s, Cursor, c} from "core";
 
 export default {
-	,
-	
 	convertVariableAssignmentsToObject: {
 		code: "convertVariableAssignmentsToObject",
 		name: "Convert to object",

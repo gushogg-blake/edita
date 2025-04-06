@@ -47,29 +47,24 @@ export default class Base extends Evented<{
 	langs: ReturnType<typeof langs>;
 	astIntel: ReturnType<typeof astIntel>;
 	codeIntel: ReturnType<typeof codeIntel>;
-	DirEntries: typeof DirEntries;
-	packageJson: any;
 	themes: Record<string, Theme>;
 	theme: Theme;
 	stores: Stores;
 	prefs: Prefs;
+	DirEntries = DirEntries;
 	
 	options: BaseOptions;
-	
 	components: Record<string, any>; // TYPE Svelte components
+	packageJson = packageJson;
 	
 	private initialisedLangs = new Set<Lang>();
 	
 	constructor() {
 		super();
 		
-		this.packageJson = packageJson;
-		
 		this.langs = langs();
 		this.astIntel = astIntel();
 		this.codeIntel = codeIntel();
-		
-		this.DirEntries = DirEntries;
 	}
 	
 	async init(components, options: BaseOptions = {}) {

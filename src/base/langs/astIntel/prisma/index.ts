@@ -5,8 +5,6 @@ import dropTargets from "./dropTargets";
 import astManipulations from "./astManipulations";
 
 export default class extends AstIntel {
-	,
-	
 	pickOptions = pickOptions;
 	dropTargets = dropTargets;
 	astManipulations = astManipulations;
@@ -36,5 +34,5 @@ export default class extends AstIntel {
 			above: isBelowBlock || isBlock && isBelowSibling ? 1 : 0,
 			below: isAboveBlock || isBlock && isAboveSibling ? 1 : 0,
 		};
-	},
+	}
 }
