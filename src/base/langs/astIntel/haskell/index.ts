@@ -3,12 +3,12 @@ import pickOptions from "./pickOptions";
 import dropTargets from "./dropTargets";
 import astManipulations from "./astManipulations";
 
-export default {
+export default class extends AstIntel {
 	,
 	
-	pickOptions,
-	dropTargets,
-	astManipulations,
+	pickOptions = pickOptions;
+	dropTargets = dropTargets;
+	astManipulations = astManipulations;
 	
 	adjustSpaces(document, fromSelection, toSelection, selectionLines, insertLines, insertIndentLevel) {
 		let spaceBlocks = base.getPref("verticalSpacing.spaceBlocks");
@@ -36,4 +36,4 @@ export default {
 			below: isAboveBlock || isBlock && isAboveSibling ? 1 : 0,
 		};
 	},
-};
+}
