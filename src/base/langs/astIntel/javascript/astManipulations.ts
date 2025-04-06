@@ -2,7 +2,7 @@ import {AstSelection, a, Selection, s, Cursor, c} from "core";
 import type {Document} from "core";
 import type {AstIntel} from "modules/astIntel";
 
-export default function(lang: Lang) {
+export default function(astIntel: AstIntel) {
 	return {
 		convertVariableAssignmentsToObject: {
 			code: "convertVariableAssignmentsToObject",
@@ -148,13 +148,13 @@ export default function(lang: Lang) {
 			group: "$change",
 			
 			isAvailable(document, astSelection) {
-				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, astIntel.lang);
 				
 				return nodes.some(node => node.type === "if_statement");
 			},
 			
 			setNormalModeSelection(document, astSelection) {
-				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, astIntel.lang);
 				
 				let ifStatement = nodes.find(node => node.type === "if_statement");
 				let parenthesizedExpression = ifStatement.children[1];
@@ -170,13 +170,13 @@ export default function(lang: Lang) {
 			group: "$change",
 			
 			isAvailable(document, astSelection) {
-				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, astIntel.lang);
 				
 				return nodes.some(node => node.type === "while_statement");
 			},
 			
 			setNormalModeSelection(document, astSelection) {
-				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, astIntel.lang);
 				
 				let whileStatement = nodes.find(node => node.type === "while_statement");
 				let parenthesizedExpression = whileStatement.children[1];
@@ -192,13 +192,13 @@ export default function(lang: Lang) {
 			group: "$change",
 			
 			isAvailable(document, astSelection) {
-				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, astIntel.lang);
 				
 				return nodes.some(node => node.type === "for_statement");
 			},
 			
 			setNormalModeSelection(document, astSelection) {
-				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, astIntel.lang);
 				
 				let forStatement = nodes.find(node => node.type === "for_statement");
 				let openingBracket = forStatement.children.find(node => node.type === "(");

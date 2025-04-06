@@ -4,7 +4,7 @@ import type {AstIntel} from "modules/astIntel";
 import {indentLines} from "modules/utils/editing";
 import removeSelection from "modules/astIntel/removeSelection";
 
-export default function(lang: Lang) {
+export default function(astIntel: AstIntel) {
 	return {
 		addSelectionToNewRule: {
 			type: "addSelectionToNewRule",

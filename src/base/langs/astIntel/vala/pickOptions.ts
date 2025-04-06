@@ -3,7 +3,7 @@ import type {Document} from "core";
 import type {AstIntel} from "modules/astIntel";
 import {isHeader, getHeaders} from "modules/astIntel/utils";
 
-export default function(lang: Lang) {
+export default function(astIntel: AstIntel) {
 	return {
 		contents: {
 			type: "contents",

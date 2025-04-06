@@ -5,7 +5,7 @@ import {indentLines} from "modules/utils/editing";
 import removeSelection from "modules/astIntel/removeSelection";
 import isIfFooter from "./utils/isIfFooter";
 
-export default function(lang: Lang) {
+export default function(astIntel: AstIntel) {
 	return {
 		addSelectionToNewElse: {
 			type: "addSelectionToNewElse",
