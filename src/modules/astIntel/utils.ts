@@ -1,6 +1,6 @@
 export function getFooterLineIndex(document, lineIndex) {
 	for (let node of document.generateNodesStartingOnLine(lineIndex)) {
-		let footer = node.lang.getFooter(node);
+		let footer = node.lang.astIntel?.getFooter(node);
 		
 		if (footer) {
 			return footer.end.lineIndex;
@@ -12,7 +12,7 @@ export function getFooterLineIndex(document, lineIndex) {
 
 export function getHeaderLineIndex(document, lineIndex) {
 	for (let node of document.generateNodesStartingOnLine(lineIndex)) {
-		let header = node.lang.getHeader(node);
+		let header = node.lang.astIntel?.getHeader(node);
 		
 		if (header) {
 			return header.start.lineIndex;
@@ -36,7 +36,7 @@ export function getHeaders(document, lineIndex) {
 	return nodes.map(function(node) {
 		return {
 			header: node,
-			footer: node.lang.getFooter(node),
+			footer: node.lang.astIntel?.getFooter(node),
 		};
 	}).filter(r => r.footer);
 }
@@ -46,7 +46,7 @@ export function getFooters(document, lineIndex) {
 	
 	return nodes.map(function(node) {
 		return {
-			header: node.lang.getHeader(node),
+			header: node.lang.astIntel?.getHeader(node),
 			footer: node,
 		};
 	}).filter(r => r.header);

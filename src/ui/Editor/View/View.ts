@@ -21,10 +21,6 @@ import CanvasUtils from "./utils/CanvasUtils";
 import Renderer from "./render/Renderer";
 import ViewLine from "./ViewLine";
 
-type SetNormalSelectionOptions = {
-	updateAstSelection: boolean;
-};
-
 type ViewLineDiff = {
 	startLineIndex: number;
 	invalidCount: number;
@@ -134,6 +130,8 @@ export default class View extends Evented<{
 	// distinguish between line indexes and line positions (where a position can be
 	// array.length, whereas an index can't)
 	private folds: Record<string, number> = {};
+	
+	private needToUpdateAstSelection: boolean = false;
 	
 	private redrawTimer: number | null = null;
 	private redrawnWhileHidden: boolean = false;
@@ -253,6 +251,7 @@ export default class View extends Evented<{
 	switchToAstMode(): void {
 		this.mode = "ast";
 		
+		this.updateAstSelection();
 		this.clearCursorBlink();
 		this.scheduleRedraw();
 		
@@ -628,21 +627,22 @@ export default class View extends Evented<{
 		this.fire("scroll");
 	}
 	
-	setNormalSelection(selection, options?: SetNormalSelectionOptions) {
-		options = {
-			updateAstSelection: true,
-			...options,
-		};
-		
+	setNormalSelection(selection) {
 		this.normalSelection = this.Selection.validate(selection);
+		
+		this.needToUpdateAstSelection = true;
 		
 		// TODO validate for folds
 		
-		if (options.updateAstSelection) {
-			this.updateAstSelectionFromNormalSelection();
-		}
-		
 		this.scheduleRedraw();
+	}
+	
+	updateAstSelection() {
+		if (this.needToUpdateAstSelection) {
+			this.updateAstSelectionFromNormalSelection();
+			
+			this.needToUpdateAstSelection = false;
+		}
 	}
 	
 	validateSelection() {

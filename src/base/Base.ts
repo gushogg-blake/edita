@@ -17,7 +17,7 @@ import stores, {type Stores} from "base/stores";
 import type {Prefs, Theme} from "base/types";
 
 import {generateRequiredLangs} from "./utils";
-import {core as langs, astIntel, codeIntel} from "./langs";
+import {core as langs, astIntel, codeIntel, hiliters} from "./langs";
 
 import packageJson from "root/package.json";
 
@@ -44,9 +44,10 @@ export default class Base extends Evented<{
 	prefsUpdated: void;
 	themeUpdated: void;
 }> {
-	langs: ReturnType<typeof langs>;
-	astIntel: ReturnType<typeof astIntel>;
-	codeIntel: ReturnType<typeof codeIntel>;
+	langs = langs();
+	astIntel = astIntel();
+	codeIntel = codeIntel();
+	hiliters = hiliters();
 	themes: Record<string, Theme>;
 	theme: Theme;
 	stores: Stores;
@@ -58,14 +59,6 @@ export default class Base extends Evented<{
 	packageJson = packageJson;
 	
 	private initialisedLangs = new Set<Lang>();
-	
-	constructor() {
-		super();
-		
-		this.langs = langs();
-		this.astIntel = astIntel();
-		this.codeIntel = codeIntel();
-	}
 	
 	async init(components, options: BaseOptions = {}) {
 		options = {

@@ -84,7 +84,6 @@ export default class Editor extends Evented<{
 	private snippetSession?: any; // TYPE
 	private batchState: "typing" | "backspace" | "delete" | null = null;
 	private mouseIsDown: boolean = false;
-	private needToUpdateAstSelection: boolean = false;
 	private throttledBackup: () => void;
 	
 	// TYPE this might not be technically right as they go through bindFunctions
@@ -578,11 +577,7 @@ export default class Editor extends Evented<{
 	}
 	
 	setSelectionFromNormalKeyboard(selection) {
-		this.setNormalSelection(selection, {
-			updateAstSelection: false,
-		});
-		
-		this.needToUpdateAstSelection = true;
+		this.setNormalSelection(selection);
 		
 		this.setSelectionClipboard();
 		
@@ -592,8 +587,8 @@ export default class Editor extends Evented<{
 		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
 	
-	setSelectionFromNormalMouse(selection, options={}) {
-		this.setNormalSelection(selection, options);
+	setSelectionFromNormalMouse(selection) {
+		this.setNormalSelection(selection);
 		this.setSelectionClipboard();
 		this.view.updateSelectionEndCol();
 		
@@ -605,7 +600,7 @@ export default class Editor extends Evented<{
 		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
 	
-	setNormalSelection(selection, options?) {
+	setNormalSelection(selection) {
 		this.view.setNormalSelection(selection, options);
 		
 		this.wordCompletion.selectionChanged();
@@ -690,16 +685,7 @@ export default class Editor extends Evented<{
 		});
 	}
 	
-	updateAstSelection() {
-		if (this.needToUpdateAstSelection) {
-			this.view.updateAstSelectionFromNormalSelection();
-			
-			this.needToUpdateAstSelection = false;
-		}
-	}
-	
 	switchToAstMode() {
-		this.updateAstSelection();
 		this.clearCompletions();
 		this.view.switchToAstMode();
 	}

@@ -127,7 +127,7 @@ let api = {
 		let {startLineIndex} = selection;
 		
 		for (let node of document.generateNodesStartingOnLine(startLineIndex)) {
-			let footer = node.lang.getFooter(node);
+			let footer = node.lang.astIntel?.getFooter(node);
 			
 			if (footer) {
 				let header = node;
