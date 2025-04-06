@@ -11,10 +11,6 @@ export type Injection = Partial<{
 	excludeChildren?: boolean;
 }>;
 
-//interface ILang {
-//	
-//}
-
 type SupportLevel = "specific" | "general" | "alternate" | null;
 
 export default abstract class Lang {
