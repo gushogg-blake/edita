@@ -3,9 +3,7 @@ import Cursor, {c} from "core/Cursor";
 
 export default {
 	drawSelection(selection) {
-		this.view.setNormalSelection(selection, {
-			updateAstSelection: false,
-		});
+		this.view.setNormalSelection(selection);
 	},
 	
 	drawDoubleClickSelection(origWordSelection, cursor) {
@@ -18,9 +16,7 @@ export default {
 			newSelection = s(origWordSelection.left, wordUnderCursor.right);
 		}
 		
-		this.view.setNormalSelection(newSelection, {
-			updateAstSelection: false,
-		});
+		this.view.setNormalSelection(newSelection);
 	},
 	
 	finishDrawingSelection() {
@@ -32,13 +28,9 @@ export default {
 	},
 	
 	setSelectionAndStartCursorBlink(selection) {
-		let {view} = this;
+		this.setSelectionFromNormalMouse(selection);
 		
-		this.setSelectionFromNormalMouse(selection, {
-			updateAstSelection: false,
-		});
-		
-		view.startCursorBlink();
+		this.view.startCursorBlink();
 	},
 	
 	async insertSelectionClipboard(cursor) {
