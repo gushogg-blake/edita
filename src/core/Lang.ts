@@ -39,6 +39,10 @@ export default abstract class Lang {
 		return base.codeIntel.get(this.code);
 	}
 	
+	get hiliter() {
+		return base.hiliters.get(this.code);
+	}
+	
 	async initTreeSitterLanguage() {
 		this.treeSitterLanguage = await platform.loadTreeSitterLanguage(this.code);
 		
