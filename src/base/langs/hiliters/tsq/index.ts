@@ -2,14 +2,6 @@ import type {Node} from "core";
 import {Hiliter} from "modules/hiliter";
 
 export default class extends Hiliter {
-	getFooter(node) {
-		return null;
-	}
-	
-	getHeader(node) {
-		return null;
-	}
-	
 	getHiliteClass(node: Node): string | null {
 		let {
 			type,

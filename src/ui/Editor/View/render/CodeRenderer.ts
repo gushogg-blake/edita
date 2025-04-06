@@ -169,7 +169,7 @@ export default class extends LineRowRenderer {
 	
 	getStyle(node) {
 		let {lang} = this.scope;
-		let hiliteClass = lang.getHiliteClass(node);
+		let hiliteClass = lang.hiliter?.getHiliteClass(node);
 		let styles = base.theme.langs[lang.code];
 		
 		return styles && hiliteClass ? styles[hiliteClass] : null;

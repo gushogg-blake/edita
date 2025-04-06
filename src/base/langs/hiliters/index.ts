@@ -17,4 +17,3 @@ export {default as ruby} from "./ruby";
 //export {default as codepatterns} from "./codepatterns";
 //export {default as tsq} from "./tsq";
 export {default as prisma} from "./prisma";
-export {default as plaintext} from "./plaintext";
