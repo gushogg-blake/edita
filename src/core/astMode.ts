@@ -100,31 +100,3 @@ export type PickOption = {
 	isAvailable: (document: Document, lineIndex: number) => boolean;
 	getSelection: (document: Document, lineIndex: number) => AstSelection;
 };
-
-export function astManipulationIsAvailable(
-	astManipulation: AstManipulation,
-	document: Document,
-	selection: Selection,
-): boolean {
-	return !astManipulation.isAvailable || astManipulation.isAvailable(document, selection);
-}
-
-export function getPickOptions(
-	astIntel: AstIntel,
-	document: Document,
-	lineIndex: number,
-): PickOption[] {
-	return Object.values(astIntel.pickOptions).filter((pickOption) => {
-		return pickOption.isAvailable(document, lineIndex);
-	});
-}
-
-export function getDropTargets(
-	astIntel: AstIntel,
-	document: Document,
-	lineIndex: number,
-): DropTarget[] {
-	return Object.values(astIntel.dropTargets).filter((dropTarget) => {
-		return dropTarget.isAvailable(document, lineIndex);
-	});
-}

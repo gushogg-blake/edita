@@ -7,9 +7,9 @@ export default function(lang: Lang) {
 			code: "convertVariableAssignmentsToObject",
 			name: "Convert to object",
 			
-			isAvailable(document, selection) {
+			isAvailable(document, astSelection) {
 				let {lines} = document;
-				let {startLineIndex, endLineIndex} = selection;
+				let {startLineIndex, endLineIndex} = astSelection;
 				
 				for (let i = startLineIndex; i < endLineIndex; i++) {
 					let line = lines[i];
@@ -34,9 +34,9 @@ export default function(lang: Lang) {
 				return true;
 			},
 			
-			apply(multiStepCommand, document, selection) {
+			apply(multiStepCommand, document, astSelection) {
 				let {lines} = document;
-				let {startLineIndex: start, endLineIndex: end} = selection;
+				let {startLineIndex: start, endLineIndex: end} = astSelection;
 				let {indentLevel: baseIndentLevel} = lines[start];
 				let statements = [];
 				
@@ -132,11 +132,11 @@ export default function(lang: Lang) {
 		//	code: "unwrap",
 		//	name: "Unwrap",
 		//	
-		//	isAvailable(document, selection) {
+		//	isAvailable(document, astSelection) {
 		//		
 		//	},
 		//	
-		//	apply(multiStepCommand, document, selection) {
+		//	apply(multiStepCommand, document, astSelection) {
 		//		
 		//	},
 		//},
@@ -146,14 +146,14 @@ export default function(lang: Lang) {
 			name: "Change `if` condition",
 			group: "$change",
 			
-			isAvailable(document, selection) {
-				let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			isAvailable(document, astSelection) {
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
 				
 				return nodes.some(node => node.type === "if_statement");
 			},
 			
-			setNormalModeSelection(document, selection) {
-				let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			setNormalModeSelection(document, astSelection) {
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
 				
 				let ifStatement = nodes.find(node => node.type === "if_statement");
 				let parenthesizedExpression = ifStatement.children[1];
@@ -168,14 +168,14 @@ export default function(lang: Lang) {
 			name: "Change `while` condition",
 			group: "$change",
 			
-			isAvailable(document, selection) {
-				let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			isAvailable(document, astSelection) {
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
 				
 				return nodes.some(node => node.type === "while_statement");
 			},
 			
-			setNormalModeSelection(document, selection) {
-				let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			setNormalModeSelection(document, astSelection) {
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
 				
 				let whileStatement = nodes.find(node => node.type === "while_statement");
 				let parenthesizedExpression = whileStatement.children[1];
@@ -190,14 +190,14 @@ export default function(lang: Lang) {
 			name: "Change `for` initialiser",
 			group: "$change",
 			
-			isAvailable(document, selection) {
-				let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			isAvailable(document, astSelection) {
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
 				
 				return nodes.some(node => node.type === "for_statement");
 			},
 			
-			setNormalModeSelection(document, selection) {
-				let nodes = document.getNodesOnLine(selection.startLineIndex, lang);
+			setNormalModeSelection(document, astSelection) {
+				let nodes = document.getNodesOnLine(astSelection.startLineIndex, lang);
 				
 				let forStatement = nodes.find(node => node.type === "for_statement");
 				let openingBracket = forStatement.children.find(node => node.type === "(");
@@ -214,11 +214,11 @@ export default function(lang: Lang) {
 		//	code: "toggleMultilineOuter",
 		//	name: "Toggle multi-line (outermost node)",
 		//	
-		//	isAvailable(document, selection) {
+		//	isAvailable(document, astSelection) {
 		//		return true;
 		//	},
 		//	
-		//	apply(multiStepCommand, document, selection) {
+		//	apply(multiStepCommand, document, astSelection) {
 		//		console.log("toggleMultilineOuter");
 		//		
 		//		return [];

@@ -1,4 +1,4 @@
-import type {Selection, Document, Node, Line} from "core";
+import type {AstSelection, Document, Node, Line} from "core";
 import type {AstSelectionContents, PickOption, DropTarget, AstManipulation} from "core/astMode";
 
 export {default as selectionUtils} from "./selectionUtils";
@@ -49,4 +49,32 @@ export abstract class AstIntel {
 	): {above: number; below: number} {
 		return {above: 0, below: 0};
 	}
+}
+
+export function astManipulationIsAvailable(
+	astManipulation: AstManipulation,
+	document: Document,
+	selection: AstSelection,
+): boolean {
+	return !astManipulation.isAvailable || astManipulation.isAvailable(document, selection);
+}
+
+export function getPickOptions(
+	astIntel: AstIntel,
+	document: Document,
+	lineIndex: number,
+): PickOption[] {
+	return Object.values(astIntel.pickOptions).filter((pickOption) => {
+		return pickOption.isAvailable(document, lineIndex);
+	});
+}
+
+export function getDropTargets(
+	astIntel: AstIntel,
+	document: Document,
+	lineIndex: number,
+): DropTarget[] {
+	return Object.values(astIntel.dropTargets).filter((dropTarget) => {
+		return dropTarget.isAvailable(document, lineIndex);
+	});
 }
