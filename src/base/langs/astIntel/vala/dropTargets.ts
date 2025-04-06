@@ -1,5 +1,6 @@
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
-import type {Document, Lang} from "core";
+import type {Document} from "core";
+import type {AstIntel} from "modules/astIntel";
 import {indentLines} from "modules/utils/editing";
 import removeSelection from "modules/astIntel/removeSelection";
 import isIfFooter from "./utils/isIfFooter";
