@@ -130,7 +130,7 @@ export default class AstSelection {
 		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));
 		
 		return lines.map(function(line) {
-			return [line.indentLevel - minIndentLevel, line.trimmed];
+			return {indent: line.indentLevel - minIndentLevel, string: line.trimmed};
 		});
 	}
 	
@@ -139,8 +139,8 @@ export default class AstSelection {
 		indentStr: string,
 		indent: number = 0,
 	): string[] {
-		return selectionContents.map(function([indentLevel, line]) {
-			return indentStr.repeat(indent + indentLevel) + line;
+		return selectionContents.map(function({indent, string}) {
+			return indentStr.repeat(indent + indentLevel) + string;
 		});
 	}
 }

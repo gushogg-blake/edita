@@ -3,7 +3,7 @@ import bindFunctions from "utils/bindFunctions";
 
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
 import type {Document} from "core";
-import type {HistoryEntry} from "core/Document";
+import type {Edit, HistoryEntry} from "core/Document";
 
 import type App from "ui/App";
 
@@ -73,7 +73,7 @@ export default class Editor extends Evented<{
 	api: EditorApi;
 	
 	private env?: EditorEnv;
-	private modeSwitchKey: ReturnType<modeSwitchKey>;
+	private modeSwitchKey: ReturnType<typeof modeSwitchKey>;
 	private astMode: AstMode;
 	private wordCompletion: WordCompletion;
 	private completions: ActiveCompletions | null = null;
@@ -98,7 +98,7 @@ export default class Editor extends Evented<{
 	
 	private teardownCallbacks: Array<() => void>;
 	
-	constructor(document: Document, env?: Env) {
+	constructor(document: Document, env?: EditorEnv) {
 		super();
 		
 		this.document = document;

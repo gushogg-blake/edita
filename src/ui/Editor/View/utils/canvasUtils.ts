@@ -1,5 +1,4 @@
-import Selection, {s} from "core/Selection";
-import Cursor, {c} from "core/Cursor";
+import {Selection, s, Cursor, c} from "core";
 import {expandTabs} from "modules/utils/editing";
 
 export default {

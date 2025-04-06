@@ -1,22 +1,22 @@
 import {Evented} from "utils";
 import {AstSelection, a} from "core";
-import type {AstManipulationResult} from "modules/astIntel";
+import type {MultiStepCommand as IMultiStepCommand, AstManipulation, AstManipulationResult} from "core/astMode";
 import type Editor from "ui/Editor";
 
 class MultiStepCommand extends Evented<{
 	complete: void;
 	canceled: void;
 	resolved: void;
-}> {
+}> implements IMultiStepCommand {
 	editor: Editor;
-	astManipulation: any; // TYPE
+	astManipulation: AstManipulation;
+	peekingAstMode: boolean;
 	selectionOnReturnToAstMode: AstSelection | null = null;
 	
 	private astManipulationResult?: AstManipulationResult;
-	private peekingAstMode: boolean;
 	private teardownCallbacks: Array<() => void>;
 	
-	constructor(editor: Editor, astManipulation: any) { // TYPE AstManipulation
+	constructor(editor: Editor, astManipulation: AstManipulation) {
 		super();
 		
 		this.editor = editor;
@@ -25,7 +25,7 @@ class MultiStepCommand extends Evented<{
 		this.peekingAstMode = this.editor.modeSwitchKey.isPeeking;
 		
 		this.teardownCallbacks = [
-			editor.astMode.on("pasteFromNormalMode", this.onPasteFromNormalMode.bind(this)),
+			//editor.astMode.on("pasteFromNormalMode", this.onPasteFromNormalMode.bind(this)),
 		];
 	}
 	

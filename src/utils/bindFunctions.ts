@@ -1,9 +1,9 @@
-export default function(obj, fns) {
-	let res = {};
+export default function<T>(obj, fns: T): T {
+	let result: any = {};
 	
 	for (let [n, fn] of Object.entries(fns)) {
-		res[n] = fn.bind(obj);
+		result[n] = fn.bind(obj);
 	}
 	
-	return res;
+	return result;
 }

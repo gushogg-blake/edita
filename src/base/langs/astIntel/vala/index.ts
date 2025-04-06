@@ -5,9 +5,9 @@ import dropTargets from "./dropTargets";
 import astManipulations from "./astManipulations";
 
 export default class extends AstIntel {
-	pickOptions = pickOptions;
-	dropTargets = dropTargets;
-	astManipulations = astManipulations;
+	pickOptions = pickOptions(this.lang);
+	dropTargets = dropTargets(this.lang);
+	astManipulations = astManipulations(this.lang);
 	
 	isBlock(node) {
 		return node.isMultiline() && [

@@ -1,6 +1,5 @@
 import regexMatch from "utils/regexMatch";
-import Selection, {s} from "core/Selection";
-import Cursor, {c} from "core/Cursor";
+import {Selection, s, Cursor, c} from "core";
 
 let wordUnderCursorRe = {
 	wordChar: /[\w_]/,

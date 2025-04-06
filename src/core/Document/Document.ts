@@ -13,7 +13,7 @@ export {default as Line} from "./Line";
 export {default as Range} from "./Source/Range";
 export {default as Scope} from "./Source/Scope";
 
-export type {HistoryEntry};
+export type {Edit, HistoryEntry};
 
 export type DocumentOptions = {
 	noParse: boolean;

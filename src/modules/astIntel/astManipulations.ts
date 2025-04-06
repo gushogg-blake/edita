@@ -1,22 +1,24 @@
-import {AstSelection, a} from "core";
+import {a} from "core";
+import type {Document, Selection} from "core";
+import type {MultiStepCommand} from "core/astMode";
 
 export default {
 	wrap: {
 		code: "wrap",
 		name: "Wrap",
 		
-		apply(multiStepCommand, document, selection) {
+		apply(multiStepCommand: MultiStepCommand, document: Document, selection: Selection) {
 			multiStepCommand.setClipboard();
 			
 			return {
-				replaceSelectionWith: [[0, "@_"]],
+				replaceSelectionWith: [{indent: 0, string: "@_"}],
 				
 				onPasteFromNormalMode(paste) {
 					let {astSelection, insertLines, edit} = paste;
 					let {startLineIndex} = astSelection;
 					
 					if (!multiStepCommand.isPeekingAstMode) {
-						multiStepCommand.setSelectionOnReturnToAstMode(AstSelection.s(startLineIndex, startLineIndex + insertLines.length));
+						multiStepCommand.setSelectionOnReturnToAstMode(a(startLineIndex, startLineIndex + insertLines.length));
 					}
 				},
 			};

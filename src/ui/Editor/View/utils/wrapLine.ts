@@ -1,4 +1,5 @@
 import regexMatch from "utils/regexMatch";
+import type {IndentationDetails} from "core";
 import type ViewLine, {VariableWidthPart} from "../ViewLine";
 
 export type LineRow = {
@@ -19,7 +20,16 @@ let endWordRe = /[\S\w]+\s*$/;
 let wordRe = /[\S\w]+\s*/g;
 
 class LineWrapper {
-	constructor(viewLine: ViewLine, indentation, measurements, availableWidth) {
+	private viewLine: ViewLine;
+	private indentation: IndentationDetails;
+	private measurements: any; // TYPE
+	private availableWidth: number;
+	
+	private screenCols: number;
+	private textCols: number;
+	private offset: number;
+	
+	constructor(viewLine: ViewLine, indentation: IndentationDetails, measurements, availableWidth) {
 		this.viewLine = viewLine;
 		this.indentation = indentation;
 		this.measurements = measurements;

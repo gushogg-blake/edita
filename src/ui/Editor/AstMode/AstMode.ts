@@ -138,7 +138,7 @@ class AstMode extends Evented<{
 			edit,
 		};
 		
-		this.fire("pasteFromNormalMode", paste);
+		this.multiStepCommand?.onPasteFromNormalMode(paste);
 		
 		return paste;
 	}

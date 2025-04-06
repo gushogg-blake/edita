@@ -1,5 +1,4 @@
 import {Evented, mapArrayToObject} from "utils";
-import bindFunctions from "utils/bindFunctions";
 import {Selection, s, Cursor, c, AstSelection, a} from "core";
 import type {Document} from "core";
 import type {AppliedEdit} from "core/Document";
@@ -67,6 +66,9 @@ export default class View extends Evented<{
 	
 	Selection: typeof SelectionUtils;
 	AstSelection: typeof AstSelectionUtils;
+	
+	// TODO simplify
+	[K in keyof typeof CanvasUtils]: (typeof CanvasUtils)[K];
 	
 	// for remembering the "intended" col when moving a cursor up/down to a line
 	// that doesn't have as many cols as the cursor

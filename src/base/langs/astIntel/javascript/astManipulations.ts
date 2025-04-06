@@ -83,7 +83,7 @@ export default function(lang: Lang) {
 					i = endLineIndex;
 				}
 				
-				let header = [0, "let @name = {"];
+				let header = {indent: 0, string: "let @name = {"};
 				
 				let transformedLines = statements.map(function(statement) {
 					let {type, line} = statement;
@@ -95,28 +95,28 @@ export default function(lang: Lang) {
 						string = string.replace(/^(\w+)\s*=\s*/, "$1: ");
 						string = string.replace(/;$/, "");
 						
-						return [1, string + ","];
+						return {indent: 1, string: string + ","};
 					} else if (type === "header") {
 						let {trimmed: string} = line;
 						
 						string = string.replace(/^(let|const|var) /, "");
 						string = string.replace(/^(\w+)\s*=\s*/, "$1: ");
 						
-						return [1, string];
+						return {indent: 1, string: string};
 					} else if (type === "multilineContents") {
-						return [1 + line.indentLevel - baseIndentLevel, line.trimmed];
+						return {indent: 1 + line.indentLevel - baseIndentLevel, string: line.trimmed};
 					} else if (type === "footer") {
 						let {trimmed: string} = line;
 						
 						string = string.replace(/;$/, "");
 						
-						return [1, string + ","];
+						return {indent: 1, string: string + ","};
 					} else if (type === "blankLine") {
-						return [1, ""];
+						return {indent: 1, string: ""};
 					}
 				});
 				
-				let footer = [0, "};@$"];
+				let footer = {indent: 0, string: "};@$"};
 				
 				return {
 					replaceSelectionWith: [
@@ -128,18 +128,18 @@ export default function(lang: Lang) {
 			},
 		},
 		
-		unwrap: {
-			code: "unwrap",
-			name: "Unwrap",
-			
-			isAvailable(document, selection) {
-				
-			},
-			
-			apply(multiStepCommand, document, selection) {
-				
-			},
-		},
+		//unwrap: {
+		//	code: "unwrap",
+		//	name: "Unwrap",
+		//	
+		//	isAvailable(document, selection) {
+		//		
+		//	},
+		//	
+		//	apply(multiStepCommand, document, selection) {
+		//		
+		//	},
+		//},
 		
 		changeIfCondition: {
 			code: "changeIfCondition",
@@ -210,19 +210,19 @@ export default function(lang: Lang) {
 			},
 		},
 		
-		toggleMultilineOuter: {
-			code: "toggleMultilineOuter",
-			name: "Toggle multi-line (outermost node)",
-			
-			isAvailable(document, selection) {
-				return true;
-			},
-			
-			apply(multiStepCommand, document, selection) {
-				console.log("toggleMultilineOuter");
-				
-				return [];
-			},
-		},
+		//toggleMultilineOuter: {
+		//	code: "toggleMultilineOuter",
+		//	name: "Toggle multi-line (outermost node)",
+		//	
+		//	isAvailable(document, selection) {
+		//		return true;
+		//	},
+		//	
+		//	apply(multiStepCommand, document, selection) {
+		//		console.log("toggleMultilineOuter");
+		//		
+		//		return [];
+		//	},
+		//},
 	};
 }
