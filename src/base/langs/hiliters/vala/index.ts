@@ -93,7 +93,7 @@ let keywords = new Set([
 ]);
 
 export default class extends Hiliter {
-	getHiliteClass(node) {
+	getHiliteClass(node: Node): string | null {
 		let {type, parent, text} = node;
 		
 		if ([

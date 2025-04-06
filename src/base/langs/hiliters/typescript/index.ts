@@ -6,7 +6,7 @@ import type {Document, Node} from "core";
 let wordRe = /\w/;
 
 export default class extends Hiliter {
-	getHiliteClass(node) {
+	getHiliteClass(node: Node): string | null {
 		let {type, parent} = node;
 		
 		if ([

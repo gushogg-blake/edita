@@ -10,7 +10,7 @@ export default class extends Hiliter {
 		return null;
 	}
 	
-	getHiliteClass(node) {
+	getHiliteClass(node: Node): string | null {
 		let {
 			type,
 			parent,

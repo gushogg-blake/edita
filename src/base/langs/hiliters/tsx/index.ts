@@ -4,7 +4,7 @@ import {Hiliter} from "modules/hiliter";
 let wordRe = /\w/;
 
 export default class extends Hiliter {
-	getHiliteClass(node) {
+	getHiliteClass(node: Node): string | null {
 		let {type, parent} = node;
 		
 		if ([
