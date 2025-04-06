@@ -1,7 +1,5 @@
 import {Lang} from "core";
 
-let wordRe = /\w/;
-
 let keywords = new Set([
 	"abstract",
 	"as",

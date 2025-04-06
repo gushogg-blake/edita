@@ -14,14 +14,6 @@ export default class extends Lang {
 		},
 	];
 	
-	getFooter(node) {
-		return null;
-	}
-	
-	getHeader(node) {
-		return null;
-	}
-	
 	getSupportLevel(code, path) {
 		if (!path) {
 			return null; //

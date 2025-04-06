@@ -2,8 +2,6 @@ import {Lang} from "core";
 
 let loggedTypes = [];
 
-let wordRe = /\w/;
-
 export default class extends Lang {
 	group = "c";
 	name = "C++";

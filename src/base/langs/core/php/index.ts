@@ -1,7 +1,5 @@
 import {Lang} from "core";
 
-let wordRe = /\w/;
-
 export default class extends Lang {
 	name = "PHP";
 	defaultExtension = "php";

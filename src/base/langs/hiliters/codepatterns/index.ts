@@ -1,16 +1,6 @@
 import {Hiliter} from "modules/hiliter";
 
 export default class extends Hiliter {
-	//reparseOnEdit = true; // HACK
-	
-	getFooter(node) {
-		return null;
-	}
-	
-	getHeader(node) {
-		return null;
-	}
-	
 	getHiliteClass(node) {
 		let {
 			type,
