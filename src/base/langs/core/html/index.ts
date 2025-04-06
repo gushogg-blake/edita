@@ -53,7 +53,6 @@ export default class extends Lang {
 				"style_element",
 				"script_element",
 			].includes(node.type)
-			
 			&& node.firstChild.end.lineIndex !== node.lastChild.start.lineIndex
 		);
 	}

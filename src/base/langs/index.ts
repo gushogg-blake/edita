@@ -56,7 +56,7 @@ export function codeIntel() {
 	let codeIntel = new Registry<CodeIntel>();
 	
 	for (let [langCode, CodeIntelClass] of Object.entries(codeIntelModules)) {
-		codeIntel.add(langCode, new CodeIntelClass());
+		codeIntel.add(langCode, new CodeIntelClass(langCode));
 	}
 	
 	return codeIntel;

@@ -5,28 +5,34 @@ import type {CaptureSingleResult} from "core/Tree";
 // ? used to mark things as actually optional
 export type Injection = Partial<{
 	pattern: string;
-	lang: string | (capture: CaptureSingleResult) => Lang;
+	lang: string | (capture: CaptureSingleResult) => string;
 	query: Query;
 	combined?: boolean;
 	excludeChildren?: boolean;
 }>;
 
-export default class Lang {
-	group: string;
+interface ILang {
+	
+}
+
+type SupportLevel = "specific" | "general" | "alternate" | null;
+
+export default abstract class Lang {
 	code: string;
+	group?: string;
 	name: string;
-	defaultExtension: string;
+	defaultExtension?: string;
 	
 	// whether the lang should be available as a file type or is an internal util
 	// (markdown_inline for example)
-	util: boolean;
+	util?: boolean;
 	
 	treeSitterLanguage: Language;
 	queries: Record<string, Query>;
 	injections: Injection[];
 	
-	constructor() {
-		
+	constructor(langCode: string) {
+		this.code = langCode;
 	}
 	
 	async initTreeSitterLanguage() {
@@ -49,4 +55,6 @@ export default class Lang {
 	query(string: string): Query {
 		return new Query(this.treeSitterLanguage, string);
 	}
+	
+	abstract getSupportLevel(code: string, path: string): string; // TYPE SupportLevel;
 }

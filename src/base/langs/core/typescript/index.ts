@@ -1,4 +1,5 @@
 import {Lang} from "core";
+import type {Document, Node} from "core";
 
 let wordRe = /\w/;
 
