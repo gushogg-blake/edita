@@ -68,7 +68,7 @@ export default class View extends Evented<{
 	AstSelection: typeof AstSelectionUtils;
 	
 	// TODO simplify
-	[K in keyof typeof CanvasUtils]: (typeof CanvasUtils)[K];
+	[K in keyof typeof canvasUtils]: (typeof canvasUtils)[K];
 	
 	// for remembering the "intended" col when moving a cursor up/down to a line
 	// that doesn't have as many cols as the cursor

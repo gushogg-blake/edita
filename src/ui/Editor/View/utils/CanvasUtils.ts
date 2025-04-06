@@ -1,7 +1,42 @@
 import {Selection, s, Cursor, c} from "core";
 import {expandTabs} from "modules/utils/editing";
+import type View from "../View";
 
-export default {
+export default class {
+	private view: View;
+	
+	constructor(view: View) {
+		this.view = view;
+	}
+	
+	get wrappedLines() {
+		return this.view.wrappedLines;
+	}
+	
+	get document() {
+		return this.view.document;
+	}
+	
+	get measurements() {
+		return this.view.measurements;
+	}
+	
+	get sizes() {
+		return this.view.sizes;
+	}
+	
+	get topMargin() {
+		return this.view.topMargin;
+	}
+	
+	get scrollPosition() {
+		return this.view.scrollPosition;
+	}
+	
+	get folds() {
+		return this.view.folds;
+	}
+	
 	countLineRowsFolded() {
 		let rows = 0;
 		
@@ -10,7 +45,7 @@ export default {
 		}
 		
 		return rows;
-	},
+	}
 	
 	cursorFromRowCol(row, col, beforeTab=false) {
 		let rowsCounted = 0;
@@ -95,11 +130,11 @@ export default {
 		}
 		
 		return c(lineIndex, offset);
-	},
+	}
 	
 	cursorFromScreenCoords(x, y) {
 		return cursorFromRowCol(...this.cursorRowColFromScreenCoords(x, y));
-	},
+	}
 	
 	*generateLineRowsFolded(startLineIndex=0) {
 		let lineIndex = startLineIndex;
@@ -137,7 +172,7 @@ export default {
 			
 			lineIndex++;
 		}
-	},
+	}
 	
 	*generateWrappedLinesFolded(startLineIndex=0) {
 		let lineIndex = startLineIndex;
@@ -162,7 +197,7 @@ export default {
 			
 			lineIndex++;
 		}
-	},
+	}
 	
 	findFirstVisibleLine() {
 		let {rowHeight} = this.measurements;
@@ -183,7 +218,7 @@ export default {
 		}
 		
 		throw new Error("findFirstVisibleLine - no line found, scroll position possibly out of bounds");
-	},
+	}
 	
 	getLineStartingRow(lineIndex) {
 		let startingRow = 0;
@@ -197,7 +232,7 @@ export default {
 		}
 		
 		return startingRow;
-	},
+	}
 	
 	lineRowIndexAndOffsetFromCursor(cursor) {
 		let {lineIndex, offset} = cursor;
@@ -223,7 +258,7 @@ export default {
 		}
 		
 		return [lineRowIndex, offsetInRow];
-	},
+	}
 	
 	insertLineIndexFromScreenY(y) {
 		let {rowHeight} = this.measurements;
@@ -277,7 +312,7 @@ export default {
 			belowLineIndex,
 			offset: offsetFromMiddle / middle,
 		};
-	},
+	}
 	
 	rowColFromCursor(cursor) {
 		let {lineIndex, offset} = cursor;
@@ -328,7 +363,7 @@ export default {
 		}
 		
 		return [row, col];
-	},
+	}
 	
 	rowColFromScreenCoords(x, y) {
 		let {
@@ -345,7 +380,7 @@ export default {
 			Math.max(0, screenRow),
 			Math.max(0, screenCol),
 		];
-	},
+	}
 	
 	cursorRowColFromScreenCoords(x, y) {
 		let {
@@ -362,11 +397,11 @@ export default {
 			Math.max(0, screenRow),
 			Math.max(0, screenCol),
 		];
-	},
+	}
 	
 	screenCoordsFromCursor(cursor) {
 		return this.screenCoordsFromRowCol(...this.rowColFromCursor(cursor));
-	},
+	}
 	
 	screenCoordsFromRowCol(row, col) {
 		let {rowHeight, colWidth} = this.measurements;
@@ -375,9 +410,9 @@ export default {
 		let y = row * rowHeight + this.topMargin - this.scrollPosition.y;
 		
 		return [x, y];
-	},
+	}
 	
 	screenYFromLineIndex(lineIndex) {
 		return this.getLineStartingRow(lineIndex) * this.measurements.rowHeight - this.scrollPosition.y;
-	},
-};
+	}
+}
