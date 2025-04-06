@@ -18,11 +18,4 @@ export default class extends Hiliter {
 			return line.string.replace(/^(\s*)#?/, "$1");
 		}).join(document.format.newline);
 	}
-	
-	getSupportLevel(code, path) {
-		// NOTE this will never be used due to the logic
-		// (plaintext is hardcoded as the fallback)
-		// just including for type check
-		return "alternate";
-	}
 }

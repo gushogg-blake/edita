@@ -39,20 +39,4 @@ export default class extends Hiliter {
 			return line.string.replace(/^(\s*)(<!--)?/, "$1").replace(/-->$/, "");
 		}).join(document.format.newline);
 	}
-	
-	getSupportLevel(code, path) {
-		if (!path) {
-			return null; //
-		}
-		
-		let type = platform.fs(path).lastType;
-		
-		if ([
-			"md",
-		].includes(type)) {
-			return "general";
-		}
-		
-		return null;
-	}
 }

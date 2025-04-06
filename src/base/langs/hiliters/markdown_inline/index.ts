@@ -44,8 +44,4 @@ export default class extends Hiliter {
 			return line.string.replace(/^(\s*)(<!--)?/, "$1").replace(/-->$/, "");
 		}).join(document.format.newline);
 	}
-	
-	getSupportLevel(code, path) {
-		return null;
-	}
 }

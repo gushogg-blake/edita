@@ -53,26 +53,4 @@ export default class extends Hiliter {
 		
 		return "symbol";
 	}
-	
-	getSupportLevel(code, path) {
-		if (!path) {
-			return null; //
-		}
-		
-		let type = platform.fs(path).lastType;
-		
-		if ([
-			"cpp",
-			"cxx",
-			"cc",
-		].includes(type)) {
-			return "general";
-		}
-		
-		if (type === "vala") {
-			return "alternate";
-		}
-		
-		return null;
-	}
 }

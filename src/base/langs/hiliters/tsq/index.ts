@@ -41,20 +41,4 @@ export default class extends Hiliter {
 		
 		return null;
 	}
-	
-	getSupportLevel(code, path) {
-		if (!path) {
-			return null; //
-		}
-		
-		let type = platform.fs(path).lastType;
-		
-		if ([
-			"tsq",
-		].includes(type)) {
-			return "general";
-		}
-		
-		return null;
-	}
 }
