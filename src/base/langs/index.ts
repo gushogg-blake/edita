@@ -1,9 +1,11 @@
 import {Lang} from "core";
 import {AstIntel} from "modules/astIntel";
 import {CodeIntel} from "modules/codeIntel";
+import {Hiliter} from "modules/hiliter";
 import * as langModules from "./core";
 import * as astIntelModules from "./astIntel";
 import * as codeIntelModules from "./codeIntel";
+import * as hiliterModules from "./hiliters";
 
 class Registry<T> {
 	map: Record<string, T> = {};
@@ -33,31 +35,41 @@ InstanceType.
 */
 
 export function core() {
-	let langs = new Registry<Lang>();
+	let registry = new Registry<Lang>();
 	
 	for (let [langCode, LangClass] of Object.entries(langModules)) {
-		langs.add(langCode, new LangClass(langCode));
+		registry.add(langCode, new LangClass(langCode));
 	}
 	
-	return langs;
+	return registry;
 }
 
 export function astIntel() {
-	let astIntel = new Registry<AstIntel>();
+	let registry = new Registry<AstIntel>();
 	
 	for (let [langCode, AstIntelClass] of Object.entries(astIntelModules)) {
-		astIntel.add(langCode, new AstIntelClass(langCode));
+		registry.add(langCode, new AstIntelClass(langCode));
 	}
 	
-	return astIntel;
+	return registry;
 }
 
 export function codeIntel() {
-	let codeIntel = new Registry<CodeIntel>();
+	let registry = new Registry<CodeIntel>();
 	
 	for (let [langCode, CodeIntelClass] of Object.entries(codeIntelModules)) {
-		codeIntel.add(langCode, new CodeIntelClass(langCode));
+		registry.add(langCode, new CodeIntelClass(langCode));
 	}
 	
-	return codeIntel;
+	return registry;
+}
+
+export function hiliters() {
+	let registry = new Registry<Hiliter>();
+	
+	for (let [langCode, HiliterClass] of Object.entries(hiliterModules)) {
+		registry.add(langCode, new HiliterClass(langCode));
+	}
+	
+	return registry;
 }
