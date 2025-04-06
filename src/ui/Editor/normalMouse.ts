@@ -23,10 +23,6 @@ export default {
 		this.setSelectionFromNormalMouse(this.view.normalSelection);
 	},
 	
-	updateAstSelection() {
-		this.view.updateAstSelectionFromNormalSelection();
-	},
-	
 	setSelectionAndStartCursorBlink(selection) {
 		this.setSelectionFromNormalMouse(selection);
 		
