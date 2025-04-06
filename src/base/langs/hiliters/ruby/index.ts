@@ -3,11 +3,6 @@ import {Hiliter} from "modules/hiliter";
 let wordRe = /\w/;
 
 export default class extends Hiliter {
-	group = "ruby";
-	name = "Ruby";
-	defaultExtension = "rb";
-	injections = [];
-	
 	getHiliteClass(node) {
 		let {type, parent} = node;
 		

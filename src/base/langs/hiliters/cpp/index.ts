@@ -5,11 +5,6 @@ let loggedTypes = [];
 let wordRe = /\w/;
 
 export default class extends Hiliter {
-	group = "c";
-	name = "C++";
-	defaultExtension = "cpp";
-	injections = [];
-	
 	getHiliteClass(node) {
 		let {
 			type,

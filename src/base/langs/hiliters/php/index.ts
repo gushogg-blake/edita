@@ -3,18 +3,6 @@ import {Hiliter} from "modules/hiliter";
 let wordRe = /\w/;
 
 export default class extends Hiliter {
-	name = "PHP";
-	defaultExtension = "php";
-	possibleInjections = ["html"];
-	
-	injections = [
-		{
-			pattern: "(text) @injectionNode",
-			combined: true,
-			lang: "html",
-		},
-	];
-	
 	getHiliteClass(node) {
 		let {
 			type,

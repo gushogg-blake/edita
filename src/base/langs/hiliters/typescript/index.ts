@@ -4,11 +4,6 @@ import type {Document, Node} from "core";
 let wordRe = /\w/;
 
 export default class extends Hiliter {
-	group = "javascript";
-	name = "TypeScript";
-	defaultExtension = "ts";
-	injections = [];
-	
 	getHiliteClass(node) {
 		let {type, parent} = node;
 		

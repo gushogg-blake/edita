@@ -1,8 +1,6 @@
 import {Hiliter} from "modules/hiliter";
 
 export default class extends Hiliter {
-	name = "Plain text";
-	
 	commentLines(document, startLineIndex, endLineIndex) {
 		let lines = document.lines.slice(startLineIndex, endLineIndex);
 		let minIndentLevel = Math.min(...lines.map(line => line.indentLevel));

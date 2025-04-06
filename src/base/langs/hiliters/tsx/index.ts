@@ -3,11 +3,6 @@ import {Hiliter} from "modules/hiliter";
 let wordRe = /\w/;
 
 export default class extends Hiliter {
-	group = "javascript";
-	name = "TSX";
-	defaultExtension = "tsx";
-	injections = [];
-	
 	getHiliteClass(node) {
 		let {type, parent} = node;
 		

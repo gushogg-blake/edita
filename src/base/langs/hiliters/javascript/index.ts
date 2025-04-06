@@ -51,11 +51,6 @@ let keywords = new Set([
 ]);
 
 export default class extends Hiliter {
-	group = "javascript";
-	name = "JavaScript";
-	defaultExtension = "js";
-	injections = [];
-	
 	getHiliteClass(node) {
 		let {type, parent} = node;
 		

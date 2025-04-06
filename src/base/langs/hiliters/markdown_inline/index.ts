@@ -1,17 +1,7 @@
 import {Hiliter} from "modules/hiliter";
 
 export default class extends Hiliter {
-	group = "html"; // to get snippets
-	name = "markdown_inline (sub-parser for markdown)";
-	util = true;
-	
-	injections = [
-		{
-			pattern: "(html_tag) @injectionNode",
-			lang: "html",
-			combined: false,
-		},
-	];
+	 // to get snippets
 	
 	getFooter(node) {
 		return null;

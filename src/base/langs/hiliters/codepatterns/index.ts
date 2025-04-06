@@ -1,18 +1,7 @@
 import {Hiliter} from "modules/hiliter";
 
 export default class extends Hiliter {
-	name = "CodePatterns Query";
-	defaultExtension = "cp";
 	//reparseOnEdit = true; // HACK
-	possibleInjections = ["tsq"];
-	
-	injections = [
-		{
-			pattern: "(tsq) @injectionNode",
-			combined: true,
-			lang: "tsq",
-		},
-	];
 	
 	getFooter(node) {
 		return null;

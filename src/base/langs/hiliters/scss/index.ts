@@ -1,11 +1,6 @@
 import {Hiliter} from "modules/hiliter";
 
 export default class extends Hiliter {
-	group = "css";
-	name = "SCSS";
-	defaultExtension = "scss";
-	injections = [];
-	
 	getHiliteClass(node) {
 		let {type, parent} = node;
 		

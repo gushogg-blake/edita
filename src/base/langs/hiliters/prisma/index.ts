@@ -9,11 +9,6 @@ let keywords = new Set([
 ]);
 
 export default class extends Hiliter {
-	group = "prisma";
-	name = "Prisma";
-	defaultExtension = "prisma";
-	injections = [];
-	
 	getHiliteClass(node) {
 		let {type, parent} = node;
 		

@@ -1,10 +1,6 @@
 import {Hiliter} from "modules/hiliter";
 
 export default class extends Hiliter {
-	group = "lisp";
-	name = "Tree-sitter Query";
-	defaultExtension = "tsq";
-	
 	getFooter(node) {
 		return null;
 	}

@@ -3,11 +3,6 @@ import {Hiliter} from "modules/hiliter";
 let wordRe = /\w/;
 
 export default class extends Hiliter {
-	group = "c";
-	name = "C";
-	defaultExtension = "c";
-	injections = [];
-	
 	getHiliteClass(node) {
 		let {
 			type,

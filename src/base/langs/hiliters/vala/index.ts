@@ -92,11 +92,6 @@ let keywords = new Set([
 ]);
 
 export default class extends Hiliter {
-	group = "vala";
-	name = "Vala";
-	defaultExtension = "vala";
-	injections = [];
-	
 	getHiliteClass(node) {
 		let {type, parent, text} = node;
 		

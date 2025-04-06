@@ -36,11 +36,6 @@ let keywords = new Set([
 ]);
 
 export default class extends Hiliter {
-	group = "haskell";
-	name = "Haskell";
-	defaultExtension = "hs";
-	injections = [];
-	
 	getHiliteClass(node) {
 		let {type, parent, text} = node;
 		
