@@ -25,10 +25,6 @@ export default class {
 		return this.view.sizes;
 	}
 	
-	get topMargin() {
-		return this.view.topMargin;
-	}
-	
 	get scrollPosition() {
 		return this.view.scrollPosition;
 	}
@@ -47,7 +43,7 @@ export default class {
 		return rows;
 	}
 	
-	cursorFromRowCol(row, col, beforeTab=false) {
+	cursorFromRowCol(row, col, beforeTab = false) {
 		let rowsCounted = 0;
 		let foldedLineRow;
 		
@@ -136,7 +132,7 @@ export default class {
 		return cursorFromRowCol(...this.cursorRowColFromScreenCoords(x, y));
 	}
 	
-	*generateLineRowsFolded(startLineIndex=0) {
+	*generateLineRowsFolded(startLineIndex = 0) {
 		let lineIndex = startLineIndex;
 		
 		while (lineIndex < this.wrappedLines.length) {
@@ -174,7 +170,7 @@ export default class {
 		}
 	}
 	
-	*generateWrappedLinesFolded(startLineIndex=0) {
+	*generateWrappedLinesFolded(startLineIndex = 0) {
 		let lineIndex = startLineIndex;
 		
 		while (lineIndex < this.wrappedLines.length) {
@@ -201,7 +197,7 @@ export default class {
 	
 	findFirstVisibleLine() {
 		let {rowHeight} = this.measurements;
-		let scrollY = Math.max(0, this.scrollPosition.y - this.topMargin);
+		let scrollY = Math.max(0, this.scrollPosition.y - this.sizes.topMargin);
 		let scrollRow = Math.floor(scrollY / rowHeight);
 		let rowIndex = 0;
 		
@@ -263,7 +259,7 @@ export default class {
 	insertLineIndexFromScreenY(y) {
 		let {rowHeight} = this.measurements;
 		
-		y -= this.topMargin;
+		y -= this.sizes.topMargin;
 		
 		let scrollOffset = this.scrollPosition.y % rowHeight;
 		let middle = (rowHeight / 2);
@@ -374,7 +370,7 @@ export default class {
 		let coordsXHint = 2;
 		
 		let screenCol = Math.floor((x - this.sizes.marginOffset + coordsXHint + this.scrollPosition.x) / colWidth);
-		let screenRow = Math.floor((y - this.topMargin + this.scrollPosition.y) / rowHeight);
+		let screenRow = Math.floor((y - this.sizes.topMargin + this.scrollPosition.y) / rowHeight);
 		
 		return [
 			Math.max(0, screenRow),
@@ -391,7 +387,7 @@ export default class {
 		let coordsXHint = 2;
 		
 		let screenCol = Math.round((x - this.sizes.marginOffset + coordsXHint + this.scrollPosition.x) / colWidth);
-		let screenRow = Math.floor((y - this.topMargin + this.scrollPosition.y) / rowHeight);
+		let screenRow = Math.floor((y - this.sizes.topMargin + this.scrollPosition.y) / rowHeight);
 		
 		return [
 			Math.max(0, screenRow),
@@ -407,7 +403,7 @@ export default class {
 		let {rowHeight, colWidth} = this.measurements;
 		
 		let x = Math.round(Math.round(this.sizes.marginOffset) + col * colWidth - this.scrollPosition.x);
-		let y = row * rowHeight + this.topMargin - this.scrollPosition.y;
+		let y = row * rowHeight + this.sizes.topMargin - this.scrollPosition.y;
 		
 		return [x, y];
 	}

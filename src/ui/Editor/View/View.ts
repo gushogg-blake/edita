@@ -1,4 +1,4 @@
-import {Evented, mapArrayToObject} from "utils";
+import {Evented, mapArrayToObject, bindFunctions} from "utils";
 import {Selection, s, Cursor, c, AstSelection, a} from "core";
 import type {Document} from "core";
 import type {AppliedEdit} from "core/Document";
