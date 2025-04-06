@@ -1,3 +1,4 @@
+import {AstIntel} from "modules/astIntel";
 import pickOptions from "./pickOptions";
 import dropTargets from "./dropTargets";
 import astManipulations from "./astManipulations";
