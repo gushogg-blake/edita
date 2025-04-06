@@ -8,7 +8,7 @@ export {default as removeSelection} from "./removeSelection";
 
 export * from "./utils";
 
-export type AstIntel = {
+interface IAstIntel {
 	pickOptions?: Record<string, PickOption>;
 	dropTargets?: Record<string, DropTarget>;
 	astManipulations?: Record<string, AstManipulation>;
@@ -21,7 +21,19 @@ export type AstIntel = {
 		insertLines,
 		insertIndentLevel,
 	) => any; // TYPE
-};
+}
+
+export abstract class AstIntel implements IAstIntel {
+	langCode: string;
+	
+	constructor(langCode: string) {
+		this.langCode = langCode;
+	}
+	
+	get lang() {
+		return base.langs.get(this.langCode);
+	}
+}
 
 export type AstManipulation = {
 	code: string;
