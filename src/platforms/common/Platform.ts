@@ -22,8 +22,14 @@ or let it continue for another step
 class Loop {
 	private loops = 0;
 	
-	check(max: number, ...debugInfo) {
+	iterate(max: number, ...debugInfo) {
 		if (this.loops > max) {
+			let o = {};
+			
+			Error.captureStackTrace(o, platform.loop);
+			
+			let {stack} = o;
+			
 			console.log("Possible infinite loop\n");
 			console.log("Debug info:\n");
 			console.log(...debugInfo);
