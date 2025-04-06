@@ -1,3 +1,4 @@
+import type {Node} from "core";
 import {Hiliter} from "modules/hiliter";
 
 let wordRe = /\w/;
