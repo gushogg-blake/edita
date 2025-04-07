@@ -27,8 +27,6 @@ export default class extends Evented<{
 	fs: any; // TYPE fs
 	urlsToOpenOnStartup?: URL[] = [];
 	
-	private _loop = new Loop();
-	
 	init(config?: any): Promise<void> {
 		throw new Error("abstract");
 	}

@@ -4,6 +4,7 @@ import {Hiliter} from "modules/hiliter";
 let wordRe = /\w/;
 
 let keywords = new Set([
+	"as",
 	"async",
 	"await",
 	"break",
