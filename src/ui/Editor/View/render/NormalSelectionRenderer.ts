@@ -112,18 +112,8 @@ export default class extends LineRowRenderer {
 	}
 	
 	renderRow() {
-		let i = 0;
-		
-		while (this.variableWidthPart) {
+		while (this.variableWidthPart && "spincheck=100000") {
 			this.step();
-			
-			if (++i === 1000) {
-				console.log("infinite");
-			}
-			
-			if (i === 1010) {
-				break;
-			}
 		}
 	}
 }
@@ -136,7 +126,7 @@ function findFirstVisibleSelectionIndex(
 	let endIndex = selections.length;
 	let first = null;
 	
-	while (true) {
+	while ("spincheck=100") {
 		if (endIndex - startIndex === 0) {
 			break;
 		}

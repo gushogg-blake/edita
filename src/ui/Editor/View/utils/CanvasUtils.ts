@@ -135,7 +135,7 @@ export default class {
 	*generateLineRowsFolded(startLineIndex = 0) {
 		let lineIndex = startLineIndex;
 		
-		while (lineIndex < this.wrappedLines.length) {
+		while (lineIndex < this.wrappedLines.length && "spincheck=1000000") {
 			let wrappedLine = this.wrappedLines[lineIndex];
 			let {viewLine} = wrappedLine;
 			let foldEndLineIndex = this.folds[lineIndex];
@@ -173,7 +173,7 @@ export default class {
 	*generateWrappedLinesFolded(startLineIndex = 0) {
 		let lineIndex = startLineIndex;
 		
-		while (lineIndex < this.wrappedLines.length) {
+		while (lineIndex < this.wrappedLines.length && "spincheck=1000000") {
 			let wrappedLine = this.wrappedLines[lineIndex];
 			let {viewLine} = wrappedLine;
 			let foldEndLineIndex = this.folds[lineIndex];

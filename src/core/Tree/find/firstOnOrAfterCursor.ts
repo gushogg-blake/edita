@@ -37,7 +37,7 @@ export default function(node, cursor) {
 	let rightmostBeforeCursor = null;
 	let leftmostAfterCursor = null;
 	
-	while (true) {
+	while ("spincheck=100") {
 		if (endIndex - startIndex === 0) {
 			break;
 		}
@@ -98,7 +98,7 @@ export default function(node, cursor) {
 	if (foundContainingNode && !first) {
 		let n = (node.lastChild || node).next();
 		
-		while (n) {
+		while (n && "spincheck=1000") {
 			if (n.isOnOrAfter(cursor)) {
 				first = n;
 				

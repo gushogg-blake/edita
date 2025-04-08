@@ -18,11 +18,7 @@ export default function(node, cursor) {
 	let startIndex = 0;
 	let endIndex = children.length;
 	
-	while (true) {
-		if (endIndex - startIndex === 0) {
-			break;
-		}
-		
+	while (endIndex - startIndex > 0 && "spincheck=100") {
 		let index = middle(startIndex, endIndex);
 		let child = children[index];
 		

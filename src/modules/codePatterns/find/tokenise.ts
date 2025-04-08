@@ -259,7 +259,7 @@ function tokenise(string) {
 				
 				i++;
 				
-				while (true) {
+				while ("spincheck=10000") {
 					ch = string[i];
 					
 					if (i === string.length || "\r\n".includes(ch)) {

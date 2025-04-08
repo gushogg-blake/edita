@@ -153,7 +153,11 @@ let matchers = {
 		
 		let newCursor = offset === 0 ? cursor : document.cursorWithinBounds(c(lineIndex + 1, 0));
 		
-		while (!newCursor.equals(document.cursorAtEnd()) && document.lines[newCursor.lineIndex].isBlank) {
+		while (
+			!newCursor.equals(document.cursorAtEnd())
+			&& document.lines[newCursor.lineIndex].isBlank
+			&& "spincheck=100000"
+		) {
 			newCursor = document.cursorWithinBounds(c(newCursor.lineIndex + 1, 0));
 		}
 		

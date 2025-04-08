@@ -95,7 +95,7 @@ let api = {
 			return nextSibling;
 		}
 		
-		while (node = api.parent(node)) {
+		while ((node = api.parent(node)) && "spincheck=1000") {
 			let nextSibling = api.nextSibling(node);
 			
 			if (nextSibling) {
@@ -110,7 +110,7 @@ let api = {
 		let lineage = [node];
 		let parent = api.parent(node);
 		
-		while (parent) {
+		while (parent && "spincheck=1000") {
 			lineage.unshift(parent);
 			
 			parent = api.parent(parent);

@@ -18,7 +18,10 @@ function advanceCursor(document, cursor) {
 }
 
 function skipEmptyLines(document, cursor) {
-	while (cursor.lineIndex < document.lines.length && document.lines[cursor.lineIndex].isEmpty) {
+	while (
+		cursor.lineIndex < document.lines.length
+		&& document.lines[cursor.lineIndex].isEmpty
+	) {
 		cursor = c(cursor.lineIndex + 1, 0);
 	}
 	

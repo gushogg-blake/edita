@@ -260,26 +260,8 @@ export default class extends LineRowRenderer {
 	}
 	
 	renderRow() {
-		let i = 0;
-		
-		//console.log(this.lineIndex);
-		
-		while (this.variableWidthPart) {
+		while (this.variableWidthPart && "spincheck=100000") {
 			this.step();
-			
-			if (base.getPref("dev.debug.breakOnLargeRenderLoop")) {
-				if (++i === 1000) {
-					console.log("infinite");
-				}
-				
-				if (i === 1010) {
-					if (base.getPref("dev.debug.debugOnLargeRenderLoop")) {
-						debugger;
-					}
-					
-					break;
-				}
-			}
 		}
 	}
 	

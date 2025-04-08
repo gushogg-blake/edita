@@ -22,7 +22,7 @@ export default class extends LineRowRenderer {
 				|| offsetInRow < lineRow.string.length
 			)
 		) {
-			while (true) {
+			while ("spincheck=100000") {
 				if (this.variableWidthPart) {
 					if (this.offset + this.variableWidthPart.string.length > offset) {
 						this.canvasRenderer.skipText(offset - this.offset);

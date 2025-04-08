@@ -2,6 +2,7 @@ import svelte from "rollup-plugin-svelte";
 import copy from "rollup-plugin-copy-watch";
 import scss from "rollup-plugin-scss";
 import css from "rollup-plugin-css-only";
+import spincheck from "rollup-plugin-spincheck";
 
 import svelteConfig from "../svelte.config.js";
 
@@ -25,7 +26,16 @@ export default function(platform) {
 		scss(),
 		cssOnly(),
 		basePlugins.commonjs(),
+		_spincheck(),
 	];
+}
+
+function _spincheck() {
+	return spincheck({
+		debug: true,
+		prompt: true,
+		breakMethod: "throw",
+	});
 }
 
 function _svelte() {
