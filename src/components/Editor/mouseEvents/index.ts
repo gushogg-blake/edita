@@ -10,7 +10,7 @@ export type CustomMouseEvent = {
 
 export type CustomMousedownEvent = CustomMouseEvent & {
 	isDoubleClick: boolean;
-	enableDrag: (forceSynthetic: boolean) => void;
+	enableDrag: (forceSynthetic?: boolean) => void;
 };
 
 export type CustomDragEvent = {

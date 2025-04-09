@@ -7,7 +7,7 @@ import {astDragData} from "./mouseEvents";
 import autoScroll from "./utils/autoScroll";
 
 export default function(editor, editorComponent) {
-	let {document, view} = editor;
+	let {document, view, modeSwitchKey} = editor;
 	let drag = null;
 	let drawingSelection = false;
 	let isDraggingOver = false;
@@ -363,7 +363,7 @@ export default function(editor, editorComponent) {
 	function dragend({originalEvent: e}: CustomDragEvent) {
 		view.clearDropTargets();
 		
-		mouseup();
+		mouseup(e);
 		
 		drag = null;
 		isDraggingOver = false;
