@@ -1,8 +1,10 @@
 import {on, off} from "utils/dom/domEvents";
 import {AstSelection, a} from "core";
+import type {PickOptionType} from "core/astMode";
 import {selectionUtils} from "modules/astIntel";
+import type {CustomMouseEvent, CustomMousedownEvent, CustomDragEvent} from "./mouseEvents";
+import {astDragData} from "./mouseEvents";
 import autoScroll from "./utils/autoScroll";
-import astDragData from "./astDragData";
 
 export default function(editor, editorComponent) {
 	let {document, view} = editor;
@@ -12,7 +14,7 @@ export default function(editor, editorComponent) {
 	let mouseIsOver = false;
 	let mouseIsDown = false;
 	
-	function getCanvasCoords(e) {
+	function getCanvasCoords(e: MouseEvent) {
 		let {canvasDiv} = editorComponent;
 		
 		let {
@@ -26,7 +28,7 @@ export default function(editor, editorComponent) {
 		return [x, y];
 	}
 	
-	function lineIndexFromEvent(e) {
+	function lineIndexFromEvent(e: MouseEvent) {
 		let [x, y] = getCanvasCoords(e);
 		let [row, col] = view.canvasUtils.cursorRowColFromScreenCoords(x, y);
 		
@@ -37,7 +39,11 @@ export default function(editor, editorComponent) {
 		return view.canvasUtils.cursorFromRowCol(row, col).lineIndex;
 	}
 	
-	function hiliteFromLineIndex(lineIndex, pickOptionType=null, withinSelection=false) {
+	function hiliteFromLineIndex(
+		lineIndex: number,
+		pickOptionType: PickOptionType = null,
+		withinSelection = false,
+	) {
 		if (pickOptionType) {
 			withinSelection = true;
 		}
@@ -51,13 +57,17 @@ export default function(editor, editorComponent) {
 		return selectionUtils.hiliteFromLineIndex(document, lineIndex, pickOptionType);
 	}
 	
-	function hiliteFromEvent(e, pickOptionType=null, withinSelection=false) {
+	function hiliteFromEvent(
+		e: MouseEvent,
+		pickOptionType: PickOptionType = null,
+		withinSelection = false,
+	) {
 		let lineIndex = lineIndexFromEvent(e);
 		
 		return lineIndex === null ? null : hiliteFromLineIndex(lineIndex, pickOptionType, withinSelection);
 	}
 	
-	function getInsertionRange(e) {
+	function getInsertionRange(e: MouseEvent) {
 		let {
 			astSelection,
 		} = view;
@@ -85,7 +95,7 @@ export default function(editor, editorComponent) {
 		return range;
 	}
 	
-	function hilite(e, pickOptionType) {
+	function hilite(e: MouseEvent, pickOptionType?: PickOptionType) {
 		let lineIndex = lineIndexFromEvent(e);
 		
 		if (lineIndex === null) {
@@ -99,7 +109,7 @@ export default function(editor, editorComponent) {
 		editor.astMouse.setSelectionHilite(selection, lineIndex, !pickOptionType);
 	}
 	
-	function mousedown(e, pickOptionType, enableDrag) {
+	function mousedown({originalEvent: e, pickOptionType, enableDrag}: CustomMousedownEvent) {
 		mouseIsDown = true;
 		
 		let {
@@ -126,7 +136,13 @@ export default function(editor, editorComponent) {
 				return;
 			}
 			
-			enableDrag();
+			enableDrag(
+				// if we're holding Escape and haven't pressed another key,
+				// it'll cancel a native drag, so use a synthetic one
+				modeSwitchKey.isPeeking
+				&& !modeSwitchKey.keyPressedWhilePeeking
+				&& base.prefs.modeSwitchKey === "Escape"
+			);
 			
 			editor.astMouse.setSelection(selection);
 			
@@ -135,15 +151,15 @@ export default function(editor, editorComponent) {
 		}
 	}
 	
-	function drawSelection(e) {
+	function drawSelection(e: MouseEvent) {
 		
 	}
 	
-	function finishSelection(e) {
+	function finishSelection(e: MouseEvent) {
 		drawingSelection = false;
 	}
 	
-	function mousemove(e, pickOptionType) {
+	function mousemove({originalEvent: e, pickOptionType}: CustomMouseEvent) {
 		mouseIsOver = true;
 		
 		if (drawingSelection || mouseIsDown) {
@@ -159,7 +175,7 @@ export default function(editor, editorComponent) {
 		});
 	}
 	
-	function mouseup(e) {
+	function mouseup(e: MouseEvent) {
 		mouseIsDown = false;
 		
 		editor.astMouse.setInsertionHilite(null);
@@ -172,17 +188,17 @@ export default function(editor, editorComponent) {
 		off(window, "dragend", dragend);
 	}
 	
-	function mouseenter(e) {
+	function mouseenter({originalEvent: e}: CustomMouseEvent) {
 		mouseIsOver = true;
 	}
 	
-	function mouseleave(e) {
+	function mouseleave({originalEvent: e}: CustomMouseEvent) {
 		editor.astMouse.clearSelectionHilite();
 		
 		mouseIsOver = false;
 	}
 	
-	function click(e, pickOptionType) {
+	function click({originalEvent: e, pickOptionType}: CustomMouseEvent) {
 		if (e.button !== 0) {
 			return;
 		}
@@ -196,11 +212,11 @@ export default function(editor, editorComponent) {
 		hilite(e, pickOptionType);
 	}
 	
-	function dblclick(e) {
+	function dblclick({originalEvent: e}: CustomMouseEvent) {
 		
 	}
 	
-	function contextmenu(e, pickOptionType) {
+	function contextmenu({originalEvent: e, pickOptionType}: CustomMouseEvent) {
 		let selection = hiliteFromEvent(e, pickOptionType);
 		
 		if (!selection) {
@@ -224,11 +240,11 @@ export default function(editor, editorComponent) {
 		});
 	}
 	
-	function middlepress(e, pickOptionType) {
+	function middlepress({originalEvent: e, pickOptionType}: CustomMouseEvent) {
 		
 	}
 	
-	function dragstart(e, pickOptionType) {
+	function dragstart({originalEvent: e, pickOptionType}: CustomDragEvent) {
 		let {
 			astSelection: selection,
 		} = view;
@@ -248,7 +264,7 @@ export default function(editor, editorComponent) {
 		});
 	}
 	
-	function dragover(e, dropTargetType) {
+	function dragover({originalEvent: e, dropTargetType}: CustomDragEvent) {
 		e.dataTransfer.dropEffect = e.ctrlKey ? "copy" : "move";
 		
 		let data = astDragData.get(e);
@@ -276,17 +292,17 @@ export default function(editor, editorComponent) {
 		});
 	}
 	
-	function dragenter(e) {
+	function dragenter({originalEvent: e}: CustomDragEvent) {
 		isDraggingOver = true;
 	}
 	
-	function dragleave(e) {
+	function dragleave({originalEvent: e}: CustomDragEvent) {
 		isDraggingOver = false;
 		
 		view.clearDropTargets();
 	}
 	
-	function drop(e, fromUs, toUs, extra) {
+	function drop({originalEvent: e, fromUs, toUs, dropTargetType}: CustomDragEvent) {
 		// NOTE dropEffect doesn't work when dragging between windows
 		// (it will always be none in the source window)
 		
@@ -294,7 +310,6 @@ export default function(editor, editorComponent) {
 		
 		e.dataTransfer.dropEffect = move ? "move" : "copy";
 		
-		let {dropTargetType} = extra;
 		let fromSelection;
 		let toSelection;
 		let lines;
@@ -345,7 +360,7 @@ export default function(editor, editorComponent) {
 		);
 	}
 	
-	function dragend() {
+	function dragend({originalEvent: e}: CustomDragEvent) {
 		view.clearDropTargets();
 		
 		mouseup();
@@ -354,7 +369,7 @@ export default function(editor, editorComponent) {
 		isDraggingOver = false;
 	}
 	
-	function updateHilites(e) {
+	function updateHilites(e: MouseEvent) {
 		if (e) {
 			hilite(e);
 		} else {
@@ -369,8 +384,8 @@ export default function(editor, editorComponent) {
 		mouseleave,
 		click,
 		dblclick,
-		contextmenu,
 		middlepress,
+		contextmenu,
 		dragstart,
 		dragover,
 		dragenter,

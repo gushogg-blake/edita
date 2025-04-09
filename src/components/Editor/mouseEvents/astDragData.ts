@@ -6,7 +6,7 @@ uppercase chars, so we encode all the data into a string of char codes.
 */
 
 export default {
-	get(e) {
+	get(e: DragEvent): any {
 		for (let encodedStr of e.dataTransfer.types) {
 			try {
 				let str = encodedStr.split(",").map(Number).map(n => String.fromCharCode(n)).join("");
@@ -21,7 +21,7 @@ export default {
 		return null;
 	},
 	
-	set(e, data) {
+	set(e: DragEvent, data: any): void {
 		let json = JSON.stringify({
 			isAstDragDrop: true,
 			data,

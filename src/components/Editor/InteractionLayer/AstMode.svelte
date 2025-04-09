@@ -20,12 +20,22 @@ export function mouseup() {
 	selectedPickOption = null;
 }
 
+export function dragenter() {
+	isDragging = true;
+}
+
+export function dragleave() {
+	isDragging = false;
+}
+
 export function dragover(e) {
 	currentDropTarget = dropTargetFromMouseEvent(e);
+	isDragging = true;
 }
 
 export function dragend() {
 	selectedPickOption = null;
+	isDragging = false;
 }
 
 export function getSelectedPickOption() {
@@ -60,6 +70,8 @@ let currentDropTarget: DropTarget | null = $state();
 
 let divToPickOption = new Map<HTMLDivElement, PickOption>();
 let divToDropTarget = new Map<HTMLDivElement, DropTarget>();
+
+let isDragging = $state(false);
 
 function registerItem(el, map, item) {
 	map.set(el, item);

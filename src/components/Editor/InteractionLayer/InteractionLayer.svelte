@@ -4,29 +4,50 @@ import {unique} from "utils/array";
 import {on, off} from "utils/dom/domEvents";
 import inlineStyle from "utils/dom/inlineStyle";
 import getDistanceBetweenMouseEvents from "utils/dom/getDistanceBetweenMouseEvents";
-import drag from "./utils/drag";
-import createDragEvent from "./utils/createDragEvent";
+import type Editor from "ui/Editor";
+import {syntheticDrag} from "components/Editor/mouseEvents";
+import type {CustomMouseEvent, CustomMousedownEvent, CustomDragEvent} from "components/Editor/mouseEvents";
 import AstMode from "./AstMode.svelte";
 import Completions from "./Completions.svelte";
 
+type Props = {
+	editor: Editor;
+	onmiddlepress: (e: CustomMouseEvent) => void;
+	ondblclick: (e: CustomMouseEvent) => void;
+	onmousedown: (e: CustomMousedownEvent) => void;
+	onmousemove: (e: CustomMouseEvent) => void;
+	onmouseup: (e: CustomMouseEvent) => void;
+	onclick: (e: CustomMouseEvent) => void;
+	onmarginMousedown: (e: CustomMouseEvent) => void;
+	onmouseenter: (e: CustomMouseEvent) => void;
+	onmouseleave: (e: CustomMouseEvent) => void;
+	oncontextmenu: (e: CustomMouseEvent) => void;
+	ondragstart: (e: CustomDragEvent) => void;
+	ondragover: (e: CustomDragEvent) => void;
+	ondragenter: (e: CustomDragEvent) => void;
+	ondragleave: (e: CustomDragEvent) => void;
+	ondrop: (e: CustomDragEvent) => void;
+	ondragend: (e: CustomDragEvent) => void;
+};
+
 let {
 	editor,
-	onmiddlepress = () => {},
-	ondblclick = () => {},
-	onmousedown = () => {},
-	onmousemove = () => {},
-	onmouseup = () => {},
-	onclick = () => {},
-	onmarginMousedown = () => {},
-	onmouseenter = () => {},
-	onmouseleave = () => {},
-	oncontextmenu = () => {},
-	ondragstart = () => {},
-	ondragover = () => {},
-	ondragenter = () => {},
-	ondragleave = () => {},
-	ondrop = () => {},
-	ondragend = () => {},
+	onmiddlepress,
+	ondblclick,
+	onmousedown,
+	onmousemove,
+	onmouseup,
+	onclick,
+	onmarginMousedown,
+	onmouseenter,
+	onmouseleave,
+	oncontextmenu,
+	ondragstart,
+	ondragover,
+	ondragenter,
+	ondragleave,
+	ondrop,
+	ondragend,
 } = $props();
 
 let {document, view} = editor;
@@ -35,10 +56,9 @@ let astModeComponent: AstMode = $state();
 let interactionDiv: HTMLDivElement = $state();
 
 let draggable = $state(false);
-let useSyntheticDrag = $state();
-let syntheticDrag = null;
+let useSyntheticDrag = $state(false);
+let syntheticDragHandler: ReturnType<typeof syntheticDrag>;
 let dragStartedHere = $state(false);
-let isDragging = $state(false);
 
 let lastMousedownWasDoubleClick = false;
 let lastMousedownEvent;
@@ -55,49 +75,6 @@ let mode = $state(view.mode);
 let sizes = $state(view.sizes);
 let rowHeight = $state(measurements.rowHeight);
 let colWidth = $state(measurements.colWidth);
-
-let syntheticDragHandler = drag({
-	start(e) {
-		syntheticDrag = {
-			data: {},
-			files: [],
-			
-			get types() {
-				return Object.keys(this.data);
-			},
-			
-			setData(type, data) {
-				this.data[type] = data;
-			},
-			
-			getData(type) {
-				return this.data[type];
-			},
-			
-			setDragImage() {
-			},
-		};
-		
-		interactionDiv.dispatchEvent(createDragEvent.dragstart(e, syntheticDrag));
-		interactionDiv.dispatchEvent(createDragEvent.dragenter(e, syntheticDrag));
-	},
-	
-	move(e, x, y) {
-		interactionDiv.dispatchEvent(createDragEvent.dragover(e, syntheticDrag));
-	},
-	
-	end(e) {
-		if (window.document.elementsFromPoint(e.pageX, e.pageY).includes(interactionDiv)) {
-			interactionDiv.dispatchEvent(createDragEvent.drop(e, syntheticDrag));
-		}
-		
-		interactionDiv.dispatchEvent(createDragEvent.dragend(e, syntheticDrag));
-		
-		syntheticDrag = null;
-	},
-	
-	click,
-});
 
 function mousedown(e) {
 	if (e.button === 2) {
@@ -122,7 +99,7 @@ function mousedown(e) {
 	
 	if (e.button === 1) {
 		onmiddlepress({
-			e,
+			originalEvent: e,
 			pickOptionType: astModeComponent.getSelectedPickOption()?.type,
 		});
 		
@@ -158,7 +135,9 @@ function mousedown(e) {
 		&& getDistanceBetweenMouseEvents(e, lastClickMousedownEvent) <= clickDistanceThreshold
 		&& isDoubleClickSpeed
 	) {
-		ondblclick(e);
+		ondblclick({
+			originalEvent: e,
+		});
 		
 		lastMousedownWasDoubleClick = true;
 	} else {
@@ -166,11 +145,11 @@ function mousedown(e) {
 	}
 	
 	onmousedown({
-		e,
+		originalEvent: e,
 		isDoubleClick: lastMousedownWasDoubleClick,
 		pickOptionType: astModeComponent.getSelectedPickOption()?.type,
 		
-		enableDrag(forceSynthetic=false) {
+		enableDrag(forceSynthetic = false): void {
 			draggable = true;
 			useSyntheticDrag = forceSynthetic || isDoubleClickSpeed;
 		},
@@ -193,7 +172,7 @@ function mousemove(e) {
 	}
 	
 	onmousemove({
-		e,
+		originalEvent: e,
 		pickOptionType: astModeComponent.getHoveredPickOption()?.type,
 	});
 }
@@ -222,7 +201,7 @@ function mouseup(e) {
 function click(e) {
 	if (!lastMousedownWasDoubleClick) {
 		onclick({
-			e,
+			originalEvent: e,
 			pickOptionType: astModeComponent.getHoveredPickOption()?.type,
 		});
 	}
@@ -232,11 +211,15 @@ function click(e) {
 }
 
 function marginMousedown(e) {
-	onmarginMousedown(e);
+	onmarginMousedown({
+		originalEvent: e,
+	});
 }
 
 function mouseenter(e) {
-	onmouseenter(e);
+	onmouseenter({
+		originalEvent: e,
+	});
 }
 
 function mouseleave(e) {
@@ -244,7 +227,9 @@ function mouseleave(e) {
 		return;
 	}
 	
-	onmouseleave(e);
+	onmouseleave({
+		originalEvent: e,
+	});
 }
 
 function contextmenu(e) {
@@ -255,7 +240,7 @@ function contextmenu(e) {
 	}
 	
 	oncontextmenu({
-		e,
+		originalEvent: e,
 		pickOptionType: astModeComponent.getSelectedPickOption()?.type,
 	});
 	
@@ -279,7 +264,7 @@ function dragstart(e) {
 	e.dataTransfer.effectAllowed = "all";
 	
 	ondragstart({
-		e,
+		originalEvent: e,
 		pickOptionType: mode === "ast" ? astModeComponent.getSelectedPickOption()?.type : null,
 	});
 }
@@ -296,7 +281,7 @@ function dragover(e) {
 	}
 	
 	ondragover({
-		e,
+		originalEvent: e,
 		dropTargetType: mode === "ast" ? astModeComponent.getCurrentDropTarget()?.type : null,
 	});
 }
@@ -306,52 +291,39 @@ let justDropped = false;
 function drop(e) {
 	e.preventDefault();
 	
-	let extra = {};
-	
-	if (mode === "ast") {
-		extra.dropTargetType = astModeComponent.dropTargetFromMouseEvent(e)?.type;
-	}
-	
 	if (dragStartedHere) {
 		justDropped = true;
 		
 		if (astModeComponent.pickOptionFromMouseEvent(e)) {
 			return;
 		}
-		
-		ondrop({
-			e,
-			fromUs: true,
-			toUs: true,
-			extra,
-		});
-	} else {
-		ondrop({
-			e,
-			fromUs: false,
-			toUs: true,
-			extra,
-		});
 	}
+	
+	ondrop({
+		originalEvent: e,
+		fromUs: dragStartedHere,
+		toUs: true,
+		dropTargetType: mode === "ast" ? astModeComponent.dropTargetFromMouseEvent(e)?.type : null,
+	});
 }
 
 function dragend(e) {
 	if (!justDropped) {
 		ondrop({
-			e,
+			originalEvent: e,
 			fromUs: true,
 			toUs: false,
-			extra: {},
 		});
 	}
 	
-	ondragend(e);
+	ondragend({
+		originalEvent: e,
+	});
 	
 	justDropped = false;
 	draggable = false;
 	useSyntheticDrag = false;
 	dragStartedHere = false;
-	isDragging = false;
 	
 	astModeComponent.dragend();
 }
@@ -359,17 +331,17 @@ function dragend(e) {
 function dragenter(e) {
 	e.preventDefault();
 	
-	isDragging = true;
-	
-	ondragenter(e);
+	ondragenter({
+		originalEvent: e,
+	});
 }
 
 function dragleave(e) {
 	e.preventDefault();
 	
-	isDragging = false;
-	
-	ondragleave(e);
+	ondragleave({
+		originalEvent: e,
+	});
 }
 
 function onUpdateSizes() {
@@ -382,10 +354,6 @@ function onUpdateMeasurements() {
 
 function onModeSwitch() {
 	({mode} = view);
-}
-
-function onEdit() {
-	({lines} = view);
 }
 
 function calculateMarginStyle(sizes) {
@@ -419,12 +387,14 @@ onMount(function() {
 	let teardown = [
 		view.on("updateSizes", onUpdateSizes),
 		view.on("updateMeasurements", onUpdateMeasurements),
-		view.on("scroll", onScroll),
 		view.on("modeSwitch", onModeSwitch),
-		view.on("updateCompletions", onUpdateCompletions),
-		
-		editor.on("edit", onEdit),
 	];
+	
+	syntheticDragHandler = syntheticDrag(interactionDiv, {
+		onclick(e) {
+			click(e);
+		},
+	});
 	
 	return function() {
 		for (let fn of teardown) {

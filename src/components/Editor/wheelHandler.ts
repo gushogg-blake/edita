@@ -4,7 +4,7 @@ import {getCursor} from "./utils/cursorFromEvent";
 export default function(editor, editorComponent) {
 	let {view} = editor;
 	
-	function wheel(e) {
+	function wheel({originalEvent: e}) {
 		let wheelCombo = getWheelCombo(e);
 		
 		if (editor.willHandleWheel(wheelCombo)) {

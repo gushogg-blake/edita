@@ -10,11 +10,11 @@ import {getApp} from "components/context";
 
 import render from "./canvas/render";
 
+import {astDragData} from "./mouseEvents";
 import normalMouse from "./normalMouse";
 import astMouse from "./astMouse";
 import marginMouse from "./marginMouse";
 import wheelHandler from "./wheelHandler";
-import astDragData from "./astDragData";
 
 import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer/InteractionLayer.svelte";
@@ -132,34 +132,22 @@ let _wheelHandler = wheelHandler(editor, {
 	},
 });
 
-function mousedown({e, isDoubleClick, pickOptionType, enableDrag}) {
+let mouseHandler = normalMouseHandler;
+
+function mousedown(e) {
 	editor.mousedown();
 	
-	if (view.mode === "normal") {
-		normalMouseHandler.mousedown(e, isDoubleClick, enableDrag);
-	} else if (view.mode === "ast") {
-		astMouseHandler.mousedown(e, pickOptionType, function() {
-			enableDrag(
-				modeSwitchKey.isPeeking
-				&& !modeSwitchKey.keyPressedWhilePeeking
-				&& base.prefs.modeSwitchKey === "Escape"
-			);
-		});
-	}
+	mouseHandler.mousedown(e);
 }
 
-function mousemove({e, pickOptionType}) {
+function mousemove(e) {
 	if (isDragging) {
 		return;
 	}
 	
-	lastMouseEvent = e;
+	lastMouseEvent = e.originalEvent;
 	
-	if (view.mode === "normal") {
-		normalMouseHandler.mousemove(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.mousemove(e, pickOptionType);
-	}
+	mouseHandler.mousemove(e);
 }
 
 function mouseenter(e) {
@@ -167,11 +155,7 @@ function mouseenter(e) {
 		return;
 	}
 	
-	if (view.mode === "normal") {
-		normalMouseHandler.mouseenter(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.mouseenter(e);
-	}
+	mouseHandler.mouseenter(e);
 }
 
 function mouseleave(e) {
@@ -179,11 +163,7 @@ function mouseleave(e) {
 		return;
 	}
 	
-	if (view.mode === "normal") {
-		normalMouseHandler.mouseleave(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.mouseleave(e);
-	}
+	mouseHandler.mouseleave(e);
 }
 
 function _mouseup(e) {
@@ -194,94 +174,58 @@ function mouseup(e) {
 	_mouseup(e);
 }
 
-function click({e, pickOptionType}) {
-	if (view.mode === "normal") {
-		normalMouseHandler.click(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.click(e, pickOptionType);
-	}
+function click(e) {
+	mouseHandler.click(e);
 }
 
 function dblclick(e) {
-	if (view.mode === "normal") {
-		normalMouseHandler.dblclick(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.dblclick(e);
-	}
+	mouseHandler.dblclick(e);
 }
 
-function contextmenu({e, pickOptionType}) {
-	if (view.mode === "normal") {
-		normalMouseHandler.contextmenu(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.contextmenu(e, pickOptionType);
-	}
+function contextmenu(e) {
+	mouseHandler.contextmenu(e);
 }
 
-function middlepress({e, pickOptionType}) {
-	if (view.mode === "normal") {
-		normalMouseHandler.middlepress(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.middlepress(e, pickOptionType);
-	}
+function middlepress(e) {
+	mouseHandler.middlepress(e);
 }
 
-function dragstart({e, pickOptionType}) {
+function dragstart(e) {
 	isDragging = true;
 	
-	if (view.mode === "normal") {
-		normalMouseHandler.dragstart(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.dragstart(e, pickOptionType);
-	}
+	mouseHandler.dragstart(e);
 	
-	lastMouseEvent = e;
+	lastMouseEvent = e.originalEvent;
 }
 
-function dragover({e, dropTargetType}) {
-	if (view.mode === "normal") {
-		normalMouseHandler.dragover(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.dragover(e, dropTargetType);
-	}
+function dragover(e) {
+	mouseHandler.dragover(e);
 	
-	lastMouseEvent = e;
+	lastMouseEvent = e.originalEvent;
 }
 
 function dragend(e) {
 	isDragging = false;
 	
-	if (view.mode === "normal") {
-		normalMouseHandler.dragend();
-	} else if (view.mode === "ast") {
-		astMouseHandler.dragend();
-	}
+	mouseHandler.dragend(e);
 	
-	lastMouseEvent = e;
+	lastMouseEvent = e.originalEvent;
 }
 
 function dragenter(e) {
-	if (view.mode === "normal" && astDragData.get(e)) {
+	if (view.mode === "normal" && astDragData.get(e.originalEvent)) {
 		editor.switchToAstMode();
 		
 		inAstModeForDrop = true;
 	}
 	
-	if (view.mode === "normal") {
-		normalMouseHandler.dragenter(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.dragenter(e);
-	}
+	mouseHandler.dragenter(e);
 	
-	lastMouseEvent = e;
+	lastMouseEvent = e.originalEvent;
 }
 
 function dragleave(e) {
-	if (view.mode === "normal") {
-		normalMouseHandler.dragleave(e);
-	} else if (view.mode === "ast") {
-		astMouseHandler.dragleave(e);
-	}
+	mouseHandler.dragleave(e);
 	
 	if (inAstModeForDrop) {
 		editor.switchToNormalMode();
@@ -289,15 +233,11 @@ function dragleave(e) {
 		inAstModeForDrop = false;
 	}
 	
-	lastMouseEvent = e;
+	lastMouseEvent = e.originalEvent;
 }
 
-function drop({e, fromUs, toUs, extra}) {
-	if (view.mode === "normal") {
-		normalMouseHandler.drop(e, fromUs, toUs, extra);
-	} else if (view.mode === "ast") {
-		astMouseHandler.drop(e, fromUs, toUs, extra);
-	}
+function drop(e) {
+	mouseHandler.drop(e);
 	
 	if (inAstModeForDrop) {
 		editor.switchToNormalMode();
@@ -305,11 +245,11 @@ function drop({e, fromUs, toUs, extra}) {
 		inAstModeForDrop = false;
 	}
 	
-	if (!fromUs) {
+	if (!e.fromUs) {
 		view.requestFocus();
 	}
 	
-	lastMouseEvent = e;
+	lastMouseEvent = e.originalEvent;
 }
 
 function marginMousedown(e) {
@@ -546,9 +486,7 @@ function onEdit() {
 }
 
 function onModeSwitch() {
-	if (view.mode === "ast") {
-		//astMouseHandler.updateHilites(lastMouseEvent);
-	}
+	mouseHandler = view.mode === "ast" ? astMouseHandler : normalMouseHandler;
 }
 
 onMount(function() {

@@ -1,5 +1,6 @@
 import {on, off} from "utils/dom/domEvents";
 import {Selection, s} from "core";
+import type {CustomMouseEvent, CustomMousedownEvent, CustomDragEvent} from "./mouseEvents";
 import autoScroll from "./utils/autoScroll";
 import {getCursor, getCharCursor} from "./utils/cursorFromEvent";
 
@@ -8,7 +9,7 @@ export default function(editor, editorComponent) {
 	let drawingSelection = false;
 	let origDoubleClickWordSelection = false;
 	
-	function mousedown(e, isDoubleClick, enableDrag) {
+	function mousedown({originalEvent: e, isDoubleClick, enableDrag}: CustomMousedownEvent) {
 		if (e.ctrlKey) {
 			return;
 		}
@@ -44,7 +45,7 @@ export default function(editor, editorComponent) {
 		on(window, "dragend", dragend);
 	}
 	
-	function drawSelection(e) {
+	function drawSelection(e: MouseEvent) {
 		requestAnimationFrame(function() {
 			let cursor = getCursor(e, view, editorComponent.canvasDiv);
 			
@@ -59,13 +60,13 @@ export default function(editor, editorComponent) {
 		});
 	}
 	
-	function mousemove(e) {
+	function mousemove({originalEvent: e}: CustomMouseEvent) {
 		if (drawingSelection) {
 			return;
 		}
 	}
 	
-	function mouseup(e) {
+	function mouseup(e: MouseEvent) {
 		if (view.normalSelection.isFull()) {
 			editor.normalMouse.finishDrawingSelection();
 		}
@@ -80,15 +81,15 @@ export default function(editor, editorComponent) {
 		off(window, "dragend", dragend);
 	}
 	
-	function mouseenter(e) {
+	function mouseenter({originalEvent: e}: CustomMouseEvent) {
 		
 	}
 	
-	function mouseleave(e) {
+	function mouseleave({originalEvent: e}: CustomMouseEvent) {
 		
 	}
 	
-	function click(e) {
+	function click({originalEvent: e}: CustomMouseEvent) {
 		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		
 		if (e.ctrlKey) {
@@ -100,7 +101,7 @@ export default function(editor, editorComponent) {
 		editor.normalMouse.setSelectionAndStartCursorBlink(s(cursor));
 	}
 	
-	function dblclick(e) {
+	function dblclick({originalEvent: e}: CustomMouseEvent) {
 		let cursor = getCharCursor(e, view, editorComponent.canvasDiv);
 		
 		origDoubleClickWordSelection = view.Selection.wordUnderCursor(cursor);
@@ -112,13 +113,13 @@ export default function(editor, editorComponent) {
 		}
 	}
 	
-	function middlepress(e) {
+	function middlepress({originalEvent: e}: CustomMouseEvent) {
 		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		
 		editor.normalMouse.insertSelectionClipboard(cursor);
 	}
 	
-	function contextmenu(e) {
+	function contextmenu({originalEvent: e}: CustomMouseEvent) {
 		let cursor = getCursor(e, view, editorComponent.canvasDiv);
 		
 		let items = [
@@ -141,7 +142,7 @@ export default function(editor, editorComponent) {
 		platform.showContextMenu(e, editorComponent.app, items);
 	}
 	
-	function dragstart(e) {
+	function dragstart({originalEvent: e}: CustomDragEvent) {
 		let {
 			normalSelection: selection,
 		} = view;
@@ -149,7 +150,7 @@ export default function(editor, editorComponent) {
 		e.dataTransfer.setData("text/plain", document.getSelectedText(selection));
 	}
 	
-	function dragover(e) {
+	function dragover({originalEvent: e}: CustomDragEvent) {
 		if (!e.dataTransfer.types.includes("text/plain")) {
 			return;
 		}
@@ -181,15 +182,15 @@ export default function(editor, editorComponent) {
 		});
 	}
 	
-	function dragenter(e) {
+	function dragenter({originalEvent: e}: CustomDragEvent) {
 		
 	}
 	
-	function dragleave(e) {
+	function dragleave({originalEvent: e}: CustomDragEvent) {
 		view.setInsertCursor(null);
 	}
 	
-	function drop(e, fromUs, toUs, extra) {
+	function drop({originalEvent: e, fromUs, toUs}: CustomDragEvent) {
 		if (!e.dataTransfer.types.includes("text/plain")) {
 			return;
 		}
@@ -208,10 +209,10 @@ export default function(editor, editorComponent) {
 		editor.normalMouse.drop(cursor, str, move, fromUs, toUs);
 	}
 	
-	function dragend() {
+	function dragend({originalEvent: e}: CustomDragEvent) {
 		view.setInsertCursor(null);
 		
-		mouseup();
+		mouseup(e);
 	}
 	
 	return {
@@ -229,5 +230,6 @@ export default function(editor, editorComponent) {
 		dragleave,
 		drop,
 		dragend,
+		updateHilites(e: MouseEvent) {}, // AST only
 	};
 }
