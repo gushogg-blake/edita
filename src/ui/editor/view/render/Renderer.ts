@@ -13,34 +13,34 @@ import CodeRenderer from "./CodeRenderer";
 import NormalCursorRenderer from "./NormalCursorRenderer";
 
 /*
-**WIP**
+LIFECYCLE per-render (in constrast to counterparts in the Editor component,
+which are created once per Editor and re-used)
 
-making this long-lived -- Renderer lifecycle will be just one for
-a view.
-
-individual renderers will be created dynamically as some won't be
-needed -- this is in contrast to the canvas side, where all renderers
-except code renderers can also be long lived
+code renderers have to be created per-render anyway, and keeping
+instances around risks having stale state from previous renders,
+so it's probably best to keep it like this. I am fairly sure from
+looking at a bunch of profiles that this isn't a performance concern.
 */
 
 export default class Renderer {
 	view: View;
+	document: Document;
 	canvas: Canvas;
 	uiState: UiState;
-	document: Document;
 	
-	constructor(view: View, canvas: Canvas) {
+	constructor(view: View, canvas: Canvas, uiState: UiState) {
 		this.view = view;
-		this.canvas = canvas;
 		this.document = view.document;
+		this.canvas = canvas;
+		this.uiState = UiState;
 	}
 	
-	getVisibleScopes() {
+	private getVisibleScopes() {
 		return this.document.getVisibleScopes(this.visibleSelection);
 	}
 	
-	init() {
-		this.foldedLineRows = this.getFoldedLineRowsToRender(view);
+	private init() {
+		this.foldedLineRows = this.getFoldedLineRowsToRender();
 		
 		let firstRow = this.foldedLineRows[0];
 		let lastRow = this.foldedLineRows.at(-1);
@@ -55,7 +55,17 @@ export default class Renderer {
 	}
 	
 	private createRenderers() {
-		let {lines} = this.document;
+		let {
+			mode,
+			insertCursor,
+			normalSelection,
+			normalHilites,
+			cursorBlinkOn,
+			astSelection,
+			astSelectionHilite,
+			astInsertionHilite,
+			focused,
+		} = this.view;
 		
 		let {windowHasFocus, isPeekingAstMode} = this.uiState;
 		
@@ -68,7 +78,7 @@ export default class Renderer {
 		let renderAstSelectionHilite = ast && astSelectionHilite && (isPeekingAstMode || !astSelection.equals(astSelectionHilite));
 		let renderAstInsertionHilite = ast && astInsertionHilite;
 		
-		let renderers = [
+		return [
 			normal && new CurrentLineHiliteRenderer(this),
 			new NormalSelectionRenderer(this, normalHilites, this.canvas.normalHilites),
 			renderNormalSelection && new NormalSelectionRenderer(this, [normalSelection.sort()], this.canvas.normalSelection),
@@ -89,20 +99,8 @@ export default class Renderer {
 		].filter(Boolean);
 	}
 	
-	render(uiState: UiState): void {
+	render(): void {
 		this.init();
-		
-		let {
-			mode,
-			insertCursor,
-			normalSelection,
-			normalHilites,
-			cursorBlinkOn,
-			astSelection,
-			astSelectionHilite,
-			astInsertionHilite,
-			focused,
-		} = this.view;
 		
 		let renderers = this.createRenderers();
 		

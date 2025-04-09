@@ -234,7 +234,7 @@ export default class View extends Evented<{
 		this.scheduleRedraw();
 	}
 	
-	render(canvas: CanvasRenderers, uiState): void {
+	render(canvas: Canvas, uiState: UiState): void {
 		let renderer = new Renderer(this, canvas, uiState);
 		
 		renderer.render();

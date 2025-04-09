@@ -1,15 +1,17 @@
 import type {Canvas as ICanvas, CanvasRenderers as ICanvasRenderers} from "ui/editor/view";
 
+import type {Contexts} from "components/Editor";
+
 import CurrentLineHiliteRenderer from "./CurrentLineHiliteRenderer";
-import NormalSelectionsRenderer from "./NormalSelectionsRenderer";
+import NormalSelectionRenderer from "./NormalSelectionRenderer";
 import AstSelectionRenderer from "./AstSelectionRenderer";
 import AstInsertionHiliteRenderer from "./AstInsertionHiliteRenderer";
 import MarginRenderer from "./MarginRenderer";
-import FoldHilitesRenderer from "./FoldHilitesRenderer";
+import FoldHiliteRenderer from "./FoldHiliteRenderer";
 import CodeRenderer from "./CodeRenderer";
 import NormalCursorRenderer from "./NormalCursorRenderer";
 
-import type {Contexts, Offsets} from ".";
+import type {Offsets} from ".";
 
 export default class CanvasRenderer implements ICanvas {
 	layers: Contexts;
@@ -23,13 +25,13 @@ export default class CanvasRenderer implements ICanvas {
 		
 		this.renderers = {
 			currentLineHilite: new CurrentLineHiliteRenderer(this),
-			normalHilites: new NormalSelectionsRenderer(this, "hiliteBackground"),
-			normalSelection: new NormalSelectionsRenderer(this, "selectionBackground"),
+			normalHilites: new NormalSelectionRenderer(this, "hiliteBackground"),
+			normalSelection: new NormalSelectionRenderer(this, "selectionBackground"),
 			astSelection: new AstSelectionRenderer(this, "astSelectionBackground"),
 			astSelectionHilite: new AstSelectionRenderer(this, "astSelectionHiliteBackground"),
 			astInsertionHilite: new AstInsertionHiliteRenderer(this),
 			margin: new MarginRenderer(this),
-			foldHilites: new FoldHilitesRenderer(this),
+			foldHilites: new FoldHiliteRenderer(this),
 			normalCursor: new NormalCursorRenderer(this),
 			
 			// this is a function as the view creates a CodeRenderer dynamically
