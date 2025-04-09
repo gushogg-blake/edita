@@ -61,8 +61,8 @@ let rowHeight = $state(measurements.rowHeight);
 let colWidth = $state(measurements.colWidth);
 
 let lines = $state(view.lines);
-let dropTargetTypesByLine = $state(astMode.dropTargetTypesByLine);
-let pickOptionTypesByLine = $state(astMode.pickOptionTypesByLine);
+let dropTargetsByLine = $state(astMode.dropTargetsByLine);
+let pickOptionsByLine = $state(astMode.pickOptionsByLine);
 
 let hoveredPickOption: PickOption | null = $state();
 let selectedPickOption: PickOption | null = $state();
