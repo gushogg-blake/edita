@@ -1,3 +1,3 @@
 export {PickOption, DropTarget} from "./AstMode";
 
-export {default} from "./Editor";
+export {Editor} from "./Editor";

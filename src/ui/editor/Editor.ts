@@ -64,7 +64,7 @@ export interface EditorEnv {
 	goToDefinition(definition: any): Promise<void>; // TYPE LSP response (or we convert it into our own)
 }
 
-export default class Editor extends Evented<{
+export class Editor extends Evented<{
 	edit: void;
 	focus: void;
 	blur: void;
