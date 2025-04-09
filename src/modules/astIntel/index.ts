@@ -1,5 +1,5 @@
 import type {AstSelection, Document, Node, Line} from "core";
-import type {AstSelectionContents, PickOption, DropTarget, AstManipulation} from "core/astMode";
+import type {AstSelectionContents, PickOptionType, DropTargetType, AstManipulation} from "core/astMode";
 
 export {default as selectionUtils} from "./selectionUtils";
 export {default as drop} from "./drop";
@@ -11,8 +11,8 @@ export * from "./utils";
 export abstract class AstIntel {
 	langCode: string;
 	
-	pickOptions?: Record<string, PickOption>;
-	dropTargets?: Record<string, DropTarget>;
+	pickOptions?: Record<string, PickOptionType>;
+	dropTargets?: Record<string, DropTargetType>;
 	astManipulations?: Record<string, AstManipulation>;
 	
 	constructor(langCode: string) {
@@ -59,22 +59,22 @@ export function astManipulationIsAvailable(
 	return !astManipulation.isAvailable || astManipulation.isAvailable(document, selection);
 }
 
-export function getPickOptions(
+export function getAvailablePickOptionTypes(
 	astIntel: AstIntel,
 	document: Document,
 	lineIndex: number,
-): PickOption[] {
-	return Object.values(astIntel.pickOptions).filter((pickOption) => {
-		return pickOption.isAvailable(document, lineIndex);
+): PickOptionType[] {
+	return Object.values(astIntel.pickOptions).filter((type) => {
+		return type.isAvailable(document, lineIndex);
 	});
 }
 
-export function getDropTargets(
+export function getAvailableDropTargetTypes(
 	astIntel: AstIntel,
 	document: Document,
 	lineIndex: number,
-): DropTarget[] {
-	return Object.values(astIntel.dropTargets).filter((dropTarget) => {
-		return dropTarget.isAvailable(document, lineIndex);
+): DropTargetType[] {
+	return Object.values(astIntel.dropTargets).filter((type) => {
+		return type.isAvailable(document, lineIndex);
 	});
 }

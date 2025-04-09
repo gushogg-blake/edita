@@ -10,7 +10,7 @@ import {
 import type Editor from "ui/Editor";
 import MultiStepCommand from "./MultiStepCommand";
 
-class AstMode extends Evented<{
+export default class AstMode extends Evented<{
 	pasteFromNormalMode: any; // TYPE
 }> {
 	editor: Editor;
@@ -143,5 +143,3 @@ class AstMode extends Evented<{
 		return paste;
 	}
 }
-
-export default AstMode;

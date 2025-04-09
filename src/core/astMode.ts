@@ -79,7 +79,7 @@ export type AstManipulationResult = {
 	onPasteFromNormalMode?: (paste: any) => void; // TYPE
 };
 
-export type DropTarget = {
+export type DropTargetType = {
 	type: string;
 	label: string;
 	isAvailable: (document: Document, lineIndex: number) => boolean;
@@ -94,7 +94,7 @@ export type DropTarget = {
 	) => void;
 };
 
-export type PickOption = {
+export type PickOptionType = {
 	type: string;
 	label: string;
 	isAvailable: (document: Document, lineIndex: number) => boolean;

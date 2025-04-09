@@ -20,6 +20,8 @@ import modeSwitchKey from "./modeSwitchKey";
 import snippets from "./snippets";
 import EditorApi from "./EditorApi";
 
+export {PickOption, DropTarget} from "./AstMode";
+
 export type EditorMode = "normal" | "ast";
 
 export type ActiveCompletions = {

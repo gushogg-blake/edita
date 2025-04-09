@@ -4,14 +4,13 @@ import {unique} from "utils/array";
 import {on, off} from "utils/dom/domEvents";
 import inlineStyle from "utils/dom/inlineStyle";
 import getDistanceBetweenMouseEvents from "utils/dom/getDistanceBetweenMouseEvents";
-import type {PickOption, DropTarget} from "core/astMode";
 import drag from "./utils/drag";
 import createDragEvent from "./utils/createDragEvent";
+import AstMode from "./AstMode.svelte";
+import Completions from "./Completions.svelte";
 
 let {
-	document,
 	editor,
-	view,
 	onmiddlepress = () => {},
 	ondblclick = () => {},
 	onmousedown = () => {},
@@ -30,14 +29,13 @@ let {
 	ondragend = () => {},
 } = $props();
 
-let interactionDiv: HTMLDivElement = $state();
+let {document, view} = editor;
 
-let hoveredPickOption: PickOption | null = $state();
-let selectedPickOption: PickOption | null = $state();
+let astModeComponent: AstMode = $state();
+let interactionDiv: HTMLDivElement = $state();
 
 let draggable = $state(false);
 let useSyntheticDrag = $state();
-let currentDropTarget: DropTarget = $state();
 let syntheticDrag = null;
 let dragStartedHere = $state(false);
 let isDragging = $state(false);
@@ -50,58 +48,13 @@ let lastClickMousedownTime;
 
 let clickDistanceThreshold = 2;
 let ignoreMouseLeave = false;
-let rowYHint = 0;
 
 let {measurements, astMode} = view;
 
-let lines = $state(view.lines);
 let mode = $state(view.mode);
-let dropTargetsByLine = $state(astMode.dropTargetsByLine);
-let pickOptionsByLine = $state(astMode.pickOptionsByLine);
-let completions = $state(view.completions);
-let scrollPosition = $state(view.scrollPosition);
 let sizes = $state(view.sizes);
 let rowHeight = $state(measurements.rowHeight);
 let colWidth = $state(measurements.colWidth);
-
-let divToPickOption = new Map<HTMLDivElement, PickOption>();
-let divToDropTarget = new Map<HTMLDivElement, DropTarget>();
-
-function registerItem(el, map, item) {
-	map.set(el, item);
-	
-	return {
-		destroy() {
-			map.delete(el);
-		},
-	};
-}
-
-function registerPickOption(el, option) {
-	return registerItem(el, divToPickOption, option);
-}
-
-function registerDropTarget(el, option) {
-	return registerItem(el, divToDropTarget, option);
-}
-
-function itemFromMouseEvent(e, map) {
-	for (let el of window.document.elementsFromPoint(e.pageX, e.pageY)) {
-		if (map.has(el)) {
-			return map.get(el);
-		}
-	}
-	
-	return null;
-}
-
-function pickOptionFromMouseEvent(e) {
-	return itemFromMouseEvent(e, divToPickOption);
-}
-
-function dropTargetFromMouseEvent(e) {
-	return itemFromMouseEvent(e, divToDropTarget);
-}
 
 let syntheticDragHandler = drag({
 	start(e) {
@@ -163,12 +116,14 @@ function mousedown(e) {
 		return;
 	}
 	
-	selectedPickOption = pickOptionFromMouseEvent(e);
+	if (mode === "ast") {
+		astModeComponent.mousedown(e);
+	}
 	
 	if (e.button === 1) {
 		onmiddlepress({
 			e,
-			pickOptionType: selectedPickOption?.type,
+			pickOptionType: astModeComponent.getSelectedPickOption()?.type,
 		});
 		
 		return;
@@ -213,7 +168,7 @@ function mousedown(e) {
 	onmousedown({
 		e,
 		isDoubleClick: lastMousedownWasDoubleClick,
-		pickOptionType: selectedPickOption?.type,
+		pickOptionType: astModeComponent.getSelectedPickOption()?.type,
 		
 		enableDrag(forceSynthetic=false) {
 			draggable = true;
@@ -234,12 +189,12 @@ function mousemove(e) {
 	}
 	
 	if (mode === "ast") {
-		hoveredPickOption = pickOptionFromMouseEvent(e);
+		astModeComponent.mousemove(e);
 	}
 	
 	onmousemove({
 		e,
-		pickOptionType: hoveredPickOption?.type,
+		pickOptionType: astModeComponent.getHoveredPickOption()?.type,
 	});
 }
 
@@ -254,7 +209,8 @@ function mouseup(e) {
 		}
 	}
 	
-	selectedPickOption = null;
+	astModeComponent.mouseup();
+	
 	draggable = false;
 	useSyntheticDrag = false;
 	
@@ -267,7 +223,7 @@ function click(e) {
 	if (!lastMousedownWasDoubleClick) {
 		onclick({
 			e,
-			pickOptionType: hoveredPickOption?.type,
+			pickOptionType: astModeComponent.getHoveredPickOption()?.type,
 		});
 	}
 	
@@ -294,11 +250,13 @@ function mouseleave(e) {
 function contextmenu(e) {
 	e.preventDefault();
 	
-	selectedPickOption = pickOptionFromMouseEvent(e);
+	if (mode === "ast") {
+		astModeComponent.mousedown(e);
+	}
 	
 	oncontextmenu({
 		e,
-		pickOptionType: selectedPickOption?.type,
+		pickOptionType: astModeComponent.getSelectedPickOption()?.type,
 	});
 	
 	return false;
@@ -322,24 +280,24 @@ function dragstart(e) {
 	
 	ondragstart({
 		e,
-		pickOptionType: mode === "ast" ? selectedPickOption?.type : null,
+		pickOptionType: mode === "ast" ? astModeComponent.getSelectedPickOption()?.type : null,
 	});
 }
 
 function dragover(e) {
 	e.preventDefault();
 	
-	if (pickOptionFromMouseEvent(e)) {
-		return;
-	}
-	
 	if (mode === "ast") {
-		currentDropTarget = dropTargetFromMouseEvent(e);
+		if (astModeComponent.pickOptionFromMouseEvent(e)) {
+			return;
+		}
+		
+		astModeComponent.dragover(e);
 	}
 	
 	ondragover({
 		e,
-		dropTargetType: mode === "ast" ? currentDropTarget?.target?.type : null,
+		dropTargetType: mode === "ast" ? astModeComponent.getCurrentDropTarget()?.type : null,
 	});
 }
 
@@ -351,13 +309,13 @@ function drop(e) {
 	let extra = {};
 	
 	if (mode === "ast") {
-		extra.dropTargetType = dropTargetFromMouseEvent(e)?.target?.type;
+		extra.dropTargetType = astModeComponent.dropTargetFromMouseEvent(e)?.type;
 	}
 	
 	if (dragStartedHere) {
 		justDropped = true;
 		
-		if (pickOptionFromMouseEvent(e)) {
+		if (astModeComponent.pickOptionFromMouseEvent(e)) {
 			return;
 		}
 		
@@ -392,9 +350,10 @@ function dragend(e) {
 	justDropped = false;
 	draggable = false;
 	useSyntheticDrag = false;
-	selectedPickOption = null;
 	dragStartedHere = false;
 	isDragging = false;
+	
+	astModeComponent.dragend();
 }
 
 function dragenter(e) {
@@ -417,28 +376,12 @@ function onUpdateSizes() {
 	({sizes} = view);
 }
 
-function onScroll() {
-	({scrollPosition} = view);
-}
-
 function onUpdateMeasurements() {
 	({rowHeight, colWidth} = view.measurements);
 }
 
 function onModeSwitch() {
 	({mode} = view);
-}
-
-function onUpdatePickOptions() {
-	({pickOptionsByLine} = view);
-}
-
-function onUpdateDropTargets() {
-	({dropTargetsByLine} = view);
-}
-
-function onUpdateCompletions() {
-	({completions} = view);
 }
 
 function onEdit() {
@@ -468,41 +411,6 @@ function calculateCodeStyle(sizes, mode, dragStartedHere) {
 	};
 }
 
-function rowStyle(lines, lineIndex, rowHeight, colWidth, scrollPosition) {
-	let screenY = view.canvasUtils.screenYFromLineIndex(lineIndex);
-	let line = lines[lineIndex];
-	let screenCol = line.trimmed ? line.width + 1 : line.width;
-	
-	return {
-		top: sizes.topMargin + rowYHint + screenY,
-		left: screenCol * colWidth - scrollPosition.x,
-		height: rowHeight,
-	};
-}
-
-function completionsStyle(completions, rowHeight, colWidth, scrollPosition) {
-	let {cursor} = completions;
-	let [row, col] = view.canvasUtils.rowColFromCursor(cursor);
-	let screenY = view.canvasUtils.screenYFromLineIndex(cursor.lineIndex + 1);
-	let screenCol = col;
-	
-	return {
-		top: sizes.topMargin + rowYHint + screenY,
-		left: screenCol * colWidth - scrollPosition.x,
-	};
-}
-
-function targetIsActive(target, currentDropTarget) {
-	if (!currentDropTarget) {
-		return false;
-	}
-	
-	return (
-		target.lineIndex === currentDropTarget.lineIndex
-		&& target.target.type === currentDropTarget.target.type
-	);
-}
-
 let marginStyle = $derived(calculateMarginStyle(sizes));
 
 let codeStyle = $derived(calculateCodeStyle(sizes, mode, dragStartedHere));
@@ -514,9 +422,6 @@ onMount(function() {
 		view.on("scroll", onScroll),
 		view.on("modeSwitch", onModeSwitch),
 		view.on("updateCompletions", onUpdateCompletions),
-		
-		astMode.on("updatePickOptions", onUpdatePickOptions),
-		astMode.on("updateDropTargets", onUpdateDropTargets),
 		
 		editor.on("edit", onEdit),
 	];
@@ -552,63 +457,9 @@ onMount(function() {
 #interactionLayer {
 	@include utils.abs-sticky;
 }
-
-.row {
-	position: absolute;
-	display: flex;
-	align-items: center;
-	gap: 5px;
-}
-
-.item {
-	/*font-weight: bold;*/
-	font-size: 11px;
-	border: 1px solid #544200;
-	border-radius: 100px;
-	padding: 0 5px;
-}
-
-.pickOption {
-	color: #3D2F00;
-	background: #D6AD0C;
-	
-	&.active {
-		color: #FCEEC2;
-		background: #A88712;
-	}
-	
-	&:not(.hover):not(.active) {
-		opacity: .5;
-	}
-}
-
-.dropTarget {
-	color: #EFD2C4;
-	background: #A0451E;
-	background: #D34F0C;
-	
-	&.active {
-		color: #FCDFD1;
-		background: #B24711;
-	}
-	
-	&.fade {
-		opacity: .35;
-	}
-}
-
-#completions {
-	position: absolute;
-	max-height: 150px;
-	overflow-y: auto;
-	cursor: default;
-	background: white;
-}
 </style>
 
-<div
-	id="main"
->
+<div id="main">
 	<div
 		id="margin"
 		style={inlineStyle(marginStyle)}
@@ -619,40 +470,10 @@ onMount(function() {
 		style={inlineStyle(codeStyle)}
 	>
 		{#if mode === "ast"}
-			{#each dropTargetsByLine as {lineIndex, dropTargets} (lineIndex)}
-				<div
-					class="row"
-					style={inlineStyle(rowStyle(lines, lineIndex, rowHeight, colWidth, scrollPosition))}
-				>
-					{#each dropTargets as dropTarget (dropTarget)}
-						<div
-							use:registerDropTarget={dropTarget}
-							class="item dropTarget"
-							class:active={targetIsActive(dropTarget, currentDropTarget)}
-							class:fade={!isDragging}
-						>
-							{dropTarget.label}
-						</div>
-					{/each}
-				</div>
-			{/each}
-			{#each pickOptionsByLine as {lineIndex, pickOptions} (lineIndex)}
-				<div
-					class="row"
-					style={inlineStyle(rowStyle(lines, lineIndex, rowHeight, colWidth, scrollPosition))}
-				>
-					{#each pickOptions as pickOption}}
-						<div
-							use:registerPickOption={registerPickOption}
-							class="item pickOption"
-							class:hover={pickOption.type === hoveredPickOption?.type}
-							class:active={pickOption.type === selectedPickOption?.type}
-						>
-							{pickOption.label}
-						</div>
-					{/each}
-				</div>
-			{/each}
+			<AstMode
+				bind:this={astModeComponent}
+				{editor}
+			/>
 		{/if}
 		<div
 			bind:this={interactionDiv}
@@ -670,24 +491,8 @@ onMount(function() {
 			ondragleave={dragleave}
 			oncontextmenu={contextmenu}
 		>
-			{#if completions}
-				<div
-					id="completions"
-					style={inlineStyle(completionsStyle(completions, rowHeight, colWidth, scrollPosition))}
-					onwheel={e => e.stopPropagation()}
-					onmousedown={e => e.stopPropagation()}
-					onclick={e => e.stopPropagation()}
-					ondblclick={e => e.stopPropagation()}
-				>
-					{#each completions.completions as completion}
-						<div
-							class="completion"
-							class:selected={completion === completions.selectedCompletion}
-						>
-							{completion.label}
-						</div>
-					{/each}
-				</div>
+			{#if mode === "normal"}
+				<Completions {editor}/>
 			{/if}
 		</div>
 	</div>

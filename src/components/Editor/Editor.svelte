@@ -17,7 +17,7 @@ import wheelHandler from "./wheelHandler";
 import astDragData from "./astDragData";
 
 import Scrollbar from "./Scrollbar.svelte";
-import InteractionLayer from "./InteractionLayer.svelte";
+import InteractionLayer from "./InteractionLayer/InteractionLayer.svelte";
 
 import type Editor from "ui/Editor";
 
@@ -707,9 +707,7 @@ canvas {
 		</div>
 		<div class="layer">
 			<InteractionLayer
-				{document}
 				{editor}
-				{view}
 				onmousedown={mousedown}
 				onmouseenter={mouseenter}
 				onmouseleave={mouseleave}

@@ -2,12 +2,11 @@ import {Evented} from "utils";
 import {Selection, s, Cursor, c, AstSelection, a} from "core";
 
 import {
-	getPickOptions,
-	getDropTargets,
-	type PickOption,
-	type DropTarget,
+	getAvailablePickOptionTypes,
+	getAvailableDropTargetTypes,
 } from "modules/astIntel";
 
+import {PickOption, DropTarget} from "ui/Editor";
 import type View from "./View";
 
 /*
@@ -31,13 +30,14 @@ export default class extends Evented<{
 		this.view = view;
 	}
 	
-	showPickOptionsFor(lineIndex: number) {
+	showPickOptionsFor(lineIndex: number): void {
 		let {document} = this.view;
 		let {astMode} = document.langFromAstSelection(a(lineIndex));
+		let types = getAvailablePickOptionTypes(astMode, document, lineIndex);
 		
 		this.pickOptionsByLine = [{
 			lineIndex,
-			pickOptions: getPickOptions(astMode, document, lineIndex),
+			pickOptions: types.map(type => new PickOption(lineIndex, type)),
 		}];
 		
 		this.fire("updatePickOptions");
@@ -92,16 +92,11 @@ export default class extends Evented<{
 				continue;
 			}
 			
-			byLineIndex.set(lineIndex, getDropTargets(
+			byLineIndex.set(lineIndex, getAvailableDropTargetTypes(
 				astMode,
 				document,
 				lineIndex,
-			).map(function(target) {
-				return {
-					lineIndex,
-					target,
-				};
-			}));
+			).map(type => new DropTarget(lineIndex, type)));
 			
 			rowsRenderedOrSkipped += wrappedLine.height;
 			
@@ -112,11 +107,8 @@ export default class extends Evented<{
 			lineIndex++;
 		}
 		
-		this.dropTargetsByLine = [...byLineIndex.entries()].map(([lineIndex, targets]) => {
-			return {
-				lineIndex,
-				dropTargets: targets.map(({target}) => target),
-			};
+		this.dropTargetsByLine = [...byLineIndex.entries()].map(([lineIndex, dropTargets]) => {
+			return {lineIndex, dropTargets};
 		});
 		
 		this.fire("updateDropTargets");

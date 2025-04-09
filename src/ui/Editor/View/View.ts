@@ -6,8 +6,8 @@ import type {AppliedEdit} from "core/Document";
 import {
 	selectionUtils as astSelectionUtils,
 	getFooterLineIndex,
-	type PickOption,
-	type DropTarget,
+	type PickOptionType,
+	type DropTargetType,
 } from "modules/astIntel";
 
 import type {EditorMode, ActiveCompletions} from "ui/Editor";
