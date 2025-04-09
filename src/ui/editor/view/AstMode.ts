@@ -6,7 +6,7 @@ import {
 	getAvailableDropTargetTypes,
 } from "modules/astIntel";
 
-import {PickOption, DropTarget} from "ui/Editor";
+import {PickOption, DropTarget} from "ui/editor";
 import type View from "./View";
 
 /*

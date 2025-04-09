@@ -6,9 +6,13 @@ import windowFocus from "utils/dom/windowFocus";
 import {on} from "utils/dom/domEvents";
 import getKeyCombo from "utils/getKeyCombo";
 
+import type {Editor} from "ui/editor";
+
 import {getApp} from "components/context";
 
-import render from "./canvas/render";
+import {CanvasRenderer} from "./canvas";
+
+import type {Canvases, Contexts} from ".";
 
 import {astDragData} from "./mouseEvents";
 import normalMouse from "./normalMouse";
@@ -18,8 +22,6 @@ import wheelHandler from "./wheelHandler";
 
 import Scrollbar from "./Scrollbar.svelte";
 import InteractionLayer from "./InteractionLayer/InteractionLayer.svelte";
-
-import type Editor from "ui/Editor";
 
 type EditorProps = {
 	editor: Editor;
@@ -55,15 +57,7 @@ let {
 	modeSwitchKey,
 } = editor;
 
-type CanvasKey = "background" | "foldHilites" | "hilites" | "code" | "margin";
-
-type Canvases = {
-	[K in CanvasKey]: HTMLCanvasElement;
-};
-
-type Contexts = {
-	[K in CanvasKey]: CanvasRenderingContext2D;
-};
+let canvasRenderer: CanvasRenderer;
 
 let revisionCounter = 0;
 let mounted = false;
@@ -72,6 +66,7 @@ let canvasDiv: HTMLDivElement = $state();
 let measurementsDiv: HTMLDivElement = $state();
 let canvases = $state({}) as Canvases;
 let contexts = {} as Contexts;
+
 let rowHeightPadding = 2;
 
 let verticalScrollbar: Scrollbar = $state();
@@ -362,12 +357,10 @@ function resizeAsync() {
 }
 
 function updateCanvas() {
-	render(
-		contexts,
-		view,
-		modeSwitchKey.isPeeking,
+	canvasRenderer.render({
+		isPeekingAstMode: modeSwitchKey.isPeeking,
 		windowHasFocus,
-	);
+	});
 }
 
 function updateScrollbars() {
@@ -495,6 +488,8 @@ onMount(function() {
 	for (let [name, canvas] of Object.entries(canvases)) {
 		contexts[name] = canvas.getContext("2d");
 	}
+	
+	canvasRenderer = new CanvasRenderer(contexts, view);
 	
 	windowHasFocus = windowFocus.isFocused();
 	

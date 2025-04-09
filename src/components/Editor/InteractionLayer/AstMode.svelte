@@ -1,7 +1,7 @@
 <script lang="ts">
 import {onMount} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
-import type {PickOption, DropTarget} from "ui/Editor";
+import type {PickOption, DropTarget} from "ui/editor";
 //import type {PickOptionType, DropTargetType} from "core/astMode";
 
 let {

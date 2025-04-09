@@ -1,7 +1,7 @@
 import {Selection, s} from "core";
 import {Special} from "core/resource";
 import type App from "ui/App";
-import type Editor from "ui/Editor";
+import type {Editor} from "ui/editor";
 import Tab from "./Tab";
 
 class ClippingsTab extends Tab {

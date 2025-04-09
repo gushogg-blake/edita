@@ -7,8 +7,11 @@ import type {Edit, HistoryEntry} from "core/Document";
 
 import type App from "ui/App";
 
-import View from "./View";
-import AstMode from "./AstMode";
+import type {ActiveCompletions, EditorEnv} from "ui/editor";
+
+import {View} from "ui/editor/view";
+
+import {AstMode} from "./astMode";
 import normalMouse from "./normalMouse";
 import normalKeyboard from "./normalKeyboard";
 import astMouse from "./astMouse";
@@ -19,16 +22,6 @@ import commonWheel from "./commonWheel";
 import modeSwitchKey from "./modeSwitchKey";
 import snippets from "./snippets";
 import EditorApi from "./EditorApi";
-
-export {PickOption, DropTarget} from "./AstMode";
-
-export type EditorMode = "normal" | "ast";
-
-export type ActiveCompletions = {
-	completions: any[], // TYPE LSP
-	selectedCompletion: any; // ^
-	cursor: Cursor;
-};
 
 type Action = {
 	edits: Edit[];
@@ -49,22 +42,7 @@ type EditorHistoryEntry = {
 	};
 };
 
-// stuff the Editor needs from outside, e.g. LSP, word completions
-// from other tabs' filenames
-
-export interface EditorEnv {
-	getWordCompletionCandidates(): string[];
-	
-	lsp: {
-		getCompletions(cursor: Cursor): Promise<any[]>; // TYPE LSP response
-		getDefinitions(cursor: Cursor): Promise<any[]>; // TYPE LSP response
-	};
-	
-	findReferences(cursor: Cursor): Promise<void>;
-	goToDefinition(definition: any): Promise<void>; // TYPE LSP response (or we convert it into our own)
-}
-
-export class Editor extends Evented<{
+export default class Editor extends Evented<{
 	edit: void;
 	focus: void;
 	blur: void;

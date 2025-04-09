@@ -9,7 +9,7 @@ import type {RecursivePartial, AsyncOrSync} from "utils/types";
 
 import {Document, Lang} from "core";
 
-import Editor from "ui/Editor";
+import {Editor} from "ui/editor";
 
 import DirEntries from "base/DirEntries";
 import stores, {type Stores} from "base/stores";

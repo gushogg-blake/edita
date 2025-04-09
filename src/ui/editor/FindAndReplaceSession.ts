@@ -1,6 +1,6 @@
 import {Cursor, c} from "core";
 import findAndReplace from "modules/grep/findAndReplace";
-import type Editor from "ui/Editor";
+import type {Editor} from "ui/editor";
 
 export default class {
 	editor: Editor;

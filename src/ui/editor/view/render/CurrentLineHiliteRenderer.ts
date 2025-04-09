@@ -5,7 +5,7 @@ export default class extends LineRowRenderer {
 	constructor(renderer: Renderer) {
 		super(renderer);
 		
-		this.canvasRenderer = this.renderer.canvasRenderers.currentLineHilite;
+		this.canvasRenderer = this.renderer.canvas.currentLineHilite;
 	}
 	
 	renderRow() {

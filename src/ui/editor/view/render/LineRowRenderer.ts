@@ -1,6 +1,6 @@
 import generatorFromArray from "utils/generatorFromArray";
 import {Cursor, c} from "core";
-import type {CanvasRenderer} from "ui/Editor/View";
+import type {CanvasRenderer} from "ui/editor/view";
 import type Renderer from "./Renderer";
 
 export default class {

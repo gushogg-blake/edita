@@ -10,7 +10,7 @@ import {
 	type DropTargetType,
 } from "modules/astIntel";
 
-import type {EditorMode, ActiveCompletions} from "ui/Editor";
+import type {EditorMode, ActiveCompletions} from "ui/editor";
 
 import SelectionUtils from "./utils/Selection";
 import AstSelectionUtils from "./utils/AstSelection";
@@ -234,8 +234,8 @@ export default class View extends Evented<{
 		this.scheduleRedraw();
 	}
 	
-	render(canvasRenderers: CanvasRenderers, uiState): void {
-		let renderer = new Renderer(this, canvasRenderers, uiState);
+	render(canvas: CanvasRenderers, uiState): void {
+		let renderer = new Renderer(this, canvas, uiState);
 		
 		renderer.render();
 	}

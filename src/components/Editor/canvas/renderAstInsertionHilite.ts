@@ -1,4 +1,4 @@
-import type CanvasRenderer from "ui/Editor/View";
+import type CanvasRenderer from "ui/editor/view";
 import type {MiscOffsets} from "./types";
 
 let lineThickness = 2;

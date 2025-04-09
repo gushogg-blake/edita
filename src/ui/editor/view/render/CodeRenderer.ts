@@ -13,7 +13,7 @@ export default class extends LineRowRenderer {
 		this.ranges = ranges;
 		this.injectionRanges = injectionRanges;
 		
-		this.canvasRenderer = this.renderer.canvasRenderers.code();
+		this.canvasRenderer = this.renderer.canvas.code();
 		
 		this.rangeIndex = 0;
 		this.injectionRangeIndex = 0;

@@ -1,7 +1,7 @@
 import type {PickOptionType, DropTargetType} from "core/astMode";
 import AstMode from "./AstMode";
 
-export default AstMode;
+export {AstMode};
 
 export class PickOption {
 	lineIndex: number;

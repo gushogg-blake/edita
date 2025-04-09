@@ -7,7 +7,7 @@ import {
 	astManipulationIsAvailable,
 } from "modules/astIntel";
 
-import type Editor from "ui/Editor";
+import type {Editor} from "ui/editor";
 import MultiStepCommand from "./MultiStepCommand";
 
 export default class AstMode extends Evented<{

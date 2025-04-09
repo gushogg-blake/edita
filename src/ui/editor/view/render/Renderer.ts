@@ -1,6 +1,7 @@
-import {Selection, s, AstSelection, a, Cursor, c} from "core";
+import {s, c} from "core";
+import type {Document} from "core";
 
-import type View from "ui/Editor/View";
+import type {View, Canvas, UiState} from "ui/edior/view";
 
 import CurrentLineHiliteRenderer from "./CurrentLineHiliteRenderer";
 import NormalSelectionRenderer from "./NormalSelectionRenderer";
@@ -11,44 +12,35 @@ import FoldHiliteRenderer from "./FoldHiliteRenderer";
 import CodeRenderer from "./CodeRenderer";
 import NormalCursorRenderer from "./NormalCursorRenderer";
 
-import type {CanvasRenderers} from "./types";
+/*
+**WIP**
 
-function getFoldedLineRowsToRender(view: View) {
-	let {sizes, measurements} = view;
-	let foldedLineRows = [];
-	let rowsToRender = Math.ceil(sizes.height / measurements.rowHeight) + 1;
-	
-	let {
-		lineIndex: firstLineIndex,
-		rowIndexInLine: firstLineRowIndex,
-	} = view.canvasUtils.findFirstVisibleLine();
-	
-	let foldedLineRowGenerator = view.canvasUtils.generateLineRowsFolded(firstLineIndex);
-	let foldedLineRow = foldedLineRowGenerator.next().value;
-	
-	while (foldedLineRow?.rowIndexInLine < firstLineRowIndex) {
-		foldedLineRow = foldedLineRowGenerator.next().value;
-	}
-	
-	while (foldedLineRow && foldedLineRows.length < rowsToRender) {
-		foldedLineRows.push(foldedLineRow);
-		
-		foldedLineRow = foldedLineRowGenerator.next().value;
-	}
-	
-	return foldedLineRows;
-}
+making this long-lived -- Renderer lifecycle will be just one for
+a view.
 
-class Renderer {
-	canvasRenderers: CanvasRenderers;
+individual renderers will be created dynamically as some won't be
+needed -- this is in contrast to the canvas side, where all renderers
+except code renderers can also be long lived
+*/
+
+export default class Renderer {
+	view: View;
+	canvas: Canvas;
+	uiState: UiState;
+	document: Document;
 	
-	constructor(view, canvasRenderers, uiState) {
+	constructor(view: View, canvas: Canvas) {
 		this.view = view;
-		this.canvasRenderers = canvasRenderers;
-		this.uiState = uiState;
+		this.canvas = canvas;
 		this.document = view.document;
-		
-		this.foldedLineRows = getFoldedLineRowsToRender(view);
+	}
+	
+	getVisibleScopes() {
+		return this.document.getVisibleScopes(this.visibleSelection);
+	}
+	
+	init() {
+		this.foldedLineRows = this.getFoldedLineRowsToRender(view);
 		
 		let firstRow = this.foldedLineRows[0];
 		let lastRow = this.foldedLineRows.at(-1);
@@ -62,23 +54,7 @@ class Renderer {
 		this.lastRow = lastRow;
 	}
 	
-	getVisibleScopes() {
-		return this.document.getVisibleScopes(this.visibleSelection);
-	}
-	
-	render() {
-		let {
-			mode,
-			insertCursor,
-			normalSelection,
-			normalHilites,
-			cursorBlinkOn,
-			astSelection,
-			astSelectionHilite,
-			astInsertionHilite,
-			focused,
-		} = this.view;
-		
+	private createRenderers() {
 		let {lines} = this.document;
 		
 		let {windowHasFocus, isPeekingAstMode} = this.uiState;
@@ -94,11 +70,11 @@ class Renderer {
 		
 		let renderers = [
 			normal && new CurrentLineHiliteRenderer(this),
-			new NormalSelectionRenderer(this, normalHilites, this.canvasRenderers.normalHilites),
-			renderNormalSelection && new NormalSelectionRenderer(this, [normalSelection.sort()], this.canvasRenderers.normalSelection),
+			new NormalSelectionRenderer(this, normalHilites, this.canvas.normalHilites),
+			renderNormalSelection && new NormalSelectionRenderer(this, [normalSelection.sort()], this.canvas.normalSelection),
 			
-			ast && new AstSelectionRenderer(this, astSelection, this.canvasRenderers.astSelection),
-			renderAstSelectionHilite && new AstSelectionRenderer(this, astSelectionHilite, this.canvasRenderers.astSelectionHilite),
+			ast && new AstSelectionRenderer(this, astSelection, this.canvas.astSelection),
+			renderAstSelectionHilite && new AstSelectionRenderer(this, astSelectionHilite, this.canvas.astSelectionHilite),
 			renderAstInsertionHilite && new AstInsertionHiliteRenderer(this),
 			
 			new FoldHiliteRenderer(this),
@@ -111,6 +87,24 @@ class Renderer {
 			renderNormalCursor && new NormalCursorRenderer(this, normalSelection.end),
 			renderInsertCursor && new NormalCursorRenderer(this, insertCursor),
 		].filter(Boolean);
+	}
+	
+	render(uiState: UiState): void {
+		this.init();
+		
+		let {
+			mode,
+			insertCursor,
+			normalSelection,
+			normalHilites,
+			cursorBlinkOn,
+			astSelection,
+			astSelectionHilite,
+			astInsertionHilite,
+			focused,
+		} = this.view;
+		
+		let renderers = this.createRenderers();
 		
 		let {firstRow, lastRow} = this;
 		
@@ -144,6 +138,30 @@ class Renderer {
 			renderer.flush();
 		}
 	}
+	
+	private getFoldedLineRowsToRender() {
+		let {sizes, measurements} = this.view;
+		let foldedLineRows = [];
+		let rowsToRender = Math.ceil(sizes.height / measurements.rowHeight) + 1;
+		
+		let {
+			lineIndex: firstLineIndex,
+			rowIndexInLine: firstLineRowIndex,
+		} = view.canvasUtils.findFirstVisibleLine();
+		
+		let foldedLineRowGenerator = view.canvasUtils.generateLineRowsFolded(firstLineIndex);
+		let foldedLineRow = foldedLineRowGenerator.next().value;
+		
+		while (foldedLineRow?.rowIndexInLine < firstLineRowIndex) {
+			foldedLineRow = foldedLineRowGenerator.next().value;
+		}
+		
+		while (foldedLineRow && foldedLineRows.length < rowsToRender) {
+			foldedLineRows.push(foldedLineRow);
+			
+			foldedLineRow = foldedLineRowGenerator.next().value;
+		}
+		
+		return foldedLineRows;
+	}
 }
-
-export default Renderer;

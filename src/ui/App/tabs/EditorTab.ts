@@ -1,5 +1,5 @@
 import set from "lodash.set";
-import type Editor from "ui/Editor";
+import type {Editor} from "ui/editor";
 import type App from "ui/App";
 import Tab from "./Tab";
 

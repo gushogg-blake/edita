@@ -1,16 +1,14 @@
-export interface CanvasRenderer {
-	init?: () => void;
-	
-	/*
-	TODO add methods. most are optional; renderers (or Renderer at least)
-	checks for them.
-	*/
-	
-	setStartLine(indentCols: number, rowsAboveCurrent: number): void;
-	
-	setEndLine(rowsBelowCurrent: number): void ;
-	
-	endRow(): void;
+export {default as View} from "./View";
+
+export interface Canvas {
+	renderers: {
+		
+	};
+}
+
+export interface UiState {
+	isPeekingAstMode: boolean;
+	windowHasFocus: boolean;
 }
 
 /*

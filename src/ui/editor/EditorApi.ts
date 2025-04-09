@@ -1,5 +1,5 @@
 import {Selection, s} from "core";
-import type Editor from "./Editor";
+import type {Editor} from "ui/editor";
 import FindAndReplaceSession from "./FindAndReplaceSession";
 
 /*

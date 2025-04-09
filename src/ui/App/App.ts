@@ -6,7 +6,7 @@ import type {DocumentOptions} from "core/Document";
 
 import {alwaysIncludeDirInTabTitle} from "base/conventions";
 
-import Editor from "ui/Editor";
+import {Editor} from "ui/editor";
 import FindAndReplace from "ui/FindAndReplace";
 import FileTree from "ui/FileTree";
 import contextMenu from "ui/contextMenu";

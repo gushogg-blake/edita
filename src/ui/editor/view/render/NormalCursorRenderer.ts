@@ -5,7 +5,7 @@ export default class extends LineRowRenderer {
 		super(renderer);
 		
 		this.cursorToRender = cursor;
-		this.canvasRenderer = this.renderer.canvasRenderers.normalCursor;
+		this.canvasRenderer = this.renderer.canvas.normalCursor;
 	}
 	
 	renderRow() {

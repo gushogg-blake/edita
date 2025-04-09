@@ -3,7 +3,7 @@ import {onMount} from "svelte";
 import {on, off} from "utils/dom/domEvents";
 import inlineStyle from "utils/dom/inlineStyle";
 import getDistanceBetweenMouseEvents from "utils/dom/getDistanceBetweenMouseEvents";
-import type Editor from "ui/Editor";
+import type {Editor} from "ui/editor";
 import {syntheticDrag} from "components/Editor/mouseEvents";
 import type {CustomMouseEvent, CustomMousedownEvent, CustomDragEvent} from "components/Editor/mouseEvents";
 import AstMode from "./AstMode.svelte";

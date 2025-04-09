@@ -19,7 +19,7 @@ used to it that it seems at home in core.
 (the reason the UI stuff needs to be in core is that astIntel
 modules in base can have signatures that accept a MultiStepCommand,
 and having them know about the UI -- as in import {MultiStepCommand}
-from "ui/Editor/..." -- seems wrong)
+from "ui/editor/..." -- seems wrong)
 */
 
 /*

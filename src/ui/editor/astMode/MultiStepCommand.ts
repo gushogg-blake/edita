@@ -1,7 +1,7 @@
 import {Evented} from "utils";
 import {AstSelection, a} from "core";
 import type {MultiStepCommand as IMultiStepCommand, AstManipulation, AstManipulationResult} from "core/astMode";
-import type Editor from "ui/Editor";
+import type {Editor} from "ui/editor";
 
 class MultiStepCommand extends Evented<{
 	complete: void;

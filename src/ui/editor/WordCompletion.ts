@@ -4,7 +4,7 @@ import convertCase from "utils/convertCase";
 import {unique} from "utils/array";
 import {Selection, s, Cursor, c} from "core";
 import type {WordAtCursor} from "core/Document";
-import type Editor from "ui/Editor";
+import type {Editor} from "ui/editor";
 
 function findCompletions(code: string, wordAtCursor, index, extraWords=[]) {
 	let {left, right} = wordAtCursor;
