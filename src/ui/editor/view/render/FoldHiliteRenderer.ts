@@ -13,9 +13,9 @@ export default class extends LineRowRenderer {
 	
 	renderRow() {
 		if (this.foldedLineRow.isFoldHeader) {
-			let {line} = this;
+			let {line, viewLine} = this;
 			
-			this.canvasRenderer.drawHilite(line.indentCols, line.width - line.indentCols);
+			this.canvasRenderer.drawHilite(line.indentCols, viewLine.width - line.indentCols);
 		}
 	}
 }

@@ -7,7 +7,7 @@ import TabPane from "./TabPane.svelte";
 let app = getApp();
 
 let {bottomPanes} = app;
-let {tools, output} = bottomPanes;
+let {tools, output} = bottomPanes.panes;
 let containerHeight = $state(bottomPanes.containerHeight);
 
 function update() {

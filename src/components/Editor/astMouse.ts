@@ -25,18 +25,18 @@ export default function(editor, editorComponent) {
 		let x = e.clientX - left;
 		let y = e.clientY - top;
 		
-		return [x, y];
+		return {x, y};
 	}
 	
 	function lineIndexFromEvent(e: MouseEvent) {
-		let [x, y] = getCanvasCoords(e);
-		let [row, col] = view.canvasUtils.cursorRowColFromScreenCoords(x, y);
+		let coords = getCanvasCoords(e);
+		let rowCol = view.canvasUtils.cursorRowColFromScreenCoords(coords);
 		
-		if (row >= view.canvasUtils.countLineRowsFolded()) {
+		if (rowCol.row >= view.canvasUtils.countLineRowsFolded()) {
 			return null;
 		}
 		
-		return view.canvasUtils.cursorFromRowCol(row, col).lineIndex;
+		return view.canvasUtils.cursorFromRowCol(rowCol).lineIndex;
 	}
 	
 	function hiliteFromLineIndex(
@@ -73,7 +73,7 @@ export default function(editor, editorComponent) {
 		} = view;
 		
 		let {lines} = document;
-		let [x, y] = getCanvasCoords(e);
+		let {y} = getCanvasCoords(e);
 		
 		let {
 			aboveLineIndex,

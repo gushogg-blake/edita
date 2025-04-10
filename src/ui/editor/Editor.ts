@@ -6,9 +6,9 @@ import type {Document, Edit, HistoryEntry} from "core/document";
 
 import type {App} from "ui/app";
 
-import type {ActiveCompletions, EditorEnv} from "ui/editor";
+import type {EditorEnv} from "ui/editor";
 
-import {View} from "ui/editor/view";
+import {View, type ActiveCompletions} from "ui/editor/view";
 
 import {AstMode} from "./astMode";
 import normalMouse from "./normalMouse";
@@ -55,7 +55,6 @@ export default class Editor extends Evented<{
 	
 	private env?: EditorEnv;
 	private wordCompletion: WordCompletion;
-	private completions: ActiveCompletions | null = null;
 	
 	private historyEntries = new WeakMap<HistoryEntry, EditorHistoryEntry>();
 	private pendingHistoryEntry?: EditorHistoryEntry;
@@ -114,6 +113,34 @@ export default class Editor extends Evented<{
 			this.view.on("focus", this.onFocus.bind(this)),
 			this.view.on("blur", this.onBlur.bind(this)),
 		];
+	}
+	
+	get string() {
+		return this.document.string;
+	}
+	
+	get mode() {
+		return this.view.mode;
+	}
+	
+	get astSelection() {
+		return this.view.astSelection;
+	}
+	
+	get normalSelection() {
+		return this.view.normalSelection;
+	}
+	
+	get selectionEndCol() {
+		return this.view.selectionEndCol;
+	}
+	
+	get wrappedLines() {
+		return this.view.wrappedLines;
+	}
+	
+	get activeCompletions() {
+		return this.view.activeCompletions;
 	}
 	
 	insertSnippet(snippet, replaceWord=null) {
@@ -175,7 +202,7 @@ export default class Editor extends Evented<{
 		}
 	}
 	
-	snippetSessionHasMoreTabstops() {
+	snippetSessionHasMoreTabstops(): boolean {
 		let {index, positions} = this.snippetSession;
 		
 		for (let i = index + 1; i < positions.length; i++) {
@@ -193,28 +220,21 @@ export default class Editor extends Evented<{
 		}
 		
 		let cursor = this.normalSelection.left;
-		
 		let completions = await this.env?.lsp.getCompletions(cursor) || [];
 		
 		console.log(completions);
 		
-		if (completions.length > 0) {
-			this.completions = {
-				completions,
-				selectedCompletion: completions[0],
-				cursor,
-			};
-		} else {
-			this.completions = null;
-		}
+		let activeCompletions = completions.length > 0 ? {
+			completions,
+			selectedCompletion: completions[0],
+			cursor,
+		} : null;
 		
-		this.view.setCompletions(this.completions);
+		this.view.setActiveCompletions(activeCompletions);
 	}
 	
 	clearCompletions() {
-		this.completions = null;
-		
-		this.view.setCompletions(this.completions);
+		this.view.setActiveCompletions(null);
 	}
 	
 	acceptSelectedCompletion() {
@@ -566,7 +586,7 @@ export default class Editor extends Evented<{
 		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
 	
-	setSelectionFromNormalMouse(selection) {
+	setSelectionFromNormalMouse(selection: Selection) {
 		this.setNormalSelection(selection);
 		this.setSelectionClipboard();
 		this.view.updateSelectionEndCol();
@@ -579,7 +599,7 @@ export default class Editor extends Evented<{
 		this.fire("normalSelectionChangedByMouseOrKeyboard", selection);
 	}
 	
-	setNormalSelection(selection) {
+	setNormalSelection(selection: Selection) {
 		this.view.setNormalSelection(selection);
 		
 		this.wordCompletion.selectionChanged();
@@ -590,8 +610,8 @@ export default class Editor extends Evented<{
 		}
 	}
 	
-	setAstSelection(selection) {
-		this.view.setAstSelection(selection);
+	setAstSelection(astSelection: AstSelection) {
+		this.view.setAstSelection(astSelection);
 	}
 	
 	setSelectionClipboard() {
@@ -600,7 +620,7 @@ export default class Editor extends Evented<{
 		}
 	}
 	
-	adjustIndent(adjustment) {
+	adjustIndent(adjustment: number) {
 		let selection = this.normalSelection.sort();
 		let {start, end} = selection;
 		let edits = [];
@@ -729,30 +749,6 @@ export default class Editor extends Evented<{
 	
 	mouseup() {
 		this.modeSwitchKey.mouseup();
-	}
-	
-	get string() {
-		return this.document.string;
-	}
-	
-	get mode() {
-		return this.view.mode;
-	}
-	
-	get astSelection() {
-		return this.view.astSelection;
-	}
-	
-	get normalSelection() {
-		return this.view.normalSelection;
-	}
-	
-	get selectionEndCol() {
-		return this.view.selectionEndCol;
-	}
-	
-	get wrappedLines() {
-		return this.view.wrappedLines;
 	}
 	
 	teardown() {

@@ -76,8 +76,8 @@ export default class App extends Evented<{
 		this.panes = {
 			left: this.sidePanes.left,
 			right: this.sidePanes.right,
-			tools: this.bottomPanes.tools,
-			output: this.bottomPanes.output,
+			tools: this.bottomPanes.panes.tools,
+			output: this.bottomPanes.panes.output,
 		};
 		
 		this.tools = new Tools(this);

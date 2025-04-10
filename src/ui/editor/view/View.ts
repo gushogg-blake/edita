@@ -5,7 +5,7 @@ import type {Edit, AppliedEdit, LineDiff} from "core/document";
 
 import {astSelectionUtils, getFooterLineIndex} from "modules/astIntel";
 
-import type {EditorMode, ActiveCompletions} from "ui/editor";
+import type {EditorMode} from "ui/editor";
 
 import type {
 	Canvas,
@@ -15,6 +15,7 @@ import type {
 	MarginStyle,
 	ScrollPosition,
 	Folds,
+	ActiveCompletions,
 } from "ui/editor/view";
 
 import SelectionUtils from "./utils/Selection";
@@ -108,7 +109,7 @@ export default class View extends Evented<{
 	sizes: Sizes;
 	scrollPosition: ScrollPosition = {x: 0, y: 0};
 	
-	completions: ActiveCompletions | null = null;
+	activeCompletions: ActiveCompletions | null = null;
 	
 	// TYPE not clear what this is but it's a map of header line index to footer line index
 	// might be better as a map, and possibly with explicit types for the numbers -- not
@@ -684,8 +685,8 @@ export default class View extends Evented<{
 		this.scheduleRedraw();
 	}
 	
-	setCompletions(completions: ActiveCompletions) {
-		this.completions = completions;
+	setActiveCompletions(activeCompletions: ActiveCompletions) {
+		this.activeCompletions = activeCompletions;
 		
 		this.fire("updateCompletions");
 	}

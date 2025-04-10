@@ -1,9 +1,17 @@
+import type {Cursor} from "core";
+
 export {default as View} from "./View";
 
 export type {LineRow, WrappedLine} from "./utils/wrapLine";
 export type {FoldedLineRow, FoldedWrappedLine} from "./utils/CanvasUtils";
 export type {default as ViewLine, VariableWidthPart} from "./ViewLine";
 export * from "./canvasInterface";
+
+export type ActiveCompletions = {
+	completions: any[], // TYPE LSP
+	selectedCompletion: any; // ^
+	cursor: Cursor;
+};
 
 export type Measurements = {
 	rowHeight: number;

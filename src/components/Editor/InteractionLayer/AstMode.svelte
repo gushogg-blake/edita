@@ -1,12 +1,16 @@
 <script lang="ts">
 import {onMount} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
-import type {PickOption, DropTarget} from "ui/editor";
+import type {Editor, PickOption, DropTarget} from "ui/editor";
 //import type {PickOptionType, DropTargetType} from "core/astMode";
+
+type Props = {
+	editor: Editor;
+};
 
 let {
 	editor,
-} = $props();
+}: Props = $props();
 
 export function mousedown(e) {
 	selectedPickOption = pickOptionFromMouseEvent(e);
@@ -122,11 +126,11 @@ function onUpdateMeasurements() {
 }
 
 function onUpdatePickOptions() {
-	({pickOptionsByLine} = view);
+	({pickOptionsByLine} = astMode);
 }
 
 function onUpdateDropTargets() {
-	({dropTargetsByLine} = view);
+	({dropTargetsByLine} = astMode);
 }
 
 function onEdit() {

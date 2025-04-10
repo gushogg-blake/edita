@@ -4,12 +4,6 @@ export {PickOption, DropTarget} from "./astMode";
 
 export type EditorMode = "normal" | "ast";
 
-export type ActiveCompletions = {
-	completions: any[], // TYPE LSP
-	selectedCompletion: any; // ^
-	cursor: Cursor;
-};
-
 // stuff the Editor needs from outside, e.g. LSP, word completions
 // from other tabs' filenames
 

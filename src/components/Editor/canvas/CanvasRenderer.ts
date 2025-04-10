@@ -25,6 +25,8 @@ export default class CanvasRenderer implements Canvas {
 		this.view = view;
 		this.uiState = uiState;
 		
+		this.init();
+		
 		let {
 			hiliteBackground,
 			selectionBackground,
@@ -53,8 +55,6 @@ export default class CanvasRenderer implements Canvas {
 		if (base.getPref("dev.timing.render")) {
 			console.time("render");
 		}
-		
-		this.init();
 		
 		this.view.render(this, this.uiState);
 		

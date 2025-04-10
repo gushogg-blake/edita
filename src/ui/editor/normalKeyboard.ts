@@ -360,7 +360,7 @@ export default {
 		
 		let insertSnippet = false;
 		
-		if (snippet && !this.completions) {
+		if (snippet && !this.activeCompletions) {
 			if (this.snippetSession) {
 				let {insertNestedSnippets} = base.prefs;
 				
@@ -378,7 +378,7 @@ export default {
 		
 		if (insertSnippet) {
 			this.insertSnippet(snippet, snippet.name);
-		} else if (this.completions) {
+		} else if (this.activeCompletions) {
 			this.acceptSelectedCompletion();
 		} else if (this.snippetSession) {
 			this.nextTabstop();

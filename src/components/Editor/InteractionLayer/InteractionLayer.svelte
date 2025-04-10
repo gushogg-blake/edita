@@ -15,7 +15,7 @@ type Props = {
 	ondblclick: (e: CustomMouseEvent) => void;
 	onmousedown: (e: CustomMousedownEvent) => void;
 	onmousemove: (e: CustomMouseEvent) => void;
-	onmouseup: (e: CustomMouseEvent) => void;
+	onmouseup: (e: MouseEvent) => void;
 	onclick: (e: CustomMouseEvent) => void;
 	onmarginMousedown: (e: CustomMouseEvent) => void;
 	onmouseenter: (e: CustomMouseEvent) => void;
@@ -438,12 +438,10 @@ onMount(function() {
 		id="code"
 		style={inlineStyle(codeStyle)}
 	>
-		{#if mode === "ast"}
-			<AstMode
-				bind:this={astModeComponent}
-				{editor}
-			/>
-		{/if}
+		<AstMode
+			bind:this={astModeComponent}
+			{editor}
+		/>
 		<div
 			bind:this={interactionDiv}
 			id="interactionLayer"

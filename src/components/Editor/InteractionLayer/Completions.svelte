@@ -1,10 +1,16 @@
 <script lang="ts">
 import {onMount} from "svelte";
+import type {Editor} from "ui/editor";
+import type {ActiveCompletions} from "ui/editor/view";
 import inlineStyle from "utils/dom/inlineStyle";
+
+type Props = {
+	editor: Editor;
+};
 
 let {
 	editor,
-} = $props();
+}: Props = $props();
 
 let {document, view} = editor;
 let {measurements} = view;
@@ -17,11 +23,11 @@ let scrollPosition = $state(view.scrollPosition);
 let rowHeight = $state(measurements.rowHeight);
 let colWidth = $state(measurements.colWidth);
 
-let completions = $state(view.completions);
+let activeCompletions = $state(view.activeCompletions);
 
-function completionsStyle(completions, rowHeight, colWidth, scrollPosition) {
-	let {cursor} = completions;
-	let [row, col] = view.canvasUtils.rowColFromCursor(cursor);
+function completionsStyle(activeCompletions, rowHeight, colWidth, scrollPosition) {
+	let {cursor} = activeCompletions;
+	let {row, col} = view.canvasUtils.rowColFromCursor(cursor);
 	let screenY = view.canvasUtils.screenYFromLineIndex(cursor.lineIndex + 1);
 	let screenCol = col;
 	
@@ -44,7 +50,7 @@ function onUpdateMeasurements() {
 }
 
 function onUpdateCompletions() {
-	({completions} = view);
+	({activeCompletions} = view);
 }
 
 function onEdit() {
@@ -79,20 +85,22 @@ onMount(function() {
 }
 </style>
 
-<div
-	id="main"
-	style={inlineStyle(completionsStyle(completions, rowHeight, colWidth, scrollPosition))}
-	onwheel={e => e.stopPropagation()}
-	onmousedown={e => e.stopPropagation()}
-	onclick={e => e.stopPropagation()}
-	ondblclick={e => e.stopPropagation()}
->
-	{#each completions.completions as completion}
-		<div
-			class="completion"
-			class:selected={completion === completions.selectedCompletion}
-		>
-			{completion.label}
-		</div>
-	{/each}
-</div>
+{#if activeCompletions}
+	<div
+		id="main"
+		style={inlineStyle(completionsStyle(onUpdateCompletions, rowHeight, colWidth, scrollPosition))}
+		onwheel={e => e.stopPropagation()}
+		onmousedown={e => e.stopPropagation()}
+		onclick={e => e.stopPropagation()}
+		ondblclick={e => e.stopPropagation()}
+	>
+		{#each activeCompletions.completions as completion}
+			<div
+				class="completion"
+				class:selected={completion === activeCompletions.selectedCompletion}
+			>
+				{completion.label}
+			</div>
+		{/each}
+	</div>
+{/if}
