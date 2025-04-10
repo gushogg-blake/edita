@@ -1,20 +1,20 @@
-import {selectionUtils} from "modules/astIntel";
+import {astSelectionUtils} from "modules/astIntel";
 
 export default {
 	up() {
-		this.setAstSelection(selectionUtils.up(this.document, this.astSelection));
+		this.setAstSelection(astSelectionUtils.up(this.document, this.astSelection));
 	},
 	
 	down() {
-		this.setAstSelection(selectionUtils.down(this.document, this.astSelection));
+		this.setAstSelection(astSelectionUtils.down(this.document, this.astSelection));
 	},
 	
 	next() {
-		this.setAstSelection(selectionUtils.next(this.document, this.astSelection));
+		this.setAstSelection(astSelectionUtils.next(this.document, this.astSelection));
 	},
 	
 	previous() {
-		this.setAstSelection(selectionUtils.previous(this.document, this.astSelection));
+		this.setAstSelection(astSelectionUtils.previous(this.document, this.astSelection));
 	},
 	
 	insertAtEnd() {

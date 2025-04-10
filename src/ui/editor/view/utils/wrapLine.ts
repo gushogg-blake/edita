@@ -1,6 +1,8 @@
 import regexMatch from "utils/regexMatch";
-import type {IndentationDetails} from "core";
-import type ViewLine, {VariableWidthPart} from "../ViewLine";
+import type {Line, IndentationDetails} from "core";
+import type {View, Measurements} from "ui/editor/view";
+import type ViewLine from "../ViewLine";
+import type {VariableWidthPart} from "../ViewLine";
 
 export type LineRow = {
 	startOffset: number;
@@ -20,22 +22,31 @@ let endWordRe = /[\S\w]+\s*$/;
 let wordRe = /[\S\w]+\s*/g;
 
 class LineWrapper {
+	private view: View;
+	private lineRows: LineRow[];
 	private viewLine: ViewLine;
+	
 	private indentation: IndentationDetails;
-	private measurements: any; // TYPE
+	private measurements: Measurements;
 	private availableWidth: number;
 	
+	private isFoldHeader: boolean;
 	private screenCols: number;
 	private textCols: number;
+	private startOffset: number;
 	private offset: number;
+	private availableCols: number;
+	private currentlyAvailableCols: number;
 	
-	constructor(viewLine: ViewLine, indentation: IndentationDetails, measurements, availableWidth) {
+	constructor(view: View, viewLine: ViewLine, availableWidth: number) {
+		this.view = view;
 		this.viewLine = viewLine;
-		this.indentation = indentation;
-		this.measurements = measurements;
+		this.indentation = view.document.format.indentation;
+		this.measurements = view.measurements;
 		this.availableWidth = availableWidth;
+		this.isFoldHeader = (viewLine.line.lineIndex in view.folds);
 		
-		this.screenCols = Math.floor(availableWidth / measurements.colWidth);
+		this.screenCols = Math.floor(availableWidth / this.measurements.colWidth);
 		this.textCols = this.screenCols - viewLine.line.indentCols;
 		this.offset = 0;
 	}
@@ -133,8 +144,8 @@ class LineWrapper {
 		this.offset += string.length;
 	}
 	
-	wrap(wrap, isFoldHeader) {
-		if (isFoldHeader || !wrap || !this.requiresWrapping()) {
+	wrap() {
+		if (this.isFoldHeader || !this.view.wrap || !this.requiresWrapping()) {
 			return this.unwrapped();
 		}
 		
@@ -201,14 +212,11 @@ class LineWrapper {
 }
 
 export default function(
-	wrap: boolean,
+	view: View,
 	viewLine: ViewLine,
-	isFoldHeader: boolean,
-	indentation,
-	measurements,
 	availableWidth: number,
 ) {
-	let wrapper = new LineWrapper(viewLine, indentation, measurements, availableWidth);
+	let wrapper = new LineWrapper(view, viewLine, availableWidth);
 	
-	return wrapper.wrap(wrap, isFoldHeader);
+	return wrapper.wrap();
 }

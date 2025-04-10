@@ -1,4 +1,4 @@
-import type {Canvas, CanvasRenderers, UiState} from "ui/editor/view";
+import type {View, Canvas, CanvasRenderers, UiState} from "ui/editor/view";
 
 import type {Contexts} from "components/Editor";
 
@@ -25,12 +25,19 @@ export default class CanvasRenderer implements Canvas {
 		this.view = view;
 		this.uiState = uiState;
 		
+		let {
+			hiliteBackground,
+			selectionBackground,
+			astSelectionBackground,
+			astSelectionHiliteBackground,
+		} = base.theme.editor;
+		
 		this.renderers = {
 			currentLineHilite: currentLineHiliteRenderer(this),
-			normalHilites: normalSelectionRenderer(this, "hiliteBackground"),
-			normalSelection: normalSelectionRenderer(this, "selectionBackground"),
-			astSelection: astSelectionRenderer(this, "astSelectionBackground"),
-			astSelectionHilite: astSelectionRenderer(this, "astSelectionHiliteBackground"),
+			normalHilites: normalSelectionRenderer(this, hiliteBackground),
+			normalSelection: normalSelectionRenderer(this, selectionBackground),
+			astSelection: astSelectionRenderer(this, astSelectionBackground),
+			astSelectionHilite: astSelectionRenderer(this, astSelectionHiliteBackground),
 			astInsertionHilite: astInsertionHiliteRenderer(this),
 			margin: marginRenderer(this),
 			foldHilites: foldHiliteRenderer(this),
@@ -49,7 +56,7 @@ export default class CanvasRenderer implements Canvas {
 		
 		this.init();
 		
-		view.render(this, this.uiState);
+		this.view.render(this, this.uiState);
 		
 		if (base.getPref("dev.timing.render")) {
 			console.timeEnd("render");

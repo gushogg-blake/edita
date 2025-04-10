@@ -1,4 +1,4 @@
-export {default as View} from "./View";
+export {default as View, type Measurements} from "./View";
 
 export interface NormalSelectionRenderer {
 	init(): void;
@@ -30,7 +30,7 @@ export interface FoldHiliteRenderer {
 }
 
 export interface CurrentLineHiliteRenderer {
-	// not implemented yet
+	init(): void;
 }
 
 export interface CodeRenderer {
@@ -67,8 +67,8 @@ export interface CanvasRenderers {
 	astInsertionHilite: AstInsertionHiliteRenderer;
 	margin: MarginRenderer;
 	foldHilites: FoldHiliteRenderer;
-	code: CodeRenderer;
 	normalCursor: NormalCursorRenderer;
+	code(): CodeRenderer;
 }
 
 export interface Canvas {

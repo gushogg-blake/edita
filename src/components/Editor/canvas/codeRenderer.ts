@@ -1,5 +1,5 @@
 import type {HiliteStyle} from "core/hiliting";
-import type {MarginRenderer} from "ui/editor/view";
+import type {CodeRenderer} from "ui/editor/view";
 import type {CanvasRenderer} from ".";
 
 export default function(canvasRenderer: CanvasRenderer): CodeRenderer {

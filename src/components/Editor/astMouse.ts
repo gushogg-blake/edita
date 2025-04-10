@@ -1,7 +1,7 @@
 import {on, off} from "utils/dom/domEvents";
 import {AstSelection, a} from "core";
 import type {PickOptionType} from "core/astMode";
-import {selectionUtils} from "modules/astIntel";
+import {astSelectionUtils} from "modules/astIntel";
 import type {CustomMouseEvent, CustomMousedownEvent, CustomDragEvent} from "./mouseEvents";
 import {astDragData} from "./mouseEvents";
 import autoScroll from "./utils/autoScroll";
@@ -54,7 +54,7 @@ export default function(editor, editorComponent) {
 			return astSelection;
 		}
 		
-		return selectionUtils.hiliteFromLineIndex(document, lineIndex, pickOptionType);
+		return astSelectionUtils.hiliteFromLineIndex(document, lineIndex, pickOptionType);
 	}
 	
 	function hiliteFromEvent(

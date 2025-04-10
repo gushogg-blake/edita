@@ -1,3 +1,5 @@
+import type {HiliteStyle} from "core/hiliting";
+
 export type Prefs = {
 	tabWidth: number;
 	defaultIndent: string;
@@ -148,7 +150,7 @@ export type Theme = {
 	editor: {
 		fontFamily: string,
 		fontSize: string;
-		defaultStyle: string;
+		defaultStyle: HiliteStyle;
 		
 		cursorColor: string;
 		

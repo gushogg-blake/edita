@@ -32,8 +32,8 @@ export default class extends Evented<{
 	
 	showPickOptionsFor(lineIndex: number): void {
 		let {document} = this.view;
-		let {astMode} = document.langFromAstSelection(a(lineIndex));
-		let types = getAvailablePickOptionTypes(astMode, document, lineIndex);
+		let {astIntel} = document.langFromAstSelection(a(lineIndex));
+		let types = getAvailablePickOptionTypes(astIntel, document, lineIndex);
 		
 		this.pickOptionsByLine = [{
 			lineIndex,
@@ -83,9 +83,9 @@ export default class extends Evented<{
 				continue;
 			}
 			
-			let {astMode} = document.langFromLineIndex(lineIndex);
+			let {astIntel} = document.langFromLineIndex(lineIndex);
 			
-			if (!astMode) {
+			if (!astIntel) {
 				lineIndex++;
 				rowsRenderedOrSkipped += wrappedLine.height;
 				
@@ -93,7 +93,7 @@ export default class extends Evented<{
 			}
 			
 			byLineIndex.set(lineIndex, getAvailableDropTargetTypes(
-				astMode,
+				astIntel,
 				document,
 				lineIndex,
 			).map(type => new DropTarget(lineIndex, type)));

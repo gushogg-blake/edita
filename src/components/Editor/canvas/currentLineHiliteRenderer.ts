@@ -5,5 +5,9 @@ export default function(canvasRenderer: CanvasRenderer): CurrentLineHiliteRender
 	let {layers, view, offsets} = canvasRenderer;
 	let {colWidth, rowHeight} = view.measurements;
 	
-	return {};
+	return {
+		init() {
+			
+		},
+	};
 }

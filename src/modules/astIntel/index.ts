@@ -1,7 +1,7 @@
 import type {AstSelection, Document, Node, Line} from "core";
 import type {AstSelectionContents, PickOptionType, DropTargetType, AstManipulation} from "core/astMode";
 
-export {default as selectionUtils} from "./selectionUtils";
+export {default as astSelectionUtils} from "./selectionUtils";
 export {default as drop} from "./drop";
 export {default as astManipulations} from "./astManipulations";
 export {default as removeSelection} from "./removeSelection";

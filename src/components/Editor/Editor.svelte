@@ -7,6 +7,7 @@ import {on} from "utils/dom/domEvents";
 import getKeyCombo from "utils/getKeyCombo";
 
 import type {Editor} from "ui/editor";
+import type {UiState} from "ui/editor/view";
 
 import {getApp} from "components/context";
 

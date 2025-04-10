@@ -1,10 +1,10 @@
-import type {CurrentLineHiliteRenderer} from "ui/editor/view";
+import type {NormalSelectionRenderer} from "ui/editor/view";
 import type {CanvasRenderer} from ".";
 
 export default function(
 	canvasRenderer: CanvasRenderer,
 	style: string,
-): CurrentLineHiliteRenderer {
+): NormalSelectionRenderer {
 	let {layers, view, offsets} = canvasRenderer;
 	let {colWidth, rowHeight} = view.measurements;
 	

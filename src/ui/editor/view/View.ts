@@ -1,18 +1,13 @@
 import {Evented, mapArrayToObject, bindFunctions} from "utils";
 import {Selection, s, Cursor, c, AstSelection, a} from "core";
-import type {Document} from "core";
-import type {AppliedEdit} from "core/Document";
+import type {Document, Line} from "core";
+import type {Edit, AppliedEdit, LineDiff} from "core/Document";
 
-import {
-	selectionUtils as astSelectionUtils,
-	getFooterLineIndex,
-	type PickOptionType,
-	type DropTargetType,
-} from "modules/astIntel";
+import {astSelectionUtils, getFooterLineIndex} from "modules/astIntel";
 
 import type {EditorMode, ActiveCompletions} from "ui/editor";
 
-import type {UiState} from "ui/editor/view";
+import type {Canvas, UiState} from "ui/editor/view";
 
 import SelectionUtils from "./utils/Selection";
 import AstSelectionUtils from "./utils/AstSelection";
@@ -28,7 +23,7 @@ type ViewLineDiff = {
 	newViewLines: ViewLine[];
 };
 
-type Measurements = {
+export type Measurements = {
 	rowHeight: number;
 	colWidth: number;
 };
@@ -50,7 +45,7 @@ type Sizes = {
 	topMargin: number;
 	marginWidth: number;
 	marginOffset: number;
-	marginStyle: number;
+	marginStyle: MarginStyle;
 	codeWidth: number;
 	rows: number;
 	cols: number;
@@ -61,7 +56,7 @@ const TOP_MARGIN = 2;
 export default class View extends Evented<{
 	modeSwitch: void;
 	scroll: void;
-	wrapChanged: void;
+	wrapChanged: boolean;
 	updateCompletions: void;
 	updateMeasurements: void;
 	updateSizes: void;
@@ -75,6 +70,7 @@ export default class View extends Evented<{
 	show: void;
 	hide: void;
 }> {
+	viewLines: ViewLine[];
 	wrappedLines: WrappedLine[];
 	
 	focused: boolean = false;
@@ -82,8 +78,12 @@ export default class View extends Evented<{
 	mounted: boolean = false;
 	
 	document: Document;
-	normalSelection: NormalSelection = s(c(0, 0));
+	normalSelection: Selection = s(c(0, 0));
 	astSelection: AstSelection | null = null;
+	
+	insertCursor: Cursor | null = null;
+	astSelectionHilite: AstSelection | null = null;
+	astInsertionHilite: AstSelection | null = null; // TODO not 100% sure what this is
 	
 	normalHilites: Selection[] = [];
 	
@@ -115,10 +115,6 @@ export default class View extends Evented<{
 	sizes: Sizes;
 	scrollPosition: ScrollPosition = {x: 0, y: 0};
 	
-	private insertCursor: Cursor | null = null;
-	private astSelectionHilite: AstSelection | null = null;
-	private astInsertionHilite: AstSelection | null = null; // TODO not 100% sure what this is
-	
 	private completions: ActiveCompletions | null = null;
 	
 	// TYPE not clear what this is but it's a map of header line index to footer line index
@@ -131,13 +127,17 @@ export default class View extends Evented<{
 	
 	private needToUpdateAstSelection: boolean = false;
 	
-	private redrawTimer: number | null = null;
+	private redrawTimer: ReturnType<typeof setTimeout> | null = null;
 	private redrawnWhileHidden: boolean = false;
 	private hasBatchedUpdates: boolean = false;
 	private syncRedrawBatchDepth: number = 0;
 	
 	private cursorBlinkOn: boolean = false;
-	private cursorInterval: number | null = null;
+	private cursorInterval: ReturnType<typeof setInterval> | null = null;
+	
+	private requestFocusOnMount: boolean;
+	
+	private teardownCallbacks: Array<() => void>;
 	
 	constructor(document: Document) {
 		super();
@@ -210,11 +210,8 @@ export default class View extends Evented<{
 	getWrappedLines(viewLines: ViewLine[]): WrappedLine[] {
 		return viewLines.map((viewLine, lineIndex) => {
 			return wrapLine(
-				this.wrap,
+				this,
 				viewLine,
-				this.folds[lineIndex],
-				this.document.format.indentation,
-				this.measurements,
 				this.sizes.codeWidth,
 			);
 		});

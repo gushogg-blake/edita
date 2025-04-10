@@ -1,7 +1,10 @@
 import type {AstSelectionRenderer} from "ui/editor/view";
 import type {CanvasRenderer} from ".";
 
-export default function(canvasRenderer: CanvasRenderer): AstSelectionRenderer {
+export default function(
+	canvasRenderer: CanvasRenderer,
+	style: string,
+): AstSelectionRenderer {
 	let {layers, view, offsets} = canvasRenderer;
 	let {width} = view.sizes;
 	let {rowHeight} = view.measurements;
