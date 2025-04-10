@@ -1,8 +1,9 @@
 import {type Cursor, c} from "core";
-import type {HiliteStyle} from "core";
 import type {Scope, Range, Node} from "core";
-import type {VisibleScope} from "core/Document/Source/Scope";
+import type {VisibleScope} from "core/document/Source/Scope";
+import type {HiliteStyle} from "core/hiliting";
 import LineRowRenderer from "./LineRowRenderer";
+import type Renderer from "./Renderer";
 
 /*
 LIFECYCLE: per-frame.

@@ -2,8 +2,7 @@ import {Evented, throttle, removeInPlace} from "utils";
 import bindFunctions from "utils/bindFunctions";
 
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
-import type {Document} from "core";
-import type {Edit, HistoryEntry} from "core/Document";
+import type {Document, Edit, HistoryEntry} from "core/document";
 
 import type App from "ui/App";
 

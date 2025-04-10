@@ -3,7 +3,7 @@ import regexMatch from "utils/regexMatch";
 import convertCase from "utils/convertCase";
 import {unique} from "utils/array";
 import {Selection, s, Cursor, c} from "core";
-import type {WordAtCursor} from "core/Document";
+import type {WordAtCursor} from "core/document";
 import type {Editor} from "ui/editor";
 
 function findCompletions(code: string, wordAtCursor, index, extraWords=[]) {

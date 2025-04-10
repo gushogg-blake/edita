@@ -72,7 +72,7 @@ export type Prefs = {
 	dev: any;
 };
 
-type LangHiliteClasses = Record<string, string>;
+type LangHiliteClasses = Record<string, HiliteStyle>;
 
 export type Theme = {
 	name: string;

@@ -1,20 +1,22 @@
+import type {AstSelection} from "core";
 import type {AstSelectionRenderer} from "ui/editor/view";
 import LineRowRenderer from "./LineRowRenderer";
 import type Renderer from "./Renderer";
 
 export default class extends LineRowRenderer {
-	constructor(renderer: Renderer, selection: AstSelection, canvasRenderer: AstSelectionRenderer) {
+	private astSelection: AstSelection;
+	private hasStartLine: boolean = false;
+	private hasEndLine: boolean = false;
+	
+	constructor(renderer: Renderer, astSelection: AstSelection, canvasRenderer: AstSelectionRenderer) {
 		super(renderer);
 		
 		this.canvasRenderer = canvasRenderer;
-		this.selection = selection;
-		
-		this.hasStartLine = false;
-		this.hasEndLine = false;
+		this.astSelection = astSelection;
 	}
 	
 	renderBetweenLines(lineAbove, lineBelow, rowsAboveCurrent, rowsBelowCurrent) {
-		let {startLineIndex, endLineIndex} = this.selection;
+		let {startLineIndex, endLineIndex} = this.astSelection;
 		let lineIndex = lineBelow ? lineBelow.lineIndex : lineAbove.lineIndex + 1;
 		
 		if (lineIndex >= startLineIndex && lineIndex <= endLineIndex && !this.hasStartLine) {

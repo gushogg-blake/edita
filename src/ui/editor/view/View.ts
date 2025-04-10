@@ -1,7 +1,7 @@
 import {Evented, mapArrayToObject, bindFunctions} from "utils";
 import {Selection, s, Cursor, c, AstSelection, a} from "core";
 import type {Document, Line} from "core";
-import type {Edit, AppliedEdit, LineDiff} from "core/Document";
+import type {Edit, AppliedEdit, LineDiff} from "core/document";
 
 import {astSelectionUtils, getFooterLineIndex} from "modules/astIntel";
 

@@ -10,6 +10,7 @@ export default class {
 	protected offset: number = null;
 	protected variableWidthPart: VariableWidthPart = null;
 	protected lastRenderedLineIndex?: number = null;
+	protected variableWidthPartGenerator: Generator<VariableWidthPart, undefined, void>;
 	
 	constructor(renderer: Renderer) {
 		this.renderer = renderer;
@@ -21,6 +22,10 @@ export default class {
 	
 	get rowIndexInLine() {
 		return this.foldedLineRow.rowIndexInLine;
+	}
+	
+	get line() {
+		return this.foldedLineRow.viewLine.line;
 	}
 	
 	get viewLine() {

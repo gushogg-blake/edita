@@ -1,6 +1,6 @@
 import {c} from "core";
 import type {Cursor, Selection, Document, Lang} from "core";
-import type {AppliedEdit} from "core/Document";
+import type {AppliedEdit} from "core/document";
 import Scope from "./Scope";
 import Range, {type VisibleScope} from "./Range";
 

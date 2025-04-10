@@ -9,12 +9,6 @@ import Edit from "./Edit";
 //import Action from "./Action";
 import HistoryEntry from "./HistoryEntry";
 
-export {default as Line} from "./Line";
-export {default as Range} from "./Source/Range";
-export {default as Scope} from "./Source/Scope";
-
-export type {Edit, HistoryEntry};
-
 export type DocumentOptions = {
 	noParse: boolean;
 };

@@ -9,7 +9,7 @@ import {
 import mapArrayToObject from "utils/mapArrayToObject";
 import {Cursor, c} from "core";
 import type {Lang, Range} from "core";
-import type {AppliedEdit} from "core/Document";
+import type {AppliedEdit} from "core/document";
 import Node from "./Node";
 import find from "./find";
 

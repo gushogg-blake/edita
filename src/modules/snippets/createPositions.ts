@@ -1,6 +1,5 @@
-import Selection, {s} from "core/Selection";
-import Cursor, {c} from "core/Cursor";
-import Document from "core/Document";
+import {Selection, s, Cursor, c} from "core";
+import {Document} from "core";
 import getPlaceholders from "./getPlaceholders";
 
 function getReplacedString(string, placeholders) {

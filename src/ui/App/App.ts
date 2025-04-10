@@ -2,7 +2,7 @@ import bluebird from "bluebird";
 
 import {Evented, bindFunctions, promiseWithMethods} from "utils";
 import {URL, Document, type Resource} from "core";
-import type {DocumentOptions} from "core/Document";
+import type {DocumentOptions} from "core/document";
 
 import {alwaysIncludeDirInTabTitle} from "base/conventions";
 
