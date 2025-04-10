@@ -1,4 +1,4 @@
-import JsonStore from "base/stores/JsonStore";
+import {JsonStore} from "base/stores";
 import migrations from "./migrations";
 
 export default function() {

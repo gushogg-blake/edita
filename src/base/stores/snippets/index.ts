@@ -1,6 +1,6 @@
 import {Evented, lid, removeInPlace} from "utils";
 import type {Lang} from "core";
-import JsonStore from "base/stores/JsonStore";
+import {JsonStore} from "base/stores";
 import migrations from "./migrations";
 
 export type Snippet = {

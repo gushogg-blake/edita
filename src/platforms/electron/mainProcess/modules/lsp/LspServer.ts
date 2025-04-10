@@ -1,7 +1,7 @@
 import {Evented, lid, sleep, promiseWithMethods} from "utils/node";
 import type {PromiseWithMethods} from "utils";
 import {spawn} from "utils/node";
-import type {App} from "electronMain/App";
+import type App from "electronMain/App";
 import config from "./config";
 
 export default class LspServer extends Evented<{

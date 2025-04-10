@@ -1,6 +1,6 @@
 import {Special} from "core/resource";
 import type {App} from "ui/app";
-import type {RefactorPreview} from "ui/Refactor";
+import type {RefactorPreview} from "ui/refactor";
 import Tab from "./Tab";
 
 class RefactorPreviewTab extends Tab {

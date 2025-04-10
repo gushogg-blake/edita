@@ -1,5 +1,5 @@
-import Singleton from "base/stores/Singleton";
-import type {Prefs} from "base/types";
+import {Singleton} from "base/stores";
+import type {Prefs} from "base";
 import defaultPrefs from "./defaultPrefs";
 import migrations from "./migrations";
 

@@ -1,6 +1,6 @@
 import {Evented} from "utils";
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
-import {type Resource, type URL, File, Memory} from "core/resource";
+import {type FileLike, type URL, File, Memory} from "core/resource";
 import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";
@@ -38,7 +38,7 @@ export default class Document extends Evented<{
 	save: void;
 	resourceChanged: void;
 }> {
-	resource: Resource;
+	resource: FileLike;
 	string: string;
 	lines: Line[];
 	history: HistoryEntry[] = [];
@@ -50,7 +50,7 @@ export default class Document extends Evented<{
 	private source: Source;
 	private historyIndexAtSave: number = 0;
 	
-	constructor(resource, options?: DocumentOptions) {
+	constructor(resource: FileLike, options?: DocumentOptions) {
 		super();
 		
 		this.resource = resource;

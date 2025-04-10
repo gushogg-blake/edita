@@ -1,6 +1,16 @@
-import Evented from "utils/Evented";
+import {Evented} from "utils";
+import type {Side} from "ui/app/panes";
 
-class Pane extends Evented {
+export default class Pane extends Evented<{
+	show: void;
+	hide: void;
+	update: void;
+	save: void;
+}> {
+	position: Side;
+	visible: boolean;
+	size: number;
+	
 	constructor(position, size, visible) {
 		super();
 		
@@ -40,5 +50,3 @@ class Pane extends Evented {
 		this.fire(visible ? "show" : "hide");
 	}
 }
-
-export default Pane;

@@ -1,9 +1,17 @@
-import Evented from "utils/Evented";
+import {Evented} from "utils";
+import type {App} from "ui/app";
 
 let maxPages = 12;
 
-class FindResults extends Evented {
-	constructor(app) {
+export class FindResults extends Evented<{
+	resultsAdded: void;
+	nav: void;
+}> {
+	private app: App;
+	private index: number;
+	private pages: any[]; // TYPE
+	
+	constructor(app: App) {
 		super();
 		
 		this.app = app;
@@ -77,5 +85,3 @@ class FindResults extends Evented {
 		this.app.showFindAndReplace(this.currentPage.options);
 	}
 }
-
-export default FindResults;

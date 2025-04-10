@@ -1,7 +1,7 @@
 <script lang="ts">
 import {onMount, tick} from "svelte";
 import inlineStyle from "utils/dom/inlineStyle";
-import type RefactorPreview from "ui/Refactor/RefactorPreview";
+import type {RefactorPreview} from "ui/refactor";
 import type {AstHint} from "ui/AstHint";
 import Gap from "components/utils/Gap.svelte";
 import Editor from "components/Editor/Editor.svelte";

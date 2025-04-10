@@ -1,14 +1,20 @@
-import Pane from "./Pane";
+import type {App} from "ui/app";
+import {type Side, Pane} from "ui/app/panes";
 
-class SidePanes {
-	constructor(app) {
+export default class SidePanes {
+	left: Pane;
+	right: Pane;
+	
+	private app: App;
+	
+	constructor(app: App) {
 		this.app = app;
 		
 		this.left = this.createPane("left");
 		this.right = this.createPane("right");
 	}
 	
-	createPane(side) {
+	createPane(side: Side) {
 		let {size, visible} = base.getPref("panes." + side);
 		
 		let pane = new Pane(side, size, visible);
@@ -32,5 +38,3 @@ class SidePanes {
 		return pane;
 	}
 }
-
-export default SidePanes;

@@ -1,16 +1,24 @@
-import {removeInPlace} from "utils/array";
-import {Evented} from "utils";
+import {Evented, removeInPlace} from "utils";
+import type {Tab} from "ui/app/tabs";
 
-class TabPane extends Evented {
+export default class TabPane extends Evented<{
+	updateTabs: void;
+	selectTab: Tab;
+	tabClosed: Tab;
+}> {
+	selectedTab: Tab = null;
+	tabs: Tab[] = [];
+	
+	private previouslySelectedTabs: Tab[] = [];
+	private closedTabs: Tab[] = [];
+	private state: any; // TYPE
+	
 	constructor(state) {
 		super();
 		
 		// keep a reference to the related state for convenience
 		// we don't modify it; BottomPanes handles that
 		this.state = state;
-		this.tabs = [];
-		this.selectedTab = null;
-		this.previouslySelectedTabs = [];
 	}
 	
 	show() {
@@ -126,10 +134,6 @@ class TabPane extends Evented {
 		removeInPlace(this.tabs, tab);
 		removeInPlace(this.previouslySelectedTabs, tab);
 		
-		if (tab.isSaved && !noSave) {
-			this.closedTabs.unshift(tab.saveState());
-		}
-		
 		if (selectNext) {
 			this.selectTab(selectNext);
 		}
@@ -138,5 +142,3 @@ class TabPane extends Evented {
 		this.fire("tabClosed", tab);
 	}
 }
-
-export default TabPane;

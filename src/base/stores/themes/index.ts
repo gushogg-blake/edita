@@ -1,6 +1,6 @@
 import bluebird from "bluebird";
-import JsonStore from "base/stores/JsonStore";
-import type {Theme} from "base/types";
+import {JsonStore} from "base/stores";
+import type {Theme} from "base";
 import defaultThemes from "./defaultThemes";
 import migrations from "./migrations";
 

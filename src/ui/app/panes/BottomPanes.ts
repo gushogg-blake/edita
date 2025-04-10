@@ -1,4 +1,6 @@
 import {Evented} from "utils";
+import type {Prefs} from "base";
+import type {App} from "ui/app";
 import TabPane from "./TabPane";
 
 /*
@@ -27,8 +29,38 @@ and expanded and one for when it's not. the appropriate one of these is
 used unless the height is "fill" from the above rule.
 */
 
-class BottomPanes extends Evented {
-	constructor(app) {
+type PaneConfiguration = {
+	visible: boolean;
+	expanded: boolean;
+};
+
+type TopPaneConfiguration = PaneConfiguration & {
+	size: number | "auto" | "fill";
+};
+
+type BottomPaneConfiguration = PaneConfiguration & {
+	size: number;
+};
+
+type PaneConfigurations = {
+	top: TopPaneConfiguration,
+	bottom: BottomPaneConfiguration;
+};
+
+type Panes = {
+	tools: TabPane;
+	output: TabPane;
+};
+
+export default class BottomPanes extends Evented<{
+	update: void;
+}> {
+	private app: App;
+	private panes: Panes;
+	private paneConfigurations: PaneConfigurations;
+	private preferredSizes: Prefs["panes"]["bottom"]["preferredSizes"];
+	
+	constructor(app: App) {
 		super();
 		
 		this.app = app;
@@ -37,37 +69,41 @@ class BottomPanes extends Evented {
 			preferredSizes,
 			top,
 			bottom,
-		} = base.getPref("panes.bottom");
+		} = base.prefs.panes.bottom;
 		
-		this.top = {
-			visible: top.visible,
-			expanded: top.expanded,
-			size: null,
+		this.paneConfigurations = {
+			top: {
+				visible: top.visible,
+				expanded: top.expanded,
+				size: null,
+			},
+			
+			bottom: {
+				visible: bottom.visible,
+				expanded: bottom.expanded,
+				size: null,
+			},
 		};
 		
-		this.bottom = {
-			visible: bottom.visible,
-			expanded: bottom.expanded,
-			size: null,
+		this.panes = {
+			tools: this.createPane(this.paneConfigurations.top),
+			output: this.createPane(this.paneConfigurations.bottom),
 		};
-		
-		this.tools = this.createPane(this.top);
-		this.output = this.createPane(this.bottom);
 		
 		this.preferredSizes = preferredSizes;
 		
 		this.setSizes();
 		
 		this.on("update", () => {
-			this.tools.resize();
-			this.output.resize();
+			this.panes.tools.resize();
+			this.panes.output.resize();
 			this.app.resize();
 		});
 	}
 	
 	init() {
-		this.tools.on("selectTab", this.onSelectTopPaneTab.bind(this));
-		this.output.on("selectTab", this.onSelectBottomPaneTab.bind(this));
+		this.panes.tools.on("selectTab", this.onSelectTopPaneTab.bind(this));
+		this.panes.output.on("selectTab", this.onSelectBottomPaneTab.bind(this));
 		
 		this.setSizes();
 		
@@ -93,7 +129,7 @@ class BottomPanes extends Evented {
 	}
 	
 	toggleTools() {
-		this.top.visible = !this.top.visible;
+		this.paneConfigurations.top.visible = !this.paneConfigurations.top.visible;
 		
 		this.setSizes();
 		
@@ -103,7 +139,7 @@ class BottomPanes extends Evented {
 	}
 	
 	toggleOutput() {
-		this.bottom.visible = !this.bottom.visible;
+		this.paneConfigurations.bottom.visible = !this.paneConfigurations.bottom.visible;
 		
 		this.setSizes();
 		
@@ -114,7 +150,7 @@ class BottomPanes extends Evented {
 	
 	get containerHeight() {
 		if (this.topVisibleAndExpanded) {
-			if (this.top.size === "auto") {
+			if (this.paneConfigurations.top.size === "auto") {
 				if (this.bottomVisibleAndExpanded) {
 					return this.preferredSizes.totalWithTopExpanded;
 				} else {
@@ -129,20 +165,26 @@ class BottomPanes extends Evented {
 	}
 	
 	get topVisibleAndExpanded() {
-		return this.top.visible && this.top.expanded;
+		return this.paneConfigurations.top.visible && this.paneConfigurations.top.expanded;
 	}
 	
 	get bottomVisibleAndExpanded() {
-		return this.bottom.visible && this.bottom.expanded;
+		return this.paneConfigurations.bottom.visible && this.paneConfigurations.bottom.expanded;
 	}
 	
 	setSizes() {
 		let topSize;
 		let bottomSize;
 		
-		if (["findAndReplace"].includes(this.tools.selectedTab?.type)) {
+		if (["find-and-replace:"].includes(this.panes.tools.selectedTab?.protocol)) {
+			// fit contents
 			topSize = "auto";
 		} else {
+			// use as much height as allowed by the pref
+			// NOTE not sure exactly how this works now, it's a bit weird
+			// the idea is to have two settings for the desired bottom
+			// pane height, as you'll want it to be smaller if the top
+			// pane is bigger (e.g. refactor)
 			topSize = "fill";
 		}
 		
@@ -152,34 +194,34 @@ class BottomPanes extends Evented {
 			bottomSize = this.preferredSizes.bottomContentsWithoutTop;
 		}
 		
-		this.top.size = topSize;
-		this.bottom.size = bottomSize;
+		this.paneConfigurations.top.size = topSize;
+		this.paneConfigurations.bottom.size = bottomSize;
 	}
 	
 	expandTools() {
-		this.top.visible = true;
-		this.top.expanded = true;
+		this.paneConfigurations.top.visible = true;
+		this.paneConfigurations.top.expanded = true;
 		
-		this.tools.show();
+		this.panes.tools.show();
 	}
 	
 	collapseTools() {
-		this.top.expanded = false;
+		this.paneConfigurations.top.expanded = false;
 		
-		this.tools.hide();
+		this.panes.tools.hide();
 	}
 	
 	expandOutput() {
-		this.bottom.visible = true;
-		this.bottom.expanded = true;
+		this.paneConfigurations.bottom.visible = true;
+		this.paneConfigurations.bottom.expanded = true;
 		
-		this.output.show();
+		this.panes.output.show();
 	}
 	
 	collapseOutput() {
-		this.bottom.expanded = false;
+		this.paneConfigurations.bottom.expanded = false;
 		
-		this.output.hide();
+		this.panes.output.hide();
 	}
 	
 	//openFindAndReplace() {
@@ -200,11 +242,11 @@ class BottomPanes extends Evented {
 		this.expandTools();
 		this.setSizes();
 		
-		if (this.top.size === "auto") {
-			this.bottom.visible = true;
-			this.bottom.expanded = true;
+		if (this.paneConfigurations.top.size === "auto") {
+			this.paneConfigurations.bottom.visible = true;
+			this.paneConfigurations.bottom.expanded = true;
 		} else {
-			this.bottom.expanded = false;
+			this.paneConfigurations.bottom.expanded = false;
 		}
 		
 		this.fire("update");
@@ -221,39 +263,39 @@ class BottomPanes extends Evented {
 		this.savePrefs();
 	}
 	
-	createPane(state) {
+	createPane(state): TabPane {
 		let pane = new TabPane(state);
 		
 		return pane;
 	}
 	
-	resizeTools(diff) {
-		if (this.top.expanded) {
+	resizeTools(diff: number) {
+		if (this.paneConfigurations.top.expanded) {
 			this.preferredSizes.totalWithTopExpanded += diff;
 		} else {
 			this.preferredSizes.bottomContentsWithoutTop += diff;
-			this.bottom.size = this.preferredSizes.bottomContentsWithoutTop;
+			this.paneConfigurations.bottom.size = this.preferredSizes.bottomContentsWithoutTop;
 		}
 		
 		this.fire("update");
 	}
 	
-	resizeAndSaveTools(diff) {
+	resizeAndSaveTools(diff: number) {
 		this.resizeTools(diff);
 		
 		this.savePrefs();
 	}
 	
-	resizeOutput(diff) {
-		if (this.top.size === "auto" && this.topVisibleAndExpanded) {
+	resizeOutput(diff: number) {
+		if (this.paneConfigurations.top.size === "auto" && this.topVisibleAndExpanded) {
 			this.preferredSizes.totalWithTopExpanded += diff;
 		} else {
 			if (this.topVisibleAndExpanded) {
 				this.preferredSizes.bottomContentsWithTop += diff;
-				this.bottom.size = this.preferredSizes.bottomContentsWithTop;
+				this.paneConfigurations.bottom.size = this.preferredSizes.bottomContentsWithTop;
 			} else {
 				this.preferredSizes.bottomContentsWithoutTop += diff;
-				this.bottom.size = this.preferredSizes.bottomContentsWithoutTop;
+				this.paneConfigurations.bottom.size = this.preferredSizes.bottomContentsWithoutTop;
 			}
 		}
 		
@@ -267,7 +309,8 @@ class BottomPanes extends Evented {
 	}
 	
 	savePrefs() {
-		let {top, bottom, preferredSizes} = this;
+		let {top, bottom} = this.paneConfigurations;
+		let {preferredSizes} = this;
 		
 		base.setPref("panes.bottom", {
 			top,
@@ -276,5 +319,3 @@ class BottomPanes extends Evented {
 		});
 	}
 }
-
-export default BottomPanes;

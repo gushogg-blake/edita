@@ -1,9 +1,19 @@
-import FindResults from "ui/FindResults";
+import type {App} from "ui/app";
+import type {TabPane} from "ui/app/panes";
+import {FindResults} from "ui/findResults";
 import FindResultsTab from "./tabs/FindResultsTab";
 import ClippingsTab from "./tabs/ClippingsTab";
 
-class Output {
-	constructor(app) {
+export default class Output {
+	findResults: FindResults;
+	findResultsTab: FindResultsTab;
+	clippingsTab: ClippingsTab;
+	
+	private app: App;
+	private pane: TabPane;
+	private teardownCallbacks: Array<() => void>;
+	
+	constructor(app: App) {
 		this.app = app;
 		this.pane = app.panes.output;
 		
@@ -22,7 +32,7 @@ class Output {
 		this.teardownCallbacks = [
 			platform.clipboard.on("set", (str) => {
 				this.clippingsTab.addClipping(str);
-			});
+			}),
 			
 			app.on("teardown", this.teardown.bind(this)),
 		];
@@ -42,5 +52,3 @@ class Output {
 		}
 	}
 }
-
-export default Output;

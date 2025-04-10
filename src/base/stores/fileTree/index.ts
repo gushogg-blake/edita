@@ -1,4 +1,4 @@
-import Singleton from "base/stores/Singleton";
+import {Singleton} from "base/stores";
 import migrations from "./migrations";
 
 export default function() {

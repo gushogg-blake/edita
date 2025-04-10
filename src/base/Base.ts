@@ -14,7 +14,7 @@ import {Editor} from "ui/editor";
 import DirEntries from "base/DirEntries";
 import stores, {type Stores} from "base/stores";
 
-import type {Prefs, Theme} from "base/types";
+import type {Prefs, Theme} from "base";
 
 import {generateRequiredLangs} from "./utils";
 import {core as langs, astIntel, codeIntel, hiliters} from "./langs";

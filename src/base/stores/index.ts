@@ -13,6 +13,9 @@ import session from "./session";
 import snippets from "./snippets";
 import themes from "./themes";
 
+export {default as JsonStore} from "./JsonStore";
+export {default as Singleton} from "./Singleton";
+
 export type Stores = {
 	ephemeralUiState: Singleton;
 	fileTree: Singleton;

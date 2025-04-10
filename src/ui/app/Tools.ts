@@ -1,10 +1,15 @@
 import bluebird from "bluebird";
-import Refactor from "ui/Refactor";
+import type {App} from "ui/app";
+import type {TabPane} from "ui/app/panes";
+import {Refactor} from "ui/refactor";
 import FindAndReplaceTab from "./tabs/FindAndReplaceTab";
 import RefactorTab from "./tabs/RefactorTab";
 
-class Tools {
-	constructor(app) {
+export default class Tools {
+	private app: App;
+	private pane: TabPane;
+	
+	constructor(app: App) {
 		this.app = app;
 		this.pane = app.panes.tools;
 		
@@ -55,5 +60,3 @@ class Tools {
 		this.app.bottomPanes.configure(true, true);
 	}
 }
-
-export default Tools;
