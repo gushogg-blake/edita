@@ -122,12 +122,6 @@ Note: Electron now strongly discourages using `ipcRenderer` directly from the re
 
 Rollup.
 
-### TypeScript
-
-This project in the process of migration from JS to TS, and in the initial change only the minimal required changes were applied to get the code to compile.
-
-Currently compiling, but if something to do with types looks wrong, it probably is. Type annotations being added gradually and haphazardly. I'm ambivalent about typing; it feels like you can spend a lot of time doing stuff just to get rid of the errors, when the types are kind of irrelevant as they're not exposed outside the module. Large interfaces can be cumbersome to maintain and types aren't amenable to the pattern (v. common in JS) of just sticking something somewhere and not worrying too much about defining it precisely (see platforms/web/Platform .backupFs for example, which will be a PITA to type as it's basically "you know the Node fs module? ... yeah, kind of like that..."). They also don't play well with the pattern of passing a dependency into a closure and then defining an entire module's code in the closure for easy access -- again see utils/fs. Typing will require either a large interface repeating the Node interface, or foregoing the closure pattern and having something like this.backends.osPath instead of just osPath, for all the backend stuff.
-
 ### Strict null checking & optionality
 
 I'm used to using `null` but TS seems to prefer `undefined` in that optionality is `type | undefined` and with `--strictNullChecking` you can't put `null` there. For now I'm using optionality (`var?: type`) to indicate that something can be null, and initialising it to null where appropriate. Later, if `--strictNullChecking` is turned on, it should be fairly easy to update all the logic to use `undefined` as the null value and remove the `null` initialisations.
