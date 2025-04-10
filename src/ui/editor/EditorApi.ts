@@ -29,7 +29,7 @@ export default class EditorApi {
 		
 		let {rows} = view.sizes;
 		let {rowHeight} = view.measurements;
-		let [selectionRow] = view.canvasUtils.rowColFromCursor(selection.start);
+		let {row: selectionRow} = view.canvasUtils.rowColFromCursor(selection.start);
 		let scrollToRow = selectionRow - Math.ceil(rows / 2);
 		let scrollTop = scrollToRow * rowHeight;
 		

@@ -5,6 +5,12 @@ import type {AppliedEdit} from "core/Document";
 import type Source from "./Source";
 import Range from "./Range";
 
+export type VisibleScope = {
+	scope: Scope;
+	ranges: Range[];
+	injectionRanges: Range[];
+};
+
 function getInjectionLangCode(injection, result) {
 	return _typeof(injection.lang) === "Function" ? injection.lang(result) : injection.lang;
 }
@@ -256,7 +262,7 @@ export default class Scope {
 		}
 	}
 	
-	query(query, startCursor=null) {
+	query(query, startCursor = null) {
 		return this.tree.query(query, startCursor);
 	}
 	
@@ -267,15 +273,15 @@ export default class Scope {
 	possibly link them with .children and/or sibling pointers
 	*/
 	
-	getVisibleScopes(selection) {
+	getVisibleScopes(selection: Selection): VisibleScope[] {
 		let ranges = this.ranges.filter(range => selection.overlaps(range.selection));
 		
 		if (ranges.length === 0) {
 			return [];
 		}
 		
-		let children = this.scopes.reduce(function(scopes, scope) {
-			return [...scopes, ...scope.getVisibleScopes(selection)];
+		let children = this.scopes.reduce(function(visibleScopes, scope) {
+			return [...visibleScopes, ...scope.getVisibleScopes(selection)];
 		}, []);
 		
 		return [
@@ -309,7 +315,7 @@ export default class Scope {
 	see langs/markdown/index.js for more details.
 	*/
 	
-	rangesFromNode(node, excludeChildren=false) {
+	rangesFromNode(node, excludeChildren = false) {
 		let ranges = [];
 		let selections = excludeChildren ? node.selectionsExcludingChildren() : [node.selection];
 		

@@ -1,6 +1,59 @@
-import {Selection, s, Cursor, c} from "core";
+import {type Cursor, c} from "core";
 import {expandTabs} from "modules/utils/editing";
-import type View from "../View";
+import type {View, WrappedLine, LineRow} from "ui/editor/view";
+
+/*
+"folded" in FoldedLineRow and FoldedWrappedLine means taking
+folds into account -- the item/s returned are not necessarily
+folded in the sense of being inside a fold or being a fold
+header.
+*/
+
+export type FoldedLineRow = {
+	isFoldHeader: boolean;
+	lineIndex: number;
+	rowIndexInLine: number;
+	wrappedLine: WrappedLine;
+	viewLine: ViewLine;
+	lineRow: LineRow;
+};
+
+export type FoldedWrappedLine = {
+	isFoldHeader: boolean;
+	lineIndex: number;
+	wrappedLine: WrappedLine;
+};
+
+/*
+describes the first visible line in the document. used as
+the starting point for rendering
+*/
+
+export type FirstVisibleLine = {
+	wrappedLine: WrappedLine;
+	lineIndex: number;
+	rowIndexInLine: number;
+};
+
+/*
+for AST mouse actions
+*/
+
+export type InsertLineIndex = {
+	aboveLineIndex: number | null;
+	belowLineIndex: number | null;
+	offset: number;
+};
+
+export type RowCol = {
+	row: number;
+	col: number;
+};
+
+export type Coords = {
+	x: number;
+	y: number;
+};
 
 export default class {
 	private view: View;
@@ -43,7 +96,7 @@ export default class {
 		return rows;
 	}
 	
-	cursorFromRowCol(row, col, beforeTab = false) {
+	cursorFromRowCol({row, col}: RowCol, beforeTab: boolean = false): Cursor {
 		let rowsCounted = 0;
 		let foldedLineRow;
 		
@@ -128,14 +181,14 @@ export default class {
 		return c(lineIndex, offset);
 	}
 	
-	cursorFromScreenCoords(x, y) {
-		return cursorFromRowCol(...this.cursorRowColFromScreenCoords(x, y));
+	cursorFromScreenCoords(coords: Coords): Cursor {
+		return cursorFromRowCol(this.cursorRowColFromScreenCoords(coords));
 	}
 	
-	*generateLineRowsFolded(startLineIndex = 0) {
+	*generateLineRowsFolded(startLineIndex: number = 0): Generator<FoldedLineRow, undefined, void> {
 		let lineIndex = startLineIndex;
 		
-		while (lineIndex < this.wrappedLines.length && "spincheck=1000000") {
+		while (lineIndex < this.wrappedLines.length && `spincheck=${1000000}`) {
 			let wrappedLine = this.wrappedLines[lineIndex];
 			let {viewLine} = wrappedLine;
 			let foldEndLineIndex = this.folds[lineIndex];
@@ -170,7 +223,7 @@ export default class {
 		}
 	}
 	
-	*generateWrappedLinesFolded(startLineIndex = 0) {
+	*generateWrappedLinesFolded(startLineIndex: number = 0): Generator<FoldedWrappedLine, void, void> {
 		let lineIndex = startLineIndex;
 		
 		while (lineIndex < this.wrappedLines.length && "spincheck=1000000") {
@@ -195,7 +248,7 @@ export default class {
 		}
 	}
 	
-	findFirstVisibleLine() {
+	findFirstVisibleLine(): FirstVisibleLine {
 		let {rowHeight} = this.measurements;
 		let scrollY = Math.max(0, this.scrollPosition.y - this.sizes.topMargin);
 		let scrollRow = Math.floor(scrollY / rowHeight);
@@ -216,7 +269,7 @@ export default class {
 		throw new Error("findFirstVisibleLine - no line found, scroll position possibly out of bounds");
 	}
 	
-	getLineStartingRow(lineIndex) {
+	getLineStartingRow(lineIndex: number): number {
 		let startingRow = 0;
 		
 		for (let foldedLineRow of this.generateLineRowsFolded()) {
@@ -230,7 +283,7 @@ export default class {
 		return startingRow;
 	}
 	
-	lineRowIndexAndOffsetFromCursor(cursor) {
+	lineRowIndexAndOffsetFromCursor(cursor: Cursor): {lineRowIndex: number, offsetInRow: number} {
 		let {lineIndex, offset} = cursor;
 		let wrappedLine = this.wrappedLines[lineIndex];
 		let lineRowIndex = 0;
@@ -253,10 +306,10 @@ export default class {
 			offsetInRow -= lineRow.string.length;
 		}
 		
-		return [lineRowIndex, offsetInRow];
+		return {lineRowIndex, offsetInRow};
 	}
 	
-	insertLineIndexFromScreenY(y) {
+	insertLineIndexFromScreenY(y: number): InsertLineIndex {
 		let {rowHeight} = this.measurements;
 		
 		y -= this.sizes.topMargin;
@@ -285,11 +338,11 @@ export default class {
 			}
 			
 			if (rowAbove >= 0) {
-				aboveLineIndex = this.cursorFromRowCol(rowAbove, 0).lineIndex;
+				aboveLineIndex = this.cursorFromRowCol({row: rowAbove, col: 0}).lineIndex;
 			}
 			
 			if (aboveLineIndex === null || aboveLineIndex < this.wrappedLines.length - 1) {
-				belowLineIndex = this.cursorFromRowCol(rowBelow, 0).lineIndex;
+				belowLineIndex = this.cursorFromRowCol({row: rowBelow, col: 0}).lineIndex;
 			}
 		}
 		
@@ -310,7 +363,7 @@ export default class {
 		};
 	}
 	
-	rowColFromCursor(cursor) {
+	rowColFromCursor(cursor: Cursor): RowCol {
 		let {lineIndex, offset} = cursor;
 		let row = 0;
 		
@@ -358,10 +411,10 @@ export default class {
 			col += wrappedLine.line.indentCols;
 		}
 		
-		return [row, col];
+		return {row, col};
 	}
 	
-	rowColFromScreenCoords(x, y) {
+	rowColFromScreenCoords({x, y}: Coords): RowCol {
 		let {
 			rowHeight,
 			colWidth,
@@ -372,13 +425,13 @@ export default class {
 		let screenCol = Math.floor((x - this.sizes.marginOffset + coordsXHint + this.scrollPosition.x) / colWidth);
 		let screenRow = Math.floor((y - this.sizes.topMargin + this.scrollPosition.y) / rowHeight);
 		
-		return [
-			Math.max(0, screenRow),
-			Math.max(0, screenCol),
-		];
+		return {
+			row: Math.max(0, screenRow),
+			col: Math.max(0, screenCol),
+		};
 	}
 	
-	cursorRowColFromScreenCoords(x, y) {
+	cursorRowColFromScreenCoords({x, y}: Coords): RowCol {
 		let {
 			rowHeight,
 			colWidth,
@@ -389,26 +442,26 @@ export default class {
 		let screenCol = Math.round((x - this.sizes.marginOffset + coordsXHint + this.scrollPosition.x) / colWidth);
 		let screenRow = Math.floor((y - this.sizes.topMargin + this.scrollPosition.y) / rowHeight);
 		
-		return [
-			Math.max(0, screenRow),
-			Math.max(0, screenCol),
-		];
+		return {
+			row: Math.max(0, screenRow),
+			col: Math.max(0, screenCol),
+		};
 	}
 	
-	screenCoordsFromCursor(cursor) {
-		return this.screenCoordsFromRowCol(...this.rowColFromCursor(cursor));
+	screenCoordsFromCursor(cursor: Cursor): Coords {
+		return this.screenCoordsFromRowCol(this.rowColFromCursor(cursor));
 	}
 	
-	screenCoordsFromRowCol(row, col) {
+	screenCoordsFromRowCol({row, col}: RowCol): Coords {
 		let {rowHeight, colWidth} = this.measurements;
 		
 		let x = Math.round(Math.round(this.sizes.marginOffset) + col * colWidth - this.scrollPosition.x);
 		let y = row * rowHeight + this.sizes.topMargin - this.scrollPosition.y;
 		
-		return [x, y];
+		return {x, y};
 	}
 	
-	screenYFromLineIndex(lineIndex) {
+	screenYFromLineIndex(lineIndex: number): number {
 		return this.getLineStartingRow(lineIndex) * this.measurements.rowHeight - this.scrollPosition.y;
 	}
 }

@@ -1,4 +1,7 @@
 export {default as View, type Measurements} from "./View";
+export type {LineRow, WrappedLine} from "./utils/wrapLine";
+export type {FoldedLineRow, FoldedWrappedLine} from "./utils/CanvasUtils";
+export type {default as ViewLine} from "./ViewLine";
 
 export interface NormalSelectionRenderer {
 	init(): void;
@@ -78,8 +81,4 @@ export interface Canvas {
 export interface UiState {
 	isPeekingAstMode: boolean;
 	windowHasFocus: boolean;
-}
-
-export interface FoldedLineRow {
-	
 }

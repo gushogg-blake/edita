@@ -1,7 +1,9 @@
+import type {AstSelectionRenderer} from "ui/editor/view";
 import LineRowRenderer from "./LineRowRenderer";
+import type Renderer from "./Renderer";
 
 export default class extends LineRowRenderer {
-	constructor(renderer, selection, canvasRenderer) {
+	constructor(renderer: Renderer, selection: AstSelection, canvasRenderer: AstSelectionRenderer) {
 		super(renderer);
 		
 		this.canvasRenderer = canvasRenderer;

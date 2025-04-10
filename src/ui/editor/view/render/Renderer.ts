@@ -1,7 +1,7 @@
 import {s, c} from "core";
-import type {Document} from "core";
+import type {Document, Selection} from "core";
 
-import type {View, Canvas, UiState} from "ui/edior/view";
+import type {View, Canvas, UiState, FoldedLineRow} from "ui/editor/view";
 
 import CurrentLineHiliteRenderer from "./CurrentLineHiliteRenderer";
 import NormalSelectionRenderer from "./NormalSelectionRenderer";
@@ -27,11 +27,16 @@ export default class Renderer {
 	canvas: Canvas;
 	uiState: UiState;
 	
+	private visibleSelection: Selection;
+	private foldedLineRows: FoldedLineRow[];
+	private firstRow: FoldedLineRow;
+	private lastRow: FoldedLineRow;
+	
 	constructor(view: View, canvas: Canvas, uiState: UiState) {
 		this.view = view;
 		this.document = view.document;
 		this.canvas = canvas;
-		this.uiState = UiState;
+		this.uiState = uiState;
 	}
 	
 	render(): void {
@@ -39,6 +44,7 @@ export default class Renderer {
 		
 		let renderers = this.createRenderers();
 		
+		let {lines} = this.view;
 		let {firstRow, lastRow} = this;
 		
 		for (let renderer of renderers) {
@@ -65,7 +71,7 @@ export default class Renderer {
 			if (lastRow.rowIndexInLine !== lastRow.wrappedLine.lineRows.length - 1) {
 				let lineBelow = lines[lastRow.lineIndex + 1] || null;
 				
-				renderer.renderBetweenLines(lastRow.line, lineBelow, 0, lastRow.wrappedLine.lineRows.length - 1 - lastRow.rowIndexInLine);
+				renderer.renderBetweenLines(lastRow.viewLine.line, lineBelow, 0, lastRow.wrappedLine.lineRows.length - 1 - lastRow.rowIndexInLine);
 			}
 			
 			renderer.flush();
@@ -115,20 +121,22 @@ export default class Renderer {
 		let renderAstSelectionHilite = ast && astSelectionHilite && (isPeekingAstMode || !astSelection.equals(astSelectionHilite));
 		let renderAstInsertionHilite = ast && astInsertionHilite;
 		
+		let {renderers: canvasRenderers} = this.canvas;
+		
 		return [
 			normal && new CurrentLineHiliteRenderer(this),
-			new NormalSelectionRenderer(this, normalHilites, this.canvas.normalHilites),
-			renderNormalSelection && new NormalSelectionRenderer(this, [normalSelection.sort()], this.canvas.normalSelection),
+			new NormalSelectionRenderer(this, normalHilites, canvasRenderers.normalHilites),
+			renderNormalSelection && new NormalSelectionRenderer(this, [normalSelection.sort()], canvasRenderers.normalSelection),
 			
-			ast && new AstSelectionRenderer(this, astSelection, this.canvas.astSelection),
-			renderAstSelectionHilite && new AstSelectionRenderer(this, astSelectionHilite, this.canvas.astSelectionHilite),
+			ast && new AstSelectionRenderer(this, astSelection, canvasRenderers.astSelection),
+			renderAstSelectionHilite && new AstSelectionRenderer(this, astSelectionHilite, canvasRenderers.astSelectionHilite),
 			renderAstInsertionHilite && new AstInsertionHiliteRenderer(this),
 			
 			new FoldHiliteRenderer(this),
 			new MarginRenderer(this),
 			
-			...this.getVisibleScopes().map(({scope, ranges, injectionRanges}) => {
-				return new CodeRenderer(this, scope, ranges, injectionRanges)
+			...this.getVisibleScopes().map((visibleScope) => {
+				return new CodeRenderer(this, visibleScope);
 			}),
 			
 			renderNormalCursor && new NormalCursorRenderer(this, normalSelection.end),
@@ -144,9 +152,9 @@ export default class Renderer {
 		let {
 			lineIndex: firstLineIndex,
 			rowIndexInLine: firstLineRowIndex,
-		} = view.canvasUtils.findFirstVisibleLine();
+		} = this.view.canvasUtils.findFirstVisibleLine();
 		
-		let foldedLineRowGenerator = view.canvasUtils.generateLineRowsFolded(firstLineIndex);
+		let foldedLineRowGenerator = this.view.canvasUtils.generateLineRowsFolded(firstLineIndex);
 		let foldedLineRow = foldedLineRowGenerator.next().value;
 		
 		while (foldedLineRow?.rowIndexInLine < firstLineRowIndex) {

@@ -2,10 +2,11 @@ import {c} from "core";
 import type {Cursor, Selection, Document, Lang} from "core";
 import type {AppliedEdit} from "core/Document";
 import Scope from "./Scope";
-import Range from "./Range";
+import Range, {type VisibleScope} from "./Range";
 
 export default class {
 	rootScope: Scope;
+	
 	private document: Document;
 	
 	constructor(document: Document) {
@@ -36,7 +37,7 @@ export default class {
 		this.rootScope.edit(appliedEdit, [this.getContainingRange()]);
 	}
 	
-	getVisibleScopes(selection: Selection): Scope[] {
+	getVisibleScopes(selection: Selection): VisibleScope[] {
 		return this.rootScope.getVisibleScopes(selection);
 	}
 	

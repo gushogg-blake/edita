@@ -1,23 +1,38 @@
-import Cursor, {c} from "core/Cursor";
+import {type Cursor, c} from "core";
+import type {HiliteStyle} from "core";
+import type {Scope, Range, Node} from "core";
+import type {VisibleScope} from "core/Document/Source/Scope";
 import LineRowRenderer from "./LineRowRenderer";
 
 /*
 LIFECYCLE: per-frame.
 */
 
+type NodeStackElement = {
+	node: Node | null;
+	style: HiliteStyle | null;
+	nextChild: Node | null;
+};
+
 export default class extends LineRowRenderer {
-	constructor(renderer, scope, ranges, injectionRanges) {
+	private scope: Scope;
+	private ranges: Range[];
+	private injectionRanges: Range[];
+	
+	private rangeIndex: number = 0;
+	private injectionRangeIndex: number = 0;
+	private nodeStack: NodeStackElement[] = [];
+	
+	constructor(renderer: Renderer, visibleScope: VisibleScope) {
 		super(renderer);
+		
+		let {scope, ranges, injectionRanges} = visibleScope;
 		
 		this.scope = scope;
 		this.ranges = ranges;
 		this.injectionRanges = injectionRanges;
 		
-		this.canvasRenderer = this.renderer.canvas.code();
-		
-		this.rangeIndex = 0;
-		this.injectionRangeIndex = 0;
-		this.nodeStack = null;
+		this.canvasRenderer = this.renderer.canvas.renderers.code();
 	}
 	
 	init(row) {

@@ -1,11 +1,15 @@
+import type {Cursor} from "core";
 import LineRowRenderer from "./LineRowRenderer";
+import type Renderer from "./Renderer";
 
 export default class extends LineRowRenderer {
-	constructor(renderer, cursor) {
+	private cursorToRender: Cursor;
+	
+	constructor(renderer: Renderer, cursor: Cursor) {
 		super(renderer);
 		
 		this.cursorToRender = cursor;
-		this.canvasRenderer = this.renderer.canvas.normalCursor;
+		this.canvasRenderer = this.renderer.canvas.renderers.normalCursor;
 	}
 	
 	renderRow() {
@@ -22,7 +26,7 @@ export default class extends LineRowRenderer {
 				|| offsetInRow < lineRow.string.length
 			)
 		) {
-			while ("spincheck=100000") {
+			while (`spincheck=${lineRow.variableWidthParts.length}`) {
 				if (this.variableWidthPart) {
 					if (this.offset + this.variableWidthPart.string.length > offset) {
 						this.canvasRenderer.skipText(offset - this.offset);

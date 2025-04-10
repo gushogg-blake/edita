@@ -1,11 +1,11 @@
 import generatorFromArray from "utils/generatorFromArray";
-import {Cursor, c} from "core";
-import type {CanvasRenderer} from "ui/editor/view";
+import {type Cursor, c} from "core";
+import type {LineRowCanvasRenderer, FoldedLineRow, VariableWidthPart} from "ui/editor/view";
 import type Renderer from "./Renderer";
 
 export default class {
 	protected renderer: Renderer;
-	protected canvasRenderer: CanvasRenderer;
+	protected canvasRenderer: LineRowCanvasRenderer;
 	protected foldedLineRow: FoldedLineRow;
 	protected offset: number = null;
 	protected variableWidthPart: VariableWidthPart = null;

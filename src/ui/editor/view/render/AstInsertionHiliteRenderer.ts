@@ -5,7 +5,7 @@ export default class extends LineRowRenderer {
 	constructor(renderer: Renderer) {
 		super(renderer);
 		
-		this.canvasRenderer = this.renderer.canvas.astInsertionHilite;
+		this.canvasRenderer = this.renderer.canvas.renderers.astInsertionHilite;
 	}
 	
 	renderBetweenLines(lineAbove, lineBelow, rowsAboveCurrent, rowsBelowCurrent) {

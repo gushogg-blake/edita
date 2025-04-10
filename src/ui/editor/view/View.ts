@@ -87,6 +87,8 @@ export default class View extends Evented<{
 	
 	normalHilites: Selection[] = [];
 	
+	cursorBlinkOn: boolean = false;
+	
 	wrap: boolean;
 	
 	mode: EditorMode = "normal";
@@ -132,7 +134,6 @@ export default class View extends Evented<{
 	private hasBatchedUpdates: boolean = false;
 	private syncRedrawBatchDepth: number = 0;
 	
-	private cursorBlinkOn: boolean = false;
 	private cursorInterval: ReturnType<typeof setInterval> | null = null;
 	
 	private requestFocusOnMount: boolean;
@@ -476,7 +477,7 @@ export default class View extends Evented<{
 		
 		let {end} = this.normalSelection;
 		let {lineIndex, offset} = end;
-		let [row, col] = this.canvasUtils.rowColFromCursor(end);
+		let {row, col} = this.canvasUtils.rowColFromCursor(end);
 		
 		let maxRow = this.canvasUtils.countLineRowsFolded() - 1;
 		let firstVisibleRow = Math.floor(scrollPosition.y / rowHeight);
@@ -501,7 +502,7 @@ export default class View extends Evented<{
 		if (!this.wrap) {
 			let colBuffer = colWidth * 4;
 			
-			let [x] = this.canvasUtils.screenCoordsFromRowCol(row, col);
+			let {x} = this.canvasUtils.screenCoordsFromRowCol({row, col});
 			
 			x -= this.sizes.marginOffset;
 			
@@ -579,9 +580,9 @@ export default class View extends Evented<{
 	}
 	
 	updateSelectionEndCol() {
-		let [, endCol] = this.canvasUtils.rowColFromCursor(this.normalSelection.end);
+		let {col} = this.canvasUtils.rowColFromCursor(this.normalSelection.end);
 		
-		this.selectionEndCol = endCol;
+		this.selectionEndCol = col;
 	}
 	
 	updateNormalSelectionFromAstSelection() {

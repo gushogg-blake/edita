@@ -1,10 +1,11 @@
+import type Renderer from "./Renderer";
 import LineRowRenderer from "./LineRowRenderer";
 
 export default class extends LineRowRenderer {
-	constructor(renderer) {
+	constructor(renderer: Renderer) {
 		super(renderer);
 		
-		this.canvasRenderer = this.renderer.canvas.foldHilites;
+		this.canvasRenderer = this.renderer.canvas.renderers.foldHilites;
 	}
 	
 	renderRow() {

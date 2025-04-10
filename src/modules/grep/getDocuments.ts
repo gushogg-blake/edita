@@ -1,6 +1,5 @@
 import bluebird from "bluebird";
-import Document from "core/Document";
-import URL from "core/resource/URL";
+import {URL, Document} from "core";
 
 export default async function(paths) {
 	return bluebird.map(paths, async function(path) {
