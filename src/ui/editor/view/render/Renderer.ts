@@ -26,8 +26,8 @@ export default class Renderer {
 	document: Document;
 	canvas: Canvas;
 	uiState: UiState;
+	visibleSelection: Selection;
 	
-	private visibleSelection: Selection;
 	private foldedLineRows: FoldedLineRow[];
 	private firstRow: FoldedLineRow;
 	private lastRow: FoldedLineRow;

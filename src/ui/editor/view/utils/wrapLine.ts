@@ -161,7 +161,7 @@ class LineWrapper {
 			} else {
 				let {string} = part;
 				
-				while (string && "spincheck=10000") {
+				while (string && `spincheck=${10000}`) {
 					let toEnd = string.substr(0, this.currentlyAvailableCols);
 					let overflow = string.substr(toEnd.length);
 					let endWord = regexMatch(toEnd, endWordRe);

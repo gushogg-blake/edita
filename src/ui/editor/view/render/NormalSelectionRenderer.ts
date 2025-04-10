@@ -9,6 +9,8 @@ export default class extends LineRowRenderer {
 	private selectionIndex?: number = null;
 	private inSelection: boolean = false;
 	
+	declare protected canvasRenderer: NormalSelectionRenderer;
+	
 	constructor(renderer: Renderer, selections: Selection[], canvasRenderer: NormalSelectionRenderer) {
 		super(renderer);
 		
@@ -113,7 +115,7 @@ export default class extends LineRowRenderer {
 	}
 	
 	renderRow() {
-		while (this.variableWidthPart && "spincheck=100000") {
+		while (this.variableWidthPart && `spincheck=${100000}`) {
 			this.step();
 		}
 	}
@@ -127,7 +129,7 @@ function findFirstVisibleSelectionIndex(
 	let endIndex = selections.length;
 	let first = null;
 	
-	while ("spincheck=100") {
+	while (`spincheck=${100}`) {
 		if (endIndex - startIndex === 0) {
 			break;
 		}

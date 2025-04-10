@@ -19,7 +19,7 @@ export default class extends Hiliter {
 			let prevNonEmptySibling = null;
 			let prevSibling = node.previousSibling;
 			
-			while (prevSibling && "spincheck=100000") {
+			while (prevSibling && `spincheck=${100000}`) {
 				if (prevSibling.text.trim() !== "") {
 					prevNonEmptySibling = prevSibling;
 					

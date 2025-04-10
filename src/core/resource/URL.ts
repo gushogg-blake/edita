@@ -37,6 +37,19 @@ export default class CustomURL {
 		return this.protocol === "file:";
 	}
 	
+	/*
+	NOTE these should be in FileLikeURL; would need to update types
+	to be more specific, e.g. EditorTab always has a FileLikeURL
+	*/
+	
+	get path() {
+		return urlToPath(this.url.pathname);
+	}
+	
+	get name() {
+		return platform.fs(this.path).name;
+	}
+	
 	static file(path) {
 		return CustomURL.fromString("file://" + pathToUrl(path));
 	}
@@ -119,14 +132,6 @@ class FileLikeURL extends CustomURL {
 		} else {
 			return new CustomURL(new URL(str));
 		}
-	}
-	
-	get path() {
-		return urlToPath(this.url.pathname);
-	}
-	
-	get name() {
-		return platform.fs(this.path).name;
 	}
 }
 

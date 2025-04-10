@@ -8,6 +8,8 @@ export default class extends LineRowRenderer {
 	private hasStartLine: boolean = false;
 	private hasEndLine: boolean = false;
 	
+	declare protected canvasRenderer: AstSelectionRenderer;
+	
 	constructor(renderer: Renderer, astSelection: AstSelection, canvasRenderer: AstSelectionRenderer) {
 		super(renderer);
 		

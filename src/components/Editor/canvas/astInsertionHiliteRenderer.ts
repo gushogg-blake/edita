@@ -1,11 +1,11 @@
-import type {AstInsertionHiliteRenderer} from "ui/editor/view";
+import type {AstInsertionHiliteCanvasRenderer} from "ui/editor/view";
 import type {CanvasRenderer} from ".";
 
 let lineThickness = 2;
 let lineWidth = 35;
 let yHint = 2;
 
-export default function(canvasRenderer: CanvasRenderer): AstInsertionHiliteRenderer {
+export default function(canvasRenderer: CanvasRenderer): AstInsertionHiliteCanvasRenderer {
 	let {layers, view, offsets} = canvasRenderer;
 	let {marginOffset} = view.sizes;
 	let {colWidth, rowHeight} = view.measurements;

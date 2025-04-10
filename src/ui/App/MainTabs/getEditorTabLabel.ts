@@ -96,7 +96,7 @@ export default function(tab, tabs) {
 			//let commonAncestor = startNode.getCommonAncestor(...others);
 			break;
 		}
-	} while (others.some(other => other.name === startNode.name) && "spincheck=1000");
+	} while (others.some(other => other.name === startNode.name) && `spincheck=${1000}`);
 	
 	if (startNode.isRoot) {
 		/*

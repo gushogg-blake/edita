@@ -1,7 +1,18 @@
 import set from "lodash.set";
-import type {Editor} from "ui/editor";
+import type {URL, Selection, AstSelection} from "core";
+import type {Editor, EditorMode} from "ui/editor";
+import type {ScrollPosition, Folds} from "ui/editor/view";
 import type App from "ui/App";
 import Tab from "./Tab";
+
+export type SavedState = {
+	url: URL;
+	mode: EditorMode;
+	normalSelection: Selection;
+	astSelection: AstSelection;
+	scrollPosition: ScrollPosition;
+	folds: Folds;
+};
 
 function fs(...args) {
 	return platform.fs(...args);
@@ -279,7 +290,7 @@ class EditorTab extends Tab<{
 		return await base.stores.perFilePrefs.load(this.path);
 	}
 	
-	saveState() {
+	saveState(): SavedState {
 		let {url} = this;
 		
 		let {
@@ -300,7 +311,7 @@ class EditorTab extends Tab<{
 		};
 	}
 	
-	restoreState(details) {
+	restoreState(details: SavedState): void {
 		let {
 			mode,
 			normalSelection,

@@ -22,7 +22,7 @@ label {
 	<input
 		bind:checked={value}
 		type="checkbox"
-		{onchange}
+		onchange={() => onchange()}
 		{disabled}
 	>
 	<Accel {label}/>

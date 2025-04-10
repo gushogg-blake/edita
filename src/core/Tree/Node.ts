@@ -108,7 +108,7 @@ export default class Node {
 		let start = this.selection.start;
 		let nextChild = this.firstChild;
 		
-		while ("spincheck=10000") {
+		while (`spincheck=${10000}`) {
 			let end = nextChild?.selection.start || this.selection.end;
 			let selection = s(start, end);
 			

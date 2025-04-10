@@ -6,7 +6,7 @@ export default function(node, cursor) {
 	let endIndex = children.length;
 	let first = null;
 	
-	while (endIndex - startIndex > 0 && "spincheck=100") {
+	while (endIndex - startIndex > 0 && `spincheck=${100}`) {
 		let index = middle(startIndex, endIndex);
 		let child = children[index];
 		

@@ -1,6 +1,6 @@
 import {Evented} from "utils";
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
-import {type Resource, File, Memory} from "core/resource";
+import {type Resource, type URL, File, Memory} from "core/resource";
 import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";

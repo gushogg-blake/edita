@@ -1,4 +1,4 @@
-import {Evented, lid} from "utils";
+import {Evented, lid, removeInPlace} from "utils";
 import type {Lang} from "core";
 import JsonStore from "base/stores/JsonStore";
 import migrations from "./migrations";
@@ -17,6 +17,7 @@ export class SnippetsStore extends Evented<{
 	update: Snippet;
 	delete: string;
 }> {
+	private store: JsonStore;
 	private snippets: Snippet[];
 	
 	constructor() {
@@ -44,7 +45,7 @@ export class SnippetsStore extends Evented<{
 	}
 	
 	async create(snippet: Snippet): Promise<string> {
-		let id = createId(snippet);
+		let id = SnippetsStore.createId(snippet);
 		
 		await this.store.create(id, {id, ...snippet});
 		
@@ -92,7 +93,7 @@ export class SnippetsStore extends Evented<{
 		
 		this.snippets[this.findIndexById(id)] = snippet;
 		
-		this.fire("update", {id, snippet});
+		this.fire("update", snippet);
 	}
 	
 	private onDelete(id: string) {

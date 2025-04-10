@@ -1,7 +1,7 @@
-import type {NormalCursorRenderer} from "ui/editor/view";
+import type {NormalCursorCanvasRenderer} from "ui/editor/view";
 import type {CanvasRenderer} from ".";
 
-export default function(canvasRenderer: CanvasRenderer): NormalCursorRenderer {
+export default function(canvasRenderer: CanvasRenderer): NormalCursorCanvasRenderer {
 	let {layers, view, offsets} = canvasRenderer;
 	let {colWidth, rowHeight} = view.measurements;
 	let {leftEdge, rowOffset} = offsets;

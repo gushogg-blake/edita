@@ -10,7 +10,7 @@ export default class {
 	protected offset: number = null;
 	protected variableWidthPart: VariableWidthPart = null;
 	protected lastRenderedLineIndex?: number = null;
-	protected variableWidthPartGenerator: Generator<VariableWidthPart, undefined, void>;
+	protected variableWidthPartGenerator: Generator<VariableWidthPart>;
 	
 	constructor(renderer: Renderer) {
 		this.renderer = renderer;

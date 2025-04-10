@@ -385,7 +385,11 @@ export default class Scope {
 	child scopes after the main loop but it didn't really make sense
 	*/
 	
-	*_generateNodesStartingOnLine(lineIndex: number, startOffset: number, lang: Lang = null): Generator<Node, void, void> {
+	*_generateNodesStartingOnLine(
+		lineIndex: number,
+		startOffset: number,
+		lang: Lang = null,
+	): Generator<Node> {
 		if (!this.tree || !this.overlapsWithLine(lineIndex)) {
 			return;
 		}

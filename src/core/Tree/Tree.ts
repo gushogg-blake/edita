@@ -60,10 +60,13 @@ export default class Tree {
 		});
 	}
 	
-	*generateNodesStartingOnLine(lineIndex: number, startOffset: number = 0): Generator<Node, void, void> {
+	*generateNodesStartingOnLine(
+		lineIndex: number,
+		startOffset: number = 0,
+	): Generator<Node> {
 		let node = this.firstOnOrAfter(c(lineIndex, startOffset));
 		
-		while (node?.start.lineIndex === lineIndex && "spincheck=10000") {
+		while (node?.start.lineIndex === lineIndex && `spincheck=${10000}`) {
 			yield node;
 			
 			node = node.next();

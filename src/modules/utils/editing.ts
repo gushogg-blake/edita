@@ -16,7 +16,7 @@ export function getIndentLevel(str, indentation: IndentationDetails) {
 
 // TODO this is more view-related
 export function expandTabs(string, format: Format) {
-	let {tabWidth} = format.indentation;
+	let {tabWidth} = base.prefs;
 	
 	let colsAdded = 0;
 	

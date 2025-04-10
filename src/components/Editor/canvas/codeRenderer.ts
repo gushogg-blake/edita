@@ -1,8 +1,8 @@
 import type {HiliteStyle} from "core/hiliting";
-import type {CodeRenderer} from "ui/editor/view";
+import type {CodeCanvasRenderer} from "ui/editor/view";
 import type {CanvasRenderer} from ".";
 
-export default function(canvasRenderer: CanvasRenderer): CodeRenderer {
+export default function(canvasRenderer: CanvasRenderer): CodeCanvasRenderer {
 	let {layers, view, offsets} = canvasRenderer;
 	let {width, marginWidth} = view.sizes;
 	let {colWidth, rowHeight} = view.measurements;

@@ -34,10 +34,12 @@ type MarginStyle = {
 	paddingRight: number;
 };
 
-type ScrollPosition = {
+export type ScrollPosition = {
 	x: number;
 	y: number;
 };
+
+export type Folds = Record<string, number>;
 
 type Sizes = {
 	width: number;
@@ -117,7 +119,7 @@ export default class View extends Evented<{
 	sizes: Sizes;
 	scrollPosition: ScrollPosition = {x: 0, y: 0};
 	
-	private completions: ActiveCompletions | null = null;
+	completions: ActiveCompletions | null = null;
 	
 	// TYPE not clear what this is but it's a map of header line index to footer line index
 	// might be better as a map, and possibly with explicit types for the numbers -- not
@@ -125,7 +127,7 @@ export default class View extends Evented<{
 	// might be worth doing, as there is always gonna be ambiguity -- would allow us to
 	// distinguish between line indexes and line positions (where a position can be
 	// array.length, whereas an index can't)
-	private folds: Record<string, number> = {};
+	folds: Folds = {};
 	
 	private needToUpdateAstSelection: boolean = false;
 	

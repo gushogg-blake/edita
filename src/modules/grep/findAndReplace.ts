@@ -152,7 +152,7 @@ let findAndReplace = {
 		let hasSetLoopedFile = false;
 		let firstResultIndex = null;
 		
-		while ("spincheck=100000") {
+		while (`spincheck=${100000}`) {
 			let match = findMatch();
 			
 			if (!match) {

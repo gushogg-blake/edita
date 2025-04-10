@@ -1,6 +1,7 @@
 <script lang="ts">
 let {
 	title = "",
+	onclose = () => {},
 } = $props();
 
 export function setTitle(value) {
@@ -29,6 +30,6 @@ export function setTitle(value) {
 		{title}
 	</div>
 	<div id="buttons">
-		<button onclick={() => fire("close")}>x</button>
+		<button onclick={() => onclose()}>x</button>
 	</div>
 </div>

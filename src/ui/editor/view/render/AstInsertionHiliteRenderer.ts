@@ -1,7 +1,10 @@
+import type {AstInsertionHiliteRenderer} from "ui/editor/view";
 import LineRowRenderer from "./LineRowRenderer";
 import type Renderer from "./Renderer";
 
 export default class extends LineRowRenderer {
+	declare protected canvasRenderer: AstInsertionHiliteRenderer;
+	
 	constructor(renderer: Renderer) {
 		super(renderer);
 		

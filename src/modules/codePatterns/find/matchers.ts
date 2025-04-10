@@ -156,7 +156,7 @@ let matchers = {
 		while (
 			!newCursor.equals(document.cursorAtEnd())
 			&& document.lines[newCursor.lineIndex].isBlank
-			&& "spincheck=100000"
+			&& `spincheck=${100000}`
 		) {
 			newCursor = document.cursorWithinBounds(c(newCursor.lineIndex + 1, 0));
 		}

@@ -1,4 +1,4 @@
-import {Evented} from "utils";
+import {Evented, type AsyncOrSync} from "utils";
 import JsonStore, {type Migration} from "./JsonStore";
 
 export default class Singleton<StoreValue = any> extends Evented<{
@@ -19,11 +19,11 @@ export default class Singleton<StoreValue = any> extends Evented<{
 		return this.store.defaultValue;
 	}
 	
-	load(): Promise<StoreValue> {
+	load(): AsyncOrSync<StoreValue> {
 		return this.store.load("default");
 	}
 	
-	save(value: StoreValue): Promise<void> {
+	save(value: StoreValue): AsyncOrSync<void> {
 		return this.store.createOrUpdate("default", value);
 	}
 }

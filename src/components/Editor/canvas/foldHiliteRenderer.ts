@@ -1,7 +1,7 @@
-import type {FoldHiliteRenderer} from "ui/editor/view";
+import type {FoldHiliteCanvasRenderer} from "ui/editor/view";
 import type {CanvasRenderer} from ".";
 
-export default function(canvasRenderer: CanvasRenderer): FoldHiliteRenderer {
+export default function(canvasRenderer: CanvasRenderer): FoldHiliteCanvasRenderer {
 	let {layers, view, offsets} = canvasRenderer;
 	let {colWidth, rowHeight} = view.measurements;
 	

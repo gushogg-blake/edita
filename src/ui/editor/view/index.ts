@@ -1,19 +1,26 @@
-export {default as View, type Measurements} from "./View";
+export {default as View} from "./View";
+export type {Measurements, ScrollPositon, Folds} from "./View";
 export type {LineRow, WrappedLine} from "./utils/wrapLine";
 export type {FoldedLineRow, FoldedWrappedLine} from "./utils/CanvasUtils";
-export type {default as ViewLine} from "./ViewLine";
+export type {default as ViewLine, VariableWidthPart} from "./ViewLine";
 
-export interface NormalSelectionRenderer {
+export interface LineRowCanvasRenderer {
+	init?: () => void;
+	startRow?: (wrapIndentCols: number) => void;
+	endRow?: (isLastRow?: boolean) => void;
+}
+
+export interface NormalSelectionCanvasRenderer {
 	init(): void;
 	startRow(wrapIndentCols: number): void;
-	endRow(isLastRow: boolean): void;
+	endRow(isLastRow?: boolean): void;
 	advance(cols: number): void;
 	enterSelection(): void;
 	leaveSelection(): void;
 	flush(): void;
 }
 
-export interface NormalCursorRenderer {
+export interface NormalCursorCanvasRenderer {
 	init(): void;
 	startRow(wrapIndentCols: number): void;
 	endRow(): void;
@@ -21,22 +28,22 @@ export interface NormalCursorRenderer {
 	draw(): void;
 }
 
-export interface MarginRenderer {
+export interface MarginCanvasRenderer {
 	init(): void;
 	drawLineNumber(lineIndex: number): void;
 	endRow(): void;
 }
 
-export interface FoldHiliteRenderer {
+export interface FoldHiliteCanvasRenderer {
 	drawHilite(indentCols: number, lineWidth: number): void;
 	endRow(): void;
 }
 
-export interface CurrentLineHiliteRenderer {
+export interface CurrentLineHiliteCanvasRenderer {
 	init(): void;
 }
 
-export interface CodeRenderer {
+export interface CodeCanvasRenderer {
 	init(): void;
 	setStyle(style: any /* TYPE */): void;
 	startRow(wrapIndentCols: number): void;
@@ -46,7 +53,7 @@ export interface CodeRenderer {
 	skipText(string: string): void;
 }
 
-export interface AstSelectionRenderer {
+export interface AstSelectionCanvasRenderer {
 	init(): void;
 	setStartLine(): void;
 	setEndLine(): void;
@@ -54,7 +61,7 @@ export interface AstSelectionRenderer {
 	draw(): void;
 }
 
-export interface AstInsertionHiliteRenderer {
+export interface AstInsertionHiliteCanvasRenderer {
 	init(): void;
 	setStartLine(indentCols: number, rowsAboveCurrent: number): void;
 	setEndLine(rowsBelowCurrent: number): void;
@@ -62,16 +69,16 @@ export interface AstInsertionHiliteRenderer {
 }
 
 export interface CanvasRenderers {
-	currentLineHilite: CurrentLineHiliteRenderer;
-	normalHilites: NormalSelectionRenderer;
-	normalSelection: NormalSelectionRenderer;
-	astSelection: AstSelectionRenderer;
-	astSelectionHilite: AstSelectionRenderer;
-	astInsertionHilite: AstInsertionHiliteRenderer;
-	margin: MarginRenderer;
-	foldHilites: FoldHiliteRenderer;
-	normalCursor: NormalCursorRenderer;
-	code(): CodeRenderer;
+	currentLineHilite: CurrentLineHiliteCanvasRenderer;
+	normalHilites: NormalSelectionCanvasRenderer;
+	normalSelection: NormalSelectionCanvasRenderer;
+	astSelection: AstSelectionCanvasRenderer;
+	astSelectionHilite: AstSelectionCanvasRenderer;
+	astInsertionHilite: AstInsertionHiliteCanvasRenderer;
+	margin: MarginCanvasRenderer;
+	foldHilites: FoldHiliteCanvasRenderer;
+	normalCursor: NormalCursorCanvasRenderer;
+	code(): CodeCanvasRenderer;
 }
 
 export interface Canvas {

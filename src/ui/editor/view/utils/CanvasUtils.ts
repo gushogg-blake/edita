@@ -1,6 +1,6 @@
 import {type Cursor, c} from "core";
 import {expandTabs} from "modules/utils/editing";
-import type {View, WrappedLine, LineRow} from "ui/editor/view";
+import type {View, ViewLine, WrappedLine, LineRow} from "ui/editor/view";
 
 /*
 "folded" in FoldedLineRow and FoldedWrappedLine means taking
@@ -182,10 +182,10 @@ export default class {
 	}
 	
 	cursorFromScreenCoords(coords: Coords): Cursor {
-		return cursorFromRowCol(this.cursorRowColFromScreenCoords(coords));
+		return this.cursorFromRowCol(this.cursorRowColFromScreenCoords(coords));
 	}
 	
-	*generateLineRowsFolded(startLineIndex: number = 0): Generator<FoldedLineRow, undefined, void> {
+	*generateLineRowsFolded(startLineIndex: number = 0): Generator<FoldedLineRow> {
 		let lineIndex = startLineIndex;
 		
 		while (lineIndex < this.wrappedLines.length && `spincheck=${1000000}`) {
@@ -223,10 +223,10 @@ export default class {
 		}
 	}
 	
-	*generateWrappedLinesFolded(startLineIndex: number = 0): Generator<FoldedWrappedLine, void, void> {
+	*generateWrappedLinesFolded(startLineIndex: number = 0): Generator<FoldedWrappedLine> {
 		let lineIndex = startLineIndex;
 		
-		while (lineIndex < this.wrappedLines.length && "spincheck=1000000") {
+		while (lineIndex < this.wrappedLines.length && `spincheck=${1000000}`) {
 			let wrappedLine = this.wrappedLines[lineIndex];
 			let {viewLine} = wrappedLine;
 			let foldEndLineIndex = this.folds[lineIndex];

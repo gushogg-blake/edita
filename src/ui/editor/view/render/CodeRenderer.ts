@@ -2,6 +2,7 @@ import {type Cursor, c} from "core";
 import type {Scope, Range, Node} from "core";
 import type {VisibleScope} from "core/document/Source/Scope";
 import type {HiliteStyle} from "core/hiliting";
+import type {CodeRenderer} from "ui/editor/view";
 import LineRowRenderer from "./LineRowRenderer";
 import type Renderer from "./Renderer";
 
@@ -23,6 +24,8 @@ export default class extends LineRowRenderer {
 	private rangeIndex: number = 0;
 	private injectionRangeIndex: number = 0;
 	private nodeStack: NodeStackElement[] = [];
+	
+	declare protected canvasRenderer: CodeRenderer;
 	
 	constructor(renderer: Renderer, visibleScope: VisibleScope) {
 		super(renderer);
@@ -276,7 +279,7 @@ export default class extends LineRowRenderer {
 	}
 	
 	renderRow() {
-		while (this.variableWidthPart && "spincheck=100000") {
+		while (this.variableWidthPart && `spincheck=${100000}`) {
 			this.step();
 		}
 	}

@@ -1,9 +1,11 @@
 import type {Cursor} from "core";
+import type {NormalCursorRenderer} from "ui/editor/view";
 import LineRowRenderer from "./LineRowRenderer";
 import type Renderer from "./Renderer";
 
 export default class extends LineRowRenderer {
 	private cursorToRender: Cursor;
+	declare protected canvasRenderer: NormalCursorRenderer;
 	
 	constructor(renderer: Renderer, cursor: Cursor) {
 		super(renderer);

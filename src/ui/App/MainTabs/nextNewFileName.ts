@@ -9,7 +9,7 @@ export default function(editorTabs: EditorTab[], dir: string, lang: Lang): URL {
 	let name = nextName(function(n) {
 		return lang.name + "-" + n + extension;
 	}, function(name) {
-		return !editorTabs.some(tab => tab.url.name === name);
+		return !editorTabs.some(tab => platform.fs(tab.url.path).name === name);
 	});
 	
 	let path = platform.fs(dir).child(name).path;

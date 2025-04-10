@@ -1,7 +1,7 @@
-import type {CurrentLineHiliteRenderer} from "ui/editor/view";
+import type {CurrentLineHiliteCanvasRenderer} from "ui/editor/view";
 import type {CanvasRenderer} from ".";
 
-export default function(canvasRenderer: CanvasRenderer): CurrentLineHiliteRenderer {
+export default function(canvasRenderer: CanvasRenderer): CurrentLineHiliteCanvasRenderer {
 	let {layers, view, offsets} = canvasRenderer;
 	let {colWidth, rowHeight} = view.measurements;
 	

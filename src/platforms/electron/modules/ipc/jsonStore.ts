@@ -1,5 +1,5 @@
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";
-import type {JsonStoreWatcher} from "platforms/common/JsonStore";
+import type {JsonStoreWatcher, WatchEventType} from "platforms/common/JsonStore";
 
 // TYPE use unknown instead of any for the values?
 
@@ -29,7 +29,12 @@ export default {
 	},
 	
 	watch(name: string, fn: JsonStoreWatcher) {
-		return ipcRenderer.on("jsonStore.update", function(e, _name: string, key: string, value: any, type: string) {
+		return ipcRenderer.on("jsonStore.update", function(
+			e, _name: string,
+			key: string,
+			value: any,
+			type: WatchEventType, // TYPE we are just trusting that it will be
+		) {
 			if (_name !== name) {
 				return;
 			}

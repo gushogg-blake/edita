@@ -1,5 +1,6 @@
 import bluebird from "bluebird";
 import {URL, File} from "core";
+import type App from "ui/App";
 import type {SavedState} from "./tabs/EditorTab";
 
 export type TabDescriptor = {
@@ -8,7 +9,9 @@ export type TabDescriptor = {
 };
 
 export default class {
-	constructor(app) {
+	private app: App;
+	
+	constructor(app: App) {
 		this.app = app;
 	}
 	

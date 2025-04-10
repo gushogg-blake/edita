@@ -1,10 +1,10 @@
-import type {NormalSelectionRenderer} from "ui/editor/view";
+import type {NormalSelectionCanvasRenderer} from "ui/editor/view";
 import type {CanvasRenderer} from ".";
 
 export default function(
 	canvasRenderer: CanvasRenderer,
 	style: string,
-): NormalSelectionRenderer {
+): NormalSelectionCanvasRenderer {
 	let {layers, view, offsets} = canvasRenderer;
 	let {colWidth, rowHeight} = view.measurements;
 	

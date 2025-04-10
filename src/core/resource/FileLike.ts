@@ -5,8 +5,9 @@ import {getNewline, getIndent, guessLang} from "./utils";
 export default class FileLike extends Evented<{
 	formatChanged: void;
 }> implements Resource {
-	contents: string;
+	url: URL;
 	format: Format;
+	contents: string;
 	
 	constructor(url: URL) {
 		super();

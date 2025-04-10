@@ -26,7 +26,7 @@ export default class ViewLine {
 	
 	createVariableWidthParts(format: Format) {
 		let {string} = this.line;
-		let {tabWidth} = format.indentation;
+		let {tabWidth} = base.prefs;
 		let splitByTabs = string.split("\t");
 		
 		this.variableWidthParts = [];

@@ -1,7 +1,7 @@
-import type {MarginRenderer} from "ui/editor/view";
+import type {MarginCanvasRenderer} from "ui/editor/view";
 import type {CanvasRenderer} from ".";
 
-export default function(canvasRenderer: CanvasRenderer): MarginRenderer {
+export default function(canvasRenderer: CanvasRenderer): MarginCanvasRenderer {
 	let {layers, view, offsets} = canvasRenderer;
 	let {height, marginWidth, marginStyle} = view.sizes;
 	let {colWidth, rowHeight} = view.measurements;

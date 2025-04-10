@@ -6,7 +6,7 @@ export default class {
 	editor: Editor;
 	
 	private options: any; // TYPE
-	private generator: Generator<any, void, void>; // TYPE result
+	private generator: Generator<any>; // TYPE result
 	
 	// TYPE
 	private results: any;

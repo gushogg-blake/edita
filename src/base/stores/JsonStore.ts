@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import {Evented} from "utils";
+import {Evented, type AsyncOrSync} from "utils";
 
 /*
 think of a JsonStore like a database table -- it probably
@@ -12,7 +12,7 @@ and in localStorage on web.
 for singleton stores (prefs, session state, etc) see Singleton.
 */
 
-export type Migration = (value: any) => any | undefined;
+export type Migration = (value: any, key?: any) => any | undefined;
 
 export default class JsonStore<StoreValue = any> extends Evented<{
 	create: {key: string; value: StoreValue};
@@ -77,19 +77,19 @@ export default class JsonStore<StoreValue = any> extends Evented<{
 		return value;
 	}
 	
-	create(key: string, value: StoreValue): Promise<void> {
+	create(key: string, value: StoreValue): AsyncOrSync<void> {
 		return platform.jsonStore.create(this.name, key, this.wrap(value));
 	}
 	
-	update(key: string, value: StoreValue): Promise<void> {
+	update(key: string, value: StoreValue): AsyncOrSync<void> {
 		return platform.jsonStore.update(this.name, key, this.wrap(value));
 	}
 	
-	createOrUpdate(key: string, value: StoreValue): Promise<void> {
+	createOrUpdate(key: string, value: StoreValue): AsyncOrSync<void> {
 		return platform.jsonStore.createOrUpdate(this.name, key, this.wrap(value));
 	}
 	
-	delete(key: string, value: StoreValue): Promise<void> {
+	delete(key: string): AsyncOrSync<void> {
 		return platform.jsonStore.delete(this.name, key);
 	}
 	
