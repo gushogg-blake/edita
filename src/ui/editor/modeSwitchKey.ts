@@ -51,7 +51,16 @@ export default function(editor) {
 		let downTime = Date.now() - keyDownAt;
 		
 		if (editor.mode === "ast") {
-			if (downTime >= base.prefs.minHoldTime || keyPressedWhilePeeking) {
+			/*
+			three things indicate we're only intending to peek into AST mode
+			to do a single action:
+			
+			- holding it for more than a normal keypress length
+			- pressing another key while it's down -- using it like a modifier
+			- if we're dragging with the mouse
+			*/
+			
+			if (downTime >= base.prefs.minHoldTime || keyPressedWhilePeeking || mouseIsDown) {
 				if (mouseIsDown) {
 					switchToNormalModeOnMouseUp = true;
 				} else {
