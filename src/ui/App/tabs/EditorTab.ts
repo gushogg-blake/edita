@@ -1,5 +1,6 @@
 import set from "lodash.set";
 import type {URL, Selection, AstSelection} from "core";
+import type {DirEntry} from "base/DirEntries";
 import type {Editor, EditorMode} from "ui/editor";
 import type {ScrollPosition, Folds} from "ui/editor/view";
 import type App from "ui/App";
@@ -26,15 +27,19 @@ class EditorTab extends Tab<{
 }> {
 	editor: Editor;
 	
+	private perFilePrefs: any; // TYPE
+	private defaultPerFilePrefs: any; // TYPE
+	private entries: DirEntry[] = [];
+	private currentPath: string;
+	private _label: any; // TYPE {label, disambiguator} from app.getEditorTabLabel
+	private pendingActions: Array<() => void> = [];
+	private loading: boolean = false;
+	
 	constructor(app: App, editor: Editor) {
 		super(app, editor.document.resource);
 		
 		this.editor = editor;
 		this.currentPath = this.path;
-		this.entries = [];
-		this.loading = false;
-		
-		this.pendingActions = [];
 		
 		let {document, view} = editor;
 		
@@ -71,9 +76,10 @@ class EditorTab extends Tab<{
 		return this.editor.document;
 	}
 	
-	get project() {
-		return this.document.project;
-	}
+	// MIGRATE
+	//get project() {
+	//	return this.document.project;
+	//}
 	
 	get isSaved() {
 		return this.document.isSaved;

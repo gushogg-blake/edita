@@ -2,7 +2,7 @@ import {type Cursor, c} from "core";
 import type {Scope, Range, Node} from "core";
 import type {VisibleScope} from "core/document/Source/Scope";
 import type {HiliteStyle} from "core/hiliting";
-import type {CodeRenderer} from "ui/editor/view";
+import type {CodeCanvasRenderer} from "ui/editor/view";
 import LineRowRenderer from "./LineRowRenderer";
 import type Renderer from "./Renderer";
 
@@ -25,7 +25,7 @@ export default class extends LineRowRenderer {
 	private injectionRangeIndex: number = 0;
 	private nodeStack: NodeStackElement[] = [];
 	
-	declare protected canvasRenderer: CodeRenderer;
+	declare protected canvasRenderer: CodeCanvasRenderer;
 	
 	constructor(renderer: Renderer, visibleScope: VisibleScope) {
 		super(renderer);

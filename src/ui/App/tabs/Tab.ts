@@ -6,6 +6,8 @@ class Tab<EventMap = {}> extends Evented<EventMap> {
 	app: App;
 	resource: Resource;
 	
+	protected teardownCallbacks: Array<() => void>;
+	
 	constructor(app, resource) {
 		super();
 		
@@ -32,7 +34,7 @@ class Tab<EventMap = {}> extends Evented<EventMap> {
 		return false;
 	}
 	
-	get name() {
+	get name(): string {
 		throw new Error("tab name must be overridden");
 	}
 	

@@ -1,6 +1,6 @@
 import middle from "utils/middle";
 import {Selection, s} from "core";
-import type {NormalSelectionRenderer} from "ui/editor/view";
+import type {NormalSelectionCanvasRenderer} from "ui/editor/view";
 import LineRowRenderer from "./LineRowRenderer";
 import type Renderer from "./Renderer";
 
@@ -9,9 +9,9 @@ export default class extends LineRowRenderer {
 	private selectionIndex?: number = null;
 	private inSelection: boolean = false;
 	
-	declare protected canvasRenderer: NormalSelectionRenderer;
+	declare protected canvasRenderer: NormalSelectionCanvasRenderer;
 	
-	constructor(renderer: Renderer, selections: Selection[], canvasRenderer: NormalSelectionRenderer) {
+	constructor(renderer: Renderer, selections: Selection[], canvasRenderer: NormalSelectionCanvasRenderer) {
 		super(renderer);
 		
 		this.selections = selections;

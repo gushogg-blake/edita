@@ -14,7 +14,7 @@ export default class Special implements Resource {
 		return new Special("refactor");
 	}
 	
-	static refactorPreview(path: string): Special {
+	static refactorPreview(): Special {
 		return new Special("refactor-preview");
 	}
 	

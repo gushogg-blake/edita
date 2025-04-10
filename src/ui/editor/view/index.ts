@@ -1,5 +1,5 @@
 export {default as View} from "./View";
-export type {Measurements, ScrollPositon, Folds} from "./View";
+export type {Measurements, ScrollPosition, Folds} from "./View";
 export type {LineRow, WrappedLine} from "./utils/wrapLine";
 export type {FoldedLineRow, FoldedWrappedLine} from "./utils/CanvasUtils";
 export type {default as ViewLine, VariableWidthPart} from "./ViewLine";
