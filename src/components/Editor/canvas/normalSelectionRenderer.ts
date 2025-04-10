@@ -1,7 +1,12 @@
-export default function(layers, view, offsets, style) {
-	let {
-		measurements: {colWidth, rowHeight},
-	} = view;
+import type {CurrentLineHiliteRenderer} from "ui/editor/view";
+import type {CanvasRenderer} from ".";
+
+export default function(
+	canvasRenderer: CanvasRenderer,
+	style: string,
+): CurrentLineHiliteRenderer {
+	let {layers, view, offsets} = canvasRenderer;
+	let {colWidth, rowHeight} = view.measurements;
 	
 	let context = layers.hilites;
 	
@@ -22,7 +27,7 @@ export default function(layers, view, offsets, style) {
 			context.fillStyle = style;
 		},
 		
-		startRow(wrapIndentCols) {
+		startRow(wrapIndentCols: number) {
 			col = wrapIndentCols;
 			
 			if (inSelection) {
@@ -30,7 +35,7 @@ export default function(layers, view, offsets, style) {
 			}
 		},
 		
-		endRow(isLastRow) {
+		endRow(isLastRow: boolean) {
 			if (inSelection) {
 				if (isLastRow) {
 					col++;
@@ -42,7 +47,7 @@ export default function(layers, view, offsets, style) {
 			y += rowHeight;
 		},
 		
-		advance(cols) {
+		advance(cols: number) {
 			col += cols;
 		},
 		

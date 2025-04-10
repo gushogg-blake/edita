@@ -1,7 +1,9 @@
-export default function(layers, view, offsets) {
-	let {
-		measurements: {colWidth, rowHeight},
-	} = view;
+import type {FoldHiliteRenderer} from "ui/editor/view";
+import type {CanvasRenderer} from ".";
+
+export default function(canvasRenderer: CanvasRenderer): FoldHiliteRenderer {
+	let {layers, view, offsets} = canvasRenderer;
+	let {colWidth, rowHeight} = view.measurements;
 	
 	let {
 		foldHeaderBorder,
@@ -13,7 +15,7 @@ export default function(layers, view, offsets) {
 	let y = offsets.rowOffset;
 	
 	return {
-		drawHilite(indentCols, lineWidth) {
+		drawHilite(indentCols: number, lineWidth: number) {
 			let x = Math.round(offsets.leftEdge + indentCols * colWidth);
 			let width = Math.round(lineWidth * colWidth);
 			

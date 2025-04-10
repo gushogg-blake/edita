@@ -1,7 +1,7 @@
 import {Lang} from "core";
 import {AstIntel} from "modules/astIntel";
 import {CodeIntel} from "modules/codeIntel";
-import {Hiliter} from "modules/hiliter";
+import {Hiliter} from "core/hiliting";
 import * as langModules from "./core";
 import * as astIntelModules from "./astIntel";
 import * as codeIntelModules from "./codeIntel";

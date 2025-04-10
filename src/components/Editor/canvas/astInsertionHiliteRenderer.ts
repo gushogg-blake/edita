@@ -1,14 +1,14 @@
-import type {CanvasRenderer, Offsets} from ".";
+import type {AstInsertionHiliteRenderer} from "ui/editor/view";
+import type {CanvasRenderer} from ".";
 
 let lineThickness = 2;
 let lineWidth = 35;
 let yHint = 2;
 
-export default function(layers: CanvasLayers, view: View, offsets: MiscOffsets): CanvasRenderer {
-	let {
-		measurements: {colWidth, rowHeight},
-		sizes: {marginOffset},
-	} = view;
+export default function(canvasRenderer: CanvasRenderer): AstInsertionHiliteRenderer {
+	let {layers, view, offsets} = canvasRenderer;
+	let {marginOffset} = view.sizes;
+	let {colWidth, rowHeight} = view.measurements;
 	
 	let context = layers.hilites;
 	
@@ -23,12 +23,12 @@ export default function(layers: CanvasLayers, view: View, offsets: MiscOffsets):
 			context.fillStyle = base.theme.editor.astInsertionHiliteBackground;
 		},
 		
-		setStartLine(indentCols, rowsAboveCurrent) {
+		setStartLine(indentCols: number, rowsAboveCurrent: number) {
 			x = Math.max(offsets.leftEdge + indentCols * colWidth, marginOffset);
 			startY = y - rowsAboveCurrent * rowHeight;
 		},
 		
-		setEndLine(rowsBelowCurrent) {
+		setEndLine(rowsBelowCurrent: number) {
 			endY = y + rowsBelowCurrent * rowHeight;
 			
 			let height = endY - startY;

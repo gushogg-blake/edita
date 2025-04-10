@@ -1,8 +1,10 @@
-export default function(layers, view, offsets) {
-	let {
-		sizes: {height, marginWidth, marginStyle},
-		measurements: {colWidth, rowHeight},
-	} = view;
+import type {MarginRenderer} from "ui/editor/view";
+import type {CanvasRenderer} from ".";
+
+export default function(canvasRenderer: CanvasRenderer): MarginRenderer {
+	let {layers, view, offsets} = canvasRenderer;
+	let {height, marginWidth, marginStyle} = view.sizes;
+	let {colWidth, rowHeight} = view.measurements;
 	
 	let {
 		fontFamily,
@@ -23,7 +25,7 @@ export default function(layers, view, offsets) {
 			context.fillRect(0, 0, marginWidth, height);
 		},
 		
-		drawLineNumber(lineIndex) {
+		drawLineNumber(lineIndex: number) {
 			let lineNumber = String(lineIndex + 1);
 			let x = marginWidth - marginStyle.paddingRight - lineNumber.length * colWidth;
 			

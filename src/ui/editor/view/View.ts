@@ -12,6 +12,8 @@ import {
 
 import type {EditorMode, ActiveCompletions} from "ui/editor";
 
+import type {UiState} from "ui/editor/view";
+
 import SelectionUtils from "./utils/Selection";
 import AstSelectionUtils from "./utils/AstSelection";
 import wrapLine, {type WrappedLine} from "./utils/wrapLine";

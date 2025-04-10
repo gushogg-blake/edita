@@ -1,8 +1,10 @@
-export default function(layers, view, offsets, style) {
-	let {
-		sizes: {width},
-		measurements: {rowHeight},
-	} = view;
+import type {AstSelectionRenderer} from "ui/editor/view";
+import type {CanvasRenderer} from ".";
+
+export default function(canvasRenderer: CanvasRenderer): AstSelectionRenderer {
+	let {layers, view, offsets} = canvasRenderer;
+	let {width} = view.sizes;
+	let {rowHeight} = view.measurements;
 	
 	let context = layers.hilites;
 	

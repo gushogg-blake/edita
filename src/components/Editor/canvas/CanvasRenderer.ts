@@ -1,53 +1,55 @@
-import type {Canvas as ICanvas, CanvasRenderers as ICanvasRenderers} from "ui/editor/view";
+import type {Canvas, CanvasRenderers, UiState} from "ui/editor/view";
 
 import type {Contexts} from "components/Editor";
 
-import CurrentLineHiliteRenderer from "./CurrentLineHiliteRenderer";
-import NormalSelectionRenderer from "./NormalSelectionRenderer";
-import AstSelectionRenderer from "./AstSelectionRenderer";
-import AstInsertionHiliteRenderer from "./AstInsertionHiliteRenderer";
-import MarginRenderer from "./MarginRenderer";
-import FoldHiliteRenderer from "./FoldHiliteRenderer";
-import CodeRenderer from "./CodeRenderer";
-import NormalCursorRenderer from "./NormalCursorRenderer";
+import currentLineHiliteRenderer from "./currentLineHiliteRenderer";
+import normalSelectionRenderer from "./normalSelectionRenderer";
+import astSelectionRenderer from "./astSelectionRenderer";
+import astInsertionHiliteRenderer from "./astInsertionHiliteRenderer";
+import marginRenderer from "./marginRenderer";
+import foldHiliteRenderer from "./foldHiliteRenderer";
+import codeRenderer from "./codeRenderer";
+import normalCursorRenderer from "./normalCursorRenderer";
 
 import type {Offsets} from ".";
 
-export default class CanvasRenderer implements ICanvas {
+export default class CanvasRenderer implements Canvas {
 	layers: Contexts;
 	view: View;
-	renderers: ICanvasRenderers;
+	renderers: CanvasRenderers;
 	offsets: Offsets;
+	uiState: UiState;
 	
-	constructor(layers: CanvasLayers, view: View) {
+	constructor(layers: Contexts, view: View, uiState: UiState) {
 		this.layers = layers;
 		this.view = view;
+		this.uiState = uiState;
 		
 		this.renderers = {
-			currentLineHilite: new CurrentLineHiliteRenderer(this),
-			normalHilites: new NormalSelectionRenderer(this, "hiliteBackground"),
-			normalSelection: new NormalSelectionRenderer(this, "selectionBackground"),
-			astSelection: new AstSelectionRenderer(this, "astSelectionBackground"),
-			astSelectionHilite: new AstSelectionRenderer(this, "astSelectionHiliteBackground"),
-			astInsertionHilite: new AstInsertionHiliteRenderer(this),
-			margin: new MarginRenderer(this),
-			foldHilites: new FoldHiliteRenderer(this),
-			normalCursor: new NormalCursorRenderer(this),
+			currentLineHilite: currentLineHiliteRenderer(this),
+			normalHilites: normalSelectionRenderer(this, "hiliteBackground"),
+			normalSelection: normalSelectionRenderer(this, "selectionBackground"),
+			astSelection: astSelectionRenderer(this, "astSelectionBackground"),
+			astSelectionHilite: astSelectionRenderer(this, "astSelectionHiliteBackground"),
+			astInsertionHilite: astInsertionHiliteRenderer(this),
+			margin: marginRenderer(this),
+			foldHilites: foldHiliteRenderer(this),
+			normalCursor: normalCursorRenderer(this),
 			
 			// this is a function as the view creates a CodeRenderer dynamically
 			// for each scope.
-			code: () => new CodeRenderer(this),
+			code: () => codeRenderer(this),
 		};
 	}
 	
-	render(uiState: UiState): void {
+	render(): void {
 		if (base.getPref("dev.timing.render")) {
 			console.time("render");
 		}
 		
 		this.init();
 		
-		view.render(this, uiState);
+		view.render(this, this.uiState);
 		
 		if (base.getPref("dev.timing.render")) {
 			console.timeEnd("render");

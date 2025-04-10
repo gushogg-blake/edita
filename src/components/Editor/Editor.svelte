@@ -57,8 +57,6 @@ let {
 	modeSwitchKey,
 } = editor;
 
-let canvasRenderer: CanvasRenderer;
-
 let revisionCounter = 0;
 let mounted = false;
 let main: HTMLDivElement = $state();
@@ -357,10 +355,14 @@ function resizeAsync() {
 }
 
 function updateCanvas() {
-	canvasRenderer.render({
+	let uiState: UiState = {
 		isPeekingAstMode: modeSwitchKey.isPeeking,
 		windowHasFocus,
-	});
+	};
+	
+	let renderer = new CanvasRenderer(contexts, view, uiState);
+	
+	renderer.render();
 }
 
 function updateScrollbars() {
@@ -488,8 +490,6 @@ onMount(function() {
 	for (let [name, canvas] of Object.entries(canvases)) {
 		contexts[name] = canvas.getContext("2d");
 	}
-	
-	canvasRenderer = new CanvasRenderer(contexts, view);
 	
 	windowHasFocus = windowFocus.isFocused();
 	

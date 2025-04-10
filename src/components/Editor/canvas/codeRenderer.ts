@@ -1,8 +1,11 @@
-export default function(layers, view, offsets) {
-	let {
-		sizes: {width, marginWidth},
-		measurements: {colWidth, rowHeight},
-	} = view;
+import type {HiliteStyle} from "core/hiliting";
+import type {MarginRenderer} from "ui/editor/view";
+import type {CanvasRenderer} from ".";
+
+export default function(canvasRenderer: CanvasRenderer): CodeRenderer {
+	let {layers, view, offsets} = canvasRenderer;
+	let {width, marginWidth} = view.sizes;
+	let {colWidth, rowHeight} = view.measurements;
 	
 	let {
 		fontFamily,
@@ -19,7 +22,7 @@ export default function(layers, view, offsets) {
 	
 	let styleKey = null;
 	
-	function setStyle(style) {
+	function setStyle(style: HiliteStyle) {
 		let {
 			color,
 			fontWeight = "normal",
@@ -44,11 +47,11 @@ export default function(layers, view, offsets) {
 			setStyle(defaultStyle);
 		},
 		
-		setStyle(style) {
+		setStyle(style: HiliteStyle) {
 			setStyle(style);
 		},
 		
-		startRow(wrapIndentCols) {
+		startRow(wrapIndentCols: number) {
 			x = offsets.leftEdge + wrapIndentCols * colWidth;
 		},
 		
@@ -56,7 +59,7 @@ export default function(layers, view, offsets) {
 			y += rowHeight;
 		},
 		
-		drawTab(width) {
+		drawTab(width: number) {
 			if (underline) {
 				drawUnderline(width);
 			}
@@ -64,7 +67,7 @@ export default function(layers, view, offsets) {
 			x += width * colWidth;
 		},
 		
-		drawText(string) {
+		drawText(string: string) {
 			let offToLeft = Math.max(0, marginWidth - x);
 			let charsOffToLeft = Math.min(string.length, Math.floor(offToLeft / colWidth));
 			let maxLength = Math.ceil(width / colWidth);
@@ -83,7 +86,7 @@ export default function(layers, view, offsets) {
 			x += trimmed.length * colWidth;
 		},
 		
-		skipText(string) {
+		skipText(string: string) {
 			x += string.length * colWidth;
 		},
 	};

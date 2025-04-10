@@ -13,8 +13,7 @@ import CodeRenderer from "./CodeRenderer";
 import NormalCursorRenderer from "./NormalCursorRenderer";
 
 /*
-LIFECYCLE per-render (in constrast to counterparts in the Editor component,
-which are created once per Editor and re-used)
+LIFECYCLE per-render
 
 code renderers have to be created per-render anyway, and keeping
 instances around risks having stale state from previous renders,
@@ -33,6 +32,44 @@ export default class Renderer {
 		this.document = view.document;
 		this.canvas = canvas;
 		this.uiState = UiState;
+	}
+	
+	render(): void {
+		this.init();
+		
+		let renderers = this.createRenderers();
+		
+		let {firstRow, lastRow} = this;
+		
+		for (let renderer of renderers) {
+			renderer.init(firstRow);
+			
+			let lineAbove = lines[firstRow.lineIndex - 1] || null;
+			
+			renderer.renderBetweenLines(lineAbove, firstRow.viewLine.line, firstRow.rowIndexInLine, 0);
+			
+			for (let foldedLineRow of this.foldedLineRows) {
+				renderer.startRow(foldedLineRow);
+				
+				renderer.renderRow();
+				
+				renderer.endRow();
+				
+				if (foldedLineRow.rowIndexInLine === foldedLineRow.wrappedLine.lineRows.length - 1) {
+					let lineBelow = lines[foldedLineRow.lineIndex + 1] || null;
+					
+					renderer.renderBetweenLines(foldedLineRow.viewLine.line, lineBelow, 0, 0);
+				}
+			}
+			
+			if (lastRow.rowIndexInLine !== lastRow.wrappedLine.lineRows.length - 1) {
+				let lineBelow = lines[lastRow.lineIndex + 1] || null;
+				
+				renderer.renderBetweenLines(lastRow.line, lineBelow, 0, lastRow.wrappedLine.lineRows.length - 1 - lastRow.rowIndexInLine);
+			}
+			
+			renderer.flush();
+		}
 	}
 	
 	private getVisibleScopes() {
@@ -97,44 +134,6 @@ export default class Renderer {
 			renderNormalCursor && new NormalCursorRenderer(this, normalSelection.end),
 			renderInsertCursor && new NormalCursorRenderer(this, insertCursor),
 		].filter(Boolean);
-	}
-	
-	render(): void {
-		this.init();
-		
-		let renderers = this.createRenderers();
-		
-		let {firstRow, lastRow} = this;
-		
-		for (let renderer of renderers) {
-			renderer.init(firstRow);
-			
-			let lineAbove = lines[firstRow.lineIndex - 1] || null;
-			
-			renderer.renderBetweenLines(lineAbove, firstRow.viewLine.line, firstRow.rowIndexInLine, 0);
-			
-			for (let foldedLineRow of this.foldedLineRows) {
-				renderer.startRow(foldedLineRow);
-				
-				renderer.renderRow();
-				
-				renderer.endRow();
-				
-				if (foldedLineRow.rowIndexInLine === foldedLineRow.wrappedLine.lineRows.length - 1) {
-					let lineBelow = lines[foldedLineRow.lineIndex + 1] || null;
-					
-					renderer.renderBetweenLines(foldedLineRow.viewLine.line, lineBelow, 0, 0);
-				}
-			}
-			
-			if (lastRow.rowIndexInLine !== lastRow.wrappedLine.lineRows.length - 1) {
-				let lineBelow = lines[lastRow.lineIndex + 1] || null;
-				
-				renderer.renderBetweenLines(lastRow.line, lineBelow, 0, lastRow.wrappedLine.lineRows.length - 1 - lastRow.rowIndexInLine);
-			}
-			
-			renderer.flush();
-		}
 	}
 	
 	private getFoldedLineRowsToRender() {

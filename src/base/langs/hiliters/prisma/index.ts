@@ -1,5 +1,5 @@
 import type {Node} from "core";
-import {Hiliter} from "modules/hiliter";
+import {Hiliter} from "core/hiliting";
 
 let wordRe = /\w/;
 
