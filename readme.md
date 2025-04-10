@@ -136,7 +136,7 @@ I'm used to using `null` but TS seems to prefer `undefined` in that optionality 
 
 ```typescript
 class A {
-	// should always ve non-null after class has done its initialisation
+	// should always be non-null after class has done its initialisation
 	private variableWidthPart: VariableWidthPart = null;
 	// can be null
 	private lastRenderedLineIndex?: number = null;
