@@ -1,6 +1,6 @@
 import {mount} from "svelte";
 import "css/global.scss";
-import App from "ui/App";
+import {App} from "ui/app";
 import components from "components";
 import AppComponent from "components/App/App.svelte";
 import {setGlobals} from "platforms/common/globals";

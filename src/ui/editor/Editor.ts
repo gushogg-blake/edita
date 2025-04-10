@@ -4,7 +4,7 @@ import bindFunctions from "utils/bindFunctions";
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
 import type {Document, Edit, HistoryEntry} from "core/document";
 
-import type App from "ui/App";
+import type {App} from "ui/app";
 
 import type {ActiveCompletions, EditorEnv} from "ui/editor";
 

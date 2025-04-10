@@ -11,7 +11,7 @@ import {screenOffsets} from "utils/dom";
 import {URL, File} from "core";
 
 import type {ContextMenuOptions} from "ui/contextMenu";
-import type App from "ui/App";
+import type {App} from "ui/app";
 
 import fs from "platforms/electron/modules/fs";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";

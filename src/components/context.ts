@@ -1,5 +1,5 @@
 import {setContext, getContext} from "svelte";
-import type App from "ui/App";
+import type {App} from "ui/app";
 
 export function setApp(app: App) {
 	setContext("app", app);

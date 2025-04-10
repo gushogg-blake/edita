@@ -1,7 +1,7 @@
 <script lang="ts">
 import {onMount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
-import type EditorTab from "ui/App/tabs/EditorTab";
+import type EditorTab from "ui/app/tabs/EditorTab";
 import {getApp} from "components/context";
 import Spacer from "components/utils/Spacer.svelte";
 

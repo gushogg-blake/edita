@@ -11,7 +11,7 @@ import {screenOffsets} from "utils/dom";
 import {URL, File} from "core";
 
 import type {ContextMenuOptions} from "ui/contextMenu";
-import type App from "ui/App";
+import type {App} from "ui/app";
 
 import clipboard from "platforms/web/modules/clipboard";
 import jsonStore from "platforms/web/modules/jsonStore";

@@ -1,6 +1,6 @@
 import Evented from "utils/Evented";
 import type {Resource} from "core";
-import type App from "ui/App";
+import type {App} from "ui/app";
 
 class Tab<EventMap = {}> extends Evented<EventMap> {
 	app: App;

@@ -1,6 +1,6 @@
 import {Selection, s} from "core";
 import {Special} from "core/resource";
-import type App from "ui/App";
+import type {App} from "ui/app";
 import type {Editor} from "ui/editor";
 import Tab from "./Tab";
 

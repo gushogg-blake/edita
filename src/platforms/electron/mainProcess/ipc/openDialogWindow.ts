@@ -1,4 +1,4 @@
-import App from "electronMain/App";
+import {App} from "electronMain/App";
 
 export default function(app: App) {
 	return {

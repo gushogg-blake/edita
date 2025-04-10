@@ -4,7 +4,7 @@ import {unique} from "utils/array";
 import {removeInPlace} from "utils/array";
 import Project from "modules/Project";
 import {projectRootFiles} from "base/conventions";
-import type App from "ui/App";
+import type {App} from "ui/app";
 
 /*
 REFACTOR this should keep a map of File -> Project for open files

@@ -2,8 +2,8 @@ import bluebird from "bluebird";
 import {lid, partition} from "utils";
 import {URL, type Lang} from "core";
 import {File, NewFile} from "core/resource";
-import type App from "ui/App";
-import type EditorTab from "ui/App/tabs/EditorTab";
+import type {App} from "ui/app";
+import type EditorTab from "ui/app/tabs/EditorTab";
 
 export default class {
 	app: App;

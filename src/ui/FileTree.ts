@@ -1,6 +1,6 @@
 import bluebird from "bluebird";
 import {Evented} from "utils";
-import type App from "ui/App";
+import type {App} from "ui/app";
 import type {DirEntry} from "base/DirEntries";
 
 export default class extends Evented<{

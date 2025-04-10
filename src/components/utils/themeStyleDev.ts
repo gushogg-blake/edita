@@ -1,7 +1,7 @@
 import mapObject from "utils/mapObject";
 import _typeof from "utils/typeof";
 import inlineStyle from "utils/dom/inlineStyle";
-import EditorTab from "ui/App/tabs/EditorTab";
+import EditorTab from "ui/app/tabs/EditorTab";
 
 /*
 write theme variables to the node's style (and update them when the

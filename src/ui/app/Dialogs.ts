@@ -1,5 +1,5 @@
 import type {PromiseWithMethods} from "utils";
-import type App from "ui/App";
+import type {App} from "ui/app";
 import showSyntheticDialog from "./showSyntheticDialog";
 
 type OpenDialogMode = "selectDir" | "selectFiles" | "save";

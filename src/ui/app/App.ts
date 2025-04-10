@@ -11,13 +11,13 @@ import FindAndReplace from "ui/FindAndReplace";
 import FileTree from "ui/FileTree";
 import contextMenu from "ui/contextMenu";
 
-import Projects from "ui/App/Projects";
-import Tools from "ui/App/Tools";
-import Output from "ui/App/Output";
-import SidePanes from "ui/App/panes/SidePanes";
-import BottomPanes from "ui/App/panes/BottomPanes";
-import EditorTab from "ui/App/tabs/EditorTab";
-import RefactorPreviewTab from "ui/App/tabs/RefactorPreviewTab";
+import Projects from "ui/app/Projects";
+import Tools from "ui/app/Tools";
+import Output from "ui/app/Output";
+import SidePanes from "ui/app/panes/SidePanes";
+import BottomPanes from "ui/app/panes/BottomPanes";
+import EditorTab from "ui/app/tabs/EditorTab";
+import RefactorPreviewTab from "ui/app/tabs/RefactorPreviewTab";
 
 import commands from "./commands";
 import MainTabs from "./MainTabs";
@@ -27,9 +27,9 @@ import Dialogs from "./Dialogs";
 
 import readFiles from "./readFiles";
 
-import Dev from "ui/App/Dev";
+import Dev from "ui/app/Dev";
 
-class App extends Evented<{
+export default class App extends Evented<{
 	teardown: void;
 	"document.edit": Document;
 	"document.undo": Document;
@@ -358,5 +358,3 @@ class App extends Evented<{
 		this.fire("teardown");
 	}
 }
-
-export default App;

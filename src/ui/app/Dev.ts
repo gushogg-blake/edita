@@ -1,5 +1,5 @@
 import {Evented, sleep, sortedPartition} from "utils";
-import type App from "ui/App";
+import type {App} from "ui/app";
 import type {AstHint} from "ui/AstHint";
 
 function get(key) {

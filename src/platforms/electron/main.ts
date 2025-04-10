@@ -2,7 +2,7 @@ import "css/global.scss";
 import "platforms/electron/css/app.scss";
 import {mount, unmount} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
-import App from "ui/App";
+import {App} from "ui/app";
 import dialogs from "ui/dialogs";
 import ipcRenderer from "platforms/electron/modules/ipcRenderer";
 import AppComponent from "components/App/App.svelte";

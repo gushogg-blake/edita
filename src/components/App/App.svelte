@@ -4,7 +4,7 @@ import {onMount, tick} from "svelte";
 import getKeyCombo from "utils/getKeyCombo";
 import inlineStyle from "utils/dom/inlineStyle";
 
-import type App from "ui/App";
+import type {App} from "ui/app";
 
 import themeStyle from "components/utils/themeStyle";
 import themeStyleDev from "components/utils/themeStyleDev";

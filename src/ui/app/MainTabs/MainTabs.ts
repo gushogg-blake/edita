@@ -2,10 +2,10 @@ import bluebird from "bluebird";
 import {Evented, moveInPlace, removeInPlace} from "utils";
 import {type Lang} from "core";
 import type {Resource, URL, File} from "core/resource";
-import EditorTab from "ui/App/tabs/EditorTab";
-import type Tab from "ui/App/tabs/Tab";
-import type App from "ui/App";
-import type {TabDescriptor} from "ui/App/SessionSaving";
+import EditorTab from "ui/app/tabs/EditorTab";
+import type Tab from "ui/app/tabs/Tab";
+import type {App} from "ui/app";
+import type {TabDescriptor} from "ui/app/SessionSaving";
 import {getEditorTabLabel, nextNewFileName} from "./utils";
 
 /*

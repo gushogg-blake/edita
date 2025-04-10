@@ -1,6 +1,6 @@
 import bluebird from "bluebird";
 import {URL, File} from "core";
-import type App from "ui/App";
+import type {App} from "ui/app";
 import type {SavedState} from "./tabs/EditorTab";
 
 export type TabDescriptor = {

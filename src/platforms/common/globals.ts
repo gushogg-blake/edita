@@ -1,6 +1,6 @@
 import type PlatformCommon from "platforms/common/Platform";
 import {Base} from "base";
-import type App from "ui/App";
+import type {App} from "ui/app";
 
 declare global {
 	module globalThis {
