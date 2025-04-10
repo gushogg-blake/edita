@@ -7,7 +7,15 @@ import {astSelectionUtils, getFooterLineIndex} from "modules/astIntel";
 
 import type {EditorMode, ActiveCompletions} from "ui/editor";
 
-import type {Canvas, UiState} from "ui/editor/view";
+import type {
+	Canvas,
+	UiState,
+	Measurements,
+	Sizes,
+	MarginStyle,
+	ScrollPosition,
+	Folds,
+} from "ui/editor/view";
 
 import SelectionUtils from "./utils/Selection";
 import AstSelectionUtils from "./utils/AstSelection";
@@ -23,39 +31,14 @@ type ViewLineDiff = {
 	newViewLines: ViewLine[];
 };
 
-export type Measurements = {
-	rowHeight: number;
-	colWidth: number;
-};
-
-type MarginStyle = {
-	margin: number;
-	paddingLeft: number;
-	paddingRight: number;
-};
-
-export type ScrollPosition = {
-	x: number;
-	y: number;
-};
-
-export type Folds = Record<string, number>;
-
-type Sizes = {
-	width: number;
-	height: number;
-	topMargin: number;
-	marginWidth: number;
-	marginOffset: number;
-	marginStyle: MarginStyle;
-	codeWidth: number;
-	rows: number;
-	cols: number;
-};
-
 const TOP_MARGIN = 2;
 
 export default class View extends Evented<{
+	/*
+	a lot of these events don't have an arg, because they basically
+	mean "something changed, re-render everything"
+	*/
+	
 	modeSwitch: void;
 	scroll: void;
 	wrapChanged: boolean;
@@ -81,14 +64,20 @@ export default class View extends Evented<{
 	
 	document: Document;
 	normalSelection: Selection = s(c(0, 0));
+	insertCursor: Cursor | null = null;
+	
 	astSelection: AstSelection | null = null;
 	
-	insertCursor: Cursor | null = null;
+	// appears when you hover over an element
 	astSelectionHilite: AstSelection | null = null;
-	astInsertionHilite: AstSelection | null = null; // TODO not 100% sure what this is
+	
+	// appears to indicate where a dropped element will go
+	astInsertionHilite: AstSelection | null = null;
 	
 	normalHilites: Selection[] = [];
 	
+	// whether the cursor blink is currently on (switches on and
+	// off with an interval)
 	cursorBlinkOn: boolean = false;
 	
 	wrap: boolean;
@@ -695,13 +684,13 @@ export default class View extends Evented<{
 		this.scheduleRedraw();
 	}
 	
-	setCompletions(completions: ActiveCompletions): void {
+	setCompletions(completions: ActiveCompletions) {
 		this.completions = completions;
 		
 		this.fire("updateCompletions");
 	}
 	
-	setMeasurements(measurements) {
+	setMeasurements(measurements: Measurements) {
 		this.measurements = measurements;
 		
 		this.fire("updateMeasurements");
@@ -709,13 +698,13 @@ export default class View extends Evented<{
 		this.updateSizes();
 	}
 	
-	setCanvasSize(width, height) {
+	setCanvasSize(width: number, height: number) {
 		this.updateSizes(width, height);
 		this.createWrappedLines();
 		this.validateScrollPosition();
 	}
 	
-	updateSizes(width=null, height=null) {
+	updateSizes(width: number | null = null, height: number | null = null) {
 		if (width === null && height === null) {
 			({width, height} = this.sizes);
 		}
