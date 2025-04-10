@@ -40,23 +40,33 @@ export default function(editor, editorComponent) {
 		
 		drawingSelection = true;
 		
-		on(window, "mousemove", drawSelection);
+		on(window, "mousemove", drawSelectionRAF);
 		on(window, "mouseup", mouseup);
 		on(window, "dragend", dragend);
 	}
 	
 	function drawSelection(e: MouseEvent) {
-		requestAnimationFrame(function() {
-			let cursor = getCursor(e, view, editorComponent.canvasDiv);
-			
-			if (origDoubleClickWordSelection) {
-				editor.normalMouse.drawDoubleClickSelection(origDoubleClickWordSelection, cursor);
-			} else {
-				editor.normalMouse.drawSelection({
-					start: view.normalSelection.start,
-					end: cursor,
-				});
-			}
+		let cursor = getCursor(e, view, editorComponent.canvasDiv);
+		
+		if (origDoubleClickWordSelection) {
+			editor.normalMouse.drawDoubleClickSelection(origDoubleClickWordSelection, cursor);
+		} else {
+			editor.normalMouse.drawSelection({
+				start: view.normalSelection.start,
+				end: cursor,
+			});
+		}
+	}
+	
+	let drawSelectionAnimationId = null;
+	
+	function drawSelectionRAF(e: MouseEvent) {
+		if (drawSelectionAnimationId !== null) {
+			cancelAnimationFrame(drawSelectionAnimationId);
+		}
+		
+		drawSelectionAnimationId = requestAnimationFrame(function() {
+			drawSelection(e);
 		});
 	}
 	
@@ -67,7 +77,16 @@ export default function(editor, editorComponent) {
 	}
 	
 	function mouseup(e: MouseEvent) {
-		if (view.normalSelection.isFull()) {
+		if (drawingSelection) {
+			if (drawSelectionAnimationId) {
+				cancelAnimationFrame(drawSelectionAnimationId);
+			}
+			
+			drawSelection(e); // do a non-RAF one to make sure it's up to date
+			
+			// NOTE this is a bit weird - we update the view while drawing,
+			// and only update the Editor afterwards, so they'll be out of
+			// sync while drawing. probs doesn't matter, just worth noting
 			editor.normalMouse.finishDrawingSelection();
 		}
 		
@@ -76,7 +95,7 @@ export default function(editor, editorComponent) {
 		drawingSelection = false;
 		origDoubleClickWordSelection = null;
 		
-		off(window, "mousemove", drawSelection);
+		off(window, "mousemove", drawSelectionRAF);
 		off(window, "mouseup", mouseup);
 		off(window, "dragend", dragend);
 	}
