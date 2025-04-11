@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import {URL, Document} from "core";
+import {FileLikeURL, Document} from "core";
 
 export default async function(paths) {
 	return bluebird.map(paths, async function(path) {
@@ -7,7 +7,7 @@ export default async function(paths) {
 			let code = await platform.fs(path).read();
 			
 			// MIGRATE
-			return new Document(code, URL.file(path), {
+			return new Document(code, FileLikeURL.file(path), {
 				noParse: true,
 			});
 		} catch (e) {

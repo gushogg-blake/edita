@@ -8,7 +8,7 @@ import {Language} from "web-tree-sitter";
 import {lid, promiseWithMethods} from "utils";
 import type {PromiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
-import {URL, File} from "core";
+import {FileLikeURL, File} from "core";
 
 import type {ContextMenuOptions} from "ui/contextMenu";
 import type {App} from "ui/app";
@@ -54,7 +54,7 @@ export default class Platform extends PlatformCommon {
 		this.fs = fs;
 		
 		this.urlsToOpenOnStartup = config.files.map(function(path) {
-			return URL.file(path);
+			return FileLikeURL.file(path);
 		});
 		
 		ipcRenderer.on("closeWindow", () => {
@@ -109,7 +109,7 @@ export default class Platform extends PlatformCommon {
 	
 	filesFromDropEvent(e, app) {
 		return app.readFiles([...e.dataTransfer.files].map((file) => {
-			return URL.file(webUtils.getPathForFile(file));
+			return FileLikeURL.file(webUtils.getPathForFile(file));
 		}));
 	}
 	

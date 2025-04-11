@@ -1,5 +1,5 @@
 import set from "lodash.set";
-import type {URL, Selection, AstSelection} from "core";
+import type {FileLikeURL, Selection, AstSelection} from "core";
 import type {DirEntry} from "base/DirEntries";
 import type {Editor, EditorMode} from "ui/editor";
 import type {ScrollPosition, Folds} from "ui/editor/view";
@@ -7,7 +7,7 @@ import type {App} from "ui/app";
 import Tab from "./Tab";
 
 export type SavedState = {
-	url: URL;
+	url: FileLikeURL;
 	mode: EditorMode;
 	normalSelection: Selection;
 	astSelection: AstSelection;

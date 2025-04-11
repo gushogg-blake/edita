@@ -2,9 +2,9 @@
 
 Takes:
 
-- a list of URLs (e.g. from glob, the current file, all open files, the current selection*)
+- a list of FileLikeURLs (e.g. from glob, the current file, all open files, the current selection*)
 
-- a function URL -> Document, so calling code can either read from disk or use the Document of a currently open editor
+- a function FileLikeURL -> Document, so calling code can either read from disk or use the Document of a currently open editor
 
 - a FindOptions
 

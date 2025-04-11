@@ -1,5 +1,5 @@
 import {Evented, lid} from "utils";
-import {URL} from "core";
+import {FileLikeURL} from "core";
 import LspError from "modules/lsp/LspError";
 import {
 	cursorToLspPosition,
@@ -110,7 +110,7 @@ class LspClient extends Evented {
 	}
 	
 	createUriForScope(document, scope) {
-		return URL.file(document.path).toString() + "#" + lid();
+		return FileLikeURL.file(document.path).toString() + "#" + lid();
 	}
 	
 	async getCompletions(document, cursor) {
@@ -171,7 +171,7 @@ class LspClient extends Evented {
 			
 			return result.map(function(definition) {
 				let {uri, range} = definition;
-				let url = URL.fromString(uri);
+				let url = FileLikeURL.fromString(uri);
 				
 				if (url.protocol !== "file:") {
 					return null;
@@ -212,11 +212,12 @@ class LspClient extends Evented {
 			
 			return result.map(function(definition) {
 				let {uri, range} = definition;
-				let url = new URL(uri);
 				
-				if (url.protocol !== "file:") {
+				if (!uri.startsWith("file:")) {
 					return null;
 				}
+				
+				let url = new FileLikeURL(uri);
 				
 				return {
 					path: url.path,

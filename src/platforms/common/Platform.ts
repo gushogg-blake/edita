@@ -1,5 +1,5 @@
 import {Evented, type PromiseWithMethods} from "utils";
-import type {URL, Document, File} from "core";
+import type {FileLikeURL, Document, File} from "core";
 import type {App} from "ui/app";
 import type {ContextMenuOptions} from "ui/contextMenu";
 import type Clipboard from "./Clipboard";
@@ -25,7 +25,7 @@ export default class extends Evented<{
 	jsonStore: JsonStore;
 	lsp?: any; // TYPE
 	fs: any; // TYPE fs
-	urlsToOpenOnStartup?: URL[] = [];
+	urlsToOpenOnStartup?: FileLikeURL[] = [];
 	
 	init(config?: any): Promise<void> {
 		throw new Error("abstract");
