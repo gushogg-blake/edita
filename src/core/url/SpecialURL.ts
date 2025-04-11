@@ -1,6 +1,6 @@
-import {CustomURL} from ".";
+import {BaseURL} from ".";
 
-export default class SpecialURL extends CustomURL {
+export default class SpecialURL extends BaseURL {
 	private constructor(url: URL) {
 		super(url);
 	}

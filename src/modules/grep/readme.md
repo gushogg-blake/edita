@@ -27,4 +27,4 @@ we don't keep the Document in the results, although it would be convenient, to a
 
 for the actual grepping, Document will probs use functions from this module to search itself, so grep will call Document to get results then Document will call something in grep to find them. actualyl that probably doesn't make sense -- the logci should be here. keep it out of Document, it doesn't need to be there.
 
-\* URLs can contain a selection in the hash, like file:///a/b/c.ts#123,0-456,10 -- see core/URL.
+\* URLs can contain a selection in the hash, like file:///a/b/c.ts#123,0-456,10 -- see core/FileLikeURL.

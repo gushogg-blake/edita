@@ -124,7 +124,7 @@ export default class App {
 			}
 			
 			protocol.registerStreamProtocol("app", async (request, callback) => {
-				let requestPath = decodeURIComponent(new URL(request.url).pathname);
+				let requestPath = decodeURIComponent(new FileLikeURL(request.url).pathname);
 				let {name, type} = fs(requestPath);
 				let mimeType = mimeTypes[type];
 				let path;

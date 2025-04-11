@@ -17,6 +17,17 @@ export interface EditorEnv {
 	
 	findReferences(cursor: Cursor): Promise<void>;
 	goToDefinition(definition: any): Promise<void>; // TYPE LSP response (or we convert it into our own)
+	
+	findAndReplace: {
+		// show F&R UI with options preset to replace in selection
+		replaceInSelectedText: () => void;
+		
+		// show F&R UI with options preset to replace in document
+		replaceInDocument: () => void;
+	};
+	
+	// show quick find bar
+	showFindBar: () => void;
 }
 
 export {default as Editor} from "./Editor";

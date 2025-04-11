@@ -1,13 +1,14 @@
-import type {Resource} from "core";
-import URL, {pathToUrl} from "./URL";
+import type {Resource, SpecialURL} from "core";
 
 export default class Special implements Resource {
+	declare url: SpecialURL;
+	
 	private constructor(type: string, path: string) {
 		if (!path) {
 			path = type;
 		}
 		
-		this.url = URL.special(type + ":", path);
+		this.url = FileLikeURL.special(type + ":", path);
 	}
 	
 	static refactor(): Special {

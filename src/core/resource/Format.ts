@@ -4,15 +4,16 @@ export class IndentationDetails {
 	re: RegExp;
 	colsPerIndent: number;
 	
-	constructor(indent) {
+	constructor(indent: string) {
 		let type = indent[0] === "\t" ? "tab" : "space";
 		
 		// TODO enable overriding tabWidth in project settings
-		this.tabWidth = base.prefs.tabWidth;
+		let {tabWidth} = base.prefs;
+		
 		this.type = type;
 		this.string = indent;
 		this.re = new RegExp("^(" + indent + ")*");
-		this.colsPerIndent = type === "tab" ? indent.length * this.tabWidth : indent.length;
+		this.colsPerIndent = type === "tab" ? indent.length * tabWidth : indent.length;
 	}
 }
 

@@ -30,6 +30,10 @@ function getMethod(action, options) {
 
 let maxHistoryEntries = 100;
 
+/*
+
+*/
+
 class FindAndReplace extends Evented<{
 	hide: void;
 	optionsUpdated: void;
@@ -85,6 +89,8 @@ class FindAndReplace extends Evented<{
 			}
 		}
 		
+		// INFLIGHT this is why there's no "show" event -- we do it here
+		// not sure how hiding works
 		this.tools.findAndReplace({
 			...this.findAndReplace.defaultOptions,
 			...this.findAndReplace.savedOptions,
@@ -98,6 +104,13 @@ class FindAndReplace extends Evented<{
 		
 		// MIGRATE listen to hide in app?
 		this.app.mainTabs.focusSelectedTab();
+	}
+	
+	findInOpenFiles() {
+		this.show({
+			replace: false,
+			searchIn: "openFiles",
+		});
 	}
 	
 	findInFiles(paths) {

@@ -55,32 +55,8 @@ export default {
 		this.showQuickAction("commandPalette");
 	},
 	
-	find() {
-		if (!this.mainTabs.selectedTab) {
-			return;
-		}
-		
-		this.showFindBar();
-	},
-	
 	findInOpenFiles() {
-		this.showFindAndReplace({
-			replace: false,
-			searchIn: "openFiles",
-		});
-	},
-	
-	replace() {
-		if (!this.mainTabs.selectedTab) {
-			return;
-		}
-		
-		let {editor} = this.mainTabs.selectedTab;
-		
-		this.showFindAndReplace({
-			replace: true,
-			searchIn: editor.view.normalSelection.isMultiline() ? "selectedText" : "currentDocument",
-		});
+		this.findAndReplace.findInOpenFiles();
 	},
 	
 	replaceInOpenFiles() {

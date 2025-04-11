@@ -1,8 +1,8 @@
 import type {Selection} from "core";
-import {CustomURL} from ".";
+import {BaseURL} from ".";
 import {encodeSelection, decodeSelection} from "./utils";
 
-class FileLikeURL extends CustomURL {
+class FileLikeURL extends BaseURL {
 	selection: Selection | null;
 	
 	constructor(url: URL) {
@@ -17,13 +17,13 @@ class FileLikeURL extends CustomURL {
 		return hash ? decodeSelection(hash) : null;
 	}
 	
-	withSelection(selection: selection): FileLikeURL {
+	withSelection(selection: Selection): FileLikeURL {
 		let str = this.withoutSelection().toString() + encodeSelection(selection);
 		
-		return new FileLikeURL(new URL(str));
+		return new FileLikeURL(new FileLikeURL(str));
 	}
 	
-	withoutSelection() {
+	withoutSelection(): FileLikeURL {
 		let url = new URL(this.toString());
 		
 		url.hash = "";
@@ -47,15 +47,15 @@ class FileLikeURL extends CustomURL {
 		return platform.fs(this.path).name;
 	}
 	
-	static file(path) {
+	static file(path: string): FileLikeURL {
 		return FileLikeURL.fromString("file://" + pathToUrl(path));
 	}
 	
-	static _new(path, startIndex=null, endIndex=null) {
+	static _new(path: string): FileLikeURL {
 		return FileLikeURL.fromString("new://" + pathToUrl(path));
 	}
 	
-	static memory(path, startIndex=null, endIndex=null) {
+	static memory(path: string): FileLikeURL {
 		return FileLikeURL.fromString("memory://" + pathToUrl(path));
 	}
 	

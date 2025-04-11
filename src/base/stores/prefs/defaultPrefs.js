@@ -76,6 +76,9 @@ export default {
 		"Ctrl+Space": "completeWord",
 		"Ctrl+Shift+Space": "completeWordPrevious",
 		
+		"Ctrl+F": "showFindBar",
+		"Ctrl+H": "replace",
+		
 		"Alt+I": "insertAstClipboard",
 		"Alt+O": "cursorAfterSnippet",
 		
@@ -152,9 +155,7 @@ export default {
 		"Ctrl+P": "fastOpen",
 		//"Ctrl+Shift+P": "commandPalette",
 		
-		"Ctrl+F": "find",
 		"Ctrl+Shift+F": "findInOpenFiles",
-		"Ctrl+H": "replace",
 		"Ctrl+Shift+H": "replaceInOpenFiles",
 		
 		"Ctrl+W": "closeTab",

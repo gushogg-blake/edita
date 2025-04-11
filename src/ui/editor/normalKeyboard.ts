@@ -587,4 +587,12 @@ export default {
 		
 		return ["noScrollCursorIntoView"];
 	},
+	
+	showFindBar() {
+		this.showFindBar();
+	},
+	
+	replace() {
+		this.replace();
+	},
 };

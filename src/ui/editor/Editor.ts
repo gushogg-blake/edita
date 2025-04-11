@@ -725,6 +725,18 @@ export default class Editor extends Evented<{
 		});
 	}
 	
+	showFindBar() {
+		this.env?.showFindBar();
+	}
+	
+	replace() {
+		if (this.normalSelection.isMultiline()) {
+			this.env?.findAndReplace.replaceInSelectedText();
+		} else {
+			this.env?.findAndReplace.replaceInDocument();
+		}
+	}
+	
 	getValue() {
 		return this.document.string;
 	}

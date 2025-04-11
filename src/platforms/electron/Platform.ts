@@ -8,7 +8,7 @@ import {Language} from "web-tree-sitter";
 import {lid, promiseWithMethods} from "utils";
 import type {PromiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
-import {FileLikeURL, File} from "core";
+import {type Document, FileLikeURL, File} from "core";
 
 import type {ContextMenuOptions} from "ui/contextMenu";
 import type {App} from "ui/app";
@@ -93,7 +93,7 @@ export default class Platform extends PlatformCommon {
 		
 	}
 	
-	backup(document) {
+	backup(document: Document) {
 		let key = encodeURIComponent(document.url);
 		
 		this.fs(this.config.userDataDir, "backups", key).write(document.string, {
@@ -101,7 +101,7 @@ export default class Platform extends PlatformCommon {
 		});
 	}
 	
-	removeBackup(document) {
+	removeBackup(document: Document) {
 		let key = encodeURIComponent(document.url);
 		
 		this.fs(this.config.userDataDir, "backups", key).deleteIfExists();

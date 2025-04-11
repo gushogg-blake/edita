@@ -1,10 +1,10 @@
 /*
 base class for URLs
 
-called CustomURL because URL is already taken
+called BaseURL because FileLikeURL is already taken
 */
 
-export default class CustomURL {
+export default class BaseURL {
 	private url: URL;
 	
 	private constructor(url: URL) {

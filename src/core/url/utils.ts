@@ -1,5 +1,11 @@
 import {type Selection, s, c} from "core";
 
+/*
+convert URL-style paths (always /, can some chars will be URL
+encoded) to and from filesystem paths (separator platform dependent,
+no URL-encoded chars)
+*/
+
 export function pathToUrl(path: string): string {
 	let encoded = "/" + path.split("/").slice(1).map(p => encodeURIComponent(p)).join("/");
 	
@@ -19,6 +25,13 @@ export function urlToPath(urlPath: string): string {
 		return decoded;
 	}
 }
+
+/*
+convert between a Selection and our scheme for encoding it in the
+hash part of the URL
+
+(for FileLikeURLs only)
+*/
 
 export function decodeSelection(hash: string): Selection | null {
 	if (!hash.match(/^#\d+,\d+-\d+,\d+$/)) {

@@ -1,6 +1,6 @@
-import type {FileLikeURL} from "core";
+import type {BaseURL} from "core";
 
 export interface Resource {
-	url: FileLikeURL;
+	url: BaseURL;
 	delete(): Promise<void>;
 }

@@ -25,6 +25,8 @@ class EditorTab extends Tab<{
 	zoomChange: void;
 	updateDirListing: void;
 }> {
+	declare resource: FileLike;
+	
 	editor: Editor;
 	
 	private perFilePrefs: any; // TYPE
