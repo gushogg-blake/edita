@@ -8,7 +8,7 @@ import fsWeb from "vendor/fs-web";
 import {fs as createFs, Evented, lid, promiseWithMethods, type PromiseWithMethods} from "utils";
 import {screenOffsets} from "utils/dom";
 
-import {URL, File} from "core";
+import {CustomURL, File} from "core";
 
 import type {ContextMenuOptions} from "ui/contextMenu";
 import type {App} from "ui/app";
@@ -124,7 +124,7 @@ export default class Platform extends PlatformCommon {
 			let tmpPath = platform.path.resolve("/tmp", "upload-" + lid(), droppedFile.name);
 			
 			return await File.write(
-				URL.file(tmpPath),
+				FileLikeURL.file(tmpPath),
 				await droppedFile.text(),
 			);
 		});

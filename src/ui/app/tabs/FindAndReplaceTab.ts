@@ -1,7 +1,7 @@
 import {Special} from "core/resource";
 import Tab from "./Tab";
 
-class FindAndReplaceTab extends Tab {
+export default class FindAndReplaceTab extends Tab {
 	constructor(app) {
 		super(app, Special.findAndReplace());
 		
@@ -35,5 +35,3 @@ class FindAndReplaceTab extends Tab {
 		
 	}
 }
-
-export default FindAndReplaceTab;

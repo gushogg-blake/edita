@@ -7,9 +7,9 @@ import type {DocumentOptions} from "core/document";
 import {alwaysIncludeDirInTabTitle} from "base/conventions";
 
 import {Editor} from "ui/editor";
-import FindAndReplace from "ui/FindAndReplace";
 import FileTree from "ui/FileTree";
 import contextMenu from "ui/contextMenu";
+import {FindAndReplace} from "ui/findAndReplace";
 
 import Projects from "ui/app/Projects";
 import Tools from "ui/app/Tools";
@@ -58,7 +58,7 @@ export default class App extends Evented<{
 	output: any;
 	bottomPanes: any;
 	sidePanes: any;
-	findAndReplace: any;
+	findAndReplace: FindAndReplace;
 	panes: any;
 	
 	commands: any; // TYPE
@@ -278,24 +278,6 @@ export default class App extends Evented<{
 	
 	updateTitle() {
 		platform.setTitle(this.mainTabs.selectedTab?.windowTitle || "");
-	}
-	
-	findInFiles(paths) {
-		// MIGRATE
-		//this.showFindAndReplace({
-		//	replace: false,
-		//	searchIn: "files",
-		//	paths,
-		//});
-	}
-	
-	replaceInFiles(paths) {
-		// MIGRATE
-		//this.showFindAndReplace({
-		//	replace: true,
-		//	searchIn: "files",
-		//	paths,
-		//});
 	}
 	
 	async onDocumentSave(document) {

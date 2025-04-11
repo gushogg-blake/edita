@@ -4,6 +4,7 @@ import Evented from "utils/Evented";
 import findAndReplace from "modules/grep/findAndReplace";
 import getPaths from "modules/grep/getPaths";
 import getDocuments from "modules/grep/getDocuments";
+import type {App} from "ui/app";
 import getFindAndReplaceOptions from "./getFindAndReplaceOptions";
 import Session from "./Session";
 
@@ -29,8 +30,15 @@ function getMethod(action, options) {
 
 let maxHistoryEntries = 100;
 
-class FindAndReplace extends Evented {
-	constructor(app) {
+class FindAndReplace extends Evented<{
+	hide: void;
+	optionsUpdated: void;
+	historyUpdated: void;
+	requestFocus: void;
+}> {
+	private app: App;
+	
+	constructor(app: App) {
 		super();
 		
 		this.app = app;
@@ -57,6 +65,55 @@ class FindAndReplace extends Evented {
 			this.loadOptions(),
 			this.loadHistory(),
 		]);
+	}
+	
+	private show(options) {
+		// TODO use last single-line selection, so we can select a word,
+		// then make a selection to find in selection and find will
+		// default to the word
+		
+		let search = "";
+		let {selectedTab} = this.app.mainTabs;
+		
+		if (selectedTab instanceof EditorTab) {
+			let {editor} = selectedTab;
+			let {document} = editor;
+			let selectedText = editor.getSelectedText();
+			
+			if (selectedText.indexOf(document.format.newline) === -1) {
+				search = selectedText;
+			}
+		}
+		
+		this.tools.findAndReplace({
+			...this.findAndReplace.defaultOptions,
+			...this.findAndReplace.savedOptions,
+			search,
+			...options,
+		});
+	}
+	
+	private hide() {
+		this.fire("hide");
+		
+		// MIGRATE listen to hide in app?
+		this.app.mainTabs.focusSelectedTab();
+	}
+	
+	findInFiles(paths) {
+		this.show({
+			replace: false,
+			searchIn: "files",
+			paths,
+		});
+	}
+	
+	replaceInFiles(paths) {
+		this.show({
+			replace: true,
+			searchIn: "files",
+			paths,
+		});
 	}
 	
 	reset() {
