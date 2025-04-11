@@ -1,6 +1,5 @@
 import parseJavaScript from "./parseJavaScript";
 import createExpressionFunction from "./createExpressionFunction";
-import getVariableName from "./getVariableName";
 import Tabstop from "./Tabstop";
 import Expression from "./Expression";
 import RegexReference from "./RegexReference";
@@ -67,6 +66,16 @@ export default function(string, createTabstops=true) {
 					
 					encounteredTabstops[name] = true;
 				}
+				
+				i = end;
+			} else if (next.match(/\d/)) {
+				// @N for regex replace
+				
+				let [, index] = string.substr(i + "@".length).match(/^(\d+)/);
+				let start = i;
+				let end = start + "@".length + index.length;
+				
+				placeholders.push(new RegexReference(start, end, index));
 				
 				i = end;
 			} else if (next === "@") {

@@ -1,4 +1,4 @@
-class RegexReference {
+export default class RegexReference {
 	constructor(start, end, index) {
 		this.type = "expression";
 		this.start = start;
@@ -7,12 +7,10 @@ class RegexReference {
 	}
 	
 	getValue(context) {
-		return context[this.index] || "";
+		return context["$" + this.index] || "";
 	}
 	
 	getDefaultValue(context) {
 		return this.getValue(context);
 	}
 }
-
-export default RegexReference;

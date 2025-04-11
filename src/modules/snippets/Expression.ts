@@ -1,3 +1,4 @@
+//import createExpressionFunction from "./createExpressionFunction";
 import functions from "./functions";
 
 class Expression {
@@ -10,6 +11,10 @@ class Expression {
 		/*
 		name - for simple @name expressions we might want to calculate the value
 		some other way, e.g. for CodePatterns query captures
+		
+		TODO this should probably be made more generic -- since snippets is
+		used by F&R and CP, call it placeholders or something and split the
+		snippets-specific logic out
 		*/
 		
 		this.name = name;

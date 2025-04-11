@@ -20,6 +20,10 @@ function hasWordBoundaries(code, match: RegExpMatchArray) {
 	);
 }
 
+/*
+
+*/
+
 function replaceExpressionsForRegexReplace(str, match) {
 	let placeholders = getPlaceholders(str, false);
 	
@@ -27,7 +31,7 @@ function replaceExpressionsForRegexReplace(str, match) {
 	let prevPlaceholderEnd = 0;
 	
 	let context = mapArrayToObject(match, function(value, index) {
-		return ["$" + index, value];
+		return ["$" + String(index), value];
 	});
 	
 	for (let placeholder of placeholders) {
@@ -152,7 +156,7 @@ let findAndReplace = {
 		let hasSetLoopedFile = false;
 		let firstResultIndex = null;
 		
-		while (`spincheck=${100000}`) {
+		while (`spincheck=${code.length}`) {
 			let match = findMatch();
 			
 			if (!match) {
@@ -229,7 +233,7 @@ let findAndReplace = {
 			hasSetLoopedFile = loopedFile;
 			hasSetLoopedResults = loopedResults;
 			
-			platform.loop(10000, {
+			`spincheck(${{
 				options,
 				match,
 				index,
@@ -237,10 +241,8 @@ let findAndReplace = {
 				loopedFile,
 				loopedRange,
 				loopedResults,
-			});
+			}})`;
 		}
-		
-		platform.resetLoop();
 	},
 	
 	/*
@@ -269,5 +271,3 @@ let findAndReplace = {
 		return prevResult.index;
 	},
 };
-
-export default findAndReplace;
