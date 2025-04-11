@@ -5,7 +5,6 @@ import findAndReplace from "modules/grep/findAndReplace";
 import getPaths from "modules/grep/getPaths";
 import getDocuments from "modules/grep/getDocuments";
 import type {App} from "ui/app";
-import getFindAndReplaceOptions from "./getFindAndReplaceOptions";
 import Session from "./Session";
 
 let methods = {
@@ -255,63 +254,6 @@ class FindAndReplace extends Evented<{
 		return results;
 	}
 	
-	async ensureSession(options) {
-		if (this.useExistingSession(options)) {
-			return;
-		}
-		
-		this.session = new Session(this.app, options);
-		
-		await Promise.all([
-			this.session.init(),
-			this.addOptionsToHistory(options),
-		]);
-	}
-	
-	async findNext(options) {
-		await this.ensureSession(options);
-		
-		let done = false;
-		let counts = null;
-		let result = await this.session.next();
-		
-		if (!result) {
-			done = true;
-			counts = this.session.countResults();
-			
-			this.session = null;
-		}
-		
-		return {
-			done,
-			counts,
-		};
-	}
-	
-	async findPrevious(options) {
-		await this.ensureSession(options);
-		
-		let done = false;
-		let counts = null;
-		let result = await this.session.previous();
-		
-		if (!result) {
-			done = true;
-			counts = this.session.countResults();
-			
-			this.session = null;
-		}
-		
-		return {
-			done,
-			counts,
-		};
-	}
-	
-	replace(options) {
-		this.session.replace();
-	}
-	
 	async loadOptions() {
 		this.savedOptions = await base.stores.findAndReplaceOptions.load();
 	}
@@ -355,5 +297,3 @@ class FindAndReplace extends Evented<{
 		this.fire("requestFocus");
 	}
 }
-
-export default FindAndReplace;

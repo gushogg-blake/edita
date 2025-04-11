@@ -5,7 +5,6 @@ import type {SnippetsStore} from "./snippets";
 import ephemeralUiState from "./ephemeralUiState";
 import fileTree from "./fileTree";
 import findAndReplaceHistory from "./findAndReplaceHistory";
-import findAndReplaceOptions from "./findAndReplaceOptions";
 import perFilePrefs from "./perFilePrefs";
 import prefs from "./prefs";
 import projects from "./projects";
@@ -17,10 +16,10 @@ export {default as JsonStore} from "./JsonStore";
 export {default as Singleton} from "./Singleton";
 
 export type Stores = {
+	// TYPE specify the store types on these
 	ephemeralUiState: Singleton;
 	fileTree: Singleton;
 	findAndReplaceHistory: Singleton;
-	findAndReplaceOptions: Singleton;
 	perFilePrefs: JsonStore;
 	prefs: Singleton;
 	projects: JsonStore;
@@ -34,7 +33,6 @@ export default async function() {
 		ephemeralUiState: await ephemeralUiState(),
 		fileTree: await fileTree(),
 		findAndReplaceHistory: await findAndReplaceHistory(),
-		findAndReplaceOptions: await findAndReplaceOptions(),
 		perFilePrefs: await perFilePrefs(),
 		prefs: await prefs(),
 		projects: await projects(),
