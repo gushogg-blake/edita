@@ -1,4 +1,4 @@
-import URL from "core/resource/URL";
+import {FileLikeURL} from "core";
 import getPaths from "modules/grep/getPaths";
 import getFindAndReplaceOptions from "./getFindAndReplaceOptions";
 
@@ -30,7 +30,7 @@ class Session {
 			let openPaths = app.editorTabs.map(tab => tab.path).filter(path => paths.includes(path));
 			let nonOpenPaths = paths.filter(path => !openPaths.includes(path));
 			
-			this.urls = [...openPaths, ...nonOpenPaths].map(path => URL.file(path));
+			this.urls = [...openPaths, ...nonOpenPaths].map(path => FileLikeURL.file(path));
 		}
 		
 		await this.nextUrl();

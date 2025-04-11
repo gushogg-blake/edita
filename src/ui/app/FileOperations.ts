@@ -1,6 +1,6 @@
 import bluebird from "bluebird";
 import {lid, partition} from "utils";
-import {URL, type Lang} from "core";
+import {FileLikeURL, type Lang} from "core";
 import {File, NewFile} from "core/resource";
 import type {App} from "ui/app";
 import type EditorTab from "ui/app/tabs/EditorTab";
@@ -31,10 +31,10 @@ export default class {
 	}
 	
 	openPath(path: string): Promise<EditorTab> {
-		return this.openUrl(URL.file(path));
+		return this.openUrl(FileLikeURL.file(path));
 	}
 	
-	async openUrl(url: URL): Promise<EditorTab> {
+	async openUrl(url: FileLikeURL): Promise<EditorTab> {
 		let {mainTabs} = this.app;
 		
 		let existingTab = mainTabs.findTabByUrl(url);
@@ -65,7 +65,7 @@ export default class {
 		await dir.mkdirp();
 		
 		let files = await bluebird.map(uploadedFiles, ({name, contents}) => {
-			return File.write(URL.file(dir.child(name).path), contents);
+			return File.write(FileLikeURL.file(dir.child(name).path), contents);
 		});
 		
 		for (let file of files) {
@@ -98,7 +98,7 @@ export default class {
 		});
 		
 		if (path && path !== document.path) {
-			await document.saveAs(URL.file(path));
+			await document.saveAs(FileLikeURL.file(path));
 		}
 	}
 	
@@ -120,7 +120,7 @@ export default class {
 		});
 		
 		if (path && path !== oldPath) {
-			await document.saveAs(URL.file(path));
+			await document.saveAs(FileLikeURL.file(path));
 			await resource.delete();
 		}
 	}

@@ -1,6 +1,6 @@
 import Evented from "utils/Evented";
 import {sortedPartition} from "utils/array";
-import URL from "core/resource/URL";
+import {FileLikeURL} from "core";
 import codePatterns from "modules/codePatterns";
 
 class RefactorPreview extends Evented {
@@ -41,7 +41,7 @@ class RefactorPreview extends Evented {
 	
 	async selectPath(path) {
 		// MIGRATE
-		let code = await this.app.readFile(URL.file(path));
+		let code = await this.app.readFile(FileLikeURL.file(path));
 		
 		if (code === null) {
 			return;

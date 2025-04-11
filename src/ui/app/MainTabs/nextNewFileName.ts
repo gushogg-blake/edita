@@ -1,8 +1,8 @@
 import nextName from "utils/nextName";
-import {type Lang, URL} from "core";
+import {type Lang, FileLikeURL} from "core";
 import type EditorTab from "ui/app/tabs/EditorTab";
 
-export default function(editorTabs: EditorTab[], dir: string, lang: Lang): URL {
+export default function(editorTabs: EditorTab[], dir: string, lang: Lang): FileLikeURL {
 	let {defaultExtension} = lang;
 	let extension = defaultExtension ? "." + defaultExtension : "";
 	
@@ -13,7 +13,7 @@ export default function(editorTabs: EditorTab[], dir: string, lang: Lang): URL {
 	});
 	
 	let path = platform.fs(dir).child(name).path;
-	let url = URL._new(path);
+	let url = FileLikeURL._new(path);
 	
 	return url;
 }

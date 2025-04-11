@@ -1,5 +1,5 @@
 import nextName from "utils/nextName";
-import {type URL} from "core";
+import {type FileLikeURL} from "core";
 import FileLike from "./FileLike";
 
 /*
@@ -18,7 +18,7 @@ to it though.
 */
 
 export default class NewFile extends FileLike {
-	constructor(url: URL) {
+	constructor(url: FileLikeURL) {
 		super(url);
 		
 		this.contents = "\n";
@@ -26,7 +26,7 @@ export default class NewFile extends FileLike {
 		this.updateFormat();
 	}
 	
-	static async create(url: URL): Promise<NewFile> {
+	static async create(url: FileLikeURL): Promise<NewFile> {
 		let newFile = new NewFile(url);
 		
 		await newFile.ensureRequiredLangsInitialised();

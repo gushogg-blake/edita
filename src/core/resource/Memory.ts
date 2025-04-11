@@ -1,10 +1,10 @@
-import {URL, Format, type Lang} from "core";
+import {FileLikeURL, Format, type Lang} from "core";
 import {getNewline, getIndent, guessLang} from "./utils";
 import FileLike from "./FileLike";
 
 export default class Memory extends FileLike {
-	private constructor(url: URL, str: string, lang: Lang = null) {
-		super(url || URL.memory("memory"));
+	private constructor(url: FileLikeURL, str: string, lang: Lang = null) {
+		super(url || FileLikeURL.memory("memory"));
 		
 		this.contents = str;
 		
@@ -26,7 +26,7 @@ export default class Memory extends FileLike {
 	}
 	
 	static async withPath(path: string, str: string): Promise<Memory> {
-		let file = new Memory(URL.file(path), str);
+		let file = new Memory(FileLikeURL.file(path), str);
 		
 		await file.ensureRequiredLangsInitialised();
 		

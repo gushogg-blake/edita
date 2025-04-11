@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import {URL} from "core";
+import {FileLikeURL} from "core";
 import {App} from "ui/app";
 
 /*
@@ -9,7 +9,7 @@ functions available to be bound to key presses/buttons
 export default {
 	async open() {
 		let dir = this.getCurrentDir(platform.systemInfo.homeDir);
-		let urls = (await this.dialogs.showOpen(dir)).map(path => URL.file(path));
+		let urls = (await this.dialogs.showOpen(dir)).map(path => FileLikeURL.file(path));
 		let files = await this.readFiles(urls);
 		
 		for (let file of files) {

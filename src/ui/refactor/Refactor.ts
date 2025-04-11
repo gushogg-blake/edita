@@ -1,6 +1,6 @@
 import bluebird from "bluebird";
 import {Evented} from "utils";
-import {URL, Document} from "core";
+import {FileLikeURL, Document} from "core";
 import codePatterns from "modules/codePatterns";
 import RefactorPreview from "./RefactorPreview";
 
@@ -63,7 +63,7 @@ class Refactor extends Evented {
 	async getFiles() {
 		let nodes = (await bluebird.map(this.options.globs, glob => platform.fs().glob(glob))).flat();
 		let textFileNodes = await bluebird.filter(nodes, node => node.isTextFile());
-		let urls = textFileNodes.map(node => URL.file(node.path));
+		let urls = textFileNodes.map(node => FileLikeURL.file(node.path));
 		
 		return this.app.readFiles(urls);
 	}

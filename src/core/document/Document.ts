@@ -1,6 +1,6 @@
 import {Evented} from "utils";
 import {AstSelection, a, Selection, s, Cursor, c} from "core";
-import {type FileLike, type URL, File, Memory} from "core/resource";
+import {type FileLike, type FileLikeURL, File, Memory} from "core/resource";
 import findAndReplace from "modules/grep/findAndReplace";
 
 import Source from "./Source";
@@ -473,7 +473,7 @@ export default class Document extends Evented<{
 		this.onSave();
 	}
 	
-	async saveAs(url: URL): Promise<void> {
+	async saveAs(url: FileLikeURL): Promise<void> {
 		let file = await File.write(url, this.string);
 		
 		this.setResource(file);

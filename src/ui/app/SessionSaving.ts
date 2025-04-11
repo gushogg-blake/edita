@@ -1,5 +1,5 @@
 import bluebird from "bluebird";
-import {URL, File} from "core";
+import {FileLikeURL, File} from "core";
 import type {App} from "ui/app";
 import type {SavedState} from "./tabs/EditorTab";
 
@@ -25,7 +25,7 @@ export default class {
 			if (session) {
 				let {mainTabs} = session;
 				let {tabs, selectedTabUrl} = mainTabs;
-				let files = await this.app.readFilesByUrl(tabs.map(tab => URL.fromString(tab.url)));
+				let files = await this.app.readFilesByUrl(tabs.map(tab => FileLikeURL.fromString(tab.url)));
 				
 				tabsFromSession = await bluebird.map(tabs, ({url: urlString, state}) => {
 					let file = files[urlString];
@@ -37,7 +37,7 @@ export default class {
 				}).filter(Boolean);
 				
 				if (selectedTabUrl && files[selectedTabUrl]) {
-					urlToSelect = URL.fromString(selectedTabUrl);
+					urlToSelect = FileLikeURL.fromString(selectedTabUrl);
 				}
 			}
 		}

@@ -1,15 +1,15 @@
 import {Evented} from "utils";
-import {type URL, Format, type Resource, type Lang} from "core";
+import {type FileLikeURL, Format, type Resource, type Lang} from "core";
 import {getNewline, getIndent, guessLang} from "./utils";
 
 export default class FileLike extends Evented<{
 	formatChanged: void;
 }> implements Resource {
-	url: URL;
+	url: FileLikeURL;
 	format: Format;
 	contents: string;
 	
-	constructor(url: URL) {
+	constructor(url: FileLikeURL) {
 		super();
 		
 		this.url = url;

@@ -1,5 +1,5 @@
 import detectIndent from "detect-indent";
-import type {Lang, URL} from "core";
+import type {Lang, FileLikeURL} from "core";
 
 // type Newline = "\r\n" | "\r" | "\n";
 
@@ -81,7 +81,7 @@ alternate means the lang supports the file but wouldn't usually be used,
 e.g. JavaScript supports JSON files and SCSS supports CSS files.
 */
 
-export function guessLang(str: string, url?: URL): Lang {
+export function guessLang(str: string, url?: FileLikeURL): Lang {
 	if (url) {
 		for (let [langCode, patterns] of Object.entries(base.prefs.fileAssociations)) {
 			for (let pattern of patterns) {

@@ -20,11 +20,11 @@ export default class File extends FileLike {
 	private changeListeners: Array<() => void> = [];
 	private saving: boolean = false;
 	
-	private constructor(url: URL) {
+	private constructor(url: FileLikeURL) {
 		super(url);
 	}
 	
-	private static async create(url: URL, contents = null): Promise<File> {
+	private static async create(url: FileLikeURL, contents = null): Promise<File> {
 		let file = new File(url);
 		
 		if (contents !== null) {
@@ -38,7 +38,7 @@ export default class File extends FileLike {
 		return file;
 	}
 	
-	static async read(url: URL): Promise<File> {
+	static async read(url: FileLikeURL): Promise<File> {
 		return File.create(url);
 	}
 	
@@ -75,7 +75,7 @@ export default class File extends FileLike {
 		this.updateFormat();
 	}
 	
-	//async rename(url: URL) {
+	//async rename(url: FileLikeURL) {
 	//	if (url.toString() === this.url.toString()) {
 	//		return;
 	//	}

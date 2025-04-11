@@ -1,7 +1,7 @@
 import bluebird from "bluebird";
 import {Evented, moveInPlace, removeInPlace} from "utils";
 import {type Lang} from "core";
-import type {Resource, URL, File} from "core/resource";
+import type {Resource, FileLikeURL, File} from "core/resource";
 import EditorTab from "ui/app/tabs/EditorTab";
 import type Tab from "ui/app/tabs/Tab";
 import type {App} from "ui/app";
@@ -243,11 +243,11 @@ export default class extends Evented<{
 		return this.editorTabs.find(tab => tab.isSaved && tab.path === path);
 	}
 	
-	findTabByUrl(url: URL): EditorTab | undefined {
+	findTabByUrl(url: FileLikeURL): EditorTab | undefined {
 		return this.editorTabs.find(tab => tab.url.toString() === url.toString());
 	}
 	
-	async loadFromSessionAndStartup({tabs, urlToSelect}: {tabs: TabDescriptor[], urlToSelect?: URL}): Promise<void> {
+	async loadFromSessionAndStartup({tabs, urlToSelect}: {tabs: TabDescriptor[], urlToSelect?: FileLikeURL}): Promise<void> {
 		this.tabs = await bluebird.map(tabs, async ({file, state}) => {
 			let tab = await this.createEditorTab(file);
 			
@@ -309,7 +309,7 @@ export default class extends Evented<{
 		return getEditorTabLabel(tab, this.editorTabs);
 	}
 	
-	nextNewFileName(dir: string, lang: Lang): URL {
+	nextNewFileName(dir: string, lang: Lang): FileLikeURL {
 		return nextNewFileName(this.editorTabs, dir, lang);
 	}
 }
