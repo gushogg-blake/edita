@@ -9,7 +9,7 @@ let wordUnderCursorRe = {
 	symbol: /^[^\w\s_]+/,
 };
 
-export default {
+export default class Commands {
 	up() {
 		let {row: startRow, col: startCol} = this.canvasUtils.rowColFromCursor(this.normalSelection.left);
 		
@@ -21,7 +21,7 @@ export default {
 		let col = this.selectionEndCol;
 		
 		return s(this.canvasUtils.cursorFromRowCol({row, col}));
-	},
+	}
 	
 	down() {
 		let {right} = this.normalSelection;
@@ -35,7 +35,7 @@ export default {
 		let col = this.selectionEndCol;
 		
 		return s(this.canvasUtils.cursorFromRowCol(row, col));
-	},
+	}
 	
 	left() {
 		let {left} = this.normalSelection;
@@ -54,7 +54,7 @@ export default {
 		}
 		
 		return s(c(lineIndex, offset - 1));
-	},
+	}
 	
 	right() {
 		let {right} = this.normalSelection;
@@ -74,7 +74,7 @@ export default {
 		}
 		
 		return s(c(lineIndex, offset + 1));
-	},
+	}
 	
 	pageUp() {
 		let {rows} = this.sizes;
@@ -86,7 +86,7 @@ export default {
 		let col = this.selectionEndCol;
 		
 		return s(this.canvasUtils.cursorFromRowCol(row, col));
-	},
+	}
 	
 	pageDown() {
 		let {rows} = this.sizes;
@@ -98,7 +98,7 @@ export default {
 		let col = this.selectionEndCol;
 		
 		return s(this.canvasUtils.cursorFromRowCol(row, col));
-	},
+	}
 	
 	home() {
 		let {wrappedLines} = this;
@@ -125,7 +125,7 @@ export default {
 				return s(this.canvasUtils.cursorFromRowCol(row, indentCols));
 			}
 		}
-	},
+	}
 	
 	end() {
 		let {wrappedLines} = this;
@@ -146,7 +146,7 @@ export default {
 		} else {
 			return s(c(lineIndex, line.string.length));
 		}
-	},
+	}
 	
 	wordLeft() {
 		let {wrappedLines} = this;
@@ -161,7 +161,7 @@ export default {
 			
 			return s(c(lineIndex, offset - whiteSpaceOrWord.length));
 		}
-	},
+	}
 	
 	wordRight() {
 		let {wrappedLines} = this;
@@ -176,7 +176,7 @@ export default {
 			
 			return s(c(lineIndex, offset + whiteSpaceOrWord.length));
 		}
-	},
+	}
 	
 	expandOrContractUp() {
 		let {start, end} = this.normalSelection;
@@ -190,7 +190,7 @@ export default {
 		let col = this.selectionEndCol;
 		
 		return s(start, this.canvasUtils.cursorFromRowCol(row, col));
-	},
+	}
 	
 	expandOrContractDown() {
 		let {wrappedLines} = this;
@@ -206,7 +206,7 @@ export default {
 		let col = this.selectionEndCol;
 		
 		return s(start, this.canvasUtils.cursorFromRowCol(row, col));
-	},
+	}
 	
 	expandOrContractLeft() {
 		let {wrappedLines} = this;
@@ -224,7 +224,7 @@ export default {
 		}
 		
 		return s(start, c(lineIndex, offset - 1));
-	},
+	}
 	
 	expandOrContractRight() {
 		let {wrappedLines} = this;
@@ -241,7 +241,7 @@ export default {
 		}
 		
 		return s(start, c(lineIndex, offset + 1));
-	},
+	}
 	
 	expandOrContractPageUp() {
 		let {rows} = this.sizes;
@@ -252,7 +252,7 @@ export default {
 		let col = this.selectionEndCol;
 		
 		return s(start, this.canvasUtils.cursorFromRowCol(row, col));
-	},
+	}
 	
 	expandOrContractPageDown() {
 		let {rows} = this.sizes;
@@ -263,7 +263,7 @@ export default {
 		let col = this.selectionEndCol;
 		
 		return s(start, this.canvasUtils.cursorFromRowCol(row, col));
-	},
+	}
 	
 	expandOrContractHome() {
 		let {wrappedLines} = this;
@@ -290,7 +290,7 @@ export default {
 				return s(start, this.canvasUtils.cursorFromRowCol(row, indentCols));
 			}
 		}
-	},
+	}
 	
 	expandOrContractEnd() {
 		let {wrappedLines} = this;
@@ -311,7 +311,7 @@ export default {
 		} else {
 			return s(start, c(lineIndex, line.string.length));
 		}
-	},
+	}
 	
 	expandOrContractWordLeft() {
 		let {wrappedLines} = this;
@@ -327,7 +327,7 @@ export default {
 			
 			return s(start, c(lineIndex, offset - whiteSpaceOrWord.length));
 		}
-	},
+	}
 	
 	expandOrContractWordRight() {
 		let {wrappedLines} = this;
@@ -343,15 +343,15 @@ export default {
 			
 			return s(start, c(lineIndex, offset + whiteSpaceOrWord.length));
 		}
-	},
+	}
 	
 	startOfLineContent(lineIndex) {
 		return s(this.document.cursorAtStartOfLineContent(lineIndex));
-	},
+	}
 	
 	endOfLineContent(lineIndex) {
 		return s(this.document.cursorAtEndOfLine(lineIndex));
-	},
+	}
 	
 	wordUnderCursor(cursor) {
 		let {wrappedLines} = this;
@@ -382,31 +382,9 @@ export default {
 		let left = regexMatch(string.substr(0, offset).split("").reverse().join(""), wordRe).length;
 		
 		return s(c(lineIndex, offset - left), c(lineIndex, offset + right));
-	},
+	}
 	
 	all() {
 		return this.document.selectAll();
-	},
-	
-	validate(selection) {
-		let {lines} = this.document;
-		let {start, end} = selection;
-		let {lineIndex: startLineIndex, offset: startOffset} = start;
-		let {lineIndex: endLineIndex, offset: endOffset} = end;
-		
-		startLineIndex = Math.min(startLineIndex, lines.length - 1);
-		startOffset = Math.min(startOffset, lines[startLineIndex].string.length);
-		endLineIndex = Math.min(endLineIndex, lines.length - 1);
-		endOffset = Math.min(endOffset, lines[endLineIndex].string.length);
-		
-		return s(c(startLineIndex, startOffset), c(endLineIndex, endOffset));
-	},
-	
-	fromAstSelection(astSelection) {
-		let {lines} = this.document;
-		
-		let endLineIndex = Math.max(astSelection.startLineIndex, astSelection.endLineIndex - 1);
-		
-		return s(c(astSelection.startLineIndex, 0), c(endLineIndex, lines[endLineIndex].string.length));
-	},
-};
+	}
+}

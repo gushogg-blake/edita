@@ -18,11 +18,11 @@ import type {
 	ActiveCompletions,
 } from "ui/editor/view";
 
-import SelectionUtils from "./utils/Selection";
-import AstSelectionUtils from "./utils/AstSelection";
+
 import wrapLine, {type WrappedLine} from "./utils/wrapLine";
 import CanvasUtils from "./utils/CanvasUtils";
 import Renderer from "./render/Renderer";
+import Scroll from "./Scroll";
 import ViewLine from "./ViewLine";
 import AstMode from "./AstMode";
 
@@ -43,7 +43,7 @@ export default class View extends Evented<{
 	modeSwitch: void;
 	scroll: void;
 	wrapChanged: boolean;
-	updateCompletions: void;
+	updateCompletions: void; // TODO maybe best to just listen to these from the source
 	updateMeasurements: void;
 	updateSizes: void;
 	updateScrollbars: void;
@@ -57,43 +57,27 @@ export default class View extends Evented<{
 	hide: void;
 }> {
 	viewLines: ViewLine[];
-	wrappedLines: WrappedLine[];
 	
 	focused: boolean = false;
 	visible: boolean = false;
 	mounted: boolean = false;
 	
 	document: Document;
-	normalSelection: Selection = s(c(0, 0));
-	insertCursor: Cursor | null = null;
-	
-	astSelection: AstSelection | null = null;
-	
-	// appears when you hover over an element
-	astSelectionHilite: AstSelection | null = null;
-	
-	// appears to indicate where a dropped element will go
-	astInsertionHilite: AstSelection | null = null;
-	
-	normalHilites: Selection[] = [];
-	
-	// whether the cursor blink is currently on (switches on and
-	// off with an interval)
-	cursorBlinkOn: boolean = false;
-	
-	wrap: boolean;
 	
 	mode: EditorMode = "normal";
 	
+	scroll = new Scroll(this);
+	normalSelection = new NormalSelection(this);
+	astSelection = new AstSelectionHelper(this);
+	wrap = new Wrapping(this);
+	folds = new Folds(this);
+	completions = new Completions(this);
 	astMode = new AstMode(this);
-	
-	Selection = bindFunctions(this, SelectionUtils);
-	AstSelection = bindFunctions(this, AstSelectionUtils);
 	canvasUtils = new CanvasUtils(this);
 	
-	// for remembering the "intended" col when moving a cursor up/down to a line
-	// that doesn't have as many cols as the cursor
-	selectionEndCol: number = 0;
+	insertCursor: Cursor | null = null;
+	
+	normalHilites: Selection[] = [];
 	
 	marginStyle: MarginStyle = {
 		margin: 2,
@@ -107,17 +91,6 @@ export default class View extends Evented<{
 	};
 	
 	sizes: Sizes;
-	scrollPosition: ScrollPosition = {x: 0, y: 0};
-	
-	activeCompletions: ActiveCompletions | null = null;
-	
-	// TYPE not clear what this is but it's a map of header line index to footer line index
-	// might be better as a map, and possibly with explicit types for the numbers -- not
-	// sure about that yet as a pattern, but would obvs extend to line numbers, offsets, etc
-	// might be worth doing, as there is always gonna be ambiguity -- would allow us to
-	// distinguish between line indexes and line positions (where a position can be
-	// array.length, whereas an index can't)
-	folds: Folds = {};
 	
 	private needToUpdateAstSelection: boolean = false;
 	
@@ -125,8 +98,6 @@ export default class View extends Evented<{
 	private redrawnWhileHidden: boolean = false;
 	private hasBatchedUpdates: boolean = false;
 	private syncRedrawBatchDepth: number = 0;
-	
-	private cursorInterval: ReturnType<typeof setInterval> | null = null;
 	
 	private requestFocusOnMount: boolean;
 	
@@ -149,6 +120,8 @@ export default class View extends Evented<{
 		
 		this.teardownCallbacks = [
 			document.on("edit", this.onDocumentEdit.bind(this)),
+			this.scroll.on("scroll", () => this.onScroll()),
+			this.scroll.on("updateScrollbars", () => this.updateScrollbars()),
 		];
 	}
 	
@@ -267,255 +240,10 @@ export default class View extends Evented<{
 		}
 	}
 	
-	// TODO move these to a helper class, like AstMode
-	
-	getScrollHeight() {
-		let {
-			measurements: {rowHeight},
-			sizes: {topMargin, height},
-		} = this;
-		
-		let rows = this.canvasUtils.countLineRowsFolded();
-		
-		return rows === 1 ? height : topMargin + (rows - 1) * rowHeight + height;
-	}
-	
-	getScrollWidth() {
-		let {
-			document,
-			measurements: {colWidth},
-			sizes: {codeWidth: width},
-		} = this;
-		
-		let longestLineWidth = document.getLongestLineWidth();
-		
-		return longestLineWidth * colWidth + width;
-	}
-	
-	getVerticalScrollMax() {
-		return this.getScrollHeight() - this.sizes.height;
-	}
-	
-	getHorizontalScrollMax() {
-		return this.wrap ? 0 : this.getScrollWidth() - this.sizes.codeWidth;
-	}
-	
-	boundedScrollY(y) {
-		return Math.max(0, Math.min(y, this.getVerticalScrollMax()));
-	}
-	
-	boundedScrollX(x) {
-		return Math.max(0, Math.min(x, this.getHorizontalScrollMax()));
-	}
-	
-	ensureScrollIsWithinBounds() {
-		let x = this.boundedScrollX(this.scrollPosition.x);
-		let y = this.boundedScrollY(this.scrollPosition.y);
-		
-		if (x !== this.scrollPosition.x || y !== this.scrollPosition.y) {
-			this.setScrollPositionNoValidate({x, y});
-		}
-	}
-	
-	scrollBy(x, y) {
-		let scrolled = false;
-		
-		if (x !== 0 && !this.wrap) {
-			let newX = Math.round(this.boundedScrollX(this.scrollPosition.x + x));
-			
-			scrolled = newX !== this.scrollPosition.x;
-			
-			this.scrollPosition.x = newX;
-		}
-		
-		if (y !== 0) {
-			let newY = this.boundedScrollY(this.scrollPosition.y + y);
-			
-			scrolled = newY !== this.scrollPosition.y;
-			
-			this.scrollPosition.y = newY;
-		}
-		
-		if (scrolled) {
-			this.fire("scroll");
-			
-			this.scheduleRedraw();
-		}
-		
-		return scrolled;
-	}
-	
-	scrollTo(x, y) {
-		this.setScrollPosition({x, y});
-	}
-	
-	setVerticalScrollPosition(position) {
-		this.setVerticalScrollNoValidate(Math.round(this.getVerticalScrollMax() * position));
-	}
-	
-	setHorizontalScrollPosition(position) {
-		this.setHorizontalScrollNoValidate(Math.round(this.getHorizontalScrollMax() * position));
-	}
-	
-	setVerticalScrollNoValidate(y) {
-		this.scrollPosition.y = y;
-		
-		this.fire("scroll");
-		
-		this.scheduleRedraw();
-	}
-	
-	setHorizontalScrollNoValidate(x) {
-		if (this.wrap && x !== 0) {
-			return;
-		}
-		
-		this.scrollPosition.x = x;
-		
-		this.fire("scroll");
-		
-		this.scheduleRedraw();
-	}
-	
-	setScrollPosition(scrollPosition) {
-		let {x, y} = scrollPosition;
-		
-		this.scrollPosition = {
-			x: this.boundedScrollX(x),
-			y: this.boundedScrollY(y),
-		};
-		
-		this.updateScrollbars();
-		
-		this.fire("scroll");
-	}
-	
-	setScrollPositionNoValidate(scrollPosition) {
-		this.scrollPosition = {...scrollPosition};
-		
-		this.updateScrollbars();
-		
-		this.fire("scroll");
-	}
-	
-	/*
-	ensure scroll position is still valid after e.g. resizing, which
-	can change the height if wrapping is enabled
-	*/
-	
-	validateScrollPosition() {
-		this.setScrollPosition(this.scrollPosition);
-	}
-	
-	scrollPage(dir) {
-		let {rows} = this.sizes;
-		
-		this.scrollBy(0, rows * dir);
-	}
-	
-	scrollPageDown() {
-		this.scrollPage(1);
-	}
-	
-	scrollPageUp() {
-		this.scrollPage(-1);
-	}
-	
-	ensureSelectionIsOnScreen() {
-		if (this.mode === "ast") {
-			this.ensureAstSelectionIsOnScreen();
-		} else {
-			this.ensureNormalCursorIsOnScreen();
-		}
-	}
-	
-	ensureAstSelectionIsOnScreen() {
-		let {height} = this.sizes;
-		let {startLineIndex, endLineIndex} = this.astSelection;
-		
-		let topY = this.canvasUtils.screenYFromLineIndex(startLineIndex);
-		let bottomY = this.canvasUtils.screenYFromLineIndex(endLineIndex);
-		let selectionHeight = bottomY - topY;
-		let bottomDistance = height - bottomY;
-		
-		let idealBuffer = this.measurements.rowHeight * 5;
-		let spaceAvailable = height - selectionHeight;
-		
-		if (spaceAvailable >= idealBuffer * 2) {
-			let topBuffer = Math.max(idealBuffer, topY);
-			let topDiff = topBuffer - topY;
-			let newBottomDistance = bottomDistance + topDiff;
-			let idealBottomBuffer = Math.max(idealBuffer, newBottomDistance);
-			
-			let bottomDiff = idealBottomBuffer - newBottomDistance;
-			
-			this.scrollBy(0, -topDiff + bottomDiff);
-		} else {
-			let topBuffer = Math.max(0, spaceAvailable / 2);
-			let topDiff = topBuffer - topY;
-			
-			this.scrollBy(0, -topDiff);
-		}
-	}
-	
-	ensureNormalCursorIsOnScreen() {
-		let {
-			scrollPosition,
-			measurements,
-		} = this;
-		
-		let {codeWidth: width, rows} = this.sizes;
-		let {colWidth, rowHeight} = measurements;
-		
-		let {end} = this.normalSelection;
-		let {lineIndex, offset} = end;
-		let {row, col} = this.canvasUtils.rowColFromCursor(end);
-		
-		let maxRow = this.canvasUtils.countLineRowsFolded() - 1;
-		let firstVisibleRow = Math.floor(scrollPosition.y / rowHeight);
-		let firstFullyVisibleRow = Math.ceil(scrollPosition.y / rowHeight);
-		let lastFullyVisibleRow = firstVisibleRow + rows;
-		
-		let idealRowBufferTop = rows > 10 ? 5 : 0;
-		let idealRowBufferBottom = rows > 10 ? 5 : 1;
-		
-		let topRowDiff = idealRowBufferTop - (row - firstFullyVisibleRow);
-		
-		if (topRowDiff > 0) {
-			scrollPosition.y = Math.max(0, scrollPosition.y - topRowDiff * rowHeight);
-		}
-		
-		let bottomRowDiff = idealRowBufferBottom - (lastFullyVisibleRow - row);
-		
-		if (bottomRowDiff > 0) {
-			scrollPosition.y = Math.min(scrollPosition.y + bottomRowDiff * rowHeight, maxRow * rowHeight);
-		}
-		
-		if (!this.wrap) {
-			let colBuffer = colWidth * 4;
-			
-			let {x} = this.canvasUtils.screenCoordsFromRowCol({row, col});
-			
-			x -= this.sizes.marginOffset;
-			
-			if (x < 1) {
-				scrollPosition.x = Math.max(0, x - colBuffer);
-			}
-			
-			if (x > this.sizes.codeWidth - colBuffer) {
-				scrollPosition.x += x - this.sizes.codeWidth + colBuffer;
-			}
-		}
-		
-		this.fire("scroll");
-	}
-	
-	setNormalSelection(selection) {
-		this.normalSelection = this.Selection.validate(selection);
+	setNormalSelection(selection: Selection) {
+		this.normalSelections.setNormalSelection(selection);
 		
 		this.needToUpdateAstSelection = true;
-		
-		// TODO validate for folds
 		
 		this.scheduleRedraw();
 	}
@@ -536,13 +264,13 @@ export default class View extends Evented<{
 		}
 	}
 	
-	setInsertCursor(cursor) {
+	setInsertCursor(cursor: Cursor) {
 		this.insertCursor = cursor;
 		
 		this.scheduleRedraw();
 	}
 	
-	setAstSelection(astSelection) {
+	setAstSelection(astSelection: AstSelection) {
 		this.astSelection = astSelectionUtils.trim(this.document, this.AstSelection.validate(astSelection));
 		this.astSelectionHilite = null;
 		
@@ -553,7 +281,7 @@ export default class View extends Evented<{
 		this.scheduleRedraw();
 	}
 	
-	setAstSelectionHilite(astSelection) {
+	setAstSelectionHilite(astSelection: AstSelection) {
 		this.astSelectionHilite = astSelection;
 		
 		this.scheduleRedraw();
@@ -616,79 +344,16 @@ export default class View extends Evented<{
 		}).filter(Boolean));
 	}
 	
-	setFolds(folds): void {
-		this.folds = folds;
-		
-		// TODO validate selection
-		
-		this.scheduleRedraw();
-	}
-	
-	toggleFoldHeader(lineIndex: number): void {
-		let {document} = this;
-		let footerLineIndex = getFooterLineIndex(document, lineIndex);
-		
-		if (lineIndex in this.folds) {
-			delete this.folds[lineIndex];
-			
-			return;
-		}
-		
-		if (footerLineIndex === null) {
-			return;
-		}
-		
-		this.folds[lineIndex] = footerLineIndex + 1;
-		
-		this.scheduleRedraw();
-	}
-	
-	adjustFoldsForEdit(edit: Edit): void {
-		let {selection, newSelection} = edit;
-		let origEndLineIndex = selection.end.lineIndex;
-		let newEndLineIndex = newSelection.end.lineIndex;
-		let diff = newEndLineIndex - origEndLineIndex;
-		
-		this.folds = mapArrayToObject(Object.entries(this.folds), function([lineIndex, foldTo]) {
-			lineIndex = Number(lineIndex);
-			
-			if (lineIndex > origEndLineIndex) {
-				lineIndex += diff;
-				foldTo += diff;
-			}
-			
-			return [lineIndex, foldTo];
-		});
-	}
-	
 	setNormalHilites(hilites: Selection[]) {
 		this.normalHilites = hilites;
 		
 		this.scheduleRedraw();
 	}
 	
-	setWrap(wrap: boolean): void {
-		if (this.wrap === wrap) {
-			return;
-		}
-		
-		this.wrap = wrap;
-		
-		if (this.wrap) {
-			this.setHorizontalScrollNoValidate(0);
-		}
-		
-		this.createWrappedLines();
-		
-		this.fire("wrapChanged", wrap);
-		
+	onScroll() {
 		this.scheduleRedraw();
-	}
-	
-	setActiveCompletions(activeCompletions: ActiveCompletions) {
-		this.activeCompletions = activeCompletions;
 		
-		this.fire("updateCompletions");
+		this.fire("scroll");
 	}
 	
 	setMeasurements(measurements: Measurements) {
@@ -702,7 +367,7 @@ export default class View extends Evented<{
 	setCanvasSize(width: number, height: number) {
 		this.updateSizes(width, height);
 		this.createWrappedLines();
-		this.validateScrollPosition();
+		this.scroll.validateScrollPosition();
 	}
 	
 	updateSizes(width: number | null = null, height: number | null = null) {
@@ -750,38 +415,6 @@ export default class View extends Evented<{
 		if (marginWidth !== this.sizes.marginWidth) {
 			this.createWrappedLines();
 		}
-	}
-	
-	startCursorBlink() {
-		if (!this.visible) {
-			return;
-		}
-		
-		if (this.mode !== "normal") {
-			return;
-		}
-		
-		if (this.cursorInterval) {
-			clearInterval(this.cursorInterval);
-		}
-		
-		this.cursorBlinkOn = true;
-		
-		this.cursorInterval = setInterval(() => {
-			this.cursorBlinkOn = !this.cursorBlinkOn;
-			
-			this.updateCanvas();
-		}, base.prefs.cursorBlinkPeriod);
-		
-		this.scheduleRedraw();
-	}
-	
-	clearCursorBlink() {
-		if (this.cursorInterval) {
-			clearInterval(this.cursorInterval);
-		}
-		
-		this.cursorInterval = null;
 	}
 	
 	updateCanvas() {
