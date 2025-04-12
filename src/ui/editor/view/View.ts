@@ -19,9 +19,8 @@ import type {
 } from "ui/editor/view";
 
 
-import wrapLine, {type WrappedLine} from "./utils/wrapLine";
-import CanvasUtils from "./utils/CanvasUtils";
-import Renderer from "./render/Renderer";
+import CanvasUtils from "./CanvasUtils";
+import {Renderer} from "./render";
 import Scroll from "./Scroll";
 import ViewLine from "./ViewLine";
 import AstMode from "./AstMode";
@@ -67,13 +66,14 @@ export default class View extends Evented<{
 	mode: EditorMode = "normal";
 	
 	scroll = new Scroll(this);
-	normalSelection = new NormalSelection(this);
-	astSelection = new AstSelectionHelper(this);
 	wrapping = new Wrapping(this);
 	folds = new Folds(this);
 	completions = new Completions(this);
 	astMode = new AstMode(this);
 	canvasUtils = new CanvasUtils(this);
+	
+	private normalSelection = new NormalSelection(this);
+	private astSelection = new AstSelectionHelper(this);
 	
 	insertCursor: Cursor | null = null;
 	
