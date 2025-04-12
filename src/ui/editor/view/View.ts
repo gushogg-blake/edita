@@ -69,7 +69,7 @@ export default class View extends Evented<{
 	scroll = new Scroll(this);
 	normalSelection = new NormalSelection(this);
 	astSelection = new AstSelectionHelper(this);
-	wrap = new Wrapping(this);
+	wrapping = new Wrapping(this);
 	folds = new Folds(this);
 	completions = new Completions(this);
 	astMode = new AstMode(this);

@@ -55,35 +55,11 @@ export type Coords = {
 	y: number;
 };
 
-export default class {
+export class CanvasHelper extends ViewHelper {
 	private view: View;
 	
 	constructor(view: View) {
 		this.view = view;
-	}
-	
-	get wrappedLines() {
-		return this.view.wrappedLines;
-	}
-	
-	get document() {
-		return this.view.document;
-	}
-	
-	get measurements() {
-		return this.view.measurements;
-	}
-	
-	get sizes() {
-		return this.view.sizes;
-	}
-	
-	get scrollPosition() {
-		return this.view.scrollPosition;
-	}
-	
-	get folds() {
-		return this.view.folds;
 	}
 	
 	countLineRowsFolded() {

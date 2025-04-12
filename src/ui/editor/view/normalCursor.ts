@@ -52,4 +52,3 @@ export class NormalCursor extends Evented<{
 	}
 	
 }
-

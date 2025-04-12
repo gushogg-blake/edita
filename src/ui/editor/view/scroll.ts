@@ -6,7 +6,7 @@ export type ScrollPosition = {
 	y: number;
 };
 
-export default class Scroll extends Evented<{
+export class Scroll extends Evented<{
 	scroll: void;
 	updateScrollbars: void;
 }> {
