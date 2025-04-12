@@ -2,8 +2,6 @@
 
 Edita is a code editor combining novel features and interactions with a familiar GUI interface.
 
-See [edita.vercel.app](//edita.vercel.app/) (WIP).
-
 ## Requirements
 
 - A recent Node version.
